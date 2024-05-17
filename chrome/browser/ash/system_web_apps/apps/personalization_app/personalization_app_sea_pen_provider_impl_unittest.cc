@@ -411,7 +411,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
       base::BindLambdaForTesting(
           [](std::optional<std::vector<
                  ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
-             manta::MantaStatusCode) { NOTREACHED(); }));
+             manta::MantaStatusCode) { NOTREACHED_IN_MIGRATION(); }));
 
   EXPECT_EQ("SearchWallpaper exceeded maximum text length",
             bad_message_observer.WaitForBadMessage())

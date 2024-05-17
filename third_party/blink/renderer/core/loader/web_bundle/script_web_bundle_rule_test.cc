@@ -25,7 +25,9 @@ class MockConsoleLogger final : public GarbageCollected<MockConsoleLogger>,
       std::optional<mojom::ConsoleMessageCategory>) override {
     message_ = message;
   }
-  void AddConsoleMessageImpl(ConsoleMessage*, bool) override { NOTREACHED(); }
+  void AddConsoleMessageImpl(ConsoleMessage*, bool) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   String message_;
 };
 

@@ -376,7 +376,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaperWhenBanned) {
 
   wallpaper_provider_remote()->SelectWallpaper(
       image_info.asset_id, /*preview_mode=*/false,
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      base::BindLambdaForTesting(
+          [](bool success) { NOTREACHED_IN_MIGRATION(); }));
 
   EXPECT_EQ("Invalid request to set wallpaper",
             bad_message_observer.WaitForBadMessage());
@@ -562,8 +563,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
   mojo::test::BadMessageObserver bad_message_observer;
   wallpaper_provider_remote()->SetDailyRefreshCollectionId(
-      collection_id,
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      collection_id, base::BindLambdaForTesting(
+                         [](bool success) { NOTREACHED_IN_MIGRATION(); }));
   EXPECT_EQ("Invalid request to set wallpaper",
             bad_message_observer.WaitForBadMessage());
 }
@@ -817,8 +818,9 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Test selecting a wallpaper before fetching the enterprise setting.
   wallpaper_provider_remote()->SelectGooglePhotosPhoto(
       "OmnisVirLupus", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      /*preview_mode=*/false, base::BindLambdaForTesting([](bool success) {
+        NOTREACHED_IN_MIGRATION();
+      }));
   EXPECT_EQ(
       "Cannot call `SelectGooglePhotosPhoto()` without confirming that the "
       "Google Photos enterprise setting is enabled.",
@@ -835,8 +837,9 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   mojo::test::BadMessageObserver bad_message_observer;
   wallpaper_provider_remote()->SelectGooglePhotosPhoto(
       "OmnisVirLupus", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      /*preview_mode=*/false, base::BindLambdaForTesting([](bool success) {
+        NOTREACHED_IN_MIGRATION();
+      }));
   EXPECT_EQ(
       "Cannot call `SelectGooglePhotosPhoto()` without confirming that the "
       "Google Photos enterprise setting is enabled.",
@@ -848,8 +851,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Test selecting an album before fetching the enterprise setting.
   mojo::test::BadMessageObserver bad_message_observer;
   wallpaper_provider_remote()->SelectGooglePhotosAlbum(
-      "OmnisVirLupus",
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      "OmnisVirLupus", base::BindLambdaForTesting(
+                           [](bool success) { NOTREACHED_IN_MIGRATION(); }));
   EXPECT_EQ(
       "Rejected attempt to set Google Photos wallpaper while disabled via "
       "enterprise setting.",
@@ -884,8 +887,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   FetchGooglePhotosEnabled();
   mojo::test::BadMessageObserver bad_message_observer;
   wallpaper_provider_remote()->SelectGooglePhotosAlbum(
-      "OmnisVirLupus",
-      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+      "OmnisVirLupus", base::BindLambdaForTesting(
+                           [](bool success) { NOTREACHED_IN_MIGRATION(); }));
   EXPECT_EQ("Invalid request to select google photos album",
             bad_message_observer.WaitForBadMessage());
 }

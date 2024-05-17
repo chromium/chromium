@@ -350,7 +350,9 @@ class MockTabletCursorEvdev : public CursorDelegateEvdev {
   void MoveCursorTo(const gfx::PointF& location) override {
     cursor_location_ = location;
   }
-  void MoveCursor(const gfx::Vector2dF& delta) override { NOTREACHED(); }
+  void MoveCursor(const gfx::Vector2dF& delta) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   bool IsCursorVisible() override { return true; }
   gfx::PointF GetLocation() override { return cursor_location_; }
   gfx::Rect GetCursorConfinedBounds() override {

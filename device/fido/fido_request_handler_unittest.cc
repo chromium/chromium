@@ -129,7 +129,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
   void OnSampleCollected(int remaining_samples) override {}
 
-  void FinishCollectToken() override { NOTREACHED(); }
+  void FinishCollectToken() override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   TransportAvailabilityNotificationReceiver

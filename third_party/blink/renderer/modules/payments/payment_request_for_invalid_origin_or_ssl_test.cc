@@ -42,8 +42,8 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
       payments::mojom::blink::PaymentDetailsPtr update_with_details) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void OnPaymentDetailsNotUpdated() override { NOTREACHED(); }
-  void Abort() override { NOTREACHED(); }
+  void OnPaymentDetailsNotUpdated() override { NOTREACHED_IN_MIGRATION(); }
+  void Abort() override { NOTREACHED_IN_MIGRATION(); }
   void Complete(payments::mojom::PaymentComplete result) override {
     NOTREACHED_IN_MIGRATION();
   }

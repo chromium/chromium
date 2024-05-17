@@ -1074,8 +1074,9 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
       // on_receive_head_callback_ is not called, and is passed to the
       // follow up PrefetchStreamingURLLoader that will follow the redirect
       // in the other network context.
-      std::get<0>(GetParam()) ? base::BindOnce([]() { NOTREACHED(); })
-                              : base::OnceClosure(),
+      std::get<0>(GetParam())
+          ? base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); })
+          : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.

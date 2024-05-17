@@ -24,7 +24,7 @@ class AudioDestinationHandler : public AudioHandler {
   // The method MUST NOT be invoked when rendering a graph because the
   // destination node is a sink. Instead, this node gets pulled by the
   // underlying renderer (audio hardware or worker thread).
-  void Process(uint32_t) final { NOTREACHED(); }
+  void Process(uint32_t) final { NOTREACHED_IN_MIGRATION(); }
 
   virtual void StartRendering() = 0;
   virtual void StopRendering() = 0;

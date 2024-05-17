@@ -28,7 +28,7 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   ~ClientNativePixmapOpaque() override = default;
 
   bool Map() override { return false; }
-  void Unmap() override { NOTREACHED(); }
+  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
   size_t GetNumberOfPlanes() const override {
     return pixmap_handle_.planes.size();
   }

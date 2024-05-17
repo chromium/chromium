@@ -127,7 +127,7 @@ class HandledClosure : public HandledTask {
     return nullptr;
   }
   unsigned taskAsClosure() const override { return closure_id_; }
-  void Print(std::ostream* os) const override { NOTREACHED(); }
+  void Print(std::ostream* os) const override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   unsigned closure_id_;

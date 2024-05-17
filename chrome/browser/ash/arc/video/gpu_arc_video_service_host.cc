@@ -91,7 +91,9 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
   void Decode(mojom::BitstreamBufferPtr bitstream_buffer) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void AssignPictureBuffers(uint32_t count) override { NOTREACHED(); }
+  void AssignPictureBuffers(uint32_t count) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
                               mojo::ScopedHandle handle,
@@ -99,9 +101,11 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
                               mojom::BufferModifierPtr modifier) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void ReusePictureBuffer(int32_t picture_buffer_id) override { NOTREACHED(); }
-  void Flush(FlushCallback callback) override { NOTREACHED(); }
-  void Reset(ResetCallback callback) override { NOTREACHED(); }
+  void ReusePictureBuffer(int32_t picture_buffer_id) override {
+    NOTREACHED_IN_MIGRATION();
+  }
+  void Flush(FlushCallback callback) override { NOTREACHED_IN_MIGRATION(); }
+  void Reset(ResetCallback callback) override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   mojo::RemoteSet<mojom::VideoDecodeClient> clients_;

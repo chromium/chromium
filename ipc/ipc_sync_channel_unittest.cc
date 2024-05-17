@@ -147,7 +147,7 @@ class Worker : public Listener, public Sender {
   SyncChannel* channel() { return channel_.get(); }
   // Functions for derived classes to implement if they wish.
   virtual void Run() { }
-  virtual void OnAnswer(int* answer) { NOTREACHED(); }
+  virtual void OnAnswer(int* answer) { NOTREACHED_IN_MIGRATION(); }
   virtual void OnAnswerDelay(Message* reply_msg) {
     // The message handler map below can only take one entry for
     // SyncChannelTestMsg_AnswerToLife, so since some classes want
@@ -159,7 +159,7 @@ class Worker : public Listener, public Sender {
     SyncChannelTestMsg_AnswerToLife::WriteReplyParams(reply_msg, answer);
     Send(reply_msg);
   }
-  virtual void OnDouble(int in, int* out) { NOTREACHED(); }
+  virtual void OnDouble(int in, int* out) { NOTREACHED_IN_MIGRATION(); }
   virtual void OnDoubleDelay(int in, Message* reply_msg) {
     int result;
     OnDouble(in, &result);

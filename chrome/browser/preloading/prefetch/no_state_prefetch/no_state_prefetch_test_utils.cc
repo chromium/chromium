@@ -88,7 +88,7 @@ class NeverRunsExternalProtocolHandlerDelegate
     NOTREACHED_IN_MIGRATION();
   }
 
-  void FinishedProcessingCheck() override { NOTREACHED(); }
+  void FinishedProcessingCheck() override { NOTREACHED_IN_MIGRATION(); }
 };
 
 }  // namespace

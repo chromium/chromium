@@ -129,7 +129,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
  private:
   // From DocumentParser
-  void insert(const String&) override { NOTREACHED(); }
+  void insert(const String&) override { NOTREACHED_IN_MIGRATION(); }
   void Append(const String&) override;
   void Finish() override;
   void ExecuteScriptsWaitingForResources() final;

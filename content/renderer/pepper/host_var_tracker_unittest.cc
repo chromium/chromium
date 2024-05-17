@@ -56,7 +56,7 @@ class PepperTryCatchForTest : public PepperTryCatch {
   PepperTryCatchForTest(const PepperTryCatchForTest&) = delete;
   PepperTryCatchForTest& operator=(const PepperTryCatchForTest&) = delete;
 
-  void SetException(const char* message) override { NOTREACHED(); }
+  void SetException(const char* message) override { NOTREACHED_IN_MIGRATION(); }
   bool HasException() override { return false; }
   v8::Local<v8::Context> GetContext() override {
     return instance_->GetIsolate()->GetCurrentContext();

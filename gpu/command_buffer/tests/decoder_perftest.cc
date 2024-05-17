@@ -266,7 +266,7 @@ class RecordReplayContext : public GpuControl {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void CancelAllQueries() override { NOTREACHED(); }
+  void CancelAllQueries() override { NOTREACHED_IN_MIGRATION(); }
 
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override {
     NOTREACHED_IN_MIGRATION();
@@ -278,9 +278,9 @@ class RecordReplayContext : public GpuControl {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void SetLock(base::Lock*) override { NOTREACHED(); }
+  void SetLock(base::Lock*) override { NOTREACHED_IN_MIGRATION(); }
 
-  void EnsureWorkVisible() override { NOTREACHED(); }
+  void EnsureWorkVisible() override { NOTREACHED_IN_MIGRATION(); }
 
   gpu::CommandBufferNamespace GetNamespaceID() const override {
     return gpu::CommandBufferNamespace::INVALID;
@@ -290,7 +290,7 @@ class RecordReplayContext : public GpuControl {
     return gpu::CommandBufferId();
   }
 
-  void FlushPendingWork() override { NOTREACHED(); }
+  void FlushPendingWork() override { NOTREACHED_IN_MIGRATION(); }
 
   uint64_t GenerateFenceSyncRelease() override {
     NOTREACHED_IN_MIGRATION();

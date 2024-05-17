@@ -684,7 +684,9 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       EnableAudioDebugRecordingsOnAllRenderProcessHosts();
       break;
     }
-    default: { NOTREACHED(); }
+    default: {
+      NOTREACHED_IN_MIGRATION();
+    }
   }
 }
 

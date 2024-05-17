@@ -78,7 +78,7 @@ class FontRenderParams {
 
   FontRenderParams() = default;
 
-  ~FontRenderParams() { NOTREACHED(); }
+  ~FontRenderParams() { NOTREACHED_IN_MIGRATION(); }
 
   THREAD_CHECKER(thread_checker_);
   std::optional<gfx::FontRenderParams> params_;

@@ -724,7 +724,9 @@ class WebStateObserverMock : public WebStateObserver {
   MOCK_METHOD1(DidStopLoading, void(WebState*));
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 // Mocks WebStateObserver navigation callbacks, including TitleWasSet.
@@ -744,7 +746,9 @@ class WebStateObserverWithTitleMock : public WebStateObserver {
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
   MOCK_METHOD1(TitleWasSet, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 // Mocks WebStatePolicyDecider decision callbacks.

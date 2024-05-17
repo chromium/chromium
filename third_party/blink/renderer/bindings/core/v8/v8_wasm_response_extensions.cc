@@ -436,7 +436,7 @@ class WasmDataLoaderClient final
   WasmDataLoaderClient& operator=(const WasmDataLoaderClient&) = delete;
 
   void DidFetchDataLoadedCustomFormat() override {}
-  void DidFetchDataLoadFailed() override { NOTREACHED(); }
+  void DidFetchDataLoadFailed() override { NOTREACHED_IN_MIGRATION(); }
   void Abort() override { loader_->AbortFromClient(); }
 
   void Trace(Visitor* visitor) const override {

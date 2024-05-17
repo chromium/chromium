@@ -843,7 +843,9 @@ class MediaStreamManager::DeviceRequest {
   // TODO(crbug.com/40247147): Combine FinalizeRequest and
   // FinalizeMediaAccessRequest, implement it for the remaining subclasses and
   // make it into on pure virtual function.
-  virtual void FinalizeRequest(const std::string& label) { NOTREACHED(); }
+  virtual void FinalizeRequest(const std::string& label) {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   virtual void FinalizeMediaAccessRequest(
       const std::string& label,
@@ -853,7 +855,9 @@ class MediaStreamManager::DeviceRequest {
 
   virtual void FinalizeRequestFailed(MediaStreamRequestResult result) = 0;
 
-  virtual void FinalizeChangeDevice(const std::string& label) { NOTREACHED(); }
+  virtual void FinalizeChangeDevice(const std::string& label) {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   virtual void OnRequestStateChangeFromBrowser(
       const std::string& label,

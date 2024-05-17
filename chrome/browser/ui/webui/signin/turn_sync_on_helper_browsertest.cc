@@ -65,7 +65,9 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   ~Delegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -86,8 +88,10 @@ class Delegate : public TurnSyncOnHelper::Delegate {
       SyncConfirmationCallback callback) override {
     AdvanceFlowOrCapture(BlockingStep::kSyncDisabled, std::move(callback));
   }
-  void ShowSyncSettings() override { NOTREACHED(); }
-  void SwitchToProfile(Profile* new_profile) override { NOTREACHED(); }
+  void ShowSyncSettings() override { NOTREACHED_IN_MIGRATION(); }
+  void SwitchToProfile(Profile* new_profile) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   BlockingStep blocking_step() const { return blocking_step_; }
 

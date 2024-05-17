@@ -4,7 +4,7 @@
 
 #include "sql/error_delegate_util.h"
 
-#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
+#include <ostream>  // Needed to compile NOTREACHED_IN_MIGRATION() with operator <<.
 #include <string>
 
 #include "base/files/file_path.h"

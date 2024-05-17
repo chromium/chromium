@@ -420,7 +420,7 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
 
   // gfx::ClientNativePixmap implementation.
   bool Map() override { NOTREACHED_NORETURN(); }
-  void Unmap() override { NOTREACHED(); }
+  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
   size_t GetNumberOfPlanes() const override { NOTREACHED_NORETURN(); }
   void* GetMemoryAddress(size_t plane) const override { NOTREACHED_NORETURN(); }
   int GetStride(size_t plane) const override { NOTREACHED_NORETURN(); }

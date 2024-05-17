@@ -88,7 +88,7 @@ class ExternalProtocolHandlerDelegate
       content::WebContents* web_contents) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void FinishedProcessingCheck() override { NOTREACHED(); }
+  void FinishedProcessingCheck() override { NOTREACHED_IN_MIGRATION(); }
 
   base::test::TestFuture<void> future;
 };

@@ -561,11 +561,15 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     state_ = RequestState::kDone;
   }
 
-  void BindTransactionReceiver() override { NOTREACHED(); }
+  void BindTransactionReceiver() override { NOTREACHED_IN_MIGRATION(); }
 
-  void UpgradeTransactionStarted(int64_t old_version) override { NOTREACHED(); }
+  void UpgradeTransactionStarted(int64_t old_version) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
-  void UpgradeTransactionFinished(bool committed) override { NOTREACHED(); }
+  void UpgradeTransactionFinished(bool committed) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   // The delete requests should always be run during force close.
   bool ShouldPruneForForceClose() override { return false; }

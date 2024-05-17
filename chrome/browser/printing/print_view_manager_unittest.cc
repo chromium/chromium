@@ -345,7 +345,9 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
       SetupScriptedPrintPreviewCallback callback) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void ShowScriptedPrintPreview(bool is_modifiable) override { NOTREACHED(); }
+  void ShowScriptedPrintPreview(bool is_modifiable) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {
     NOTREACHED_IN_MIGRATION();

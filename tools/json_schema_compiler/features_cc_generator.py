@@ -70,7 +70,7 @@ class _Generator(object):
       .Append('case kEnumBoundary: break;')
       .Eblock()
       .Append('}')
-      .Append('NOTREACHED();')
+      .Append('NOTREACHED_IN_MIGRATION();')
       .Append('return "";')
     )
     (c.Eblock()

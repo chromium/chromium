@@ -853,7 +853,9 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
       break;
     }
 
-    default: { NOTREACHED(); }
+    default: {
+      NOTREACHED_IN_MIGRATION();
+    }
   }
 
   if (capturer)

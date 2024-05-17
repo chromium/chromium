@@ -492,7 +492,9 @@ class LayerTreeHostProxyTestImplFrameCausesAnimatePending
         EndTest();
         break;
       }
-      default: { NOTREACHED(); }
+      default: {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 };
@@ -531,7 +533,9 @@ class LayerTreeHostProxyTestNeedsCommitFromImpl
                            base::Unretained(this)));
         break;
       }
-      default: { NOTREACHED(); }
+      default: {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 

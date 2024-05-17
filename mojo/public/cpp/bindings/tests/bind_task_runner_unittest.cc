@@ -141,7 +141,7 @@ class IntegerSenderImpl : public IntegerSender {
     else
       echo_handler_.Run(value, std::move(callback));
   }
-  void Send(int32_t value) override { NOTREACHED(); }
+  void Send(int32_t value) override { NOTREACHED_IN_MIGRATION(); }
 
   ReceiverType* receiver() { return &receiver_; }
 

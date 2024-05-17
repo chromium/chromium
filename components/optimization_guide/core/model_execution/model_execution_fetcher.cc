@@ -140,7 +140,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kPromptApi:
       // On-device only feature.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return MISSING_TRAFFIC_ANNOTATION;
   }
 }

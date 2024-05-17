@@ -53,7 +53,9 @@ class FakeRestrictedUDPSocket
     NOTREACHED_IN_MIGRATION();
   }
 
-  void ReceiveMore(uint32_t num_additional_datagrams) override { NOTREACHED(); }
+  void ReceiveMore(uint32_t num_additional_datagrams) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   const Vector<uint8_t>& GetReceivedData() const { return data_; }
   void Trace(cppgc::Visitor* visitor) const {}

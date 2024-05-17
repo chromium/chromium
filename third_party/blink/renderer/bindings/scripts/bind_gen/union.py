@@ -715,10 +715,11 @@ def make_accessor_functions(cg_context):
                                   class_name=cg_context.class_name)
         func_def.set_base_template_vars(cg_context.template_bindings())
         node = CxxSwitchNode(cond="content_type_")
-        node.append(case=None,
-                    body=[T("NOTREACHED();"),
-                          T("return nullptr;")],
-                    should_add_break=False)
+        node.append(
+            case=None,
+            body=[T("NOTREACHED_IN_MIGRATION();"),
+                  T("return nullptr;")],
+            should_add_break=False)
         for member in subunion_members:
             node.append(case=member.content_type(),
                         body=F("return MakeGarbageCollected<{}>({}());",
@@ -835,7 +836,7 @@ def make_tov8_function(cg_context):
     body.extend([
         branches,
         EmptyNode(),
-        TextNode("NOTREACHED();"),
+        TextNode("NOTREACHED_IN_MIGRATION();"),
         TextNode("return v8::Local<v8::Value>();"),
     ])
 

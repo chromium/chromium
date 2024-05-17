@@ -108,7 +108,9 @@ class TraceCopyTask : public base::MessagePumpLibevent::FdWatcher {
   }
 
   // base::MessagePumpLibevent::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override { NOTREACHED(); }
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void OnFileCanWriteWithoutBlocking(int fd) override {
     DCHECK_EQ(out_fd_.get(), fd);
     CopyTraceData();
@@ -197,7 +199,9 @@ class TraceConnection : public base::MessagePumpLibevent::FdWatcher {
     DCHECK_EQ(connection_fd_.get(), fd);
     ReceiveClientMessage();
   }
-  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   enum class State {
@@ -361,7 +365,9 @@ class TracingService : public base::MessagePumpLibevent::FdWatcher {
     DCHECK_EQ(server_socket_.get(), fd);
     AcceptConnection();
   }
-  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   void AcceptConnection() {

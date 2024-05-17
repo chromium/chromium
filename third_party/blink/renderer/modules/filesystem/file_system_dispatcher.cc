@@ -70,7 +70,9 @@ class FileSystemDispatcher::ReadDirectoryListener
     callbacks_->DidFail(error_code);
   }
 
-  void DidWrite(int64_t byte_count, bool complete) override { NOTREACHED(); }
+  void DidWrite(int64_t byte_count, bool complete) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   std::unique_ptr<EntriesCallbacks> callbacks_;

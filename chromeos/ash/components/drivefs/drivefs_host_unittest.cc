@@ -606,9 +606,11 @@ TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreIfNoHandler) {
 
 TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreUnknownReasonTypes) {
   ASSERT_NO_FATAL_FAILURE(DoMount());
-  host_->set_dialog_handler(base::BindRepeating(
-      [](const mojom::DialogReason&,
-         base::OnceCallback<void(mojom::DialogResult)>) { NOTREACHED(); }));
+  host_->set_dialog_handler(
+      base::BindRepeating([](const mojom::DialogReason&,
+                             base::OnceCallback<void(mojom::DialogResult)>) {
+        NOTREACHED_IN_MIGRATION();
+      }));
   bool called = false;
   delegate_->DisplayConfirmDialog(
       mojom::DialogReason::New(

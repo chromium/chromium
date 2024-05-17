@@ -5,7 +5,7 @@
 #include "sql/sqlite_result_code.h"
 
 #include <cstddef>
-#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
+#include <ostream>  // Needed to compile NOTREACHED_IN_MIGRATION() with operator <<.
 #include <set>
 #include <string>
 #include <string_view>

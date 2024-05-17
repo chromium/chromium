@@ -347,8 +347,10 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
     ui_request->entity = std::move(entity);
     ui_request->claimed_pin = std::move(claimed_pin);
-    ui_request->save_passkey_callback = base::BindOnce(
-        [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
+    ui_request->save_passkey_callback =
+        base::BindOnce([](sync_pb::WebauthnCredentialSpecifics) {
+          NOTREACHED_IN_MIGRATION();
+        });
 
     enclave::EnclaveAuthenticator authenticator(
         std::move(ui_request), /*network_context_factory=*/

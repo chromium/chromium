@@ -53,7 +53,7 @@ class FakeSerialPort : public mojom::SerialPort {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void Drain(DrainCallback callback) override { NOTREACHED(); }
+  void Drain(DrainCallback callback) override { NOTREACHED_IN_MIGRATION(); }
 
   void GetControlSignals(GetControlSignalsCallback callback) override {
     NOTREACHED_IN_MIGRATION();
@@ -69,7 +69,9 @@ class FakeSerialPort : public mojom::SerialPort {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void GetPortInfo(GetPortInfoCallback callback) override { NOTREACHED(); }
+  void GetPortInfo(GetPortInfoCallback callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void Close(bool flush, CloseCallback callback) override {
     std::move(callback).Run();

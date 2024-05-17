@@ -220,7 +220,7 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
   MOCK_METHOD1(OnLog, void(const std::string& message));
   MOCK_METHOD0(OnStarted, void());
   MOCK_METHOD0(OnStopped, void());
-  void OnStartedUsingGpuDecode() final { NOTREACHED(); }
+  void OnStartedUsingGpuDecode() final { NOTREACHED_IN_MIGRATION(); }
 
   base::ReadOnlySharedMemoryRegion TakeBufferHandle(int buffer_id) {
     DCHECK_NOT_ON_DEVICE_THREAD();

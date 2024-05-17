@@ -574,14 +574,15 @@ class QuicklyDeletedRequest : public PermissionRequest {
   QuicklyDeletedRequest(const GURL& requesting_origin,
                         RequestType request_type,
                         PermissionRequestGestureType gesture_type)
-      : PermissionRequest(requesting_origin,
-                          request_type,
-                          gesture_type == PermissionRequestGestureType::GESTURE,
-                          base::BindLambdaForTesting(
-                              [](ContentSetting result,
-                                 bool is_one_time,
-                                 bool is_final_decision) { NOTREACHED(); }),
-                          base::NullCallback()) {}
+      : PermissionRequest(
+            requesting_origin,
+            request_type,
+            gesture_type == PermissionRequestGestureType::GESTURE,
+            base::BindLambdaForTesting(
+                [](ContentSetting result,
+                   bool is_one_time,
+                   bool is_final_decision) { NOTREACHED_IN_MIGRATION(); }),
+            base::NullCallback()) {}
 
   static std::unique_ptr<QuicklyDeletedRequest> CreateRequest(
       MockPermissionRequest* request) {

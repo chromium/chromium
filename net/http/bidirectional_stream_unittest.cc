@@ -333,7 +333,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnDataSent() override { NOTREACHED(); }
+  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
 
   void OnDataRead(int bytes_read) override {
     if (phase_ == ON_HEADERS_RECEIVED) {

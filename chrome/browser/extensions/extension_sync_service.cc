@@ -377,7 +377,8 @@ void ExtensionSyncService::ApplySyncData(
       case -1: state = INSTALLED_OUTDATED; break;
       case 0: state = INSTALLED_MATCHING; break;
       case 1: state = INSTALLED_NEWER; break;
-      default: NOTREACHED();
+      default:
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -35,7 +35,7 @@ ScopedMahiMediaAppEventsProxySetter::ScopedMahiMediaAppEventsProxySetter(
     MahiMediaAppEventsProxy* proxy) {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   instance_ = this;
@@ -47,7 +47,7 @@ ScopedMahiMediaAppEventsProxySetter::ScopedMahiMediaAppEventsProxySetter(
 
 ScopedMahiMediaAppEventsProxySetter::~ScopedMahiMediaAppEventsProxySetter() {
   if (instance_ != this) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

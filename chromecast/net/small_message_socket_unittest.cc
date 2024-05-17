@@ -94,7 +94,7 @@ class TestSocket : public SmallMessageSocket::Delegate {
   SmallMessageSocket* socket() { return &socket_; }
 
  private:
-  void OnError(int error) override { NOTREACHED(); }
+  void OnError(int error) override { NOTREACHED_IN_MIGRATION(); }
 
   bool OnMessage(char* data, size_t size) override {
     message_history_.push_back(size);

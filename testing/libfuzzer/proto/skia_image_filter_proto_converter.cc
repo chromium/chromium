@@ -2117,7 +2117,9 @@ void Converter::WriteFields(const Message& msg,
               msg, field_descriptor));
           break;
         }
-        default: { NOTREACHED(); }
+        default: {
+          NOTREACHED_IN_MIGRATION();
+        }
       }
       continue;
       // Skip field if it is optional and it is unset.

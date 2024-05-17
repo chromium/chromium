@@ -309,7 +309,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   // `dict2` shares the same RefCountedSharedDictionary with `dict1`. So
   // ReadAll() must synchronously return OK.
   EXPECT_EQ(net::OK, dict2->ReadAll(base::BindLambdaForTesting(
-                         [&](int rv) { NOTREACHED(); })));
+                         [&](int rv) { NOTREACHED_IN_MIGRATION(); })));
   // `dict2` shares the same IOBuffer with `dict1`.
   EXPECT_EQ(dict1->data(), dict2->data());
   EXPECT_EQ(dict1->size(), dict2->size());

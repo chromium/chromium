@@ -82,7 +82,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
     return ExternalProtocolHandler::BlockState::DONT_BLOCK;
   }
 
-  void BlockRequest() override { NOTREACHED(); }
+  void BlockRequest() override { NOTREACHED_IN_MIGRATION(); }
 
   void RunExternalProtocolDialog(
       const GURL& url,

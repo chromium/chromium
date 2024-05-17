@@ -70,7 +70,7 @@ class TestUdpEchoServer::Core {
         udp_listener_receiver_.BindNewPipeAndPassRemote());
 
     server_socket_.set_disconnect_handler(
-        base::BindLambdaForTesting([]() { NOTREACHED(); }));
+        base::BindLambdaForTesting([]() { NOTREACHED_IN_MIGRATION(); }));
 
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 0);
     auto server_helper =

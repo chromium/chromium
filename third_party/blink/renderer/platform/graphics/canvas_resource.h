@@ -364,7 +364,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
 
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
-  void TakeSkImage(sk_sp<SkImage> image) final { NOTREACHED(); }
+  void TakeSkImage(sk_sp<SkImage> image) final { NOTREACHED_IN_MIGRATION(); }
   void NotifyResourceLost() final;
   bool NeedsReadLockFences() const final {
     // If the resource is not accelerated, it will be written to on the CPU. We

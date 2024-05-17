@@ -135,7 +135,9 @@ class BitmapImageTest : public testing::Test {
       last_decoded_size_ = new_size;
     }
     bool ShouldPauseAnimation(const Image*) override { return false; }
-    void AsyncLoadCompleted(const Image*) override { NOTREACHED(); }
+    void AsyncLoadCompleted(const Image*) override {
+      NOTREACHED_IN_MIGRATION();
+    }
 
     void Changed(const Image*) override {}
 

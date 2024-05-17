@@ -72,7 +72,7 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
     cancel_error_code_ = error_code;
     cancel_custom_reason_ = std::string(custom_reason);
   }
-  void Resume() override { NOTREACHED(); }
+  void Resume() override { NOTREACHED_IN_MIGRATION(); }
 
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,

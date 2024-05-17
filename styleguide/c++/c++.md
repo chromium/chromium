@@ -324,7 +324,7 @@ sections on these for the naming convention). Do not use `#pragma once`;
 historically it was not supported on all platforms, and it does not seem to
 outperform #include guards even on platforms which do support it.
 
-## CHECK(), DCHECK(), NOTREACHED_NORETURN() and NOTREACHED()
+## CHECK(), DCHECK(), NOTREACHED_NORETURN() and NOTREACHED_IN_MIGRATION()
 
 Use the `CHECK()` family of macros to both document and verify invariants.
   * Exception: If the invariant is known to be too expensive to verify in

@@ -27,7 +27,7 @@ using sandbox::syscall_broker::BrokerFilePermission;
 // chrome/browser/ash/arc/video/gpu_arc_video_service_host.cc depends on it and
 // that file is built for ash-chrome regardless of VA-API/V4L2. That means that
 // bots like linux-chromeos-rel end up compiling this presandbox hook (thus the
-// NOTREACHED()s in some places here).
+// NOTREACHED_IN_MIGRATION()s in some places here).
 
 namespace media {
 namespace {

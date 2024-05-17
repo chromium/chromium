@@ -271,7 +271,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
                                time_remaining, pos));
   }
 
-  void OnPause() override { NOTREACHED(); }
+  void OnPause() override { NOTREACHED_IN_MIGRATION(); }
 
   void OnComplete(const ObserverCompletionInfo& observer_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

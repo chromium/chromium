@@ -3842,7 +3842,7 @@ class FontTestHelper : public AshTestBase {
   ~FontTestHelper() override { TearDown(); }
 
   // AshTestBase:
-  void TestBody() override { NOTREACHED(); }
+  void TestBody() override { NOTREACHED_IN_MIGRATION(); }
 };
 
 bool IsTextSubpixelPositioningEnabled() {

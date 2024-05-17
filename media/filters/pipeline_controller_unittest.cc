@@ -144,8 +144,8 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnResumed() { was_resumed_ = true; }
 
   // Pipeline::Client overrides
-  void OnError(PipelineStatus status) override { NOTREACHED(); }
-  void OnFallback(PipelineStatus status) override { NOTREACHED(); }
+  void OnError(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
+  void OnFallback(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
   void OnEnded() override {}
   void OnMetadata(const PipelineMetadata& metadata) override {}
   void OnBufferingStateChange(BufferingState state,

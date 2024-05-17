@@ -91,7 +91,9 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
       expected_size, hash, /*id*/ "", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }));
   EXPECT_EQ(expected_size, dictionary->size());
   EXPECT_EQ(hash, dictionary->hash());
 
@@ -155,7 +157,9 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }));
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -213,7 +217,9 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }));
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -268,7 +274,9 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }));
 
   // ReadAll() synchronously returns OK.
   EXPECT_EQ(net::OK, dictionary->ReadAll(base::BindLambdaForTesting(

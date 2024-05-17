@@ -54,7 +54,7 @@ class LoggingRecursiveOperation : public RecursiveOperationDelegate {
   const std::vector<LogEntry>& log_entries() const { return log_entries_; }
 
   // RecursiveOperationDelegate overrides.
-  void Run() override { NOTREACHED(); }
+  void Run() override { NOTREACHED_IN_MIGRATION(); }
 
   void RunRecursively() override {
     StartRecursiveOperation(root_, FileSystemOperation::ERROR_BEHAVIOR_ABORT,

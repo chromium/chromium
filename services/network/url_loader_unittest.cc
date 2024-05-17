@@ -161,7 +161,8 @@ URLLoader::DeleteCallback DeleteLoaderCallback(
 // this method, as URLLoaders don't expect to be alive after they invoke their
 // delete callback.
 URLLoader::DeleteCallback NeverInvokedDeleteLoaderCallback() {
-  return base::BindOnce([](URLLoader* /* loader*/) { NOTREACHED(); });
+  return base::BindOnce(
+      [](URLLoader* /* loader*/) { NOTREACHED_IN_MIGRATION(); });
 }
 
 constexpr char kTestAuthURL[] = "/auth-basic?password=PASS&realm=REALM";

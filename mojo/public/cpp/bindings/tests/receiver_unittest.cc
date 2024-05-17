@@ -520,8 +520,9 @@ TEST_P(ReceiverTest, CustomImplPointerType) {
 
   {
     // Attempt to dispatch another message after the WeakPtr is invalidated.
-    impl.set_ping_handler(base::BindRepeating([] { NOTREACHED(); }));
-    remote->Ping(base::BindOnce([] { NOTREACHED(); }));
+    impl.set_ping_handler(
+        base::BindRepeating([] { NOTREACHED_IN_MIGRATION(); }));
+    remote->Ping(base::BindOnce([] { NOTREACHED_IN_MIGRATION(); }));
 
     // The receiver will close its end of the pipe which will trigger a
     // disconnect on |remote|.

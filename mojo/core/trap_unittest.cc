@@ -871,8 +871,8 @@ TEST_F(TrapTest, MultipleTriggers) {
 
   // Add a trigger whose condition is always satisfied so we can't arm. Arming
   // should fail with only this new watch's information.
-  uintptr_t writable_c_context =
-      helper.CreateContext([](const MojoTrapEvent&) { NOTREACHED(); });
+  uintptr_t writable_c_context = helper.CreateContext(
+      [](const MojoTrapEvent&) { NOTREACHED_IN_MIGRATION(); });
   MojoHandle c, d;
   CreateMessagePipe(&c, &d);
 
@@ -1017,7 +1017,8 @@ TEST_F(TrapTest, ImplicitRemoveOtherTriggerWithinEventHandler) {
   EXPECT_EQ(MOJO_RESULT_OK, helper.CreateTrap(&t));
 
   uintptr_t readable_a_context = helper.CreateContextWithCancel(
-      [](const MojoTrapEvent&) { NOTREACHED(); }, [&] { wait.Signal(); });
+      [](const MojoTrapEvent&) { NOTREACHED_IN_MIGRATION(); },
+      [&] { wait.Signal(); });
 
   uintptr_t readable_c_context =
       helper.CreateContext([&](const MojoTrapEvent& event) {
@@ -1080,8 +1081,8 @@ TEST_F(TrapTest, ExplicitRemoveOtherTriggerWithinEventHandler) {
   MojoHandle t;
   EXPECT_EQ(MOJO_RESULT_OK, helper.CreateTrap(&t));
 
-  uintptr_t readable_a_context =
-      helper.CreateContext([](const MojoTrapEvent&) { NOTREACHED(); });
+  uintptr_t readable_a_context = helper.CreateContext(
+      [](const MojoTrapEvent&) { NOTREACHED_IN_MIGRATION(); });
 
   uintptr_t readable_c_context =
       helper.CreateContext([&](const MojoTrapEvent& event) {

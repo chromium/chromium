@@ -20,7 +20,7 @@ namespace disk_cache {
 // #define STRESS_CACHE_EXTENDED_VALIDATION 1
 
 #if defined(NET_BUILD_STRESS_CACHE)
-#define STRESS_NOTREACHED() NOTREACHED()
+#define STRESS_NOTREACHED() NOTREACHED_IN_MIGRATION()
 #define STRESS_DCHECK(a) DCHECK(a)
 #else
 // We don't support streams with these macros, but that's a small price to pay

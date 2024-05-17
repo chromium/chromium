@@ -40,7 +40,9 @@ class WebStateObserverMock : public web::WebStateObserver {
   WebStateObserverMock& operator=(const WebStateObserverMock&) = delete;
 
   MOCK_METHOD2(PermissionStateChanged, void(web::WebState*, web::Permission));
-  void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(web::WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 // Web client that simulates prerendering for testing purpose.

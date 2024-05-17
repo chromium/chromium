@@ -184,7 +184,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // Add an audio sink to the track. This function must only be called for audio
   // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
   // chunk of audio is delivered.
-  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
+  virtual void AddSink(WebMediaStreamAudioSink* sink) {
+    NOTREACHED_IN_MIGRATION();
+  }
   // Add a video sink to track. This function must only be called for video
   // tracks.  The |sink| will receive video track state changes on the main
   // render thread and video frames in the |callback| method on the IO-thread.

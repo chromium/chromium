@@ -706,7 +706,8 @@ TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
                             &run_loop)));
   // Called upon webrtc::DesktopCapturer::CaptureFrame() call.
   ON_CALL(observer_, OnSourceThumbnailChanged(_))
-      .WillByDefault(testing::InvokeWithoutArgs([]() { NOTREACHED(); }));
+      .WillByDefault(
+          testing::InvokeWithoutArgs([]() { NOTREACHED_IN_MIGRATION(); }));
 
   model_->StartUpdating(&observer_);
 

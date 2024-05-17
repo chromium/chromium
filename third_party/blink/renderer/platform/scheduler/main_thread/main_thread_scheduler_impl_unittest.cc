@@ -135,7 +135,9 @@ class FakeInputEvent : public blink::WebInputEvent {
     return false;
   }
 
-  void Coalesce(const WebInputEvent& event) override { NOTREACHED(); }
+  void Coalesce(const WebInputEvent& event) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 class FakeTouchEvent : public blink::WebTouchEvent {

@@ -970,12 +970,12 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
     response_headers_ = response_headers.Clone();
     loop_.Quit();
   }
-  void OnDataRead(int bytes_read) override { NOTREACHED(); }
-  void OnDataSent() override { NOTREACHED(); }
+  void OnDataRead(int bytes_read) override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
   void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void OnFailed(int error) override { NOTREACHED(); }
+  void OnFailed(int error) override { NOTREACHED_IN_MIGRATION(); }
   base::RunLoop loop_;
   spdy::Http2HeaderBlock response_headers_;
 };

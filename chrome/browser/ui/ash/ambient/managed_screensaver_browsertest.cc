@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/3, /*timeout=*/3 * kTestPerTransitionTimeout,
       /*on_complete=*/test_future_->GetCallback(),
-      /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*on_timeout=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
   ASSERT_TRUE(test_future_->Wait());
   ASSERT_NE(nullptr, GetContainerView());
 
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
-      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
   {
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
-      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
 
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   // The large image will not even be downloaded and will fail to download.
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
-      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
   ASSERT_EQ(nullptr, GetContainerView());
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   // show images as the second image will fail to decode.
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
-      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
   ASSERT_EQ(nullptr, GetContainerView());
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/3, /*timeout=*/3 * kTestPerTransitionTimeout,
       /*on_complete=*/test_future_->GetCallback(),
-      /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*on_timeout=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
   ASSERT_TRUE(test_future_->Wait());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
-      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
   {

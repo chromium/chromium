@@ -329,7 +329,9 @@ class LogFileWriterTest
         EXPECT_EQ(uncompressed, expected_contents);
         break;
       }
-      default: { NOTREACHED(); }
+      default: {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 

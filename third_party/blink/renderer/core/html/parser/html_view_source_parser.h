@@ -44,7 +44,7 @@ class CORE_EXPORT HTMLViewSourceParser final
 
  private:
   // DocumentParser
-  void insert(const String&) override { NOTREACHED(); }
+  void insert(const String&) override { NOTREACHED_IN_MIGRATION(); }
   void Append(const String&) override;
   void Finish() override;
 

@@ -148,7 +148,7 @@ class CallbackWrapper : public Base {
   void sendFailure(const DispatchResponse& response) override {
     callback_->sendFailure(response);
   }
-  void fallThrough() override { NOTREACHED(); }
+  void fallThrough() override { NOTREACHED_IN_MIGRATION(); }
   ~CallbackWrapper() override {}
 
   std::unique_ptr<Callback> callback_;

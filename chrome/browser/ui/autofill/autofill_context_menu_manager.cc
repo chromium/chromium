@@ -588,7 +588,7 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
     case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

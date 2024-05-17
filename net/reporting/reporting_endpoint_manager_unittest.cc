@@ -129,7 +129,7 @@ class TestReportingCache : public ReportingCache {
       bool delivery_success) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void RemoveAllReports() override { NOTREACHED(); }
+  void RemoveAllReports() override { NOTREACHED_IN_MIGRATION(); }
   size_t GetFullReportCountForTesting() const override {
     NOTREACHED_IN_MIGRATION();
     return 0;
@@ -170,12 +170,14 @@ class TestReportingCache : public ReportingCache {
   void RemoveClientsForOrigin(const url::Origin& origin) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void RemoveAllClients() override { NOTREACHED(); }
+  void RemoveAllClients() override { NOTREACHED_IN_MIGRATION(); }
   void RemoveEndpointGroup(
       const ReportingEndpointGroupKey& group_key) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void RemoveEndpointsForUrl(const GURL& url) override { NOTREACHED(); }
+  void RemoveEndpointsForUrl(const GURL& url) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void RemoveSourceAndEndpoints(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED_IN_MIGRATION();
@@ -194,7 +196,7 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED_IN_MIGRATION();
     return 0;
   }
-  void Flush() override { NOTREACHED(); }
+  void Flush() override { NOTREACHED_IN_MIGRATION(); }
   ReportingEndpoint GetV1EndpointForTesting(
       const base::UnguessableToken& reporting_source,
       const std::string& endpoint_name) const override {

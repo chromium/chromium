@@ -458,7 +458,7 @@ class FunctorDrawable : public SkDrawable {
 
  protected:
   SkRect onGetBounds() override { return SkRect::MakeWH(width_, height_); }
-  void onDraw(SkCanvas*) override { NOTREACHED(); }
+  void onDraw(SkCanvas*) override { NOTREACHED_IN_MIGRATION(); }
 
   std::unique_ptr<GpuDrawHandler> onSnapGpuDrawHandler(
       GrBackendApi backend_api,

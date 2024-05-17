@@ -130,8 +130,8 @@ int StaleHostResolver::RequestImpl::Start(
   cache_parameters.source = net::HostResolverSource::LOCAL_ONLY;
   cache_request_ = resolver_->inner_resolver_->CreateRequest(
       host_, network_anonymization_key_, net_log_, cache_parameters);
-  int error =
-      cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
+  int error = cache_request_->Start(
+      base::BindOnce([](int error) { NOTREACHED_IN_MIGRATION(); }));
   DCHECK_NE(net::ERR_IO_PENDING, error);
   cache_error_ = cache_request_->GetResolveErrorInfo().error;
   DCHECK_NE(net::ERR_IO_PENDING, cache_error_);

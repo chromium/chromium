@@ -66,7 +66,7 @@ class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
   ~GetFileURLsDelegate() override = default;
 
   // RecursiveOperationDelegate:
-  void Run() override { NOTREACHED(); }
+  void Run() override { NOTREACHED_IN_MIGRATION(); }
   void RunRecursively() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     StartRecursiveOperation(root_,

@@ -143,7 +143,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   WebCodecsDecoderSelectorTest& operator=(const WebCodecsDecoderSelectorTest&) =
       delete;
 
-  void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
+  void OnOutput(scoped_refptr<Output> output) { NOTREACHED_IN_MIGRATION(); }
 
   MOCK_METHOD1_T(OnDecoderSelected, void(int));
 

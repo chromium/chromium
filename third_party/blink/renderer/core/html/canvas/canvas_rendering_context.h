@@ -264,11 +264,11 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
   virtual int LayerCount() const { return 0; }
 
-  virtual void setFontForTesting(const String&) { NOTREACHED(); }
+  virtual void setFontForTesting(const String&) { NOTREACHED_IN_MIGRATION(); }
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
-  virtual void MarkLayerComposited() { NOTREACHED(); }
+  virtual void MarkLayerComposited() { NOTREACHED_IN_MIGRATION(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
@@ -280,7 +280,9 @@ class CORE_EXPORT CanvasRenderingContext
 
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
-  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
+  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) {
+    NOTREACHED_IN_MIGRATION();
+  }
   virtual void Reshape(int width, int height) {}
   virtual int ExternallyAllocatedBufferCountPerPixel() {
     NOTREACHED_IN_MIGRATION();

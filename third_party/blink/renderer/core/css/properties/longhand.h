@@ -38,8 +38,12 @@ class Longhand : public CSSProperty {
       const CSSParserLocalContext& local_tokenizer) const {
     return nullptr;
   }
-  virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
-  virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
+  virtual void ApplyInitial(StyleResolverState&) const {
+    NOTREACHED_IN_MIGRATION();
+  }
+  virtual void ApplyInherit(StyleResolverState&) const {
+    NOTREACHED_IN_MIGRATION();
+  }
   virtual void ApplyValue(StyleResolverState&,
                           const CSSValue&,
                           ValueMode) const {

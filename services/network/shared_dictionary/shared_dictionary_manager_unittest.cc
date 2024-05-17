@@ -1125,8 +1125,8 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   // Read and check the dictionary binary.
   switch (GetManagerType()) {
     case TestManagerType::kInMemory: {
-      EXPECT_EQ(net::OK,
-                dict->ReadAll(base::BindOnce([](int rv) { NOTREACHED(); })));
+      EXPECT_EQ(net::OK, dict->ReadAll(base::BindOnce(
+                             [](int rv) { NOTREACHED_IN_MIGRATION(); })));
       break;
     }
     case TestManagerType::kOnDisk: {

@@ -57,7 +57,7 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
     NOTREACHED_IN_MIGRATION();
     return false;
   }
-  void Scale(double scale) final { NOTREACHED(); }
+  void Scale(double scale) final { NOTREACHED_IN_MIGRATION(); }
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 

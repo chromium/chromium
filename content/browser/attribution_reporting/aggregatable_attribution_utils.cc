@@ -158,7 +158,9 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
 
   absl::visit(
       base::Overloaded{
-          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+          [](const AttributionReport::EventLevelData&) {
+            NOTREACHED_IN_MIGRATION();
+          },
           [&](const AttributionReport::AggregatableAttributionData& data) {
             source_time = data.source.source_time();
             source_debug_key = data.source.debug_key();

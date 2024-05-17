@@ -50,8 +50,8 @@ class PixelTestUi : public TestBrowserUi {
   ~PixelTestUi() override = default;
 
   // TestBrowserUi:
-  void ShowUi(const std::string& name) override { NOTREACHED(); }
-  void WaitForUserDismissal() override { NOTREACHED(); }
+  void ShowUi(const std::string& name) override { NOTREACHED_IN_MIGRATION(); }
+  void WaitForUserDismissal() override { NOTREACHED_IN_MIGRATION(); }
 
   bool VerifyUi() override {
     return VerifyUiWithResult() != ui::test::ActionResult::kFailed;

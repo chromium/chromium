@@ -112,7 +112,9 @@ struct IpczMessage : public Channel::Message {
   ~IpczMessage() override = default;
 
   // Channel::Message:
-  void SetHandles(std::vector<PlatformHandle>) override { NOTREACHED(); }
+  void SetHandles(std::vector<PlatformHandle>) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void SetHandles(std::vector<PlatformHandleInTransit>) override {
     NOTREACHED_IN_MIGRATION();
   }

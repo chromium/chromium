@@ -31,7 +31,7 @@ SimpleWatcher::ReadyCallback OnReady(Handler f) {
 }
 
 SimpleWatcher::ReadyCallback NotReached() {
-  return OnReady([](MojoResult) { NOTREACHED(); });
+  return OnReady([](MojoResult) { NOTREACHED_IN_MIGRATION(); });
 }
 
 class SimpleWatcherTest : public testing::Test {

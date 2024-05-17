@@ -54,7 +54,9 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void ShowMergeSyncDataConfirmation(const std::string&,
                                      const std::string&,
@@ -62,9 +64,9 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
     NOTREACHED_IN_MIGRATION();
   }
 
-  void ShowSyncSettings() override { NOTREACHED(); }
+  void ShowSyncSettings() override { NOTREACHED_IN_MIGRATION(); }
 
-  void SwitchToProfile(Profile*) override { NOTREACHED(); }
+  void SwitchToProfile(Profile*) override { NOTREACHED_IN_MIGRATION(); }
 };
 
 }  // namespace

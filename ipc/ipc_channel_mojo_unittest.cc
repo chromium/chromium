@@ -275,7 +275,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
   void OnChannelConnected(int32_t peer_pid) override {}
 
-  void OnChannelError() override { NOTREACHED(); }
+  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
 
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
@@ -288,7 +288,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
  private:
   // IPC::mojom::TestStructPasser:
-  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED(); }
+  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED_IN_MIGRATION(); }
 
   mojo::AssociatedReceiver<IPC::mojom::TestStructPasser> receiver_{this};
 };
@@ -313,7 +313,7 @@ class ListenerThatExpectsNoError : public IPC::Listener {
     std::move(connect_closure_).Run();
   }
 
-  void OnChannelError() override { NOTREACHED(); }
+  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   base::OnceClosure connect_closure_;
@@ -797,7 +797,9 @@ class ListenerWithSimpleProxyAssociatedInterface
     std::move(callback).Run(next_expected_value_);
   }
 
-  void RequestValue(RequestValueCallback callback) override { NOTREACHED(); }
+  void RequestValue(RequestValueCallback callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void RequestQuit(RequestQuitCallback callback) override {
     std::move(callback).Run();

@@ -12,9 +12,9 @@
 // swap in their implementation it complains about missing symbols.
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 #include <stdlib.h>  // abort()
-#define NOTREACHED() abort()
+#define NOTREACHED_IN_MIGRATION() abort()
 #else
-#define NOTREACHED() static_cast<void>(0)
+#define NOTREACHED_IN_MIGRATION() static_cast<void>(0)
 #endif
 
 namespace chromecast {

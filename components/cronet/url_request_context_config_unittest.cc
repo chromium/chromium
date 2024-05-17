@@ -293,8 +293,8 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       context->host_resolver()->CreateRequest(
           net::HostPortPair("abcde", 80), net::NetworkAnonymizationKey(),
           net::NetLogWithSource(), std::nullopt);
-  EXPECT_EQ(net::OK, resolve_request->Start(
-                         base::BindOnce([](int error) { NOTREACHED(); })));
+  EXPECT_EQ(net::OK, resolve_request->Start(base::BindOnce(
+                         [](int error) { NOTREACHED_IN_MIGRATION(); })));
 
   EXPECT_TRUE(config->network_thread_priority);
   EXPECT_EQ(42, config->network_thread_priority.value());

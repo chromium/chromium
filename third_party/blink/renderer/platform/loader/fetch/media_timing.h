@@ -47,7 +47,9 @@ class MediaTiming : public GarbageCollectedMixin {
   // TODO(iclelland): Change this so that it applies to static images as well.
   virtual bool IsPaintedFirstFrame() const = 0;
 
-  virtual void SetFirstVideoFrameTime(base::TimeTicks) { NOTREACHED(); }
+  virtual void SetFirstVideoFrameTime(base::TimeTicks) {
+    NOTREACHED_IN_MIGRATION();
+  }
   virtual base::TimeTicks GetFirstVideoFrameTime() const = 0;
 
   // Returns the loading priority used for the image.

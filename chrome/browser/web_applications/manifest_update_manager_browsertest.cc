@@ -1168,9 +1168,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   WebAppInstallManagerObserverAdapter install_observer(
       &GetProvider().install_manager());
   install_observer.SetWebAppInstalledDelegate(base::BindLambdaForTesting(
-      [](const webapps::AppId& app_id) { NOTREACHED(); }));
+      [](const webapps::AppId& app_id) { NOTREACHED_IN_MIGRATION(); }));
   install_observer.SetWebAppUninstalledDelegate(base::BindLambdaForTesting(
-      [](const webapps::AppId& app_id) { NOTREACHED(); }));
+      [](const webapps::AppId& app_id) { NOTREACHED_IN_MIGRATION(); }));
 
   // CSS #RRGGBBAA syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "#00FF00F0"});

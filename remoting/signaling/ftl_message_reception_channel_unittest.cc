@@ -97,7 +97,7 @@ decltype(auto) StartStream(OnStreamOpenedLambda on_stream_opened,
 }
 
 base::OnceClosure NotReachedClosure() {
-  return base::BindOnce([]() { NOTREACHED(); });
+  return base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); });
 }
 
 base::RepeatingCallback<void(const ProtobufHttpStatus&)>

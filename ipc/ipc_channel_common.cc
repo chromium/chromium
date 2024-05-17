@@ -66,11 +66,17 @@ Channel::AssociatedInterfaceSupport* Channel::GetAssociatedInterfaceSupport() {
   return nullptr;
 }
 
-void Channel::Pause() { NOTREACHED(); }
+void Channel::Pause() {
+  NOTREACHED_IN_MIGRATION();
+}
 
-void Channel::Unpause(bool flush) { NOTREACHED(); }
+void Channel::Unpause(bool flush) {
+  NOTREACHED_IN_MIGRATION();
+}
 
-void Channel::Flush() { NOTREACHED(); }
+void Channel::Flush() {
+  NOTREACHED_IN_MIGRATION();
+}
 
 void Channel::SetUrgentMessageObserver(UrgentMessageObserver* observer) {
   // Ignored for non-mojo channels.

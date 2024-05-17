@@ -49,7 +49,9 @@ class CORE_EXPORT AsyncIterationSourceBase
   // ScriptPromiseResolverBase for the return result has been created.
   //
   // [1] https://webidl.spec.whatwg.org/#asynchronous-iterator-return
-  virtual void AsyncIteratorReturn(ScriptValue value) { NOTREACHED(); }
+  virtual void AsyncIteratorReturn(ScriptValue value) {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   bool HasPendingPromise() const {
     return pending_promise_resolver_ != nullptr;

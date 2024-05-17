@@ -33,11 +33,15 @@ class FakeChooserView : public permissions::ChooserController::View {
     delete this;
   }
 
-  void OnOptionAdded(size_t index) override { NOTREACHED(); }
-  void OnOptionRemoved(size_t index) override { NOTREACHED(); }
-  void OnOptionUpdated(size_t index) override { NOTREACHED(); }
-  void OnAdapterEnabledChanged(bool enabled) override { NOTREACHED(); }
-  void OnRefreshStateChanged(bool refreshing) override { NOTREACHED(); }
+  void OnOptionAdded(size_t index) override { NOTREACHED_IN_MIGRATION(); }
+  void OnOptionRemoved(size_t index) override { NOTREACHED_IN_MIGRATION(); }
+  void OnOptionUpdated(size_t index) override { NOTREACHED_IN_MIGRATION(); }
+  void OnAdapterEnabledChanged(bool enabled) override {
+    NOTREACHED_IN_MIGRATION();
+  }
+  void OnRefreshStateChanged(bool refreshing) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   std::unique_ptr<permissions::ChooserController> controller_;

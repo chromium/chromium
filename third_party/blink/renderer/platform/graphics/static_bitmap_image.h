@@ -89,12 +89,14 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return false;
   }
 
-  virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
+  virtual void EnsureSyncTokenVerified() { NOTREACHED_IN_MIGRATION(); }
   virtual gpu::MailboxHolder GetMailboxHolder() const {
     NOTREACHED_IN_MIGRATION();
     return gpu::MailboxHolder();
   }
-  virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
+  virtual void UpdateSyncToken(const gpu::SyncToken&) {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   // For gpu based images the Usage is a bitmap indicating set of API(s) and
   // underlying gpu::SharedImage may be used with.

@@ -101,7 +101,7 @@ class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
   ~WrappedIOBuffer() override = default;
 
   // This is to make sure that the vtable is not merged with other classes.
-  virtual void dummy() { NOTREACHED(); }
+  virtual void dummy() { NOTREACHED_IN_MIGRATION(); }
 };
 
 ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(

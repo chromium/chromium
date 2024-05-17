@@ -37,7 +37,9 @@ class FaviconUrlObserver : public WebStateObserver {
     favicon_url_candidates_ = candidates;
     favicon_url_updated_ = true;
   }
-  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   bool favicon_url_updated_ = false;

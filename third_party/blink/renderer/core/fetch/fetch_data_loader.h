@@ -43,8 +43,12 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     virtual void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer*) {
       NOTREACHED_IN_MIGRATION();
     }
-    virtual void DidFetchDataLoadedFormData(FormData*) { NOTREACHED(); }
-    virtual void DidFetchDataLoadedString(const String&) { NOTREACHED(); }
+    virtual void DidFetchDataLoadedFormData(FormData*) {
+      NOTREACHED_IN_MIGRATION();
+    }
+    virtual void DidFetchDataLoadedString(const String&) {
+      NOTREACHED_IN_MIGRATION();
+    }
     // This is called synchronously from FetchDataLoader::Start() to provide
     // the target data pipe.  This may be a pipe extracted from the consumer
     // or a new pipe that data will be copied into.
@@ -56,11 +60,11 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     // to |out_data_pipe|, and |out_data_pipe| is closed or aborted.
     // This may be called synchronously from FetchDataLoader::Start() or
     // delayed to a later task.
-    virtual void DidFetchDataLoadedDataPipe() { NOTREACHED(); }
+    virtual void DidFetchDataLoadedDataPipe() { NOTREACHED_IN_MIGRATION(); }
 
     // This function is called when a "custom" FetchDataLoader (none of the
     // ones listed above) finishes loading.
-    virtual void DidFetchDataLoadedCustomFormat() { NOTREACHED(); }
+    virtual void DidFetchDataLoadedCustomFormat() { NOTREACHED_IN_MIGRATION(); }
 
     virtual void DidFetchDataLoadFailed() = 0;
 
