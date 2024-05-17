@@ -24,7 +24,7 @@ def CheckCargoVet(input_api, output_api):
         name=cmd_name,
         cmd=[input_api.python3_executable, run_cargo_vet_path] + vet_args,
         kwargs={},
-        message=output_api.PresubmitPromptWarning)
+        message=output_api.PresubmitError)
     if input_api.verbose:
         print('Running ' + cmd_name)
     return input_api.RunTests([test_cmd])
