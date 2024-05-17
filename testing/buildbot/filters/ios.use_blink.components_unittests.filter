@@ -26,6 +26,8 @@
 -AutofillAgentTests.showAutofillPopup_PreferCustomIconForCreditCardSuggestions
 -AutofillAgentTests.showAutofillPopup_ShowIconForCreditCardSuggestionsOnly
 -AutofillAgentTests.showAutofillPopup_ShowVirtualCards
+-AutofillAgentTests.FillSpecificFormField_UpdateWithResults_WhenFailure
+-AutofillAgentTests.FillSpecificFormField_UpdateWithResults_WhenSuccess
 
 # TODO(crbug.com/339492594): The below tests have been failing since
 # https://crrev.com/c/5496051. It looks like it's missing a
