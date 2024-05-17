@@ -522,14 +522,15 @@ CookieSettingsBase::DecideAccess(
     return BlockAllCookies{};
   }
 
+  if (!is_third_party_request) {
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
+  }
+
   if (!global_setting_or_embedder_blocks_third_party_cookies) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting};
   }
 
-  if (!is_third_party_request) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
-  }
   if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowByScheme};
   }
@@ -644,6 +645,11 @@ CookieSettingsBase::GetCookieSettingInternal(
     CHECK(!is_third_party_request ||
               !global_setting_or_embedder_blocks_third_party_cookies ||
               allow_cookies->mechanism != ThirdPartyCookieAllowMechanism::kNone,
+          base::NotFatalUntil::M128);
+    // `!is_third_party_request` implies that the exemption reason must be
+    // kNone. (It doesn't make sense to exempt a first-party cookie from 3PCD.)
+    CHECK(is_third_party_request ||
+              allow_cookies->mechanism == ThirdPartyCookieAllowMechanism::kNone,
           base::NotFatalUntil::M128);
 
     FireStorageAccessHistogram(

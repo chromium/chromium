@@ -1520,18 +1520,22 @@ TEST_F(CookieSettingsTest,
       net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   // Verify that the allowed cookie does not have the 3PC warning reason.
-  EXPECT_THAT(maybe_included_cookies,
-              ElementsAre(MatchesCookieWithAccessResult(
-                  net::MatchesCookieWithName("cookie"),
-                  MatchesCookieAccessResult(
-                      AllOf(net::IsInclude(),
-                            Not(net::HasWarningReason(
-                                net::CookieInclusionStatus::WarningReason::
-                                    WARN_THIRD_PARTY_PHASEOUT))),
-                      _, _, _))));
+  EXPECT_THAT(
+      maybe_included_cookies,
+      ElementsAre(MatchesCookieWithAccessResult(
+          net::MatchesCookieWithName("cookie"),
+          MatchesCookieAccessResult(
+              AllOf(net::IsInclude(),
+                    Not(net::HasWarningReason(
+                        net::CookieInclusionStatus::WarningReason::
+                            WARN_THIRD_PARTY_PHASEOUT)),
+                    net::HasExactlyExemptionReason(
+                        net::CookieInclusionStatus::ExemptionReason::kNone)),
+              _, _, _))));
 
   // This is a third-party context, even though the request URL and the
   // top-frame URL are same-site with each other.
+  maybe_included_cookies[0].access_result.status = net::CookieInclusionStatus();
   EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kSubDomainURL), net::SiteForCookies(), &origin,
       net::FirstPartySetMetadata(
@@ -1549,6 +1553,88 @@ TEST_F(CookieSettingsTest,
                                 net::CookieInclusionStatus::WarningReason::
                                     WARN_THIRD_PARTY_PHASEOUT)),
                       _, _, _))));
+}
+
+TEST_P(CookieSettingsTestP,
+       AnnotateAndMoveUserBlockedCookies_SameSiteEmbed_FirstPartyContext) {
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
+
+  net::CookieAccessResultList maybe_included_cookies = {
+      {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}},
+      {*MakeCanonicalCookie("cookie", kURL), {}}};
+  net::CookieAccessResultList excluded_cookies = {
+      {*MakeCanonicalSameSiteNoneCookie("excluded_other", kURL),
+       // The ExclusionReason below is irrelevant, as long as there is
+       // one.
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))},
+      {*MakeCanonicalCookie("excluded_samesitelax", kURL),
+       // The ExclusionReason below is irrelevant, as long as there is
+       // one.
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))},
+  };
+  url::Origin origin = url::Origin::Create(GURL(kURL));
+
+  // Note that `url` does not match the `top_frame_origin`.
+  EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)), &origin,
+      net::FirstPartySetMetadata(
+          /*frame_entry=*/nullptr,
+          /*top_frame_entry=*/nullptr),
+      GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
+
+  EXPECT_THAT(
+      maybe_included_cookies,
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("cookie"),
+              // This cookie really ought to be excluded based on SameSite
+              // rules, but those are not enforced by CookieSettings.
+              MatchesCookieAccessResult(
+                  AllOf(
+                      net::IsInclude(),
+                      Not(net::HasWarningReason(
+                          net::CookieInclusionStatus::WarningReason::
+                              WARN_THIRD_PARTY_PHASEOUT)),
+                      net::HasExactlyExemptionReason(
+                          net::CookieInclusionStatus::ExemptionReason::kNone)),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("third_party"),
+              MatchesCookieAccessResult(
+                  AllOf(
+                      net::IsInclude(),
+                      Not(net::HasWarningReason(
+                          net::CookieInclusionStatus::WarningReason::
+                              WARN_THIRD_PARTY_PHASEOUT)),
+                      net::HasExactlyExemptionReason(
+                          net::CookieInclusionStatus::ExemptionReason::kNone)),
+                  _, _, _))));
+
+  EXPECT_THAT(
+      excluded_cookies,
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("excluded_other"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_SECURE_ONLY}),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("excluded_samesitelax"),
+              MatchesCookieAccessResult(
+                  HasExactlyExclusionReasonsForTesting(
+                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                          net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_SECURE_ONLY}),
+                  _, _, _))));
 }
 
 TEST_P(CookieSettingsTestP,
