@@ -66,6 +66,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -212,6 +213,23 @@ bool ExtensionMayAttachToRenderFrameHost(
         if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
+
+#if BUILDFLAG(ENABLE_PDF)
+        // The PDF extension frame would normally prevent all other frames in
+        // the frame tree from being attachable. Skip it so this doesn't occur.
+        // This should be okay, since the PDF extension frame and PDF content
+        // frame aren't listed in chrome.debugger.getTargets(). Check both the
+        // last committed origin and the SiteURL for the PDF extension frame,
+        // because this method may be called in the middle of a navigation where
+        // the SiteURL has been updated but navigation hasn't committed yet.
+        if (chrome_pdf::features::IsOopifPdfEnabled() &&
+            (IsPdfExtensionOrigin(
+                 render_frame_host->GetLastCommittedOrigin()) ||
+             IsPdfExtensionUrl(
+                 render_frame_host->GetSiteInstance()->GetSiteURL()))) {
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
         if (render_frame_host->GetWebUI()) {
           *error = debugger_api_constants::kRestrictedError;
