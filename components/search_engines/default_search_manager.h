@@ -36,10 +36,6 @@ class DefaultSearchManager {
   static constexpr char kDefaultSearchProviderDataPrefName[] =
       "default_search_provider_data.template_url_data";
 
-  // TODO(b/340826494): Deprecate this pref.
-  static constexpr char kDefaultSearchProviderChoiceLocationPrefName[] =
-      "default_search_provider_data.choice_location";
-
   static const char kID[];
   static const char kShortName[];
   static const char kKeyword[];

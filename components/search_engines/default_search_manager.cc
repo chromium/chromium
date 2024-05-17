@@ -142,9 +142,6 @@ DefaultSearchManager::~DefaultSearchManager() {
 void DefaultSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kDefaultSearchProviderDataPrefName);
-  registry->RegisterIntegerPref(
-      kDefaultSearchProviderChoiceLocationPrefName,
-      static_cast<int>(search_engines::ChoiceMadeLocation::kOther));
 }
 
 // static
