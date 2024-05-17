@@ -127,6 +127,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPrefetchBrowserInitiatedTriggers,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,
+    &features::kSafetyHub,
     &features::kQuietNotificationPrompts,
     &features::kWebNfc,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
@@ -291,7 +292,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kTotallyEdgeToEdge,
-    &kSafetyHub,
     &kStartSurfaceAndroid,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
@@ -933,8 +933,6 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature updates the triggering logic for the default search engine
 // choice promo. See crbug.com/1471643 for more details.
