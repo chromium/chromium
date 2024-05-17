@@ -151,7 +151,13 @@ namespace {
 // to reallocate an LSI for the UI compositor.
 BASE_FEATURE(kRenderWidgetHostHiddenCheck,
              "RenderWidgetHostHiddenCheck",
+// TODO(b/338354134): LaCrOs video is triggering the associated CHECK. Disable
+// for that configuration.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 }  // namespace
 
 // We need to watch for mouse events outside a Web Popup or its parent
