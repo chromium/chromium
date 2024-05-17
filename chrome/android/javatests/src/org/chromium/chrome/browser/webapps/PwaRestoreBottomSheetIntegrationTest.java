@@ -272,8 +272,9 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(1, true);
         assertIsComboCheckedAtIndex(2, true);
 
-        // Deselect button should start in enabled state.
+        // Deselect and Restore buttons should start in enabled state.
         onView(withId(R.id.deselect_button)).check(matches(isEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isEnabled()));
 
         // Now verify the Deselect function leaves everything in unchecked state.
         onView(withId(R.id.deselect_button)).check(matches(isDisplayed()));
@@ -282,23 +283,26 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(1, false);
         assertIsComboCheckedAtIndex(2, false);
 
-        // Deselect button should now be disabled (nothing left to disable).
+        // Deselect and Restore buttons should now be disabled (nothing to act on).
         onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
 
         // Ensure one entry gets checked.
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
 
-        // Deselect button becomes enabled since we have something to disable.
+        // Deselect and Restore buttons become enabled since we have something to act on.
         onView(withId(R.id.deselect_button)).check(matches(isEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isEnabled()));
 
         // Ensure same entry gets unchecked again.
         onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, false);
 
-        // Deselect button becomes disabled since no item remains selected.
+        // Deselect and Restore buttons become disabled since no item remains selected.
         onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
     }
 
     @Test
