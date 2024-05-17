@@ -56,9 +56,26 @@ void XDGOutput::UpdateMetrics(bool compute_scale_from_size,
   }
 
   const gfx::Size logical_size = logical_size_;
-  if (compute_scale_from_size && !logical_size.IsEmpty()) {
-    const gfx::Size physical_size = metrics.physical_size;
-    DCHECK(!physical_size.IsEmpty());
+  const gfx::Size physical_size = metrics.physical_size;
+  DCHECK(!physical_size.IsEmpty());
+
+  // As per xdg-ouput spec, compositors not scaling the monitor viewport in its
+  // compositing space will advertise logical size equal to the physical size
+  // (coming from current wl_output's mode info), in which case wl_output's
+  // scale must be used. Mutter, for example, when running with its logical
+  // monitor layout mode disabled, reports the same value for both logical and
+  // physical size even for scales other than 1, which is considered
+  // spec-compliant and has been similarly worked around in toolkits like GTK.
+  // See https://gitlab.gnome.org/GNOME/mutter/-/issues/2631 for more details.
+  //
+  // TODO(crbug.com/336007385): Deriving display scale from xdg-ouput logical
+  // size has been considered hacky and bug-prone, eg: rounding issues, as the
+  // rounding algorithm used by compositors is unspecified. wp-fractional-scale
+  // should be used instead as the long term solution, though it requires
+  // broader refactor in how scales are assigned to browser windows.
+  compute_scale_from_size &=
+      (!logical_size.IsEmpty() && logical_size != physical_size);
+  if (compute_scale_from_size) {
     const float max_physical_side =
         std::max(physical_size.width(), physical_size.height());
     const float max_logical_side =
