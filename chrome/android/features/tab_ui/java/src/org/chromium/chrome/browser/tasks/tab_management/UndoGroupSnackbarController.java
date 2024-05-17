@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -226,7 +225,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             filter.deleteTabGroupTitle(rootId);
 
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                TabGroupColorUtils.deleteTabGroupColor(rootId);
+                filter.deleteTabGroupColor(rootId);
             }
             if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
                 filter.deleteTabGroupCollapsed(rootId);
@@ -259,7 +258,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             // destination rootID, as all tabs still currently share that ID before the undo
             // operation is performed.
             if (firstInfo.destinationGroupColorId == INVALID_COLOR_ID) {
-                TabGroupColorUtils.deleteTabGroupColor(firstRootId);
+                filter.deleteTabGroupColor(firstRootId);
             }
         }
 

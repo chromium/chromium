@@ -1470,6 +1470,14 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
+    /** Deletes the color that was recorded for the group. */
+    public void deleteTabGroupColor(int rootId) {
+        TabGroupColorUtils.deleteTabGroupColor(rootId);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupColor(rootId, TabGroupColorId.GREY);
+        }
+    }
+
     /** Sets whether the tab group is expanded or collapsed. */
     public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);

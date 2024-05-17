@@ -43,15 +43,15 @@ public class TabGroupColorUtils {
      *
      * @param tabRootId The tab root ID whose related tab group color will be deleted.
      */
-    public static void deleteTabGroupColor(int tabRootId) {
+    static void deleteTabGroupColor(int tabRootId) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         getSharedPreferences().edit().remove(String.valueOf(tabRootId)).apply();
     }
 
     /**
      * This method fetches tab group colors for the related tab group root ID. While currently
-     * public, the intent is to make this package protected and force all access to go through the
-     * {@Link TabGroupModelFilter}.
+     * public, the intent is to make thisUndo package protected and force all access to go through
+     * the {@Link TabGroupModelFilter}.
      *
      * @param tabRootId The tab root ID whose related tab group color will be fetched.
      * @return The stored color of the target tab group, default value is -1 (INVALID_COLOR_ID).

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -86,9 +87,6 @@ public class TabGroupVisualDataManagerUnitTest {
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private SharedPreferences mSharedPreferencesTitle;
     @Mock private SharedPreferences mSharedPreferencesColor;
-    @Mock private SharedPreferences.Editor mEditorColor;
-    @Mock private SharedPreferences.Editor mPutIntEditorColor;
-    @Mock private SharedPreferences.Editor mRemoveEditorColor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
@@ -144,11 +142,6 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(mSharedPreferencesColor)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
-        doReturn(mEditorColor).when(mSharedPreferencesColor).edit();
-        doReturn(mRemoveEditorColor).when(mEditorColor).remove(any(String.class));
-        doReturn(mPutIntEditorColor)
-                .when(mEditorColor)
-                .putInt(any(String.class), any(Integer.class));
 
         ContextUtils.initApplicationContextForTests(mContext);
     }
@@ -178,8 +171,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor, never()).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
     }
 
     @Test
@@ -200,8 +192,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor, never()).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
     }
 
     @Test
@@ -223,8 +214,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
     }
 
     @Test
@@ -245,8 +235,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor, never()).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
 
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
@@ -257,8 +246,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
@@ -280,8 +268,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
@@ -309,8 +296,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // The title of the source group will not be deleted until the merge is committed, after
         // SnackbarController#onDismissNoAction is called for the UndoGroupSnackbarController.
         verify(mTabGroupModelFilter, never()).setTabGroupTitle(eq(TAB3_ID), anyString());
-        verify(mEditorColor, never()).putInt(eq(String.valueOf(TAB3_ID)), eq(COLOR1_ID));
-        verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).setTabGroupColor(eq(TAB3_ID), anyInt());
     }
 
     @Test
@@ -379,8 +365,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
@@ -412,8 +397,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
-        verify(mEditorColor, never()).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB1_ID);
 
         // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
@@ -431,8 +415,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB2_ID);
-        verify(mEditorColor).remove(eq(String.valueOf(TAB2_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB2_ID);
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB2_ID);
     }
 
@@ -455,8 +438,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // The stored title should be assigned to the new root id.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB2_ID), eq(CUSTOMIZED_TITLE1));
-        verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
-        verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB2_ID), eq(COLOR1_ID));
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
         verify(mTabGroupModelFilter).setTabGroupCollapsed(TAB2_ID, true);
