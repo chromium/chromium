@@ -150,6 +150,11 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     // changed when a blocking feature and its JS location are registered or
     // removed.
     virtual void UpdateBackForwardCacheDisablingFeatures(BlockingDetails) = 0;
+
+    base::WeakPtr<Delegate> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
   virtual ~FrameOrWorkerScheduler();
