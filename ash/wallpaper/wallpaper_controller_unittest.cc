@@ -1248,10 +1248,12 @@ TEST_P(WallpaperControllerTest, ResizeCustomWallpaper) {
   controller_->ShowWallpaperImage(
       image, CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH),
       /*preview_mode=*/false, /*is_override=*/false);
-  EXPECT_TRUE(image.BackedBySameObjectAs(controller_->GetWallpaper()));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(controller_->GetWallpaper()),
+                                        gfx::Image(image)));
   RunAllTasksUntilIdle();
   gfx::ImageSkia resized_image = controller_->GetWallpaper();
-  EXPECT_FALSE(image.BackedBySameObjectAs(resized_image));
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      gfx::Image(controller_->GetWallpaper()), gfx::Image(image)));
   EXPECT_EQ(gfx::Size(320, 200).ToString(), resized_image.size().ToString());
 
   // Load the original wallpaper again and check that we're still using the
@@ -3877,15 +3879,14 @@ TEST_P(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   gfx::ImageSkia online_wallpaper =
       CreateImage(640, 480, online_wallpaper_color);
   EXPECT_NE(online_wallpaper_color, GetWallpaperColor());
+  TestWallpaperControllerObserver observer(controller_);
   run_loop = std::make_unique<base::RunLoop>();
+  observer.SetOnResizeCallback(run_loop->QuitClosure());
   SetOnlineWallpaperFromImage(
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
       /*preview_mode=*/true, /*from_user=*/true, kUnitId,
-      base::BindLambdaForTesting([&run_loop](bool success) {
-        EXPECT_TRUE(success);
-        run_loop->Quit();
-      }));
+      base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
   run_loop->Run();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(online_wallpaper_color, GetWallpaperColor());

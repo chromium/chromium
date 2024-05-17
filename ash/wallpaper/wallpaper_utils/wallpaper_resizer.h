@@ -49,9 +49,9 @@ class ASH_EXPORT WallpaperResizer {
   void StartResize(base::OnceClosure on_resize_done);
 
  private:
-  // Copies `resized_bitmap` to `image_` and runs callback `on_resize_done`.
+  // Copies `resized_image` to `image_` and runs callback `on_resize_done`.
   void OnResizeFinished(base::OnceClosure on_resize_done,
-                        const SkBitmap& resized_bitmap);
+                        gfx::ImageSkia resized_image);
 
   // Image that should currently be used for wallpaper. It initially
   // contains the original image and is updated to contain the resized

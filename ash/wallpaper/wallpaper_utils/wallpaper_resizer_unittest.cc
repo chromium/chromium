@@ -26,10 +26,10 @@ const int kTestImageWidth = 5;
 const int kTestImageHeight = 2;
 const int kTargetWidth = 1;
 const int kTargetHeight = 1;
-const uint32_t kExpectedCenter = 0x02020202u;
-const uint32_t kExpectedCenterCropped = 0x03030303u;
-const uint32_t kExpectedStretch = 0x04040404u;
-const uint32_t kExpectedTile = 0;
+const uint32_t kExpectedCenter = 0xFF020202u;
+const uint32_t kExpectedCenterCropped = 0xFF030303u;
+const uint32_t kExpectedStretch = 0xFF040404u;
+const uint32_t kExpectedTile = 0xFF000000u;
 
 gfx::ImageSkia CreateTestImage(const gfx::Size& size) {
   SkBitmap src;
