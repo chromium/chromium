@@ -8,10 +8,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
+#include "chrome/browser/platform_util.h"  // nogncheck (crbug.com/335727004)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/document_icon_fetcher.h"
 #include "chrome/browser/shortcuts/icon_badging.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -182,8 +184,17 @@ void CreateShortcutForCurrentWebContentsTask::
                                   /*task_result=*/fetch_result.error()));
   } else {
     auto result_callback =
-        base::BindOnce([](ShortcutCreatorResult result) {
+        base::BindOnce([](const base::FilePath& shortcut_path,
+                          ShortcutCreatorResult result) {
           base::UmaHistogramEnumeration("Shortcuts.Creation.Result", result);
+          if (result != ShortcutCreatorResult::kError &&
+              base::FeatureList::IsEnabled(
+                  features::kShortcutsNotAppsRevealDesktop)) {
+            CHECK(!shortcut_path.empty());
+            // Profile information is not needed to show the created shortcut in
+            // the path on Windows, Mac and Linux.
+            platform_util::ShowItemInFolder(/*profile=*/nullptr, shortcut_path);
+          }
           return (result == ShortcutCreatorResult::kError)
                      ? ShortcutCreationTaskResult::kShortcutCreationFailure
                      : ShortcutCreationTaskResult::kShortcutCreationSuccess;

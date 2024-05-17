@@ -22,6 +22,13 @@ class Image;
 namespace shortcuts {
 class LinuxXdgWrapper;
 
+// Output of the shortcut creation flow, consisting of the path where the
+// shortcut was created and the creation result.
+struct ShortcutCreatorOutput {
+  base::FilePath shortcut_path;
+  ShortcutCreatorResult result = ShortcutCreatorResult::kError;
+};
+
 // Creates a shortcut on the user's desktop and installs it into the system's
 // desktop menu. The icon is written into the user's profile directory. This
 // method makes blocking calls and must be called on an appropriate task runner.
@@ -36,7 +43,7 @@ class LinuxXdgWrapper;
 // - The base::DIR_USER_DESKTOP path service variable.
 // To test, use the ShortcutCreatorLinuxTestSupport to capture these
 // side-effects.
-ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
+ShortcutCreatorOutput CreateShortcutOnLinuxDesktop(
     const std::string& shortcut_name,
     const GURL& shortcut_url,
     const gfx::Image& icon,

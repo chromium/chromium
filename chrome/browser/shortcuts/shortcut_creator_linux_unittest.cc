@@ -98,9 +98,10 @@ TEST_F(ShortcutCreatorLinuxTest, ShortcutCreatedWithIcons) {
   EXPECT_FALSE(base::DirectoryExists(GetShortcutIconDir()));
 
   FakeLinuxXdgWrapper xdg_wrapper;
-  ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
+  ShortcutCreatorOutput creation_metadata = CreateShortcutOnLinuxDesktop(
       "Test Name", kUrl, std::move(image), profile_path(), xdg_wrapper);
-  EXPECT_EQ(ShortcutCreatorResult::kSuccess, result);
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess, creation_metadata.result);
+  EXPECT_TRUE(base::PathExists(creation_metadata.shortcut_path));
 
   EXPECT_TRUE(base::PathExists(shortcut_icon_path));
   EXPECT_THAT(LoadIcon(shortcut_icon_path),
@@ -113,14 +114,18 @@ TEST_F(ShortcutCreatorLinuxTest, ShortcutCreatedWithCorrectFile) {
       GetShortcutIconDir().Append(kShortcutBaseName);
 
   FakeLinuxXdgWrapper xdg_wrapper;
-  ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
+  ShortcutCreatorOutput creation_metadata = CreateShortcutOnLinuxDesktop(
       "Test Name", kUrl, std::move(image), profile_path(), xdg_wrapper);
-  EXPECT_EQ(ShortcutCreatorResult::kSuccess, result);
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess, creation_metadata.result);
+
+  const base::FilePath& shortcut_path = creation_metadata.shortcut_path;
+  EXPECT_TRUE(base::PathExists(shortcut_path));
 
   ASSERT_EQ(xdg_wrapper.GetInstalls().size(), 1u);
   base::FilePath desktop_file = xdg_wrapper.GetInstalls()[0];
   EXPECT_EQ(GetUserDesktopPath().AppendASCII("chrome-Test_Name.desktop"),
             desktop_file);
+  EXPECT_EQ(shortcut_path, desktop_file);
   std::string file;
   ASSERT_TRUE(base::ReadFileToString(desktop_file, &file));
 

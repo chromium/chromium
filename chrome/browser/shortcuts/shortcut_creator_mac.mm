@@ -39,7 +39,8 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
 
   base::FilePath desktop_path;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
-    std::move(complete).Run(Result::kError);
+    std::move(complete).Run(/*created_shortcut_path=*/base::FilePath(),
+                            Result::kError);
     return;
   }
 
@@ -54,7 +55,8 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
       desktop_path.Append(*base_name)
           .AddExtensionASCII(ChromeWeblocFile::kFileExtension));
   if (target_path.empty()) {
-    std::move(complete).Run(Result::kError);
+    std::move(complete).Run(/*created_shortcut_path=*/base::FilePath(),
+                            Result::kError);
     return;
   }
 
@@ -63,7 +65,8 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   if (!profile_path_name.has_value() ||
       !ChromeWeblocFile(shortcut_url, *profile_path_name)
            .SaveToFile(target_path)) {
-    std::move(complete).Run(Result::kError);
+    std::move(complete).Run(/*created_shortcut_path=*/base::FilePath(),
+                            Result::kError);
     return;
   }
 
@@ -113,7 +116,7 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                            : Result::kSuccess;
               },
               target_path)
-              .Then(std::move(complete)));
+              .Then(base::BindOnce(std::move(complete), target_path)));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {

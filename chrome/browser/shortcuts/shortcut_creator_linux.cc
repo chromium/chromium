@@ -76,7 +76,7 @@ ShortcutCreatorResult CreateExecutableFile(const base::FilePath& file_path,
 
 }  // namespace
 
-ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
+ShortcutCreatorOutput CreateShortcutOnLinuxDesktop(
     const std::string& shortcut_name,
     const GURL& shortcut_url,
     const gfx::Image& icon,
@@ -86,7 +86,7 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
   // resolution before writing any data, removing some cleanup.
   base::FilePath icon_directory = profile_path.Append(kWebShortcutsIconDirName);
   if (!base::CreateDirectory(icon_directory)) {
-    return ShortcutCreatorResult::kError;
+    return {.result = ShortcutCreatorResult::kError};
   }
   EmitIconStorageCountMetric(icon_directory);
 
@@ -94,12 +94,12 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
       shell_integration_linux::GetUniqueWebShortcutFilename(shortcut_name);
 
   if (!desktop_file_basename) {
-    return ShortcutCreatorResult::kError;
+    return {.result = ShortcutCreatorResult::kError};
   }
 
   base::FilePath desktop_path;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
-    return ShortcutCreatorResult::kError;
+    return {.result = ShortcutCreatorResult::kError};
   }
 
   base::FilePath shortcut_desktop_location =
@@ -119,13 +119,13 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
   std::string desktop_file_contents =
       shell_integration_linux::GetDesktopFileContentsForUrlShortcut(
           shortcut_name, shortcut_url, icon_path, profile_path);
-  ShortcutCreatorResult file_creation_result =
+  ShortcutCreatorResult shortcut_file_creation_result =
       CreateExecutableFile(shortcut_desktop_location, desktop_file_contents);
-  switch (file_creation_result) {
+  switch (shortcut_file_creation_result) {
     case ShortcutCreatorResult::kError:
       // Attempt to clean up the icon.
       base::DeleteFile(icon_path);
-      return ShortcutCreatorResult::kError;
+      return {.result = ShortcutCreatorResult::kError};
     case ShortcutCreatorResult::kSuccessWithErrors:
       non_fatal_failure = true;
       break;
@@ -140,8 +140,11 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
   if (error_code != EXIT_SUCCESS) {
     non_fatal_failure = true;
   }
-  return non_fatal_failure ? ShortcutCreatorResult::kSuccessWithErrors
-                           : ShortcutCreatorResult::kSuccess;
+
+  auto success_result = non_fatal_failure
+                            ? ShortcutCreatorResult::kSuccessWithErrors
+                            : ShortcutCreatorResult::kSuccess;
+  return {.shortcut_path = shortcut_desktop_location, .result = success_result};
 }
 
 namespace {
@@ -161,12 +164,13 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   CHECK(image);
   CHECK_EQ(image->Size().width(), 128);
   LinuxXdgWrapperImpl wrapper_impl;
-  ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
+  ShortcutCreatorOutput result = CreateShortcutOnLinuxDesktop(
       base::UTF16ToUTF8(shortcut_metadata.shortcut_title),
       shortcut_metadata.shortcut_url, *image, shortcut_metadata.profile_path,
       g_xdg_wrapper_override ? *g_xdg_wrapper_override : wrapper_impl);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(complete), result));
+      FROM_HERE,
+      base::BindOnce(std::move(complete), result.shortcut_path, result.result));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {

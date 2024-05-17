@@ -100,17 +100,21 @@ TEST_F(ShortcutCreatorMacTest, ShortcutCreated) {
   gfx::ImageFamily images =
       CreateImageFamily({{.size = 128, .color = SK_ColorMAGENTA}});
 
-  base::test::TestFuture<ShortcutCreatorResult> future;
+  base::test::TestFuture<const base::FilePath&, ShortcutCreatorResult> future;
 
   ShortcutMetadata metadata(profile_path(), GURL("https://example.com/test"),
                             u"Test Name", std::move(images));
 
   CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess,
+            future.Get<ShortcutCreatorResult>());
+
+  const base::FilePath& current_shortcut_path = future.Get<base::FilePath>();
 
   const base::FilePath expected_path =
       GetUserDesktopPath().AppendASCII("Test Name.crwebloc");
+  ASSERT_EQ(current_shortcut_path, expected_path);
   ASSERT_TRUE(base::PathExists(expected_path));
 
   std::optional<ChromeWeblocFile> file =
@@ -133,16 +137,19 @@ TEST_F(ShortcutCreatorMacTest, ShortcutCreatedWithCorrectIcons) {
                                         {.size = 256, .color = SK_ColorGREEN}};
   gfx::ImageFamily images = CreateImageFamily(image_descs);
 
-  base::test::TestFuture<ShortcutCreatorResult> future;
+  base::test::TestFuture<const base::FilePath&, ShortcutCreatorResult> future;
   ShortcutMetadata metadata(profile_path(), GURL("https://example.com/test"),
                             u"Test Name", std::move(images));
 
   CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess,
+            future.Get<ShortcutCreatorResult>());
+  const base::FilePath& current_shortcut_path = future.Get<base::FilePath>();
 
   const base::FilePath expected_path =
       GetUserDesktopPath().AppendASCII("Test Name.crwebloc");
+  ASSERT_EQ(current_shortcut_path, expected_path);
   ASSERT_TRUE(base::PathExists(expected_path));
 
   NSImage* icon = [NSWorkspace.sharedWorkspace

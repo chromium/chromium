@@ -38,15 +38,16 @@ bool WorkspacePathRevealDisabledForTest() {
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   DCHECK([NSThread isMainThread]);
-  NSURL* url = base::apple::FilePathToNSURL(full_path);
 
   // The Finder creates a new window on each `full_path` reveal. Skip
   // revealing the path during testing to avoid an avalanche of new
   // Finder windows.
-  if (WorkspacePathRevealDisabledForTest()) {
+  if (WorkspacePathRevealDisabledForTest() ||
+      !internal::AreShellOperationsAllowed()) {
     return;
   }
 
+  NSURL* url = base::apple::FilePathToNSURL(full_path);
   [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[ url ]];
 }
 

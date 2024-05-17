@@ -326,9 +326,20 @@ BASE_FEATURE(kDesktopPWAsTabStripSettings,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the new create shortcut flow where fire and forget entities are
+// created from three dot menu > Save and Share > Create Shortcut instead of
+// PWAs.
 BASE_FEATURE(kShortcutsNotApps,
              "ShortcutsNotApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the opening of the desktop and highlighting of the shortcut created
+// as part of the new Create Shortcut flow. Requires kShortcutsNotApps to be
+// enabled to work.
+BASE_FEATURE(kShortcutsNotAppsRevealDesktop,
+             "ShortcutsNotAppsRevealDesktop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Enables notification permission revocation for origins that may send

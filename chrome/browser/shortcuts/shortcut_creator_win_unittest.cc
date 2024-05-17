@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "base/base_paths.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -60,7 +62,7 @@ class ShortcutCreatorWinTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(default_profile_path_.CreateUniqueTempDir());
   }
-  void VerifyShortcut() const;
+  void VerifyShortcut(const base::FilePath& current_shortcut_path) const;
   const base::FilePath& default_profile_path() const {
     return default_profile_path_.GetPath();
   }
@@ -72,7 +74,8 @@ class ShortcutCreatorWinTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-void ShortcutCreatorWinTest::VerifyShortcut() const {
+void ShortcutCreatorWinTest::VerifyShortcut(
+    const base::FilePath& current_shortcut_path) const {
   base::win::ShortcutProperties properties;
   properties.set_target(GetChromeProxyPath());
   std::string url_hash =
@@ -87,16 +90,18 @@ void ShortcutCreatorWinTest::VerifyShortcut() const {
                                                       /*incognito=*/false),
        L" --", base::ASCIIToWide(switches::kIgnoreProfileDirectoryIfNotExists),
        L" ", base::ASCIIToWide(kUrl.spec())}));
-  const base::FilePath shortcut_path =
+  const base::FilePath expected_shortcut_path =
       GetUserDesktopPath().AppendASCII(kShortcutFileName);
-  ASSERT_TRUE(base::PathExists(shortcut_path));
-  base::win::ValidateShortcut(shortcut_path, properties);
+  ASSERT_EQ(expected_shortcut_path, current_shortcut_path);
+  ASSERT_TRUE(base::PathExists(current_shortcut_path));
+  base::win::ValidateShortcut(current_shortcut_path, properties);
   // TODO(b/333024272): Verify images in .ico file are correct.
 
   // Verify that the shortcut matchers work correctly as well.
-  EXPECT_THAT(shortcut_path, IsShortcutForUrl(kUrl));
-  EXPECT_THAT(shortcut_path, IsShortcutForProfile(default_profile_path()));
-  EXPECT_THAT(shortcut_path, IsShortcutWithTitle(kShortcutName));
+  EXPECT_THAT(expected_shortcut_path, IsShortcutForUrl(kUrl));
+  EXPECT_THAT(expected_shortcut_path,
+              IsShortcutForProfile(default_profile_path()));
+  EXPECT_THAT(expected_shortcut_path, IsShortcutWithTitle(kShortcutName));
 }
 
 TEST_F(ShortcutCreatorWinTest, ShortcutCreated) {
@@ -107,13 +112,14 @@ TEST_F(ShortcutCreatorWinTest, ShortcutCreated) {
 
   ShortcutMetadata metadata(default_profile_path(), kUrl, kShortcutName,
                             std::move(images));
-  base::test::TestFuture<ShortcutCreatorResult> future;
+  base::test::TestFuture<const base::FilePath&, ShortcutCreatorResult> future;
 
   CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess,
+            future.Get<ShortcutCreatorResult>());
 
-  VerifyShortcut();
+  VerifyShortcut(future.Get<base::FilePath>());
 }
 
 }  // namespace

@@ -24,7 +24,9 @@ enum class ShortcutCreatorResult {
   kMaxValue = kError
 };
 
-using ShortcutCreatorCallback = base::OnceCallback<void(ShortcutCreatorResult)>;
+using ShortcutCreatorCallback =
+    base::OnceCallback<void(const base::FilePath& created_shortcut_path,
+                            ShortcutCreatorResult shortcut_creation_result)>;
 
 // Requirements for ShortcutMetadata to be valid:
 // - The `shortcut_url` must be valid.

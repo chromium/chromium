@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/platform_util_internal.h"  // nogncheck (crbug.com/335727004)
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,7 +30,7 @@ constexpr char kPageWithIcons[] = "/shortcuts/page_icons.html";
 class ShortcutCreationBrowserTest : public InProcessBrowserTest {
  public:
   ShortcutCreationBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kShortcutsNotApps);
+    platform_util::internal::DisableShellOperationsForTesting();
   }
 
   void SetUpOnMainThread() override {
@@ -41,7 +42,7 @@ class ShortcutCreationBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kShortcutsNotApps};
   base::ScopedPathOverride desktop_{base::DIR_USER_DESKTOP};
 };
 

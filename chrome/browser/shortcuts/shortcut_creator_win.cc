@@ -69,7 +69,8 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   base::FilePath desktop;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop) ||
       desktop.empty()) {
-    std::move(complete).Run(ShortcutCreatorResult::kError);
+    std::move(complete).Run(/*created_shortcut_path=*/base::FilePath(),
+                            ShortcutCreatorResult::kError);
     return;
   }
   base::FilePath shortcut_path = desktop.Append(base::StrCat(
@@ -87,10 +88,15 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   bool res =
       CreateOrUpdateShortcutLink(shortcut_path, target_and_args_properties,
                                  base::win::ShortcutOperation::kCreateAlways);
+
+  auto final_result_callback =
+      res ? base::BindOnce(std::move(complete), shortcut_path,
+                           ShortcutCreatorResult::kSuccess)
+          : base::BindOnce(std::move(complete),
+                           /*created_shortcut_path=*/base::FilePath(),
+                           ShortcutCreatorResult::kError);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(complete), res ? ShortcutCreatorResult::kSuccess
-                                              : ShortcutCreatorResult::kError));
+      FROM_HERE, std::move(final_result_callback));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {
