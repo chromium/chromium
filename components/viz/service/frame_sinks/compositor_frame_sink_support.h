@@ -559,6 +559,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Number of clients that have started video capturing.
   uint32_t number_clients_capturing_ = 0;
 
+  const bool use_blit_request_for_view_transition_ = false;
+
   // Region capture bounds associated with the last surface that was aggregated.
   RegionCaptureBounds current_capture_bounds_;
 

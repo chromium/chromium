@@ -1,0 +1,37 @@
+<!doctype html>
+<title>View Transitions capture test</title>
+
+<style>
+.box {
+  width: 100px;
+  height: 100px;
+}
+
+:root { view-transition-name: none }
+#one { view-transition-name: one; }
+#two { view-transition-name: two; }
+
+::view-transition-group(*) { animation-play-state: paused; }
+
+::view-transition-new(one) { animation: unset; opacity: 1; }
+::view-transition-old(one) { animation: unset; opacity: 0; }
+
+::view-transition-new(two) { animation: unset; opacity: 0; }
+::view-transition-old(two) { animation: unset; opacity: 1; }
+
+</style>
+<div class="box" id=one></div>
+<div class="box" id=two></div>
+
+<script>
+function runTest() {
+  one.style.background = "grey";
+  two.style.background = "pink";
+  document.startViewTransition(() => {
+    one.style.background = "black";
+    two.style.background = "orange";
+  }).ready.then(() => domAutomationController.send("SUCCESS"));
+}
+
+onload = requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>

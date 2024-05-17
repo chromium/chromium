@@ -560,6 +560,13 @@ class PixelTestPages():
             requires_fullscreen_os_screenshot_func=\
             RequiresFullScreenOSScreenshot
         ),
+        PixelTestPage('pixel_view_transitions_capture.html',
+                      base_name + '_ViewTransitionsCapture',
+                      test_rect=[0, 0, 300, 300],
+                      matching_algorithm=algo.SobelMatchingAlgorithm(
+                          max_different_pixels=0,
+                          pixel_delta_threshold=0,
+                          edge_threshold=90)),
     ]
 
   @staticmethod
