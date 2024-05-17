@@ -7,6 +7,7 @@
 #import <map>
 #import <set>
 
+#import "base/barrier_closure.h"
 #import "base/check_op.h"
 #import "base/containers/span.h"
 #import "base/files/file_enumerator.h"
@@ -283,18 +284,6 @@ FilePathSet operator+(const FilePathSet& lhs, const FilePathSet& rhs) {
   return result;
 }
 
-// Returns a closure that expects to be call `n` times and that will invoke
-// `closure` on the n-th invocation.
-base::RepeatingClosure ExpectNCall(base::RepeatingClosure closure, size_t n) {
-  __block size_t counter = 0;
-  return base::BindRepeating(^{
-    DCHECK_LT(counter, n);
-    if (++counter == n) {
-      closure.Run();
-    }
-  });
-}
-
 // Moves all WebStates from `src_web_state_list` to `dst_web_state_list` as
 // a batch operation. This respects the `active` flag, but drop any existing
 // opener-opened relationship.
@@ -372,7 +361,7 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
                           base::span<const std::string_view> urls) {
     base::RunLoop run_loop;
     ScopedTestWebStateObserver web_state_observer(
-        ExpectNCall(run_loop.QuitClosure(), std::size(urls)));
+        base::BarrierClosure(std::size(urls), run_loop.QuitClosure()));
 
     WebStateList* web_state_list = browser.GetWebStateList();
     for (std::string_view url : urls) {

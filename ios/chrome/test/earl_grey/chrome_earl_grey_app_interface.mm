@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
 #import "base/command_line.h"
 #import "base/containers/contains.h"
 #import "base/files/file.h"
@@ -126,20 +127,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::SysUTF8ToNSString(serialized_value);
 }
 
-// Returns a RepeatingClosure that will call `closure` after being called
-// exactly n time. The closure does not have to be called on a specific
-// thread or sequence.
-base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
-  return base::BindRepeating(
-      [](base::RepeatingClosure closure,
-         const std::unique_ptr<std::atomic<uint32_t>>& counter) {
-        if (!--*counter) {
-          closure.Run();
-        }
-      },
-      std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
-}
-
 }  // namespace
 
 @implementation JavaScriptExecutionResult
@@ -217,9 +204,9 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   base::RepeatingClosure closure =
-      ExpectNCall(otrService ? 2u : 1u, base::BindRepeating(^{
-                    dispatch_semaphore_signal(semaphore);
-                  }));
+      base::BarrierClosure(otrService ? 2u : 1u, base::BindRepeating(^{
+                             dispatch_semaphore_signal(semaphore);
+                           }));
 
   service->SaveSessions();
   service->InvokeClosureWhenBackgroundProcessingDone(closure);
