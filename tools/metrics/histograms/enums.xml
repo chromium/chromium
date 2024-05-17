@@ -20384,6 +20384,7 @@ from previous Chrome versions.
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
+  <int value="-386044242" label="ReadAnythingDocsIntegration:enabled"/>
   <int value="-385461103" label="XsurfaceMetricsReporting:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
@@ -22489,6 +22490,7 @@ from previous Chrome versions.
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535390916"
       label="AutofillEnablePaymentsAndroidBottomSheet:disabled"/>
+  <int value="535722187" label="ReadAnythingDocsIntegration:disabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>
   <int value="536655643" label="DelayTempStripRemoval:enabled"/>
   <int value="536948426" label="COLRV1Fonts:enabled"/>

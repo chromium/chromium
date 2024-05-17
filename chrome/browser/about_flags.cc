@@ -7302,6 +7302,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingLocalSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingLocalSidePanel)},
 
+    {"read-anything-docs-integration",
+     flag_descriptions::kReadAnythingDocsIntegrationName,
+     flag_descriptions::kReadAnythingDocsIntegrationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingDocsIntegration)},
+
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},

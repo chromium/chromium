@@ -2834,6 +2834,9 @@ extern const char kReadAnythingOmniboxIconDescription[];
 extern const char kReadAnythingLocalSidePanelName[];
 extern const char kReadAnythingLocalSidePanelDescription[];
 
+extern const char kReadAnythingDocsIntegrationName[];
+extern const char kReadAnythingDocsIntegrationDescription[];
+
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 

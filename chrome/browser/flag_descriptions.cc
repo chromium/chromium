@@ -4864,6 +4864,11 @@ const char kReadAnythingLocalSidePanelName[] =
 const char kReadAnythingLocalSidePanelDescription[] =
     "Keep the Reading Mode side panel separate and local to each tab.";
 
+const char kReadAnythingDocsIntegrationName[] =
+    "Reading Mode Google Docs Integration";
+const char kReadAnythingDocsIntegrationDescription[] =
+    "Allows Reading Mode to work on Google Docs.";
+
 const char kGlobalMediaControlsCastStartStopName[] =
     "Global media controls control Cast start/stop";
 const char kGlobalMediaControlsCastStartStopDescription[] =
