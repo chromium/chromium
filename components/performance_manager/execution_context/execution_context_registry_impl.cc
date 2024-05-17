@@ -89,7 +89,9 @@ ExecutionContextRegistry::GetExecutionContextForWorkerNode(
 ////////////////////////////////////////////////////////////////////////////////
 // ExecutionContextRegistryImpl
 
-ExecutionContextRegistryImpl::ExecutionContextRegistryImpl() = default;
+ExecutionContextRegistryImpl::ExecutionContextRegistryImpl() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 ExecutionContextRegistryImpl::~ExecutionContextRegistryImpl() = default;
 
@@ -155,7 +157,7 @@ ExecutionContextRegistryImpl::GetExecutionContextForWorkerNodeImpl(
   return GetOrCreateExecutionContextForWorkerNode(worker_node);
 }
 
-void ExecutionContextRegistryImpl::OnPassedToGraph(Graph* graph) {
+void ExecutionContextRegistryImpl::SetUp(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(graph->HasOnlySystemNode());
   graph->RegisterObject(this);
@@ -163,7 +165,7 @@ void ExecutionContextRegistryImpl::OnPassedToGraph(Graph* graph) {
   graph->AddWorkerNodeObserver(this);
 }
 
-void ExecutionContextRegistryImpl::OnTakenFromGraph(Graph* graph) {
+void ExecutionContextRegistryImpl::TearDown(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RemoveWorkerNodeObserver(this);
   graph->RemoveFrameNodeObserver(this);

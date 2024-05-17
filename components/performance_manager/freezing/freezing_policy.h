@@ -46,8 +46,7 @@ namespace performance_manager {
 //   - Mirrored;
 //   - Capturing window;
 //   - Capturing display;
-class FreezingPolicy : public GraphObserver,
-                       public GraphOwnedDefaultImpl,
+class FreezingPolicy : public GraphOwnedDefaultImpl,
                        public GraphRegisteredImpl<FreezingPolicy>,
                        public PageNode::ObserverDefaultImpl,
                        public FrameNode::ObserverDefaultImpl,
@@ -114,11 +113,9 @@ class FreezingPolicy : public GraphObserver,
   static bool HasCannotFreezeReason(
       const BrowsingInstanceState& browsing_instance_state);
 
-  // GraphObserver implementation:
-  void OnBeforeGraphDestroyed(Graph* graph) override;
-
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
+  void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;

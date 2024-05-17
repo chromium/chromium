@@ -118,9 +118,7 @@ constexpr base::TimeDelta kMinTimeBetweenRequests = base::Seconds(30);
 class V8DetailedMemoryDecoratorTest : public GraphTestHarness,
                                       public V8MemoryTestBase {
  public:
-  V8DetailedMemoryDecoratorTest() {
-    GetGraphFeatures().EnableExecutionContextRegistry();
-  }
+  V8DetailedMemoryDecoratorTest() = default;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()
       override {

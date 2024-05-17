@@ -20,8 +20,7 @@ class ProcessNodeImpl;
 // and workers) it hosts. A process will inherit the priority of the highest
 // priority context that it hosts.
 class ProcessPriorityAggregator
-    : public GraphObserver,
-      public GraphOwnedDefaultImpl,
+    : public GraphOwnedDefaultImpl,
       public NodeDataDescriberDefaultImpl,
       public ProcessNode::ObserverDefaultImpl,
       public execution_context::ExecutionContextObserverDefaultImpl {
@@ -35,9 +34,6 @@ class ProcessPriorityAggregator
       delete;
 
   ~ProcessPriorityAggregator() override;
-
-  // GraphObserver implementation:
-  void OnBeforeGraphDestroyed(Graph* graph) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;

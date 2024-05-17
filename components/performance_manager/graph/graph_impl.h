@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -43,11 +44,6 @@ class WorkerNodeImpl;
 // a list of observers that are notified of node addition and removal.
 class GraphImpl : public Graph {
  public:
-  // Pure virtual observer interface. Derive from this if you want to manually
-  // implement the whole interface, and have the compiler enforce that as new
-  // methods are added.
-  using Observer = GraphObserver;
-
   using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
   using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
   using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
@@ -79,13 +75,11 @@ class GraphImpl : public Graph {
   void TearDown();
 
   // Graph implementation:
-  void AddGraphObserver(GraphObserver* observer) override;
   void AddFrameNodeObserver(FrameNodeObserver* observer) override;
   void AddPageNodeObserver(PageNodeObserver* observer) override;
   void AddProcessNodeObserver(ProcessNodeObserver* observer) override;
   void AddSystemNodeObserver(SystemNodeObserver* observer) override;
   void AddWorkerNodeObserver(WorkerNodeObserver* observer) override;
-  void RemoveGraphObserver(GraphObserver* observer) override;
   void RemoveFrameNodeObserver(FrameNodeObserver* observer) override;
   void RemovePageNodeObserver(PageNodeObserver* observer) override;
   void RemoveProcessNodeObserver(ProcessNodeObserver* observer) override;
@@ -272,8 +266,6 @@ class GraphImpl : public Graph {
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Typed observers.
-  ObserverList<GraphObserver> graph_observers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   ObserverList<FrameNodeObserver> frame_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   ObserverList<PageNodeObserver> page_node_observers_
@@ -311,6 +303,9 @@ class GraphImpl : public Graph {
 
   InitializingFrameNodeObserverManager
       initializing_frame_node_observer_manager_;
+
+  execution_context::ExecutionContextRegistryImpl
+      execution_context_registry_impl_;
 
   // The most recently assigned serialization ID.
   int64_t current_node_serialization_id_ GUARDED_BY_CONTEXT(sequence_checker_) =

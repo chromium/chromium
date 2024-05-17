@@ -68,7 +68,6 @@ class AdFrameVoterTest : public GraphTestHarness {
   AdFrameVoterTest& operator=(const AdFrameVoterTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     auto wrapper = std::make_unique<GraphOwnedWrapper>();
     wrapper_ = wrapper.get();

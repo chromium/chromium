@@ -68,7 +68,6 @@ class LoadingPageVoterTest : public GraphTestHarness {
   LoadingPageVoterTest& operator=(const LoadingPageVoterTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     auto wrapper = std::make_unique<GraphOwnedWrapper>();
     wrapper_ = wrapper.get();

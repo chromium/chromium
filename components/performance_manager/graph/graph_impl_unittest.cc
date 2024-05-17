@@ -226,57 +226,6 @@ TEST_F(GraphImplTest, ImplVisitors) {
 
 namespace {
 
-class LenientMockObserver : public GraphObserver {
- public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
-
-  MOCK_METHOD1(OnBeforeGraphDestroyed, void(Graph*));
-};
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
-
-using testing::_;
-using testing::Invoke;
-
-}  // namespace
-
-TEST_F(GraphImplTest, ObserverWorks) {
-  std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
-  graph->SetUp();
-  Graph* raw_graph = graph.get();
-
-  MockObserver obs;
-  graph->AddGraphObserver(&obs);
-  graph->RemoveGraphObserver(&obs);
-
-  MockObserver head_obs;
-  MockObserver tail_obs;
-  graph->AddGraphObserver(&head_obs);
-  graph->AddGraphObserver(&obs);
-  graph->AddGraphObserver(&tail_obs);
-
-  // Remove observers at the head and tail of the list inside a callback, and
-  // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnBeforeGraphDestroyed(raw_graph))
-      .WillOnce(Invoke([&](Graph* graph) {
-        graph->RemoveGraphObserver(&head_obs);
-        graph->RemoveGraphObserver(&tail_obs);
-      }));
-  // `tail_obs` should not be notified as it was removed.
-  EXPECT_CALL(tail_obs, OnBeforeGraphDestroyed(_)).Times(0);
-
-  // Expect the graph teardown callback to be invoked. We have to unregister our
-  // observer in order to maintain graph invariants.
-  EXPECT_CALL(obs, OnBeforeGraphDestroyed(raw_graph))
-      .WillOnce(
-          Invoke([&obs](Graph* graph) { graph->RemoveGraphObserver(&obs); }));
-  graph->TearDown();
-  graph.reset();
-}
-
-namespace {
-
 class Foo : public GraphOwned {
  public:
   explicit Foo(int* destructor_count) : destructor_count_(destructor_count) {}

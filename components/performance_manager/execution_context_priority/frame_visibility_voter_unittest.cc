@@ -69,7 +69,6 @@ class FrameVisibilityVoterTest : public GraphTestHarness {
   FrameVisibilityVoterTest& operator=(const FrameVisibilityVoterTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
     GetGraphFeatures().EnableFrameVisibilityDecorator();
     Super::SetUp();
     auto wrapper = std::make_unique<GraphOwnedWrapper>();

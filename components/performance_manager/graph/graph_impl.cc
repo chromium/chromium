@@ -146,6 +146,8 @@ void GraphImpl::SetUp() {
 
   AddFrameNodeObserver(&initializing_frame_node_observer_manager_);
 
+  execution_context_registry_impl_.SetUp(this);
+
   CHECK_EQ(lifecycle_state_, LifecycleState::kBeforeSetUp);
   lifecycle_state_ = LifecycleState::kSetUpCalled;
 }
@@ -153,19 +155,15 @@ void GraphImpl::SetUp() {
 void GraphImpl::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Notify graph observers that the graph is being destroyed.
-  for (auto& observer : graph_observers_) {
-    observer.OnBeforeGraphDestroyed(this);
-  }
-
   // Clean up graph owned objects. This causes their TakeFromGraph callbacks to
   // be invoked, and ideally they clean up any observers they may have, etc.
   graph_owned_.ReleaseObjects(this);
 
+  execution_context_registry_impl_.TearDown(this);
+
   RemoveFrameNodeObserver(&initializing_frame_node_observer_manager_);
 
   // At this point, all typed observers should be empty.
-  DCHECK(graph_observers_.empty());
   DCHECK(frame_node_observers_.empty());
   DCHECK(page_node_observers_.empty());
   DCHECK(process_node_observers_.empty());
@@ -178,11 +176,6 @@ void GraphImpl::TearDown() {
 
   CHECK_EQ(lifecycle_state_, LifecycleState::kSetUpCalled);
   lifecycle_state_ = LifecycleState::kTearDownCalled;
-}
-
-void GraphImpl::AddGraphObserver(GraphObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddFrameNodeObserver(FrameNodeObserver* observer) {
@@ -208,11 +201,6 @@ void GraphImpl::AddSystemNodeObserver(SystemNodeObserver* observer) {
 void GraphImpl::AddWorkerNodeObserver(WorkerNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   worker_node_observers_.AddObserver(observer);
-}
-
-void GraphImpl::RemoveGraphObserver(GraphObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemoveFrameNodeObserver(FrameNodeObserver* observer) {

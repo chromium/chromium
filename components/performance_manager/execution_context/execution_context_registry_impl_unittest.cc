@@ -58,7 +58,6 @@ class ExecutionContextRegistryImplTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    graph()->PassToGraph(std::make_unique<ExecutionContextRegistryImpl>());
     registry_ = GraphRegisteredImpl<ExecutionContextRegistryImpl>::GetFromGraph(
         graph());
     ASSERT_TRUE(registry_);
@@ -180,19 +179,6 @@ TEST_F(ExecutionContextRegistryImplTest, Observers) {
   EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(frame_ec));
   mock_graph.frame.reset();
   EXPECT_EQ(0u, registry_->GetExecutionContextCountForTesting());
-
-  // Unregister the observer so that the registry doesn't explode when it is
-  // torn down.
-  registry_->RemoveObserver(&obs);
-}
-
-TEST_F(ExecutionContextRegistryImplDeathTest, EnforceObserversRemoved) {
-  // Create an observer.
-  MockExecutionContextObserver obs;
-  registry_->AddObserver(&obs);
-
-  // The registry should explode if we kill it without unregistering observers.
-  EXPECT_DCHECK_DEATH(graph()->TakeFromGraph(registry_));
 
   // Unregister the observer so that the registry doesn't explode when it is
   // torn down.

@@ -11,9 +11,6 @@ namespace performance_manager {
 Graph::Graph() = default;
 Graph::~Graph() = default;
 
-GraphObserver::GraphObserver() = default;
-GraphObserver::~GraphObserver() = default;
-
 GraphOwned::GraphOwned() = default;
 GraphOwned::~GraphOwned() = default;
 

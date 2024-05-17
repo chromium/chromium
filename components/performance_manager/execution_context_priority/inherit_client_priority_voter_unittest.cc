@@ -5,9 +5,9 @@
 #include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
 
 #include "base/memory/raw_ptr.h"
-#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -70,9 +70,6 @@ class InheritClientPriorityVoterTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-
-    graph()->PassToGraph(
-        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
 
     auto wrapper = std::make_unique<GraphOwnedWrapper>();
     wrapper_ = wrapper.get();

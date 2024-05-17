@@ -41,7 +41,6 @@ class V8ContextTrackerDataStore;
 // added to the Graph.
 class V8ContextTracker final
     : public execution_context::ExecutionContextObserverDefaultImpl,
-      public GraphObserver,
       public GraphOwned,
       public GraphRegisteredImpl<V8ContextTracker>,
       public NodeDataDescriberDefaultImpl,
@@ -208,9 +207,6 @@ class V8ContextTracker final
   // Implementation of execution_context::ExecutionContextObserverDefaultImpl.
   void OnBeforeExecutionContextRemoved(
       const execution_context::ExecutionContext* ec) final;
-
-  // Implementation of GraphObserver.
-  void OnBeforeGraphDestroyed(Graph* graph) final;
 
   // Implementation of GraphOwned.
   void OnPassedToGraph(Graph* graph) final;

@@ -40,7 +40,6 @@ class GraphFeatures {
       // (1) Add a corresponding EnableFeatureFoo() member function.
       // (2) Add the feature to EnableDefault() if necessary.
       // (3) Add the feature to the implementation of ConfigureGraph().
-      bool execution_context_registry : 1;
       bool frame_visibility_decorator : 1;
       bool metrics_collector : 1;
       bool node_impl_describers : 1;
@@ -58,11 +57,6 @@ class GraphFeatures {
   constexpr GraphFeatures() = default;
   constexpr GraphFeatures(const GraphFeatures& other) = default;
   GraphFeatures& operator=(const GraphFeatures& other) = default;
-
-  constexpr GraphFeatures& EnableExecutionContextRegistry() {
-    flags_.execution_context_registry = true;
-    return *this;
-  }
 
   constexpr GraphFeatures& EnableFrameVisibilityDecorator() {
     flags_.frame_visibility_decorator = true;
@@ -85,7 +79,6 @@ class GraphFeatures {
   }
 
   constexpr GraphFeatures& EnablePriorityTracking() {
-    EnableExecutionContextRegistry();
     EnableFrameVisibilityDecorator();
     flags_.priority_tracking = true;
     return *this;
@@ -120,7 +113,6 @@ class GraphFeatures {
   }
 
   constexpr GraphFeatures& EnableV8ContextTracker() {
-    EnableExecutionContextRegistry();
     flags_.v8_context_tracker = true;
     return *this;
   }
@@ -128,7 +120,6 @@ class GraphFeatures {
   // Helper to enable the minimal set of features required for a content_shell
   // browser to work.
   constexpr GraphFeatures& EnableMinimal() {
-    EnableExecutionContextRegistry();
     EnableV8ContextTracker();
     return *this;
   }
@@ -136,7 +127,6 @@ class GraphFeatures {
   // Helper to enable the default set of features. This is only intended for use
   // from production code.
   constexpr GraphFeatures& EnableDefault() {
-    EnableExecutionContextRegistry();
     EnableFrameVisibilityDecorator();
     EnableMetricsCollector();
     EnableNodeImplDescribers();

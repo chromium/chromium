@@ -36,18 +36,7 @@ class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
 using MockFrameNodeObserver =
     ::testing::StrictMock<LenientMockFrameNodeObserver>;
 
-class RootVoteObserverTest : public GraphTestHarness {
- public:
-  using Super = GraphTestHarness;
-
-  RootVoteObserverTest() = default;
-  ~RootVoteObserverTest() override = default;
-
-  void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
-    Super::SetUp();
-  }
-};
+using RootVoteObserverTest = GraphTestHarness;
 
 }  // namespace
 

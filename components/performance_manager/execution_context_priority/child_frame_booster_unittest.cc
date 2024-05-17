@@ -78,7 +78,6 @@ class ChildFrameBoosterTest : public GraphTestHarness {
   ChildFrameBoosterTest& operator=(const ChildFrameBoosterTest&) = delete;
 
   void SetUp() override {
-    Super::GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     wrapper_ = graph()->PassToGraph(std::make_unique<GraphOwnedWrapper>());
   }

@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
-#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
+#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -30,8 +30,8 @@ class V8ContextTrackerInternalTest : public GraphTestHarness {
   V8ContextTrackerInternalTest() = default;
 
   void OnGraphCreated(GraphImpl* graph_impl) override {
-    registry_ = graph_impl->PassToGraph(
-        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
+    registry_ =
+        execution_context::ExecutionContextRegistry::GetFromGraph(graph());
     tracker_ = graph_impl->PassToGraph(std::make_unique<V8ContextTracker>());
     mock_graph_ =
         std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());

@@ -20,7 +20,6 @@ class UkmRecorder;
 
 namespace performance_manager {
 
-class GraphObserver;
 class GraphOwned;
 class GraphRegistered;
 class FrameNode;
@@ -44,8 +43,6 @@ class GraphRegisteredImpl;
 // a list of observers that are notified of node addition and removal.
 class Graph {
  public:
-  using Observer = GraphObserver;
-
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using PageNodeVisitor = base::FunctionRef<bool(const PageNode*)>;
   using ProcessNodeVisitor = base::FunctionRef<bool(const ProcessNode*)>;
@@ -60,7 +57,6 @@ class Graph {
 
   // Adds an |observer| on the graph. It is safe for observers to stay
   // registered on the graph at the time of its death.
-  virtual void AddGraphObserver(GraphObserver* observer) = 0;
   virtual void AddFrameNodeObserver(FrameNodeObserver* observer) = 0;
   virtual void AddPageNodeObserver(PageNodeObserver* observer) = 0;
   virtual void AddProcessNodeObserver(ProcessNodeObserver* observer) = 0;
@@ -68,7 +64,6 @@ class Graph {
   virtual void AddWorkerNodeObserver(WorkerNodeObserver* observer) = 0;
 
   // Removes an |observer| from the graph.
-  virtual void RemoveGraphObserver(GraphObserver* observer) = 0;
   virtual void RemoveFrameNodeObserver(FrameNodeObserver* observer) = 0;
   virtual void RemovePageNodeObserver(PageNodeObserver* observer) = 0;
   virtual void RemoveProcessNodeObserver(ProcessNodeObserver* observer) = 0;
@@ -182,25 +177,6 @@ class Graph {
 // Compiles to a nop, and will eat ostream input.
 #define DCHECK_ON_GRAPH_SEQUENCE(graph) DCHECK(true)
 #endif
-
-// Observer interface for the graph.
-class GraphObserver : public base::CheckedObserver {
- public:
-  GraphObserver();
-
-  GraphObserver(const GraphObserver&) = delete;
-  GraphObserver& operator=(const GraphObserver&) = delete;
-
-  ~GraphObserver() override;
-
-  // Called before the |graph| associated with this observer disappears. This
-  // allows the observer to do any necessary cleanup work. Note that the
-  // observer should remove itself from observing the graph using this
-  // callback.
-  // TODO(chrisha): Make this run before the destructor!
-  // crbug.com/966840
-  virtual void OnBeforeGraphDestroyed(Graph* graph) = 0;
-};
 
 // Helper class for passing ownership of objects to a graph.
 class GraphOwned {

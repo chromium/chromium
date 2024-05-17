@@ -73,7 +73,6 @@ class FrameCapturingMediaStreamVoterTest : public GraphTestHarness {
       const FrameCapturingMediaStreamVoterTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     wrapper_ = graph()->PassToGraph(std::make_unique<GraphOwnedWrapper>());
   }

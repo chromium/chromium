@@ -69,7 +69,6 @@ class FrameAudibleVoterTest : public GraphTestHarness {
   FrameAudibleVoterTest& operator=(const FrameAudibleVoterTest&) = delete;
 
   void SetUp() override {
-    Super::GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     wrapper_ = graph()->PassToGraph(std::make_unique<GraphOwnedWrapper>());
   }

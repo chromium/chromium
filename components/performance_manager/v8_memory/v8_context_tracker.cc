@@ -365,22 +365,9 @@ void V8ContextTracker::OnBeforeExecutionContextRemoved(
     data_store_->MarkDestroyed(ec_data);
 }
 
-void V8ContextTracker::OnBeforeGraphDestroyed(Graph* graph) {
-  DCHECK_ON_GRAPH_SEQUENCE(graph);
-  // Remove ourselves from the execution context registry observer list here as
-  // it may get torn down before our OnTakenFromGraph is called. This is also
-  // called from "OnTakenFromGraph", so it is resistant to the
-  // ExecutionContextRegistry no longer existing.
-  auto* registry =
-      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
-  if (registry && registry->HasObserver(this))
-    registry->RemoveObserver(this);
-}
-
 void V8ContextTracker::OnPassedToGraph(Graph* graph) {
   DCHECK_ON_GRAPH_SEQUENCE(graph);
 
-  graph->AddGraphObserver(this);
   graph->AddProcessNodeObserver(this);
   graph->RegisterObject(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
@@ -388,22 +375,21 @@ void V8ContextTracker::OnPassedToGraph(Graph* graph) {
   auto* registry =
       execution_context::ExecutionContextRegistry::GetFromGraph(graph);
   // We expect the registry to exist before we are passed to the graph.
-  DCHECK(registry);
+  CHECK(registry);
   registry->AddObserver(this);
 }
 
 void V8ContextTracker::OnTakenFromGraph(Graph* graph) {
   DCHECK_ON_GRAPH_SEQUENCE(graph);
 
-  // Call OnBeforeGraphDestroyed as well. This unregisters us from the
-  // ExecutionContextRegistry in case we're being removed from the graph
-  // prior to its destruction.
-  OnBeforeGraphDestroyed(graph);
+  auto* registry =
+      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
+  CHECK(registry);
+  registry->RemoveObserver(this);
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->UnregisterObject(this);
   graph->RemoveProcessNodeObserver(this);
-  graph->RemoveGraphObserver(this);
 }
 
 base::Value::Dict V8ContextTracker::DescribeFrameNodeData(
