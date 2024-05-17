@@ -1162,59 +1162,10 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
     auto data = tracing_session_->ReadTraceBlocking();
     OnTraceData(data.data(), data.size(), /*has_more=*/false);
   }
-#elif BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#else
   // Trace processor isn't enabled so we can't convert the resulting trace into
   // JSON.
   CHECK(false) << "JSON tracing isn't supported";
-#else
-  if (IsEnabled()) {
-    // Can't flush when tracing is enabled because otherwise PostTask would
-    // - generate more trace events;
-    // - deschedule the calling thread on some platforms causing inaccurate
-    //   timing of the trace events.
-    scoped_refptr<RefCountedString> empty_result = new RefCountedString;
-    if (!cb.is_null())
-      cb.Run(empty_result, false);
-    LOG(WARNING) << "Ignored TraceLog::Flush called when tracing is enabled";
-    return;
-  }
-
-  int gen = generation();
-  // Copy of thread_task_runners_ to be used without locking.
-  std::vector<scoped_refptr<SingleThreadTaskRunner>> task_runners;
-  {
-    AutoLock lock(lock_);
-    DCHECK(!flush_task_runner_);
-    flush_task_runner_ = SequencedTaskRunner::HasCurrentDefault()
-                             ? SequencedTaskRunner::GetCurrentDefault()
-                             : nullptr;
-    DCHECK(thread_task_runners_.empty() || flush_task_runner_);
-    flush_output_callback_ = cb;
-
-    if (thread_shared_chunk_) {
-      logged_events_->ReturnChunk(thread_shared_chunk_index_,
-                                  std::move(thread_shared_chunk_));
-    }
-
-    for (const auto& it : thread_task_runners_)
-      task_runners.push_back(it.second);
-  }
-
-  if (!task_runners.empty()) {
-    for (auto& task_runner : task_runners) {
-      task_runner->PostTask(
-          FROM_HERE, BindOnce(&TraceLog::FlushCurrentThread, Unretained(this),
-                              gen, discard_events));
-    }
-    flush_task_runner_->PostDelayedTask(
-        FROM_HERE,
-        BindOnce(&TraceLog::OnFlushTimeout, Unretained(this), gen,
-                 discard_events),
-        kThreadFlushTimeout);
-    return;
-  }
-
-  FinishFlush(gen, discard_events);
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 }
 
