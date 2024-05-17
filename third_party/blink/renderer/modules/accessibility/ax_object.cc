@@ -1408,14 +1408,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeAriaNotificationAttributes(
       AXObjectCache().RetrieveAriaNotifications(this), node_data);
-
-  // Return early. The following attributes are unnecessary for ignored nodes.
-  // Exception: focusable ignored nodes are fully serialized, so that reasonable
-  // verbalizations can be made if they actually receive focus.
-  if (IsIgnored() &&
-      !node_data->HasState(ax::mojom::blink::State::kFocusable)) {
-    return;
-  }
 }
 
 void AXObject::SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const {
