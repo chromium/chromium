@@ -218,4 +218,16 @@ public class TabGroupRowViewUnitTest {
         assertNull(imageView.getDrawable());
         assertEquals("", textView.getText());
     }
+
+    @Test
+    @SmallTest
+    public void testResetOnBind() {
+        remakeWithProperty(ASYNC_FAVICON_TOP_LEFT, (callback) -> callback.onResult(mDrawable));
+        ImageView imageView =
+                mTabGroupStartIconParent.getChildAt(0).findViewById(R.id.favicon_image);
+        assertEquals(mDrawable, imageView.getDrawable());
+
+        mTabGroupRowView.resetOnBind();
+        assertNull(imageView.getDrawable());
+    }
 }

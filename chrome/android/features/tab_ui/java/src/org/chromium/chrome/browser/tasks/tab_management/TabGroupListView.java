@@ -37,7 +37,6 @@ public class TabGroupListView extends FrameLayout {
         Context context = getContext();
         mRecyclerView = findViewById(R.id.tab_group_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        mRecyclerView.setItemAnimator(null);
 
         mEmptyStateContainer = findViewById(R.id.empty_state_container);
 

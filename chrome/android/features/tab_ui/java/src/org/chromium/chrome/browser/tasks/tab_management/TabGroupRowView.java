@@ -93,6 +93,12 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable));
     }
 
+    void resetOnBind() {
+        for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
+            setFavicon(null, 0, corner);
+        }
+    }
+
     private ListMenu getListMenu(
             @Nullable Runnable openRunnable, @Nullable Runnable deleteRunnable) {
         ModelList listItems = new ModelList();
