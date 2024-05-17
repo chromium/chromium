@@ -1035,6 +1035,16 @@ Vector<NoVarySearchTestData> GetNoVarySearchParsingSuccessTestData() {
           false,                                // expected_vary_on_key_order
           true                                  // expected_vary_by_default
       },
+      // Vary on multiple search params but don't vary on search params order.
+      {
+          "HTTP/1.1 200 OK\r\n"
+          R"(No-Vary-Search: key-order, params, except=("a" "b" "c"))"
+          "\r\n\r\n",                       // raw_headers
+          {},                               // expected_no_vary_params
+          Vector<String>({"a", "b", "c"}),  // expected_vary_params
+          false,                            // expected_vary_on_key_order
+          false                             // expected_vary_by_default
+      },
   };
   return test_data;
 }
