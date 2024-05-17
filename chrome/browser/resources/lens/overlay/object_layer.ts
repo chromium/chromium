@@ -10,7 +10,6 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
@@ -183,12 +182,6 @@ export class ObjectLayerElement extends PolymerElement {
       composed: true,
       detail: {cursor: CursorType.POINTER},
     }));
-    this.dispatchEvent(
-        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-          bubbles: true,
-          composed: true,
-          detail: {tooltipType: CursorTooltipType.CLICK_SEARCH},
-        }));
   }
 
   private onSegmentationUnhovered() {
@@ -199,12 +192,6 @@ export class ObjectLayerElement extends PolymerElement {
       composed: true,
       detail: {cursor: CursorType.DEFAULT},
     }));
-    this.dispatchEvent(
-        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-          bubbles: true,
-          composed: true,
-          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
-        }));
   }
 
   private handlePointerEnter(event: PointerEvent) {

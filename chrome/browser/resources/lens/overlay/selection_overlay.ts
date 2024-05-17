@@ -19,7 +19,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
@@ -276,7 +275,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
   }
 
-  // LINT.IfChange(CursorOffsetValues)
   // Called on text hover and drag.
   private setCursorToText() {
     // Set body cursor style to handle dragging.
@@ -309,26 +307,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
   }
-  // LINT.ThenChange(//chrome/browser/resources/lens/overlay/cursor_tooltip.ts:CursorOffsetValues)
 
   private handlePointerEnter() {
     this.isPointerInside = true;
-    this.dispatchEvent(
-        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-          bubbles: true,
-          composed: true,
-          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
-        }));
   }
 
   private handlePointerLeave() {
     this.isPointerInside = false;
-    this.dispatchEvent(
-        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-          bubbles: true,
-          composed: true,
-          detail: {tooltipType: CursorTooltipType.LIVE_PAGE},
-        }));
 
     // Unfocus the shimmer from the cursor. If the cursor is dragging, force
     // shimmer to follow cursor.
