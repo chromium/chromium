@@ -107,8 +107,8 @@ test(function(t){
 <script>
 test(function(t){
     var axLabelledby6 = accessibilityController.accessibleElementById("labelledby6");
-    assert_equals(axLabelledby6.name, "");
-    assert_equals(axLabelledby6.nameFrom, "relatedElement");
+    assert_equals(axLabelledby6.name, "Contents");
+    assert_equals(axLabelledby6.nameFrom, "contents");
     assert_equals(axLabelledby6.nameElementCount(), 1);
     assert_equals(axLabelledby6.nameElementAtIndex(0).role, "AXRole: AXGenericContainer");
 }, "aria-labelledby reference to element with no text.");

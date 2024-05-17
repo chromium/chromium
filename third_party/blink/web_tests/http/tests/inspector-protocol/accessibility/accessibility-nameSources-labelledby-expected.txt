@@ -552,34 +552,21 @@ Tests name sources when used with aria-labelledby.
             [0] : {
                 attribute : aria-labelledby
                 attributeValue : {
-                    relatedNodes : [
-                        [0] : {
-                            idref : label6
-                            nodeResult : div#label6
-                            text : 
-                        }
-                    ]
-                    type : idrefList
+                    type : string
                     value : label6
                 }
+                invalid : true
                 type : relatedElement
-                value : {
-                    type : computedString
-                    value : 
-                }
             }
             [1] : {
                 attribute : aria-label
-                superseded : true
                 type : attribute
             }
             [2] : {
                 nativeSource : label
-                superseded : true
                 type : relatedElement
             }
             [3] : {
-                superseded : true
                 type : contents
                 value : {
                     type : computedString
@@ -593,7 +580,7 @@ Tests name sources when used with aria-labelledby.
             }
         ]
         type : computedString
-        value : 
+        value : Contents
     }
     nodeId : <string>
     parentId : <string>
@@ -610,19 +597,6 @@ Tests name sources when used with aria-labelledby.
             value : {
                 type : booleanOrUndefined
                 value : true
-            }
-        }
-        [2] : {
-            name : labelledby
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        idref : label6
-                        nodeResult : div#label6
-                        text : 
-                    }
-                ]
-                type : nodeList
             }
         }
     ]

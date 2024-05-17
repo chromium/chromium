@@ -7,6 +7,6 @@ rootWebArea
 ++++++comboBoxSelect collapsed required name='How often?' invalidState=true
 ++++++++menuListPopup invisible
 ++++++++++menuListOption selected=true
-++++++++++menuListOption invisible selected=false
-++++++++++menuListOption invisible selected=false
-++++++++++menuListOption invisible selected=false
+++++++++++menuListOption invisible name='Week' selected=false
+++++++++++menuListOption invisible name='Month' selected=false
+++++++++++menuListOption invisible name='Year' selected=false
