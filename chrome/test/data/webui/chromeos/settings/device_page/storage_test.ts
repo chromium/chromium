@@ -303,6 +303,9 @@ suite('<settings-storage> for device page', () => {
   });
 
   test('my files skyvault disabled', async () => {
+    loadTimeData.overrideValues({
+      enableSkyVault: false,
+    });
     await createStorageSubpage();
 
     checkMyFilesElement('myFilesSizeLink', true);
