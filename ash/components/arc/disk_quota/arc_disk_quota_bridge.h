@@ -10,10 +10,7 @@
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
-#include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace content {
 class BrowserContext;
@@ -88,8 +85,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   ~ArcDiskQuotaBridge() override;
 
-  void SetAccountId(const AccountId& account_id);
-
   // mojom::DiskQuotaHost overrides:
   void IsQuotaSupported(IsQuotaSupportedCallback callback) override;
 
@@ -113,8 +108,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  AccountId account_id_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcDiskQuotaBridge> weak_factory_{this};

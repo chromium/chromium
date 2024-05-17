@@ -100,10 +100,6 @@ ArcDiskQuotaBridge::~ArcDiskQuotaBridge() {
   arc_bridge_service_->disk_quota()->SetHost(nullptr);
 }
 
-void ArcDiskQuotaBridge::SetAccountId(const AccountId& account_id) {
-  account_id_ = account_id;
-}
-
 void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
   // Whether ARC quota is supported is an AND of the following two booleans:
   // * Whether there are no unmounted Android users (from cryptohome)
