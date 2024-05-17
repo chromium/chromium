@@ -326,9 +326,15 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromProfileStore) {
                           EqualsManagePasswordsSuggestion()));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Verify that suggestion for account store credential receives a different
 // `SuggestionType` and trailing icon.
-TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
+// TODO crbug/40943570: Remove after feature is fully rolled out.
+TEST_F(PasswordSuggestionGeneratorTest,
+       PasswordSuggestions_FromAccountStore_ButterFollowupDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
   PasswordFormFillData fill_data = password_form_fill_data();
   fill_data.preferred_login.uses_account_store = true;
 
@@ -341,24 +347,18 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
                               SuggestionType::kAccountStoragePasswordEntry,
                               u"username", password_label(8u),
                               /*realm_label=*/u"", favicon(),
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               Suggestion::Icon::kGoogle
-#else
-                              Suggestion::Icon::kNoIcon
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               ),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Verify that the trailing icon is not set for the account store credential if
 // the `kButterOnDesktopFollowup` is enabled.
-TEST_F(PasswordSuggestionGeneratorTest,
-       PasswordSuggestions_FromAccountStore_ButterFollowupEnabled) {
-  base::test::ScopedFeatureList feature_list(
+TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       password_manager::features::kButterOnDesktopFollowup);
-
   PasswordFormFillData fill_data = password_form_fill_data();
   fill_data.preferred_login.uses_account_store = true;
 
@@ -401,7 +401,10 @@ TEST_F(PasswordSuggestionGeneratorTest,
        PasswordSuggestions_WithAdditionalLogin) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kSyncWebauthnCredentials);
+  feature_list.InitWithFeatureStates(
+      {{syncer::kSyncWebauthnCredentials, false},
+       {password_manager::features::kButterOnDesktopFollowup, true}});
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PasswordFormFillData fill_data = password_form_fill_data();
   PasswordAndMetadata additional_login;
@@ -424,11 +427,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               SuggestionType::kAccountStoragePasswordEntry, u"additional_login",
               password_label(19u),
               /*realm_label=*/u"additional.login.com", favicon(),
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-              Suggestion::Icon::kGoogle
-#else
               Suggestion::Icon::kNoIcon
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
               ),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));

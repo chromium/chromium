@@ -2967,10 +2967,7 @@
     "ButterOnDesktopFollowup": [
         {
             "platforms": [
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos_lacros"
             ],
             "experiments": [
                 {

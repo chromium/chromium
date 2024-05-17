@@ -644,6 +644,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
+  // TODO crbug/40943570: Remove after feature is fully rolled out.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -661,8 +665,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
   // Updates the default store if opted-in and operation succeeded.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
-              SetDefaultPasswordStore(PasswordForm::Store::kAccountStore));
   EXPECT_TRUE(
       delegate->AddPassword("example2.com", u"username2", u"password2", u"",
                             /*use_account_store=*/true, web_contents.get()));
@@ -742,7 +744,13 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                             base::DoNothing(), web_contents.get());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswordsDoesntUpdateDefaultStore) {
+  // TODO crbug/40943570: Remove after feature is fully rolled out.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -757,7 +765,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   EXPECT_CALL(*(client->GetPasswordFeatureManager()),
-              SetDefaultPasswordStore(PasswordForm::Store::kAccountStore));
+              SetDefaultPasswordStore(_))
+      .Times(0);
   EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
   delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kAccount,
                             base::DoNothing(), web_contents.get());
@@ -1356,7 +1365,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
   EXPECT_FALSE(delegate->IsAccountStoreDefault(web_contents.get()));
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
+TEST_F(PasswordsPrivateDelegateImplTest,
+       TestMovePasswordsToAccountStoreWithButterFollowupDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
