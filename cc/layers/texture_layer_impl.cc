@@ -169,7 +169,7 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 }
 
 SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
-  if (transferable_resource_.is_null()) {
+  if (transferable_resource_.is_empty()) {
     return SimpleEnclosedRegion();
   }
 

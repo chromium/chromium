@@ -268,8 +268,9 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
 
     if (texture_it != saved_textures->element_id_to_resource.end()) {
       const auto& transferable_resource = texture_it->second;
-      if (transferable_resource.is_null())
+      if (transferable_resource.is_empty()) {
         return true;
+      }
 
       resource_list->push_back(transferable_resource);
       manager_it->second->RefResources({transferable_resource});

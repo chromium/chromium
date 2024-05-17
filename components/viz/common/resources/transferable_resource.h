@@ -110,7 +110,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ReturnedResource ToReturnedResource() const;
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
-  bool is_null() const {
+  bool is_empty() const {
     return (!is_shared_bitmap && mailbox_.IsZero()) ||
            (is_shared_bitmap && shared_bitmap_id_.IsZero());
   }
@@ -165,9 +165,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   const gpu::SyncToken& sync_token() const { return sync_token_; }
   gpu::SyncToken& mutable_sync_token() { return sync_token_; }
   uint32_t texture_target() const { return texture_target_; }
-
-  // TODO(crbug.com/337538024): Change all callers to call is_null() instead.
-  bool is_empty() const { return is_null(); }
 
   // The color space that is used for pixel path operations (e.g, TexImage,
   // CopyTexImage, DrawPixels) and when displaying as an overlay.
