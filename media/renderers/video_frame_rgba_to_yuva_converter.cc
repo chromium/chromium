@@ -46,23 +46,15 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     return false;
   }
 
-#if BUILDFLAG(IS_WIN)
-  // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!provider->SharedImageInterface()->GetCapabilities().shared_image_d3d) {
-    DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
-    return false;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
+
   if (dst_video_frame->shared_image_format_type() ==
       SharedImageFormatType::kLegacy) {
     SkYUVAInfo yuva_info =
         VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
     gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
     for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
-      gpu::MailboxHolder dst_mailbox_holder =
-          dst_video_frame->mailbox_holder(plane);
+      const auto& dst_mailbox_holder = dst_video_frame->mailbox_holder(plane);
       ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
       yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
     }
@@ -70,7 +62,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
         yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
         yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
   } else {
-    gpu::MailboxHolder dst_mailbox_holder = dst_video_frame->mailbox_holder(0);
+    const auto& dst_mailbox_holder = dst_video_frame->mailbox_holder(0);
     ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
 
     // `unpack_flip_y` should be set if the surface origin of the source
@@ -98,35 +90,11 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
   ri->Flush();
 
-#if BUILDFLAG(IS_WIN)
-  // For shared memory GMBs on Windows we needed to explicitly request a copy
-  // from the shared image GPU texture to the GMB.
-  DCHECK(dst_video_frame->HasGpuMemoryBuffer());
-  DCHECK_EQ(dst_video_frame->GetGpuMemoryBuffer()->GetType(),
-            gfx::SHARED_MEMORY_BUFFER);
-
-  gpu::SyncToken blit_done_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
-
-  auto* sii = provider->SharedImageInterface();
-  for (size_t plane = 0; plane < dst_video_frame->NumTextures(); ++plane) {
-    const auto& mailbox = dst_video_frame->mailbox_holder(plane).mailbox;
-    sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
-  }
-
-  // Synchronize RasterInterface with SharedImageInterface. We want to generate
-  // the final SyncToken from the RasterInterface since callers might be using
-  // RasterInterface::Finish() to ensure synchronization in cases where
-  // SignalSyncToken can't be used (e.g. webrtc video frame adapter).
-  auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
-  ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
-#endif  // BUILDFLAG(IS_WIN)
-
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
   // GpuMemoryBuffer and SharedImage resources are returned to the pool.
   gpu::SyncToken completion_sync_token;
-  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
+  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   SimpleSyncTokenClient simple_client(completion_sync_token);
   for (size_t plane = 0; plane < dst_video_frame->NumTextures(); ++plane) {
     dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);

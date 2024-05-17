@@ -17,10 +17,11 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "media/base/simple_sync_token_client.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
@@ -195,13 +196,29 @@ bool CanUseGpuMemoryBufferReadback(
   // Since ConvertToWebRtcVideoFrameBuffer will always produce an opaque frame
   // (unless the input is already I420A), we allow using GMB readback from
   // ABGR/ARGB to NV12.
-  return gpu_factories &&
-         (format == media::PIXEL_FORMAT_XBGR ||
-          format == media::PIXEL_FORMAT_XRGB ||
-          format == media::PIXEL_FORMAT_ABGR ||
-          format == media::PIXEL_FORMAT_ARGB) &&
-         WebGraphicsContext3DVideoFramePool::
-             IsGpuMemoryBufferReadbackFromTextureEnabled();
+  if (format != media::PIXEL_FORMAT_XBGR &&
+      format != media::PIXEL_FORMAT_XRGB &&
+      format != media::PIXEL_FORMAT_ABGR &&
+      format != media::PIXEL_FORMAT_ARGB) {
+    return false;
+  }
+  if (!gpu_factories) {
+    return false;
+  }
+  if (!gpu_factories->SharedImageInterface()) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
+  if (!gpu_factories->SharedImageInterface()
+           ->GetCapabilities()
+           .shared_image_d3d) {
+    DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
+    return false;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return WebGraphicsContext3DVideoFramePool::
+      IsGpuMemoryBufferReadbackFromTextureEnabled();
 }
 
 scoped_refptr<media::VideoFrame>
@@ -269,11 +286,44 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         dst_frame->set_timestamp(source_frame->timestamp());
         dst_frame->set_metadata(source_frame->metadata());
 
+        auto* ri = raster_context_provider->RasterInterface();
+        DCHECK(ri);
+
+#if BUILDFLAG(IS_WIN)
+        // For shared memory GMBs on Windows we needed to explicitly request a
+        // copy from the shared image GPU texture to the GMB.
+        DCHECK(dst_frame->HasGpuMemoryBuffer());
+        DCHECK_EQ(dst_frame->GetGpuMemoryBuffer()->GetType(),
+                  gfx::SHARED_MEMORY_BUFFER);
+        gpu::SyncToken blit_done_sync_token;
+        ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
+
+        auto* sii = raster_context_provider->SharedImageInterface();
+        for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
+          const auto& mailbox = dst_frame->mailbox_holder(plane).mailbox;
+          sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+        }
+
+        // Synchronize RasterInterface with SharedImageInterface.
+        auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
+        ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
+#endif  // BUILDFLAG(IS_WIN)
+
         // RI::Finish() makes sure that CopyRGBATextureToVideoFrame() finished
         // texture copy before we call ConstructVideoFrameFromGpu(). It's not
         // the best way to wait for completion, but it's the only sync way
         // to wait, and making this function async is currently impractical.
-        raster_context_provider->RasterInterface()->Finish();
+        ri->Finish();
+
+        // We can just clear the sync token from the video frame now that we've
+        // synchronized with the GPU.
+        gpu::SyncToken empty_sync_token;
+        media::SimpleSyncTokenClient simple_client(empty_sync_token);
+        for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
+          dst_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
+        }
+        dst_frame->UpdateReleaseSyncToken(&simple_client);
+
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
         return vf;
       }

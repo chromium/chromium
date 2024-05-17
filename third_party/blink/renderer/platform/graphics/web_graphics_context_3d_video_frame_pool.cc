@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "media/base/simple_sync_token_client.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -29,6 +30,12 @@
 namespace blink {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kUseCopyToGpuMemoryBufferAsync,
+             "UseCopyToGpuMemoryBufferAsync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
@@ -145,6 +152,126 @@ WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
   return nullptr;
 }
 
+namespace {
+void SignalGpuCompletion(
+    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
+    GLenum query_target,
+    base::OnceClosure callback) {
+  DCHECK(ctx_wrapper);
+  auto* context_provider = ctx_wrapper->ContextProvider();
+  DCHECK(context_provider);
+  auto* raster_context_provider = context_provider->RasterContextProvider();
+  DCHECK(raster_context_provider);
+  auto* ri = raster_context_provider->RasterInterface();
+  DCHECK(ri);
+
+  unsigned query_id = 0;
+  ri->GenQueriesEXT(1, &query_id);
+  ri->BeginQueryEXT(query_target, query_id);
+  ri->EndQueryEXT(query_target);
+
+  auto on_query_done_lambda =
+      [](base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
+         unsigned query_id, base::OnceClosure wrapped_callback) {
+        if (ctx_wrapper) {
+          if (auto* ctx_provider = ctx_wrapper->ContextProvider()) {
+            if (auto* ri_provider = ctx_provider->RasterContextProvider()) {
+              auto* ri = ri_provider->RasterInterface();
+              ri->DeleteQueriesEXT(1, &query_id);
+            }
+          }
+        }
+        std::move(wrapped_callback).Run();
+      };
+
+  auto* context_support = raster_context_provider->ContextSupport();
+  DCHECK(context_support);
+  context_support->SignalQuery(
+      query_id, base::BindOnce(on_query_done_lambda, std::move(ctx_wrapper),
+                               query_id, std::move(callback)));
+}
+
+#if BUILDFLAG(IS_WIN)
+void CopyToGpuMemoryBuffer(
+    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
+    media::VideoFrame* dst_frame,
+    base::OnceClosure callback) {
+  DCHECK(dst_frame->HasGpuMemoryBuffer());
+  DCHECK_EQ(dst_frame->GetGpuMemoryBuffer()->GetType(),
+            gfx::SHARED_MEMORY_BUFFER);
+
+  DCHECK(ctx_wrapper);
+  auto* context_provider = ctx_wrapper->ContextProvider();
+  DCHECK(context_provider);
+  auto* raster_context_provider = context_provider->RasterContextProvider();
+  DCHECK(raster_context_provider);
+  auto* ri = raster_context_provider->RasterInterface();
+  DCHECK(ri);
+
+  gpu::SyncToken blit_done_sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
+
+  auto* sii = context_provider->SharedImageInterface();
+  DCHECK(sii);
+
+  bool use_async_copy =
+      base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync) &&
+      dst_frame->shared_image_format_type() ==
+          media::SharedImageFormatType::kSharedImageFormat;
+
+  if (use_async_copy) {
+    auto copy_to_gmb_done_lambda = [](base::OnceClosure callback,
+                                      bool success) {
+      if (!success) {
+        DLOG(ERROR) << "CopyToGpuMemoryBufferAsync failed!";
+        base::debug::DumpWithoutCrashing();
+      }
+      std::move(callback).Run();
+    };
+
+    const auto& mailbox = dst_frame->mailbox_holder(0).mailbox;
+    sii->CopyToGpuMemoryBufferAsync(
+        blit_done_sync_token, mailbox,
+        base::BindOnce(std::move(copy_to_gmb_done_lambda),
+                       std::move(callback)));
+  } else {
+    for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
+      const auto& mailbox = dst_frame->mailbox_holder(plane).mailbox;
+      sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+    }
+  }
+
+  // Synchronize RasterInterface with SharedImageInterface.
+  auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
+  ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
+
+  // Make access to the `dst_frame` wait on copy completion. We also update the
+  // ReleaseSyncToken here since it's used when the underlying GpuMemoryBuffer
+  // and SharedImage resources are returned to the pool. This is not necessary
+  // since we'll set the empty sync token on the video frame on GPU completion.
+  // But if we ever refactor this code to have a "don't wait for GMB" mode, the
+  // correct sync token on the video frame will be needed.
+  gpu::SyncToken completion_sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
+  media::SimpleSyncTokenClient simple_client(completion_sync_token);
+  for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
+    dst_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
+  }
+  dst_frame->UpdateReleaseSyncToken(&simple_client);
+
+  // Do not use a query to track copy completion on Windows when using the new
+  // CopyToGpuMemoryBufferAsync API which performs an async copy that cannot be
+  // tracked using the command buffer.
+  if (!use_async_copy) {
+    // On Windows, shared memory CopyToGpuMemoryBuffer will do synchronization
+    // on its own. No need for GL_COMMANDS_COMPLETED_CHROMIUM QueryEXT.
+    SignalGpuCompletion(std::move(ctx_wrapper), GL_COMMANDS_ISSUED_CHROMIUM,
+                        std::move(callback));
+  }
+}
+#endif
+}  // namespace
+
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
@@ -167,68 +294,57 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
 
 #if BUILDFLAG(IS_WIN)
-  // CopyRGBATextureToVideoFrame below needs D3D shared images on Windows so
-  // early out before creating the GMB since it's going to fail anyway.
+  // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
   if (!context_provider->SharedImageInterface()
            ->GetCapabilities()
            .shared_image_d3d) {
+    DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
     return false;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
   auto dst_frame = pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
-  if (!dst_frame)
-    return false;
-
-  auto* ri = raster_context_provider->RasterInterface();
-  DCHECK(ri);
-  unsigned query_id = 0;
-  ri->GenQueriesEXT(1, &query_id);
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows, GMB data read will do synchronization on its own.
-  // No need for GL_COMMANDS_COMPLETED_CHROMIUM QueryEXT.
-  GLenum queryTarget = GL_COMMANDS_ISSUED_CHROMIUM;
-#else
-  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
-  // texture copy is complete before we access GMB data.
-  GLenum queryTarget = GL_COMMANDS_COMPLETED_CHROMIUM;
-#endif
-  ri->BeginQueryEXT(queryTarget, query_id);
-
-  const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
-      raster_context_provider, src_format, src_size, src_color_space,
-      src_surface_origin, src_mailbox_holder, dst_frame.get());
-  if (!copy_succeeded) {
-    ri->DeleteQueriesEXT(1, &query_id);
+  if (!dst_frame) {
     return false;
   }
 
-  ri->EndQueryEXT(queryTarget);
+  if (!media::CopyRGBATextureToVideoFrame(
+          raster_context_provider, src_format, src_size, src_color_space,
+          src_surface_origin, src_mailbox_holder, dst_frame.get())) {
+    return false;
+  }
 
-  auto on_query_done_cb =
-      [](scoped_refptr<media::VideoFrame> frame,
-         base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
-         unsigned query_id, int flow_id, FrameReadyCallback callback) {
-        if (ctx_wrapper) {
-          if (auto* ctx_provider = ctx_wrapper->ContextProvider()) {
-            if (auto* ri_provider = ctx_provider->RasterContextProvider()) {
-              auto* ri = ri_provider->RasterInterface();
-              ri->DeleteQueriesEXT(1, &query_id);
-            }
-          }
-        }
+  // VideoFrame::UpdateMailboxHolderSyncToken requires that the video frame have
+  // a single owner. So cache the pointer for later use after the std::move().
+  [[maybe_unused]] auto* dst_frame_ptr = dst_frame.get();
+  auto wrapped_callback = base::BindOnce(
+      [](scoped_refptr<media::VideoFrame> frame, FrameReadyCallback callback,
+         int flow_id) {
         TRACE_EVENT_INSTANT("media", "CopyRGBATextureToVideoFrame",
                             perfetto::TerminatingFlow::ProcessScoped(flow_id));
+        // We can just clear the sync token from the video frame now that we've
+        // synchronized with the GPU.
+        gpu::SyncToken empty_sync_token;
+        media::SimpleSyncTokenClient simple_client(empty_sync_token);
+        for (size_t plane = 0; plane < frame->NumTextures(); ++plane) {
+          frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
+        }
+        frame->UpdateReleaseSyncToken(&simple_client);
         std::move(callback).Run(std::move(frame));
-      };
+      },
+      std::move(dst_frame), std::move(callback), flow_id);
 
-  auto* context_support = raster_context_provider->ContextSupport();
-  DCHECK(context_support);
-  context_support->SignalQuery(
-      query_id,
-      base::BindOnce(on_query_done_cb, dst_frame, weak_context_provider_,
-                     query_id, flow_id, std::move(callback)));
+#if BUILDFLAG(IS_WIN)
+  // For shared memory GMBs on Windows we needed to explicitly request a copy
+  // from the shared image GPU texture to the GMB.
+  CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,
+                        std::move(wrapped_callback));
+#else
+  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
+  // texture copy is complete before we access GMB data.
+  SignalGpuCompletion(weak_context_provider_, GL_COMMANDS_COMPLETED_CHROMIUM,
+                      std::move(wrapped_callback));
+#endif
 
   return true;
 }
