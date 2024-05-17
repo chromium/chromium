@@ -734,6 +734,21 @@ void MediaDrmBridge::SetMediaCryptoReadyCB(
            IsSecureCodecRequired());
 }
 
+bool MediaDrmBridge::SetPropertyStringForTesting(
+    const std::string& property_name,
+    const std::string& property_value) {
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jstring> j_property_name_string =
+      ConvertUTF8ToJavaString(env, property_name);
+
+  ScopedJavaLocalRef<jstring> j_property_value_string =
+      ConvertUTF8ToJavaString(env, property_value);
+
+  return Java_MediaDrmBridge_setPropertyStringForTesting(  // IN-TEST
+      env, j_media_drm_, j_property_name_string, j_property_value_string);
+}
+
 //------------------------------------------------------------------------------
 // The following OnXxx functions are called from Java. The implementation must
 // only do minimal work and then post tasks to avoid reentrancy issues.

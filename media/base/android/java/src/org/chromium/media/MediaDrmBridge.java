@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -289,6 +290,9 @@ public class MediaDrmBridge {
         mMediaDrm.setOnEventListener(new EventListener());
         mMediaDrm.setOnExpirationUpdateListener(new ExpirationUpdateListener(), null);
         mMediaDrm.setOnKeyStatusChangeListener(new KeyStatusChangeListener(), null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mMediaDrm.setOnSessionLostStateListener(new SessionLostStateListener(), null);
+        }
 
         if (isWidevine()) {
             mMediaDrm.setPropertyString(PRIVACY_MODE, ENABLE);
@@ -1312,10 +1316,20 @@ public class MediaDrmBridge {
         }
     }
 
+    @CalledByNativeForTesting
+    private boolean setPropertyStringForTesting(String property, String value) {
+        try {
+            mMediaDrm.setPropertyString(property, value);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to set property %s", property, e);
+            return false;
+        }
+        return true;
+    }
+
     /**
-     * Start provisioning. Returns true if a provisioning request can be
-     * generated and has been forwarded to C++ code for handling, false
-     * otherwise.
+     * Start provisioning. Returns true if a provisioning request can be generated and has been
+     * forwarded to C++ code for handling, false otherwise.
      */
     private boolean startProvisioning() {
         Log.d(TAG, "startProvisioning");
@@ -1707,6 +1721,39 @@ public class MediaDrmBridge {
                     Log.w(TAG, "Ignoring MediaDrm event " + event);
                     break;
             }
+        }
+    }
+
+    // TODO(b/263310318): Add tests using setPropertyStringForTesting("drmErrorTest", "lostState")
+    // which triggers this onSessionLostState for ClearKey. Android's ClearKey is not currently used
+    // as we use AesDecryptor, so implement tests once we make the switch to Android's ClearKey.
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private class SessionLostStateListener implements MediaDrm.OnSessionLostStateListener {
+
+        @Override
+        public void onSessionLostState(MediaDrm md, byte[] drmSessionId) {
+            final SessionId sessionId = getSessionIdByDrmId(drmSessionId);
+
+            deferEventHandleIfNeeded(
+                    sessionId,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (sessionId == null) {
+                                Log.w(
+                                        TAG,
+                                        "SessionLost: Unknown session %s",
+                                        SessionId.toHexString(drmSessionId));
+                                return;
+                            }
+
+                            Log.d(TAG, "SessionLost: " + sessionId.toHexString());
+                            // TODO(crbug.com/40181810): Consider passing a reason for sessionClosed
+                            // that more closely
+                            // represents a lost state.
+                            onSessionClosed(sessionId);
+                        }
+                    });
         }
     }
 
