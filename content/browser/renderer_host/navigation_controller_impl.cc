@@ -1423,8 +1423,16 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // reaching here.
     CHECK(!is_same_document_navigation);
 
-    // TODO(crbug.com/340606786): Add a check to ensure `pending_entry_` isn't
-    // pointing to `entry_replaced_by_post_commit_error_`.
+    if (pending_entry_) {
+      // Before `entry_replaced_by_post_commit_error_` is moved back, make sure
+      // `pending_entry_` isn't pointing to the last committed entry.
+      // Instead, all reload approaches (e.g., in `Reload` and
+      // `LoadIfNecessary`) should attempt to load the
+      // `entry_replaced_by_post_commit_error_` instead of the post commit error
+      // entry itself.
+      CHECK_NE(pending_entry_, entries_[last_committed_entry_index_].get())
+          << "Incorrectly reloading the post commit error page entry.";
+    }
 
     // Any commit while a post-commit error page is showing should put the
     // original entry back, replacing the error page's entry.  This includes
