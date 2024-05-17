@@ -9,17 +9,16 @@ found in the LICENSE file.
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="96dp"
+  android:gravity="center_vertical"
   android:orientation="horizontal"
-  android:paddingHorizontal="16dp"
-  android:paddingVertical="8dp"
   tools:ignore="UnusedResources">
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/tab_group_start_icon"
     android:layout_width="80dp"
     android:layout_height="80dp"
-    android:background="@drawable/tab_group_start_icon_bg"
-    android:importantForAccessibility="no">
+    android:layout_marginStart="16dp"
+    android:background="@drawable/tab_group_start_icon_bg">
     <!-- Code will later adjust these to each occupy different corners. -->
     <include layout="@layout/tab_group_favicon_quarter" />
     <include layout="@layout/tab_group_favicon_quarter" />
@@ -82,7 +81,6 @@ found in the LICENSE file.
     android:id="@+id/more"
     android:layout_width="@dimen/min_touch_target_size"
     android:layout_height="match_parent"
-    android:layout_marginEnd="-16dp"
     android:background="@null"
     android:importantForAccessibility="no"
     android:src="@drawable/ic_more_vert_24dp"
