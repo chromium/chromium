@@ -22,11 +22,13 @@ inline constexpr auto kBlocklistedCategories =
          "/m/04shl0", "/m/01h6rj", "/m/05qt0", "/m/06gqm", "/m/09l0j_",
          "/m/01pxgq", "/m/0chbx", "/m/02c66t"});
 
+// For Android, this set should be consistent with sDefaultAppBlocklist in
+// TabResumptionModuleUtils.java.
 inline constexpr auto kDefaultAppBlocklist =
     base::MakeFixedFlatSet<std::string_view>(
-        {"mail.google.com", "m.youtube.com", "www.youtube.com",
-         "drive.google.com", "photos.google.com", "calendar.google.com",
-         "docs.google.com", "assistant.google.com", "music.youtube.com"});
+        {"assistant.google.com", "calendar.google.com", "docs.google.com",
+         "drive.google.com", "mail.google.com", "music.youtube.com",
+         "m.youtube.com", "photos.google.com", "www.youtube.com"});
 
 // Generates an identifier for the given URL leveraged for merging and
 // deduplication of similar URLs.

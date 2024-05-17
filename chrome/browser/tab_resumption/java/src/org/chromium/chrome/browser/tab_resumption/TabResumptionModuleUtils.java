@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Utilities for the tab resumption module. */
@@ -27,6 +28,23 @@ public class TabResumptionModuleUtils {
         // Called to switch to an existing Tab.
         void onSuggestionClickByTabId(int tabId);
     }
+
+    /**
+     * A set of the host URLs of default native apps on Android. This set should be keep consistent
+     * with kDefaultAppBlocklist in {@link
+     * components/visited_url_ranking/internal/url_visit_util.h}.
+     */
+    static final Set<String> sDefaultAppBlocklist =
+            Set.of(
+                    "assistant.google.com",
+                    "calendar.google.com",
+                    "docs.google.com",
+                    "drive.google.com",
+                    "mail.google.com",
+                    "music.youtube.com",
+                    "m.youtube.com",
+                    "photos.google.com",
+                    "www.youtube.com");
 
     private static final String TAB_RESUMPTION_V2_PARAM = "enable_v2";
     public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_V2 =
@@ -54,6 +72,14 @@ public class TabResumptionModuleUtils {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
                     TAB_RESUMPTION_SHOW_SEE_MORE_PARAM,
+                    false);
+
+    private static final String TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM =
+            "use_default_app_filter";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_USE_DEFAULT_APP_FILTER =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM,
                     false);
 
     /**
@@ -89,5 +115,16 @@ public class TabResumptionModuleUtils {
     static String getDomainUrl(GURL url) {
         String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
         return TextUtils.isEmpty(domainUrl) ? url.getHost() : domainUrl;
+    }
+
+    /**
+     * Returns whether to exclude the given URL. It returns true if the host of the URL matches one
+     * of the default native apps.
+     *
+     * @param url The URL of the suggestion.
+     */
+    static boolean shouldExcludeUrl(GURL url) {
+        return TabResumptionModuleUtils.TAB_RESUMPTION_USE_DEFAULT_APP_FILTER.getValue()
+                && sDefaultAppBlocklist.contains(url.getHost());
     }
 }

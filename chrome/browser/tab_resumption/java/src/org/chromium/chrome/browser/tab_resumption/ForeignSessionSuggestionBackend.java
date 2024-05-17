@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,10 +18,18 @@ import java.util.List;
 
 /** A SuggestionBackend backed by ForeignSessionHelper. */
 public class ForeignSessionSuggestionBackend implements SuggestionBackend {
-    private final ForeignSessionHelper mForeignSessionHelper;
+    // The delegate to wrap the logic whether to exclude a suggestion based on its URL.
+    interface UrlFilteringDelegate {
+        boolean shouldExcludeUrl(GURL url);
+    }
 
-    public ForeignSessionSuggestionBackend(ForeignSessionHelper foreignSessionHelper) {
+    private final ForeignSessionHelper mForeignSessionHelper;
+    private final UrlFilteringDelegate mUrlFilteringDelegate;
+
+    public ForeignSessionSuggestionBackend(
+            ForeignSessionHelper foreignSessionHelper, UrlFilteringDelegate urlFilteringDelegate) {
         mForeignSessionHelper = foreignSessionHelper;
+        mUrlFilteringDelegate = urlFilteringDelegate;
     }
 
     /** Implements {@link SuggestionBackend} */
@@ -75,6 +84,8 @@ public class ForeignSessionSuggestionBackend implements SuggestionBackend {
 
     private boolean isForeignSessionTabUsable(ForeignSessionTab tab) {
         String scheme = tab.url.getScheme();
-        return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
+
+        return (scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME))
+                && !mUrlFilteringDelegate.shouldExcludeUrl(tab.url);
     }
 }
