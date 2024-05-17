@@ -302,7 +302,9 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   // that navigated to |target_url| in the main browser window.
   void TestAppActionOpensForegroundTab(base::OnceClosure action,
                                        const GURL& target_url) {
-    ASSERT_EQ(app_browser_, chrome::FindLastActive());
+    ui_test_utils::WaitUntilBrowserBecomeActive(app_browser_);
+    ASSERT_TRUE(ui_test_utils::IsBrowserActive(app_browser_));
+    ASSERT_FALSE(ui_test_utils::IsBrowserActive(browser()));
 
     size_t num_browsers = chrome::GetBrowserCount(profile());
     int num_tabs = browser()->tab_strip_model()->count();
@@ -311,11 +313,12 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
 
     ASSERT_NO_FATAL_FAILURE(std::move(action).Run());
 
-    // Wait until the main browser set to be the last active one.
-    ui_test_utils::WaitForBrowserSetLastActive(browser());
+    // Wait until the main browser becomes active.
+    ui_test_utils::WaitUntilBrowserBecomeActive(browser());
 
     EXPECT_EQ(num_browsers, chrome::GetBrowserCount(profile()));
-    EXPECT_EQ(browser(), chrome::FindLastActive());
+    EXPECT_TRUE(ui_test_utils::IsBrowserActive(browser()));
+    EXPECT_FALSE(ui_test_utils::IsBrowserActive(app_browser_));
     EXPECT_EQ(++num_tabs, browser()->tab_strip_model()->count());
 
     content::WebContents* new_tab =
@@ -383,20 +386,14 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
 // TODO(crbug.com/40755999): Flaky on Linux and LACROS..
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
 #else
 #define MAYBE_CtrlClickLink CtrlClickLink
 #endif
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/326134178): Disable the flaky test variant on branded Lacros builder
-  // (ci/linux-lacros-chrome) until the root cause of b/325634285 is fixed.
-  if (GetParam() == AppType::HOSTED_APP) {
-    GTEST_SKIP()
-        << "Disable the flaky test for hosted app on Lacros branded build.";
-  }
-#endif
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  EXPECT_TRUE(ui_test_utils::IsBrowserActive(browser()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -408,8 +405,10 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
   // Wait for the URL to load so that we can click on the page.
   url_observer.Wait();
 
-  // Wait until app_browser_ becomes the last active one.
-  ui_test_utils::WaitForBrowserSetLastActive(app_browser_);
+  // Wait until app_browser_ becomes active.
+  ui_test_utils::WaitUntilBrowserBecomeActive(app_browser_);
+  EXPECT_TRUE(ui_test_utils::IsBrowserActive(app_browser_));
+  EXPECT_FALSE(ui_test_utils::IsBrowserActive(browser()));
 
   const GURL url = embedded_test_server()->GetURL(
       "app.com", "/click_modifier/new_window.html");
