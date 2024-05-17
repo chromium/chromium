@@ -56,6 +56,9 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
     }
 
     void onOmniboxSessionStateChange(boolean active) {
+        // Ensure that we always start from the same, known initial state, even when we're starting
+        // for the first time.
+        mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
         if (active) {
             InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
             insetObserver.addWindowInsetsAnimationListener(this);

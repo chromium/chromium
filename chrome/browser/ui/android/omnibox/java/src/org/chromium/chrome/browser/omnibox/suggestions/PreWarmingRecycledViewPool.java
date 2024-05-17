@@ -108,7 +108,8 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
             for (int index = 0; index < viewTypeAndCount.count; ++index) {
                 Runnable createViewRunnable = () -> createViewHolder(viewTypeAndCount.viewType);
                 final long delay = STEP_MILLIS * (index + 1);
-                mHandler.ifPresentOrElse(h -> h.postDelayed(createViewRunnable, delay), createViewRunnable);
+                mHandler.ifPresentOrElse(
+                        h -> h.postDelayed(createViewRunnable, delay), createViewRunnable);
             }
         }
 
