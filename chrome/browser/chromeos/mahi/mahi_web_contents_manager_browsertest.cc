@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -48,6 +49,11 @@
 namespace mahi {
 
 namespace {
+
+using chromeos::mahi::ButtonType;
+using chromeos::mahi::kMahiContentExtractionTriggeringLatency;
+using chromeos::mahi::kMahiContextMenuActivated;
+using chromeos::mahi::kMahiContextMenuActivatedFailed;
 
 // Fake context menu click action.
 constexpr int64_t kDisplayID = 1;

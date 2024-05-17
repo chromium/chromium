@@ -159,6 +159,8 @@ bool SparkyManagerImpl::IsEnabled() {
              ash::prefs::kMahiEnabled);
 }
 
+void SparkyManagerImpl::SetMediaAppPDFFocused() {}
+
 void SparkyManagerImpl::NotifyRefreshAvailability(bool available) {
   if (ui_controller_.IsMahiPanelOpen()) {
     ui_controller_.NotifyRefreshAvailabilityChanged(available);

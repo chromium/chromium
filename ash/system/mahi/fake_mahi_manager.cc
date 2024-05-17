@@ -125,4 +125,6 @@ bool FakeMahiManager::IsEnabled() {
   return true;
 }
 
+void FakeMahiManager::SetMediaAppPDFFocused() {}
+
 }  // namespace ash

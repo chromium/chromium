@@ -504,6 +504,8 @@ static_library("test_support") {
     "mahi/test/fake_mahi_web_contents_manager.h",
     "mahi/test/mock_mahi_crosapi.cc",
     "mahi/test/mock_mahi_crosapi.h",
+    "mahi/test/mock_mahi_media_app_events_proxy.cc",
+    "mahi/test/mock_mahi_media_app_events_proxy.h",
     "mahi/test/mock_mahi_web_contents_manager.cc",
     "mahi/test/mock_mahi_web_contents_manager.h",
     "mahi/test/scoped_mahi_web_contents_manager_for_testing.cc",
@@ -544,6 +546,7 @@ static_library("test_support") {
 
   deps = [
     "//chrome/browser/enterprise/data_controls",
+    "//chromeos/components/mahi/public/cpp:cpp",
     "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/reporting/client:test_support",
   ]

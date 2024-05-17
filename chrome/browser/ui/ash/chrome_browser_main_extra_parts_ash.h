@@ -12,6 +12,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 
 namespace ash {
 class ArcWindowWatcher;
@@ -23,6 +24,8 @@ class VideoConferenceTrayController;
 
 namespace chromeos {
 class MahiManager;
+class MahiMediaAppEventsProxy;
+class MahiMediaAppContentManager;
 class ReadWriteCardsManager;
 }  // namespace chromeos
 
@@ -146,6 +149,10 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<enterprise_connectors::AshAttestationCleanupManager>
       attestation_cleanup_manager_;
   std::unique_ptr<chromeos::MahiManager> mahi_manager_;
+  std::unique_ptr<chromeos::MahiMediaAppEventsProxy>
+      mahi_media_app_events_proxy_;
+  std::unique_ptr<chromeos::MahiMediaAppContentManager>
+      mahi_media_app_content_manager_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

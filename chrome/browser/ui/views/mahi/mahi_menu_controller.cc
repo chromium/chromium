@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
@@ -23,16 +24,27 @@ namespace chromeos::mahi {
 
 MahiMenuController::MahiMenuController(
     ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : read_write_cards_ui_controller_(read_write_cards_ui_controller) {}
+    : read_write_cards_ui_controller_(read_write_cards_ui_controller) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // MahiMediaAppEventsProxy is initialized only in ash chrome.
+  CHECK(chromeos::MahiMediaAppEventsProxy::Get());
+  chromeos::MahiMediaAppEventsProxy::Get()->AddObserver(this);
+#endif
+}
 
-MahiMenuController::~MahiMenuController() = default;
+MahiMenuController::~MahiMenuController() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(chromeos::MahiMediaAppEventsProxy::Get());
+  chromeos::MahiMediaAppEventsProxy::Get()->RemoveObserver(this);
+#endif
+}
 
 void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-  if (!chromeos::MahiManager::Get()->IsSupportedWithCorrectFeatureKey() ||
+  if (!chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() ||
       !::mahi::MahiWebContentsManager::Get()->GetPrefValue()) {
     return;
   }
@@ -89,6 +101,21 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
   }
 
   read_write_cards_ui_controller_->RemoveMahiUi();
+}
+
+void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor_bounds) {
+  if (!chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() ||
+      !::mahi::MahiWebContentsManager::Get()->GetPrefValue()) {
+    return;
+  }
+
+  menu_widget_ = MahiMenuView::CreateWidget(anchor_bounds,
+                                            MahiMenuView::Surface::kMediaApp);
+  menu_widget_->ShowInactive();
+}
+
+void MahiMenuController::OnPdfContextMenuHide() {
+  OnDismiss(false);
 }
 
 base::WeakPtr<MahiMenuController> MahiMenuController::GetWeakPtr() {

@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -39,7 +40,7 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
   MOCK_METHOD(void,
               OnContextMenuClicked,
               (int64_t display_id,
-               ::mahi::ButtonType button_type,
+               ::chromeos::mahi::ButtonType button_type,
                const std::u16string& question),
               (override));
 };
@@ -66,7 +67,7 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
           Eq(display::Screen::GetScreen()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
-          Eq(::mahi::ButtonType::kSummary), /*question=*/Eq(u"")))
+          Eq(::chromeos::mahi::ButtonType::kSummary), /*question=*/Eq(u"")))
       .Times(1);
 
   ui::test::EventGenerator event_generator(GetContext(),

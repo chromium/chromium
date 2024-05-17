@@ -12,8 +12,14 @@ component("cpp") {
   sources = [
     "mahi_manager.cc",
     "mahi_manager.h",
+    "mahi_media_app_content_manager.cc",
+    "mahi_media_app_content_manager.h",
+    "mahi_media_app_events_proxy.cc",
+    "mahi_media_app_events_proxy.h",
     "mahi_switches.cc",
     "mahi_switches.h",
+    "mahi_util.cc",
+    "mahi_util.h",
     "views/experiment_badge.cc",
     "views/experiment_badge.h",
   ]

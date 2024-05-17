@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -95,7 +96,7 @@ class MahiCondensedMenuButton : public views::LabelButton {
         display::Screen::GetScreen()
             ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
             .id(),
-        /*button_type=*/::mahi::ButtonType::kSummary,
+        /*button_type=*/::chromeos::mahi::ButtonType::kSummary,
         /*question=*/std::u16string());
 
     base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,

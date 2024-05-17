@@ -9,18 +9,6 @@
 #include "url/gurl.h"
 
 namespace mahi {
-ActionType MatchButtonTypeToActionType(const ButtonType button_type) {
-  switch (button_type) {
-    case ButtonType::kSummary:
-      return ActionType::kSummary;
-    case ButtonType::kOutline:
-      return ActionType::kOutline;
-    case ButtonType::kSettings:
-      return ActionType::kSettings;
-    case ButtonType::kQA:
-      return ActionType::kQA;
-  }
-}
 
 WebContentState::WebContentState(const WebContentState& state) = default;
 

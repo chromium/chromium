@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -178,8 +179,9 @@ void MahiContentExtractionDelegate::OnGetContentSize(
     const base::UnguessableToken& page_id,
     const base::Time& start_time,
     mojom::ContentSizeResponsePtr response) {
-  base::UmaHistogramMicrosecondsTimes(kMahiContentExtractionTriggeringLatency,
-                                      base::Time::Now() - start_time);
+  base::UmaHistogramMicrosecondsTimes(
+      chromeos::mahi::kMahiContentExtractionTriggeringLatency,
+      base::Time::Now() - start_time);
   distillable_check_callback_.Run(page_id,
                                   response->word_count >= kWordCountThreshold);
 }

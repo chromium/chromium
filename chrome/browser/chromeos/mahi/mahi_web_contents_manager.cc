@@ -23,6 +23,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,6 +42,7 @@ namespace mahi {
 
 namespace {
 MahiWebContentsManager* g_mahi_web_content_manager_for_testing = nullptr;
+using chromeos::mahi::ButtonType;
 }
 
 // static
@@ -144,7 +146,8 @@ void MahiWebContentsManager::OnContextMenuClicked(
   client_->OnContextMenuClicked(display_id, button_type, question);
 
   // Records the `button_type` has been clicked.
-  base::UmaHistogramEnumeration(kMahiContextMenuActivated, button_type);
+  base::UmaHistogramEnumeration(chromeos::mahi::kMahiContextMenuActivated,
+                                button_type);
 }
 
 bool MahiWebContentsManager::IsFocusedPageDistillable() {

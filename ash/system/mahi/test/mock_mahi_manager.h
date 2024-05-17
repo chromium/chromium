@@ -44,6 +44,7 @@ class MockMahiManager : public chromeos::MahiManager {
               (crosapi::mojom::MahiPageInfoPtr),
               (override));
   MOCK_METHOD(bool, IsEnabled, (), (override));
+  MOCK_METHOD(void, SetMediaAppPDFFocused, (), (override));
 };
 
 }  // namespace ash

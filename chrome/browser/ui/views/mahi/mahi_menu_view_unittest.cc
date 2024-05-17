@@ -44,7 +44,7 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
   MOCK_METHOD(void,
               OnContextMenuClicked,
               (int64_t display_id,
-               ::mahi::ButtonType button_type,
+               ::chromeos::mahi::ButtonType button_type,
                const std::u16string& question),
               (override));
 };
@@ -101,7 +101,7 @@ TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
           Eq(display::Screen::GetScreen()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
-          Eq(::mahi::ButtonType::kSettings), /*question=*/Eq(u"")))
+          Eq(::chromeos::mahi::ButtonType::kSettings), /*question=*/Eq(u"")))
       .Times(1);
 
   ui::test::EventGenerator event_generator(
@@ -139,14 +139,15 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
   EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked)
-      .WillOnce([&run_loop, &menu_widget](int64_t display_id,
-                                          ::mahi::ButtonType button_type,
-                                          const std::u16string& question) {
+      .WillOnce([&run_loop, &menu_widget](
+                    int64_t display_id,
+                    ::chromeos::mahi::ButtonType button_type,
+                    const std::u16string& question) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
-        EXPECT_EQ(::mahi::ButtonType::kSummary, button_type);
+        EXPECT_EQ(::chromeos::mahi::ButtonType::kSummary, button_type);
         EXPECT_EQ(std::u16string(), question);
         run_loop.Quit();
       });
@@ -195,14 +196,15 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
   EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked)
-      .WillOnce([&run_loop, &menu_widget](int64_t display_id,
-                                          ::mahi::ButtonType button_type,
-                                          const std::u16string& question) {
+      .WillOnce([&run_loop, &menu_widget](
+                    int64_t display_id,
+                    ::chromeos::mahi::ButtonType button_type,
+                    const std::u16string& question) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
-        EXPECT_EQ(::mahi::ButtonType::kOutline, button_type);
+        EXPECT_EQ(::chromeos::mahi::ButtonType::kOutline, button_type);
         EXPECT_EQ(std::u16string(), question);
         run_loop.Quit();
       });
@@ -270,14 +272,15 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
   EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked)
-      .WillOnce([&run_loop, &menu_widget](int64_t display_id,
-                                          ::mahi::ButtonType button_type,
-                                          const std::u16string& question) {
+      .WillOnce([&run_loop, &menu_widget](
+                    int64_t display_id,
+                    ::chromeos::mahi::ButtonType button_type,
+                    const std::u16string& question) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
                   display_id);
-        EXPECT_EQ(::mahi::ButtonType::kQA, button_type);
+        EXPECT_EQ(::chromeos::mahi::ButtonType::kQA, button_type);
         EXPECT_EQ(u"test", question);
         run_loop.Quit();
       });

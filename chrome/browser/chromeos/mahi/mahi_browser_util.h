@@ -8,34 +8,12 @@
 #include <optional>
 #include <string>
 
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace mahi {
-
-using ActionType = crosapi::mojom::MahiContextMenuActionType;
-
-// Metrics:
-inline constexpr char kMahiContentExtractionTriggeringLatency[] =
-    "ChromeOS.Mahi.ContentExtraction.TriggeringLatency";
-inline constexpr char kMahiContextMenuActivated[] =
-    "ChromeOS.Mahi.ContextMenuView.Activated";
-inline constexpr char kMahiContextMenuActivatedFailed[] =
-    "ChromeOS.Mahi.ContextMenuView.ActivatedFailed";
-
-// Contains the types of button existed in Mahi Menu.
-enum class ButtonType {
-  kSummary = 0,
-  kOutline = 1,
-  kSettings = 2,
-  kQA = 3,
-  kMaxValue = kQA,
-};
-
-ActionType MatchButtonTypeToActionType(const ButtonType button_type);
 
 // State struct to keep the information of a web content.
 struct WebContentState {

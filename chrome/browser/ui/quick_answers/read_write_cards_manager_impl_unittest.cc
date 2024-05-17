@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chromeos/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -18,6 +19,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/context_menu_params.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
@@ -76,6 +78,11 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
  protected:
   std::unique_ptr<ReadWriteCardsManagerImpl> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
+  testing::NiceMock<::mahi::MockMahiMediaAppEventsProxy>
+      mock_mahi_media_app_events_proxy_;
+  chromeos::ScopedMahiMediaAppEventsProxySetter
+      scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 };
 
 INSTANTIATE_TEST_SUITE_P(, ReadWriteCardsManagerImplTest, testing::Bool());

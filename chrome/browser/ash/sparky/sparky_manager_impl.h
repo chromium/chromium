@@ -44,6 +44,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
   bool IsEnabled() override;
+  void SetMediaAppPDFFocused() override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.

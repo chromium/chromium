@@ -34,6 +34,8 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
+#include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
+#include "chrome/browser/ash/mahi/media_app/mahi_media_app_events_proxy_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -335,6 +337,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   ui::HeatmapPalmDetector::SetInstance(
       std::make_unique<ash::HeatmapPalmDetectorImpl>());
 
+  // Required by `read_write_cards_manager_` and
+  // `mahi_media_app_content_manager_`.
+  mahi_media_app_events_proxy_ =
+      std::make_unique<ash::MahiMediaAppEventsProxyImpl>();
+
+  mahi_media_app_content_manager_ =
+      std::make_unique<ash::MahiMediaAppContentManagerImpl>();
+
   read_write_cards_manager_ =
       std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 }
@@ -480,6 +490,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();
   read_write_cards_manager_.reset();
+
+  mahi_media_app_content_manager_.reset();
+  mahi_media_app_events_proxy_.reset();
 
   ambient_client_.reset();
 

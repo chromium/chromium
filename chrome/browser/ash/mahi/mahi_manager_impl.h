@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -46,6 +47,7 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
   bool IsEnabled() override;
+  void SetMediaAppPDFFocused() override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.
@@ -104,6 +106,10 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   chromeos::MahiResponseStatus latest_response_status_;
 
   MahiUiController ui_controller_;
+
+  // If true, tries to get content from MediaAppContentManager instead.
+  bool media_app_pdf_focused_ = false;
+  base::UnguessableToken media_app_client_id_;
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_{this};
 };

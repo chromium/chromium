@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -22,7 +23,8 @@ class ReadWriteCardsUiController;
 namespace mahi {
 // Controller that manages the mahi menu related views.
 // TODO(b/319256809): Rename this class to something less misleading.
-class MahiMenuController : public chromeos::ReadWriteCardController {
+class MahiMenuController : public chromeos::ReadWriteCardController,
+                           public chromeos::MahiMediaAppEventsProxy::Observer {
  public:
   explicit MahiMenuController(
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
@@ -37,6 +39,10 @@ class MahiMenuController : public chromeos::ReadWriteCardController {
                        const std::string& surrounding_text) override;
   void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
   void OnDismiss(bool is_other_command_executed) override;
+
+  // chromeos::MahiMediaAppEvnetsProxy::Observer
+  void OnPdfContextMenuShown(const gfx::Rect& anchor_bounds) override;
+  void OnPdfContextMenuHide() override;
 
   views::Widget* menu_widget_for_test() { return menu_widget_.get(); }
   base::WeakPtr<MahiMenuController> GetWeakPtr();

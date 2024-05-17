@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -29,6 +30,8 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
@@ -124,10 +127,18 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   MaybeInitialize();
 
   current_panel_url_ = current_page_info_->url;
-  GetMahiBrowserDelgateAsh()->GetContentFromClient(
-      current_page_info_->client_id, current_page_info_->page_id,
+  auto get_content_done_callback =
       base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  if (media_app_pdf_focused_) {
+    chromeos::MahiMediaAppContentManager::Get()->GetContent(
+        media_app_client_id_, std::move(get_content_done_callback));
+  } else {
+    GetMahiBrowserDelgateAsh()->GetContentFromClient(
+        current_page_info_->client_id, current_page_info_->page_id,
+        std::move(get_content_done_callback));
+  }
 }
 
 void MahiManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
@@ -157,11 +168,17 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
   }
 
   current_panel_url_ = current_page_info_->url;
-  GetMahiBrowserDelgateAsh()->GetContentFromClient(
-      current_page_info_->client_id, current_page_info_->page_id,
-      base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
-                     weak_ptr_factory_.GetWeakPtr(), question,
-                     std::move(callback)));
+  auto get_content_done_callback = base::BindOnce(
+      &MahiManagerImpl::OnGetPageContentForQA, weak_ptr_factory_.GetWeakPtr(),
+      question, std::move(callback));
+  if (media_app_pdf_focused_) {
+    chromeos::MahiMediaAppContentManager::Get()->GetContent(
+        media_app_client_id_, std::move(get_content_done_callback));
+  } else {
+    GetMahiBrowserDelgateAsh()->GetContentFromClient(
+        current_page_info_->client_id, current_page_info_->page_id,
+        std::move(get_content_done_callback));
+  }
 }
 
 void MahiManagerImpl::GetSuggestedQuestion(
@@ -172,6 +189,7 @@ void MahiManagerImpl::GetSuggestedQuestion(
 
 void MahiManagerImpl::SetCurrentFocusedPageInfo(
     crosapi::mojom::MahiPageInfoPtr info) {
+  media_app_pdf_focused_ = false;
   // TODO(b/318565610): consider adding default icon when there is no icon
   // available.
   current_page_info_ = std::move(info);
@@ -258,6 +276,29 @@ bool MahiManagerImpl::IsEnabled() {
   return IsSupportedWithCorrectFeatureKey() &&
          Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
              ash::prefs::kMahiEnabled);
+}
+
+void MahiManagerImpl::SetMediaAppPDFFocused() {
+  chromeos::MahiMediaAppContentManager* media_app_content_manager =
+      chromeos::MahiMediaAppContentManager::Get();
+  CHECK(media_app_content_manager);
+
+  media_app_client_id_ = media_app_content_manager->active_client_id();
+  media_app_pdf_focused_ = true;
+
+  // Fits the media app page info into a MahiPageInfoPtr.
+  // crosapi::mojom::MahiPageInfoPtr media_app_pdf_info =
+  current_page_info_ = crosapi::mojom::MahiPageInfo::New(
+      media_app_client_id_,
+      /*page_id=*/media_app_client_id_,
+      GURL{media_app_content_manager->GetFileName(media_app_client_id_)},
+      /*title=*/media_app_content_manager->GetFileName(media_app_client_id_),
+      gfx::ImageSkia(),
+      /*distillable=*/true);
+
+  const bool availability =
+      !current_panel_url_.EqualsIgnoringRef(current_page_info_->url);
+  NotifyRefreshAvailability(/*available=*/availability);
 }
 
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {

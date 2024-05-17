@@ -59,7 +59,7 @@ class MahiWebContentsManager {
   // `question` is used only if `ButtonType` is kQA.
   // Virtual so we can override in tests.
   virtual void OnContextMenuClicked(int64_t display_id,
-                                    ButtonType button_type,
+                                    chromeos::mahi::ButtonType button_type,
                                     const std::u16string& question);
 
   // Returns boolean to indicate if the current focused page is distillable. The

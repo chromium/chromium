@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -120,24 +121,25 @@ void MahiBrowserClientImpl::OnFocusedPageChanged(
 
 void MahiBrowserClientImpl::OnContextMenuClicked(
     int64_t display_id,
-    ButtonType button_type,
+    chromeos::mahi::ButtonType button_type,
     const std::u16string& question) {
   // Generates the context menu request.
   crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
       crosapi::mojom::MahiContextMenuRequest::New(
           /*display_id=*/display_id,
-          /*action_type=*/MatchButtonTypeToActionType(button_type),
+          /*action_type=*/
+          chromeos::mahi::MatchButtonTypeToActionType(button_type),
           /*question=*/std::nullopt);
-  if (button_type == ButtonType::kQA) {
+  if (button_type == chromeos::mahi::ButtonType::kQA) {
     context_menu_request->question = question;
   }
 
   auto callback = base::BindOnce(
-      [](ButtonType button_type, bool success) {
+      [](chromeos::mahi::ButtonType button_type, bool success) {
         if (!success) {
           // Records the `button_type` clicking did not succeed.
-          base::UmaHistogramEnumeration(kMahiContextMenuActivatedFailed,
-                                        button_type);
+          base::UmaHistogramEnumeration(
+              chromeos::mahi::kMahiContextMenuActivatedFailed, button_type);
           LOG(ERROR) << "MahiBrowser::OnContextMenuClicked did not succeed.";
         }
       },

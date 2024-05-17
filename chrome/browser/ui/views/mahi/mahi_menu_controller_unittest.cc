@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +33,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "chrome/browser/chromeos/mahi/test/mock_mahi_media_app_events_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos::mahi {
@@ -79,6 +81,13 @@ class MahiMenuControllerTest : public ChromeViewsTestBase,
 
   ~MahiMenuControllerTest() override = default;
 
+  void TearDown() override {
+    // Manually reset `menu_controller_` here because it requires the existence
+    // of `mock_mahi_media_app_events_proxy_` to destroy.
+    menu_controller_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
   MahiMenuController* menu_controller() { return menu_controller_.get(); }
 
   MockMagicBoostController& mock_magic_boost_controller() {
@@ -103,6 +112,11 @@ class MahiMenuControllerTest : public ChromeViewsTestBase,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::AutoReset<bool> ignore_mahi_secret_key_ =
       ash::switches::SetIgnoreMahiSecretKeyForTest();
+  // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
+  testing::NiceMock<::mahi::MockMahiMediaAppEventsProxy>
+      mock_mahi_media_app_events_proxy_;
+  chromeos::ScopedMahiMediaAppEventsProxySetter
+      scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<MahiMenuController> menu_controller_;
@@ -345,6 +359,11 @@ class MahiMenuControllerFeatureKeyTest : public ChromeViewsTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+  // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
+  testing::NiceMock<::mahi::MockMahiMediaAppEventsProxy>
+      mock_mahi_media_app_events_proxy_;
+  chromeos::ScopedMahiMediaAppEventsProxySetter
+      scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 };
 
 TEST_F(MahiMenuControllerFeatureKeyTest, DoesNotShowWidgetIfFeatureKeyIsWrong) {

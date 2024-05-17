@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -26,7 +27,14 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   METADATA_HEADER(MahiMenuView, chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  MahiMenuView();
+  // Enum that indicates where the Mahi Menu is shown. Different surfaces have
+  // different ways of providing content.
+  enum class Surface {
+    kBrowser,
+    kMediaApp,
+  };
+
+  explicit MahiMenuView(Surface surface = Surface::kBrowser);
   MahiMenuView(const MahiMenuView&) = delete;
   MahiMenuView& operator=(const MahiMenuView&) = delete;
   ~MahiMenuView() override;
@@ -34,7 +42,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // Creates a menu widget that contains a `MahiMenuView`, configured with the
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds);
+      const gfx::Rect& anchor_view_bounds,
+      const Surface surface = Surface::kBrowser);
 
   // Returns the host widget's name.
   static const char* GetWidgetName();
@@ -49,7 +58,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   class MenuTextfieldController;
 
   // Buttons callback.
-  void OnButtonPressed(::mahi::ButtonType button_type);
+  void OnButtonPressed(::chromeos::mahi::ButtonType button_type);
 
   // Texfield callback.
   void OnQuestionSubmitted();
@@ -67,6 +76,10 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   raw_ptr<views::LabelButton> outline_button_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> submit_question_button_ = nullptr;
+
+  // Where the mahi menu widget is shown, currently it could be the browser (web
+  // pages) or the media app (pdf files).
+  const Surface surface_;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };
