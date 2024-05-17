@@ -193,5 +193,62 @@ TEST(InputMethodUserDataServiceTest, AddJapaneseDictionaryEntryOnError) {
   EXPECT_EQ(config_future.Get(), expected);
 }
 
+TEST(InputMethodUserDataServiceTest, EditJapaneseDictionaryEntryOnSuccess) {
+  chromeos_input::UserDataRequest request_pb;
+  chromeos_input::EditJapaneseDictionaryEntryRequest& edit_request =
+      *request_pb.mutable_edit_japanese_dictionary_entry();
+  edit_request.set_dictionary_id(999);
+  edit_request.set_entry_index(1);
+  edit_request.mutable_entry()->set_key("key");
+  edit_request.mutable_entry()->set_value("value");
+  edit_request.mutable_entry()->set_comment("comment");
+  edit_request.mutable_entry()->set_pos(JapaneseDictionary::FIRST_NAME);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  mojom::JapaneseDictionaryEntryPtr entry = mojom::JapaneseDictionaryEntry::New(
+      /*key=*/"key", /*value=*/"value", /*pos=*/mojom::JpPosType::kFirstName,
+      /*comment=*/"comment");
+  service.EditJapaneseDictionaryEntry(/*dict_id=*/999, /*entry_index=*/1,
+                                      std::move(entry),
+                                      config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, EditJapaneseDictionaryEntryOnError) {
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(false);
+  response_pb.mutable_status()->set_reason("Unknown Error");
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest)
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  mojom::JapaneseDictionaryEntryPtr entry = mojom::JapaneseDictionaryEntry::New(
+      /*key=*/"key", /*value=*/"value", /*pos=*/mojom::JpPosType::kFirstName,
+      /*comment=*/"comment");
+  service.EditJapaneseDictionaryEntry(/*dict_id=*/999, /*entry_index=*/1,
+                                      std::move(entry),
+                                      config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = false;
+  expected->reason = "Unknown Error";
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
 }  // namespace
 }  // namespace ash::ime

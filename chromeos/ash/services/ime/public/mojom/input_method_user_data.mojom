@@ -35,4 +35,9 @@ interface InputMethodUserDataService {
   // Adds an entry into the Japanese dictionary specified by the dict_id.
   AddJapaneseDictionaryEntry(uint64 dict_id, JapaneseDictionaryEntry entry)
       => (Status status);
+
+  // Edits an entry in the Japanese dictionary specified by the dict_id.
+  EditJapaneseDictionaryEntry(
+      uint64 dict_id, uint32 entry_index, JapaneseDictionaryEntry entry)
+      => (Status status);
 };
