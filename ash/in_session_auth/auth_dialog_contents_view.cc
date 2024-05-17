@@ -618,8 +618,8 @@ void AuthDialogContentsView::AddActionButtonsView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CANCEL)));
 
-  action_view_container_->SetPreferredSize(
-      gfx::Size(kContainerPreferredWidth, cancel_button_->height()));
+  action_view_container_->SetPreferredSize(gfx::Size(
+      kContainerPreferredWidth, cancel_button_->GetPreferredSize().height()));
 }
 
 void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
