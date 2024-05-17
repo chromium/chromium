@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/transform_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
@@ -140,6 +141,15 @@ enum class DocumentUpdateReason;
 struct FocusParams;
 
 using ScrollOffset = gfx::Vector2dF;
+
+struct AttributeToNameTransform {
+  String operator()(const Attribute& attr) const {
+    return attr.GetName().ToString();
+  }
+};
+
+using AttributeNamesView =
+    bindings::TransformedView<AttributeCollection, AttributeToNameTransform>;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -602,7 +612,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // For exposing to DOM only.
   NamedNodeMap* attributesForBindings() const;
-  Vector<AtomicString> getAttributeNames() const;
+  AttributeNamesView getAttributeNames() const;
 
   enum class AttributeModificationReason {
     kDirectly,

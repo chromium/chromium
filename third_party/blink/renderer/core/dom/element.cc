@@ -1164,18 +1164,8 @@ NamedNodeMap* Element::attributesForBindings() const {
   return rare_data.AttributeMap();
 }
 
-Vector<AtomicString> Element::getAttributeNames() const {
-  Vector<AtomicString> attributesVector;
-  if (!hasAttributes()) {
-    return attributesVector;
-  }
-
-  AttributeCollection attributes = element_data_->Attributes();
-  attributesVector.ReserveInitialCapacity(attributes.size());
-  for (const Attribute& attr : attributes) {
-    attributesVector.UncheckedAppend(attr.GetName().ToString());
-  }
-  return attributesVector;
+AttributeNamesView Element::getAttributeNames() const {
+  return bindings::Transform<AttributeToNameTransform>(Attributes());
 }
 
 inline ElementRareDataVector* Element::GetElementRareData() const {
