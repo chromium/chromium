@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_image_service;
 
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -106,7 +107,22 @@ public final class ImageServiceBridgeUnitTest {
     @Test
     @SmallTest
     public void testClear() {
+        mImageServiceBridge.fetchImageUrlFor(/* isAccountData= */ true, PAGE_URL, mUrlCallback);
+
+        verify(mImageServiceBridgeJni)
+                .fetchImageUrlFor(
+                        anyLong(),
+                        eq(true),
+                        eq(CLIENT_ID),
+                        eq(PAGE_URL),
+                        mUrlCallbackCaptor.capture());
+        mUrlCallbackCaptor.getValue().onResult(SALIENT_IMAGE_URL);
+        assertFalse(mImageServiceBridge.isUrlCacheEmptyForTesting());
+
+        // Verifies that cleaning up the bridge deletes the cache of the image fetcher, but doesn't
+        // delete the cache of salient image URLs.
         mImageServiceBridge.clear();
         verify(mImageFetcher).clear();
+        assertFalse(mImageServiceBridge.isUrlCacheEmptyForTesting());
     }
 }

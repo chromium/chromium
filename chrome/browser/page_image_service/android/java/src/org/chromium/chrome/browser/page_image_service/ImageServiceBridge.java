@@ -60,7 +60,6 @@ public class ImageServiceBridge {
 
     /** Cleanup any cached bitmap or URLs in memory. */
     public void clear() {
-        mSalientImageUrlCache.clear();
         mImageFetcher.clear();
     }
 
@@ -124,6 +123,10 @@ public class ImageServiceBridge {
     boolean isUrlCachedForTesting(GURL pageUrl, GURL imageUrl) {
         return mSalientImageUrlCache.containsKey(pageUrl)
                 && mSalientImageUrlCache.containsValue(imageUrl);
+    }
+
+    boolean isUrlCacheEmptyForTesting() {
+        return mSalientImageUrlCache.isEmpty();
     }
 
     @NativeMethods
