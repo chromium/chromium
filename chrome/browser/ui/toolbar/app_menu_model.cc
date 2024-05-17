@@ -1796,7 +1796,9 @@ void AppMenuModel::Build() {
     if (tab_organization_service) {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
-      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(), true);
+      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(),
+                        browser()->window()->MaybeShowNewBadgeFor(
+                            features::kTabOrganization));
     }
   }
 

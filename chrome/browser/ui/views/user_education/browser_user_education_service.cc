@@ -1364,6 +1364,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       lens::features::kLensOverlay,
       user_education::Metadata(126, "jdonnelly@google.com, dfried@google.com",
                                "Shown in app and web context menus.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kTabOrganization,
+      user_education::Metadata(
+          126, "emshack@chromium.org",
+          "Shown in app menu when TabOrganizationAppMenuItem is enabled.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
