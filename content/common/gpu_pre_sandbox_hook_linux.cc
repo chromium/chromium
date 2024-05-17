@@ -327,7 +327,7 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       "/usr/lib64/libdrm_amdgpu.so.1", "/usr/lib64/libdrm_radeon.so.1",
       "/usr/lib64/libdrm_nouveau.so.2", "/usr/lib64/dri/crocus_dri.so",
       "/usr/lib64/dri/i965_dri.so", "/usr/lib64/dri/iris_dri.so",
-      "/usr/lib64/dri/swrast_dri.so",
+      "/usr/lib64/dri/swrast_dri.so", "/usr/lib64/libzstd.so.1",
       // Allow libglvnd files and libs.
       "/usr/share/glvnd/egl_vendor.d",
       "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
