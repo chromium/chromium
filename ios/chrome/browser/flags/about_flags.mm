@@ -564,20 +564,40 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
     {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
-const FeatureEntry::FeatureParam kRichAutocompletionImplementationTextField[] =
-    {{kRichAutocompletionParam, kRichAutocompletionParamTextField}};
 const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationNoAdditionalText[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText}};
+    kRichAutocompletionImplementationTextField3Chars[] = {
+        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+const FeatureEntry::FeatureParam
+    kRichAutocompletionImplementationTextField4Chars[] = {
+        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
+const FeatureEntry::FeatureParam
+    kRichAutocompletionImplementationNoAdditionalText3Chars[] = {
+        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+const FeatureEntry::FeatureParam
+    kRichAutocompletionImplementationNoAdditionalText4Chars[] = {
+        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
 const FeatureEntry::FeatureVariation
     kRichAutocompletionImplementationVariations[] = {
         {"In Label", kRichAutocompletionImplementationLabel,
          std::size(kRichAutocompletionImplementationLabel), nullptr},
-        {"In TextField", kRichAutocompletionImplementationTextField,
-         std::size(kRichAutocompletionImplementationTextField), nullptr},
-        {"No Additional Text",
-         kRichAutocompletionImplementationNoAdditionalText,
-         std::size(kRichAutocompletionImplementationNoAdditionalText), nullptr},
+        {"In TextField, 3 Min Chars",
+         kRichAutocompletionImplementationTextField3Chars,
+         std::size(kRichAutocompletionImplementationTextField3Chars), nullptr},
+        {"In TextField, 4 Min Chars",
+         kRichAutocompletionImplementationTextField4Chars,
+         std::size(kRichAutocompletionImplementationTextField4Chars), nullptr},
+        {"No Additional Text, 3 Min Chars",
+         kRichAutocompletionImplementationNoAdditionalText3Chars,
+         std::size(kRichAutocompletionImplementationNoAdditionalText3Chars),
+         nullptr},
+        {"No Additional Text, 4 Min Chars",
+         kRichAutocompletionImplementationNoAdditionalText4Chars,
+         std::size(kRichAutocompletionImplementationNoAdditionalText4Chars),
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
