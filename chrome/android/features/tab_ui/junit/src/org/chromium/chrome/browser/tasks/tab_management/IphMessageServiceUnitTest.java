@@ -62,7 +62,8 @@ public class IphMessageServiceUnitTest {
     }
 
     @Test
-    public void testAddObserver() {
+    public void testAddObserver_NotInitialized() {
+        doReturn(false).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
         Assert.assertTrue(
                 mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
@@ -71,12 +72,26 @@ public class IphMessageServiceUnitTest {
     }
 
     @Test
-    public void testCallbackWouldTriggerDragDrop() {
+    public void testAddObserver_Initialized() {
         doReturn(true)
                 .when(mTracker)
                 .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
+        Assert.assertTrue(
+                mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
+        verify(mMessageObserver, times(1))
+                .messageReady(eq(MessageType.IPH), any(IphMessageService.IphMessageData.class));
+    }
+
+    @Test
+    public void testCallbackWouldTriggerDragDrop() {
+        doReturn(true)
+                .when(mTracker)
+                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+        doReturn(false).when(mTracker).isInitialized();
+        mIphMessageService.addObserver(mMessageObserver);
+        doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.IPH), any(IphMessageService.IphMessageData.class));

@@ -76,7 +76,11 @@ public class IphMessageService extends MessageService {
     @Override
     public void addObserver(MessageObserver observer) {
         super.addObserver(observer);
-        mTracker.addOnInitializedCallback(mInitializedCallback);
+        if (mTracker.isInitialized()) {
+            mInitializedCallback.onResult(true);
+        } else {
+            mTracker.addOnInitializedCallback(mInitializedCallback);
+        }
     }
 
     protected Callback<Boolean> getInitializedCallbackForTesting() {

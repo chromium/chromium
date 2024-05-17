@@ -19,7 +19,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -38,7 +37,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -143,7 +141,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1472857")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testShowAndHideIphDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -168,10 +166,9 @@ public class TabGridIphTest {
         // Press back should dismiss the IPH dialog.
         pressBack();
         verifyIphDialogHiding(cta);
-        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Check the IPH message card is showing and open the IPH dialog.
-        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
@@ -192,7 +189,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1515080")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testIphItemShowingInIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -205,7 +202,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1412394")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testDismissIphItem() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -237,7 +234,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1424103")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIph_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -253,7 +250,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1504246")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIph_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -276,7 +273,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1466485")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIphDialog_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -306,7 +303,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1300743")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIphDialog_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -341,7 +338,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1424103")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testIphItemChangeWithLastTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -378,7 +375,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1245260")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testSwipeToDismiss_IPH() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -402,7 +399,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1381298")
+    @DisabledTest(message = "Reviving b/341267765")
     public void testNotShowIPHInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -425,7 +422,6 @@ public class TabGridIphTest {
     private void verifyIphDialogShowing(ChromeTabbedActivity cta) {
         // Verify IPH dialog view.
         onViewWaiting(withId(R.id.iph_dialog))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
@@ -445,22 +441,10 @@ public class TabGridIphTest {
     }
 
     private void verifyIphDialogHiding(ChromeTabbedActivity cta) {
-        boolean isShowing = true;
-        try {
-            onView(withId(R.id.iph_dialog))
-                    .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                    .check(matches(isDisplayed()));
-        } catch (NoMatchingRootException e) {
-            isShowing = false;
-        } catch (Exception e) {
-            assert false : "error when inspecting iph dialog.";
-        }
-        assertFalse(isShowing);
+        onView(withId(R.id.iph_dialog)).check(doesNotExist());
     }
 
     private void exitIphDialogByClickingButton(ChromeTabbedActivity cta) {
-        onView(withId(R.id.positive_button))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .perform(click());
+        onView(withId(R.id.positive_button)).perform(click());
     }
 }
