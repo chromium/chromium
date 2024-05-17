@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
+#include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -32,6 +33,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -59,6 +61,20 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ShoppingInsightsSidePanelUI,
 END_METADATA
 
 namespace commerce {
+
+namespace {
+
+void UpdatePageActionIconView(content::WebContents* web_contents,
+                              PageActionIconType type) {
+  CHECK(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser || !browser->window()) {
+    return;
+  }
+  browser->window()->UpdatePageActionIcon(type);
+}
+
+}  // namespace
 
 CommerceUiTabHelper::CommerceUiTabHelper(
     content::WebContents* content,
@@ -100,6 +116,21 @@ CommerceUiTabHelper::CommerceUiTabHelper(
       std::make_unique<PriceTrackingPageActionController>(
           std::move(update_callback), shopping_service_, image_fetcher_,
           tracker);
+
+  base::RepeatingCallback<void()> product_specifications_update_callback =
+      base::BindRepeating(
+          [](base::WeakPtr<CommerceUiTabHelper> helper) {
+            if (!helper) {
+              return;
+            }
+
+            helper->MaybeComputePageActionToExpand();
+            helper->UpdateProductSpecificationsIconView();
+          },
+          weak_ptr_factory_.GetWeakPtr());
+  product_specifications_controller_ =
+      std::make_unique<ProductSpecificationsPageActionController>(
+          std::move(product_specifications_update_callback), shopping_service_);
 }
 
 CommerceUiTabHelper::~CommerceUiTabHelper() = default;
@@ -162,6 +193,9 @@ void CommerceUiTabHelper::DidFinishNavigation(
   price_tracking_controller_->ResetForNewNavigation(
       web_contents()->GetLastCommittedURL());
 
+  product_specifications_controller_->ResetForNewNavigation(
+      web_contents()->GetLastCommittedURL());
+
   if (shopping_service_->IsPriceInsightsEligible()) {
     // Price insights needs product info to get the product cluster title.
     shopping_service_->GetProductInfoForUrl(
@@ -207,15 +241,7 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 }
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
-  DCHECK(web_contents());
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-
-  if (!browser || !browser->window()) {
-    return;
-  }
-
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceInsights);
+  UpdatePageActionIconView(web_contents(), PageActionIconType::kPriceInsights);
 }
 
 void CommerceUiTabHelper::SetImageFetcherForTesting(
@@ -231,6 +257,11 @@ bool CommerceUiTabHelper::ShouldShowPriceTrackingIconView() {
 bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
   return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
          price_insights_info_.has_value();
+}
+
+bool CommerceUiTabHelper::ShouldShowProductSpecificationsIconView() {
+  return product_specifications_controller_->ShouldShowForNavigation().value_or(
+      false);
 }
 
 void CommerceUiTabHelper::HandleProductInfoResponse(
@@ -311,6 +342,11 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   }
 
   if (!price_tracking_controller_->ShouldShowForNavigation().has_value()) {
+    return;
+  }
+
+  if (!product_specifications_controller_->ShouldShowForNavigation()
+           .has_value()) {
     return;
   }
 
@@ -411,15 +447,12 @@ bool CommerceUiTabHelper::IsPriceTracking() {
 }
 
 void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
-  DCHECK(web_contents());
+  UpdatePageActionIconView(web_contents(), PageActionIconType::kPriceTracking);
+}
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-
-  if (!browser || !browser->window()) {
-    return;
-  }
-
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceTracking);
+void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
+  UpdatePageActionIconView(web_contents(),
+                           PageActionIconType::kProductSpecifications);
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
@@ -531,6 +564,11 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
   if (IsShowingDiscountsIcon()) {
     MaybeRecordShoppingInformationUKM(
         PageActionIconType::kPaymentsOfferNotification);
+    return;
+  }
+
+  if (ShouldShowProductSpecificationsIconView()) {
+    page_action_to_expand_ = PageActionIconType::kProductSpecifications;
     return;
   }
 

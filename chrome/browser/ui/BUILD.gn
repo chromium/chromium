@@ -5036,6 +5036,8 @@ static_library("ui") {
       "commerce/price_tracking_page_action_controller.h",
       "commerce/product_specifications_entry_point_controller.cc",
       "commerce/product_specifications_entry_point_controller.h",
+      "commerce/product_specifications_page_action_controller.cc",
+      "commerce/product_specifications_page_action_controller.h",
       "dialogs/outdated_upgrade_bubble.cc",
       "dialogs/outdated_upgrade_bubble.h",
       "plus_addresses/plus_address_creation_controller_desktop.h",

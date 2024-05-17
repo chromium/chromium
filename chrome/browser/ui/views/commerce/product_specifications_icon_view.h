@@ -35,12 +35,21 @@ class ProductSpecificationsIconView : public PageActionIconView {
   void UpdateImpl() override;
 
  private:
+  // IconLabelBubbleView:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
   bool ShouldShow();
   void SetVisualState(bool is_added);
+  void MaybeShowPageActionLabel();
+  void HidePageActionLabel();
 
   const raw_ptr<Browser> browser_;
 
   raw_ptr<const gfx::VectorIcon> icon_;
+
+  // Boolean that tracks whether we should extend the duration for which the
+  // label is shown when it animates in.
+  bool should_extend_label_shown_duration_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_ICON_VIEW_H_

@@ -43,8 +43,13 @@ ProductSpecificationsIconView::ProductSpecificationsIconView(
                          "ProductSpecifications"),
       browser_(browser),
       icon_(&omnibox::kProductSpecificationsAddIcon) {
+  SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey,
               kProductSpecificationsChipElementId);
+  SetAccessibilityProperties(
+      /*role*/ std::nullopt,
+      l10n_util::GetStringUTF16(
+          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
 }
 
 ProductSpecificationsIconView::~ProductSpecificationsIconView() = default;
@@ -70,14 +75,47 @@ const gfx::VectorIcon& ProductSpecificationsIconView::GetVectorIcon() const {
 
 void ProductSpecificationsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
-  SetLabel(l10n_util::GetStringUTF16(
-      IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+  if (should_show) {
+    // TODO(b/325660810): Add logics to flip button visual state.
+    SetVisualState(false);
+    SetLabel(l10n_util::GetStringUTF16(
+        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+    MaybeShowPageActionLabel();
+  } else {
+    HidePageActionLabel();
+  }
   SetVisible(should_show);
 }
 
+void ProductSpecificationsIconView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  PageActionIconView::AnimationProgressed(animation);
+  // Pause the animation when the label is fully revealed to keep the icon in
+  // the expanded state.
+  // TODO(crbug.com/40832707): This approach of inspecting the animation
+  // progress to extend the animation duration is quite hacky. This should be
+  // removed and the IconLabelBubbleView API expanded to support a finer level
+  // of control.
+  constexpr double kAnimationValueWhenLabelFullyShown = 0.5;
+  if (should_extend_label_shown_duration_ &&
+      GetAnimationValue() >= kAnimationValueWhenLabelFullyShown) {
+    should_extend_label_shown_duration_ = false;
+    PauseAnimation();
+  }
+}
+
 bool ProductSpecificationsIconView::ShouldShow() {
-  // TODO(b/325660810): Add implementation to decide if icon should show.
-  return false;
+  if (delegate()->ShouldHidePageActionIcons()) {
+    return false;
+  }
+  auto* web_contents = GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  auto* tab_helper =
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+
+  return tab_helper && tab_helper->ShouldShowProductSpecificationsIconView();
 }
 
 void ProductSpecificationsIconView::SetVisualState(bool is_added) {
@@ -86,6 +124,25 @@ void ProductSpecificationsIconView::SetVisualState(bool is_added) {
 
   SetPaintLabelOverSolidBackground(true);
   UpdateIconImage();
+}
+
+void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
+  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
+    return;
+  }
+  auto* tab_helper =
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
+                         PageActionIconType::kProductSpecifications)) {
+    return;
+  }
+  should_extend_label_shown_duration_ = true;
+  AnimateIn(std::nullopt);
+}
+
+void ProductSpecificationsIconView::HidePageActionLabel() {
+  UnpauseAnimation();
+  ResetSlideAnimation(false);
 }
 
 BEGIN_METADATA(ProductSpecificationsIconView)
