@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_value_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -232,34 +233,25 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum) {
 // type PIIDataItem = {
 //   piiTypeDescription: string,
 //   piiType: number,
-//   detectedData: string,
+//   detectedData: List<string>,
 //   count: number,
 //   keep: boolean,
 // }
 base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
-  base::Value::List detected_pii_data_items;
-  for (const auto& pii_entry : detected_pii) {
-    base::Value::Dict pii_data_item;
-    pii_data_item.Set(support_tool_ui::kPiiItemDescriptionKey,
-                      GetPIITypeDescription(pii_entry.first));
-    pii_data_item.Set(support_tool_ui::kPiiItemPIITypeKey,
-                      static_cast<int>(pii_entry.first));
-    pii_data_item.Set(
-        support_tool_ui::kPiiItemDetectedDataKey,
-        base::JoinString(
-            std::vector<std::string_view>(pii_entry.second.begin(),
-                                          pii_entry.second.end()),
-            // Join the PII strings with a comma in between them when displaying
-            // to the user to make it more easily readable.
-            ", "));
-    pii_data_item.Set(support_tool_ui::kPiiItemCountKey,
-                      static_cast<int>(pii_entry.second.size()));
-    // TODO(b/200511640): Set `keep` field to the value we'll get from URL's
-    // pii_masking_on query if it exists.
-    pii_data_item.Set(support_tool_ui::kPiiItemKeepKey, true);
-    detected_pii_data_items.Append(std::move(pii_data_item));
-  }
-  return detected_pii_data_items;
+  return base::ToValueList(detected_pii, [](const auto& detected_pii_entry) {
+    const auto& [pii_key, pii_data] = detected_pii_entry;
+    return base::Value::Dict()
+        .Set(support_tool_ui::kPiiItemDescriptionKey,
+             GetPIITypeDescription(pii_key))
+        .Set(support_tool_ui::kPiiItemPIITypeKey, static_cast<int>(pii_key))
+        .Set(support_tool_ui::kPiiItemDetectedDataKey,
+             base::ToValueList(pii_data))
+        .Set(support_tool_ui::kPiiItemCountKey,
+             static_cast<int>(pii_data.size()))
+        // TODO(b/200511640): Set `keep` field to the value we'll get from
+        // URL's pii_masking_on query if it exists.
+        .Set(support_tool_ui::kPiiItemKeepKey, true);
+  });
 }
 
 std::set<redaction::PIIType> GetPIITypesToKeep(

@@ -19,7 +19,7 @@ export interface IssueDetails {
 export interface PiiDataItem {
   piiTypeDescription: string;
   piiType: number;
-  detectedData: string;
+  detectedData: string[];
   count: number;
   keep: boolean;
   expandDetails: boolean;

@@ -102,7 +102,13 @@ found in the LICENSE file.
         </cr-expand-button>
         <cr-collapse class="pii-item-collapse"
             opened="[[item.expandDetails]]">
-          <div class="pii-details" tabindex="0">[[item.detectedData]]</div>
+          <div class="pii-details" tabindex="0">
+            <template is="dom-repeat" items="[[item.detectedData]]">
+              <div>
+                [[item]]
+              </div>
+            </template>
+          </div>
         </cr-collapse>
       </div>
     </template>

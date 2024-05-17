@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -52,6 +53,7 @@ const PIIMap kPIIMap = {
 const redaction::PIIType kPIITypes[] = {redaction::PIIType::kIPAddress,
                                         redaction::PIIType::kURL,
                                         redaction::PIIType::kStableIdentifier};
+
 }  // namespace
 
 class SupportToolUiUtilsTest : public ::testing::Test {
@@ -135,10 +137,16 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
     // The definition string must equal to the expected one in
     // `kPIIStringsWithDefinition`.
     EXPECT_EQ(*description, GetExpectedPIIDefinitionString(pii_type));
-    const std::string* pii_data =
-        pii_item->FindString(support_tool_ui::kPiiItemDetectedDataKey);
+    const base::Value::List* pii_data =
+        pii_item->FindList(support_tool_ui::kPiiItemDetectedDataKey);
     // Check the detected data.
     EXPECT_TRUE(pii_data);
+    EXPECT_THAT(kPIIMap.at(pii_type),
+                UnorderedElementsAreArray(
+                    base::ToVector(*pii_data, [](const base::Value& value) {
+                      // Contents of PII data must be string.
+                      return value.GetString();
+                    })));
   }
 
   // Update all PII items to have their keep value as true.

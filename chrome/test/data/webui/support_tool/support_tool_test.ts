@@ -57,7 +57,7 @@ const PII_ITEMS: PiiDataItem[] = [
   {
     piiTypeDescription: 'IP Address',
     piiType: 0,
-    detectedData: '255.255.155.2, 255.255.155.255, 172.11.5.5',
+    detectedData: ['255.255.155.2', '255.255.155.255', '172.11.5.5'],
     count: 3,
     keep: false,
     expandDetails: true,
@@ -65,7 +65,7 @@ const PII_ITEMS: PiiDataItem[] = [
   {
     piiTypeDescription: 'Hash',
     piiType: 1,
-    detectedData: '27540283740a0897ab7c8de0f809add2bacde78f',
+    detectedData: ['27540283740a0897ab7c8de0f809add2bacde78f'],
     count: 1,
     keep: false,
     expandDetails: true,
@@ -73,8 +73,11 @@ const PII_ITEMS: PiiDataItem[] = [
   {
     piiTypeDescription: 'URL',
     piiType: 2,
-    detectedData:
-        'chrome://resources/f?user=bar, chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x, http://tets.com',
+    detectedData: [
+      'chrome://resources/f?user=bar',
+      'chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x',
+      'http://tets.com',
+    ],
     count: 3,
     keep: false,
     expandDetails: true,
