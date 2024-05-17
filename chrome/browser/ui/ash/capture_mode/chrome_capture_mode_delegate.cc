@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_LOCAL_USER_FILES_LOCAL_FILES_CLEANUP_H_
-#define CHROME_BROWSER_ASH_POLICY_LOCAL_USER_FILES_LOCAL_FILES_CLEANUP_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_CLEANUP_H_
+#define CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_CLEANUP_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/local_user_files/observer.h"
+#include "chrome/browser/ash/policy/skyvault/observer.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 
 namespace policy::local_user_files {
@@ -37,4 +37,4 @@ class LocalFilesCleanup : public Observer {
 
 }  // namespace policy::local_user_files
 
-#endif  // CHROME_BROWSER_ASH_POLICY_LOCAL_USER_FILES_LOCAL_FILES_CLEANUP_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_CLEANUP_H_

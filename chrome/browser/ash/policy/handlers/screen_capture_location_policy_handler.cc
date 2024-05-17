@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"

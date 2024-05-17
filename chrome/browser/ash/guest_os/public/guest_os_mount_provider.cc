@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
-#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"

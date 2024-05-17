@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -44,8 +44,8 @@ base::FilePath GetUserDefaultDownloadsFolder() {
 
 }  // namespace
 
-// The location string may have Google Drive or Microsoft Drive placeholders, but
-// only in the beginning, so checking that if found - at start.
+// The location string may have Google Drive or Microsoft Drive placeholders,
+// but only in the beginning, so checking that if found - at start.
 bool IsValidLocationString(const std::string& str) {
   const size_t google_drive_position = str.find(kGoogleDrivePolicyVariableName);
   if (google_drive_position != std::string::npos &&

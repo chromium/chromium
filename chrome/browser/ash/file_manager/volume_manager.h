@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/policy/local_user_files/observer.h"
+#include "chrome/browser/ash/policy/skyvault/observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"

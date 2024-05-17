@@ -31,7 +31,7 @@ include_rules = [
   "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/dlp",
-  "+chrome/browser/ash/policy/local_user_files",
+  "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/browser_process.h",

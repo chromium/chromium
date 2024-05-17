@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/local_user_files/local_files_cleanup.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
 
 #include <optional>
 #include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 
 namespace policy::local_user_files {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/cloud_upload/odfs_skyvault_uploader.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"

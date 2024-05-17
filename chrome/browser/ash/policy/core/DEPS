@@ -27,7 +27,7 @@ include_rules = [
   "+chrome/browser/ash/policy/external_data",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/policy/invalidation",
-  "+chrome/browser/ash/policy/local_user_files",
+  "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/policy/networking",
   "+chrome/browser/ash/policy/off_hours",
