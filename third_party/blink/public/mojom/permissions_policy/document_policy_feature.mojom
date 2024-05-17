@@ -23,7 +23,7 @@ enum DocumentPolicyFeature {
   kOversizedImages = 6,
   // Controls the layout size of intrinsically sized images and videos. When
   // disabled, default size (300 x 150) is used to prevent relayout.
-  kUnsizedMedia = 7,
+  // kUnsizedMedia = 7, // Removed.
   // Restricts the usage of layout-causing animations in a document.
   kLayoutAnimations = 8,
   // Controls the ability of the document to use several dynamic markup API

@@ -102,13 +102,6 @@
       depends_on: ["ExperimentalPolicies"],
     },
     {
-      name: "UnsizedMedia",
-      document_policy_name: "unsized-media",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
       name: "LayoutAnimations",
       document_policy_name: "layout-animations",
       value_type: "Bool",

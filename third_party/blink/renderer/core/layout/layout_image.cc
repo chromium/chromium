@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -36,7 +35,6 @@
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/html/media/media_element_parser_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -147,7 +145,7 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   if (!did_increment_visually_non_empty_pixel_count_) {
     // At a zoom level of 1 the image is guaranteed to have an integer size.
     View()->GetFrameView()->IncrementVisuallyNonEmptyPixelCount(
-        gfx::ToFlooredSize(ImageSizeOverriddenByIntrinsicSize(1.0f)));
+        gfx::ToFlooredSize(image_resource_->ImageSize(1.0f)));
     did_increment_visually_non_empty_pixel_count_ = true;
   }
 
@@ -186,7 +184,7 @@ void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
   PhysicalSize old_intrinsic_size = IntrinsicSize();
 
   PhysicalSize new_intrinsic_size = PhysicalSize::FromSizeFRound(
-      ImageSizeOverriddenByIntrinsicSize(StyleRef().EffectiveZoom()));
+      image_resource_->ImageSize(StyleRef().EffectiveZoom()));
   UpdateIntrinsicSizeIfNeeded(new_intrinsic_size);
 
   // In the case of generated image content using :before/:after/content, we
@@ -308,44 +306,6 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
   return inside;
 }
 
-bool LayoutImage::HasOverriddenIntrinsicSize() const {
-  NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled())
-    return false;
-  auto* image_element = DynamicTo<HTMLImageElement>(GetNode());
-  return image_element && image_element->IsDefaultIntrinsicSize();
-}
-
-gfx::SizeF LayoutImage::ImageSizeOverriddenByIntrinsicSize(
-    float multiplier) const {
-  NOT_DESTROYED();
-  if (!HasOverriddenIntrinsicSize())
-    return image_resource_->ImageSize(multiplier);
-
-  gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
-  if (multiplier != 1) {
-    overridden_intrinsic_size.Scale(multiplier);
-    if (overridden_intrinsic_size.width() < 1.0f)
-      overridden_intrinsic_size.set_width(1.0f);
-    if (overridden_intrinsic_size.height() < 1.0f)
-      overridden_intrinsic_size.set_height(1.0f);
-  }
-
-  return overridden_intrinsic_size;
-}
-
-bool LayoutImage::OverrideIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  NOT_DESTROYED();
-  if (!HasOverriddenIntrinsicSize())
-    return false;
-
-  gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
-  intrinsic_sizing_info.size = overridden_intrinsic_size;
-  intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
-  return true;
-}
-
 bool LayoutImage::CanApplyObjectViewBox() const {
   if (!EmbeddedSVGImage()) {
     return true;
@@ -360,28 +320,27 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  if (!OverrideIntrinsicSizingInfo(intrinsic_sizing_info)) {
-    if (EmbeddedSVGImage()) {
-      intrinsic_sizing_info =
-          image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
+  if (EmbeddedSVGImage()) {
+    intrinsic_sizing_info =
+        image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
 
-      if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
-        DCHECK(intrinsic_sizing_info.has_width);
-        DCHECK(intrinsic_sizing_info.has_height);
-        intrinsic_sizing_info.size = *view_box_size;
-      }
-
-      // The value returned by LayoutImageResource will be in zoomed CSS
-      // pixels, but for the 'scale-down' object-fit value we want "zoomed
-      // device pixels", so undo the DPR part here.
-      if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-        intrinsic_sizing_info.size.InvScale(ImageDevicePixelRatio());
-      }
-      return;
+    if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
+      DCHECK(intrinsic_sizing_info.has_width);
+      DCHECK(intrinsic_sizing_info.has_height);
+      intrinsic_sizing_info.size = *view_box_size;
     }
 
-    LayoutReplaced::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
+    // The value returned by LayoutImageResource will be in zoomed CSS
+    // pixels, but for the 'scale-down' object-fit value we want "zoomed
+    // device pixels", so undo the DPR part here.
+    if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
+      intrinsic_sizing_info.size.InvScale(ImageDevicePixelRatio());
+    }
+    return;
   }
+
+  LayoutReplaced::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
+
   // Don't compute an intrinsic ratio to preserve historical WebKit behavior if
   // we're painting alt text and/or a broken image.
   // Video is excluded from this behavior because video elements have a default
@@ -403,20 +362,6 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
   if (!cached_image || cached_image->IsCacheValidator())
     return nullptr;
   return DynamicTo<SVGImage>(cached_image->GetImage());
-}
-
-void LayoutImage::UpdateAfterLayout() {
-  NOT_DESTROYED();
-  LayoutBox::UpdateAfterLayout();
-  Node* node = GetNode();
-  if (auto* image_element = DynamicTo<HTMLImageElement>(node)) {
-    media_element_parser_helpers::CheckUnsizedMediaViolation(
-        this, image_element->IsDefaultIntrinsicSize());
-    image_element->SetAutoSizesUsecounter();
-  } else if (auto* video_element = DynamicTo<HTMLVideoElement>(node)) {
-    media_element_parser_helpers::CheckUnsizedMediaViolation(
-        this, video_element->IsDefaultIntrinsicSize());
-  }
 }
 
 void LayoutImage::MutableForPainting::UpdatePaintedRect(

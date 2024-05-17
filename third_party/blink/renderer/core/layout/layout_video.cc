@@ -79,14 +79,6 @@ PhysicalSize LayoutVideo::CalculateIntrinsicSize(float scale) {
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
-  if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
-    if (video->IsDefaultIntrinsicSize()) {
-      PhysicalSize size = DefaultSize();
-      size.Scale(scale);
-      return size;
-    }
-  }
-
   auto display_mode = GetDisplayMode();
 
   // Special case: If the poster image is the "default poster image", we should

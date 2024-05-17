@@ -105,8 +105,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     return "LayoutImage";
   }
 
-  void UpdateAfterLayout() override;
-
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
     void UpdatePaintedRect(const PhysicalRect& paint_rect);

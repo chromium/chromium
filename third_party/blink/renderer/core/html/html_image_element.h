@@ -110,10 +110,6 @@ class CORE_EXPORT HTMLImageElement
   void setHeight(unsigned);
   void setWidth(unsigned);
 
-  bool IsDefaultIntrinsicSize() const {
-    return is_default_overridden_intrinsic_size_;
-  }
-
   int x() const;
   int y() const;
 
@@ -282,7 +278,6 @@ class CORE_EXPORT HTMLImageElement
   bool form_was_set_by_parser_ : 1;
   bool element_created_by_parser_ : 1;
   bool is_fallback_image_ : 1;
-  bool is_default_overridden_intrinsic_size_ : 1;
   // This flag indicates if the image violates one or more optimized image
   // policies. When any policy is violated, the image should be rendered as a
   // placeholder image.

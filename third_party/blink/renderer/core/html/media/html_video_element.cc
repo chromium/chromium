@@ -32,7 +32,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -91,10 +90,6 @@ HTMLVideoElement::HTMLVideoElement(Document& document)
       is_persistent_(false),
       is_auto_picture_in_picture_(false),
       is_effectively_fullscreen_(false),
-      is_default_overridden_intrinsic_size_(
-          !document.IsMediaDocument() && GetExecutionContext() &&
-          !GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::DocumentPolicyFeature::kUnsizedMedia)),
       video_has_played_(false),
       mostly_filling_viewport_(false) {
   if (document.GetSettings()) {
@@ -231,16 +226,12 @@ void HTMLVideoElement::ParseAttribute(
 }
 
 unsigned HTMLVideoElement::videoWidth() const {
-  if (is_default_overridden_intrinsic_size_)
-    return LayoutReplaced::kDefaultWidth;
   if (!GetWebMediaPlayer())
     return 0;
   return GetWebMediaPlayer()->NaturalSize().width();
 }
 
 unsigned HTMLVideoElement::videoHeight() const {
-  if (is_default_overridden_intrinsic_size_)
-    return LayoutReplaced::kDefaultHeight;
   if (!GetWebMediaPlayer())
     return 0;
   return GetWebMediaPlayer()->NaturalSize().height();

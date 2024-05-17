@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 
-#include "third_party/blink/renderer/core/html/media/media_element_parser_helpers.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
@@ -76,14 +75,6 @@ void LayoutSVGImage::WillBeDestroyed() {
   LayoutSVGModelObject::WillBeDestroyed();
 }
 
-bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
-  NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled())
-    return false;
-  auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement());
-  return svg_image_element && svg_image_element->IsDefaultIntrinsicSize();
-}
-
 gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   NOT_DESTROYED();
 
@@ -100,15 +91,10 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   const gfx::SizeF kDefaultObjectSize(LayoutReplaced::kDefaultWidth,
                                       LayoutReplaced::kDefaultHeight);
   IntrinsicSizingInfo sizing_info;
-  if (HasOverriddenIntrinsicSize()) {
-    sizing_info.size = kDefaultObjectSize;
-    sizing_info.aspect_ratio = sizing_info.size;
-  } else {
-    if (!image_resource_->HasImage() || image_resource_->ErrorOccurred()) {
-      return gfx::SizeF(style_size.x(), style_size.y());
-    }
-    sizing_info = image_resource_->GetNaturalDimensions(1);
+  if (!image_resource_->HasImage() || image_resource_->ErrorOccurred()) {
+    return gfx::SizeF(style_size.x(), style_size.y());
   }
+  sizing_info = image_resource_->GetNaturalDimensions(1);
 
   const gfx::SizeF concrete_object_size =
       ConcreteObjectSize(sizing_info, kDefaultObjectSize);
@@ -174,10 +160,6 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
 
 bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
                                           bool bbox_changed) {
-  if (auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement())) {
-    media_element_parser_helpers::CheckUnsizedMediaViolation(
-        this, svg_image_element->IsDefaultIntrinsicSize());
-  }
   if (bbox_changed) {
     SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
 
