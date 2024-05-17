@@ -5,8 +5,8 @@
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"

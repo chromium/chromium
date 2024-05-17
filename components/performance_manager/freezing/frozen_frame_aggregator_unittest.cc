@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/frozen_frame_aggregator.h"
+#include "components/performance_manager/freezing/frozen_frame_aggregator.h"
 
 #include <memory>
 

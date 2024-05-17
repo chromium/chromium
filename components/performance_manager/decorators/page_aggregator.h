@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
 
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -51,4 +51,4 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
 
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_

@@ -9,11 +9,11 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/performance_manager/decorators/page_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {

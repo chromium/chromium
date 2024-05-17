@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/test_support/page_aggregator.h"
+#include "components/performance_manager/test_support/page_aggregator.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/performance_manager/decorators/page_aggregator.h"
+#include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
