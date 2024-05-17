@@ -168,8 +168,17 @@ source_set("card_unmask_authentication_selection_view_controller") {
     "//ui/base",
   ]
   public_deps = [
+    ":card_unmask_authentication_selection_constants",
     ":card_unmask_authentication_selection_consumer",
     ":card_unmask_authentication_selection_mutator",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("card_unmask_authentication_selection_constants") {
+  sources = [
+    "card_unmask_authentication_selection_constants.h",
+    "card_unmask_authentication_selection_constants.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -203,6 +212,7 @@ source_set("eg2_tests") {
     "otp_input_dialog_egtest.mm",
   ]
   deps = [
+    ":card_unmask_authentication_selection_constants",
     ":egtest_util",
     ":otp_input_dialog_ui_constants",
     "//components/autofill/core/browser:test_support",

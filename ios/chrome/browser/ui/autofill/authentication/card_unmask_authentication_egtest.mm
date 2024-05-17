@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/authentication/authentication_egtest_util.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -53,14 +54,18 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionSendButton() {
   return grey_allOf(
       chrome_test_util::ButtonWithAccessibilityLabelId(
           IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+      grey_accessibilityID(
+          kCardUnmaskAuthenticationSelectionAcceptanceButtonAccessibilityIdentifier),
+      nil);
 }
 
 // Matcher for the "Cancel" button.
 id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
   return grey_allOf(
       chrome_test_util::CancelButton(),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+      grey_accessibilityID(
+          kCardUnmaskAuthenticationSelectionCancelButtonAccessibilityIdentifier),
+      nil);
 }
 
 @interface CardUnmaskAuthenticationSelectionEgtest : ChromeTestCase
@@ -231,7 +236,8 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
           grey_allOf(
               chrome_test_util::ButtonWithAccessibilityLabelId(
                   IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE),
-              grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
+              grey_accessibilityID(
+                  kCardUnmaskAuthenticationSelectionAcceptanceButtonAccessibilityIdentifier),
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 

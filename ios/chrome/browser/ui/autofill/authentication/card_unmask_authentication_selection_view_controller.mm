@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_constants.h"
 #import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -42,10 +43,13 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
   self.title = l10n_util::GetNSString(
       IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION);
   // Configure the cancel button.
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+  UIBarButtonItem* cancelBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(didTapCancelButton)];
+  cancelBarButtonItem.accessibilityIdentifier =
+      kCardUnmaskAuthenticationSelectionCancelButtonAccessibilityIdentifier;
+  self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
 
   // Configure the table items.
   self.tableView.allowsSelection = YES;
@@ -106,11 +110,14 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
 }
 
 - (void)setChallengeAcceptanceLabel:(NSString*)challengeAcceptanceLabel {
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+  UIBarButtonItem* barButtonItem = [[UIBarButtonItem alloc]
       initWithTitle:challengeAcceptanceLabel
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(didTapChallengeAcceptanceButton)];
+  barButtonItem.accessibilityIdentifier =
+      kCardUnmaskAuthenticationSelectionAcceptanceButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = barButtonItem;
 }
 
 - (void)enterPendingState {
