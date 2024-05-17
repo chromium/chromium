@@ -128,9 +128,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
-    this.setSelectedUrl_(event.detail.selected);
+    const path = event.detail.selected;
+    this.setSelectedUrl_(path);
 
-    const path = new URL(event.detail.selected).pathname;
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(

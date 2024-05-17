@@ -5,14 +5,6 @@
 import {assert} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-function toCamelCase(name: string): string {
-  const pieces = name.split('-');
-  let camel = pieces[0]!;
-  pieces.slice(1).forEach(
-      piece => camel = camel + piece[0]!.toUpperCase() + piece.substr(1));
-  return camel;
-}
-
 /**
  * CrSelectableMixin maintains a collection of selectable elements. The
  * elements are queried from a <slot>'s assignedElements, and are identified
@@ -45,14 +37,9 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     static get properties() {
       return {
         /**
-         * To use an attribute value or property of an element for
-         * `selected` instead of the index, set this to the name of the
-         * attribute or property. Hyphenated values are converted to camel case
-         * when used to look up the property of a selectable element. Camel
-         * cased values are *not* converted to hyphenated values for attribute
-         * lookup. It's recommended that you provide the hyphenated form of the
-         * name so that selection works in both cases. (Use
-         * `attr-or-property-name` instead of `attrOrPropertyName`.)
+         * To use an attribute value of an element for determining `selected`
+         * instead of using the index, set this property to the name of the HTML
+         * attribute.
          */
         attrForSelected: {type: String},
 
@@ -248,11 +235,8 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
         const index = this.items_.indexOf(item);
         return index === -1 ? null : index;
       }
-      const itemAsDict = item as (Element & {[key: string]: any});
-      const propValue = itemAsDict[toCamelCase(this.attrForSelected)];
-      return (propValue !== undefined && propValue !== null) ?
-          propValue :
-          item.getAttribute(this.attrForSelected);
+
+      return item.getAttribute(this.attrForSelected);
     }
 
     itemsChanged() {

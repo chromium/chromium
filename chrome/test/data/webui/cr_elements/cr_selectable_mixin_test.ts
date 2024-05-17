@@ -78,10 +78,10 @@ suite('cr-scrollable-mixin', function() {
     elements[0]!.click();
     const events = await Promise.all([activateEvent, selectEvent]);
 
-    assertEquals('chrome://webui-test/a', events[0]!.detail.selected);
+    assertEquals('/a', events[0]!.detail.selected);
     assertEquals(elements[0], events[0]!.detail.item);
     assertEquals(elements[0], events[1]!.detail.item);
-    assertEquals('chrome://webui-test/a', element.selected);
+    assertEquals('/a', element.selected);
 
     selectEvent = eventToPromise('iron-select', element);
     activateEvent = eventToPromise('iron-activate', element);
@@ -90,11 +90,11 @@ suite('cr-scrollable-mixin', function() {
     const newEvents =
         await Promise.all([activateEvent, deselectEvent, selectEvent]);
 
-    assertEquals('chrome://webui-test/b', newEvents[0]!.detail.selected);
+    assertEquals('/b', newEvents[0]!.detail.selected);
     assertEquals(elements[1], newEvents[0]!.detail.item);
     assertEquals(elements[0], newEvents[1]!.detail.item);
     assertEquals(elements[1], newEvents[2]!.detail.item);
-    assertEquals('chrome://webui-test/b', element.selected);
+    assertEquals('/b', element.selected);
   });
 
   test('sets attribute and class', async () => {
@@ -109,11 +109,11 @@ suite('cr-scrollable-mixin', function() {
       }
     }
 
-    element.selected = 'chrome://webui-test/c';
+    element.selected = '/c';
     await eventToPromise('iron-select', element);
     assertSelected(2);
 
-    element.selected = 'chrome://webui-test/a';
+    element.selected = '/a';
     await eventToPromise('iron-select', element);
     assertSelected(0);
   });
@@ -177,7 +177,7 @@ suite('cr-scrollable-mixin overrides', function() {
     assertNull(element.selectedItem);
 
     // Select the 2nd item.
-    element.selected = 'chrome://webui-test/b';
+    element.selected = '/b';
     await element.updateComplete;
     let selectedItem = element.shadowRoot!.querySelector('.iron-selected');
     assertTrue(!!selectedItem);
@@ -191,7 +191,7 @@ suite('cr-scrollable-mixin overrides', function() {
     assertNull(element.selectedItem);
 
     // Select the 1st item.
-    element.selected = 'chrome://webui-test/a';
+    element.selected = '/a';
     await element.updateComplete;
     selectedItem = element.shadowRoot!.querySelector('.iron-selected');
     assertTrue(!!selectedItem);
@@ -201,7 +201,7 @@ suite('cr-scrollable-mixin overrides', function() {
     // Select the next item.
     element.selectNext();
     await element.updateComplete;
-    assertEquals('chrome://webui-test/c', element.selected);
+    assertEquals('/c', element.selected);
     selectedItem = element.shadowRoot!.querySelector('.iron-selected');
     assertTrue(!!selectedItem);
     assertEquals(selectedItem, element.selectedItem);
