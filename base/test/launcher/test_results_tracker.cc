@@ -32,6 +32,7 @@
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -600,6 +601,7 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     return false;
   }
 
+#if BUILDFLAG(IS_FUCHSIA)
   // File::Flush() will call fsync(). This is important on Fuchsia to ensure
   // that the file is written to the disk - the system running under qemu will
   // shutdown shortly after the test completes. On Fuchsia fsync() times out
@@ -618,6 +620,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
 
   return false;
+#else
+  return true;
+#endif
 }
 
 TestResultsTracker::TestStatusMap
