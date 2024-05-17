@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -523,15 +524,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// TODO(crbug.com/328648892):reenable after fix. 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup \
-  DISABLED_testTappingLearnMoreInFamilyPickerInfoPopup
-#else
-#define MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup \
-  testTappingLearnMoreInFamilyPickerInfoPopup
-#endif
-- (void)MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup {
+- (void)testTappingFamilyPickerIneligibleRecipientInfoPopup {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -543,6 +536,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   // Tap on the info button next to the ineligible recipient row.
   [[EarlGrey
       selectElementWithMatcher:
@@ -552,14 +546,13 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
                      grey_kindOfClass([UIButton class]), nil)]
       performAction:grey_tap()];
 
-  // Tap the "Learn more" link in the popup.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
-      performAction:grey_tap()];
-
-  // Check that the help center article was opened.
-  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center article.");
+  // Check that the info popup about ineligibility is visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(ParseStringWithLinks(
+                        l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE))
+                        .string)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testTappingCancelInFirstRunExperienceView {
