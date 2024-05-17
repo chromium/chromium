@@ -37,7 +37,6 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -338,7 +337,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({ContentFeatures.PRERENDER2_NO_VARY_SEARCH})
+    @Features.EnableFeatures({BlinkFeatures.PRERENDER2_NO_VARY_SEARCH})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testNoVarySearchHeader() throws Throwable {
         setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
@@ -370,7 +369,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({ContentFeatures.PRERENDER2_NO_VARY_SEARCH})
+    @Features.EnableFeatures({BlinkFeatures.PRERENDER2_NO_VARY_SEARCH})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testNoVarySearchHeaderUnignorableSearchParam() throws Throwable {
         setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);

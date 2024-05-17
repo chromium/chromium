@@ -463,7 +463,7 @@ void PrerenderHost::ReadyToCommitNavigation(
   // No-Vary-Search header.
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   CHECK(navigation_request->IsInPrerenderedMainFrame());
-  if (base::FeatureList::IsEnabled(features::kPrerender2NoVarySearch) &&
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
       IsInitialNavigation(*navigation_request) &&
       navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
@@ -864,7 +864,8 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   } else {
     // TODO(crbug.com/41494389): We should check for No-Vary-Search match
     // here.
-    if (!base::FeatureList::IsEnabled(features::kPrerender2NoVarySearch)) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kPrerender2NoVarySearch)) {
       CHECK_EQ(potential_activation.url, common_params_->url);
     }
   }

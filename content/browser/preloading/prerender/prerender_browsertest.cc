@@ -829,7 +829,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
  public:
   NoVarySearchPrerenderBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPrerender2NoVarySearch);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kPrerender2NoVarySearch);
   }
 
   ~NoVarySearchPrerenderBrowserTest() override = default;

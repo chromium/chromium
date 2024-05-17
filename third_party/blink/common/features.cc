@@ -1847,6 +1847,10 @@ BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              "Prerender2EarlyDocumentLifecycleUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerender2NoVarySearch,
+             "Prerender2NoVarySearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable limiting previews loading hints to specific resource types.
 BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
              "PreviewsResourceLoadingHintsSpecificResourceTypes",

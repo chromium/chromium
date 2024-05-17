@@ -334,10 +334,10 @@ class NoVarySearchHeaderPrerenderHostTest
     bool is_nvs_header_enabled = GetParam();
     if (is_nvs_header_enabled) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kPrerender2NoVarySearch);
+          blink::features::kPrerender2NoVarySearch);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kPrerender2NoVarySearch);
+          blink::features::kPrerender2NoVarySearch);
     }
   }
 
