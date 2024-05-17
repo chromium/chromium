@@ -257,7 +257,7 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
 }
 
 void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
-    const NavigationRequest& navigation_request,
+    NavigationRequest* navigation_request,
     RenderFrameHostImpl* old_host,
     RenderFrameHostImpl* new_host) {
   // Ignore all the subframe requests. Safe to do so as a start point because:
@@ -270,7 +270,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   //
   // Note: Also implicitly, all the subframes' DidFinishNavigation()s are
   // ignored.
-  CHECK(navigation_request.IsInPrimaryMainFrame());
+  CHECK(navigation_request->IsInPrimaryMainFrame());
 
   bool skip_all_animations_and_self_destroy = false;
 
@@ -289,25 +289,44 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
 
       if (navigation_state_ == NavigationState::kStarted) {
-        if (navigation_request.GetNavigationId() !=
+        if (navigation_request->GetNavigationId() !=
             primary_main_frame_navigation_request_id_of_gesture_nav_.value()) {
           // A previously pending navigation has committed since we started
           // tracking our gesture navigation. Ignore this committed navigation.
           return;
         }
+
+        // Before we display the crossfade animation to show the new page, we
+        // need to check if the new page matches the origin of the screenshot.
+        // We are not allowed to cross-fade from a screenshot of A.com to a page
+        // of B.com.
+        bool land_on_error_page = navigation_request->DidEncounterError();
+        const auto& original_url = navigation_request->GetOriginalRequestURL();
+        std::optional<url::Origin> committed_origin =
+            navigation_request->GetOriginToCommit();
+        CHECK(committed_origin.has_value());
+        // NOTE: Converting from a URL to an Origin isn't always safe (see
+        // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md#risky).
+        // It's okay to convert here because the edge cases either won't
+        // redirect (e.g., about:blank) or won't affect the animation decision
+        // (e.g., a sandboxed frame).
+        bool same_origin = url::Origin::Create(original_url)
+                               .IsSameOriginWith(*committed_origin);
+        if (!land_on_error_page && !same_origin) {
+          skip_all_animations_and_self_destroy = true;
+          break;
+        }
+
         // Our gesture navigation has committed.
         navigation_state_ = NavigationState::kCommitted;
         physics_model_.OnNavigationFinished(/*navigation_committed=*/true);
-        if (navigation_request.DidEncounterError()) {
+        if (land_on_error_page) {
           // TODO(crbug.com/41482489): Implement a different UX if we
           // decide not show the animation at all (i.e. abort animation early
           // when we receive the response header).
         }
         CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(old_host,
                                                                   new_host);
-        // TODO(crbug.com/41492130): Handle the cross-origin server
-        // redirect. We cannot show a cross-origin fullscreen overlay of a.com
-        // if a.com redirect the user to b.com.
       } else {
         // Our navigation has already committed while a second navigation
         // commits. This can be a client redirect: A.com -> B.com and B.com's

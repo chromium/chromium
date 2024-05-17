@@ -133,7 +133,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
 
 void BackForwardTransitionAnimationManagerAndroid::
     OnDidNavigatePrimaryMainFramePreCommit(
-        const NavigationRequest& navigation_request,
+        NavigationRequest* navigation_request,
         RenderFrameHostImpl* old_host,
         RenderFrameHostImpl* new_host) {
   if (animator_) {

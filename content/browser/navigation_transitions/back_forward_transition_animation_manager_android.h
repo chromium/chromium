@@ -70,7 +70,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // launch. Without RD we need to make sure no frames from the old document is
   // associated with the updated LocalSurfaceId (https://crbug.com/1445976).
   void OnDidNavigatePrimaryMainFramePreCommit(
-      const NavigationRequest& navigation_request,
+      NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
 

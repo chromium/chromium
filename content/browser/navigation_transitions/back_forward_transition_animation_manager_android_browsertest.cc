@@ -2323,4 +2323,72 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kGestureNavTypes),
     &DescribeGestureNavType);
 
+namespace {
+
+class BackForwardTransitionAnimationManagerWithRedirectBrowserTest
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerWithRedirectBrowserTest() = default;
+  ~BackForwardTransitionAnimationManagerWithRedirectBrowserTest() override =
+      default;
+
+  void SetUpOnMainThread() override {
+    SetupCrossSiteRedirector(embedded_test_server());
+    BackForwardTransitionAnimationManagerBrowserTest::SetUpOnMainThread();
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(
+    BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
+    AbortedOnCrossOriginRedirect) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  std::string different_host("b.com");
+  GURL redirect = embedded_test_server()->GetURL(
+      "/cross-site/" + different_host + "/empty.html");
+  GURL expected_url =
+      embedded_test_server()->GetURL(different_host, "/empty.html");
+
+  // [red&, green*]
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
+  web_contents()->GetController().GetEntryAtIndex(0)->SetURL(redirect);
+
+  TestNavigationManager redirect_nav(web_contents(), redirect);
+
+  GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(redirect_nav.WaitForNavigationFinished());
+  destroyed.Run();
+  ASSERT_FALSE(invoke_played);
+
+  // [empty.html*, green&]
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
+  ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(0)->GetURL(),
+            expected_url);
+  ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(1)->GetURL(),
+            GreenURL());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
+    ::testing::ValuesIn(kGestureNavTypes),
+    &DescribeGestureNavType);
+
 }  // namespace content

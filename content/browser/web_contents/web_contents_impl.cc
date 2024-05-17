@@ -6726,7 +6726,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
           GetBackForwardTransitionAnimationManager());
   if (animation_manager) {
     animation_manager->OnDidNavigatePrimaryMainFramePreCommit(
-        *request, frame_tree_node->render_manager()->current_frame_host(),
+        request, frame_tree_node->render_manager()->current_frame_host(),
         request->GetRenderFrameHost());
   }
 #endif

@@ -71,7 +71,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnGestureCancelled();
   void OnGestureInvoked();
   void OnDidNavigatePrimaryMainFramePreCommit(
-      const NavigationRequest& navigation_request,
+      NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
