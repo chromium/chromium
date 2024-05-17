@@ -77,10 +77,6 @@
 #import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
-BASE_FEATURE(kEnableFocusOmniboxWorkaround,
-             "EnableFocusOmniboxWorkaround",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 }  // namespace
@@ -352,12 +348,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
-    // TODO(crbug.com/40275343): Clean up the kill switch and else branch.
-    if (base::FeatureList::IsEnabled(kEnableFocusOmniboxWorkaround)) {
-      [self focusOmnibox];
-    } else {
-      [self.omniboxCoordinator focusOmnibox];
-    }
+    [self focusOmnibox];
     [self.omniboxCoordinator
         insertTextToOmnibox:base::SysUTF16ToNSString(sanitizedQuery)];
   }
