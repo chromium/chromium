@@ -256,7 +256,7 @@ mach_port_t ChildPortHandshakeServer::RunServer(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

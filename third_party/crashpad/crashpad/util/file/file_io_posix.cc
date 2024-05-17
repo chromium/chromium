@@ -276,7 +276,7 @@ FileHandle StdioFileHandle(StdioStream stdio_stream) {
       return STDERR_FILENO;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kInvalidFileHandle;
 }
 

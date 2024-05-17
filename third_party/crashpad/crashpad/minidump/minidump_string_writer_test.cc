@@ -42,7 +42,7 @@ class TestTypeNames {
     if (std::is_same<T, RVA64>()) {
       return "RVA64";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 };

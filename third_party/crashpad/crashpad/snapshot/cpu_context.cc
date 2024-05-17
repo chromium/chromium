@@ -174,7 +174,7 @@ uint64_t CPUContext::InstructionPointer() const {
     case kCPUArchitectureRISCV64:
       return riscv64->pc;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ~0ull;
   }
 }
@@ -192,7 +192,7 @@ uint64_t CPUContext::StackPointer() const {
     case kCPUArchitectureRISCV64:
       return riscv64->regs[1];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ~0ull;
   }
 }
@@ -202,12 +202,12 @@ uint64_t CPUContext::ShadowStackPointer() const {
     case kCPUArchitectureX86:
     case kCPUArchitectureARM:
     case kCPUArchitectureARM64:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
     case kCPUArchitectureX86_64:
       return x86_64->xstate.cet_u.ssp;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ~0ull;
   }
 }
@@ -221,7 +221,7 @@ bool CPUContext::HasShadowStack() const {
     case kCPUArchitectureX86_64:
       return x86_64->xstate.cet_u.cetmsr != 0;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -238,7 +238,7 @@ bool CPUContext::Is64Bit() const {
     case kCPUArchitectureMIPSEL:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

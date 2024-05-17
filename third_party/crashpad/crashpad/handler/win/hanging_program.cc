@@ -40,13 +40,13 @@ DWORD WINAPI Thread1(LPVOID context) {
 
   Sleep(INFINITE);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 DWORD WINAPI Thread2(LPVOID dummy) {
   Sleep(INFINITE);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -65,7 +65,7 @@ DWORD WINAPI Thread3(LPVOID context) {
   if (!FreeLibrary(dll))
     PLOG(FATAL) << "FreeLibrary";
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

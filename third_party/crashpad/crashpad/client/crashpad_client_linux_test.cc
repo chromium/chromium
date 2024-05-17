@@ -765,7 +765,7 @@ class StartHandlerForChildTest : public Multiprocess {
 
     __builtin_trap();
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   StartHandlerForClientTest test_state_;

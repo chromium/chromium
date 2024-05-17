@@ -196,7 +196,7 @@ thread_state_flavor_t InitializeCPUContextX86Flavor(
     }
 
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return THREAD_STATE_NONE;
     }
   }
@@ -377,7 +377,7 @@ thread_state_flavor_t InitializeCPUContextX86_64Flavor(
     }
 
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return THREAD_STATE_NONE;
     }
   }
@@ -553,7 +553,7 @@ thread_state_flavor_t InitializeCPUContextARM64Flavor(
     }
 
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return THREAD_STATE_NONE;
     }
   }

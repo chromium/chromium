@@ -207,7 +207,7 @@ int MacOSVersionNumber() {
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_13_4
     // On macOS 10.13.4 and later, the sysctlbyname above should have been
     // successful.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return -1;
 #else  // DT >= 10.13.4
     // The Darwin major version is always 4 greater than the macOS minor version

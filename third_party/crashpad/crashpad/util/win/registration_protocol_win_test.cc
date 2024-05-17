@@ -98,7 +98,7 @@ void CheckAce(PACL acl,
       mask = label_ace->Mask;
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

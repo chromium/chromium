@@ -129,7 +129,7 @@ void ChildTestFunction() {
 
 CRASHPAD_CHILD_TEST_MAIN(ChildToBeSanitized) {
   ChildTestFunction();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EXIT_SUCCESS;
 }
 

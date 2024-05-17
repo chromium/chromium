@@ -80,7 +80,7 @@ ExceptionPorts::ExceptionPorts(TargetType target_type, mach_port_t target_port)
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       get_exception_ports_ = nullptr;
       set_exception_ports_ = nullptr;
       target_name_ = nullptr;
