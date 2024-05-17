@@ -5282,6 +5282,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationResource.ActionIconSizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification source action icons on the 1.0
+    scale factor. Emitted when applying an action icon to a notification built
+    from a notification resource.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotificationResource.BadgeMemorySizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification source badges on the 1.0 scale
+    factor. Emitted when applying a badge to a notification built from a
+    notification resource.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotificationResource.IconMemorySizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification source icons on the 1.0 scale
+    factor. Emitted when applying an icon to a notification built from a
+    notification resource.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotificationResource.ImageMemorySizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification source images on the 1.0 scale
+    factor. Emitted when applying an image to a notification built from a
+    notification resource.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.NotificationView.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
     units="%" expires_after="2025-02-01">
