@@ -48,26 +48,38 @@ suite(SettingsToggleV2Element.is, () => {
     return internalToggle;
   }
 
-  test('disabled toggle', () => {
-    init();
+  suite('when disabled', () => {
+    setup(() => {
+      init();
+      toggleElement.disabled = true;
+    });
 
-    // `disabled` is false by default.
-    assertFalse(toggleElement.hasAttribute('disabled'));
+    test('disabled property is reflected to attribute', () => {
+      assertTrue(toggleElement.hasAttribute('disabled'));
 
-    toggleElement.disabled = true;
-    assertTrue(toggleElement.hasAttribute('disabled'));
+      toggleElement.disabled = false;
+      assertFalse(toggleElement.hasAttribute('disabled'));
+    });
 
-    // clicking a disabled toggle does not change its checked value.
-    toggleElement.click();
-    assertTrue(toggleElement.hasAttribute('disabled'));
-    assertFalse(toggleElement.checked);
+    test('internal cr-toggle is disabled', () => {
+      const internalToggle = getInternalToggle();
+      assertTrue(internalToggle.disabled);
+    });
 
-    toggleElement.disabled = false;
-    assertFalse(toggleElement.hasAttribute('disabled'));
+    test('clicking does not change the toggle state', () => {
+      assertFalse(toggleElement.checked);
+      const internalToggle = getInternalToggle();
+      assertFalse(internalToggle.checked);
+
+      toggleElement.click();
+      assertFalse(toggleElement.checked);
+      assertFalse(internalToggle.checked);
+    });
   });
 
   test(
       'triggers a change event when the value of toggle changes.', async () => {
+        init();
         const checkedChangeEventPromise = eventToPromise('change', window);
 
         toggleElement.click();
@@ -230,13 +242,7 @@ suite(SettingsToggleV2Element.is, () => {
     test(
         'Pref value updates the checked value when the toggle is disabled',
         () => {
-          // `disabled` is false by default.
-          assertFalse(toggleElement.hasAttribute('disabled'));
-
           toggleElement.disabled = true;
-          assertTrue(toggleElement.hasAttribute('disabled'));
-
-          // changing the pref changes the checked value
           toggleElement.set('pref.value', true);
           assertTrue(toggleElement.pref!.value);
           assertTrue(toggleElement.checked);
