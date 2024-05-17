@@ -2246,8 +2246,6 @@ source_set("browser") {
     "webauth/client_data_json.h",
     "webauth/webauth_request_security_checker.cc",
     "webauth/webauth_request_security_checker.h",
-    "webid/digital_credentials/digital_identity_provider_utils.cc",
-    "webid/digital_credentials/digital_identity_provider_utils.h",
     "webid/digital_credentials/digital_identity_request_impl.cc",
     "webid/digital_credentials/digital_identity_request_impl.h",
     "webid/fake_identity_request_dialog_controller.cc",
@@ -3201,8 +3199,6 @@ source_set("browser") {
       "web_contents/web_contents_android.h",
       "web_contents/web_contents_view_android.cc",
       "web_contents/web_contents_view_android.h",
-      "webid/digital_credentials/digital_identity_provider_android.cc",
-      "webid/digital_credentials/digital_identity_provider_android.h",
     ]
 
     deps += [

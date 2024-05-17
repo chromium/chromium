@@ -33,7 +33,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils;
 import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils.MockIdentityCredentialsDelegate;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -63,7 +62,7 @@ public class DigitalCredentialProviderTest {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
-        DigitalCredentialProviderUtils.setDelegateForTesting(mDelegate);
+        DigitalIdentityProvider.setDelegateForTesting(mDelegate);
     }
 
     @Test

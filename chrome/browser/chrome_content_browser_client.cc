@@ -487,6 +487,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/webid/digital_identity_safety_interstitial_bridge_android.h"
+#include "chrome/browser/webid/digital_identity_provider_android.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -7869,6 +7870,11 @@ void ChromeContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
       web_contents, origin, is_only_requesting_age,
       base::BindOnce(&RunDigitalIdentityCallback, std::move(bridge),
                      std::move(callback)));
+}
+
+std::unique_ptr<content::DigitalIdentityProvider>
+ChromeContentBrowserClient::CreateDigitalIdentityProvider() {
+  return std::make_unique<DigitalIdentityProviderAndroid>();
 }
 #endif
 

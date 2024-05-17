@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.webid;
 
+import org.chromium.content_public.browser.webid.IdentityCredentialsDelegate;
+
 /**
  * Public no-op implementation of IdentityCredentialsDelegate.
  *

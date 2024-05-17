@@ -31,6 +31,7 @@
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
@@ -910,6 +911,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin,
       bool is_only_requesting_age,
       DigitalIdentityInterstitialCallback callback) override;
+
+  std::unique_ptr<content::DigitalIdentityProvider>
+  CreateDigitalIdentityProvider() override;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

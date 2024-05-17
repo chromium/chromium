@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.webid;
+package org.chromium.chrome.browser.webid;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,7 @@ import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusFor
 /** Tests for {@link DigitalIdentityProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = 34)
-public class DigitalIdentityProviderTest {
+public class DigitalIdentityProviderUnitTest {
     @Test
     public void testUserDeclined() {
         assertEquals(

@@ -79,8 +79,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       const std::string& response,
       DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
 
-  std::unique_ptr<DigitalIdentityProvider> CreateProvider();
-
   std::unique_ptr<DigitalIdentityProvider> provider_;
   RequestCallback callback_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.webid;
+package org.chromium.chrome.browser.webid;
 
 import android.annotation.SuppressLint;
 import android.credentials.GetCredentialException;
@@ -11,19 +11,20 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.content_public.browser.webid.IdentityCredentialsDelegate;
+import org.chromium.content_public.browser.webid.IdentityCredentialsDelegateFactory;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Class for issuing request to the Identity Credentials Manager in GMS core. */
-@JNINamespace("content")
 public class DigitalIdentityProvider {
     private static final String TAG = "DigitalIdentityProvider";
     private long mDigitalIdentityProvider;
-    private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegateImpl();
+    private static IdentityCredentialsDelegate sCredentials =
+            IdentityCredentialsDelegateFactory.createDefault();
 
     private DigitalIdentityProvider(long digitalIdentityProvider) {
         mDigitalIdentityProvider = digitalIdentityProvider;

@@ -512,6 +512,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/wallet/android:java",
       "//chrome/browser/webapps/android:java",
       "//chrome/browser/webauthn/android:java",
+      "//chrome/browser/webid:java",
       "//chrome/browser/xsurface:java",
       "//chrome/browser/xsurface_provider:dependency_provider_impl_java",
       "//chrome/browser/xsurface_provider:java",
@@ -664,6 +665,7 @@ if (current_toolchain == default_toolchain) {
       "//components/webxr/android:xr_java",
       "//components/zoom/android:java",
       "//content/public/android:content_java",
+      "//content/public/android:identity_credentials_java",
       "//content/public/common:common_java",
       "//device/gamepad:java",
       "//media/base/android:media_java",
@@ -1196,6 +1198,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/wallet/android:junit",
       "//chrome/browser/webapps/android:java",
       "//chrome/browser/webauthn/android:java",
+      "//chrome/browser/webid:junit",
       "//chrome/browser/xsurface:java",
       "//chrome/browser/xsurface_provider:junit",
       "//chrome/test:sync_integration_test_support_java",
@@ -3823,7 +3826,10 @@ generate_jni("chrome_jni_headers") {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
   }
 
-  public_deps = [ ":base_module_jni" ]
+  public_deps = [
+    ":base_module_jni",
+    "//chrome/browser/webid:jni_headers",
+  ]
 }
 
 source_set("chrome_test_util") {

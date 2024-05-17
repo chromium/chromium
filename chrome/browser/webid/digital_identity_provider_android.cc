@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/digital_identity_provider_android.h"
+#include "chrome/browser/webid/digital_identity_provider_android.h"
 
 #include <jni.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/values.h"
-#include "content/public/android/content_jni_headers/DigitalIdentityProvider_jni.h"
+#include "chrome/browser/webid/jni_headers/DigitalIdentityProvider_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -17,8 +17,6 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
-
-namespace content {
 
 DigitalIdentityProviderAndroid::DigitalIdentityProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
@@ -33,7 +31,7 @@ DigitalIdentityProviderAndroid::~DigitalIdentityProviderAndroid() {
       env, j_digital_identity_provider_android_);
 }
 
-void DigitalIdentityProviderAndroid::Request(WebContents* web_contents,
+void DigitalIdentityProviderAndroid::Request(content::WebContents* web_contents,
                                              const url::Origin& origin,
                                              const std::string& request,
                                              DigitalIdentityCallback callback) {
@@ -66,5 +64,3 @@ void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
             status_for_metrics));
   }
 }
-
-}  // namespace content

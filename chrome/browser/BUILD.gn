@@ -3523,6 +3523,8 @@ static_library("browser") {
       "webauthn/android/chrome_webauthn_client_android.h",
       "webauthn/android/webauthn_request_delegate_android.cc",
       "webauthn/android/webauthn_request_delegate_android.h",
+      "webid/digital_identity_provider_android.cc",
+      "webid/digital_identity_provider_android.h",
     ]
     public_deps += [
       "//chrome/android/features/dev_ui:buildflags",

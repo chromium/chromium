@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/digital_credentials/digital_identity_provider_utils.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -220,7 +219,7 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
     return;
   }
 
-  provider_ = CreateProvider();
+  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
   if (!provider_) {
     CompleteRequest("", RequestStatusForMetrics::kErrorOther);
     return;
@@ -254,18 +253,6 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
       is_only_requesting_age,
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                      weak_ptr_factory_.GetWeakPtr(), response));
-}
-
-std::unique_ptr<DigitalIdentityProvider>
-DigitalIdentityRequestImpl::CreateProvider() {
-  // A provider may only be created in browser tests by this moment.
-  std::unique_ptr<DigitalIdentityProvider> provider =
-      GetContentClient()->browser()->CreateDigitalIdentityProvider();
-
-  if (!provider) {
-    return CreateDigitalIdentityProvider();
-  }
-  return provider;
 }
 
 }  // namespace content
