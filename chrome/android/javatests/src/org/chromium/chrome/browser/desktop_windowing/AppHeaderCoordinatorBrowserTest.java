@@ -330,8 +330,6 @@ public class AppHeaderCoordinatorBrowserTest {
     public void testRecreateActivitiesInDesktopWindow() {
         // Assume that the current activity enters desktop windowing mode.
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
-        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
-        firstActivity = ApplicationTestUtils.recreateActivity(firstActivity);
         triggerDesktopWindowingModeChange(firstActivity, true);
 
         // Create a new (desktop) window, that should gain focus and cause the first activity to
@@ -352,7 +350,8 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Trigger activity recreation in desktop windowing mode (an app theme change for eg. would
         // trigger this).
-        firstActivity = ApplicationTestUtils.recreateActivity(firstActivity);
+        mActivityTestRule.recreateActivity();
+        firstActivity = mActivityTestRule.getActivity();
         secondActivity = ApplicationTestUtils.recreateActivity(secondActivity);
 
         // Activity recreation will send an #onTopResumedActivityChanged(false) signal as the
