@@ -3,9 +3,12 @@
 
 include!("../../generated/generated_gvar.rs");
 
-use super::variations::{
-    PackedPointNumbers, Tuple, TupleDelta, TupleVariationCount, TupleVariationData,
-    TupleVariationHeader,
+use super::{
+    glyf::PointCoord,
+    variations::{
+        PackedPointNumbers, Tuple, TupleDelta, TupleVariationCount, TupleVariationData,
+        TupleVariationHeader,
+    },
 };
 
 /// Variation data specialized for the glyph variations table.
@@ -120,8 +123,9 @@ pub struct GlyphDelta {
 
 impl GlyphDelta {
     /// Applies a tuple scalar to this delta.
-    pub fn apply_scalar(self, scalar: Fixed) -> Point<Fixed> {
-        Point::new(self.x_delta as i32, self.y_delta as i32).map(Fixed::from_i32) * scalar
+    pub fn apply_scalar<D: PointCoord>(self, scalar: Fixed) -> Point<D> {
+        let scalar = D::from_fixed(scalar);
+        Point::new(self.x_delta as i32, self.y_delta as i32).map(D::from_i32) * scalar
     }
 }
 

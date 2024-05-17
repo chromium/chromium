@@ -173,7 +173,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."read-fonts:0.19.0"]
+[policy."read-fonts:0.19.1"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.6"]

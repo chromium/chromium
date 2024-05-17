@@ -895,6 +895,11 @@ relying on certification by the Chromium engineers who work on the library
 (mostly drott@chromium.org).
 """
 
+[[audits.read-fonts]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.19.0 -> 0.19.1"
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

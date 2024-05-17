@@ -636,8 +636,8 @@ where
             .unwrap_or_default()
     }
 
-    /// Compute the scalar for this tuple at the given location in variation
-    /// space.
+    /// Compute the fixed point scalar for this tuple at the given location in
+    /// variation space.
     ///
     /// The `coords` slice must be of lesser or equal length to the number of
     /// axes. If it is less, missing (trailing) axes will be assumed to have
@@ -683,6 +683,59 @@ where
                     return None;
                 }
                 scalar = scalar.mul_div(coord, peak);
+            }
+        }
+        Some(scalar)
+    }
+
+    /// Compute the floating point scalar for this tuple at the given location
+    /// in variation space.
+    ///
+    /// The `coords` slice must be of lesser or equal length to the number of
+    /// axes. If it is less, missing (trailing) axes will be assumed to have
+    /// zero values.
+    ///
+    /// Returns `None` if this tuple is not applicable at the provided
+    /// coordinates (e.g. if the resulting scalar is zero).
+    pub fn compute_scalar_f32(&self, coords: &[F2Dot14]) -> Option<f32> {
+        let mut scalar = 1.0;
+        let peak = self.peak();
+        let inter_start = self.header.intermediate_start_tuple();
+        let inter_end = self.header.intermediate_end_tuple();
+        if peak.len() != self.axis_count as usize {
+            return None;
+        }
+        for i in 0..self.axis_count {
+            let i = i as usize;
+            let coord = coords.get(i).copied().unwrap_or_default().to_bits() as i32;
+            let peak = peak.get(i).unwrap_or_default().to_bits() as i32;
+            if peak == 0 || peak == coord {
+                continue;
+            }
+            if coord == 0 {
+                return None;
+            }
+            if let (Some(inter_start), Some(inter_end)) = (&inter_start, &inter_end) {
+                let start = inter_start.get(i).unwrap_or_default().to_bits() as i32;
+                let end = inter_end.get(i).unwrap_or_default().to_bits() as i32;
+                if start > peak || peak > end || (start < 0 && end > 0 && peak != 0) {
+                    continue;
+                }
+                if coord < start || coord > end {
+                    return None;
+                }
+                if coord < peak {
+                    if peak != start {
+                        scalar *= (coord - start) as f32 / (peak - start) as f32;
+                    }
+                } else if peak != end {
+                    scalar *= (end - coord) as f32 / (end - peak) as f32;
+                }
+            } else {
+                if coord < peak.min(0) || coord > peak.max(0) {
+                    return None;
+                }
+                scalar *= coord as f32 / peak as f32;
             }
         }
         Some(scalar)

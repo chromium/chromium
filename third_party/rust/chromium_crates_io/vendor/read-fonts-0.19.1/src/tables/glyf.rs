@@ -2,6 +2,8 @@
 
 pub mod bytecode;
 
+use bytemuck::AnyBitPattern;
+use core::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 use std::fmt;
 use types::{F26Dot6, Pen, Point};
 
@@ -125,6 +127,28 @@ impl PointFlags {
     }
 }
 
+/// Trait for types that are usable for TrueType point coordinates.
+pub trait PointCoord:
+    Copy
+    + Default
+    // You could bytemuck with me
+    + AnyBitPattern
+    // You could compare me
+    + PartialEq
+    + PartialOrd
+    // You could do math with me
+    + Add<Output = Self>
+    + AddAssign
+    + Sub<Output = Self>
+    + Div<Output = Self>
+    + Mul<Output = Self>
+    + MulAssign {
+    fn from_fixed(x: Fixed) -> Self;
+    fn from_i32(x: i32) -> Self;
+    fn to_f32(self) -> f32;
+    fn midpoint(self, other: Self) -> Self;
+}
+
 impl<'a> SimpleGlyph<'a> {
     /// Returns the total number of points.
     pub fn num_points(&self) -> usize {
@@ -155,9 +179,9 @@ impl<'a> SimpleGlyph<'a> {
     /// As the name implies, this is faster than using the iterator returned by
     /// [points](Self::points) so should be used when it is possible to
     /// preallocate buffers.
-    pub fn read_points_fast(
+    pub fn read_points_fast<C: PointCoord>(
         &self,
-        points: &mut [Point<i32>],
+        points: &mut [Point<C>],
         flags: &mut [PointFlags],
     ) -> Result<(), ReadError> {
         let n_points = self.num_points();
@@ -193,7 +217,7 @@ impl<'a> SimpleGlyph<'a> {
                 delta = cursor.read::<i16>()? as i32;
             }
             x = x.wrapping_add(delta);
-            point.x = x;
+            point.x = C::from_i32(x);
         }
         let mut y = 0i32;
         for (point_flags, point) in flags.iter_mut().zip(points.as_mut()) {
@@ -208,7 +232,7 @@ impl<'a> SimpleGlyph<'a> {
                 delta = cursor.read::<i16>()? as i32;
             }
             y = y.wrapping_add(delta);
-            point.y = y;
+            point.y = C::from_i32(y);
             // Only keep the on-curve bit
             point_flags.0 &= 1;
         }
@@ -707,7 +731,7 @@ enum OnCurve {
 
 impl OnCurve {
     #[inline(always)]
-    fn endpoint(&self, last_offcurve: Point<F26Dot6>, current: Point<F26Dot6>) -> Point<F26Dot6> {
+    fn endpoint<C: PointCoord>(&self, last_offcurve: Point<C>, current: Point<C>) -> Point<C> {
         match self {
             OnCurve::Implicit => midpoint(last_offcurve, current),
             OnCurve::Explicit => current,
@@ -718,39 +742,48 @@ impl OnCurve {
 // FreeType uses integer division to compute midpoints.
 // See: https://github.com/freetype/freetype/blob/de8b92dd7ec634e9e2b25ef534c54a3537555c11/src/base/ftoutln.c#L123
 #[inline(always)]
-fn midpoint(a: Point<F26Dot6>, b: Point<F26Dot6>) -> Point<F26Dot6> {
-    ((a + b).map(F26Dot6::to_bits) / 2).map(F26Dot6::from_bits)
+fn midpoint<C: PointCoord>(a: Point<C>, b: Point<C>) -> Point<C> {
+    Point::new(a.x.midpoint(b.x), a.y.midpoint(b.y))
 }
 
 #[derive(Debug)]
-struct Contour<'a> {
+struct Contour<'a, C>
+where
+    C: PointCoord,
+{
     /// The offset into the glyphs point stream our points start.
     ///
     /// Allows us to report error indices that are correct relative to the containing point stream.
     base_offset: usize,
     /// The points for this contour, sliced from a glyphs point stream
-    points: &'a [Point<F26Dot6>],
+    points: &'a [Point<C>],
     /// The flags for points, sliced from a glyphs flag stream
     flags: &'a [PointFlags],
     path_style: ToPathStyle,
 }
 
 #[derive(Debug)]
-struct ContourIter<'a> {
-    contour: &'a Contour<'a>,
+struct ContourIter<'a, C>
+where
+    C: PointCoord,
+{
+    contour: &'a Contour<'a, C>,
     /// Wrapping index into points/flags of contour.
     ix: usize,
     /// Number of points yet to be processed
     points_pending: usize,
-    first_move: Point<F26Dot6>,
+    first_move: Point<C>,
     /// Indices of off-curve points yet to be processed
     off_curve: [usize; 2],
     /// Number of live entries in off_curve
     off_curve_pending: usize,
 }
 
-impl<'a> ContourIter<'a> {
-    fn new(contour: &'a Contour<'_>) -> Result<Self, ToPathError> {
+impl<'a, C> ContourIter<'a, C>
+where
+    C: PointCoord,
+{
+    fn new(contour: &'a Contour<'_, C>) -> Result<Self, ToPathError> {
         // By default start at [0], unless [0] is off-curve
         let mut start_ix = 0;
         let mut num_pending = contour.points.len();
@@ -801,7 +834,7 @@ impl<'a> ContourIter<'a> {
 
     fn quad_to(
         &mut self,
-        curr: Point<F26Dot6>,
+        curr: Point<C>,
         oncurve: OnCurve,
         pen: &mut impl Pen,
     ) -> Result<(), ToPathError> {
@@ -811,8 +844,8 @@ impl<'a> ContourIter<'a> {
             return Err(ToPathError::ExpectedQuad(self.contour.base_offset + buf_ix));
         }
         let c0 = self.contour.points[buf_ix];
-        let end = oncurve.endpoint(c0, curr).map(F26Dot6::to_f32);
-        let c0 = c0.map(F26Dot6::to_f32);
+        let end = oncurve.endpoint(c0, curr).map(C::to_f32);
+        let c0 = c0.map(C::to_f32);
         pen.quad_to(c0.x, c0.y, end.x, end.y);
 
         self.off_curve_pending = 0;
@@ -821,7 +854,7 @@ impl<'a> ContourIter<'a> {
 
     fn cubic_to(
         &mut self,
-        curr: Point<F26Dot6>,
+        curr: Point<C>,
         oncurve: OnCurve,
         pen: &mut impl Pen,
     ) -> Result<(), ToPathError> {
@@ -839,10 +872,10 @@ impl<'a> ContourIter<'a> {
             ));
         }
 
-        let c0 = self.contour.points[buf_ix_0].map(F26Dot6::to_f32);
+        let c0 = self.contour.points[buf_ix_0].map(C::to_f32);
         let c1 = self.contour.points[buf_ix_1];
-        let end = oncurve.endpoint(c1, curr).map(F26Dot6::to_f32);
-        let c1 = c1.map(F26Dot6::to_f32);
+        let end = oncurve.endpoint(c1, curr).map(C::to_f32);
+        let c1 = c1.map(C::to_f32);
         pen.curve_to(c0.x, c0.y, c1.x, c1.y, end.x, end.y);
 
         self.off_curve_pending = 0;
@@ -886,7 +919,7 @@ impl<'a> ContourIter<'a> {
                     _ => {
                         // only zero should match and that's a line
                         debug_assert!(self.off_curve_pending == 0);
-                        let curr = curr.map(F26Dot6::to_f32);
+                        let curr = curr.map(C::to_f32);
                         pen.line_to(curr.x, curr.y);
                     }
                 }
@@ -907,10 +940,13 @@ impl<'a> ContourIter<'a> {
     }
 }
 
-impl<'a> Contour<'a> {
+impl<'a, C> Contour<'a, C>
+where
+    C: PointCoord,
+{
     fn new(
         base_offset: usize,
-        points: &'a [Point<F26Dot6>],
+        points: &'a [Point<C>],
         flags: &'a [PointFlags],
         path_style: ToPathStyle,
     ) -> Result<Self, ToPathError> {
@@ -934,7 +970,7 @@ impl<'a> Contour<'a> {
             return Ok(());
         }
 
-        let first_move = it.first_move.map(F26Dot6::to_f32);
+        let first_move = it.first_move.map(C::to_f32);
         pen.move_to(first_move.x, first_move.y);
 
         while !it.is_empty() {
@@ -948,15 +984,16 @@ impl<'a> Contour<'a> {
     }
 }
 
-/// Converts a `glyf` outline described by points, flags and contour end points to a sequence of
-/// path elements and invokes the appropriate callback on the given pen for each.
+/// Converts a `glyf` outline described by points, flags and contour end points
+/// to a sequence of path elements and invokes the appropriate callback on the
+/// given pen for each.
 ///
-/// The input points are expected in `F26Dot6` format as that is the standard result of scaling
-/// a TrueType glyph. Output points are generated in `f32`.
+/// The input points can have any coordinate type that implements
+/// [`PointCoord`]. Output points are always generated in `f32`.
 ///
 /// This is roughly equivalent to [`FT_Outline_Decompose`](https://freetype.org/freetype2/docs/reference/ft2-outline_processing.html#ft_outline_decompose).
-pub fn to_path(
-    points: &[Point<F26Dot6>],
+pub fn to_path<C: PointCoord>(
+    points: &[Point<C>],
     flags: &[PointFlags],
     contours: &[u16],
     path_style: ToPathStyle,
@@ -1020,19 +1057,79 @@ impl Transform {
     }
 }
 
-//NOTE: we want generated_glyf traversal to include this:
-//7usize => {
-//let this = self.sneaky_copy();
-//Some(Field::new(
-//"components",
-//FieldType::offset_iter(move || {
-//Box::new(
-//this.iter_components()
-//.map(|item| FieldType::ResolvedOffset(Ok(Box::new(item)))),
-//) as Box<dyn Iterator<Item = FieldType<'a>> + 'a>
-//}),
-//))
-//}
+impl PointCoord for F26Dot6 {
+    fn from_fixed(x: Fixed) -> Self {
+        x.to_f26dot6()
+    }
+
+    fn from_i32(x: i32) -> Self {
+        Self::from_i32(x)
+    }
+
+    fn to_f32(self) -> f32 {
+        self.to_f32()
+    }
+
+    fn midpoint(self, other: Self) -> Self {
+        Self::from_bits((self.to_bits() + other.to_bits()) / 2)
+    }
+}
+
+impl PointCoord for Fixed {
+    fn from_fixed(x: Fixed) -> Self {
+        x
+    }
+
+    fn from_i32(x: i32) -> Self {
+        Self::from_i32(x)
+    }
+
+    fn to_f32(self) -> f32 {
+        self.to_f32()
+    }
+
+    fn midpoint(self, other: Self) -> Self {
+        Self::from_bits((self.to_bits() + other.to_bits()) / 2)
+    }
+}
+
+impl PointCoord for i32 {
+    fn from_fixed(x: Fixed) -> Self {
+        x.to_i32()
+    }
+
+    fn from_i32(x: i32) -> Self {
+        x
+    }
+
+    fn to_f32(self) -> f32 {
+        self as f32
+    }
+
+    fn midpoint(self, other: Self) -> Self {
+        (self + other) / 2
+    }
+}
+
+impl PointCoord for f32 {
+    fn from_fixed(x: Fixed) -> Self {
+        x.to_f32()
+    }
+
+    fn from_i32(x: i32) -> Self {
+        x as f32
+    }
+
+    fn to_f32(self) -> f32 {
+        self
+    }
+
+    fn midpoint(self, other: Self) -> Self {
+        // HarfBuzz uses a lerp here so we copy the style to
+        // preserve compatibility
+        self + 0.5 * (other - self)
+    }
+}
 
 #[cfg(test)]
 mod tests {
