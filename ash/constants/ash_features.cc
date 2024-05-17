@@ -2968,6 +2968,11 @@ BASE_FEATURE(kVcLightIntensity,
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables versioned wallpaper info.
+BASE_FEATURE(kVersionedWallpaperInfo,
+             "VersionedWallpaperInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable global preferences for skin tone and gender in the virtual
 // keyboard emoji picker.
 BASE_FEATURE(kVirtualKeyboardGlobalEmojiPreferences,
@@ -2993,11 +2998,6 @@ BASE_FEATURE(kWallpaperFastRefresh,
 BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              "WallpaperGooglePhotosSharedAlbums",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables wallpaper info improvement.
-BASE_FEATURE(kWallpaperInfoImprovement,
-             "WallpaperInfoImprovement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable different wallpapers per desk.
 BASE_FEATURE(kWallpaperPerDesk,
@@ -4585,16 +4585,16 @@ bool IsVcWebApiEnabled() {
   return base::FeatureList::IsEnabled(kVcWebApi) && IsVideoConferenceEnabled();
 }
 
+bool IsVersionWallpaperInfoEnabled() {
+  return base::FeatureList::IsEnabled(kVersionedWallpaperInfo);
+}
+
 bool IsWallpaperFastRefreshEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperFastRefresh);
 }
 
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperGooglePhotosSharedAlbums);
-}
-
-bool IsWallpaperInfoImprovementEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperInfoImprovement);
 }
 
 bool IsWallpaperPerDeskEnabled() {
