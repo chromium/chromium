@@ -16,6 +16,7 @@ _proto_files = [
   "groups.proto",
   "navigational_intent.proto",
   "rich_answer_template.proto",
+  "rich_suggest_template.proto",
   "search_context.proto",
   "types.proto",
 ]

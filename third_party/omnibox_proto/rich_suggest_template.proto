@@ -1,0 +1,16 @@
+syntax = 'proto2';
+
+import "rich_answer_template.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'RichSuggestTemplateProto';
+
+package omnibox;
+
+message RichSuggestTemplate {
+  oneof template {
+    RichAnswerTemplate rich_answer_template = 1;
+  }
+  reserved 2, 3, 4, 5;
+}
