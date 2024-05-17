@@ -793,3 +793,15 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
       keyEvents[9].type);
   assertEquals(KeyCode.LEFT, keyEvents[9].keyCode);
 });
+
+AX_TEST_F('FaceGazeTest', 'ClosesCameraStream', async function() {
+  await this.getFaceGaze().cameraStreamReadyPromise_;
+  let win = chrome.extension.getViews().find(
+      view => view.location.href.includes('camera_stream.html'));
+  assertTrue(!!win);
+  this.getFaceGaze().onFaceGazeDisabled();
+  await this.getFaceGaze().cameraStreamClosedPromise_;
+  win = chrome.extension.getViews().find(
+      view => view.location.href.includes('camera_stream.html'));
+  assertFalse(!!win);
+});
