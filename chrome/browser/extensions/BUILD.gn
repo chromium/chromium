@@ -439,6 +439,8 @@ static_library("extensions") {
     "blocklist_factory.h",
     "blocklist_state_fetcher.cc",
     "blocklist_state_fetcher.h",
+    "bookmark_app_util.cc",
+    "bookmark_app_util.h",
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
     "browser_extension_window_controller.cc",
