@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -46,7 +47,8 @@ UpdateContext::UpdateContext(
     const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
     UpdateEngine::Callback callback,
     PersistedData* persisted_data,
-    bool is_update_check_only)
+    bool is_update_check_only,
+    base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space)
     : config(config),
       crx_cache_(crx_cache),
       is_foreground(is_foreground),
@@ -58,7 +60,8 @@ UpdateContext::UpdateContext(
       session_id(base::StrCat(
           {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
       persisted_data(persisted_data),
-      is_update_check_only(is_update_check_only) {
+      is_update_check_only(is_update_check_only),
+      get_available_space(get_available_space) {
   for (const auto& id : ids) {
     components.insert(
         std::make_pair(id, std::make_unique<Component>(*this, id)));

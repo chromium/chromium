@@ -33,14 +33,15 @@ enum class ErrorCategory {
   kUpdateCheck,
 };
 
-// These errors are returned with the |kNetworkError| error category. This
-// category could include other errors such as the errors defined by
-// the Chrome net stack.
+// These errors are returned with the `kDownload` error category. This category
+// could include other errors such as the errors defined by the Chrome net
+// stack.
 enum class CrxDownloaderError {
   NONE = 0,
   NO_URL = 10,
   NO_HASH = 11,
   BAD_HASH = 12,  // The downloaded file fails the hash verification.
+  DISK_FULL = 13,
   // The Windows BITS queue contains to many update client jobs. The value is
   // chosen so that it can be reported as a custom COM error on this platform.
   BITS_TOO_MANY_JOBS = 0x0200,

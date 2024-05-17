@@ -257,16 +257,28 @@ class Component {
     void DoHandle() override;
   };
 
-  class StateDownloadingDiff : public State {
+  class StateDownloadingBase : public State {
    public:
-    explicit StateDownloadingDiff(Component* component);
-    StateDownloadingDiff(const StateDownloadingDiff&) = delete;
-    StateDownloadingDiff& operator=(const StateDownloadingDiff&) = delete;
-    ~StateDownloadingDiff() override;
+    explicit StateDownloadingBase(Component* component, ComponentState state);
+    StateDownloadingBase(const StateDownloadingBase&) = delete;
+    StateDownloadingBase& operator=(const StateDownloadingBase&) = delete;
+    ~StateDownloadingBase() override;
+
+    virtual int64_t component_size() const = 0;
+    virtual std::vector<GURL> component_crx_urls() const = 0;
+    virtual std::string component_hash_sha256() const = 0;
+    virtual void set_component_error_category(ErrorCategory error_category) = 0;
+    virtual void set_component_error_code(int error_code) = 0;
+    virtual std::unique_ptr<State> next_state_on_error() = 0;
+    virtual std::unique_ptr<State> next_state() = 0;
 
    private:
     // State overrides.
     void DoHandle() override;
+
+    // Starts the download if there is enough disk space available to download.
+    // If not enough disk space, transitions to the error state.
+    void HandleAvailableSpace(const int64_t available_bytes);
 
     // Called when progress is being made downloading a CRX. Can be called
     // multiple times due to how the CRX downloader switches between
@@ -279,26 +291,36 @@ class Component {
     scoped_refptr<CrxDownloader> crx_downloader_;
   };
 
-  class StateDownloading : public State {
+  class StateDownloading : public StateDownloadingBase {
    public:
     explicit StateDownloading(Component* component);
     StateDownloading(const StateDownloading&) = delete;
     StateDownloading& operator=(const StateDownloading&) = delete;
     ~StateDownloading() override;
 
-   private:
-    // State overrides.
-    void DoHandle() override;
+    int64_t component_size() const override;
+    std::vector<GURL> component_crx_urls() const override;
+    std::string component_hash_sha256() const override;
+    void set_component_error_category(ErrorCategory error_category) override;
+    void set_component_error_code(int error_code) override;
+    std::unique_ptr<State> next_state_on_error() override;
+    std::unique_ptr<State> next_state() override;
+  };
 
-    // Called when progress is being made downloading a CRX. Can be called
-    // multiple times due to how the CRX downloader switches between
-    // different downloaders and fallback urls.
-    void DownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
+  class StateDownloadingDiff : public StateDownloadingBase {
+   public:
+    explicit StateDownloadingDiff(Component* component);
+    StateDownloadingDiff(const StateDownloadingDiff&) = delete;
+    StateDownloadingDiff& operator=(const StateDownloadingDiff&) = delete;
+    ~StateDownloadingDiff() override;
 
-    void DownloadComplete(const CrxDownloader::Result& download_result);
-
-    // Downloads updates for one CRX id only.
-    scoped_refptr<CrxDownloader> crx_downloader_;
+    int64_t component_size() const override;
+    std::vector<GURL> component_crx_urls() const override;
+    std::string component_hash_sha256() const override;
+    void set_component_error_category(ErrorCategory error_category) override;
+    void set_component_error_code(int error_code) override;
+    std::unique_ptr<State> next_state_on_error() override;
+    std::unique_ptr<State> next_state() override;
   };
 
   class StateUpdatingDiff : public State {

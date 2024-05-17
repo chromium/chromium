@@ -4,6 +4,7 @@
 
 #include "components/update_client/component.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -67,6 +68,13 @@
 //     |               +-<- [differential update?]           |
 //     |               |               |                     |
 //     |               |           yes |                     |
+//     |               |               |                     |
+//     |    error, no  |               |                     |
+//     +-<----------[disk space available?]                  |
+//     |               |               |                     |
+//     |           yes |           yes |                     |
+//     |               |               |                     |
+//     |               |               |                     |
 //     |               | error         V                     |
 //     |               +-<----- kDownloadingDiff             |
 //     |               |               |                     |
@@ -1043,31 +1051,64 @@ void Component::StateUpToDate::DoHandle() {
   EndState();
 }
 
-Component::StateDownloadingDiff::StateDownloadingDiff(Component* component)
-    : State(component, ComponentState::kDownloadingDiff) {}
+Component::StateDownloadingBase::StateDownloadingBase(Component* component,
+                                                      ComponentState state)
+    : State(component, state) {}
 
-Component::StateDownloadingDiff::~StateDownloadingDiff() {
+Component::StateDownloadingBase::~StateDownloadingBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void Component::StateDownloadingDiff::DoHandle() {
+void Component::StateDownloadingBase::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
   CHECK(component.crx_component());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(
+          [](base::RepeatingCallback<int64_t(const base::FilePath&)>
+                 get_available_space) -> int64_t {
+            base::ScopedTempDir temp_dir;
+            return temp_dir.CreateUniqueTempDir()
+                       ? get_available_space.Run(temp_dir.GetPath())
+                       : 0;
+          },
+          component.update_context_->get_available_space),
+      base::BindOnce(&Component::StateDownloadingBase::HandleAvailableSpace,
+                     base::Unretained(this)));
+}
+
+void Component::StateDownloadingBase::HandleAvailableSpace(
+    const int64_t available_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto& component = Component::State::component();
+  CHECK(component.crx_component());
+
+  if (available_bytes <= component_size() * 2) {
+    VLOG(1) << "available_bytes: " << available_bytes
+            << ", download size: " << component_size();
+    component.error_category_ = ErrorCategory::kDownload;
+    component.error_code_ = static_cast<int>(CrxDownloaderError::DISK_FULL);
+
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    return;
+  }
 
   component.downloaded_bytes_ = -1;
   component.total_bytes_ = -1;
 
   crx_downloader_ =
       component.config()->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          component.CanDoBackgroundDownload(component.sizediff_));
+          component.CanDoBackgroundDownload(component_size()));
   crx_downloader_->set_progress_callback(
-      base::BindRepeating(&Component::StateDownloadingDiff::DownloadProgress,
+      base::BindRepeating(&Component::StateDownloadingBase::DownloadProgress,
                           base::Unretained(this)));
   cancel_callback_ = crx_downloader_->StartDownload(
-      component.crx_diffurls_, component.hashdiff_sha256_,
-      base::BindOnce(&Component::StateDownloadingDiff::DownloadComplete,
+      component_crx_urls(), component_hash_sha256(),
+      base::BindOnce(&Component::StateDownloadingBase::DownloadComplete,
                      base::Unretained(this)));
 
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
@@ -1076,7 +1117,7 @@ void Component::StateDownloadingDiff::DoHandle() {
 // Called when progress is being made downloading a CRX. Can be called multiple
 // times due to how the CRX downloader switches between different downloaders
 // and fallback urls.
-void Component::StateDownloadingDiff::DownloadProgress(int64_t downloaded_bytes,
+void Component::StateDownloadingBase::DownloadProgress(int64_t downloaded_bytes,
                                                        int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = Component::State::component();
@@ -1085,11 +1126,12 @@ void Component::StateDownloadingDiff::DownloadProgress(int64_t downloaded_bytes,
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
-void Component::StateDownloadingDiff::DownloadComplete(
+void Component::StateDownloadingBase::DownloadComplete(
     const CrxDownloader::Result& download_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
+
   for (const auto& download_metrics : crx_downloader_->download_metrics()) {
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
   }
@@ -1105,90 +1147,81 @@ void Component::StateDownloadingDiff::DownloadComplete(
 
   if (download_result.error) {
     CHECK(download_result.response.empty());
-    component.diff_error_category_ = ErrorCategory::kDownload;
-    component.diff_error_code_ = download_result.error;
+    set_component_error_category(ErrorCategory::kDownload);
+    set_component_error_code(download_result.error);
 
-    TransitionState(std::make_unique<StateDownloading>(&component));
+    TransitionState(next_state_on_error());
     return;
   }
 
   component.payload_path_ = download_result.response;
 
-  TransitionState(std::make_unique<StateUpdatingDiff>(&component));
+  TransitionState(next_state());
 }
 
 Component::StateDownloading::StateDownloading(Component* component)
-    : State(component, ComponentState::kDownloading) {}
-
+    : StateDownloadingBase(component, ComponentState::kDownloading) {}
 Component::StateDownloading::~StateDownloading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void Component::StateDownloading::DoHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+int64_t Component::StateDownloading::component_size() const {
+  return Component::State::component().size_;
+}
+std::vector<GURL> Component::StateDownloading::component_crx_urls() const {
+  return Component::State::component().crx_urls_;
+}
+std::string Component::StateDownloading::component_hash_sha256() const {
+  return Component::State::component().hash_sha256_;
+}
+void Component::StateDownloading::set_component_error_category(
+    ErrorCategory error_category) {
+  Component::State::component().error_category_ = error_category;
+}
+void Component::StateDownloading::set_component_error_code(int error_code) {
+  Component::State::component().error_code_ = error_code;
+}
+std::unique_ptr<Component::State>
+Component::StateDownloading::next_state_on_error() {
   auto& component = Component::State::component();
-  CHECK(component.crx_component());
-
-  component.downloaded_bytes_ = -1;
-  component.total_bytes_ = -1;
-
-  crx_downloader_ =
-      component.config()->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          component.CanDoBackgroundDownload(component.size_));
-  crx_downloader_->set_progress_callback(base::BindRepeating(
-      &Component::StateDownloading::DownloadProgress, base::Unretained(this)));
-  cancel_callback_ = crx_downloader_->StartDownload(
-      component.crx_urls_, component.hash_sha256_,
-      base::BindOnce(&Component::StateDownloading::DownloadComplete,
-                     base::Unretained(this)));
-
-  component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
+  return std::make_unique<Component::StateUpdateError>(&component);
+}
+std::unique_ptr<Component::State> Component::StateDownloading::next_state() {
+  auto& component = Component::State::component();
+  return std::make_unique<Component::StateUpdating>(&component);
 }
 
-// Called when progress is being made downloading a CRX. Can be called multiple
-// times due to how the CRX downloader switches between different downloaders
-// and fallback urls.
-void Component::StateDownloading::DownloadProgress(int64_t downloaded_bytes,
-                                                   int64_t total_bytes) {
+Component::StateDownloadingDiff::StateDownloadingDiff(Component* component)
+    : StateDownloadingBase(component, ComponentState::kDownloadingDiff) {}
+Component::StateDownloadingDiff::~StateDownloadingDiff() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto& component = Component::State::component();
-  component.downloaded_bytes_ = downloaded_bytes;
-  component.total_bytes_ = total_bytes;
-  component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
-void Component::StateDownloading::DownloadComplete(
-    const CrxDownloader::Result& download_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+int64_t Component::StateDownloadingDiff::component_size() const {
+  return Component::State::component().sizediff_;
+}
+std::vector<GURL> Component::StateDownloadingDiff::component_crx_urls() const {
+  return Component::State::component().crx_diffurls_;
+}
+std::string Component::StateDownloadingDiff::component_hash_sha256() const {
+  return Component::State::component().hashdiff_sha256_;
+}
+void Component::StateDownloadingDiff::set_component_error_category(
+    ErrorCategory error_category) {
+  Component::State::component().diff_error_category_ = error_category;
+}
+void Component::StateDownloadingDiff::set_component_error_code(int error_code) {
+  Component::State::component().diff_error_code_ = error_code;
+}
+std::unique_ptr<Component::State>
+Component::StateDownloadingDiff::next_state_on_error() {
   auto& component = Component::State::component();
-
-  for (const auto& download_metrics : crx_downloader_->download_metrics()) {
-    component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
-  }
-
-  crx_downloader_ = nullptr;
-
-  if (component.update_context_->is_cancelled) {
-    TransitionState(std::make_unique<StateUpdateError>(&component));
-    component.error_category_ = ErrorCategory::kService;
-    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
-    return;
-  }
-
-  if (download_result.error) {
-    CHECK(download_result.response.empty());
-    component.error_category_ = ErrorCategory::kDownload;
-    component.error_code_ = download_result.error;
-
-    TransitionState(std::make_unique<StateUpdateError>(&component));
-    return;
-  }
-
-  component.payload_path_ = download_result.response;
-
-  TransitionState(std::make_unique<StateUpdating>(&component));
+  return std::make_unique<Component::StateDownloading>(&component);
+}
+std::unique_ptr<Component::State>
+Component::StateDownloadingDiff::next_state() {
+  auto& component = Component::State::component();
+  return std::make_unique<Component::StateUpdatingDiff>(&component);
 }
 
 Component::StateUpdatingDiff::StateUpdatingDiff(Component* component)

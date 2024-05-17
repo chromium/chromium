@@ -12,10 +12,13 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "components/update_client/component.h"
 #include "components/update_client/crx_cache.h"
@@ -141,7 +144,12 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
       UpdateEngine::Callback callback,
       PersistedData* persisted_data,
-      bool is_update_check_only);
+      bool is_update_check_only,
+      base::RepeatingCallback<int64_t(const base::FilePath&)>
+          get_available_space =
+              base::BindRepeating([](const base::FilePath& dir) {
+                return base::SysInfo::AmountOfFreeDiskSpace(dir);
+              }));
   UpdateContext(const UpdateContext&) = delete;
   UpdateContext& operator=(const UpdateContext&) = delete;
 
@@ -209,6 +217,8 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   // True if this context is for an update check operation.
   bool is_update_check_only = false;
+
+  base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space;
 
  private:
   friend class base::RefCountedThreadSafe<UpdateContext>;
