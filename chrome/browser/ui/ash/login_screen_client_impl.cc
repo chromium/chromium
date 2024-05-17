@@ -13,6 +13,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/check_is_test.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -426,12 +427,21 @@ void LoginScreenClientImpl::OnParentAccessValidation(
 
 void LoginScreenClientImpl::ShowGaiaSigninInternal(
     const AccountId& prefilled_account) {
+  // It is possible that the call will come during the session start and after
+  // the LoginDisplayHost destruction. Ignore such calls.
   if (ash::LoginDisplayHost::default_host()) {
-    // Login screen case.
     ash::LoginDisplayHost::default_host()->ShowGaiaDialog(prefilled_account);
-  } else {
-    // Lock screen case.
+  } else if (session_manager::SessionManager::Get()->session_state() ==
+             session_manager::SessionState::LOCKED) {
     ash::LockScreenStartReauthDialog::Show();
+  } else {
+    // TODO(b/332715260): In general this shouldn't happen, however there might
+    // be transition states when pending calls still arrive. It should be safe
+    // to remove the DumpWithoutCrashing if the number of reports will be low.
+    base::debug::DumpWithoutCrashing();
+    LOG(WARNING) << __func__ << ": ignoring the call, session state: "
+                 << static_cast<int>(session_manager::SessionManager::Get()
+                                         ->session_state());
   }
 }
 
