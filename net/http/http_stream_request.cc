@@ -18,7 +18,6 @@ namespace net {
 
 HttpStreamRequest::HttpStreamRequest(
     Helper* helper,
-    HttpStreamRequest::Delegate* delegate,
     WebSocketHandshakeStreamBase::CreateHelper*
         websocket_handshake_stream_create_helper,
     const NetLogWithSource& net_log,

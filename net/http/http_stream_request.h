@@ -129,10 +129,9 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     virtual void SetPriority(RequestPriority priority) = 0;
   };
 
-  // Request will notify |job_controller| when it's destructed.
-  // Thus |job_controller| is valid for the lifetime of the |this| Request.
+  // Request will notify `helper` when it's destructed.
+  // Thus `helper` is valid for the lifetime of the `this` Request.
   HttpStreamRequest(Helper* helper,
-                    HttpStreamRequest::Delegate* delegate,
                     WebSocketHandshakeStreamBase::CreateHelper*
                         websocket_handshake_stream_create_helper,
                     const NetLogWithSource& net_log,

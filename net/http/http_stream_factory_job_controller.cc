@@ -200,7 +200,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::JobController::Start(
   priority_ = priority;
 
   auto request = std::make_unique<HttpStreamRequest>(
-      this, delegate, websocket_handshake_stream_create_helper, source_net_log,
+      this, websocket_handshake_stream_create_helper, source_net_log,
       stream_type);
   // Keep a raw pointer but release ownership of HttpStreamRequest instance.
   request_ = request.get();
