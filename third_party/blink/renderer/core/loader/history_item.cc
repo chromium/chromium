@@ -136,6 +136,12 @@ void HistoryItem::ClearDocumentState() {
 }
 
 void HistoryItem::SetStateObject(scoped_refptr<SerializedScriptValue> object) {
+  if (object) {
+    recordreplay::Assert(
+      "[TT-492-1184] HistoryItem::SetStateObject %s",
+      object->ToWireString().Ascii().c_str()
+    );
+  }
   state_object_ = std::move(object);
 }
 
