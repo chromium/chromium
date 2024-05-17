@@ -23,11 +23,6 @@ std::unique_ptr<MainThread> WebFakeThreadScheduler::CreateMainThread() {
   return nullptr;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-WebFakeThreadScheduler::CompositorTaskRunner() {
-  return GetSingleThreadTaskRunnerForTesting();
-}
-
 std::unique_ptr<WebAgentGroupScheduler>
 WebFakeThreadScheduler::CreateWebAgentGroupScheduler() {
   return std::make_unique<WebAgentGroupScheduler>(

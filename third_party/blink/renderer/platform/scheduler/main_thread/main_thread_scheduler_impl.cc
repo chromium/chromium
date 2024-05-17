@@ -268,12 +268,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       find_in_page_budget_pool_controller_(
           new FindInPageBudgetPoolController(this)),
       control_task_queue_(helper_.ControlMainThreadTaskQueue()),
-      compositor_task_queue_(helper_.NewTaskQueue(
-          MainThreadTaskQueue::QueueCreationParams(
-              MainThreadTaskQueue::QueueType::kCompositor)
-              .SetShouldMonitorQuiescence(true)
-              .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
-                                         PrioritisationType::kCompositor))),
       back_forward_cache_ipc_tracking_task_queue_(helper_.NewTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages)
@@ -298,10 +292,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Compositor task queue and default task queue should be managed by
   // WebThreadScheduler. Control task queue should not.
   task_runners_.emplace(helper_.DefaultMainThreadTaskQueue(), nullptr);
-  task_runners_.emplace(compositor_task_queue_,
-                        compositor_task_queue_->CreateQueueEnabledVoter());
-  main_thread_only().idle_time_estimator.AddCompositorTaskQueue(
-      compositor_task_queue_);
 
   back_forward_cache_ipc_tracking_task_runner_ =
       back_forward_cache_ipc_tracking_task_queue_->CreateTaskRunner(
@@ -323,8 +313,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       v8_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueV8);
   v8_low_priority_task_runner_ = v8_low_priority_task_queue_->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueV8LowPriority);
-  compositor_task_runner_ = compositor_task_queue_->CreateTaskRunner(
-      TaskType::kMainThreadTaskQueueCompositor);
   control_task_runner_ = helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueControl);
   non_waking_task_runner_ = non_waking_task_queue_->CreateTaskRunner(
@@ -665,12 +653,6 @@ MainThreadSchedulerImpl::IdleTaskRunner() {
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
   return helper_.DeprecatedDefaultTaskRunner();
-}
-
-scoped_refptr<MainThreadTaskQueue>
-MainThreadSchedulerImpl::CompositorTaskQueue() {
-  helper_.CheckOnValidThread();
-  return compositor_task_queue_;
 }
 
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::V8TaskQueue() {
@@ -2064,11 +2046,6 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::V8LowPriorityTaskRunner() {
   return v8_low_priority_task_runner_;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-MainThreadSchedulerImpl::CompositorTaskRunner() {
-  return compositor_task_runner_;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
