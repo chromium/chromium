@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
@@ -28,6 +29,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -95,9 +97,16 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
 
+    pref_service_.registry()->RegisterBooleanPref(
+        metrics::prefs::kMetricsReportingEnabled, true);
+
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+
+    // Metrics reporting is disabled for non-branded builds.
+    SearchEngineChoiceMetricsServiceAccessor::
+        SetForceIsMetricsReportingEnabledPrefLookup(true);
 
     InitMockPolicyService();
     CheckPoliciesInitialState();
@@ -1364,6 +1373,36 @@ TEST_F(SearchEngineChoiceServiceTest,
   // Choice not marked done, so the service also clear the pending state.
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+}
+
+TEST_F(SearchEngineChoiceServiceTest,
+       MaybeRecordChoiceScreenDisplayState_OnServiceStartup_UmaDisabled) {
+  // Disable UMA reporting.
+  SearchEngineChoiceMetricsServiceAccessor::
+      SetForceIsMetricsReportingEnabledPrefLookup(false);
+
+  ChoiceScreenDisplayState display_state(
+      /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
+                          SEARCH_ENGINE_YAHOO},
+      /*country_id=*/kBelgiumCountryId,
+      /*list_is_modified_by_current_default=*/false,
+      /*selected_engine_index=*/0);
+  pref_service()->SetDict(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
+      display_state.ToDict());
+  EXPECT_TRUE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+
+  InitService(kBelgiumCountryId, /*force_reset=*/true);
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+
+  histogram_tester_.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
+      0);
+  histogram_tester_.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 }
 
 // Test that the user is not reprompted is the reprompt parameter is not a valid

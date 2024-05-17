@@ -8,6 +8,7 @@ include_rules = [
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/lens",
+  "+components/metrics",
   "+components/omnibox/common",
   "+components/policy",
   "+components/pref_registry",

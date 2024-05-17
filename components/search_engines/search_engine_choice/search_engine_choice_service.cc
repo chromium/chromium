@@ -25,6 +25,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -509,6 +510,14 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
 void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
   if (!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
+    return;
+  }
+
+  // The display state should not be cached when UMA is disabled.
+  if (!SearchEngineChoiceMetricsServiceAccessor::IsMetricsReportingEnabled(
+          &profile_prefs_.get())) {
+    profile_prefs_->ClearPref(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
     return;
   }
 
