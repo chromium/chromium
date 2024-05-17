@@ -13,7 +13,12 @@ namespace password_manager {
 #if BUILDFLAG(IS_LINUX)
 extern const char kPasswordStore[];
 extern const char kEnableEncryptionSelection[];
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
+
+// Specifies the user data directory, which is where the browser will look for
+// all of its state. Needs to be kept in sync with
+// chrome/common/chrome_switches.h
+inline constexpr char kUserDataDir[] = "user-data-dir";
 
 }  // namespace password_manager
 

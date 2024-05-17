@@ -31,6 +31,7 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
@@ -2272,6 +2273,134 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
       1);
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfStoreSwitchTest) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  // Set the password store switch
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kPasswordStore);
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfEncryptionSelectionSwitchTest) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  // Set the ecryption selection switch
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kEnableEncryptionSelection);
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+
+#endif  // BUILDFLAG(IS_LINUX)
+
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfUserDataDirSwitchTest) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  // Set the user data directory switch
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kUserDataDir);
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfEncryptionNotAvailiableTest) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  // Make authentication not available.
+  OSCryptMocker::SetBackendLocked(true);
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {

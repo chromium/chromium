@@ -62,6 +62,7 @@ source_set("password_store_impl") {
     "//components/os_crypt/sync:os_crypt",
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/sync",

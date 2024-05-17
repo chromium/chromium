@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
@@ -997,8 +999,18 @@ LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
 }
 
 bool ShouldDeleteUndecryptablePasswords() {
-  // TODO: crbug/40286735 - Check if password switches are disabled.
-  return OSCrypt::IsEncryptionAvailable() &&
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_pwm_related_switches_enabled =
+      command_line->HasSwitch(password_manager::kUserDataDir);
+
+#if BUILDFLAG(IS_LINUX)
+  has_pwm_related_switches_enabled =
+      has_pwm_related_switches_enabled ||
+      command_line->HasSwitch(password_manager::kPasswordStore) ||
+      command_line->HasSwitch(password_manager::kEnableEncryptionSelection);
+#endif
+  return !has_pwm_related_switches_enabled &&
+         OSCrypt::IsEncryptionAvailable() &&
          base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
 
