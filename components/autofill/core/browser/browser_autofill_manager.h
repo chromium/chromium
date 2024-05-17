@@ -128,6 +128,13 @@ inline constexpr char kAutocompleteSuppressionByPlusAddressUma[] =
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {
  public:
+  // Triggered when `GenerateSuggestionsAndMaybeShowUI` is complete.
+  // `show_suggestions` indicates whether or not the list of `suggestions`
+  // should be displayed (via the `external_delegate_`).
+  using OnGenerateSuggestionsCallback =
+      base::OnceCallback<void(bool show_suggestions,
+                              std::vector<Suggestion> suggestions)>;
+
   BrowserAutofillManager(AutofillDriver* driver,
                          const std::string& app_locale);
 
@@ -522,24 +529,55 @@ class BrowserAutofillManager : public AutofillManager {
                                                bool cleared_value,
                                                bool formatting_only);
 
-  // Replaces the contents of `suggestions` with available suggestions for
-  // `field`. Which fields of the `form` are filled depends on the
-  // `trigger_source`.
-  // `context` will contain additional information about the suggestions, such
-  // as if they correspond to credit card suggestions and if the context is
-  // secure.
-  void GetAvailableSuggestions(const FormData& form,
-                               const FormFieldData& field,
-                               AutofillSuggestionTriggerSource trigger_source,
-                               std::vector<Suggestion>* suggestions,
-                               SuggestionsContext* context);
-
   // Populates all the fields (except for ablation stuy related fields) in
   // `SuggestionsContext` based on the given params.
   SuggestionsContext BuildSuggestionsContext(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source);
+
+  // Replaces the contents of `suggestions` with available suggestions for
+  // `field`. Which fields of the `form` are filled depends on the
+  // `trigger_source`.
+  // `context` could contain additional information about the suggestions, such
+  // as ablation study related fields.
+  // TODO(b/340494671): Rename to GetAvailableAddressAndCreditCardSuggestions.
+  // TODO(b/340494671): Move ablation study fields out of the function and make
+  // the context a const ref.
+  void GetAvailableSuggestions(const FormData& form,
+                               const FormFieldData& field,
+                               AutofillSuggestionTriggerSource trigger_source,
+                               std::vector<Suggestion>* suggestions,
+                               SuggestionsContext* context);
+
+  // Generates and prioritizes different kinds of suggestions and
+  // suggestion surfaces accordingly (e.g. Fast Checkout,
+  // SingleFieldFormFiller(s), address and credit card popups). Suggestion flows
+  // that handle their own UI flow (e.g. FastCheckout, TTF,
+  // SingleFieldFormFiller) are triggered from within this function. Other flows
+  // that rely on the `external_delegate_` to show their suggestions, pass the
+  // suggestions list to the delegate on `OnGenerateSuggestionsComplete` and
+  // request them to be shown (via `show_suggestions`). Note that the `callback`
+  // is always called regardless of the suggestion surface. The only case when
+  // it's not called is when suggestions are suppressed (See
+  // `ShouldSuppressSuggestions`).
+  void GenerateSuggestionsAndMaybeShowUI(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext context,
+      OnGenerateSuggestionsCallback callback);
+
+  // The function receives a the list of `suggestions` from
+  // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
+  // is true (via the `external_delegate_`). It also logs whether there is a
+  // suggestion for the user and whether the suggestion is shown.
+  void OnGenerateSuggestionsComplete(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      bool show_suggestions,
+      std::vector<Suggestion> suggestions);
 
   // For each submitted field in the |form_structure|, it determines whether
   // |ADDRESS_HOME_STATE| is a possible matching type.

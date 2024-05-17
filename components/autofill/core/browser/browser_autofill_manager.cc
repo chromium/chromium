@@ -1285,17 +1285,26 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context =
       BuildSuggestionsContext(form, field, trigger_source);
 
+  GenerateSuggestionsAndMaybeShowUI(
+      form, field, trigger_source, std::move(context),
+      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     trigger_source));
+}
+
+void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuggestionsContext context,
+    OnGenerateSuggestionsCallback callback) {
   std::vector<Suggestion> suggestions;
   GetAvailableSuggestions(form, field, trigger_source, &suggestions, &context);
 
-  const bool form_element_was_clicked =
-      trigger_source ==
-      AutofillSuggestionTriggerSource::kFormControlElementClicked;
-
-  if (context.is_autofill_available) {
+  auto ShouldSuppressSuggestions = [&] {
     switch (context.suppress_reason) {
       case SuppressReason::kNotSuppressed:
-        break;
+        return false;
 
       case SuppressReason::kAblation:
         single_field_form_fill_router_->CancelPendingQueries();
@@ -1304,24 +1313,28 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: Ablation experiment";
-        return;
+        return true;
 
       case SuppressReason::kInsecureForm:
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: Insecure form";
-        return;
+        return true;
       case SuppressReason::kAutocompleteOff:
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: autocomplete=off";
-        return;
+        return true;
       case SuppressReason::kAutocompleteUnrecognized:
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: autocomplete=unrecognized";
-        return;
+        return true;
     }
+  };
+
+  if (context.is_autofill_available && ShouldSuppressSuggestions()) {
+    return;
   }
 
   if (!suggestions.empty()) {
@@ -1417,7 +1430,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return true;
   };
 
-  auto ShouldShowSuggestion = [&] {
+  auto ShouldShowSuggestions = [&] {
+    const bool form_element_was_clicked =
+        trigger_source ==
+        AutofillSuggestionTriggerSource::kFormControlElementClicked;
     if (fast_checkout_delegate_ &&
         (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
          (form_element_was_clicked &&
@@ -1463,19 +1479,32 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return true;
   };
 
-  bool show_suggestion = ShouldShowSuggestion();
+  // Calling `ShouldShowSuggestions` must be done before moving `suggestions`.
+  // Given that the order of evaluating parameters in C++ is unspecified, this
+  // call can not be inlined below.
+  bool show_suggestions = ShouldShowSuggestions();
+  std::move(callback).Run(show_suggestions, std::move(suggestions));
+}
+
+void BrowserAutofillManager::OnGenerateSuggestionsComplete(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    bool show_suggestions,
+    std::vector<Suggestion> suggestions) {
   // When focusing on a field, log whether there is a suggestion for the user
   // and whether the suggestion is shown.
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (form_element_was_clicked &&
+  if (trigger_source ==
+          AutofillSuggestionTriggerSource::kFormControlElementClicked &&
       GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     autofill_field->AppendLogEventIfNotRepeated(AskForValuesToFillFieldLogEvent{
         .has_suggestion = ToOptionalBoolean(!suggestions.empty()),
-        .suggestion_is_shown = ToOptionalBoolean(show_suggestion),
+        .suggestion_is_shown = ToOptionalBoolean(show_suggestions),
     });
   }
-  if (show_suggestion) {
+  if (show_suggestions) {
     // Send Autofill suggestions (could be an empty list).
     external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions);
   }
