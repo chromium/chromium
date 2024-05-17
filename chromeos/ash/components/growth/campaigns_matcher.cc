@@ -470,6 +470,11 @@ bool CampaignsMatcher::MatchMinorUser(
                             ->GetAccountId()
                             .GetGaiaId();
   auto* identity_manager = client_->GetIdentityManager();
+  if (!identity_manager) {
+    // Identity manager is not available (e.g:guest mode). In that case,
+    // a campaign with minor user targeting shouldn't be triggered.
+    return false;
+  }
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   // TODO: b/333896450 - find a better signal for minor mode.
