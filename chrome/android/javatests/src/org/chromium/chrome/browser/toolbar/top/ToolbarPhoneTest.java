@@ -809,11 +809,10 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testToolbarBackgroundChanged() {
+    public void testToolbarBackgroundChange() {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt
-        int homeSurfaceToolbarBackgroundColorForSurfacePolish =
+        int homeSurfaceToolbarBackgroundColor =
                 ColorUtils.setAlphaComponent(
                         ChromeColors.getSurfaceColor(
                                 mToolbar.getContext(),
@@ -821,45 +820,38 @@ public class ToolbarPhoneTest {
                         0);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
-        assertNotEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        assertEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
 
         // Focus on the Omnibox.
         mOmnibox.requestFocus();
-        assertNotEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRealSearchBoxAppearanceChange(boolean nightModeEnabled) {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();
         View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
-        int expectedEndMarginAfterPolish =
+        int expectedEndMarginForNtp =
                 mToolbar.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_polish);
-        int expectedEndMarginBeforePolish =
+        int expectedEndMargin =
                 mToolbar.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
         assertEquals(View.INVISIBLE, iconBackground.getVisibility());
         assertEquals(
-                expectedEndMarginBeforePolish,
+                expectedEndMargin,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
 
         // Load the new tab page.
@@ -879,50 +871,43 @@ public class ToolbarPhoneTest {
             assertEquals(View.VISIBLE, iconBackground.getVisibility());
         }
         assertEquals(
-                expectedEndMarginAfterPolish,
+                expectedEndMarginForNtp,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
 
         // Focus on the Omnibox.
         mOmnibox.requestFocus();
         assertEquals(View.INVISIBLE, iconBackground.getVisibility());
         assertEquals(
-                expectedEndMarginBeforePolish,
+                expectedEndMargin,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt
-        int homeSurfaceToolbarBackgroundColorForSurfacePolish =
+        int homeSurfaceToolbarBackgroundColor =
                 ChromeColors.getSurfaceColor(
                         mToolbar.getContext(),
                         org.chromium.chrome.browser.toolbar.R.dimen
                                 .home_surface_background_color_elevation);
 
         assertEquals(false, mToolbar.isLocationBarShownInGeneralNtp());
-        assertNotEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
-        assertEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
 
         // Focus the Omnibox.
         mOmnibox.requestFocus();
-        assertNotEquals(
-                homeSurfaceToolbarBackgroundColorForSurfacePolish,
-                toolbarBackgroundDrawable.getColor());
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
     }
 
     private static class TestControlsVisibilityDelegate

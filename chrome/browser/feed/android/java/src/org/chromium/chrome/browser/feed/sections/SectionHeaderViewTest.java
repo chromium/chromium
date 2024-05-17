@@ -31,7 +31,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -93,7 +92,6 @@ public final class SectionHeaderViewTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void mainContentTopMarginTest() {
         mSectionHeaderView.onFinishInflate();
 

@@ -983,9 +983,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    public void testStartSurfaceBackgroundColorAfterPolish() {
+    public void testStartSurfaceBackgroundColor() {
         if (!mImmediateReturn) return;
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
@@ -1028,8 +1027,7 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testFakeOmniboxPolish() {
+    public void testFakeOmnibox() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }

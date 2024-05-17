@@ -161,92 +161,47 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
-    /** Test that the default color is used in Start surface without surface polish enabled. */
+    /** Test the color of status bar when used in NTP. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @DisableFeatures({
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
-    })
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testBrandColorIgnoredInStartSurface() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.getLayoutManager()
-                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
-                });
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
-        waitForStatusBarColor(activity, expectedDefaultStandardColor);
-    }
-
-    /** Test that a polished color is used in NTP with surface polish enabled. */
-    @Test
-    @LargeTest
-    @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testPolishStatusBarColorNtp() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedPolishedStandardColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.home_surface_background_color_elevation);
-
-        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
-        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
-
-        // Scroll the toolbar up and let it pinned on top.
-        scrollUpToolbarUntilPinnedAtTop(activity);
-        waitForStatusBarColor(activity, expectedPolishedStandardColor);
-    }
-
-    /** Test that the default color is used in Start surface without surface polish enabled. */
-    @Test
-    @LargeTest
-    @Feature({"StatusBar"})
-    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     @DisabledTest(message = "https://issues.chromium.org/issues/341157444")
     public void testStatusBarColorNtp() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
+        final int expectedColor =
+                ChromeColors.getSurfaceColor(
+                        activity, R.dimen.home_surface_background_color_elevation);
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
         // Scroll the toolbar up and let it pinned on top.
         scrollUpToolbarUntilPinnedAtTop(activity);
-        waitForStatusBarColor(activity, expectedStandardColor);
+        waitForStatusBarColor(activity, expectedColor);
     }
 
-    /**
-     * Test that a polished color is used in Start surface with surface polish enabled, but not on
-     * Tab switcher.
-     */
+    /** Test the color of status bar when used in Start surface and Tab switcher. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testBrandColorNotIgnoredInStartSurfaceWithSurfacePolishEnabled() throws Exception {
+    public void testBrandColorNotIgnoredInStartSurface() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedPolishedStandardColor =
+        final int expectedColor =
                 ChromeColors.getSurfaceColor(
                         activity, R.dimen.home_surface_background_color_elevation);
         final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
 
-        // Verifies that the status bar color uses a polished color for Start surface.
+        // Verifies that the status bar color uses a correct color for Start surface.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
                             .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
                 });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
-        waitForStatusBarColor(activity, expectedPolishedStandardColor);
+        waitForStatusBarColor(activity, expectedColor);
 
         // Verifies that the status bar color unchanged on Tab switcher.
         TestThreadUtils.runOnUiThreadBlocking(

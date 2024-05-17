@@ -18,13 +18,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -84,38 +81,8 @@ public class NewTabPageColorWithFeedV2Test {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testTextBoxBackgroundColorWithSurfacePolishDisabled() throws Exception {
-        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
-
-        Context context = mActivityTestRule.getActivity();
-        Assert.assertEquals(
-                ChromeColors.getPrimaryBackgroundColor(context, false),
-                mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
-
-        // Wait for the test feed items to be available in the feed.
-        FeedV2TestHelper.waitForRecyclerItems(
-                MIN_ITEMS_AFTER_LOAD,
-                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
-
-        // Scroll to the bottom.
-        RecyclerViewTestUtils.scrollToBottom(recycleView);
-        RecyclerViewTestUtils.waitForStableRecyclerView(recycleView);
-
-        Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
-        final int expectedTextBoxBackground =
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
-        Assert.assertEquals(
-                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
-    }
-
-    @Test
-    @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @Feature({"NewTabPage", "FeedNewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testTextBoxBackgroundColor_SurfacePolishEnabled() throws Exception {
-        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
+    public void testTextBoxBackgroundColor() throws Exception {
+        RecyclerView recycleView = mNtp.getCoordinatorForTesting().getRecyclerView();
 
         Context context = mActivityTestRule.getActivity();
         int expectedTextBoxBackground =

@@ -41,7 +41,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -410,13 +409,12 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testPhoneUrlBarAndStatusViewTranslation_SurfacePolishEnabled() {
+    public void testPhoneUrlBarAndStatusViewTranslation() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
-                    int statusIconAndUrlBarOffsetForSurfacePolish =
+                    int statusIconAndUrlBarOffset =
                             OmniboxResourceProvider.getToolbarSidePaddingForStartSurfaceOrNtp(
                                             activity)
                                     - OmniboxResourceProvider.getToolbarSidePadding(activity);
@@ -435,13 +433,12 @@ public class LocationBarLayoutTest {
                             /* isUrlFocusChangeInProgress= */ true);
 
                     Assert.assertEquals(
-                            statusIconAndUrlBarOffsetForSurfacePolish * (1 - MathUtils.EPSILON),
+                            statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
                             urlBar.getTranslationX(),
                             MathUtils.EPSILON);
                     Assert.assertEquals(
                             OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(activity)
-                                    + statusIconAndUrlBarOffsetForSurfacePolish
-                                            * (1 - MathUtils.EPSILON),
+                                    + statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
                             statusView.getTranslationX(),
                             MathUtils.EPSILON);
 
@@ -451,12 +448,12 @@ public class LocationBarLayoutTest {
                             /* urlFocusChangeFraction= */ 0.5f,
                             /* isUrlFocusChangeInProgress= */ true);
                     Assert.assertEquals(
-                            statusIconAndUrlBarOffsetForSurfacePolish * 0.5,
+                            statusIconAndUrlBarOffset * 0.5,
                             urlBar.getTranslationX(),
                             MathUtils.EPSILON);
                     Assert.assertEquals(
                             OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(activity)
-                                    + statusIconAndUrlBarOffsetForSurfacePolish * 0.5,
+                                    + statusIconAndUrlBarOffset * 0.5,
                             statusView.getTranslationX(),
                             MathUtils.EPSILON);
 
@@ -478,13 +475,12 @@ public class LocationBarLayoutTest {
                             /* isUrlFocusChangeInProgress= */ true);
 
                     Assert.assertEquals(
-                            statusIconAndUrlBarOffsetForSurfacePolish * (1 - MathUtils.EPSILON),
+                            statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
                             urlBar.getTranslationX(),
                             MathUtils.EPSILON);
                     Assert.assertEquals(
                             OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(activity)
-                                    + statusIconAndUrlBarOffsetForSurfacePolish
-                                            * (1 - MathUtils.EPSILON),
+                                    + statusIconAndUrlBarOffset * (1 - MathUtils.EPSILON),
                             statusView.getTranslationX(),
                             MathUtils.EPSILON);
                 });

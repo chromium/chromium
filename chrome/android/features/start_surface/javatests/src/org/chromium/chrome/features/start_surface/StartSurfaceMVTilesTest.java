@@ -161,11 +161,8 @@ public class StartSurfaceMVTilesTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.MAGIC_STACK_ANDROID
-    })
-    public void testTapMVTilesInSingleSurfaceWithSurfacePolish() {
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
+    public void testTapMVTilesInSingleSurfaceWithMagicStack() {
         testTapMVTilesInSingleSurfaceImpl();
     }
 
@@ -352,8 +349,7 @@ public class StartSurfaceMVTilesTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void test1RowMvtOnStartSurfaceAfterPolish() {
+    public void testMvtOnStartSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
