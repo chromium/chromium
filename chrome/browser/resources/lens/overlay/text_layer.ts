@@ -11,6 +11,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
 import type {CursorData, TextContextMenuData} from './selection_overlay.js';
@@ -170,12 +171,24 @@ export class TextLayerElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent<CursorData>(
         'set-cursor',
         {bubbles: true, composed: true, detail: {cursor: CursorType.TEXT}}));
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.TEXT_HIGHLIGHT},
+        }));
   }
 
   private handlePointerLeave() {
     this.dispatchEvent(new CustomEvent<CursorData>(
         'set-cursor',
         {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+        }));
   }
 
   handleDownGesture(event: GestureEvent): boolean {

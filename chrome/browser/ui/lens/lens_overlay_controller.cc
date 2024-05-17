@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -287,6 +288,13 @@ void LensOverlayController::ShowUI(
                             weak_factory_.GetWeakPtr(), invocation_source));
     return;
   }
+
+  // Increment the counter for the number of times the Lens Overlay has been
+  // started.
+  int lens_overlay_start_count =
+      pref_service_->GetInteger(prefs::kLensOverlayStartCount);
+  pref_service_->SetInteger(prefs::kLensOverlayStartCount,
+                            lens_overlay_start_count + 1);
 
   // Create the results side panel coordinator when showing the UI if it does
   // not already exist for this tab's web contents.

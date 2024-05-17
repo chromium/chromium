@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lens_untrusted_resources.h"
@@ -21,6 +22,9 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace lens {
+
+// The number of times to show cursor tooltips.
+constexpr int kNumTimesToShowCursorTooltips = 5;
 
 LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
@@ -42,6 +46,17 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  html_source->AddLocalizedString("cursorTooltipDragMessage",
+                                  IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE);
+  html_source->AddLocalizedString(
+      "cursorTooltipTextHighlightMessage",
+      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE);
+  html_source->AddLocalizedString(
+      "cursorTooltipClickMessage",
+      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_CLICK_MESSAGE);
+  html_source->AddLocalizedString(
+      "cursorTooltipLivePageMessage",
+      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
 
   // Add finch flags
@@ -107,6 +122,14 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("searchBoxHint",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   html_source->AddBoolean("searchboxInSidePanel", true);
+
+  // Determine if the cursor tooltip should appear.
+  Profile* profile = Profile::FromWebUI(web_ui);
+  int lens_overlay_start_count =
+      profile->GetPrefs()->GetInteger(prefs::kLensOverlayStartCount);
+  html_source->AddBoolean(
+      "canShowTooltipFromPrefs",
+      lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
 }
 
 void LensUntrustedUI::BindInterface(
