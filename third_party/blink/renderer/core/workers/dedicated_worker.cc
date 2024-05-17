@@ -333,6 +333,7 @@ void DedicatedWorker::OnWorkerHostCreated(
         browser_interface_broker,
     CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
         dedicated_worker_host) {
+  TRACE_EVENT("blink.worker", "DedicatedWorker::OnWorkerHostCreated");
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
