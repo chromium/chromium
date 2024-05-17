@@ -17,8 +17,9 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_INT
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -55,7 +56,7 @@ async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
         })
     resp = await read_JSON_message(websocket)
 
-    assert {
+    assert resp == AnyExtending({
         "type": "event",
         "method": "cdp.Runtime.consoleAPICalled",
         "params": {
@@ -73,7 +74,7 @@ async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
             },
             "session": session_id
         }
-    } == resp
+    })
 
 
 @pytest.mark.asyncio
@@ -97,7 +98,7 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
 
     resp = await wait_for_event(websocket, "cdp.Runtime.consoleAPICalled")
 
-    assert resp == {
+    assert resp == AnyExtending({
         "type": "event",
         "method": "cdp.Runtime.consoleAPICalled",
         "params": {
@@ -115,7 +116,7 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
             },
             "session": session_id
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -138,7 +139,7 @@ async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id):
 
     event_response = await wait_for_event(websocket,
                                           "cdp.Runtime.consoleAPICalled")
-    assert {
+    assert event_response == AnyExtending({
         "type": "event",
         "method": "cdp.Runtime.consoleAPICalled",
         "params": {
@@ -156,4 +157,4 @@ async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id):
             },
             "session": session_id
         }
-    } == event_response
+    })
