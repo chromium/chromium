@@ -353,7 +353,7 @@ public class AwScrollOffsetManager {
 
         if (rect.bottom > screenBottom) {
             int oneThirdOfScreenHeight = mContainerViewHeight / 3;
-            if (rect.width() > 2 * oneThirdOfScreenHeight) {
+            if (rect.height() > 2 * oneThirdOfScreenHeight) {
                 // If the rectangle is too tall to fit in the bottom two thirds
                 // of the screen, place it at the top.
                 scrollYDelta = rect.top - screenTop;
