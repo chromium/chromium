@@ -335,6 +335,9 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
 
 void ImageResource::AppendData(base::span<const char> data) {
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(data.size());
+  if (data.size() > 0) {
+    GetContent()->SetAllocatedExternalMemory();
+  }
   if (multipart_parser_) {
     multipart_parser_->AppendData(data.data(),
                                   base::checked_cast<wtf_size_t>(data.size()));

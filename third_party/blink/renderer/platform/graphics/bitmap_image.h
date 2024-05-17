@@ -133,7 +133,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   BitmapImage(const SkBitmap&, ImageObserver* = nullptr);
   BitmapImage(ImageObserver* = nullptr,
               bool is_multi_part = false,
-              bool is_transparent_placeholder = false);
+              wtf_size_t transparent_placeholder_index = kNotFound);
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
@@ -152,6 +152,13 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   scoped_refptr<SharedBuffer> Data() override;
   bool HasData() const override;
   size_t DataSize() const override;
+
+  bool IsTransparentPlaceholder() const;
+
+  static Vector<String> KnownTransparentGifUrls();
+
+  static scoped_refptr<SharedBuffer> KnownTransparentEncodedGifs(
+      wtf_size_t index);
 
   // Notifies observers that the memory footprint has changed.
   void NotifyMemoryChanged();
@@ -187,8 +194,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool default_frame_has_alpha_ : 1;
 
-  const bool is_transparent_placeholder_ : 1;  // Whether this image represents
-                                               // a 1x1 transparent gif.
+  // The index of the 1x1 transparent gif in the list of known placeholder
+  // images.
+  const wtf_size_t transparent_placeholder_index_ = kNotFound;
 
   RepetitionCountStatus repetition_count_status_;
   int repetition_count_;  // How many total animation loops we should do.  This

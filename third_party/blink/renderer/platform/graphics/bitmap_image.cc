@@ -70,7 +70,7 @@ int GetRepetitionCountWithPolicyOverride(
 
 BitmapImage::BitmapImage(ImageObserver* observer,
                          bool is_multipart,
-                         bool is_transparent_placeholder)
+                         wtf_size_t transparent_placeholder_index)
     : Image(observer, is_multipart),
       animation_policy_(
           mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed),
@@ -79,25 +79,58 @@ BitmapImage::BitmapImage(ImageObserver* observer,
       preferred_size_is_transposed_(false),
       size_available_(false),
       have_frame_count_(false),
-      is_transparent_placeholder_(is_transparent_placeholder),
+      transparent_placeholder_index_(transparent_placeholder_index),
       repetition_count_status_(kUnknown),
       repetition_count_(kAnimationNone),
       frame_count_(0) {}
 
 BitmapImage::~BitmapImage() {}
 
-scoped_refptr<BitmapImage> BitmapImage::MaybeCreateTransparentPlaceholderImage(
-    KURL url) {
+bool BitmapImage::IsTransparentPlaceholder() const {
+  return transparent_placeholder_index_ != kNotFound;
+}
+
+Vector<String> BitmapImage::KnownTransparentGifUrls() {
+  // `BitmapImage::FilenameExtension()` is hard-coded to return gif for
+  // transparent placeholder images. If additional transparent image types are
+  // added, this will need to be updated.
   CHECK(IsMainThread());
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      Vector<String>, known_transparent_gifs,
+      Vector<String>, known_transparent_urls,
       ({"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
         "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
         "data:image/gif;base64,R0lGODlhAQABAID/"
         "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="}));
-  if (known_transparent_gifs.Contains(url)) {
+  return known_transparent_urls;
+}
+
+scoped_refptr<SharedBuffer> BitmapImage::KnownTransparentEncodedGifs(
+    wtf_size_t index) {
+  CHECK(index >= 0 && index < 2);
+  CHECK(IsMainThread());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
+      ({SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
+            "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
+            static_cast<size_t>(43)),
+        SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
+            "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
+            static_cast<size_t>(43))}));
+  CHECK_EQ(known_transparent_encoded_gifs.size(),
+           KnownTransparentGifUrls().size());
+  return known_transparent_encoded_gifs[index];
+}
+
+scoped_refptr<BitmapImage> BitmapImage::MaybeCreateTransparentPlaceholderImage(
+    KURL url) {
+  wtf_size_t index = KnownTransparentGifUrls().Find(url);
+  if (index != kNotFound) {
     DEFINE_STATIC_REF(BitmapImage, transparent_placeholder_image,
-                      (base::AdoptRef(new BitmapImage(nullptr, false, true))));
+                      (base::AdoptRef(new BitmapImage(nullptr, false, index))));
     return transparent_placeholder_image;
   }
   return nullptr;
@@ -113,14 +146,30 @@ void BitmapImage::DestroyDecodedData() {
 }
 
 scoped_refptr<SharedBuffer> BitmapImage::Data() {
-  return decoder_ ? decoder_->Data() : nullptr;
+  if (decoder_) {
+    return decoder_->Data();
+  } else if (IsTransparentPlaceholder()) {
+    // The encoded transparent placeholder image is a 43 byte gif.
+    return KnownTransparentEncodedGifs(transparent_placeholder_index_);
+  }
+  return nullptr;
 }
 
 bool BitmapImage::HasData() const {
-  return decoder_ ? decoder_->HasData() : false;
+  if (decoder_) {
+    return decoder_->HasData();
+  } else if (IsTransparentPlaceholder()) {
+    return true;
+  }
+  return false;
 }
 
 size_t BitmapImage::DataSize() const {
+  if (IsTransparentPlaceholder()) {
+    DCHECK(!decoder_);
+    // The standard transparent placeholder image decodes to be a 43 byte gif.
+    return KnownTransparentEncodedGifs(transparent_placeholder_index_)->size();
+  }
   DCHECK(decoder_);
   return decoder_->DataSize();
 }
@@ -180,7 +229,7 @@ void BitmapImage::UpdateSize() const {
 }
 
 gfx::Size BitmapImage::SizeWithConfig(SizeConfig config) const {
-  if (is_transparent_placeholder_) {
+  if (IsTransparentPlaceholder()) {
     static constexpr gfx::Size kSize{1, 1};
     return kSize;
   }
@@ -195,7 +244,7 @@ gfx::Size BitmapImage::SizeWithConfig(SizeConfig config) const {
 }
 
 void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
-  if (!is_transparent_placeholder_) {
+  if (!IsTransparentPlaceholder()) {
     BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension(),
                                               use_counter);
   }
@@ -219,7 +268,7 @@ bool BitmapImage::ShouldReportByteSizeUMAs(bool data_now_completely_received) {
 
 Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,
                                              bool all_data_received) {
-  CHECK(!is_transparent_placeholder_ || !data);
+  CHECK(!IsTransparentPlaceholder() || !data);
 
   if (!data)
     return kSizeAvailable;
@@ -284,7 +333,12 @@ bool BitmapImage::HasColorProfile() const {
 }
 
 String BitmapImage::FilenameExtension() const {
-  return decoder_ ? decoder_->FilenameExtension() : String();
+  if (decoder_) {
+    return decoder_->FilenameExtension();
+  } else if (IsTransparentPlaceholder()) {
+    return "gif";
+  }
+  return String();
 }
 
 const AtomicString& BitmapImage::MimeType() const {
@@ -390,7 +444,8 @@ bool BitmapImage::IsSizeAvailable() {
   if (size_available_)
     return true;
 
-  size_available_ = decoder_ && decoder_->IsSizeAvailable();
+  size_available_ =
+      (decoder_ && decoder_->IsSizeAvailable()) || IsTransparentPlaceholder();
   if (size_available_ && HasVisibleImageSize(Size()))
     BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension());
 
@@ -398,7 +453,7 @@ bool BitmapImage::IsSizeAvailable() {
 }
 
 PaintImage BitmapImage::PaintImageForCurrentFrame() {
-  CHECK(!is_transparent_placeholder_ || !decoder_);
+  CHECK(!IsTransparentPlaceholder() || !decoder_);
 
   auto alpha_type = decoder_ ? decoder_->AlphaType() : kUnknown_SkAlphaType;
   if (cached_frame_ && cached_frame_.GetAlphaType() == alpha_type)
@@ -441,7 +496,7 @@ scoped_refptr<Image> BitmapImage::ImageForDefaultFrame() {
 }
 
 bool BitmapImage::CurrentFrameKnownToBeOpaque() {
-  CHECK(!is_transparent_placeholder_ || !decoder_);
+  CHECK(!IsTransparentPlaceholder() || !decoder_);
 
   return decoder_ ? decoder_->AlphaType() == kOpaque_SkAlphaType : false;
 }

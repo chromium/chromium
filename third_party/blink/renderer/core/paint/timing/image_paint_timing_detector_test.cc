@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -54,6 +55,10 @@ namespace blink {
   "wlazcDcBc4gjjVwCWid2usCWroYEhnaqbzFJLUzAHIXRDChXCcQP8zhkSZ5eNLgHAUzwDcRu4C" \
   "oIRn/wsGUQIIy4Vr9TH6SYFCNzw4nALn5627K4vIttOUOwfa5YnrDYzt/9OLv9I5l8kk5hZ3XL" \
   "O20b7tbR7zHLy/BX8G0IeBEM7ZN1NGIaFUaKLgAAAAAElFTkSuQmCC"
+
+#define TRANSPARENT_PLACEHOLDER_IMAGE \
+  "data:image/gif;base64,"            \
+  "R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
 
 using UkmPaintTiming = ukm::builders::Blink_PaintTiming;
 using ::testing::Optional;
@@ -238,6 +243,17 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     To<HTMLImageElement>(element)->SetImageForTest(content);
   }
 
+  void SetTransparentPlaceholderImageAndPaint(const char* id) {
+    Element* element = GetDocument().getElementById(AtomicString(id));
+    scoped_refptr<BitmapImage> transparent_image =
+        BitmapImage::MaybeCreateTransparentPlaceholderImage(
+            url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
+    DCHECK(transparent_image);
+    ImageResourceContent* image_content =
+        ImageResourceContent::CreateLoaded(transparent_image);
+    To<HTMLImageElement>(element)->SetImageForTest(image_content);
+  }
+
   void SetChildFrameImageAndPaint(const char* id, int width, int height) {
     DCHECK(GetChildDocument());
     Element* element = GetChildDocument()->getElementById(AtomicString(id));
@@ -314,6 +330,29 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_NoImage) {
   )HTML");
   ImageRecord* record = LargestImage();
   EXPECT_FALSE(record);
+}
+
+TEST_P(ImagePaintTimingDetectorTest,
+       LargestImagePaint_TransparentPlaceholderImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kSimplifyLoadingTransparentPlaceholderImage);
+
+  LargestContentfulPaintDetailsForReporting largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
+  SetBodyInnerHTML(R"HTML(
+      <img id="placeholder"></img>
+    )HTML");
+  SetTransparentPlaceholderImageAndPaint("placeholder");
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 1u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
