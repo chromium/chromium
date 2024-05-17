@@ -64,6 +64,14 @@ void CryptohomeBasedEngine::UpdateObserver(FactorEngineObserver* observer) {
   observer_ = observer;
 }
 
+void CryptohomeBasedEngine::CleanUp(CleanupCallback callback) {
+  // By default, the cleanup phase is no-op because the majority
+  // of the auth factors do not need to do anything for cleaning up.
+  // Simply run the callback with the factor type to indicate
+  // the end of clean-up.
+  std::move(callback).Run(GetFactor());
+}
+
 void CryptohomeBasedEngine::StopAuthFlow(ShutdownCallback callback) {
   CHECK(shutdown_callback_.is_null());
   shutdown_callback_ = std::move(callback);

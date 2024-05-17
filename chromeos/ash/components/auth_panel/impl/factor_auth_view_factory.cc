@@ -37,6 +37,8 @@ FactorAuthViewFactory::CreateFactorAuthView(
       return nullptr;
     case AshAuthFactor::kLocalPassword:
       return nullptr;
+    case AshAuthFactor::kFingerprint:
+      return nullptr;
   }
 }
 

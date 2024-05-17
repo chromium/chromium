@@ -94,6 +94,8 @@ class AuthHubTestBase : public ::testing::Test {
   }
 
   void ExpectEngineStop() {
+    EXPECT_CALL(*engine_, CleanUp(_))
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(kFactor));
     EXPECT_CALL(*engine_, StopAuthFlow(_))
         .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(kFactor));
   }

@@ -47,6 +47,8 @@ component("impl") {
     "early_login_auth_policy_connector.h",
     "engines/cryptohome_based_engine.cc",
     "engines/cryptohome_based_engine.h",
+    "engines/cryptohome_fingerprint_engine.cc",
+    "engines/cryptohome_fingerprint_engine.h",
     "engines/cryptohome_password_engine.cc",
     "engines/cryptohome_password_engine.h",
     "engines/cryptohome_pin_engine.cc",

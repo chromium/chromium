@@ -25,6 +25,7 @@ class MockAuthFactorEngine : public AuthFactorEngine {
               (const AccountId&, AuthPurpose, FactorEngineObserver*),
               (override));
   MOCK_METHOD(void, UpdateObserver, (FactorEngineObserver*), (override));
+  MOCK_METHOD(void, CleanUp, (CleanupCallback), (override));
   MOCK_METHOD(void, StopAuthFlow, (ShutdownCallback), (override));
   MOCK_METHOD(AuthProofToken, StoreAuthenticationContext, (), (override));
   MOCK_METHOD(void, SetUsageAllowed, (UsageAllowed), (override));

@@ -32,6 +32,7 @@ class CryptohomeBasedEngine : public AuthFactorEngine,
                      AuthPurpose purpose,
                      FactorEngineObserver* observer) override;
   AuthProofToken StoreAuthenticationContext() override;
+  void CleanUp(CleanupCallback callback) override;
   void UpdateObserver(FactorEngineObserver* observer) override;
   void StopAuthFlow(ShutdownCallback callback) override;
 

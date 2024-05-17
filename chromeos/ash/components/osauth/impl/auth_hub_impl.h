@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   void OnAttemptStarted(const AuthAttemptVector& attempt,
                         AuthFactorsSet available_factors,
                         AuthFactorsSet failed_factors) override;
+  void OnAttemptCleanedUp(const AuthAttemptVector& attempt) override;
   void OnAttemptFinished(const AuthAttemptVector& attempt) override;
   void OnAttemptCancelled(const AuthAttemptVector& attempt) override;
   void OnIdle() override;
@@ -101,6 +102,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
 
   std::optional<AuthAttemptVector> pending_attempt_;
   raw_ptr<AuthAttemptConsumer> pending_consumer_ = nullptr;
+  std::optional<AshAuthFactor> authenticated_factor_;
 
   // Target mode for initialization, used to store last request when
   // some extra actions are required before mode can be switched.

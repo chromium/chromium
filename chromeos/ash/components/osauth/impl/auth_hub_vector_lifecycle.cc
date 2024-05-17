@@ -39,6 +39,7 @@ enum class EngineAttemptStatus {
   kStarted,
   kFailed,
   kCriticalError,
+  kCleaningUp,
   kFinishing,
 };
 
@@ -74,6 +75,7 @@ void AuthHubVectorLifecycle::StartAttempt(const AuthAttemptVector& attempt) {
       // Set up new target mode, but do not modify initializing_for_,
       // `ProceedIfAllFactorsStarted` would trigger re-initialization.
       break;
+    case Stage::kCleaningUpAttempt:
     case Stage::kFinishingAttempt:
       // Just update the target mode, `ProceedIfAllFactorsFinished` would
       // trigger new attempt.
@@ -92,6 +94,7 @@ void AuthHubVectorLifecycle::CancelAttempt() {
                                      weak_factory_.GetWeakPtr()));
       break;
     case Stage::kStartingAttempt:
+    case Stage::kCleaningUpAttempt:
     case Stage::kFinishingAttempt:
       target_attempt_ = std::nullopt;
       break;
@@ -132,9 +135,9 @@ void AuthHubVectorLifecycle::StartForTargetAttempt() {
   initializing_for_ = target_attempt_;
 
   CHECK(engines_.empty());
-  for (const auto& engine : available_engines_) {
-    engines_[engine.first] =
-        FactorAttemptState{engine.second, EngineAttemptStatus::kStarting};
+  for (const auto& [factor, engine] : available_engines_) {
+    engines_[factor] =
+        FactorAttemptState{engine, EngineAttemptStatus::kStarting};
   }
 
   watchdog_.Stop();
@@ -142,9 +145,9 @@ void AuthHubVectorLifecycle::StartForTargetAttempt() {
       FROM_HERE, kWatchdogTimeout,
       base::BindOnce(&AuthHubVectorLifecycle::OnAttemptStartWatchdog,
                      weak_factory_.GetWeakPtr()));
-  for (auto& state : engines_) {
-    state.second.engine->StartAuthFlow(target_attempt_->account,
-                                       target_attempt_->purpose, this);
+  for (auto& [unused, state] : engines_) {
+    state.engine->StartAuthFlow(target_attempt_->account,
+                                target_attempt_->purpose, this);
   }
 }
 
@@ -152,11 +155,11 @@ void AuthHubVectorLifecycle::OnAttemptStartWatchdog() {
   LOG(ERROR) << "Attempt start watchdog triggered";
   CHECK_EQ(stage_, Stage::kStartingAttempt);
 
-  for (auto& state : engines_) {
-    if (state.second.status == EngineAttemptStatus::kStarting) {
-      state.second.status = EngineAttemptStatus::kFailed;
-      LOG(ERROR) << "Factor " << state.first << " did not start in time";
-      state.second.engine->StartFlowTimedOut();
+  for (auto& [factor, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kStarting) {
+      state.status = EngineAttemptStatus::kFailed;
+      LOG(ERROR) << "Factor " << factor << " did not start in time";
+      state.engine->StartFlowTimedOut();
     }
   }
   ProceedIfAllFactorsStarted();
@@ -164,8 +167,8 @@ void AuthHubVectorLifecycle::OnAttemptStartWatchdog() {
 
 void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
   CHECK_EQ(stage_, Stage::kStartingAttempt);
-  for (const auto& state : engines_) {
-    if (state.second.status == EngineAttemptStatus::kStarting) {
+  for (const auto& [unused, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kStarting) {
       return;
     }
   }
@@ -185,21 +188,22 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
   AuthFactorsSet present;
   AuthFactorsSet failed;
 
-  for (const auto& state : engines_) {
-    switch (state.second.status) {
+  for (const auto& [factor, state] : engines_) {
+    switch (state.status) {
       case EngineAttemptStatus::kStarted:
-        present.Put(state.first);
-        state.second.engine->UpdateObserver(owner_->AsEngineObserver());
+        present.Put(factor);
+        state.engine->UpdateObserver(owner_->AsEngineObserver());
         break;
       case EngineAttemptStatus::kNoFactor:
         // Just ignore them
         break;
       case EngineAttemptStatus::kCriticalError:
       case EngineAttemptStatus::kFailed:
-        failed.Put(state.first);
+        failed.Put(factor);
         break;
       case EngineAttemptStatus::kStarting:
       case EngineAttemptStatus::kIdle:
+      case EngineAttemptStatus::kCleaningUp:
       case EngineAttemptStatus::kFinishing:
         NOTREACHED_NORETURN();
     }
@@ -214,20 +218,71 @@ void AuthHubVectorLifecycle::ShutdownAttempt(
 
   on_shutdown_attempt_ = std::move(on_shutdown_attempt);
 
-  stage_ = Stage::kFinishingAttempt;
-  for (auto& state : engines_) {
-    state.second.status = EngineAttemptStatus::kFinishing;
+  stage_ = Stage::kCleaningUpAttempt;
+  for (auto& [unused, state] : engines_) {
+    state.status = EngineAttemptStatus::kCleaningUp;
   }
   watchdog_.Stop();
+  watchdog_.Start(
+      FROM_HERE, kWatchdogTimeout,
+      base::BindOnce(&AuthHubVectorLifecycle::OnAttemptCleanedUpWatchdog,
+                     weak_factory_.GetWeakPtr()));
+
+  for (auto& [unused, state] : engines_) {
+    state.engine->UpdateObserver(this);
+    state.engine->CleanUp(
+        base::BindOnce(&AuthHubVectorLifecycle::OnFactorCleanedUp,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void AuthHubVectorLifecycle::OnFactorCleanedUp(AshAuthFactor factor) {
+  CHECK_EQ(stage_, Stage::kCleaningUpAttempt);
+  CHECK(engines_.contains(factor));
+  engines_[factor].status = EngineAttemptStatus::kFinishing;
+  FinishIfAllFactorsCleanedUp();
+}
+
+void AuthHubVectorLifecycle::OnAttemptCleanedUpWatchdog() {
+  LOG(ERROR) << "Attempt cleanup watchdog triggered";
+  CHECK_EQ(stage_, Stage::kCleaningUpAttempt);
+
+  for (auto& [factor, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kCleaningUp) {
+      state.status = EngineAttemptStatus::kFailed;
+      LOG(ERROR) << "Factor " << factor << " did not clean up in time";
+      state.engine->StopFlowTimedOut();
+      state.engine->UpdateObserver(nullptr);
+    }
+  }
+  FinishIfAllFactorsCleanedUp();
+}
+
+void AuthHubVectorLifecycle::FinishIfAllFactorsCleanedUp() {
+  CHECK_EQ(stage_, Stage::kCleaningUpAttempt);
+  for (const auto& [unused, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kCleaningUp) {
+      return;
+    }
+  }
+  watchdog_.Stop();
+  if (current_attempt_.has_value()) {
+    // we need to notify about cleanup first.
+    owner_->OnAttemptCleanedUp(*current_attempt_);
+  }
+  stage_ = Stage::kFinishingAttempt;
+  for (auto& [unused, state] : engines_) {
+    state.status = EngineAttemptStatus::kFinishing;
+  }
   watchdog_.Start(
       FROM_HERE, kWatchdogTimeout,
       base::BindOnce(&AuthHubVectorLifecycle::OnAttemptFinishWatchdog,
                      weak_factory_.GetWeakPtr()));
 
   // TODO(b/277929602): metrics on initialization time.
-  for (auto& state : engines_) {
-    state.second.engine->UpdateObserver(this);
-    state.second.engine->StopAuthFlow(base::BindOnce(
+  for (auto& [unused, state] : engines_) {
+    state.engine->UpdateObserver(this);
+    state.engine->StopAuthFlow(base::BindOnce(
         &AuthHubVectorLifecycle::OnFactorFinished, weak_factory_.GetWeakPtr()));
   }
 }
@@ -244,12 +299,12 @@ void AuthHubVectorLifecycle::OnAttemptFinishWatchdog() {
   LOG(ERROR) << "Attempt finish watchdog triggered";
   CHECK_EQ(stage_, Stage::kFinishingAttempt);
 
-  for (auto& state : engines_) {
-    if (state.second.status == EngineAttemptStatus::kFinishing) {
-      state.second.status = EngineAttemptStatus::kFailed;
-      LOG(ERROR) << "Factor " << state.first << " did not finish in time";
-      state.second.engine->StopFlowTimedOut();
-      state.second.engine->UpdateObserver(nullptr);
+  for (auto& [factor, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kFinishing) {
+      state.status = EngineAttemptStatus::kFailed;
+      LOG(ERROR) << "Factor " << factor << " did not finish in time";
+      state.engine->StopFlowTimedOut();
+      state.engine->UpdateObserver(nullptr);
     }
   }
   ProceedIfAllFactorsFinished();
@@ -257,8 +312,8 @@ void AuthHubVectorLifecycle::OnAttemptFinishWatchdog() {
 
 void AuthHubVectorLifecycle::ProceedIfAllFactorsFinished() {
   CHECK_EQ(stage_, Stage::kFinishingAttempt);
-  for (const auto& state : engines_) {
-    if (state.second.status == EngineAttemptStatus::kFinishing) {
+  for (const auto& [unused, state] : engines_) {
+    if (state.status == EngineAttemptStatus::kFinishing) {
       return;
     }
   }

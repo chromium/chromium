@@ -130,6 +130,7 @@ void AuthFactorStore::OnFactorStateChanged(AshAuthFactor factor,
       state_.password_view_state_->factor_state_ = state;
       break;
     case AshAuthFactor::kCryptohomePin:
+    case AshAuthFactor::kFingerprint:
     case AshAuthFactor::kSmartCard:
     case AshAuthFactor::kSmartUnlock:
     case AshAuthFactor::kRecovery:

@@ -59,7 +59,8 @@ enum class AshAuthFactor {
   kLegacyPin = 5,
   kLegacyFingerprint = 6,
   kLocalPassword = 7,
-  kMaxValue = kLocalPassword,
+  kFingerprint = 8,
+  kMaxValue = kFingerprint,
 };
 
 using AuthFactorsSet = base::EnumSet<AshAuthFactor,

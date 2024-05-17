@@ -233,6 +233,16 @@ void AuthHubImpl::OnAttemptStarted(const AuthAttemptVector& attempt,
   attempt_handler_->OnFactorsChecked(available_factors, failed_factors);
 }
 
+void AuthHubImpl::OnAttemptCleanedUp(const AuthAttemptVector& attempt) {
+  CHECK(attempt == *current_attempt_);
+  if (authenticated_factor_.has_value()) {
+    AuthProofToken token =
+        engines_[*authenticated_factor_]->StoreAuthenticationContext();
+    attempt_consumer_->OnUserAuthSuccess(*authenticated_factor_, token);
+    authenticated_factor_.reset();
+  }
+}
+
 void AuthHubImpl::OnAttemptFinished(const AuthAttemptVector& attempt) {
   CHECK(attempt == *current_attempt_);
   attempt_consumer_ = nullptr;
@@ -301,9 +311,13 @@ void AuthHubImpl::OnAuthenticationSuccess(const AuthAttemptVector& attempt,
                                           AshAuthFactor factor) {
   CHECK(attempt == *current_attempt_);
   CHECK(engines_.contains(factor));
-  AuthProofToken token = engines_[factor]->StoreAuthenticationContext();
-  attempt_consumer_->OnUserAuthSuccess(factor, token);
-  vector_lifecycle_->FinishAttempt();
+
+  // Record the authenticated factor and start terminating all engines.
+  // AuthProofToken will be retrieved after all auth engines clean up their
+  // internal states during the termination process, to avoid race conditions
+  // on authenticated UserContext.
+  authenticated_factor_ = factor;
+  vector_lifecycle_->CancelAttempt();
 }
 
 }  // namespace ash

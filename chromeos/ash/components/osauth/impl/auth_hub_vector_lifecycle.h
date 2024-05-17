@@ -27,9 +27,13 @@ namespace ash {
 //  * Call each engine's `StartAuthFlow` with auth vector, and wait for
 //  completion.
 //  * Notify `Owner` about available / failed auth factors.
-//  * Once attempt is finished, call each engine's `StopAuthFlow`, and wait for
-//  completion.
-//  * Notify `Owner` that attempt is finished.
+//  * Once attempt is canceled, execute a two-stage finish:
+//    1. Clean-up substage
+//      1.1 Call each engine's `CleanUp`, and wait for completion.
+//      1.2 Notify `Owner` that attempt is cleaned up.
+//    2.Shutdown substage
+//      2.1 Call each engine's `StopAuthFlow`, and wait for completion.
+//      2.2 Notify `Owner` that attempt is finished.
 // `AuthHubVectorLifecycle` correctly handles attempt start/finish, even if
 // request to start/finish was requested in the middle of ongoing start/finish
 // sequence.
@@ -45,6 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
     virtual void OnAttemptStarted(const AuthAttemptVector& attempt,
                                   AuthFactorsSet available_factors,
                                   AuthFactorsSet failed_factors) = 0;
+    virtual void OnAttemptCleanedUp(const AuthAttemptVector& attempt) = 0;
     virtual void OnAttemptFinished(const AuthAttemptVector& attempt) = 0;
     virtual void OnAttemptCancelled(const AuthAttemptVector& attempt) = 0;
     virtual void OnIdle() = 0;
@@ -84,6 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
     kIdle,
     kStartingAttempt,
     kStarted,
+    kCleaningUpAttempt,
     kFinishingAttempt,
   };
 
@@ -103,6 +109,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
   void ProceedIfAllFactorsStarted();
 
   void ShutdownAttempt(OnShutdownAttemptNotifyOwner on_shutdown_attempt);
+  void OnFactorCleanedUp(AshAuthFactor factor);
+  void OnAttemptCleanedUpWatchdog();
+  void FinishIfAllFactorsCleanedUp();
   void OnFactorFinished(AshAuthFactor factor);
   void OnAttemptFinishWatchdog();
   void ProceedIfAllFactorsFinished();
