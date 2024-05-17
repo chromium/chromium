@@ -116,26 +116,26 @@ class FastCheckoutClientImpl
   CreateFastCheckoutController();
 
  private:
-  friend class DISABLED_FastCheckoutClientImplTest;
+  friend class FastCheckoutClientImplTest;
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       DestroyingAutofillDriver_ResetsAutofillManagerPointer);
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       OnOptionsSelected_LocalCard_SavesFormsAndAutofillDataSelections);
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       OnOptionsSelected_ServerCard_SavesFormsAndAutofillDataSelections);
-  FRIEND_TEST_ALL_PREFIXES(DISABLED_FastCheckoutClientImplTest,
+  FRIEND_TEST_ALL_PREFIXES(FastCheckoutClientImplTest,
                            OnAfterLoadedServerPredictions_FillsForms);
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops);
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       OnFullCardRequestSucceeded_InvokesCreditCardFormFill);
   FRIEND_TEST_ALL_PREFIXES(
-      DISABLED_FastCheckoutClientImplTest,
+      FastCheckoutClientImplTest,
       TryToFillForms_LocalCreditCard_ImmediatelyFillsCreditCardForm);
 
   // From autofill::PersonalDataManagerObserver.
