@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_SIGNIN_PROMO_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 struct AccountInfo;
 class PasswordsModelDelegate;
@@ -17,7 +18,8 @@ namespace autofill {
 class AutofillBubbleSignInPromoController {
  public:
   explicit AutofillBubbleSignInPromoController(
-      base::WeakPtr<PasswordsModelDelegate> delegate);
+      base::WeakPtr<PasswordsModelDelegate> delegate,
+      const password_manager::PasswordForm& saved_password);
   ~AutofillBubbleSignInPromoController();
 
   // Called by the view when the "Sign in" button in the promo bubble is
@@ -29,6 +31,9 @@ class AutofillBubbleSignInPromoController {
   // TODO(crbug.com/319411728): Should be something across all autofill types
   // instead.
   base::WeakPtr<PasswordsModelDelegate> delegate_;
+
+  // Password that was just saved by the save update bubble.
+  password_manager::PasswordForm saved_password_;
 };
 
 }  // namespace autofill

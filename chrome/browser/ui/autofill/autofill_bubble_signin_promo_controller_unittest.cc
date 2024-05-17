@@ -47,6 +47,8 @@ class AutofillBubbleSignInPromoControllerTest : public ::testing::Test {
     return controller_.get();
   }
 
+  const password_manager::PasswordForm& form() const { return password_form_; }
+
   void Init();
   void DestroyController();
 
@@ -54,6 +56,7 @@ class AutofillBubbleSignInPromoControllerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
+  password_manager::PasswordForm password_form_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<autofill::AutofillBubbleSignInPromoController> controller_;
@@ -63,8 +66,13 @@ void AutofillBubbleSignInPromoControllerTest::Init() {
   EXPECT_CALL(*delegate(), GetWebContents())
       .WillRepeatedly(Return(test_web_contents_.get()));
 
+  password_form_.signon_realm = "http://www.google.com/";
+  password_form_.url = GURL(password_form_.signon_realm);
+  password_form_.username_value = u"username";
+  password_form_.password_value = u"password";
+
   controller_ = std::make_unique<autofill::AutofillBubbleSignInPromoController>(
-      mock_delegate_->AsWeakPtr());
+      mock_delegate_->AsWeakPtr(), password_form_);
 }
 
 TEST_F(AutofillBubbleSignInPromoControllerTest, SignInIsCalled) {
@@ -73,7 +81,6 @@ TEST_F(AutofillBubbleSignInPromoControllerTest, SignInIsCalled) {
   account.gaia = "foo_gaia_id";
   account.email = "foo@bar.com";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-
-  EXPECT_CALL(*delegate(), SignIn(AccountEq(account)));
+  EXPECT_CALL(*delegate(), SignIn(AccountEq(account), form()));
   controller()->OnSignInToChromeClicked(account);
 }

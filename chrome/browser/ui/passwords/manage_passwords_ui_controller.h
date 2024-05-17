@@ -34,6 +34,7 @@ class WebContents;
 namespace password_manager {
 enum class CredentialType;
 struct InteractionsStats;
+struct PasswordForm;
 class MovePasswordToAccountStoreHelper;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
@@ -188,7 +189,8 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
-  void SignIn(const AccountInfo& account) override;
+  void SignIn(const AccountInfo& account,
+              const password_manager::PasswordForm& password_to_move) override;
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;

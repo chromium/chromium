@@ -272,7 +272,8 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
       controller_.GetWebContents(),
-      signin::SignInAutofillBubblePromoType::Passwords);
+      signin::SignInAutofillBubblePromoType::Passwords,
+      controller_.pending_password());
   AddChildView(std::move(sign_in_promo));
   SizeToContents();
 

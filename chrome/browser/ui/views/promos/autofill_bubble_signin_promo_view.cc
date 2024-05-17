@@ -64,10 +64,12 @@ void AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::OnSignIn(
 
 AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
-    signin::SignInAutofillBubblePromoType promo_type)
+    signin::SignInAutofillBubblePromoType promo_type,
+    const password_manager::PasswordForm& saved_password)
     // TODO(crbug.com/319411728): Make this dependant on type (for now only
     // password).
-    : controller_(PasswordsModelDelegateFromWebContents(web_contents)),
+    : controller_(PasswordsModelDelegateFromWebContents(web_contents),
+                  saved_password),
       promo_type_(promo_type) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
