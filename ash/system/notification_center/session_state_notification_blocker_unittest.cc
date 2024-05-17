@@ -362,6 +362,7 @@ TEST_F(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
       kTestCases = {
           {BatteryNotification::kNotificationId, true},
           {kOOBELocaleSwitchNotificationId, true},
+          {kOOBEGnubbyNotificationId, true},
           {"new-fancy-notification", false},
       };
   const SessionState kOOBEStates[] = {SessionState::OOBE,

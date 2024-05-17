@@ -69,7 +69,7 @@ bool IsAllowedDuringOOBE(std::string_view notification_id) {
   static const std::string_view kAllowedSystemNotificationIDs[] = {
       BatteryNotification::kNotificationId};
   static const std::string_view kAllowedProfileBoundNotificationIDs[] = {
-      kOOBELocaleSwitchNotificationId};
+      kOOBELocaleSwitchNotificationId, kOOBEGnubbyNotificationId};
 
   for (const auto& id : kAllowedSystemNotificationIDs) {
     if (notification_id == id) {
