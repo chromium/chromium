@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_PASSWORD_LIST_NAVIGATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_PASSWORD_LIST_NAVIGATOR_H_
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 // Object to navigate different views in manual fallback's passwords list.
 @protocol PasswordListNavigator
 
@@ -19,6 +23,10 @@
 
 // Opens password suggestion.
 - (void)openPasswordSuggestion;
+
+// Opens the details of the given credential.
+- (void)openPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential;
 
 @end
 

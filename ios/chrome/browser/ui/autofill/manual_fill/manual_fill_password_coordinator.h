@@ -15,6 +15,10 @@ namespace autofill {
 class FormRendererId;
 }
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 // Delegate for the coordinator actions.
 @protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate>
 
@@ -29,6 +33,10 @@ class FormRendererId;
 
 // Opens password suggestion confirmation alert.
 - (void)openPasswordSuggestion;
+
+// Opens the details of the given credential.
+- (void)openPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential;
 
 @end
 

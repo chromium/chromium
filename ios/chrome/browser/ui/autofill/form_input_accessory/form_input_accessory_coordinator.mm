@@ -23,6 +23,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -506,6 +508,15 @@ const CGFloat kIPHVerticalOffset = -5;
       PasswordTabHelper::FromWebState(activeWebState)
           ->GetPasswordGenerationProvider();
   [generationProvider triggerPasswordGeneration];
+}
+
+- (void)openPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  [self reset];
+  id<SettingsCommands> settingsCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsCommandsHandler showPasswordDetailsForCredential:credential
+                                           showCancelButton:YES];
 }
 
 #pragma mark - ManualFillAllPasswordCoordinatorDelegate

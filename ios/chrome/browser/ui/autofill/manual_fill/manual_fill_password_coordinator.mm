@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -140,6 +141,15 @@
 
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakDelegate openPasswordSuggestion];
+  }];
+}
+
+- (void)openPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
+
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakDelegate openPasswordDetailsForCredential:credential];
   }];
 }
 
