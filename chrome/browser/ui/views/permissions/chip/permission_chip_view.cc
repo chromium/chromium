@@ -98,7 +98,6 @@ void PermissionChipView::ResetAnimation(double value) {
   OnAnimationValueMaybeChanged();
 }
 
-// TODO(crbug.com/40232718): Respect `available_size`.
 gfx::Size PermissionChipView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int icon_width = GetIconViewWidth();
@@ -113,8 +112,9 @@ gfx::Size PermissionChipView::CalculatePreferredSize(
       base_width_ + icon_width +
       base::ClampRound(collapsable_width * animation_->GetCurrentValue());
 
-  return views::LabelButton::CalculatePreferredSize(
-      views::SizeBounds(width, {}));
+  return gfx::Size(width, views::LabelButton::CalculatePreferredSize(
+                              views::SizeBounds(width, {}))
+                              .height());
 }
 
 void PermissionChipView::OnThemeChanged() {
