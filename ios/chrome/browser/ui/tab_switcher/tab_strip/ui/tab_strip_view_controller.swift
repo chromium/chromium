@@ -679,6 +679,7 @@ class TabStripViewController: UIViewController,
   @objc func newTabButtonTapped() {
     UserMetricsUtils.recordAction("MobileTabSwitched")
     UserMetricsUtils.recordAction("MobileTabStripNewTab")
+    UserMetricsUtils.recordAction("MobileTabNewTab")
 
     mutator?.addNewItem()
   }
