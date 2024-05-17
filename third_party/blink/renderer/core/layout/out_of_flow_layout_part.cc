@@ -323,8 +323,9 @@ class OOFCandidateStyleIterator {
 
 const Element* GetPositionAnchorElement(
     const BlockNode& node,
+    const ComputedStyle& style,
     const LogicalAnchorQuery& anchor_query) {
-  if (const ScopedCSSName* specifier = node.Style().PositionAnchor()) {
+  if (const ScopedCSSName* specifier = style.PositionAnchor()) {
     if (const LogicalAnchorReference* reference =
             anchor_query.AnchorReference(*node.GetLayoutBox(), specifier);
         reference && reference->layout_object) {
@@ -336,6 +337,30 @@ const Element* GetPositionAnchorElement(
     return element->ImplicitAnchorElement();
   }
   return nullptr;
+}
+
+const LayoutObject* GetPositionAnchorObject(
+    const BlockNode& node,
+    const ComputedStyle& style,
+    const LogicalAnchorQuery& anchor_query) {
+  if (const Element* element =
+          GetPositionAnchorElement(node, style, anchor_query)) {
+    return element->GetLayoutObject();
+  }
+  return nullptr;
+}
+
+gfx::Vector2dF GetAnchorOffset(const BlockNode& node,
+                               const ComputedStyle& style,
+                               const LogicalAnchorQuery& anchor_query) {
+  if (const LayoutObject* anchor_object =
+          GetPositionAnchorObject(node, style, anchor_query)) {
+    if (const AnchorPositionScrollData* data =
+            To<Element>(node.GetDOMNode())->GetAnchorPositionScrollData()) {
+      return data->TotalOffset(*anchor_object);
+    }
+  }
+  return gfx::Vector2dF();
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
@@ -378,7 +403,8 @@ void UpdatePositionVisibilityAfterLayout(
   // The spec is still in-flux about whether we should use multiple anchors
   // (from `anchor()` and `anchor-size()`), or just the default anchor.
   const Element* anchor =
-      anchored ? GetPositionAnchorElement(node, *anchor_query) : nullptr;
+      anchored ? GetPositionAnchorElement(node, node.Style(), *anchor_query)
+               : nullptr;
   if (is_anchor_positioned && has_anchors_visible_visibility && anchor) {
     anchored->EnsureAnchorPositionScrollData()
         .EnsureAnchorPositionVisibilityObserver()
@@ -1872,16 +1898,8 @@ void SortNonOverflowingCandidates(
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     const LogicalAnchorQueryMap* anchor_queries) {
-  gfx::Vector2dF anchor_offset;
-  if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
-    if (const AnchorPositionScrollData* data =
-            element->GetAnchorPositionScrollData()) {
-      anchor_offset = data->TotalOffset();
-    }
-  }
-
   // See non_overflowing_scroll_range.h for documentation.
-  Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
+  HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
   // Note: This assumes @position-try rounds can't affect
   // writing-mode/position-anchor.
@@ -1915,7 +1933,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // However, without @position-try, the style is the current style.
     CHECK(has_try_options || &style == &iter.GetStyle());
     std::optional<OffsetInfo> offset_info =
-        TryCalculateOffset(node_info, style, &anchor_evaluator,
+        TryCalculateOffset(node_info, style, anchor_evaluator,
                            try_fit_available_space, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset
@@ -1923,7 +1941,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     if (offset_info) {
       if (try_fit_available_space) {
         non_overflowing_scroll_ranges.push_back(non_overflowing_range);
-        if (!non_overflowing_range.Contains(anchor_offset)) {
+        if (!non_overflowing_range.Contains(GetAnchorOffset(
+                node_info.node, style, *anchor_evaluator.AnchorQuery()))) {
           continue;
         }
       }
@@ -1960,7 +1979,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // offset again, using the non-base style.
     const ComputedStyle& style = iter.ActivateStyleForChosenOption();
     NonOverflowingScrollRange non_overflowing_range_unused;
-    offset_info = TryCalculateOffset(node_info, style, &anchor_evaluator,
+    offset_info = TryCalculateOffset(node_info, style, anchor_evaluator,
                                      /* try_fit_available_space */ false,
                                      &non_overflowing_range_unused);
     offset_info->overflows_containing_block = overflows_containing_block;
@@ -1981,7 +2000,7 @@ std::optional<OutOfFlowLayoutPart::OffsetInfo>
 OutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
-    AnchorEvaluatorImpl* anchor_evaluator,
+    AnchorEvaluatorImpl& anchor_evaluator,
     bool try_fit_available_space,
     NonOverflowingScrollRange* out_non_overflowing_range) {
   // TryCalculateOffset may be called multiple times if we have multiple @try
@@ -2248,6 +2267,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         LogicalScrollRange{inline_scroll_min, inline_scroll_max,
                            block_scroll_min, block_scroll_max}
             .ToPhysical(candidate_writing_direction);
+    out_non_overflowing_range->anchor_object = GetPositionAnchorObject(
+        node_info.node, candidate_style, *anchor_evaluator.AnchorQuery());
   }
 
   bool anchor_center_x = anchor_center_position.inline_offset.has_value();
@@ -2256,9 +2277,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     std::swap(anchor_center_x, anchor_center_y);
   }
   offset_info.needs_scroll_adjustment_in_x =
-      anchor_center_x || anchor_evaluator->NeedsScrollAdjustmentInX();
+      anchor_center_x || anchor_evaluator.NeedsScrollAdjustmentInX();
   offset_info.needs_scroll_adjustment_in_y =
-      anchor_center_y || anchor_evaluator->NeedsScrollAdjustmentInY();
+      anchor_center_y || anchor_evaluator.NeedsScrollAdjustmentInY();
 
   return offset_info;
 }
@@ -2855,6 +2876,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
 
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
+  visitor->Trace(non_overflowing_scroll_ranges);
 }
 
 void OutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
