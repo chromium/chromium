@@ -121,21 +121,30 @@ class AutofillSuggestionGenerator {
  private:
   friend class AutofillSuggestionGeneratorTestApi;
 
+  struct ProfilesToSuggestOptions {
+    const bool exclude_disused_addresses;
+    const bool require_non_empty_value_on_trigger_field;
+    const bool prefix_match_suggestions;
+    const bool deduplicate_suggestions;
+  };
+
+  ProfilesToSuggestOptions GetProfilesToSuggestOptions(
+      FieldType trigger_field_type,
+      const std::u16string& trigger_field_contents,
+      AutofillSuggestionTriggerSource trigger_source) const;
+
   // Returns a list of profiles that will be displayed as suggestions to the
   // user, sorted by their relevance. This involves many steps from fetching the
   // profiles to matching with `field_contents`, and deduplicating based on
   // `field_types`, which are the relevant types for the current suggestion.
-  // When `trigger_source` is manual fallback, profiles are not deduplicated nor
-  // filtered out, exception being when there is no profile information to fill
-  // `trigger_field_type`. Furthermore, if `trigger_field_type` is not of type
-  // address, every single profile is displayed (up to a max of
-  // `kMaxDisplayedAddressSuggestions`).
+  // `options` defines what strategies to follow by the function in order to
+  // filter the list or returned profiles.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
   GetProfilesToSuggest(FieldType trigger_field_type,
                        const std::u16string& field_contents,
                        bool field_is_autofilled,
                        const FieldTypeSet& field_types,
-                       AutofillSuggestionTriggerSource trigger_source);
+                       ProfilesToSuggestOptions options);
 
   // Returns the local and server cards ordered by the Autofill ranking.
   // If `suppress_disused_cards`, local expired disused cards are removed.
@@ -181,7 +190,8 @@ class AutofillSuggestionGenerator {
   // the field on which the user is currently focused.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
   DeduplicatedProfilesForSuggestions(
-      const std::vector<const AutofillProfile*>& matched_profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          matched_profiles,
       FieldType trigger_field_type,
       const FieldTypeSet& field_types,
       const AutofillProfileComparator& comparator);
@@ -189,12 +199,12 @@ class AutofillSuggestionGenerator {
   // Matches based on prefix search, and limits number of profiles.
   // Returns the top matching profiles based on prefix search. At most
   // `kMaxPrefixMatchedProfilesForSuggestion` are returned.
-  std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
-      const std::vector<AutofillProfile*>& profiles,
-      FieldType trigger_field_type,
-      const std::u16string& raw_field_contents,
-      const std::u16string& field_contents_canon,
-      bool field_is_autofilled);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+  GetPrefixMatchedProfiles(const std::vector<AutofillProfile*>& profiles,
+                           FieldType trigger_field_type,
+                           const std::u16string& raw_field_contents,
+                           const std::u16string& field_contents_canon,
+                           bool field_is_autofilled);
 
   // Removes profiles that haven't been used after `min_last_used` from
   // |profiles|. The relative ordering of `profiles` is maintained.
