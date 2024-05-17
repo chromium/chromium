@@ -102,6 +102,8 @@ public class PwaRestoreProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> DESELECT_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Boolean> DESELECT_BUTTON_ENABLED =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> EXPANDED_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> APPS_TITLE = new WritableObjectPropertyKey<>();
@@ -129,6 +131,7 @@ public class PwaRestoreProperties {
         EXPANDED_DESCRIPTION,
         EXPANDED_TITLE,
         DESELECT_BUTTON_LABEL,
+        DESELECT_BUTTON_ENABLED,
         EXPANDED_BUTTON_LABEL,
         APPS_TITLE,
         BACK_BUTTON_ON_CLICK_CALLBACK,

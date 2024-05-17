@@ -98,6 +98,7 @@ class PwaRestoreBottomSheetMediator {
             if (app.isSelected()) app.toggleSelection();
         }
         mModel.set(PwaRestoreProperties.APPS, appList);
+        mModel.set(PwaRestoreProperties.DESELECT_BUTTON_ENABLED, false);
     }
 
     private void onRestoreButtonClicked() {
@@ -124,12 +125,18 @@ class PwaRestoreBottomSheetMediator {
 
         List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
 
+        boolean somethingSelected = false;
         for (PwaRestoreProperties.AppInfo app : appList) {
             if (TextUtils.equals(app.getId(), appId)) {
                 app.toggleSelection();
-                return;
+            }
+
+            if (app.isSelected()) {
+                somethingSelected = true;
             }
         }
+
+        mModel.set(PwaRestoreProperties.DESELECT_BUTTON_ENABLED, somethingSelected);
     }
 
     PropertyModel getModel() {

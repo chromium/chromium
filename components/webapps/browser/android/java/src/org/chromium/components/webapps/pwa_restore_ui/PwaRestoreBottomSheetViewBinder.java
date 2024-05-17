@@ -40,6 +40,9 @@ class PwaRestoreBottomSheetViewBinder {
         } else if (propertyKey.equals(PwaRestoreProperties.DESELECT_BUTTON_LABEL)) {
             ((Button) view.getContentView().findViewById(R.id.deselect_button))
                     .setText(model.get(PwaRestoreProperties.DESELECT_BUTTON_LABEL));
+        } else if (propertyKey.equals(PwaRestoreProperties.DESELECT_BUTTON_ENABLED)) {
+            ((Button) view.getContentView().findViewById(R.id.deselect_button))
+                    .setEnabled(model.get(PwaRestoreProperties.DESELECT_BUTTON_ENABLED));
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_BUTTON_LABEL)) {
             ((Button) view.getContentView().findViewById(R.id.restore_button))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_BUTTON_LABEL));
