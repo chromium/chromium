@@ -2406,10 +2406,10 @@ config("optimize") {
   if (is_win) {
     cflags = [ "/O2" ] + common_optimize_on_cflags
 
-    # https://doc.rust-lang.org/rustc/profile-guided-optimization.html#usage
-    # suggests not using an explicit `-Copt-level` at all, and the default is
-    # to optimize for performance like `/O2` for clang.
-    rustflags = []
+    # The `-O3` for clang turns on extra optimizations compared to the standard
+    # `-O2`. But for rust, `-Copt-level=3` is the default and is thus reliable
+    # to use.
+    rustflags = [ "-Copt-level=3" ]
   } else if (optimize_for_size || is_chromeos) {
     # Favor size over speed.
     # -Os in clang is more of a size-conscious -O2 than "size at any cost"
