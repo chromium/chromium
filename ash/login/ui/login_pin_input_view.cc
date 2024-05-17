@@ -192,8 +192,7 @@ void LoginPinInputView::OnImplicitAnimationsCompleted() {
 }
 
 bool LoginPinInputView::IsAutosubmitSupported(int length) {
-  return features::IsPinAutosubmitFeatureEnabled() &&
-         length >= kPinAutosubmitMinLength && length <= kPinAutosubmitMaxLength;
+  return length >= kPinAutosubmitMinLength && length <= kPinAutosubmitMaxLength;
 }
 
 void LoginPinInputView::Init(const OnPinSubmit& on_submit,

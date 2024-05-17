@@ -139,18 +139,11 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
       nullptr;  // Owned by test widget view hierarchy.
 };
 
-class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,
-                                  /*autosubmit_feature*/
-                                  public ::testing::WithParamInterface<bool> {
+class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase {
  public:
   LoginAuthUserViewUnittest(const LoginAuthUserViewUnittest&) = delete;
   LoginAuthUserViewUnittest& operator=(const LoginAuthUserViewUnittest&) =
       delete;
-
-  static std::string ParamInfoToString(
-      testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
-    return info.param ? "AutosubmitEnabled" : "AutosubmitDisabled";
-  }
 
  protected:
   LoginAuthUserViewUnittest() = default;
@@ -159,33 +152,12 @@ class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,
   // LoginTestBase:
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
-    feature_list_.InitWithFeatureState(features::kQuickUnlockPinAutosubmit,
-                                       GetParam());
-    InitializeViewForUser(CreateUser("user@domain.com"));
-  }
-};
-
-class LoginAuthUserViewAutosumbitUnittest : public LoginAuthUserViewTestBase {
- public:
-  LoginAuthUserViewAutosumbitUnittest(
-      const LoginAuthUserViewAutosumbitUnittest&) = delete;
-  LoginAuthUserViewAutosumbitUnittest& operator=(
-      const LoginAuthUserViewAutosumbitUnittest&) = delete;
-
- protected:
-  LoginAuthUserViewAutosumbitUnittest() = default;
-  ~LoginAuthUserViewAutosumbitUnittest() override = default;
-
-  // LoginTestBase:
-  void SetUp() override {
-    LoginAuthUserViewTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(features::kQuickUnlockPinAutosubmit);
     InitializeViewForUser(CreateUser("user@domain.com"));
   }
 };
 
 // Verifies showing the PIN keyboard makes the user view grow.
-TEST_P(LoginAuthUserViewUnittest, ShowingPinExpandsView) {
+TEST_F(LoginAuthUserViewUnittest, ShowingPinExpandsView) {
   gfx::Size start_size = view_->size();
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_PIN);
@@ -195,7 +167,7 @@ TEST_P(LoginAuthUserViewUnittest, ShowingPinExpandsView) {
 }
 
 // Verifies that an auth user that shows a password is opaque.
-TEST_P(LoginAuthUserViewUnittest, ShowingPasswordForcesOpaque) {
+TEST_F(LoginAuthUserViewUnittest, ShowingPasswordForcesOpaque) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginUserView::TestApi user_test(auth_test.user_view());
 
@@ -217,7 +189,7 @@ TEST_P(LoginAuthUserViewUnittest, ShowingPasswordForcesOpaque) {
 }
 
 // Verifies that password is cleared after AUTH_PASSWORD is disabled.
-TEST_P(LoginAuthUserViewUnittest,
+TEST_F(LoginAuthUserViewUnittest,
        PasswordClearedAfterAnimationIfPasswordDisabled) {
   LoginPasswordView::TestApi password_test(view_->password_view());
   auto has_password = [&]() {
@@ -240,7 +212,7 @@ TEST_P(LoginAuthUserViewUnittest,
   EXPECT_FALSE(has_password());
 }
 
-TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
+TEST_F(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPasswordView::TestApi password_test(auth_test.password_view());
 
@@ -263,7 +235,7 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
             ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-TEST_F(LoginAuthUserViewAutosumbitUnittest, ResetPinFieldOnUpdateUser) {
+TEST_F(LoginAuthUserViewUnittest, ResetPinFieldOnUpdateUser) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPinInputView* pin_input(auth_test.pin_input_view());
   LoginPinInputView::TestApi pin_input_test_api(auth_test.pin_input_view());
@@ -288,7 +260,7 @@ TEST_F(LoginAuthUserViewAutosumbitUnittest, ResetPinFieldOnUpdateUser) {
 // Tests that the appropriate InputFieldMode is used based on the exposed
 // length of the user's PIN. An exposed PIN length of zero (0) means that
 // auto submit is not being used.
-TEST_P(LoginAuthUserViewUnittest, CorrectFieldModeForExposedPinLength) {
+TEST_F(LoginAuthUserViewUnittest, CorrectFieldModeForExposedPinLength) {
   SetUserCount(1);
 
   for (int pin_length = 0; pin_length <= 64; pin_length++) {
@@ -303,7 +275,7 @@ TEST_P(LoginAuthUserViewUnittest, CorrectFieldModeForExposedPinLength) {
 }
 
 // Tests the correctness of InputFieldMode::NONE
-TEST_P(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
+TEST_F(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginAuthUserView::AuthMethods methods_without_input[] = {
       LoginAuthUserView::AUTH_CHALLENGE_RESPONSE,
@@ -319,7 +291,7 @@ TEST_P(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
 // Tests the correctness of InputFieldMode::PASSWORD_ONLY. With only the
 // password field present and no PIN, the authentication call must
 // have 'authenticated_by_pin' as false.
-TEST_P(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
+TEST_F(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -350,7 +322,7 @@ TEST_P(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
  * - Digits are correctly ignored when the field is set to read-only
  * - Submitting the credentials results in the correct auth call
  */
-TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
+TEST_F(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -394,7 +366,7 @@ TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
  * - Digits are correctly ignored when the field is set to read-only
  * - Submitting the last digit triggers the correct auth call
  */
-TEST_F(LoginAuthUserViewAutosumbitUnittest, PinWithToggleFieldModeCorrectness) {
+TEST_F(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
@@ -435,7 +407,7 @@ TEST_F(LoginAuthUserViewAutosumbitUnittest, PinWithToggleFieldModeCorrectness) {
  * mode that shows just the password field with the option to switch to PIN.
  * It is only available when the user has auto submit enabled.
  */
-TEST_F(LoginAuthUserViewAutosumbitUnittest, PwdWithToggleFieldModeCorrectness) {
+TEST_F(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -466,11 +438,6 @@ TEST_F(LoginAuthUserViewAutosumbitUnittest, PwdWithToggleFieldModeCorrectness) {
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
 }
-
-INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,
-                         LoginAuthUserViewUnittest,
-                         testing::Bool(),  // PIN autosubmit feature
-                         LoginAuthUserViewUnittest::ParamInfoToString);
 
 class LoginAuthUserViewOnlineUnittest
     : public LoginAuthUserViewTestBase,

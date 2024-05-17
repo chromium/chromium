@@ -217,9 +217,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPinUnlockMaximumLength, 0);
   registry->RegisterBooleanPref(prefs::kPinUnlockWeakPinsAllowed, true);
 
-  // Register as true by default only when the feature is enabled.
-  registry->RegisterBooleanPref(::prefs::kPinUnlockAutosubmitEnabled,
-                                features::IsPinAutosubmitFeatureEnabled());
+  registry->RegisterBooleanPref(::prefs::kPinUnlockAutosubmitEnabled, true);
 }
 
 bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose) {

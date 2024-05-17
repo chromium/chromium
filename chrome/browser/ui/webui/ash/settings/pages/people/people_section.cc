@@ -313,8 +313,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
-  html_source->AddBoolean("quickUnlockPinAutosubmitFeatureEnabled",
-                          features::IsPinAutosubmitFeatureEnabled());
   html_source->AddBoolean("quickUnlockDisabledByPolicy",
                           quick_unlock::IsPinDisabledByPolicy(
                               pref_service, quick_unlock::Purpose::kAny));

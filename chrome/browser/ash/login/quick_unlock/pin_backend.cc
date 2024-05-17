@@ -246,8 +246,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
                                          BoolCallback did_set) {
   // Immediate false if the PIN length isn't supported, or when the feature
   // isdisabled.
-  if (!features::IsPinAutosubmitFeatureEnabled() ||
-      pin.length() > kPinAutosubmitMaxPinLength) {
+  if (pin.length() > kPinAutosubmitMaxPinLength) {
     PostResponse(std::move(did_set), false);
     return;
   }
@@ -408,11 +407,6 @@ bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
 
 int PinBackend::GetExposedPinLength(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (!features::IsPinAutosubmitFeatureEnabled()) {
-    // Clear the exposed length if the feature was disabled.
-    known_user.SetUserPinLength(account_id, 0);
-    return 0;
-  }
 
   // Clear the pin length in local state if auto-submit got disabled, for
   // example, via policy. Disabling auto submit through Settings clears it
@@ -495,9 +489,6 @@ PrefService* PinBackend::PrefService(const AccountId& account_id) {
 
 void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
                                           size_t pin_length) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
-
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // A PIN is being set when the auto submit feature is present. This user
   // does not need to be backfilled.
@@ -522,8 +513,6 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
 }
 
 void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetUserPinLength(account_id, 0);
   PrefService(account_id)->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
@@ -532,9 +521,6 @@ void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
 void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
     const AccountId& account_id,
     size_t pin_length) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
-
   // Backfill the auto submit preference if the PIN that was authenticated was
   // set before the auto submit feature existed.
   PinAutosubmitBackfill(account_id, pin_length);
@@ -550,8 +536,7 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
 
 void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
                                        size_t pin_length) {
-  if (!features::IsPinAutosubmitBackfillFeatureEnabled() ||
-      !features::IsPinAutosubmitFeatureEnabled()) {
+  if (!features::IsPinAutosubmitBackfillFeatureEnabled()) {
     return;
   }
 
