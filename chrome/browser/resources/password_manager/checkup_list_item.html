@@ -67,12 +67,12 @@
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
-  <site-favicon url="[[getGroupIcon_(group)]]" domain="[[getGroupName_(group)]]"
-      aria-hidden="true">
+  <site-favicon url="[[getGroupIcon_(group, item)]]" 
+      domain="[[getGroupName_(group, item)]]" aria-hidden="true">
   </site-favicon>
   <div id="credentialInfo">
     <div id="shownUrl" class="label text-elide">
-      [[getGroupName_(group)]]
+      [[getGroupName_(group, item)]]
     </div>
     <div id="usernameContainer" class="cr-secondary-text label">
       <span id="username" class="text-elide">[[item.username]]</span>
@@ -93,7 +93,7 @@
   <template is="dom-if" if="[[item.changePasswordUrl]]">
     <div class="button-container" id="changeButton">
       <cr-button id="changePasswordButton" on-click="onChangePasswordClick_"
-          aria-label$="[[getChangeButtonAriaLabel_(group)]]">
+          aria-label$="[[getChangeButtonAriaLabel_(group, item)]]">
         $i18n{changePassword}
         <iron-icon icon="cr:open-in-new" id="change-password-link-icon">
         </iron-icon>
@@ -108,7 +108,8 @@
     <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
   </template>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
-      on-click="onMoreClick_" aria-label$="[[getMoreButtonAriaLabel_(group)]]">
+      on-click="onMoreClick_" 
+      aria-label$="[[getMoreButtonAriaLabel_(group, item)]]">
   </cr-icon-button>
 </div>
 <template is="dom-if" if="[[showEditPasswordDisclaimer_]]" restamp>
