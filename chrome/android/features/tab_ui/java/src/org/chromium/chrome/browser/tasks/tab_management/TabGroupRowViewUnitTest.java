@@ -71,6 +71,7 @@ public class TabGroupRowViewUnitTest {
     private ViewGroup mTabGroupStartIconParent;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private ListMenuButton mListMenuButton;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -85,6 +86,7 @@ public class TabGroupRowViewUnitTest {
         mTabGroupStartIconParent = mTabGroupRowView.findViewById(R.id.tab_group_start_icon);
         mTitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_title);
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
+        mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
         mTabGroupRowView.setTimeAgoResolverForTesting(mTimeAgoResolver);
 
         PropertyModelChangeProcessor.create(
@@ -146,8 +148,7 @@ public class TabGroupRowViewUnitTest {
     @SmallTest
     public void testOpenRunnableFromMenu() {
         remakeWithProperty(OPEN_RUNNABLE, mRunnable);
-        ListMenuButton menu = mTabGroupRowView.findViewById(R.id.more);
-        menu.showMenu();
+        mListMenuButton.showMenu();
         onView(withText("Open")).perform(click());
         verify(mRunnable).run();
     }
@@ -156,8 +157,7 @@ public class TabGroupRowViewUnitTest {
     @SmallTest
     public void testCloseRunnableFromMenu() {
         remakeWithProperty(DELETE_RUNNABLE, mRunnable);
-        ListMenuButton menu = mTabGroupRowView.findViewById(R.id.more);
-        menu.showMenu();
+        mListMenuButton.showMenu();
         onView(withText("Delete")).perform(click());
         verify(mRunnable).run();
     }
@@ -229,5 +229,13 @@ public class TabGroupRowViewUnitTest {
 
         mTabGroupRowView.resetOnBind();
         assertNull(imageView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testContentDescriptions() {
+        remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
+        assertEquals("Open Title", mTitleTextView.getContentDescription());
+        assertEquals("Title tab group options", mListMenuButton.getContentDescription());
     }
 }

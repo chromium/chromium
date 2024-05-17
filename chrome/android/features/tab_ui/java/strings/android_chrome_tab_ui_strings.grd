@@ -785,6 +785,12 @@
       <message name="IDS_OPEN_TAB_GROUP_MENU_ITEM" desc="Menu item to open a more detailed view of a tab group.">
         Open
       </message>
+      <message name="IDS_TAB_GROUP_ROW_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe action of tapping on a tab group row.">
+        Open <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph>
+      </message>
+      <message name="IDS_TAB_GROUP_MENU_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe the action of tapping on the more menu button.">
+        <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph> tab group options
+      </message>
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">

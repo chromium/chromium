@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
@@ -66,13 +67,19 @@ public class TabGroupRowView extends LinearLayout {
     }
 
     void setTitleData(Pair<String, Integer> titleData) {
-        String userTitle = titleData.first;
-        if (TextUtils.isEmpty(userTitle)) {
-            mTitleTextView.setText(
-                    TabGroupTitleEditor.getDefaultTitle(getContext(), titleData.second));
-        } else {
-            mTitleTextView.setText(userTitle);
+        String title = titleData.first;
+        if (TextUtils.isEmpty(title)) {
+            title = TabGroupTitleEditor.getDefaultTitle(getContext(), titleData.second);
         }
+        mTitleTextView.setText(title);
+        Resources resources = getResources();
+        mListMenuButton.setContentDescription(
+                resources.getString(R.string.tab_group_menu_accessibility_text, title));
+
+        // Note that the subtitle will also be read for the row, as it just loops over visible text
+        // children.
+        mTitleTextView.setContentDescription(
+                resources.getString(R.string.tab_group_row_accessibility_text, title));
     }
 
     void setCreationMillis(long creationMillis) {
