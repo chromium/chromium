@@ -18,6 +18,11 @@
 
 namespace ash {
 namespace ime {
+namespace {
+
+namespace mojom = ::ash::ime::mojom;
+
+}
 
 InputMethodUserDataServiceImpl::~InputMethodUserDataServiceImpl() = default;
 
@@ -68,6 +73,28 @@ void InputMethodUserDataServiceImpl::FetchJapaneseDictionary(
     response->get_dictionaries().push_back(std::move(data));
   }
 
+  std::move(callback).Run(std::move(response));
+}
+
+void InputMethodUserDataServiceImpl::AddJapaneseDictionaryEntry(
+    uint64_t dict_id,
+    mojom::JapaneseDictionaryEntryPtr entry,
+    AddJapaneseDictionaryEntryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+
+  chromeos_input::AddJapaneseDictionaryEntryRequest& request =
+      *user_data_request.mutable_add_japanese_dictionary_entry();
+  request.set_dictionary_id(dict_id);
+  *request.mutable_entry() = MakeProtoJpDictEntry(*entry);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
   std::move(callback).Run(std::move(response));
 }
 

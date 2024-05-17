@@ -29,6 +29,11 @@ class InputMethodUserDataServiceImpl
   void FetchJapaneseDictionary(
       FetchJapaneseDictionaryCallback callback) override;
 
+  void AddJapaneseDictionaryEntry(
+      uint64_t dict_id,
+      ash::ime::mojom::JapaneseDictionaryEntryPtr entry,
+      AddJapaneseDictionaryEntryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 
