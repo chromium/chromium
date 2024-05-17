@@ -98,6 +98,7 @@ class OverviewTracingHandler : public wm::ActivationChangeObserver,
   void StopTracing();
 
   bool is_tracing() const;
+  bool arc_window_is_active() const;
 
  private:
   GraphicsModelReadyCb graphics_model_ready_;

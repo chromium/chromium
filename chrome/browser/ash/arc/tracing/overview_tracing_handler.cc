@@ -434,6 +434,10 @@ bool OverviewTracingHandler::is_tracing() const {
   return active_trace_ != nullptr;
 }
 
+bool OverviewTracingHandler::arc_window_is_active() const {
+  return arc_active_window_ != nullptr;
+}
+
 base::TimeTicks OverviewTracingHandler::SystemTicksNow() {
   return TRACE_TIME_TICKS_NOW();
 }

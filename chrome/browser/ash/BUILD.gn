@@ -978,6 +978,8 @@ source_set("ash") {
     "customization/customization_wallpaper_util.h",
     "data_migration/data_migration_factory.cc",
     "data_migration/data_migration_factory.h",
+    "dbus/arc_tracing_service_provider.cc",
+    "dbus/arc_tracing_service_provider.h",
     "dbus/ash_dbus_helper.cc",
     "dbus/ash_dbus_helper.h",
     "dbus/chrome_features_service_provider.cc",

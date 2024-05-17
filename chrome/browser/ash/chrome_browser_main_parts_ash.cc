@@ -69,6 +69,7 @@
 #include "chrome/browser/ash/crosapi/lacros_availability_policy_observer.h"
 #include "chrome/browser/ash/crosapi/lacros_data_backward_migration_mode_policy_observer.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
+#include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/dbus/chrome_features_service_provider.h"
 #include "chrome/browser/ash/dbus/component_updater_service_provider.h"
@@ -180,6 +181,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/fwupd_download_client_impl.h"
@@ -521,6 +523,14 @@ class DBusServices {
             std::make_unique<DlpFilesPolicyServiceProvider>()));
 
     if (arc::IsArcVmEnabled()) {
+      if (ChromeTracingDelegate::IsSystemWideTracingEnabled()) {
+        arc_tracing_service_ = CrosDBusService::Create(
+            system_bus, arc::tracing::kArcTracingServiceName,
+            dbus::ObjectPath(arc::tracing::kArcTracingServicePath),
+            CrosDBusService::CreateServiceProviderList(
+                std::make_unique<ArcTracingServiceProvider>()));
+      }
+
       libvda_service_ = CrosDBusService::Create(
           system_bus, libvda::kLibvdaServiceName,
           dbus::ObjectPath(libvda::kLibvdaServicePath),
@@ -578,6 +588,7 @@ class DBusServices {
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();
     TPMTokenLoader::Shutdown();
+    arc_tracing_service_.reset();
     proxy_resolution_service_.reset();
     kiosk_info_service_.reset();
     metrics_event_service_.reset();
@@ -632,6 +643,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> fusebox_service_;
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
+  std::unique_ptr<CrosDBusService> arc_tracing_service_;
 };
 
 }  // namespace internal
