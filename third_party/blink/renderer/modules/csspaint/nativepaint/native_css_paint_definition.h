@@ -51,9 +51,7 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
 
   template <typename T>
   struct TypedKeyframe : public BaseKeyframe {
-    TypedKeyframe<T>(double offset,
-                     std::unique_ptr<gfx::TimingFunction>& tf,
-                     T v)
+    TypedKeyframe(double offset, std::unique_ptr<gfx::TimingFunction>& tf, T v)
         : BaseKeyframe(offset, tf), value(v) {}
     T value;
   };
