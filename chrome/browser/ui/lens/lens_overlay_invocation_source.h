@@ -38,7 +38,7 @@ enum class LensOverlayInvocationSource {
 
   kMaxValue = kOmnibox
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 
 }  // namespace lens
 

@@ -56,7 +56,7 @@ enum class LensOverlayDismissalSource {
 
   kMaxValue = kFullscreened
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
 }  // namespace lens
 

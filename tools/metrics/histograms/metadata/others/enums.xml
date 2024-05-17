@@ -40,52 +40,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Wayland"/>
 </enum>
 
-<!-- LINT.IfChange(LensOverlayDismissalSource) -->
-
-<enum name="LensOverlayDismissalSource">
-  <summary>The UI source of a Lens Overlay dismissal.</summary>
-  <int value="0" label="Overlay close button"/>
-  <int value="1" label="Overlay background click"/>
-  <int value="2" label="Side panel close button"/>
-  <int value="3" label="Toolbar button"/>
-  <int value="4" label="Page changed (navigation)"/>
-  <int value="5" label="Background tab contents discarded"/>
-  <int value="6" label="Tab backgrounded while screenshotting"/>
-  <int value="7" label="Error: Screenshot creation failed"/>
-  <int value="8" label="Error: Screenshot encoding failed"/>
-  <int value="9" label="Escape key press"/>
-  <int value="10" label="Unexpected side panel open"/>
-  <int value="11" label="Browser went into fullscreen"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
-
-<!-- LINT.IfChange(LensOverlayInvocationSource) -->
-
-<enum name="LensOverlayInvocationSource">
-  <summary>The UI source of a Lens Overlay invocation.</summary>
-  <int value="0" label="App menu"/>
-  <int value="1" label="Content area page context menu"/>
-  <int value="2" label="Content area image context menu"/>
-  <int value="3" label="Toolbar button"/>
-  <int value="4" label="Find in page dialog button"/>
-  <int value="5" label="Omnibox button"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
-
-<!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
-
-<enum name="LensPermissionBubbleUserAction">
-  <summary>The user interaction with the Lens Permission Bubble</summary>
-  <int value="0" label="Help Center link opened"/>
-  <int value="1" label="Accept button pressed"/>
-  <int value="2" label="Cancel button pressed"/>
-  <int value="3" label="Esc key pressed"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
-
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>
