@@ -700,13 +700,6 @@ AutofillBubbleBase* SaveCardBubbleControllerImpl::GetPaymentBubbleView() const {
   return bubble_view();
 }
 
-SavePaymentIconController::PaymentBubbleType
-SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
-  return current_bubble_type_ != BubbleType::UPLOAD_COMPLETED
-             ? PaymentBubbleType::kCreditCard
-             : PaymentBubbleType::kCreditCardSaveConfirmation;
-}
-
 int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
   return options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
              ? IDS_AUTOFILL_CVC_SAVED

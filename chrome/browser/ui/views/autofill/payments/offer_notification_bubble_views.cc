@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_view.h"
@@ -45,9 +46,9 @@ OfferNotificationBubbleViews::OfferNotificationBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view,
-                                    web_contents,
-                                    /*autosize=*/true),
+    : AutofillLocationBarBubble(anchor_view,
+                                web_contents,
+                                /*autosize=*/true),
       controller_(controller) {
   DCHECK(controller);
   SetShowCloseButton(true);

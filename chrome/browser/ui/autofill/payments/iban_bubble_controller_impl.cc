@@ -346,19 +346,6 @@ AutofillBubbleBase* IbanBubbleControllerImpl::GetPaymentBubbleView() const {
   return bubble_view();
 }
 
-SavePaymentIconController::PaymentBubbleType
-IbanBubbleControllerImpl::GetPaymentBubbleType() const {
-  switch (current_bubble_type_) {
-    case IbanBubbleType::kLocalSave:
-    case IbanBubbleType::kUploadSave:
-      return PaymentBubbleType::kSaveIban;
-    case IbanBubbleType::kManageSavedIban:
-      return PaymentBubbleType::kManageSavedIban;
-    case IbanBubbleType::kInactive:
-      return PaymentBubbleType::kUnknown;
-  }
-}
-
 int IbanBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
   return IDS_AUTOFILL_IBAN_SAVED;
 }

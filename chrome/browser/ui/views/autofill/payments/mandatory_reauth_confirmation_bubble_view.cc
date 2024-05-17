@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
+
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -31,7 +32,7 @@ MandatoryReauthConfirmationBubbleView::MandatoryReauthConfirmationBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     MandatoryReauthBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);

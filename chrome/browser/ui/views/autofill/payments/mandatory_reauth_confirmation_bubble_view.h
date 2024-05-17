@@ -7,15 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 
 namespace autofill {
 
 class MandatoryReauthBubbleController;
 
-class MandatoryReauthConfirmationBubbleView
-    : public AutofillBubbleBase,
-      public LocationBarBubbleDelegateView {
+class MandatoryReauthConfirmationBubbleView : public AutofillLocationBarBubble {
  public:
   MandatoryReauthConfirmationBubbleView(
       views::View* anchor_view,

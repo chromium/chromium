@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -25,7 +26,7 @@ ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     IbanBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());

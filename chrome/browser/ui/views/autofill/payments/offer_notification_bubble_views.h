@@ -9,8 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/styled_label.h"
 
@@ -29,8 +29,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 // rewards linked to the current page domain. This can include card-linked
 // offers, for which "Pay with [card] at checkout" is shown, or merchant promo
 // code offers, which shows the code the user should apply at checkout.
-class OfferNotificationBubbleViews : public AutofillBubbleBase,
-                                     public LocationBarBubbleDelegateView {
+class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
  public:
   // Bubble will be anchored to |anchor_view|.
   OfferNotificationBubbleViews(views::View* anchor_view,

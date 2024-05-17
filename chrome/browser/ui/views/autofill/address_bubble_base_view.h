@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_BUBBLE_BASE_VIEW_H_
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 
 namespace autofill {
-class AddressBubbleBaseView : public AutofillBubbleBase,
-                              public LocationBarBubbleDelegateView {
-  using LocationBarBubbleDelegateView::LocationBarBubbleDelegateView;
+class AddressBubbleBaseView : public AutofillLocationBarBubble {
+  using AutofillLocationBarBubble::AutofillLocationBarBubble;
 
   // TODO(b/325440757): Add common for Save/UpdateAddressProfileView functions.
 };

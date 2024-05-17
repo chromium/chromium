@@ -54,7 +54,7 @@ VirtualCardManualFallbackBubbleViews::VirtualCardManualFallbackBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     VirtualCardManualFallbackBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller_);
   SetShowIcon(true);

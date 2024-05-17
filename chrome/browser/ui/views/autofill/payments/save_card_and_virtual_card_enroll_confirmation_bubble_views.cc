@@ -22,7 +22,7 @@ SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
         base::OnceCallback<void(PaymentsBubbleClosedReason)>
             controller_hide_callback,
         SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_hide_callback_(std::move(controller_hide_callback)),
       ui_params_(std::move(ui_params)) {
   if (ui_params_.is_success) {

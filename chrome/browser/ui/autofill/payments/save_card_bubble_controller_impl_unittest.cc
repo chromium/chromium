@@ -1058,26 +1058,21 @@ class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
 // callback.
 TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
        Upload_OnSave_ShowConfirmationBubbleView) {
-  using enum SavePaymentIconController::PaymentBubbleType;
-
   ShowUploadBubble();
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
   EXPECT_TRUE(controller()->IsIconVisible());
   EXPECT_TRUE(IsSaveCardBubbleVisible());
-  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCard);
 
   controller()->OnSaveButton({});
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_IN_PROGRESS);
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_FALSE(IsConfirmationBubbleVisible());
-  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCard);
 
   ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(IsConfirmationBubbleVisible());
   EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
-  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCardSaveConfirmation);
 
   controller()->HideSaveCardBubble();
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);

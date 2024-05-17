@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
 
@@ -15,8 +15,7 @@ namespace autofill {
 // This class displays a confirmation bubble view after a save card upload or
 // virtual card enrollment.
 class SaveCardAndVirtualCardEnrollConfirmationBubbleViews
-    : public AutofillBubbleBase,
-      public LocationBarBubbleDelegateView {
+    : public AutofillLocationBarBubble {
  public:
   SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
       views::View* anchor_view,

@@ -35,7 +35,7 @@ const int kMaxNicknameChars = 25;
 SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
                                        content::WebContents* web_contents,
                                        IbanBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());

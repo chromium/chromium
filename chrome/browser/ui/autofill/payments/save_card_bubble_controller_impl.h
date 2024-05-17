@@ -143,7 +143,6 @@ class SaveCardBubbleControllerImpl
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
-  PaymentBubbleType GetPaymentBubbleType() const override;
   int GetSaveSuccessAnimationStringId() const override;
 
   static base::AutoReset<bool> IgnoreWindowActivationForTesting();

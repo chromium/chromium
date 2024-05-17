@@ -51,7 +51,7 @@ LocalCardMigrationBubbleViews::LocalCardMigrationBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
   SetButtons(ui::DIALOG_BUTTON_OK);
