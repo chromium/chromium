@@ -14,7 +14,8 @@ enum class PasswordSuggestionBottomSheetExitReason {
   kUsePasswordSuggestion = 1,
   kShowPasswordManager = 2,
   kShowPasswordDetails = 3,
-  kMaxValue = kShowPasswordDetails,
+  kBadProvider = 4,
+  kMaxValue = kBadProvider,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_EXIT_REASON_H_

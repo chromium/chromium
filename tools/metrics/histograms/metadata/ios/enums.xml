@@ -1024,6 +1024,7 @@ the generic promo launch. -->
   <int value="1" label="Used password suggestion"/>
   <int value="2" label="Accessed Password Manager through the long press menu"/>
   <int value="3" label="Accessed Password Details through the long press menu"/>
+  <int value="4" label="The suggestion provider's type was incorrect"/>
 </enum>
 
 <enum name="PaymentsSuggestionBottomSheetExitReason">

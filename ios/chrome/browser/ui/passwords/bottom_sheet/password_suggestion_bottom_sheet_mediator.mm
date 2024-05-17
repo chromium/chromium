@@ -50,6 +50,7 @@ namespace {
 const char kImageFetcherUmaClient[] = "PasswordBottomSheet";
 const CGFloat kProfileImageSize = 80.0;
 
+using PasswordSuggestionBottomSheetExitReason::kBadProvider;
 using ReauthenticationEvent::kAttempt;
 using ReauthenticationEvent::kFailure;
 using ReauthenticationEvent::kMissingPasscode;
@@ -408,7 +409,11 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 // Perform suggestion selection
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
-  [self.suggestionsProvider didSelectSuggestion:suggestion];
+  if (self.suggestionsProvider.type == SuggestionProviderTypePassword) {
+    [self.suggestionsProvider didSelectSuggestion:suggestion];
+  } else {
+    [self logExitReason:kBadProvider];
+  }
   [self disconnect];
 }
 
