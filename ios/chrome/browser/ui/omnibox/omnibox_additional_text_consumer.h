@@ -13,6 +13,11 @@
 // additional text.
 - (void)updateAdditionalText:(NSString*)additionalText;
 
+/// Notifies the consumer whether the omnibox has a rich inline default
+/// suggestion. Only used when `RichAutocompletion` is enabled without
+/// additional text.
+- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_ADDITIONAL_TEXT_CONSUMER_H_

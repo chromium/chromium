@@ -299,6 +299,12 @@ const CGFloat kClearButtonSize = 28.5f;
   }
 }
 
+- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline {
+  CHECK(IsRichAutocompletionEnabled(
+      RichAutocompletionImplementation::kNoAdditionalText));
+  _textField.omniboxHasRichInline = omniboxHasRichInline;
+}
+
 #pragma mark - TextFieldViewContaining
 
 - (UIView*)textFieldView {

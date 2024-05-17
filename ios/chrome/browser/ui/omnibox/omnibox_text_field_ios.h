@@ -114,6 +114,10 @@ typedef enum {
 @property(nonatomic, assign) BOOL incognito;
 @property(nonatomic, strong) NSAttributedString* additionalText;
 
+/// Whether the omnibox has a rich inline default suggestion. Only used when
+/// `RichAutocompletion` is enabled with no additional text.
+@property(nonatomic, assign) BOOL omniboxHasRichInline;
+
 @end
 
 // A category for defining new methods that access private ivars.
