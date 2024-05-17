@@ -46,6 +46,7 @@ export class CapabilitiesManager extends EventTarget {
   private destinationManager: DestinationManager =
       DestinationManager.getInstance();
   private capabilitiesCache = new Map<string, Capabilities>();
+  private activeDestinationCapabilitiesLoaded = false;
 
   // Prevent additional initialization.
   private constructor() {
@@ -76,13 +77,11 @@ export class CapabilitiesManager extends EventTarget {
       return;
     }
 
-    this.dispatchEvent(createCustomEvent(
-        CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_LOADING));
+    this.setActiveCapabilitiesLoading();
 
     const cachedCapabilities = this.capabilitiesCache.get(destination.id);
     if (cachedCapabilities) {
-      this.dispatchEvent(createCustomEvent(
-          CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY));
+      this.setActiveCapabilitiesReady();
       return;
     }
 
@@ -100,8 +99,7 @@ export class CapabilitiesManager extends EventTarget {
     const activeDestination = this.destinationManager.getActiveDestination();
     assert(activeDestination);
     if (caps.destinationId === activeDestination.id) {
-      this.dispatchEvent(createCustomEvent(
-          CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY));
+      this.setActiveCapabilitiesReady();
     }
   }
 
@@ -113,6 +111,22 @@ export class CapabilitiesManager extends EventTarget {
     }
 
     return this.capabilitiesCache.get(activeDestination.id);
+  }
+
+  private setActiveCapabilitiesLoading(): void {
+    this.activeDestinationCapabilitiesLoaded = false;
+    this.dispatchEvent(createCustomEvent(
+        CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_LOADING));
+  }
+
+  private setActiveCapabilitiesReady(): void {
+    this.activeDestinationCapabilitiesLoaded = true;
+    this.dispatchEvent(
+        createCustomEvent(CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY));
+  }
+
+  areActiveDestinationCapabilitiesLoaded(): boolean {
+    return this.activeDestinationCapabilitiesLoaded;
   }
 
   // Returns true only after the `initializeSession` function has been called

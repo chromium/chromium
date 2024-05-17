@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
+import {CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_LOADING, CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY, CapabilitiesManager} from './data/capabilities_manager.js';
 import {PREVIEW_REQUEST_FINISHED_EVENT, PREVIEW_REQUEST_STARTED_EVENT, PreviewTicketManager} from './data/preview_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from './data/print_ticket_manager.js';
 
@@ -24,6 +25,7 @@ export const SHEETS_USED_CHANGED_EVENT =
 // `summary-panel` element.
 export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
+  private capabilitiesManager = CapabilitiesManager.getInstance();
   private previewTicketManager = PreviewTicketManager.getInstance();
   private printTicketManager = PrintTicketManager.getInstance();
 
@@ -34,17 +36,25 @@ export class SummaryPanelController extends EventTarget {
   constructor(eventTracker: EventTracker) {
     super();
     eventTracker.add(
+        this.capabilitiesManager,
+        CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_LOADING,
+        () => this.dispatchPrintButtonDisabledChangedEvent());
+    eventTracker.add(
+        this.capabilitiesManager,
+        CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY,
+        () => this.dispatchPrintButtonDisabledChangedEvent());
+    eventTracker.add(
         this.previewTicketManager, PREVIEW_REQUEST_STARTED_EVENT,
-        () => this.onPreviewRequestStarted());
+        () => this.dispatchPrintButtonDisabledChangedEvent());
     eventTracker.add(
         this.previewTicketManager, PREVIEW_REQUEST_FINISHED_EVENT,
-        () => this.onPreviewRequestFinished());
+        () => this.dispatchPrintButtonDisabledChangedEvent());
     eventTracker.add(
         this.printTicketManager, PRINT_REQUEST_STARTED_EVENT,
-        (e: Event) => this.onPrintRequestStarted(e));
+        () => this.dispatchPrintButtonDisabledChangedEvent());
     eventTracker.add(
         this.printTicketManager, PRINT_REQUEST_FINISHED_EVENT,
-        (e: Event) => this.onPrintRequestFinished(e));
+        () => this.dispatchPrintButtonDisabledChangedEvent());
   }
 
   // Returns localized string based on current number of sheets in document and
@@ -83,29 +93,16 @@ export class SummaryPanelController extends EventTarget {
         new CustomEvent<void>(eventName, {bubbles: true, composed: true}));
   }
 
-  // Handles notifying UI to update state when preview request starts.
-  private onPreviewRequestStarted(): void {
-    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
-  }
-
-  // Handles notifying UI to update state when preview request finishes.
-  private onPreviewRequestFinished(): void {
-    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
-  }
-
-  // Handles notifying UI to update state when print request starts.
-  private onPrintRequestStarted(_e: Event): void {
-    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
-  }
-
-  // Handles notifying UI to update state when print request finishes.
-  private onPrintRequestFinished(_e: Event): void {
+  // Handles notifying UI to update state when an attribute that can
+  // enable/disable the print button changes.
+  private dispatchPrintButtonDisabledChangedEvent() {
     this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
   }
 
   // Whether the print button should be enabled for the current state.
   shouldDisablePrintButton(): boolean {
-    return !this.previewTicketManager.isPreviewLoaded() ||
+    return !this.capabilitiesManager.areActiveDestinationCapabilitiesLoaded() ||
+        !this.previewTicketManager.isPreviewLoaded() ||
         this.printTicketManager.isPrintRequestInProgress();
   }
 }

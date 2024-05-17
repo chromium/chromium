@@ -4,11 +4,13 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
-import {PREVIEW_REQUEST_FINISHED_EVENT, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
+import {CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
+import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
 import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
+import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {Button} from 'chrome://resources/cros_components/button/button.js';
@@ -36,6 +38,7 @@ suite('SummaryPanel', () => {
     mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
+    CapabilitiesManager.resetInstanceForTesting();
     PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
@@ -63,6 +66,7 @@ suite('SummaryPanel', () => {
     controller = null;
     mockController?.reset();
     mockController = null;
+    CapabilitiesManager.resetInstanceForTesting();
     PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
   });
@@ -77,16 +81,21 @@ suite('SummaryPanel', () => {
     flush();
   }
 
-  // Initialize the session to request a preview and enable the print button.
-  async function waitForPreviewRequestFinished(delay: number = 1):
-      Promise<void> {
+  // Mock the controllers to enable the print button.
+  function setPreviewAndCapabiliitesLoaded(): void {
+    assert(mockController);
+    const capabilitiesManager = CapabilitiesManager.getInstance();
+    const capabilitiesLoadedFn = mockController.createFunctionMock(
+        capabilitiesManager, 'areActiveDestinationCapabilitiesLoaded');
+    capabilitiesLoadedFn.returnValue = true;
+    capabilitiesLoadedFn.addExpectation();
+
     const previewTicketManager = PreviewTicketManager.getInstance();
-    const previewRequestFinishedEvent =
-        eventToPromise(PREVIEW_REQUEST_FINISHED_EVENT, previewTicketManager);
-    previewTicketManager.initializeSession(
-        FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
-    mockTimer.tick(delay);
-    await previewRequestFinishedEvent;
+    assert(mockController);
+    const isPreviewLoadedFn = mockController.createFunctionMock(
+        previewTicketManager, 'isPreviewLoaded');
+    isPreviewLoadedFn.returnValue = true;
+    isPreviewLoadedFn.addExpectation();
   }
 
   // Verify the summary-panel element can be rendered, contains print, cancel,
@@ -154,7 +163,10 @@ suite('SummaryPanel', () => {
         mockController.createFunctionMock(controller!, 'handlePrintClicked');
     handlePrintClickedMock.addExpectation();
 
-    await waitForPreviewRequestFinished();
+    setPreviewAndCapabiliitesLoaded();
+    assert(controller);
+    controller.dispatchEvent(
+        createCustomEvent(PRINT_BUTTON_DISABLED_CHANGED_EVENT));
 
     // Click print button.
     const printButton =
@@ -194,7 +206,10 @@ suite('SummaryPanel', () => {
     const delay = 10;
     printPreviewPageHandler.setTestDelay(delay);
 
-    await waitForPreviewRequestFinished(delay);
+    setPreviewAndCapabiliitesLoaded();
+    assert(controller);
+    controller.dispatchEvent(
+        createCustomEvent(PRINT_BUTTON_DISABLED_CHANGED_EVENT));
 
     const printButton =
         strictQuery<Button>(printButtonSelector, element!.shadowRoot, Button);

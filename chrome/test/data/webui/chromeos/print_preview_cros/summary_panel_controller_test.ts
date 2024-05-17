@@ -4,10 +4,12 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
+import {CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
+import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -19,6 +21,7 @@ suite('SummaryPanelController', () => {
   let controller: SummaryPanelController|null = null;
   let mockController: MockController;
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let capabilitiesManager: CapabilitiesManager;
   let previewTicketManager: PreviewTicketManager;
   let printTicketManager: PrintTicketManager;
   let eventTracker: EventTracker;
@@ -31,6 +34,7 @@ suite('SummaryPanelController', () => {
     // Setup fakes.
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    capabilitiesManager = CapabilitiesManager.getInstance();
     previewTicketManager = PreviewTicketManager.getInstance();
     printTicketManager = PrintTicketManager.getInstance();
 
@@ -41,6 +45,8 @@ suite('SummaryPanelController', () => {
   teardown(() => {
     mockController.reset();
     eventTracker.removeAll();
+    CapabilitiesManager.resetInstanceForTesting();
+    PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
     controller = null;
   });
@@ -88,39 +94,36 @@ suite('SummaryPanelController', () => {
       });
 
   // Verify handler called when PRINT_REQUEST_STARTED_EVENT triggered.
-  test('PRINT_REQUEST_STARTED_EVENT calls onPrintRequestStarted', async () => {
+  test('PRINT_REQUEST_STARTED_EVENT calls dispatch event', async () => {
     assert(controller);
-    const handlerFn =
-        mockController.createFunctionMock(controller, 'onPrintRequestStarted');
-    const testEvent = new CustomEvent<void>(
-        PRINT_REQUEST_STARTED_EVENT, {bubbles: true, composed: true});
+    const handlerFn = mockController.createFunctionMock(
+        controller, 'dispatchPrintButtonDisabledChangedEvent');
     const startRequest =
         eventToPromise(PRINT_REQUEST_STARTED_EVENT, printTicketManager);
-    handlerFn.addExpectation(testEvent);
+    handlerFn.addExpectation();
 
-    printTicketManager.dispatchEvent(testEvent);
+    printTicketManager.dispatchEvent(
+        createCustomEvent(PRINT_REQUEST_STARTED_EVENT));
     await startRequest;
 
     mockController.verifyMocks();
   });
 
   // Verify handler called when PRINT_REQUEST_FINISHED_EVENT triggered.
-  test(
-      'PRINT_REQUEST_FINISHED_EVENT calls onPrintRequestFinished', async () => {
-        assert(controller);
-        const handlerFn = mockController.createFunctionMock(
-            controller, 'onPrintRequestFinished');
-        const testEvent = new CustomEvent<void>(
-            PRINT_REQUEST_FINISHED_EVENT, {bubbles: true, composed: true});
-        const finishRequest =
-            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, printTicketManager);
-        handlerFn.addExpectation(testEvent);
+  test('PRINT_REQUEST_FINISHED_EVENT calls dispatch event', async () => {
+    assert(controller);
+    const handlerFn = mockController.createFunctionMock(
+        controller, 'dispatchPrintButtonDisabledChangedEvent');
+    const finishRequest =
+        eventToPromise(PRINT_REQUEST_FINISHED_EVENT, printTicketManager);
+    handlerFn.addExpectation();
 
-        printTicketManager.dispatchEvent(testEvent);
-        await finishRequest;
+    printTicketManager.dispatchEvent(
+        createCustomEvent(PRINT_REQUEST_FINISHED_EVENT));
+    await finishRequest;
 
-        mockController.verifyMocks();
-      });
+    mockController.verifyMocks();
+  });
 
   // Verify shouldDisablePrintButton is true when preview is loaded but print
   // request is in progress.
@@ -150,6 +153,12 @@ suite('SummaryPanelController', () => {
             previewTicketManager, 'isPreviewLoaded');
         previewRequestInProgressFn.returnValue = true;
 
+        // Set capabilities to loaded since that can also disable the print
+        // button.
+        const activeDestinationCapsLoadedFn = mockController.createFunctionMock(
+            capabilitiesManager, 'areActiveDestinationCapabilitiesLoaded');
+        activeDestinationCapsLoadedFn.returnValue = true;
+
         const printRequestInProgressFn = mockController.createFunctionMock(
             printTicketManager, 'isPrintRequestInProgress');
         printRequestInProgressFn.returnValue = false;
@@ -158,9 +167,30 @@ suite('SummaryPanelController', () => {
 
   // Verify shouldDisablePrintButton is true when preview isn't loaded.
   test('shouldDisablePrintButton true while preview is not loaded', () => {
+    // Set capabilities to loaded since that can also disable the print
+    // button.
+    const activeDestinationCapsLoadedFn = mockController.createFunctionMock(
+        capabilitiesManager, 'areActiveDestinationCapabilitiesLoaded');
+    activeDestinationCapsLoadedFn.returnValue = true;
+
     const previewRequestInProgressFn = mockController.createFunctionMock(
         previewTicketManager, 'isPreviewLoaded');
     previewRequestInProgressFn.returnValue = false;
     assertTrue(controller!.shouldDisablePrintButton());
   });
+
+  // Verify shouldDisablePrintButton is true when capabilities aren't loaded.
+  test(
+      'shouldDisablePrintButton true while capabilities are not loaded', () => {
+        // Set preview loaded to true since that can also disable the print
+        // button.
+        const previewRequestInProgressFn = mockController.createFunctionMock(
+            previewTicketManager, 'isPreviewLoaded');
+        previewRequestInProgressFn.returnValue = true;
+
+        const activeDestinationCapsLoadedFn = mockController.createFunctionMock(
+            capabilitiesManager, 'areActiveDestinationCapabilitiesLoaded');
+        activeDestinationCapsLoadedFn.returnValue = false;
+        assertTrue(controller!.shouldDisablePrintButton());
+      });
 });
