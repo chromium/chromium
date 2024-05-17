@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -179,9 +179,28 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // is no shared context.
   const GrContextType gr_context_type_;
 
+  struct SharedImageRepresentationFactoryRefHash {
+    using is_transparent = void;
+    std::size_t operator()(
+        const std::unique_ptr<SharedImageRepresentationFactoryRef>& o) const;
+    std::size_t operator()(const gpu::Mailbox& m) const;
+  };
+
+  struct SharedImageRepresentationFactoryRefKeyEqual {
+    using is_transparent = void;
+    bool operator()(
+        const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
+        const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const;
+    bool operator()(
+        const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
+        const gpu::Mailbox& rhs) const;
+  };
+
   // The set of SharedImages which have been created (and are being kept alive)
   // by this factory.
-  base::flat_set<std::unique_ptr<SharedImageRepresentationFactoryRef>>
+  std::unordered_set<std::unique_ptr<SharedImageRepresentationFactoryRef>,
+                     SharedImageRepresentationFactoryRefHash,
+                     SharedImageRepresentationFactoryRefKeyEqual>
       shared_images_;
 
   // Array of all the backing factories to choose from for creating shared

@@ -178,22 +178,29 @@ bool WillGetGmbConfigFromGpu() {
 
 }  // namespace
 
-// Overrides for flat_set lookups:
-bool operator<(
+std::size_t
+SharedImageFactory::SharedImageRepresentationFactoryRefHash::operator()(
+    const std::unique_ptr<SharedImageRepresentationFactoryRef>& o) const {
+  return std::hash<gpu::Mailbox>{}(o->mailbox());
+}
+
+std::size_t
+SharedImageFactory::SharedImageRepresentationFactoryRefHash::operator()(
+    const gpu::Mailbox& m) const {
+  return std::hash<gpu::Mailbox>{}(m);
+}
+
+bool SharedImageFactory::SharedImageRepresentationFactoryRefKeyEqual::
+operator()(
     const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
-    const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) {
-  return lhs->mailbox() < rhs->mailbox();
+    const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const {
+  return lhs->mailbox() == rhs->mailbox();
 }
 
-bool operator<(
-    const Mailbox& lhs,
-    const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) {
-  return lhs < rhs->mailbox();
-}
-
-bool operator<(const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
-               const Mailbox& rhs) {
-  return lhs->mailbox() < rhs;
+bool SharedImageFactory::SharedImageRepresentationFactoryRefKeyEqual::
+operator()(const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
+           const gpu::Mailbox& rhs) const {
+  return lhs->mailbox() == rhs;
 }
 
 SharedImageFactory::SharedImageFactory(
