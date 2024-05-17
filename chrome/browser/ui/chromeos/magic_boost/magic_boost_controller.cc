@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace chromeos {
@@ -28,6 +29,17 @@ MagicBoostController* MagicBoostController::Get() {
 MagicBoostController::MagicBoostController() = default;
 
 MagicBoostController::~MagicBoostController() = default;
+
+void MagicBoostController::ShowOptInUi(const gfx::Rect& anchor_view_bounds) {
+  CHECK(!opt_in_widget_);
+  CHECK(!disclaimer_widget_);
+  opt_in_widget_ = MagicBoostOptInCard::CreateWidget(anchor_view_bounds);
+  opt_in_widget_->Show();
+}
+
+void MagicBoostController::CloseOptInUi() {
+  opt_in_widget_.reset();
+}
 
 void MagicBoostController::ShowDisclaimerUi() {
   if (disclaimer_widget_) {

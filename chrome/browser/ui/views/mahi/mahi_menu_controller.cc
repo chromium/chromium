@@ -66,7 +66,7 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
 
   if (features::IsMagicBoostEnabled() &&
       MagicBoostController::Get()->ShouldQuickAnswersAndMahiShowOptIn()) {
-    MagicBoostController::Get()->ShowOptInUi();
+    MagicBoostController::Get()->ShowOptInUi(anchor_bounds);
     return;
   }
 

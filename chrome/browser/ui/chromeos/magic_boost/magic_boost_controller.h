@@ -8,6 +8,10 @@
 #include "base/no_destructor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -23,16 +27,15 @@ class MagicBoostController {
 
   static MagicBoostController* Get();
 
-  // Shows Magic Boost opt-in widget.
-  virtual void ShowOptInUi() {}
-
-  // Closes Magic Boost opt-in widget.
-  virtual void CloseOptInUi() {}
+  // Shows/closes Magic Boost opt-in widget.
+  virtual void ShowOptInUi(const gfx::Rect& anchor_view_bounds);
+  virtual void CloseOptInUi();
 
   // Shows Magic Boost disclaimer widget.
   void ShowDisclaimerUi();
 
   // For testing.
+  views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
   views::Widget* disclaimer_widget_for_test() {
     return disclaimer_widget_.get();
   }
@@ -60,6 +63,7 @@ class MagicBoostController {
   ~MagicBoostController();
 
  private:
+  views::UniqueWidgetPtr opt_in_widget_;
   views::UniqueWidgetPtr disclaimer_widget_;
 };
 

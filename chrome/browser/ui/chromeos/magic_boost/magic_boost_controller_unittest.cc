@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/lottie/resource.h"
 #include "ui/views/view_utils.h"
@@ -33,6 +34,25 @@ TEST_F(MagicBoostControllerTest, ShowDisclaimerUi) {
   EXPECT_TRUE(controller->disclaimer_widget_for_test()->IsVisible());
   EXPECT_TRUE(views::IsViewClass<MagicBoostDisclaimerView>(
       controller->disclaimer_widget_for_test()->GetContentsView()));
+}
+
+TEST_F(MagicBoostControllerTest, OptInUi) {
+  auto* controller = MagicBoostController::Get();
+
+  // Initially the opt-in widget is not visible.
+  EXPECT_FALSE(controller->opt_in_widget_for_test());
+
+  // Show the opt-in widget and test that the proper views are set.
+  controller->ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  ASSERT_TRUE(opt_in_widget);
+  EXPECT_TRUE(opt_in_widget->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MagicBoostOptInCard>(
+      opt_in_widget->GetContentsView()));
+
+  // Test that the opt-in widget is closed on `CloseOptInUI`.
+  controller->CloseOptInUi();
+  EXPECT_FALSE(controller->opt_in_widget_for_test());
 }
 
 }  // namespace chromeos
