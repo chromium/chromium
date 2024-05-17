@@ -51,7 +51,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.GradientDrawable;
@@ -63,7 +62,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -142,7 +140,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -153,7 +150,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -966,236 +962,6 @@ public class TabSwitcherLayoutTest {
     }
 
     @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1458026 for RefactorDisabled")
-    public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
-        prepareTabs(3, 0, null);
-
-        // TODO(meiliang): Avoid using static variable for tracking state,
-        // TabSuggestionMessageService.isSuggestionAvailableForTesting(). Instead, we can add a
-        // mock/fake MessageObserver to track the availability of the suggestions.
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        enterGTSWithThumbnailChecking();
-
-        // TODO(meiliang): Avoid using static variable for tracking state,
-        // TabSwitcherMessageManager::hasAppendedMessagesForTesting. Instead, we can query the
-        // number
-        // of items that the inner model of the TabSwitcher has.
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
-                .perform(click());
-        onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1447282 for refactor disabled case.")
-    public void testTabSuggestionMessageCard_review() throws InterruptedException {
-        prepareTabs(3, 0, null);
-
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        enterGTSWithThumbnailChecking();
-
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.action_button),
-                                withParent(withId(R.id.tab_grid_message_item))))
-                .perform(click());
-
-        TabListEditorTestingRobot tabListEditorTestingRobot = new TabListEditorTestingRobot();
-        tabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
-
-        Espresso.pressBack();
-        tabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @DisabledTest(message = "https://crbug.com/1230107, crbug.com/1130621")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
-            throws InterruptedException {
-        verifyOnlyOneTabSuggestionMessageCardIsShowing();
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
-    public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
-            throws InterruptedException {
-        verifyOnlyOneTabSuggestionMessageCardIsShowing();
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1311825")
-    public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
-        prepareTabs(3, 0, mUrl);
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-
-        closeFirstTabInTabSwitcher(mActivityTestRule.getActivity());
-
-        CriteriaHelper.pollUiThread(
-                () -> !TabSuggestionMessageService.isSuggestionAvailableForTesting());
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(2)));
-
-        onView(tabSwitcherViewMatcher())
-                .check(
-                        TabUiTestHelper.ChildrenCountAssertion.havingTabSuggestionMessageCardCount(
-                                0));
-        onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({
-        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1326533")
-    public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(3, 0, null);
-        View parentView = cta.getCompositorViewHolderForTesting();
-
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-
-        // Force portrait mode since the device can be wrongly in landscape. See crbug/1063639.
-        ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(() -> parentView.getHeight() > parentView.getWidth());
-
-        // Ensure the message card is visible so we can get its view holder.
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.scrollToPosition(3))
-                .check(MessageCardWidthAssertion.checkMessageItemSpanSize(3, 2));
-
-        ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(() -> parentView.getHeight() < parentView.getWidth());
-
-        // Ensure the message card is visible so we can get its view holder.
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.scrollToPosition(3))
-                .check(MessageCardWidthAssertion.checkMessageItemSpanSize(3, 3));
-        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
-    }
-
-    private static class MessageCardWidthAssertion implements ViewAssertion {
-        private int mIndex;
-        private int mSpanCount;
-
-        public static MessageCardWidthAssertion checkMessageItemSpanSize(int index, int spanCount) {
-            return new MessageCardWidthAssertion(index, spanCount);
-        }
-
-        public MessageCardWidthAssertion(int index, int spanCount) {
-            mIndex = index;
-            mSpanCount = spanCount;
-        }
-
-        @Override
-        public void check(View view, NoMatchingViewException noMatchException) {
-            if (noMatchException != null) throw noMatchException;
-            float tabListPadding = TabUiThemeProvider.getTabGridCardMargin(view.getContext());
-            float messageCardMargin =
-                    TabUiThemeProvider.getMessageCardMarginDimension(view.getContext());
-
-            assertTrue(view instanceof RecyclerView);
-            RecyclerView recyclerView = (RecyclerView) view;
-            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-            assertEquals(mSpanCount, layoutManager.getSpanCount());
-
-            RecyclerView.ViewHolder messageItemViewHolder =
-                    recyclerView.findViewHolderForAdapterPosition(mIndex);
-            assertNotNull(messageItemViewHolder);
-            assertEquals(TabProperties.UiType.MESSAGE, messageItemViewHolder.getItemViewType());
-            View messageItemView = messageItemViewHolder.itemView;
-
-            // The message card item width should always be recyclerView width minus padding and
-            // margin.
-            assertEquals(
-                    recyclerView.getWidth() - 2 * tabListPadding - 2 * messageCardMargin,
-                    (float) messageItemView.getWidth(),
-                    1.0f);
-        }
-    }
-
-    @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1122657")
@@ -1512,67 +1278,6 @@ public class TabSwitcherLayoutTest {
         // Pressing system back should dismiss the selection editor.
         Espresso.pressBack();
         robot.resultRobot.verifyTabListEditorIsHidden();
-    }
-
-    @Test
-    @MediumTest
-    @Feature("TabSuggestion")
-    @EnableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study"})
-    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @CommandLineFlags.Add({
-        BASE_PARAMS
-                + "/baseline_tab_suggestions/true"
-                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
-    })
-    @DisabledTest(message = "https://crbug.com/1449985")
-    public void testTabGroupManualSelection_AfterReviewTabSuggestion() throws InterruptedException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
-        createTabs(cta, false, 3);
-
-        // Review closing tab suggestion.
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        // Entering GTS with thumbnail checking here is trying to reduce flakiness that is caused by
-        // the TabContextObserver. TabContextObserver listens to
-        // TabObserver#didFirstVisuallyNonEmptyPaint and invalidates the suggestion. Do the
-        // thumbnail checking here is to ensure the suggestion is valid when entering tab switcher.
-        enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
-                .perform(click());
-
-        robot.resultRobot
-                .verifyTabListEditorIsVisible()
-                .verifyToolbarActionViewEnabled(R.id.tab_list_editor_close_menu_item);
-
-        robot.actionRobot.clickToolbarActionView(R.id.tab_list_editor_close_menu_item);
-        robot.resultRobot.verifyTabListEditorIsHidden();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            mActivityTestRule.getActivity().getCurrentTabModel().getCount(),
-                            Matchers.is(0));
-                });
-
-        // Show Manual Selection Mode.
-        createTabs(cta, false, 3);
-
-        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        enterTabListEditor(cta);
-        robot.resultRobot.verifyTabListEditorIsVisible();
-
-        // Group first two tabs.
-        robot.actionRobot.clickItemAtAdapterPosition(0);
-        robot.actionRobot.clickItemAtAdapterPosition(1);
-        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
-
-        // Exit manual selection mode, back to tab switcher.
-        robot.resultRobot.verifyTabListEditorIsHidden();
-        onViewWaiting(withText("2 tabs grouped"));
     }
 
     @Test
@@ -3081,33 +2786,6 @@ public class TabSwitcherLayoutTest {
                 new FileOutputStream(TabContentManager.getTabThumbnailFileJpeg(tab.getId()));
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
         outputStream.close();
-    }
-
-    private void verifyOnlyOneTabSuggestionMessageCardIsShowing() throws InterruptedException {
-        String suggestionMessageTemplate =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(R.string.tab_suggestion_close_stale_message);
-        String suggestionMessage =
-                String.format(Locale.getDefault(), suggestionMessageTemplate, "3");
-        prepareTabs(3, 0, mUrl);
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
-
-        enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        onView(allOf(withText(suggestionMessage), withParent(withId(R.id.tab_grid_message_item))))
-                .check(matches(isDisplayed()));
-        leaveGTSAndVerifyThumbnailsAreReleased();
-
-        // With soft or hard clean up depends on the soft-cleanup-delay and cleanup-delay params.
-        enterGTSWithThumbnailChecking();
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        // This will fail with error "matched multiple views" when there is more than one suggestion
-        // message card.
-        onView(allOf(withText(suggestionMessage), withParent(withId(R.id.tab_grid_message_item))))
-                .check(matches(isDisplayed()));
     }
 
     private Matcher<View> tabSwitcherViewMatcher() {

@@ -86,15 +86,6 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_elevation">6dp</dimen>
     <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
 
-    <!-- Dimens for tab cleanup promo message icon -->
-    <dimen name="tab_cleanup_promo_card_favicon_inset">8dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_height">32dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_width">92dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_end_1">32dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_start_2">30dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_end_2">62dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_start_3">60dp</dimen>
-
     <!-- Dimens for TabGroupParity features -->
     <dimen name="color_picker_color_item_size">24dp</dimen>
     <dimen name="color_picker_color_item_horizontal_padding">8dp</dimen>

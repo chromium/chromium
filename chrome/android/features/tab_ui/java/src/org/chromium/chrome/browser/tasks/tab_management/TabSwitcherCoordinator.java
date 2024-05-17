@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -94,7 +93,6 @@ public class TabSwitcherCoordinator
     private final ModalDialogManager mModalDialogManager;
     private final TabSwitcherMessageManager mMessageManager;
     private final TabListEditorManager mTabListEditorManager;
-    private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;

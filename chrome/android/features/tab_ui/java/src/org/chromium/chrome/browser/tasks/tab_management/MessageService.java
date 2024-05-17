@@ -13,14 +13,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Ideally, for each of the {@link MessageType} requires a MessageService class. This is the
- * base class. All the concrete subclass should contain logic that convert the data from the
+ * Ideally, for each of the {@link MessageType} requires a MessageService class. This is the base
+ * class. All the concrete subclass should contain logic that convert the data from the
  * corresponding external service to a data structure that the TabGridMessageCardProvider
  * understands.
  */
 public class MessageService {
     @IntDef({
-        MessageType.TAB_SUGGESTION,
         MessageType.IPH,
         MessageType.PRICE_MESSAGE,
         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
@@ -30,12 +29,11 @@ public class MessageService {
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int FOR_TESTING = 0;
-        int TAB_SUGGESTION = 1;
-        int IPH = 2;
-        int PRICE_MESSAGE = 3;
-        int INCOGNITO_REAUTH_PROMO_MESSAGE = 4;
-        int ARCHIVED_TABS_MESSAGE = 5;
-        int ALL = 6;
+        int IPH = 1;
+        int PRICE_MESSAGE = 2;
+        int INCOGNITO_REAUTH_PROMO_MESSAGE = 3;
+        int ARCHIVED_TABS_MESSAGE = 4;
+        int ALL = 5;
     }
 
     /**

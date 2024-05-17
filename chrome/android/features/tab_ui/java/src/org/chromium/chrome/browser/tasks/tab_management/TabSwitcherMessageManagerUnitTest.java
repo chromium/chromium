@@ -191,10 +191,6 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         TabProperties.UiType.LARGE_MESSAGE,
                         MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        TabProperties.UiType.LARGE_MESSAGE,
-                        MessageService.MessageType.TAB_SUGGESTION);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
@@ -225,10 +221,6 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         TabProperties.UiType.LARGE_MESSAGE,
                         MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        TabProperties.UiType.LARGE_MESSAGE,
-                        MessageService.MessageType.TAB_SUGGESTION);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 

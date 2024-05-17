@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
-import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -133,8 +132,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     private @Nullable Profile mProfile;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
-    private @Nullable TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
-    private @Nullable TabSuggestionMessageService mTabSuggestionMessageService;
     private @Nullable PriceMessageService mPriceMessageService;
     private @Nullable IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
     private @Nullable ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
@@ -358,12 +355,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                     // Skip incrementing index if the message was not added.
                     continue;
                 }
-            } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
-                // TODO(crbug.com/40073668): Update to a mayAdd call checking show criteria
-                mTabListCoordinator.addSpecialListItem(
-                        mCurrentTabModelFilterSupplier.get().index() + 1,
-                        TabProperties.UiType.LARGE_MESSAGE,
-                        messages.get(i).model);
             } else if (messages.get(i).type == MessageService.MessageType.ARCHIVED_TABS_MESSAGE) {
                 // Always add the archived tabs message to the start.
                 mTabListCoordinator.addSpecialListItem(
@@ -421,8 +412,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 TabProperties.UiType.LARGE_MESSAGE,
                 MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         mTabListCoordinator.removeSpecialListItem(
-                TabProperties.UiType.LARGE_MESSAGE, MessageService.MessageType.TAB_SUGGESTION);
-        mTabListCoordinator.removeSpecialListItem(
                 TabProperties.UiType.CUSTOM_MESSAGE,
                 MessageService.MessageType.ARCHIVED_TABS_MESSAGE);
 
@@ -453,9 +442,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 continue;
             } else if (messages.get(i).type
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
-                mTabListCoordinator.addSpecialListItemToEnd(
-                        TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
-            } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
                 mTabListCoordinator.addSpecialListItemToEnd(
                         TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
             } else {
@@ -508,8 +494,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     private void dismissHandler(@MessageType int messageType) {
         if (messageType == MessageService.MessageType.PRICE_MESSAGE
-                || messageType == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE
-                || messageType == MessageService.MessageType.TAB_SUGGESTION) {
+                || messageType == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
             mTabListCoordinator.removeSpecialListItem(
                     TabProperties.UiType.LARGE_MESSAGE, messageType);
         } else {

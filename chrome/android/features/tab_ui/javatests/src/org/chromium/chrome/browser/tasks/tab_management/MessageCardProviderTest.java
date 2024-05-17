@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -96,12 +95,9 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
 
     private MessageCardProviderCoordinator mCoordinator;
     private MessageService mTestingService;
-    private MessageService mSuggestionService;
     private MessageService mPriceService;
 
     private MessageCardView.DismissActionProvider mUiDismissActionProvider = (messageType) -> {};
-
-    @Mock private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
     @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
 
@@ -163,84 +159,14 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
                     view.addView(mRecyclerView);
 
                     mTestingService = new MessageService(MessageService.MessageType.FOR_TESTING);
-                    mSuggestionService =
-                            new MessageService(MessageService.MessageType.TAB_SUGGESTION);
                     mPriceService = new MessageService(MessageService.MessageType.PRICE_MESSAGE);
 
                     mCoordinator =
                             new MessageCardProviderCoordinator(
                                     getActivity(), () -> mProfile, mUiDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
-                    mCoordinator.subscribeMessageService(mSuggestionService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
-
-        when(mTabSuggestionMessageData.getActionType())
-                .thenReturn(TabSuggestion.TabSuggestionAction.CLOSE);
-    }
-
-    @Test
-    @SmallTest
-    public void testShowingTabSuggestionMessage() {
-        when(mTabSuggestionMessageData.getSize()).thenReturn(SUGGESTED_TAB_COUNT);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSuggestionService.sendAvailabilityNotification(mTabSuggestionMessageData);
-                    mRecyclerView.startShowing(false);
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> mRecyclerView.getVisibility() == View.VISIBLE && mFinishedShowing.get());
-
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testReviewTabSuggestionMessage() {
-        AtomicBoolean reviewed = new AtomicBoolean();
-        when(mTabSuggestionMessageData.getSize()).thenReturn(SUGGESTED_TAB_COUNT);
-        when(mTabSuggestionMessageData.getReviewActionProvider())
-                .thenReturn(() -> reviewed.set(true));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSuggestionService.sendAvailabilityNotification(mTabSuggestionMessageData);
-                    mRecyclerView.startShowing(false);
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> mRecyclerView.getVisibility() == View.VISIBLE && mFinishedShowing.get());
-
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-
-        assertFalse(reviewed.get());
-        onView(withId(R.id.action_button)).perform(click());
-        assertTrue(reviewed.get());
-    }
-
-    @Test
-    @SmallTest
-    public void testDismissTabSuggestionMessage() {
-        AtomicBoolean dismissed = new AtomicBoolean();
-        when(mTabSuggestionMessageData.getSize()).thenReturn(SUGGESTED_TAB_COUNT);
-        when(mTabSuggestionMessageData.getDismissActionProvider())
-                .thenReturn((type) -> dismissed.set(true));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSuggestionService.sendAvailabilityNotification(mTabSuggestionMessageData);
-                    mRecyclerView.startShowing(false);
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> mRecyclerView.getVisibility() == View.VISIBLE && mFinishedShowing.get());
-
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-
-        assertFalse(dismissed.get());
-        onView(withId(R.id.close_button)).perform(click());
-        assertTrue(dismissed.get());
     }
 
     @Test

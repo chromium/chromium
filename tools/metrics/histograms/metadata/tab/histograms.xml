@@ -1728,35 +1728,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
-    units="count" expires_after="2023-10-16">
-  <owner>yusufo@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <owner>meiliang@chromium.org</owner>
-  <summary>
-    The user is presented with recommendations on which Tabs they could take the
-    suggested action. The user has the option to: 1) Remove a Tab from the
-    recommendation 2) Add a Tab which wasn't in the recommendation to the
-    recommendation.
-
-    This metric records the sum of the number of times the user does 1) or 2)
-    and is a measure of how useful the recommendation is. This metric is
-    recorded after the user accepts a recommendation - potentially with edits by
-    performing 1) or 2).
-
-    Note: Adding and removing the same Tab, or vice versa, would be counted as
-    0. {TabSuggestionType}
-  </summary>
-  <token key="TabSuggestionType">
-    <variant name=".ClosingSuggestion"
-        summary="This bukect is for the closing suggestion. It suggests users
-                 to close the recommended tabs."/>
-    <variant name=".GroupingSuggestion"
-        summary="This bukect is for the grouping suggestion. It suggests
-                 users to group the recommended tabs."/>
-  </token>
-</histogram>
-
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 
