@@ -27,7 +27,7 @@ mojom("mojom") {
     "compatibility_mode.mojom",
     "crash_collector.mojom",
     "digital_goods.mojom",
-    "disk_quota.mojom",
+    "disk_space.mojom",
     "enterprise_reporting.mojom",
     "file_system.mojom",
     "iio_sensor.mojom",

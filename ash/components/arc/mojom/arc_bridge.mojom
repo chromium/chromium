@@ -21,7 +21,7 @@ import "ash/components/arc/mojom/clipboard.mojom";
 import "ash/components/arc/mojom/compatibility_mode.mojom";
 import "ash/components/arc/mojom/crash_collector.mojom";
 import "ash/components/arc/mojom/digital_goods.mojom";
-import "ash/components/arc/mojom/disk_quota.mojom";
+import "ash/components/arc/mojom/disk_space.mojom";
 import "ash/components/arc/mojom/enterprise_reporting.mojom";
 import "ash/components/arc/mojom/file_system.mojom";
 import "ash/components/arc/mojom/iio_sensor.mojom";
@@ -140,9 +140,9 @@ interface ArcBridgeHost {
   [MinVersion=51] OnDigitalGoodsInstanceReady@156(
       pending_remote<DigitalGoodsInstance> instance_remote);
 
-  // Notifies Chrome that the DiskQuotaInstance interface is ready.
-  [MinVersion=39] OnDiskQuotaInstanceReady@144(
-      pending_remote<DiskQuotaInstance> instance_remote);
+  // Notifies Chrome that the DiskSpaceInstance interface is ready.
+  [MinVersion=39] OnDiskSpaceInstanceReady@144(
+      pending_remote<DiskSpaceInstance> instance_remote);
 
   // Notifies Chrome that the EnterpriseReportingInstance interface is ready.
   [MinVersion=15] OnEnterpriseReportingInstanceReady@122(

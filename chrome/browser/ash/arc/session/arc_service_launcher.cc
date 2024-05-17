@@ -17,7 +17,7 @@
 #include "ash/components/arc/clipboard/arc_clipboard_bridge.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
-#include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
@@ -258,7 +258,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcClipboardBridge::GetForBrowserContext(profile);
   ArcCrashCollectorBridge::GetForBrowserContext(profile);
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
-  ArcDiskQuotaBridge::GetForBrowserContext(profile);
+  ArcDiskSpaceBridge::GetForBrowserContext(profile);
   ArcEnterpriseReportingService::GetForBrowserContext(profile);
   ArcFileSystemBridge::GetForBrowserContext(profile);
   ArcFileSystemMounter::GetForBrowserContext(profile);
@@ -452,7 +452,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcClipboardBridge::EnsureFactoryBuilt();
   ArcCrashCollectorBridge::EnsureFactoryBuilt();
   ArcDigitalGoodsBridge::EnsureFactoryBuilt();
-  ArcDiskQuotaBridge::EnsureFactoryBuilt();
+  ArcDiskSpaceBridge::EnsureFactoryBuilt();
   ArcDocumentsProviderRootMapFactory::GetInstance();
   ArcEnterpriseReportingService::EnsureFactoryBuilt();
   ArcFileSystemMounter::EnsureFactoryBuilt();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -27,16 +27,16 @@ base::test::ScopedChromeOSVersionInfo SetArcAndroidSdkVersionForTesting(
       base::Time::Now());
 }
 
-class ArcDiskQuotaBridgeTest : public testing::Test {
+class ArcDiskSpaceBridgeTest : public testing::Test {
  protected:
-  ArcDiskQuotaBridgeTest()
-      : bridge_(ArcDiskQuotaBridge::GetForBrowserContextForTesting(&context_)) {
+  ArcDiskSpaceBridgeTest()
+      : bridge_(ArcDiskSpaceBridge::GetForBrowserContextForTesting(&context_)) {
   }
-  ArcDiskQuotaBridgeTest(const ArcDiskQuotaBridgeTest&) = delete;
-  ArcDiskQuotaBridgeTest& operator=(const ArcDiskQuotaBridgeTest&) = delete;
-  ~ArcDiskQuotaBridgeTest() override = default;
+  ArcDiskSpaceBridgeTest(const ArcDiskSpaceBridgeTest&) = delete;
+  ArcDiskSpaceBridgeTest& operator=(const ArcDiskSpaceBridgeTest&) = delete;
+  ~ArcDiskSpaceBridgeTest() override = default;
 
-  ArcDiskQuotaBridge* bridge() { return bridge_; }
+  ArcDiskSpaceBridge* bridge() { return bridge_; }
 
   void SetUp() override {
     ash::SpacedClient::InitializeFake();
@@ -52,10 +52,10 @@ class ArcDiskQuotaBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcDiskQuotaBridge> bridge_;
+  const raw_ptr<ArcDiskSpaceBridge> bridge_;
 };
 
-TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_Supported) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_Supported) {
   ash::FakeSpacedClient::Get()->set_quota_supported(true);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
 
@@ -64,7 +64,7 @@ TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_Supported) {
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
   ash::FakeSpacedClient::Get()->set_quota_supported(false);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
 
@@ -73,7 +73,7 @@ TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
   ash::FakeSpacedClient::Get()->set_quota_supported(true);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(false);
 
@@ -82,7 +82,7 @@ TEST_F(ArcDiskQuotaBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
+TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
   const std::vector<std::pair<uint32_t, int64_t>>
       valid_android_gid_and_expected_space = {
           {kAndroidGidStart, 100},
@@ -96,24 +96,25 @@ TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
 
   for (const auto& [gid, space] : valid_android_gid_and_expected_space) {
     base::test::TestFuture<int64_t> future;
-    bridge()->GetCurrentSpaceForGid(gid, future.GetCallback());
+    bridge()->GetQuotaCurrentSpaceForGid(gid, future.GetCallback());
     EXPECT_EQ(future.Get(), space);
   }
 }
 
-TEST_F(ArcDiskQuotaBridgeTest, GetQuotaCurrentSpaceForGid_InvalidId) {
+TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGid_InvalidId) {
   constexpr uint32_t kInvalidAndroidGid = kAndroidGidEnd + 1;
 
   base::test::TestFuture<int64_t> future;
-  bridge()->GetCurrentSpaceForGid(kInvalidAndroidGid, future.GetCallback());
+  bridge()->GetQuotaCurrentSpaceForGid(kInvalidAndroidGid,
+                                       future.GetCallback());
   EXPECT_EQ(future.Get(), -1);
 }
 
-class ArcDiskQuotaBridgeWithArcVersionTest
-    : public ArcDiskQuotaBridgeTest,
+class ArcDiskSpaceBridgeWithArcVersionTest
+    : public ArcDiskSpaceBridgeTest,
       public ::testing::WithParamInterface<int> {};
 
-TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+TEST_P(ArcDiskSpaceBridgeWithArcVersionTest,
        GetQuotaCurrentSpaceForUid_Success) {
   const int arc_sdk_version = GetParam();
   const auto scoped_version_info =
@@ -135,12 +136,12 @@ TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
 
   for (const auto& [uid, space] : valid_android_uid_and_expected_space) {
     base::test::TestFuture<int64_t> future;
-    bridge()->GetCurrentSpaceForUid(uid, future.GetCallback());
+    bridge()->GetQuotaCurrentSpaceForUid(uid, future.GetCallback());
     EXPECT_EQ(future.Get(), space);
   }
 }
 
-TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+TEST_P(ArcDiskSpaceBridgeWithArcVersionTest,
        GetQuotaCurrentSpaceForUid_InvalidId) {
   const int arc_sdk_version = GetParam();
   const auto scoped_version_info =
@@ -152,11 +153,12 @@ TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
   const uint32_t kInvalidAndroidUid = kAndroidUidEnd + 1;
 
   base::test::TestFuture<int64_t> future;
-  bridge()->GetCurrentSpaceForUid(kInvalidAndroidUid, future.GetCallback());
+  bridge()->GetQuotaCurrentSpaceForUid(kInvalidAndroidUid,
+                                       future.GetCallback());
   EXPECT_EQ(future.Get(), -1);
 }
 
-TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+TEST_P(ArcDiskSpaceBridgeWithArcVersionTest,
        GetQuotaCurrentSpaceForProjectId_Success) {
   const int arc_sdk_version = GetParam();
   const auto scoped_version_info =
@@ -185,12 +187,13 @@ TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
   for (const auto& [project_id, space] :
        valid_android_project_id_and_expected_space) {
     base::test::TestFuture<int64_t> future;
-    bridge()->GetCurrentSpaceForProjectId(project_id, future.GetCallback());
+    bridge()->GetQuotaCurrentSpaceForProjectId(project_id,
+                                               future.GetCallback());
     EXPECT_EQ(future.Get(), space);
   }
 }
 
-TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
+TEST_P(ArcDiskSpaceBridgeWithArcVersionTest,
        GetQuotaCurrentSpaceForProjectId_Invalid) {
   const int arc_sdk_version = GetParam();
   const auto scoped_version_info =
@@ -208,17 +211,18 @@ TEST_P(ArcDiskQuotaBridgeWithArcVersionTest,
 
   for (const auto project_id : invalid_android_project_id) {
     base::test::TestFuture<int64_t> future;
-    bridge()->GetCurrentSpaceForProjectId(project_id, future.GetCallback());
+    bridge()->GetQuotaCurrentSpaceForProjectId(project_id,
+                                               future.GetCallback());
     EXPECT_EQ(future.Get(), -1);
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(ArcDiskQuotaBridgeTestForR,
-                         ArcDiskQuotaBridgeWithArcVersionTest,
+INSTANTIATE_TEST_SUITE_P(ArcDiskSpaceBridgeTestForR,
+                         ArcDiskSpaceBridgeWithArcVersionTest,
                          testing::Values(kArcVersionR));
 
-INSTANTIATE_TEST_SUITE_P(ArcDiskQuotaBridgeTestForT,
-                         ArcDiskQuotaBridgeWithArcVersionTest,
+INSTANTIATE_TEST_SUITE_P(ArcDiskSpaceBridgeTestForT,
+                         ArcDiskSpaceBridgeWithArcVersionTest,
                          testing::Values(kArcVersionT));
 
 }  // namespace

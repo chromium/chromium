@@ -20,7 +20,7 @@
 #include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
-#include "ash/components/arc/mojom/disk_quota.mojom.h"
+#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/iio_sensor.mojom.h"

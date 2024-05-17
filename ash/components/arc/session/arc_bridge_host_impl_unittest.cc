@@ -152,7 +152,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(CompatibilityMode);
     MAKE_INSTANCE_READY(CrashCollector);
     MAKE_INSTANCE_READY(DigitalGoods);
-    MAKE_INSTANCE_READY(DiskQuota);
+    MAKE_INSTANCE_READY(DiskSpace);
     MAKE_INSTANCE_READY(EnterpriseReporting);
     MAKE_INSTANCE_READY(FileSystem);
     MAKE_INSTANCE_READY(Ime);

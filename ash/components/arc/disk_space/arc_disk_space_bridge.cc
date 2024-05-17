@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 
 #include <utility>
 
@@ -21,23 +21,23 @@ namespace {
 // Path to query disk space and disk quota for ARC.
 constexpr char kArcDiskHome[] = "/home/chronos/user";
 
-// Singleton factory for ArcDiskQuotaBridge.
-class ArcDiskQuotaBridgeFactory
+// Singleton factory for ArcDiskSpaceBridge.
+class ArcDiskSpaceBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
-          ArcDiskQuotaBridge,
-          ArcDiskQuotaBridgeFactory> {
+          ArcDiskSpaceBridge,
+          ArcDiskSpaceBridgeFactory> {
  public:
   // Factory name used by ArcBrowserContextKeyedServiceFactoryBase.
-  static constexpr const char* kName = "ArcDiskQuotaBridgeFactory";
+  static constexpr const char* kName = "ArcDiskSpaceBridgeFactory";
 
-  static ArcDiskQuotaBridgeFactory* GetInstance() {
-    return base::Singleton<ArcDiskQuotaBridgeFactory>::get();
+  static ArcDiskSpaceBridgeFactory* GetInstance() {
+    return base::Singleton<ArcDiskSpaceBridgeFactory>::get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcDiskQuotaBridgeFactory>;
-  ArcDiskQuotaBridgeFactory() = default;
-  ~ArcDiskQuotaBridgeFactory() override = default;
+  friend base::DefaultSingletonTraits<ArcDiskSpaceBridgeFactory>;
+  ArcDiskSpaceBridgeFactory() = default;
+  ~ArcDiskSpaceBridgeFactory() override = default;
 };
 
 bool IsAndroidUid(uint32_t uid) {
@@ -63,11 +63,11 @@ bool IsAndroidProjectId(uint32_t project_id) {
 }
 
 void IsQuotaSupportedOnArcDiskHome(
-    ArcDiskQuotaBridge::IsQuotaSupportedCallback callback) {
+    ArcDiskSpaceBridge::IsQuotaSupportedCallback callback) {
   ash::SpacedClient::Get()->IsQuotaSupported(
       kArcDiskHome,
       base::BindOnce(
-          [](ArcDiskQuotaBridge::IsQuotaSupportedCallback callback,
+          [](ArcDiskSpaceBridge::IsQuotaSupportedCallback callback,
              std::optional<bool> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from IsQuotaSupported";
@@ -79,28 +79,28 @@ void IsQuotaSupportedOnArcDiskHome(
 }  // namespace
 
 // static
-ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContext(
+ArcDiskSpaceBridge* ArcDiskSpaceBridge::GetForBrowserContext(
     content::BrowserContext* context) {
-  return ArcDiskQuotaBridgeFactory::GetForBrowserContext(context);
+  return ArcDiskSpaceBridgeFactory::GetForBrowserContext(context);
 }
 
 // static
-ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContextForTesting(
+ArcDiskSpaceBridge* ArcDiskSpaceBridge::GetForBrowserContextForTesting(
     content::BrowserContext* context) {
-  return ArcDiskQuotaBridgeFactory::GetForBrowserContextForTesting(context);
+  return ArcDiskSpaceBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
-ArcDiskQuotaBridge::ArcDiskQuotaBridge(content::BrowserContext* context,
+ArcDiskSpaceBridge::ArcDiskSpaceBridge(content::BrowserContext* context,
                                        ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  arc_bridge_service_->disk_quota()->SetHost(this);
+  arc_bridge_service_->disk_space()->SetHost(this);
 }
 
-ArcDiskQuotaBridge::~ArcDiskQuotaBridge() {
-  arc_bridge_service_->disk_quota()->SetHost(nullptr);
+ArcDiskSpaceBridge::~ArcDiskSpaceBridge() {
+  arc_bridge_service_->disk_space()->SetHost(nullptr);
 }
 
-void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
+void ArcDiskSpaceBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
   // Whether ARC quota is supported is an AND of the following two booleans:
   // * Whether there are no unmounted Android users (from cryptohome)
   // * Whether |kArcDiskHome| is mounted with quota enabled (from spaced)
@@ -121,9 +121,9 @@ void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
           std::move(callback)));
 }
 
-void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
+void ArcDiskSpaceBridge::GetQuotaCurrentSpaceForUid(
     uint32_t android_uid,
-    GetCurrentSpaceForUidCallback callback) {
+    GetQuotaCurrentSpaceForUidCallback callback) {
   if (!IsAndroidUid(android_uid)) {
     LOG(ERROR) << "Android uid " << android_uid
                << " is outside the allowed query range";
@@ -135,7 +135,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
   ash::SpacedClient::Get()->GetQuotaCurrentSpaceForUid(
       kArcDiskHome, cros_uid,
       base::BindOnce(
-          [](GetCurrentSpaceForUidCallback callback, int cros_uid,
+          [](GetQuotaCurrentSpaceForUidCallback callback, int cros_uid,
              std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from GetQuotaCurrentSpaceForUid "
@@ -145,9 +145,9 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
           std::move(callback), cros_uid));
 }
 
-void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
+void ArcDiskSpaceBridge::GetQuotaCurrentSpaceForGid(
     uint32_t android_gid,
-    GetCurrentSpaceForGidCallback callback) {
+    GetQuotaCurrentSpaceForGidCallback callback) {
   if (!IsAndroidGid(android_gid)) {
     LOG(ERROR) << "Android gid " << android_gid
                << " is outside the allowed query range";
@@ -159,7 +159,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
   ash::SpacedClient::Get()->GetQuotaCurrentSpaceForGid(
       kArcDiskHome, cros_gid,
       base::BindOnce(
-          [](GetCurrentSpaceForGidCallback callback, int cros_gid,
+          [](GetQuotaCurrentSpaceForGidCallback callback, int cros_gid,
              std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from GetQuotaCurrentSpaceForGid "
@@ -169,9 +169,9 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
           std::move(callback), cros_gid));
 }
 
-void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
+void ArcDiskSpaceBridge::GetQuotaCurrentSpaceForProjectId(
     uint32_t project_id,
-    GetCurrentSpaceForProjectIdCallback callback) {
+    GetQuotaCurrentSpaceForProjectIdCallback callback) {
   if (!IsAndroidProjectId(project_id)) {
     LOG(ERROR) << "Android project id " << project_id
                << " is outside the allowed query range";
@@ -181,7 +181,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
   ash::SpacedClient::Get()->GetQuotaCurrentSpaceForProjectId(
       kArcDiskHome, project_id,
       base::BindOnce(
-          [](GetCurrentSpaceForProjectIdCallback callback, int project_id,
+          [](GetQuotaCurrentSpaceForProjectIdCallback callback, int project_id,
              std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from "
@@ -192,14 +192,14 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
           std::move(callback), project_id));
 }
 
-void ArcDiskQuotaBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
+void ArcDiskSpaceBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
   ash::SpacedClient::Get()->GetFreeDiskSpace(
       kArcDiskHome,
-      base::BindOnce(&ArcDiskQuotaBridge::OnGetFreeDiskSpace,
+      base::BindOnce(&ArcDiskSpaceBridge::OnGetFreeDiskSpace,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcDiskQuotaBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
+void ArcDiskSpaceBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
                                             std::optional<int64_t> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "spaced::GetFreeDiskSpace failed";
@@ -213,8 +213,8 @@ void ArcDiskQuotaBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
 }
 
 // static
-void ArcDiskQuotaBridge::EnsureFactoryBuilt() {
-  ArcDiskQuotaBridgeFactory::GetInstance();
+void ArcDiskSpaceBridge::EnsureFactoryBuilt() {
+  ArcDiskSpaceBridgeFactory::GetInstance();
 }
 
 }  // namespace arc

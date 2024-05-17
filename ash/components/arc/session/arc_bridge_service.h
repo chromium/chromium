@@ -50,8 +50,8 @@ class CompatibilityModeInstance;
 class CrashCollectorHost;
 class CrashCollectorInstance;
 class DigitalGoodsInstance;
-class DiskQuotaHost;
-class DiskQuotaInstance;
+class DiskSpaceHost;
+class DiskSpaceInstance;
 class EnterpriseReportingHost;
 class EnterpriseReportingInstance;
 class FileSystemHost;
@@ -220,9 +220,9 @@ class ArcBridgeService {
   ConnectionHolder<mojom::DigitalGoodsInstance>* digital_goods() {
     return &digital_goods_;
   }
-  ConnectionHolder<mojom::DiskQuotaInstance, mojom::DiskQuotaHost>*
-  disk_quota() {
-    return &disk_quota_;
+  ConnectionHolder<mojom::DiskSpaceInstance, mojom::DiskSpaceHost>*
+  disk_space() {
+    return &disk_space_;
   }
   ConnectionHolder<mojom::EnterpriseReportingInstance,
                    mojom::EnterpriseReportingHost>*
@@ -375,7 +375,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;
   ConnectionHolder<mojom::DigitalGoodsInstance> digital_goods_;
-  ConnectionHolder<mojom::DiskQuotaInstance, mojom::DiskQuotaHost> disk_quota_;
+  ConnectionHolder<mojom::DiskSpaceInstance, mojom::DiskSpaceHost> disk_space_;
   ConnectionHolder<mojom::EnterpriseReportingInstance,
                    mojom::EnterpriseReportingHost>
       enterprise_reporting_;

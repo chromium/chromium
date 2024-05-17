@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
-#define ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_DISK_SPACE_ARC_DISK_SPACE_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_DISK_SPACE_ARC_DISK_SPACE_BRIDGE_H_
 
 #include <optional>
 
-#include "ash/components/arc/mojom/disk_quota.mojom.h"
+#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -31,10 +31,10 @@ constexpr gid_t kArcGidShift = 655360;
 // The smallest UID in Android that is tracked by installd. This is set to be
 // the minimum possible uid that Android process can have.
 constexpr uid_t kAndroidUidStart = 0;
-// The largest Android UID for which GetCurrentSpaceForUid() could be called by
-// installd, based on the numbers in android_filesystem_config.h. The limit
-// differs before and after T; it has been AID_APP_END before T, but from T it's
-// AID_SDK_SANDBOX_PROCESS_END.
+// The largest Android UID for which GetQuotaCurrentSpaceForUid() could be
+// called by installd, based on the numbers in android_filesystem_config.h. The
+// limit differs before and after T; it has been AID_APP_END before T, but from
+// T it's AID_SDK_SANDBOX_PROCESS_END.
 constexpr uid_t kAndroidUidEndBeforeT = 19999;
 constexpr uid_t kAndroidUidEndAfterT = 29999;
 
@@ -67,36 +67,38 @@ constexpr int kProjectIdForAndroidAppsEndAfterT = 69999;
 
 class ArcBridgeService;
 
-// This class proxies quota requests from Android to cryptohome.
-class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
+// This class proxies disk space related requests between CrOS and Android.
+class ArcDiskSpaceBridge : public KeyedService, public mojom::DiskSpaceHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
-  static ArcDiskQuotaBridge* GetForBrowserContext(
+  static ArcDiskSpaceBridge* GetForBrowserContext(
       content::BrowserContext* context);
-  static ArcDiskQuotaBridge* GetForBrowserContextForTesting(
+  static ArcDiskSpaceBridge* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
-  ArcDiskQuotaBridge(content::BrowserContext* context,
+  ArcDiskSpaceBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
 
-  ArcDiskQuotaBridge(const ArcDiskQuotaBridge&) = delete;
-  ArcDiskQuotaBridge& operator=(const ArcDiskQuotaBridge&) = delete;
+  ArcDiskSpaceBridge(const ArcDiskSpaceBridge&) = delete;
+  ArcDiskSpaceBridge& operator=(const ArcDiskSpaceBridge&) = delete;
 
-  ~ArcDiskQuotaBridge() override;
+  ~ArcDiskSpaceBridge() override;
 
-  // mojom::DiskQuotaHost overrides:
+  // mojom::DiskSpaceHost overrides:
   void IsQuotaSupported(IsQuotaSupportedCallback callback) override;
 
-  void GetCurrentSpaceForUid(uint32_t uid,
-                             GetCurrentSpaceForUidCallback callback) override;
+  void GetQuotaCurrentSpaceForUid(
+      uint32_t uid,
+      GetQuotaCurrentSpaceForUidCallback callback) override;
 
-  void GetCurrentSpaceForGid(uint32_t gid,
-                             GetCurrentSpaceForGidCallback callback) override;
+  void GetQuotaCurrentSpaceForGid(
+      uint32_t gid,
+      GetQuotaCurrentSpaceForGidCallback callback) override;
 
-  void GetCurrentSpaceForProjectId(
+  void GetQuotaCurrentSpaceForProjectId(
       uint32_t project_id,
-      GetCurrentSpaceForProjectIdCallback callback) override;
+      GetQuotaCurrentSpaceForProjectIdCallback callback) override;
 
   void GetFreeDiskSpace(GetFreeDiskSpaceCallback) override;
 
@@ -110,9 +112,9 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // WeakPtrFactory to use for callbacks.
-  base::WeakPtrFactory<ArcDiskQuotaBridge> weak_factory_{this};
+  base::WeakPtrFactory<ArcDiskSpaceBridge> weak_factory_{this};
 };
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_DISK_SPACE_ARC_DISK_SPACE_BRIDGE_H_
