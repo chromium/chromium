@@ -630,18 +630,23 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
       is_one_time ? content_settings::mojom::SessionModel::ONE_TIME
                   : content_settings::mojom::SessionModel::DURABLE);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // The Permissions module in Safety check will revoke permissions after
-  // a finite amount of time if the permission can be revoked.
-  if (content_settings::CanBeAutoRevoked(content_settings_type_,
-                                         content_setting, is_one_time)) {
-    // For #2, by definition, that should be all of them. If that changes in
-    // the future, consider whether revocation for such permission makes
-    // sense, and/or change this to an early return so that we don't
-    // unnecessarily record timestamps where we don't need them.
-    constraints.set_track_last_visit_for_autoexpiration(true);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kRecordPermissionExpirationTimestamps)) {
+#endif  // BUILDFLAG(IS_ANDROID)
+    // The Permissions module in Safety check will revoke permissions after
+    // a finite amount of time if the permission can be revoked.
+    if (content_settings::CanBeAutoRevoked(content_settings_type_,
+                                           content_setting, is_one_time)) {
+      // For #2, by definition, that should be all of them. If that changes in
+      // the future, consider whether revocation for such permission makes
+      // sense, and/or change this to an early return so that we don't
+      // unnecessarily record timestamps where we don't need them.
+      constraints.set_track_last_visit_for_autoexpiration(true);
+    }
+#if BUILDFLAG(IS_ANDROID)
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (is_one_time) {
     if (base::FeatureList::IsEnabled(
