@@ -4,7 +4,6 @@
 
 #include "chrome/browser/devtools/protocol/pwa_handler.h"
 
-#include <expected>
 #include <sstream>
 
 #include "base/check.h"
