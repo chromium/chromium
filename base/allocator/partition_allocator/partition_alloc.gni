@@ -368,14 +368,15 @@ assert(build_with_chromium || !use_asan_backup_ref_ptr,
 assert(!use_asan_backup_ref_ptr || use_raw_ptr_hookable_impl,
        "AsanBackupRefPtr requires RawPtrHookableImpl")
 
+# pkeys support is explicitly disabled in all Cronet builds, as some test
+# dependencies that use partition_allocator are compiled in AOSP against a
+# version of glibc that does not include pkeys syscall numbers.
+is_pkeys_available =
+    (is_linux || is_chromeos) && current_cpu == "x64" && !is_cronet_build
 declare_args() {
-  # pkeys support is explicitly disabled in all Cronet builds, as some test
-  # dependencies that use partition_allocator are compiled in AOSP against a
-  # version of glibc that does not include pkeys syscall numbers.
-  enable_pkeys =
-      (is_linux || is_chromeos) && target_cpu == "x64" && !is_cronet_build
+  enable_pkeys = is_pkeys_available
 }
-assert(!enable_pkeys || ((is_linux || is_chromeos) && target_cpu == "x64"),
+assert(!enable_pkeys || is_pkeys_available,
        "Pkeys are only supported on x64 linux and ChromeOS")
 
 # Some implementations of raw_ptr<>, like BackupRefPtr, require zeroing when
