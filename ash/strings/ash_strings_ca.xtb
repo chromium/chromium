@@ -884,7 +884,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4453876312474547652">Veuràs el porta-retalls quan mantinguis premudes les tecles Ctrl+V. Pots desactivar aquesta drecera desactivant la marca #clipboard-history-longpress a chrome://flags (os://flags si utilitzes Lacros).</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
-<translation id="445923051607553918">Connexió a una xarxa Wi-Fi</translation>
+<translation id="445923051607553918">Connexió de xarxa Wi-Fi</translation>
 <translation id="4471354919263203780">S'estan baixant els fitxers de reconeixement de parla... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Actualitza el dispositiu ara}=1{Actualitza el dispositiu en 1 segon}other{Actualitza el dispositiu en # segons}}</translation>
 <translation id="4472575034687746823">Comença</translation>
@@ -990,7 +990,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="485634149294284819">Menú per seleccionar el teclat</translation>
 <translation id="485806788160414322">Reprodueix o posa en pausa el contingut multimèdia</translation>
 <translation id="4858764087721901597"><ph name="MODIFIER_ONE" /> i després <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
-<translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
+<translation id="4860284199500934869">Comprova la connexió de xarxa per baixar <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4864648187878336334">Escriptori 15</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -1639,7 +1639,7 @@ Instal·lació nova</translation>
 <translation id="7378889811480108604">El mode d'estalvi de bateria està desactivat</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Fes clic amb el botó dret en qualsevol lloc per tornar a ordenar les aplicacions</translation>
-<translation id="7386767620098596324">Commuta la connexió a la xarxa. <ph name="STATE_TEXT" />.</translation>
+<translation id="7386767620098596324">Commuta la connexió de xarxa. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Pots ajustar aquesta funció més endavant des de Configuració.</translation>
 <translation id="7401222354741467707">Fes una captura o una gravació de pantalla completes</translation>
 <translation id="7405710164030118432">Introdueix el codi d'accés parental de Family Link per desbloquejar el dispositiu</translation>
