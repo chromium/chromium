@@ -424,14 +424,26 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     desc.nextInChain = &stm_ahardwarebuffer_desc;
     shared_texture_memory_ = device.ImportSharedTextureMemory(&desc);
 
-    // Create the Dawn texture and wrap it in a Skia texture.
+    // Create the Dawn texture.
     texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
     if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
       LOG(ERROR) << "Failed to begin access for texture";
     }
-    // TODO(crbug.com/41488897): Obtain the needed YCbCr info and pass it in a
-    // DawnTextureInfo when creating the BackendTexture.
-    return {skgpu::graphite::BackendTexture(texture_.Get())};
+
+    // Obtain the YCbCr info from the SharedTextureMemory.
+    wgpu::SharedTextureMemoryProperties properties;
+    wgpu::SharedTextureMemoryAHardwareBufferProperties ahb_properties = {};
+    properties.nextInChain = &ahb_properties;
+    shared_texture_memory_.GetProperties(&properties);
+
+    // Wrap the Dawn texture in a Skia texture, passing the YCbCr info.
+    skgpu::graphite::DawnTextureInfo dawn_texture_info(
+        /*sampleCount=*/1, skgpu::Mipmapped::kNo, webgpu_format, webgpu_format,
+        texture_descriptor.usage, wgpu::TextureAspect::All, /*slice=*/0,
+        ahb_properties.yCbCrInfo);
+    return {skgpu::graphite::BackendTexture(
+        SkISize::Make(ahb_desc.width, ahb_desc.height), dawn_texture_info,
+        texture_.Get())};
   }
 
   void EndReadAccess() override {
