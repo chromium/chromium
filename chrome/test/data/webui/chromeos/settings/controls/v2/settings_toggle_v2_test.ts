@@ -23,8 +23,11 @@ suite(SettingsToggleV2Element.is, () => {
     document.body.appendChild(toggleElement);
   }
 
-  async function initWithPref(prefValue: boolean = false) {
+  async function initWithPref(
+      prefValue: boolean = false, isInverted: boolean = false) {
     init();
+
+    toggleElement.inverted = isInverted;
 
     /**
      * Pref value used in tests, should reflect the 'checked' attribute.
@@ -311,6 +314,43 @@ suite(SettingsToggleV2Element.is, () => {
             toggleElement.resetToPrefValue();
             assertFalse(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
+          });
+    });
+
+    suite('with inverted enabled', () => {
+      setup(async () => {
+        await initWithPref(/*prefValue=*/ false, /*isInverted=*/ true);
+      });
+
+      test('toggle value is the opposite of the pref', () => {
+        assertFalse(toggleElement.pref!.value);
+        assertTrue(toggleElement.checked);
+      });
+
+      test(
+          'clicking on the toggle changes the pref value to the opposite of the toggle',
+          async () => {
+            const prefChangeEventPromise =
+                eventToPromise('user-action-setting-pref-change', window);
+
+            toggleElement.click();
+            await flushTasks();
+            assertFalse(toggleElement.checked);
+
+            const event = await prefChangeEventPromise;
+            assertEquals(fakeTogglePref.key, event.detail.prefKey);
+            assertEquals(!toggleElement.checked, event.detail.value);
+          });
+
+      test(
+          'checked value reflects the opposite of pref value when pref changes',
+          () => {
+            assertFalse(toggleElement.pref!.value);
+            assertTrue(toggleElement.checked);
+
+            toggleElement.set('pref.value', true);
+            assertTrue(toggleElement.pref!.value);
+            assertFalse(toggleElement.checked);
           });
     });
   });

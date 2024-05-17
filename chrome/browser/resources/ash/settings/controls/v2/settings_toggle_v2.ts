@@ -45,6 +45,12 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
         value: false,
       },
 
+      /** Whether the control should represent the inverted pref value. */
+      inverted: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * If true, changing the control’s value will not update the pref
        * automatically. This allows the container to confirm the change first
@@ -60,11 +66,12 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
 
   static get observers() {
     return [
-      'prefChanged_(pref.*)',
+      'setToPrefValue_(pref.*)',
     ];
   }
 
   checked: boolean;
+  inverted: boolean;
   noSetPref: boolean;
   override validPrefTypes: chrome.settingsPrivate.PrefType[] = [
     chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -83,8 +90,9 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
   /**
    * Handle downward data binding from pref to update the toggle accordingly.
    */
-  private prefChanged_(): void {
-    this.checked = this.pref!.value;
+  private setToPrefValue_(): void {
+    const currentPrefValue = this.pref!.value;
+    this.checked = this.inverted ? !currentPrefValue : currentPrefValue;
   }
 
   /**
@@ -115,7 +123,8 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
   commitPrefChange(): void {
     // updatePrefValueFromUserAction() will ensure that the pref is defined
     // before committing the change.
-    this.updatePrefValueFromUserAction(this.checked);
+    this.updatePrefValueFromUserAction(
+        this.inverted ? !this.checked : this.checked);
   }
 
   /**
@@ -124,7 +133,7 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
   resetToPrefValue(): void {
     assert(this.pref, 'resetToPrefValue() requires pref to be defined.');
 
-    this.checked = this.pref.value;
+    this.setToPrefValue_();
   }
 }
 
