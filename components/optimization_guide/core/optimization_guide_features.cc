@@ -101,7 +101,6 @@ BASE_FEATURE(kPreventLongRunningPredictionModels,
              "PreventLongRunningPredictionModels",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
 BASE_FEATURE(kOverrideNumThreadsForModelExecution,
              "OverrideNumThreadsForModelExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -119,7 +118,6 @@ BASE_FEATURE(kOptimizationHintsComponent,
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,
              "OptimizationHintsFetchingSRP",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 // Kill switch for disabling model quality logging.
 BASE_FEATURE(kModelQualityLogging,
@@ -243,10 +241,11 @@ GURL GetOptimizationGuideServiceGetHintsURL() {
   std::string url = base::GetFieldTrialParamValueByFeature(
       kRemoteOptimizationGuideFetching, "optimization_guide_service_url");
   if (url.empty() || !GURL(url).SchemeIs(url::kHttpsScheme)) {
-    if (!url.empty())
+    if (!url.empty()) {
       LOG(WARNING)
           << "Empty or invalid optimization_guide_service_url provided: "
           << url;
+    }
     return GURL(kOptimizationGuideServiceGetHintsDefaultURL);
   }
 
@@ -400,7 +399,6 @@ base::TimeDelta URLKeyedHintValidCacheDuration() {
       60 * 60 /* 1 hour */));
 }
 
-
 size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
@@ -457,8 +455,9 @@ RequestContextSet GetAllowedContextsForPersonalizedMetadata() {
 
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target) {
-  if (optimization_target != proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+  if (optimization_target != proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
     return false;
+  }
 
   return base::GetFieldTrialParamByFeatureAsBool(
       kOptimizationTargetPrediction, "painful_page_load_metrics_only", false);
@@ -812,6 +811,25 @@ double GetOnDeviceModelDefaultTemperature() {
   static const base::FeatureParam<double> kTemperature{
       &kOptimizationGuideOnDeviceModel, "on_device_model_temperature", 0.8};
   return kTemperature.Get();
+}
+
+std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
+  static const base::FeatureParam<std::string>
+      kOnDeviceModelAllowedAdaptationRanks{&kOptimizationGuideOnDeviceModel,
+                                           "allowed_adaptation_ranks", "32"};
+  std::vector<uint32_t> ranks;
+  const auto ranks_str = kOnDeviceModelAllowedAdaptationRanks.Get();
+  auto rank_strs = base::SplitStringPiece(
+      ranks_str, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  ranks.reserve(rank_strs.size());
+  for (const auto& rank_str : rank_strs) {
+    uint32_t rank;
+    if (base::StringToUint(rank_str, &rank)) {
+      ranks.push_back(rank);
+    }
+  }
+  return ranks;
 }
 
 }  // namespace features

@@ -266,6 +266,7 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   if (safety_model_info_) {
     params->ts_dimension = safety_model_info_->num_output_categories();
   }
+  params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
   service_remote_->LoadModel(
       std::move(params), std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,

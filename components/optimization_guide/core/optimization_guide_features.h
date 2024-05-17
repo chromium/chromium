@@ -487,6 +487,9 @@ int GetOnDeviceModelDefaultTopK();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 double GetOnDeviceModelDefaultTemperature();
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
+
 }  // namespace features
 }  // namespace optimization_guide
 

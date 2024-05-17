@@ -341,6 +341,28 @@ TEST(OptimizationGuideFeaturesTest,
       OnDeviceModelPerformanceClass::kVeryHigh));
 }
 
+TEST(OptimizationGuideFeaturesTest, AllowedAdaptationRanks) {
+  // Default value
+  EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+              testing::ElementsAre(32));
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuideOnDeviceModel,
+        {{"allowed_adaptation_ranks", "16,32"}});
+    EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+                testing::ElementsAre(16, 32));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuideOnDeviceModel,
+        {{"allowed_adaptation_ranks", "16,invalid,64"}});
+    EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+                testing::ElementsAre(16, 64));
+  }
+}
+
 }  // namespace
 
 }  // namespace optimization_guide
