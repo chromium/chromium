@@ -2936,12 +2936,8 @@ AnchorQuery CSSMathExpressionAnchorQuery::ToQuery(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsScopedValue());
   AnchorSpecifierValue* anchor_specifier = AnchorSpecifierValue::Default();
-  if (const auto* auto_value =
-          DynamicTo<CSSIdentifierValue>(anchor_specifier_.Get())) {
-    DCHECK_EQ(auto_value->GetValueID(), CSSValueID::kAuto);
-    anchor_specifier = AnchorSpecifierValue::Auto();
-  } else if (const auto* custom_ident =
-                 DynamicTo<CSSCustomIdentValue>(anchor_specifier_.Get())) {
+  if (const auto* custom_ident =
+          DynamicTo<CSSCustomIdentValue>(anchor_specifier_.Get())) {
     length_resolver.ReferenceTreeScope();
     anchor_specifier = MakeGarbageCollected<AnchorSpecifierValue>(
         *MakeGarbageCollected<ScopedCSSName>(custom_ident->Value(),
@@ -3227,11 +3223,7 @@ class CSSMathExpressionNodeParser {
 
     // |anchor_specifier| may be omitted to represent the default anchor.
     const CSSValue* anchor_specifier =
-        css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(tokens);
-    if (!anchor_specifier) {
-      anchor_specifier =
           css_parsing_utils::ConsumeDashedIdent(tokens, context_);
-    }
 
     tokens.ConsumeWhitespace();
     const CSSValue* value = nullptr;

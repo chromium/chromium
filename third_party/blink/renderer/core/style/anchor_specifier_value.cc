@@ -19,14 +19,6 @@ AnchorSpecifierValue* AnchorSpecifierValue::Default() {
   return instance;
 }
 
-// static
-AnchorSpecifierValue* AnchorSpecifierValue::Auto() {
-  DEFINE_STATIC_LOCAL(Persistent<AnchorSpecifierValue>, instance,
-                      {MakeGarbageCollected<AnchorSpecifierValue>(
-                          base::PassKey<AnchorSpecifierValue>(), Type::kAuto)});
-  return instance;
-}
-
 AnchorSpecifierValue::AnchorSpecifierValue(base::PassKey<AnchorSpecifierValue>,
                                            Type type)
     : type_(type) {

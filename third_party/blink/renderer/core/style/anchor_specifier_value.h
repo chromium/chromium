@@ -21,22 +21,19 @@ class CORE_EXPORT AnchorSpecifierValue
  public:
   enum class Type {
     kDefault,
-    kAuto,
     kNamed,
   };
 
   // Creates a named value.
   explicit AnchorSpecifierValue(const ScopedCSSName&);
 
-  // Gets or creates the default/auto keyword values.
+  // Gets or creates the default keyword value.
   static AnchorSpecifierValue* Default();
-  static AnchorSpecifierValue* Auto();
 
   // For creating the keyword values only.
   explicit AnchorSpecifierValue(base::PassKey<AnchorSpecifierValue>, Type type);
 
   bool IsDefault() const { return type_ == Type::kDefault; }
-  bool IsAuto() const { return type_ == Type::kAuto; }
   bool IsNamed() const { return type_ == Type::kNamed; }
   const ScopedCSSName& GetName() const {
     DCHECK(IsNamed());
