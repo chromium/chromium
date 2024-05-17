@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "ui/display/manager/display_manager.h"
@@ -35,6 +37,11 @@ constexpr int kUserOverrideDisplaySettingsTimeDeltaBucketCount = 100;
 // The time threshold whether user override display settings metrics would be
 // fired or not.
 constexpr int kUserOverrideDisplaySettingsTimeThresholdInMinute = 60;
+
+// The interval of the timer that records the brightness slider adjusted event.
+// Multiple changes to the brightness percentage will not be recorded until
+// after this interval elapses.
+constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Seconds(2);
 
 // Get UMA histogram name that records the time elapsed between users changing
 // the display settings and the display is connected.
@@ -58,7 +65,12 @@ const std::string GetUserOverrideDefaultSettingsHistogramName(
 
 }  // namespace
 
-DisplaySettingsProvider::DisplaySettingsProvider() {
+DisplaySettingsProvider::DisplaySettingsProvider()
+    : brightness_slider_metric_delay_timer_(
+          FROM_HERE,
+          kMetricsDelayTimerInterval,
+          this,
+          &DisplaySettingsProvider::RecordBrightnessSliderAdjusted) {
   if (Shell::HasInstance()) {
     shell_observation_.Observe(ash::Shell::Get());
   }
@@ -360,10 +372,16 @@ void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
       percent, /*gradual=*/true, /*source=*/
       BrightnessControlDelegate::BrightnessChangeSource::kSettingsApp);
 
+  last_set_brightness_percent_ = percent;
+  // Start or reset timer for recording to metrics.
+  brightness_slider_metric_delay_timer_.Reset();
+}
+
+void DisplaySettingsProvider::RecordBrightnessSliderAdjusted() {
   // Record the brightness change event.
   std::string histogram_name(base::StrCat(
       {kDisplaySettingsHistogramName, ".Internal.BrightnessSliderAdjusted"}));
-  base::UmaHistogramPercentage(histogram_name, percent);
+  base::UmaHistogramPercentage(histogram_name, last_set_brightness_percent_);
 }
 
 void DisplaySettingsProvider::SetInternalDisplayAmbientLightSensorEnabled(

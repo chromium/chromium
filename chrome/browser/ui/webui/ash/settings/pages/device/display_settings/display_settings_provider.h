@@ -13,6 +13,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -141,6 +142,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   void OnGetHasAmbientLightSensor(HasAmbientLightSensorCallback callback,
                                   std::optional<bool> has_ambient_light_sensor);
 
+  void RecordBrightnessSliderAdjusted();
+
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};
 
@@ -164,6 +167,13 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   // the time elapsed between users changing the display default settings and
   // the display is connected.
   std::map<DisplayId, base::TimeTicks> displays_connection_timestamp_map_;
+
+  // The last display brightness percentage set by the user. Used for metrics.
+  double last_set_brightness_percent_;
+
+  // Times used to prevent the brightness slider metrics from recording each
+  // time the user moves the slider while setting the desired brightness.
+  base::DelayTimer brightness_slider_metric_delay_timer_;
 
   mojo::Receiver<mojom::DisplaySettingsProvider> receiver_{this};
 
