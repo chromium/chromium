@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host_observer.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -15,8 +14,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -73,10 +70,6 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpFoldableState() {
-    web_contents_impl()
-        ->GetDevicePostureProvider()
-        ->OverrideDevicePostureForEmulation(
-            blink::mojom::DevicePostureType::kFolded);
     const int kDisplayFeatureLength = 10;
     DisplayFeature emulated_display_feature{
         DisplayFeature::Orientation::kVertical,
@@ -89,7 +82,7 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
         root->current_frame_host()->GetRenderWidgetHost();
     root_widget->SynchronizeVisualProperties();
     // We need to wait that visual properties are updated before we test the
-    // CSS APIs of Viewport Segments and Device Posture.
+    // CSS APIs of Viewport Segments.
     while (root_widget->visual_properties_ack_pending_for_testing()) {
       TestRenderWidgetHostObserver(root_widget).WaitForVisualPropertiesUpdate();
     }
@@ -110,8 +103,11 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
 
   bool HasDevicePostureCSSApi() {
     return EvalJs(shell(),
+                  "window.matchMedia('(device-posture: continuous)').matches")
+               .ExtractBool() ||
+           EvalJs(shell(),
                   "window.matchMedia('(device-posture: folded)').matches")
-        .ExtractBool();
+               .ExtractBool();
   }
 
   bool HasViewportSegmentsApi() {
@@ -139,14 +135,8 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 };
 
-// TODO(crbug.com/339983706): Fix flaky test on macOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ValidOriginTrialToken DISABLED_ValidOriginTrialToken
-#else
-#define MAYBE_ValidOriginTrialToken ValidOriginTrialToken
-#endif
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest,
-                       MAYBE_ValidOriginTrialToken) {
+                       ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
   SetUpFoldableState();
   EXPECT_TRUE(HasDevicePostureApi());
