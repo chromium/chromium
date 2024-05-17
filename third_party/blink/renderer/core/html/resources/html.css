@@ -1541,4 +1541,11 @@ html::grammar-error {
     text-decoration: -internal-grammar-error-color grammar-error;
 }
 
+@supports blink-feature(AutoSizeLazyLoadedImages) {
+  img:is([sizes="auto" i], [sizes^="auto," i]) {
+    contain: size !important;
+    contain-intrinsic-size: 300px 150px;
+  }
+}
+
 /* noscript is handled internally, as it depends on settings. */

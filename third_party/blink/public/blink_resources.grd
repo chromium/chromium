@@ -31,7 +31,6 @@
       <include name="IDR_UASTYLE_FULLSCREEN_CSS" file="../renderer/core/css/fullscreen.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_CSS" file="../renderer/core/css/transition.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS" file="../renderer/core/css/transition_animations.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_AUTO_SIZES_CSS" file="../renderer/core/css/auto_sizes.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_CSS" file="../renderer/core/xml/DocumentXMLTreeViewer.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_JS" file="../renderer/core/xml/DocumentXMLTreeViewer.js" type="BINDATA" compress="brotli"/>
       <include name="IDR_VALIDATION_BUBBLE_ICON" file="../renderer/core/html/forms/resources/input_alert.svg" type="BINDATA" compress="brotli"/>

@@ -130,7 +130,6 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   stylable_select_style_sheet_.Clear();
   stylable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
-  auto_sizes_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
@@ -358,14 +357,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  if (!auto_sizes_style_sheet_ && IsA<HTMLImageElement>(element) &&
-      RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled()) {
-    auto_sizes_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_AUTO_SIZES_CSS));
-    AddRulesToDefaultStyleSheets(auto_sizes_style_sheet_, NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-
   DCHECK(!default_html_style_->Features().HasIdsInSelectors());
   return changed_default_style;
 }
@@ -517,7 +508,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(stylable_select_style_sheet_);
   visitor->Trace(stylable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
-  visitor->Trace(auto_sizes_style_sheet_);
   visitor->Trace(default_json_document_style_);
 }
 
