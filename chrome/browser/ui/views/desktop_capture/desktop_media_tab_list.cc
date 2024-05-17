@@ -285,6 +285,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   preview_sidebar->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       /*between_child_spacing=*/11));
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  preview_sidebar->SetLayoutManagerUseConstrainedSpace(false);
 
   std::unique_ptr<views::View> full_panel = std::make_unique<views::View>();
 
