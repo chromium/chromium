@@ -376,28 +376,28 @@ Grepped for \"crypt\", \"cipher\" - there were no hits
 
 [[audits.cxx]]
 who = "danakj <danakj@chromium.org>"
-criteria = ["does-not-implement-crypto"]
+criteria = "does-not-implement-crypto"
+version = "1.0.122"
+notes = """
+safe-to-deploy and ub-risk-2 are provided by exemption.
+"""
+
+[[audits.cxx]]
+who = "danakj <danakj@chromium.org>"
+criteria = "does-not-implement-crypto"
 delta = "1.0.117 -> 1.0.119"
 notes = "Reviewed in https://crrev.com/c/5362739"
 
 [[audits.cxx]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
-criteria = ["does-not-implement-crypto"]
+criteria = "does-not-implement-crypto"
 delta = "1.0.119 -> 1.0.120"
 notes = "Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5392544."
 
 [[audits.cxx]]
 who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["does-not-implement-crypto""]
+criteria = "does-not-implement-crypto"
 delta = "1.0.120 -> 1.0.121"
-
-[[audits.cxx]]
-who = "danakj <danakj@chromium.org>"
-criteria = ["does-not-implement-crypto"]
-version = "1.0.122"
-notes = """
-safe-to-deploy and ub-risk-2 are provided by exemption.
-"""
 
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
@@ -479,7 +479,7 @@ notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
-criteria = ["does-not-implement-crypto"]
+criteria = "does-not-implement-crypto"
 version = "1.0.122"
 notes = """
 no grep hits for cipher, crypto.
