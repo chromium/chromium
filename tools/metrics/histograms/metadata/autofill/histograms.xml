@@ -5391,6 +5391,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.Iban.NumberOfIbansShown" units="ibans"
+    expires_after="2024-07-21">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of IBANs shown in the Touch To Fill bottom sheet. Recorded when
+    showing the bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.Iban.SelectedIndex" units="index"
+    expires_after="2024-07-21">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The index of the selected IBAN in the Touch To Fill bottom sheet. Recorded
+    when user selects an IBAN from the list.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.Iban.TriggerOutcome"
     enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2024-07-21">
   <owner>qihuizhao@google.com</owner>
