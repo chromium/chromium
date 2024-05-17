@@ -47,9 +47,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
 
-    public static final CachedFlag sGroupingFrameworkForNonZPS =
-            newFlag(OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS, false);
-
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             newFlag(OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
 

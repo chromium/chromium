@@ -1149,8 +1149,6 @@ class AutocompleteMediator
         // addresses cases where hardware keyboard is attached to a device, or where user explicitly
         // called the keyboard back after we hid it.
         if (mDelegate.isKeyboardActive()) {
-            mDropdownViewInfoListBuilder.setDropdownHeightWithKeyboardActive(newHeight);
-
             if (!mNativeInitialized || mAutocomplete == null) return;
 
             int suggestionHeight =

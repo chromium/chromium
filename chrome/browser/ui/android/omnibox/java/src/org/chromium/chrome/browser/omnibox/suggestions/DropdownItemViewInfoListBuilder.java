@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
@@ -41,8 +40,6 @@ import java.util.Optional;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
 class DropdownItemViewInfoListBuilder {
-    private @Px static final int DROPDOWN_HEIGHT_UNKNOWN = -1;
-    private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
@@ -52,12 +49,10 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
-    private @Px int mDropdownHeight;
 
     DropdownItemViewInfoListBuilder(
             @NonNull Supplier<Tab> tabSupplier, @NonNull BookmarkState bookmarkState) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
-        mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mImageSupplier = Optional.empty();
         mBookmarkState = bookmarkState;
@@ -157,26 +152,6 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * Specify dropdown list height in pixels. The height is subsequentially used to determine
-     * number of visible suggestions and perform partial suggestion ordering based on their
-     * visibility.
-     *
-     * <p>Note that this mechanism is effective as long as grouping is not in use in zero-prefix
-     * context. At the time this mechanism was created, zero-prefix context never presented mixed
-     * URL and (non-reactive) search suggestions, but instead presented either a list of specialized
-     * suggestions (eg. clipboard, query tiles) mixed with reactive suggestions, a plain list of
-     * search suggestions, or a plain list of recent URLs. This gives us the chance to measure the
-     * height of the dropdown list before the actual grouping takes effect. If the above situation
-     * changes, we may need to revisit the logic here, and possibly cache the heights in different
-     * states (eg. portrait mode, split screen etc) to get better results.
-     *
-     * @param dropdownHeight Updated height of the dropdown item list.
-     */
-    void setDropdownHeightWithKeyboardActive(@Px int dropdownHeight) {
-        mDropdownHeight = dropdownHeight;
-    }
-
-    /**
      * Respond to omnibox session state change.
      *
      * @param activated Indicates whether omnibox session is activated.
@@ -197,35 +172,6 @@ class DropdownItemViewInfoListBuilder {
 
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             mPriorityOrderedSuggestionProcessors.get(index).onNativeInitialized();
-        }
-    }
-
-    /**
-     * Adaptive Suggestions logic: perform partial grouping by Search vs URL on the
-     * AutocompleteResult.
-     *
-     * @param autocompleteResult the result to apply adaptive suggestions to
-     */
-    @VisibleForTesting
-    void performPartialGroupingBySearchVsUrl(AutocompleteResult autocompleteResult) {
-        // When Adaptive Suggestions are set, perform partial grouping by search vs url.
-        // Take action only if we have more suggestions to offer than just a default match and
-        // one suggestion (otherwise no need to perform grouping).
-        if (autocompleteResult.getSuggestionsList().size() > 2) {
-            final int firstSuggestionWithHeader =
-                    getIndexOfFirstSuggestionWithHeader(autocompleteResult);
-            final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
-            // TODO(crbug.com/40127424): this should either infer the count from UI height or supply
-            // the default value if height is not known. For the time being we group the entire list
-            // to mimic the native behavior.
-            if (firstSuggestionWithHeader > 1) {
-                autocompleteResult.groupSuggestionsBySearchVsURL(
-                        1, Math.min(numVisibleSuggestions, firstSuggestionWithHeader));
-            }
-            if (numVisibleSuggestions < firstSuggestionWithHeader) {
-                autocompleteResult.groupSuggestionsBySearchVsURL(
-                        numVisibleSuggestions, firstSuggestionWithHeader);
-            }
         }
     }
 
@@ -362,10 +308,6 @@ class DropdownItemViewInfoListBuilder {
             mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
         }
 
-        if (!OmniboxFeatures.sGroupingFrameworkForNonZPS.isEnabled()) {
-            performPartialGroupingBySearchVsUrl(autocompleteResult);
-        }
-
         var newMatches = autocompleteResult.getSuggestionsList();
         int newMatchesCount = newMatches.size();
         var viewInfoList = new ArrayList<DropdownItemViewInfo>();
@@ -423,75 +365,6 @@ class DropdownItemViewInfoListBuilder {
         }
 
         return viewInfoList;
-    }
-
-    /**
-     * @param autocompleteResult The AutocompleteResult to analyze.
-     * @return Number of suggestions immediately visible to the user upon presenting the list. Does
-     *     not include the suggestions with headers, or VOICE_SUGGEST suggestions that have been
-     *     injected by Java provider.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    int getVisibleSuggestionsCount(AutocompleteResult autocompleteResult) {
-        // For cases where we don't know how many suggestions can fit in the visile screen area,
-        // make an assumption regarding the group size.
-        if (mDropdownHeight == DROPDOWN_HEIGHT_UNKNOWN) {
-            return Math.min(
-                    autocompleteResult.getSuggestionsList().size(), DEFAULT_SIZE_OF_VISIBLE_GROUP);
-        }
-
-        final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
-
-        @Px int calculatedSuggestionsHeight = 0;
-        int lastVisibleIndex;
-        for (lastVisibleIndex = 0; lastVisibleIndex < suggestions.size(); lastVisibleIndex++) {
-            final AutocompleteMatch suggestion = suggestions.get(lastVisibleIndex);
-            // We do not include suggestions with headers in partial grouping, so terminate early.
-            if (suggestion.getGroupId() != AutocompleteMatch.INVALID_GROUP) {
-                break;
-            }
-
-            final SuggestionProcessor processor =
-                    getProcessorForSuggestion(suggestion, lastVisibleIndex);
-
-            int itemHeight = processor.getMinimumViewHeight();
-
-            // Evaluate suggestion and determine whether it should be considered visible or
-            // concealed based on the degree to which it is exposed.
-            // Suggestions exposed 50% or more (where at least half of the suggestion's height is
-            // visible) are considered visible. Suggestions concealed 50% or more (more than half of
-            // the usggestion's height is hidden) are considered fully concealed.
-            if (calculatedSuggestionsHeight + (itemHeight / 2) <= mDropdownHeight) {
-                // 50% or more of the content exposed.
-                calculatedSuggestionsHeight += itemHeight;
-            } else {
-                break;
-            }
-        }
-
-        return lastVisibleIndex;
-    }
-
-    /**
-     * Returns the index of the first suggestion that has an associated group header ID.
-     *
-     * <ul>
-     *   <li>If no suggestions have group header ID set, returns the size of the list.
-     *   <li>If all suggestions have group header ID set, returns 0.
-     * </ul>
-     */
-    int getIndexOfFirstSuggestionWithHeader(AutocompleteResult autocompleteResult) {
-        final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
-        // Suggestions with headers, if present, are always shown last. Iterate from the bottom of
-        // the list to avoid scanning entire list when there are no headers.
-        for (int suggestionIndex = suggestions.size() - 1;
-                suggestionIndex >= 0;
-                suggestionIndex--) {
-            if (suggestions.get(suggestionIndex).getGroupId() == AutocompleteMatch.INVALID_GROUP) {
-                return suggestionIndex + 1;
-            }
-        }
-        return 0;
     }
 
     /**
