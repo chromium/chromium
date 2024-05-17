@@ -147,12 +147,15 @@ export class MapperServerCdpConnection {
 
     const browserClient = await cdpConnection.createBrowserSession();
 
-    const {targetId: mapperTabTargetId} = await browserClient.sendCommand(
-      'Target.createTarget',
-      {
-        url: 'about:blank',
-      }
-    );
+    // Run mapper in the first open tab.
+    const targets = (await cdpConnection.sendCommand(
+      'Target.getTargets',
+      {}
+    )) as Protocol.Target.GetTargetsResponse;
+    const mapperTabTargetId = targets.targetInfos.filter(
+      (target) => target.type === 'page'
+    )[0]!.targetId;
+
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
       {targetId: mapperTabTargetId, flatten: true}
@@ -165,6 +168,11 @@ export class MapperServerCdpConnection {
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: 'document.body.click()',
       userGesture: true,
+    });
+
+    // Create and activate new tab with a blank page.
+    await browserClient.sendCommand('Target.createTarget', {
+      url: 'about:blank',
     });
 
     const bidiSession = new SimpleTransport(
