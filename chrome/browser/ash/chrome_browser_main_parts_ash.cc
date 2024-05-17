@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
+#include "chrome/browser/ash/audio/cras_audio_handler_delegate_impl.h"
 #include "chrome/browser/ash/bluetooth/bluetooth_log_controller.h"
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
@@ -784,9 +785,10 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       media_controller_manager;
   content::GetMediaSessionService().BindMediaControllerManager(
       media_controller_manager.InitWithNewPipeAndPassReceiver());
-  CrasAudioHandler::Initialize(
+  CrasAudioHandler::InitializeDelegate(
       std::move(media_controller_manager),
-      new AudioDevicesPrefHandlerImpl(g_browser_process->local_state()));
+      new AudioDevicesPrefHandlerImpl(g_browser_process->local_state()),
+      std::make_unique<CrasAudioHandlerDelegateImpl>());
 
   audio_survey_handler_ = std::make_unique<AudioSurveyHandler>();
 

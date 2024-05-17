@@ -25,6 +25,9 @@ using SwitchToDeviceCallback =
                                  bool notify,
                                  DeviceActivateType activate_by)>;
 
+// A callback function to open OS Settings audio page.
+using OpenSettingsAudioPageCallback = base::RepeatingCallback<void()>;
+
 // AudioSelectionNotificationHandler handles the creation and display of the
 // audio selection notification.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
@@ -87,7 +90,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioDeviceList& hotplug_output_devices,
       const std::optional<std::string>& active_input_device_name,
       const std::optional<std::string>& active_output_device_name,
-      SwitchToDeviceCallback switch_to_device_callback);
+      SwitchToDeviceCallback switch_to_device_callback,
+      OpenSettingsAudioPageCallback open_settings_audio_page_callback);
 
   // Handles the situation when a hotplugged device which triggers the
   // notification has been removed. Remove the notification in this case.
@@ -102,6 +106,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioDeviceList& devices_to_activate,
       SwitchToDeviceCallback switch_to_device_callback,
       NotificationType notification_type,
+      std::optional<int> button_index);
+
+  // Handles when the settings button is clicked. |open_settigns_callback| is
+  // the callback to open the system settings audio page. |button_index|
+  // indicates the index of the button on notification body that is clicked.
+  void HandleSettingsButtonClicked(
+      OpenSettingsAudioPageCallback open_settigns_callback,
       std::optional<int> button_index);
 
   // Checks if one audio input device and one audio output device belong to the

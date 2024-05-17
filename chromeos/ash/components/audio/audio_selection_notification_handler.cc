@@ -106,7 +106,8 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
     const AudioDeviceList& hotplug_output_devices,
     const std::optional<std::string>& active_input_device_name,
     const std::optional<std::string>& active_output_device_name,
-    SwitchToDeviceCallback switch_to_device_callback) {
+    SwitchToDeviceCallback switch_to_device_callback,
+    OpenSettingsAudioPageCallback open_settings_audio_page_callback) {
   // At least input or output has hotplug device.
   CHECK(!hotplug_input_devices.empty() || !hotplug_output_devices.empty());
 
@@ -196,6 +197,19 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons = buttons_info;
 
+  // If notification type is kMultipleSources, show Settings button and pass
+  // HandleSettingsButtonClicked function.
+  auto notification_delegate =
+      notification_template.type == NotificationType::kMultipleSources
+          ? base::BindRepeating(
+                &AudioSelectionNotificationHandler::HandleSettingsButtonClicked,
+                weak_ptr_factory_.GetWeakPtr(),
+                open_settings_audio_page_callback)
+          : base::BindRepeating(
+                &AudioSelectionNotificationHandler::HandleSwitchButtonClicked,
+                weak_ptr_factory_.GetWeakPtr(), devices_to_activate,
+                switch_to_device_callback, notification_template.type);
+
   message_center::Notification notification{
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/kAudioSelectionNotificationId,
@@ -211,10 +225,7 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
       optional_fields,
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              &AudioSelectionNotificationHandler::HandleSwitchButtonClicked,
-              weak_ptr_factory_.GetWeakPtr(), devices_to_activate,
-              switch_to_device_callback, notification_template.type))};
+          notification_delegate)};
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(notification.id(),
                                      /*by_user=*/false);
@@ -269,6 +280,26 @@ void AudioSelectionNotificationHandler::HandleSwitchButtonClicked(
                                      /*by_user=*/true);
   hotplug_input_devices_.clear();
   hotplug_output_devices_.clear();
+}
+
+void AudioSelectionNotificationHandler::HandleSettingsButtonClicked(
+    base::RepeatingCallback<void()> open_settigns_callback,
+    std::optional<int> button_index) {
+  if (!button_index.has_value()) {
+    // Do not do anything when notification body is clicked. If the button is
+    // clicked, the button_index will have a value.
+    return;
+  }
+
+  // TODO(zhangwenyu): Add metrics to record notification button clicked.
+
+  // Open OS Settings audio page.
+  open_settigns_callback.Run();
+
+  // Remove notification.
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kAudioSelectionNotificationId,
+                                     /*by_user=*/true);
 }
 
 AudioSelectionNotificationHandler::NotificationTemplate

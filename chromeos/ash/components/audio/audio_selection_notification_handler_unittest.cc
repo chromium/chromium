@@ -29,6 +29,10 @@ class AudioSelectionNotificationHandlerTest
     CrasAudioHandler::Get()->SwitchToDevice(device, notify, activate_by);
   }
 
+  static void OpenSettingsAudioPage() {
+    CrasAudioHandler::Get()->OpenSettingsAudioPage();
+  }
+
   AudioSelectionNotificationHandler& audio_selection_notification_handler() {
     return audio_selection_notification_handler_;
   }
@@ -59,6 +63,16 @@ class AudioSelectionNotificationHandlerTest
             &AudioSelectionNotificationHandlerTest::FakeSwitchToDevice,
             weak_ptr_factory_.GetWeakPtr()),
         notification_type, button_index);
+  }
+
+  void FakeOpenSettingsPage() { settings_audio_page_opened_ = true; }
+
+  void HandleSettingsButtonClicked(std::optional<int> button_index) {
+    audio_selection_notification_handler_.HandleSettingsButtonClicked(
+        base::BindRepeating(
+            &AudioSelectionNotificationHandlerTest::FakeOpenSettingsPage,
+            weak_ptr_factory_.GetWeakPtr()),
+        button_index);
   }
 
   // Gets the count of audio selection notification.
@@ -93,6 +107,8 @@ class AudioSelectionNotificationHandlerTest
 
   uint64_t active_output_id() { return active_output_id_; }
 
+  bool settings_audio_page_opened() { return settings_audio_page_opened_; }
+
  private:
   AudioSelectionNotificationHandler audio_selection_notification_handler_;
 
@@ -102,6 +118,8 @@ class AudioSelectionNotificationHandlerTest
   uint64_t active_output_id_ = 0;
 
   base::HistogramTester histogram_tester_;
+
+  bool settings_audio_page_opened_ = false;
 
   base::WeakPtrFactory<AudioSelectionNotificationHandlerTest> weak_ptr_factory_{
       this};
@@ -118,7 +136,9 @@ TEST_F(AudioSelectionNotificationHandlerTest, ShowAudioSelectionNotification) {
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
 
   // Expect notification is shown.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -130,7 +150,9 @@ TEST_F(AudioSelectionNotificationHandlerTest, ShowAudioSelectionNotification) {
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
 }
 
@@ -217,7 +239,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -274,7 +298,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -339,7 +365,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -404,7 +432,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
       hotplug_input_devices, hotplug_output_devices, current_active_input,
       current_active_output,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -454,7 +484,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
       hotplug_input_devices, hotplug_output_devices, current_active_input,
       current_active_output,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -492,7 +524,9 @@ TEST_F(AudioSelectionNotificationHandlerTest, HandleSwitchButtonClicked) {
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
 
   // Expect notification displays.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -627,7 +661,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If a non related device is removed, notification should stay.
@@ -660,7 +696,9 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   audio_selection_notification_handler().ShowAudioSelectionNotification(
       hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
       base::BindRepeating(
-          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If a non related device is removed, notification should stay.
@@ -673,6 +711,40 @@ TEST_F(AudioSelectionNotificationHandlerTest,
   // should be removed too.
   audio_selection_notification_handler().RemoveNotificationIfNecessary(
       {output_device});
+  EXPECT_EQ(0u, GetNotificationCount());
+}
+
+// Tests clicking Settings button on notification should open OS Settings audio
+// page.
+TEST_F(AudioSelectionNotificationHandlerTest, HandleSettingsButtonClicked) {
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug HTMI display and a USB output device.
+  AudioDeviceList hotplug_input_devices = {};
+  const AudioDevice output_hdmi = AudioDevice(NewNodeWithName(
+      /*is_input=*/false, "HDMI", "Sceptre Z27"));
+  const AudioDevice output_USB = AudioDevice(NewNodeWithName(
+      /*is_input=*/false, "USB", "USB output device"));
+  AudioDeviceList hotplug_output_devices = {output_hdmi, output_USB};
+  audio_selection_notification_handler().ShowAudioSelectionNotification(
+      hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+
+  // Expect notification displays.
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Clicking notification body does not have any effects.
+  HandleSettingsButtonClicked(std::nullopt);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Clicking Settings button, expect OS Settings audio page is opened and
+  // notification is removed.
+  HandleSettingsButtonClicked(/*button_index=*/1);
+
+  EXPECT_TRUE(settings_audio_page_opened());
   EXPECT_EQ(0u, GetNotificationCount());
 }
 

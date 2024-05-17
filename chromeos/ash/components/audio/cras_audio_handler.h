@@ -114,6 +114,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     AudioSurveyData data_;
   };
 
+  // A Delegate class to expose chrome browser functionality to ash.
+  class Delegate {
+   public:
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    // Opens the OS Settings audio page.
+    virtual void OpenSettingsAudioPage() const = 0;
+  };
+
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
   enum class InputMuteChangeMethod {
@@ -263,6 +277,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>
           media_controller_manager,
       scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
+
+  // Same as Initialize function but also initializing a delegate class.
+  static void InitializeDelegate(
+      mojo::PendingRemote<media_session::mojom::MediaControllerManager>
+          media_controller_manager,
+      scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler,
+      std::unique_ptr<Delegate> delegate);
 
   // Sets the global instance for testing.
   // Consider using |ScopedCrasAudioHandlerForTesting| instead, as that
@@ -525,6 +546,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
                       bool notify,
                       DeviceActivateType activate_by);
 
+  // Opens the OS Settings audio page.
+  void OpenSettingsAudioPage();
+
   // Sets volume/gain level for a device.
   void SetVolumeGainPercentForDevice(uint64_t device_id, int value);
 
@@ -664,10 +688,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>
           media_controller_manager,
       scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
+  CrasAudioHandler(
+      mojo::PendingRemote<media_session::mojom::MediaControllerManager>
+          media_controller_manager,
+      scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler,
+      std::unique_ptr<Delegate> delegate);
   ~CrasAudioHandler() override;
 
  private:
   friend class CrasAudioHandlerTest;
+
+  // A helper function to set up CrasAudioHandler.
+  void SetupCrasAudioHandler(
+      scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
 
   // CrasAudioClient::Observer overrides.
   void AudioClientRestarted() override;
@@ -1110,6 +1143,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   int num_stream_ignore_ui_gains_ = 0;
 
   int32_t num_arc_streams_ = 0;
+
+  std::unique_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };
