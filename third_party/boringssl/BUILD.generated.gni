@@ -81,7 +81,6 @@ crypto_sources = [
   "src/crypto/cipher_extra/internal.h",
   "src/crypto/cipher_extra/tls_cbc.c",
   "src/crypto/conf/conf.c",
-  "src/crypto/conf/conf_def.h",
   "src/crypto/conf/internal.h",
   "src/crypto/cpu_aarch64_apple.c",
   "src/crypto/cpu_aarch64_fuchsia.c",
@@ -104,6 +103,8 @@ crypto_sources = [
   "src/crypto/dh_extra/dh_asn1.c",
   "src/crypto/dh_extra/params.c",
   "src/crypto/digest_extra/digest_extra.c",
+  "src/crypto/dilithium/dilithium.c",
+  "src/crypto/dilithium/internal.h",
   "src/crypto/dsa/dsa.c",
   "src/crypto/dsa/dsa_asn1.c",
   "src/crypto/dsa/internal.h",
@@ -522,6 +523,7 @@ crypto_headers = [
   "src/include/openssl/evp.h",
   "src/include/openssl/evp_errors.h",
   "src/include/openssl/ex_data.h",
+  "src/include/openssl/experimental/dilithium.h",
   "src/include/openssl/experimental/kyber.h",
   "src/include/openssl/experimental/spx.h",
   "src/include/openssl/hkdf.h",
@@ -676,6 +678,7 @@ pki_sources = [
   "src/pki/trust_store.cc",
   "src/pki/trust_store_collection.cc",
   "src/pki/trust_store_in_memory.cc",
+  "src/pki/verify.cc",
   "src/pki/verify_certificate_chain.cc",
   "src/pki/verify_error.cc",
   "src/pki/verify_name_match.cc",
@@ -728,6 +731,7 @@ pki_internal_headers = [
 pki_headers = [
   "src/include/openssl/pki/certificate.h",
   "src/include/openssl/pki/signature_verify_cache.h",
+  "src/include/openssl/pki/verify.h",
   "src/include/openssl/pki/verify_error.h",
 ]
 
