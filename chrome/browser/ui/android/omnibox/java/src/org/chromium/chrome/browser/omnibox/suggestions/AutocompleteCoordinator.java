@@ -237,7 +237,6 @@ public class AutocompleteCoordinator
                     // automatically added to the hierarchy, which changes the precondition assumed
                     // by the old logic. The lines below ensure the initial condition is what the
                     // logic expects it to be.
-                    dropdown.setVisibility(View.VISIBLE);
                     UiUtils.removeViewFromParent(dropdown);
                 }
 

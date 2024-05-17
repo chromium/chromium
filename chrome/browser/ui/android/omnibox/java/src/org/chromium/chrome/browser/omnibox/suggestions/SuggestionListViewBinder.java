@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -49,24 +48,16 @@ class SuggestionListViewBinder {
                 // Ensure the tracked keyboard state is consistent with actual keyboard state.
                 // The keyboard is about to be called up.
                 view.dropdown.resetKeyboardShownState();
-                if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-                    view.dropdown.setVisibility(View.VISIBLE);
-                    view.container.setVisibility(View.VISIBLE);
-                } else if (dropdownView.getParent() == null) {
+                if (dropdownView.getParent() == null) {
                     view.container.addView(dropdownView);
                     // When showing the suggestions list for the first time, make sure to apply
                     // appropriate visibility to freshly inflated container.
                     // This is later handled by subsequent calls to updateContainerVisibility()
                     // performed whenever the suggestion model list changes.
-                    updateContainerVisibility(model, view.container);
+                    updateContainerVisibility(model, view);
                 }
             } else {
-                if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-                    view.container.setVisibility(View.GONE);
-                    view.dropdown.setVisibility(View.GONE);
-                } else {
-                    UiUtils.removeViewFromParent(dropdownView);
-                }
+                UiUtils.removeViewFromParent(dropdownView);
             }
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
@@ -101,13 +92,13 @@ class SuggestionListViewBinder {
                         @Override
                         public void onItemRangeInserted(
                                 ListObservable source, int index, int count) {
-                            updateContainerVisibility(model, view.container);
+                            updateContainerVisibility(model, view);
                         }
 
                         @Override
                         public void onItemRangeRemoved(
                                 ListObservable source, int index, int count) {
-                            updateContainerVisibility(model, view.container);
+                            updateContainerVisibility(model, view);
                         }
                     });
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
@@ -124,8 +115,11 @@ class SuggestionListViewBinder {
         }
     }
 
-    private static void updateContainerVisibility(PropertyModel model, ViewGroup container) {
+    private static void updateContainerVisibility(
+            PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-        container.setVisibility(listItems.size() == 0 ? View.GONE : View.VISIBLE);
+        int visibility = listItems.size() == 0 ? View.GONE : View.VISIBLE;
+        holder.container.setVisibility(visibility);
+        holder.dropdown.setVisibility(visibility);
     }
 }
