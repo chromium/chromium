@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check_deref.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/web/public/browser_state.h"
+#import "base/check_deref.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/web/public/browser_state.h"
 
 namespace ios {
 
@@ -40,10 +42,20 @@ SearchEngineChoiceServiceFactory::GetForBrowserState(
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  int variations_country_id = country_codes::kCountryIDUnknown;
+  if (variations::VariationsService* variations_service =
+          GetApplicationContext()->GetVariationsService()) {
+    // Need to use `GetLatestCountry()` for consistency with:
+    // chrome/browser/search_engine_choice/
+    // search_engine_choice_service_factory.cc
+    variations_country_id = country_codes::CountryStringToCountryID(
+        base::ToUpperASCII(variations_service->GetLatestCountry()));
+  }
+
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
-      CHECK_DEREF(browser_state->GetPrefs()));
+      CHECK_DEREF(browser_state->GetPrefs()), variations_country_id);
 }
 
 web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(
