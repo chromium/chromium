@@ -17,11 +17,13 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -52,6 +54,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
@@ -244,22 +247,27 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
 
   if (command_id ==
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
-    // TODO(b/321678141): Execute this command.
-    NOTIMPLEMENTED();
+    ExecuteFallbackForPasswordsCommand(*autofill_driver);
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
   if (command_id ==
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) {
-    // TODO(b/321678141): Execute this command.
-    NOTIMPLEMENTED();
+    // This function also records metrics.
+    NavigateToManagePasswordsPage(
+        chrome::FindBrowserWithTab(web_contents),
+        password_manager::ManagePasswordsReferrer::kPasswordContextMenu);
     return;
   }
 
   if (command_id ==
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) {
-    // TODO(b/321678141): Execute this command.
-    NOTIMPLEMENTED();
+    // This function also records metrics.
+    password_manager_util::UserTriggeredManualGenerationFromContextMenu(
+        ChromePasswordManagerClient::FromWebContents(web_contents),
+        autofill::ContentAutofillClient::FromWebContents(web_contents));
     return;
   }
 }
@@ -620,6 +628,16 @@ void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
   LogManualFallbackContextMenuEntryAccepted(autofill_driver,
                                             FillingProduct::kCreditCard);
+}
+
+void AutofillContextMenuManager::ExecuteFallbackForPasswordsCommand(
+    AutofillDriver& autofill_driver) {
+  autofill_driver.RendererShouldTriggerSuggestions(
+      /*field_id=*/{autofill_driver.GetFrameToken(),
+                    FieldRendererId(params_.field_renderer_id)},
+      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
+  LogManualFallbackContextMenuEntryAccepted(autofill_driver,
+                                            FillingProduct::kPassword);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(

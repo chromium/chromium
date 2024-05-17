@@ -124,6 +124,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // was opened on.
   void ExecuteFallbackForPaymentsCommand(AutofillDriver& driver);
 
+  // Triggers passwords suggestions on the field that the context menu was
+  // opened on.
+  void ExecuteFallbackForPasswordsCommand(AutofillDriver& driver);
+
   // Triggers Autofill address suggestions on the field that the context menu
   // was opened on.
   void ExecuteFallbackForAddressesCommand(

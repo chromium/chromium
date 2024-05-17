@@ -20,6 +20,8 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_manager_uitest_util.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -47,10 +49,12 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -66,6 +70,7 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -845,9 +850,10 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
 
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    FormData form = CreateAndAttachPasswordForm();
+    form_ = CreateAndAttachPasswordForm();
     autofill_context_menu_manager()->set_params_for_testing(
-        CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id(),
+        CreateContextMenuParams(form_.renderer_id,
+                                form_.fields[0].renderer_id(),
                                 blink::mojom::FormControlType::kInputPassword));
   }
 
@@ -857,10 +863,13 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
         ->SetSelectedType(syncer::UserSelectableType::kPasswords, sync_enabled);
   }
 
+  FormData& form() { return form_; }
+
  private:
   base::test::ScopedFeatureList feature_{
       password_manager::features::kPasswordManualFallbackAvailable};
   base::CallbackListSubscription subscription_;
+  FormData form_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -879,6 +888,110 @@ IN_PROC_BROWSER_TEST_F(
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(), OnlyPasswordsNotSyncingFallbackAdded(
                                 /*has_passwords_saved=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
+                       SelectPasswordTriggersSuggestions) {
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form().fields[0].renderer_id()},
+          AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordsFallbackTest,
+    ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NE(web_contents()->GetLastCommittedURL(),
+            "chrome://password-manager/");
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return web_contents()->GetLastCommittedURL() ==
+           "chrome://password-manager/";
+  }));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordContextMenu,
+      /*expected_bucket_count=*/1);
+}
+
+class PasswordsFallbackWithUIInteractionsTest
+    : public BaseAutofillContextMenuManagerTest {
+  void SetUpOnMainThread() override {
+    // Note that the `SetUpOnMainThread()` of the parent class is intentionally
+    // not called, while `TearDownOnMainThread()` is intentionally let to be
+    // called.
+    //
+    // Load an HTML with password forms so that the test can execute JS on the
+    // forms.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    PasswordsNavigationObserver observer(web_contents());
+    const GURL url =
+        embedded_test_server()->GetURL("/password/password_form.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(observer.Wait());
+
+    // The next lines perform the same set up as the parent class
+    // `BaseAutofillContextMenuManagerTest()`, with the exception that a
+    // password form is created and attached.
+    personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
+        *main_rfh(), content::ContextMenuParams());
+    render_view_context_menu_->Init();
+    autofill_context_menu_manager_ =
+        std::make_unique<AutofillContextMenuManager>(
+            personal_data_, render_view_context_menu_.get(), menu_model_.get());
+
+    FormData form = CreateAndAttachPasswordForm();
+    autofill_context_menu_manager()->set_params_for_testing(
+        CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id(),
+                                blink::mojom::FormControlType::kInputPassword));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      password_manager::features::kPasswordManualFallbackAvailable};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordsFallbackWithUIInteractionsTest,
+    SuggestPasswordTriggersPasswordGenerationAndRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Focus on a password field so that the agent can allow password generation.
+  // It is not relevant (and also no in the scope of the test) whether the
+  // password field looks the same as the one provided to
+  // `AutofillContextMenuManager`. The agent just needs to know that a password
+  // field has focus in order to allow password generation.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('password_field').focus();"));
+  TestGenerationPopupObserver generation_popup_observer;
+  ChromePasswordManagerClient::FromWebContents(web_contents())
+      ->SetTestObserver(&generation_popup_observer);
+  ASSERT_FALSE(generation_popup_observer.popup_showing());
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
+  generation_popup_observer.WaitForStatus(
+      TestGenerationPopupObserver::GenerationPopup::kShown);
+  EXPECT_TRUE(generation_popup_observer.popup_showing());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.Event",
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED,
+      /*expected_bucket_count=*/1);
+
+  // Hide the password generation popup to avoid the test crashing.
+  ChromePasswordManagerClient::FromWebContents(web_contents())
+      ->PasswordGenerationRejectedByTyping();
 }
 
 enum class PasswordDatabaseEntryType {
