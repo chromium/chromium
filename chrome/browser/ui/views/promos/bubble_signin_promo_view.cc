@@ -129,7 +129,8 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 
   if (account.IsEmpty()) {
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        std::move(callback), button_style, std::move(button_text));
+        std::move(callback), access_point, button_style,
+        std::move(button_text));
 
     views::View* button_parent = AddChildView(std::make_unique<views::View>());
     std::unique_ptr<views::FlexLayout> button_layout =
