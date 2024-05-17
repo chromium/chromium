@@ -92,13 +92,13 @@ void RecordIOSDesktopPasswordPromoShownHistogram(int impression_count) {
   }
 }
 
-// RecordIOSPasswordPromoShownHistogram records which impression (count) was
+// RecordIOSPromoShownHistogram records which impression (count) was
 // shown to the user depending on the given promo type.
 void RecordIOSPromoShownHistogram(IOSPromoType promo_type,
                                   int impression_count) {
   switch (promo_type) {
     case IOSPromoType::kPassword:
-      RecordIOSPasswordPromoShownHistogram(impression_count);
+      RecordIOSDesktopPasswordPromoShownHistogram(impression_count);
       break;
     // TODO(crbug.com/331408937): Add IOS Address Promo for Desktop.
     default:
