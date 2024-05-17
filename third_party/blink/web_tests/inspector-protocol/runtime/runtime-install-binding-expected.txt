@@ -12,7 +12,6 @@ Add iframe with console.debug call..
     method : Runtime.bindingCalled
     params : {
         executionContextId : <number>
-        executionContextUniqueId : <string>
         name : send
         payload : payload
     }
@@ -23,7 +22,6 @@ Navigate to page with console.debug..
     method : Runtime.bindingCalled
     params : {
         executionContextId : <number>
-        executionContextUniqueId : <string>
         name : send
         payload : payload
     }

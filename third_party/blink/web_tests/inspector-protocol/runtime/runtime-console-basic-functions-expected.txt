@@ -29,7 +29,6 @@ Testing console.log with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -76,7 +75,6 @@ Testing console.debug with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -123,7 +121,6 @@ Testing console.info with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -170,7 +167,6 @@ Testing console.error with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -217,7 +213,6 @@ Testing console.warn with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -264,7 +259,6 @@ Testing console.dir with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -311,7 +305,6 @@ Testing console.dirxml with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -358,7 +351,6 @@ Testing console.table with required args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -386,7 +378,6 @@ Testing console.trace with optional args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -414,7 +405,6 @@ Testing console.clear with optional args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -442,7 +432,6 @@ Testing console.group with optional args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -470,7 +459,6 @@ Testing console.groupCollapsed with optional args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -498,7 +486,6 @@ Testing console.groupEnd with optional args inside page context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -545,7 +532,6 @@ Testing console.log with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -592,7 +578,6 @@ Testing console.debug with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -639,7 +624,6 @@ Testing console.info with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -686,7 +670,6 @@ Testing console.error with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -733,7 +716,6 @@ Testing console.warn with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -780,7 +762,6 @@ Testing console.dir with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -827,7 +808,6 @@ Testing console.dirxml with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -874,7 +854,6 @@ Testing console.table with required args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -902,7 +881,6 @@ Testing console.trace with optional args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -930,7 +908,6 @@ Testing console.clear with optional args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -958,7 +935,6 @@ Testing console.group with optional args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -986,7 +962,6 @@ Testing console.groupCollapsed with optional args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -1014,7 +989,6 @@ Testing console.groupEnd with optional args inside frame context
             }
         ]
         executionContextId : <number>
-        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
