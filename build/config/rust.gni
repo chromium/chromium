@@ -206,6 +206,8 @@ if (is_linux || is_chromeos) {
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
     }
+  } else if (current_cpu == "riscv64") {
+    rust_abi_target = "riscv64gc-unknown-linux-gnu"
   } else {
     # Best guess for other future platforms.
     rust_abi_target = current_cpu + "-unknown-linux-gnu"
