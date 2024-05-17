@@ -10034,6 +10034,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ExplicitBrowserSigninPreferenceRemembered_IPHPromo_SettingsPageOpened">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="ExploreSites.ContextMenu">
   <owner>chili@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
@@ -42701,6 +42707,8 @@ should be able to be added at any place in this file.
       label="For Download toolbar button feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
   <suffix name="ExperimentalAIPromo" label="For Experimental AI feature."/>
+  <suffix name="ExplicitBrowserSigninPreferenceRemembered"
+      label="For Explicit Browser Signin Preference Remembered feature."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
   <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>
   <suffix name="ExtensionsRequestAccessButton"
