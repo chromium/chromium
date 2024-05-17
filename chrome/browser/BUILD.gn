@@ -2774,7 +2774,7 @@ static_library("browser") {
     sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
   }
 
-  if (!is_android && !is_chromeos) {
+  if (is_win || is_mac || is_linux) {
     deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
   }
 
@@ -8785,7 +8785,7 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]
 
-    if (!is_chromeos) {
+    if (is_win || is_mac || is_linux) {
       public_deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
     }
   }

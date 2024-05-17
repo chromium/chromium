@@ -4,8 +4,7 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(!is_android)
-assert(!is_chromeos)
+assert(is_win || is_mac || is_linux)
 
 build_webui("build") {
   grd_prefix = "app_home"

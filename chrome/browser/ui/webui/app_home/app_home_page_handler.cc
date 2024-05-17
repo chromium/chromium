@@ -61,6 +61,8 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
 
+static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX));
+
 using content::WebUI;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
@@ -376,11 +378,9 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   app_info->start_url = start_url;
 
   bool deprecated_app = false;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   auto* context = extension_system_->extension_service()->GetBrowserContext();
   deprecated_app =
       extensions::IsExtensionUnsupportedDeprecatedApp(context, extension->id());
-#endif
 
   if (deprecated_app) {
     app_info->name =
@@ -439,7 +439,6 @@ void AppHomePageHandler::FillExtensionInfoList(
       continue;
     }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto* context = extension_system_->extension_service()->GetBrowserContext();
     const bool is_deprecated_app =
         extensions::IsExtensionUnsupportedDeprecatedApp(context,
@@ -448,7 +447,6 @@ void AppHomePageHandler::FillExtensionInfoList(
                                  context, extension->id(), nullptr)) {
       deprecated_app_ids_.insert(extension->id());
     }
-#endif
     result->emplace_back(CreateAppInfoPtrFromExtension(extension.get()));
   }
 }

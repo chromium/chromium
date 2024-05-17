@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_win || is_mac || is_linux)
+
 mojom("mojo_bindings") {
   sources = [ "app_home.mojom" ]
   webui_module_path = "/"
