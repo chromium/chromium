@@ -7149,7 +7149,7 @@ New install
         Drive Files
       </message>
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
-        This Chromebook
+        My Files
       </message>
       <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show date and time results.">
         Dates &amp; Times
