@@ -549,6 +549,8 @@ BuildCookieDeprecationMetadataIssue(
       protocol::Audits::CookieDeprecationMetadataIssueDetails::Create()
           .SetAllowedSites(std::make_unique<protocol::Array<protocol::String>>(
               issue_details->allowed_sites))
+          .SetOptOutPercentage(issue_details->opt_out_percentage)
+          .SetIsOptOutTopLevel(issue_details->is_opt_out_top_level)
           .Build();
 
   auto protocol_issue_details =

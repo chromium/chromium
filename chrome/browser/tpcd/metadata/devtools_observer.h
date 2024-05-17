@@ -32,11 +32,13 @@ class TpcdMetadataDevtoolsObserver
 
   void OnCookiesAccessedImpl(const content::CookieAccessDetails& details);
 
-  // Emit a devtools issue when `url` is allowed cookie access as a third-party
-  // site on the current page.
-  void EmitMetadataGrantDevtoolsIssue(const GURL& url);
+  // Emit a devtools issue when `third_party_url` is allowed cookie access as a
+  // third-party site on the current page.
+  void EmitMetadataGrantDevtoolsIssue(const GURL& third_party_url,
+                                      const GURL& first_party_url);
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

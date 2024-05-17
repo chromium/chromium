@@ -849,6 +849,8 @@ experimental domain Audits
   type CookieDeprecationMetadataIssueDetails extends object
     properties
       array of string allowedSites
+      number optOutPercentage
+      boolean isOptOutTopLevel
 
   type ClientHintIssueReason extends string
     enum

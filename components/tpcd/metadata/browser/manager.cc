@@ -148,6 +148,9 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     rule_metadata.set_tpcd_metadata_rule_source(
         Parser::ToRuleSource(metadata_entry.source()));
 
+    uint32_t elected_dtrp = ElectedDtrp(metadata_entry);
+    rule_metadata.set_tpcd_metadata_elected_dtrp(elected_dtrp);
+
     std::optional<content_settings::mojom::TpcdMetadataCohort> cohort;
 
     if (!Parser::IsDtrpEligible(
@@ -179,7 +182,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     }
 
     if (!cohort.has_value()) {
-      cohort = rand_generator_->Generate() <= ElectedDtrp(metadata_entry)
+      cohort = rand_generator_->Generate() <= elected_dtrp
                    ? content_settings::mojom::TpcdMetadataCohort::
                          GRACE_PERIOD_FORCED_OFF
                    : content_settings::mojom::TpcdMetadataCohort::

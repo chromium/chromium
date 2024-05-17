@@ -115,12 +115,12 @@ TEST_P(ManagerTest, OnMetadataReady) {
     EXPECT_TRUE(manager->GetGrants().empty());
   } else {
     EXPECT_EQ(manager->GetGrants().size(), 1u);
-    EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-              primary_pattern_spec);
-    EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-              secondary_pattern_spec);
-    EXPECT_EQ(manager->GetGrants().front().metadata.tpcd_metadata_rule_source(),
+    auto grant = manager->GetGrants().front();
+    EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+    EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
+    EXPECT_EQ(grant.metadata.tpcd_metadata_rule_source(),
               content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
+    EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), 0u);
   }
 }
 
@@ -311,13 +311,11 @@ TEST_P(ManagerCohortsTest, DTRP_Eligibility) {
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
-  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-            primary_pattern_spec);
-  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-            secondary_pattern_spec);
+  auto grant = manager->GetGrants().front();
+  EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+  EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
 
-  auto rule_source =
-      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  auto rule_source = grant.metadata.tpcd_metadata_rule_source();
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
   switch (GetTpcdMetadataRuleSource()) {
@@ -353,17 +351,15 @@ TEST_P(ManagerCohortsTest, DTRP_0Percent) {
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
-  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-            primary_pattern_spec);
-  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-            secondary_pattern_spec);
+  auto grant = manager->GetGrants().front();
+  EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+  EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
 
-  auto rule_source =
-      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  auto rule_source = grant.metadata.tpcd_metadata_rule_source();
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
-  auto picked_cohort =
-      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp_being_tested);
+  auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
   if (IsTpcdMetadataStagedRollbackEnabled() &&
       Parser::IsDtrpEligible(rule_source)) {
     EXPECT_EQ(
@@ -391,17 +387,15 @@ TEST_P(ManagerCohortsTest, DTRP_100Percent) {
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
-  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-            primary_pattern_spec);
-  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-            secondary_pattern_spec);
+  auto grant = manager->GetGrants().front();
+  EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+  EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
 
-  auto rule_source =
-      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  auto rule_source = grant.metadata.tpcd_metadata_rule_source();
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
-  auto picked_cohort =
-      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp_being_tested);
+  auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
   if (IsTpcdMetadataStagedRollbackEnabled() &&
       Parser::IsDtrpEligible(rule_source)) {
     EXPECT_EQ(
@@ -434,17 +428,15 @@ TEST_P(ManagerCohortsTest, DTRP_GE_Rand) {
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
-  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-            primary_pattern_spec);
-  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-            secondary_pattern_spec);
+  auto grant = manager->GetGrants().front();
+  EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+  EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
 
-  auto rule_source =
-      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  auto rule_source = grant.metadata.tpcd_metadata_rule_source();
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
-  auto picked_cohort =
-      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp_being_tested);
+  auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
   if (IsTpcdMetadataStagedRollbackEnabled() &&
       Parser::IsDtrpEligible(rule_source)) {
     EXPECT_EQ(
@@ -477,17 +469,15 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
-  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
-            primary_pattern_spec);
-  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
-            secondary_pattern_spec);
+  auto grant = manager->GetGrants().front();
+  EXPECT_EQ(grant.primary_pattern.ToString(), primary_pattern_spec);
+  EXPECT_EQ(grant.secondary_pattern.ToString(), secondary_pattern_spec);
 
-  auto rule_source =
-      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  auto rule_source = grant.metadata.tpcd_metadata_rule_source();
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
-  auto picked_cohort =
-      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp_being_tested);
+  auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
   if (IsTpcdMetadataStagedRollbackEnabled() &&
       Parser::IsDtrpEligible(rule_source)) {
     EXPECT_EQ(
@@ -597,8 +587,10 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
-    auto picked_cohort =
-        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    auto grant = manager->GetGrants().front();
+    EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp);
+    auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
     EXPECT_EQ(
         picked_cohort,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
@@ -629,8 +621,10 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
-    auto stored_cohort =
-        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    auto grant = manager->GetGrants().front();
+    EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp);
+    auto stored_cohort = grant.metadata.tpcd_metadata_cohort();
     EXPECT_EQ(
         stored_cohort,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
@@ -661,8 +655,10 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
-    auto picked_cohort =
-        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    auto grant = manager->GetGrants().front();
+    EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp);
+    auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
     EXPECT_EQ(
         picked_cohort,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
@@ -693,8 +689,10 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
-    auto picked_cohort =
-        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    auto grant = manager->GetGrants().front();
+    EXPECT_EQ(grant.metadata.tpcd_metadata_elected_dtrp(), dtrp);
+    auto picked_cohort = grant.metadata.tpcd_metadata_cohort();
     EXPECT_EQ(
         picked_cohort,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
