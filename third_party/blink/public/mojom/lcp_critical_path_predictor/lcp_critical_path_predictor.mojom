@@ -46,7 +46,6 @@ interface LCPCriticalPathPredictorHost {
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.
-// TODO(crbug.com/1419756): Populate actual hint data.
 struct LCPCriticalPathPredictorNavigationTimeHint {
   // ElementLocators of LCP elements encountered in the past loads.
   // Each ElementLocator is serialized in proto3 binary format.
