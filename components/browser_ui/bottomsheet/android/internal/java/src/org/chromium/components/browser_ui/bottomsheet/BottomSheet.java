@@ -1098,6 +1098,14 @@ class BottomSheet extends FrameLayout
         return mContainerWidth;
     }
 
+    /**
+     * @return Whether the sheet covers the full width of the container, or is limited to only
+     *     partial width.
+     */
+    public boolean isFullWidth() {
+        return getMaxSheetWidth() >= mContainerWidth;
+    }
+
     /** Center and size the sheet in its container. */
     private void sizeAndPositionSheetInParent() {
         int maxSheetWidth = getMaxSheetWidth();

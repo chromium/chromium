@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -287,7 +288,8 @@ public class SnackbarManager
                                 currentSnackbar,
                                 mSnackbarParentView,
                                 mWindowAndroid,
-                                mEdgeToEdgeSupplier);
+                                mEdgeToEdgeSupplier,
+                                isTablet());
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
@@ -320,6 +322,10 @@ public class SnackbarManager
         mIsShowingSupplier.set(isShowing());
     }
 
+    private boolean isTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+    }
+
     // ============================================================================================
     // SnackbarStateProvider
     // ============================================================================================
@@ -332,6 +338,11 @@ public class SnackbarManager
     @Override
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    @Override
+    public boolean isFullWidth() {
+        return !isTablet();
     }
 
     // ============================================================================================

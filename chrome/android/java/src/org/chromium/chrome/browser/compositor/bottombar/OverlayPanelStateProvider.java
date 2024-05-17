@@ -9,7 +9,12 @@ import androidx.annotation.ColorInt;
 public interface OverlayPanelStateProvider {
     /** An observer to be notified of changes to the overlay panel. */
     interface Observer {
-        /** Called when the {@link OverlayPanel.PanelState} state of the Overlay Panel changes. */
+        /**
+         * Called when the {@link OverlayPanel.PanelState} state of the Overlay Panel changes.
+         *
+         * @param state The {@link OverlayPanel.PanelState} of the overlay panel.
+         * @param color The background color of the overlay panel.
+         */
         default void onOverlayPanelStateChanged(
                 @OverlayPanel.PanelState int state, @ColorInt int color) {}
     }
@@ -27,4 +32,10 @@ public interface OverlayPanelStateProvider {
      * @param observer The observer to remove.
      */
     void removeObserver(Observer observer);
+
+    /**
+     * @return True if the overlay panel covers the full width of the screen, false if the panel
+     *     only partially extends across the screen.
+     */
+    boolean isFullWidthSizePanel();
 }

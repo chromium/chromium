@@ -44,12 +44,14 @@ public class BottomAttachedUiObserver
      * the screen.
      */
     public interface Observer {
-        void onBottomAttachedColorChanged(@Nullable @ColorInt Integer color);
+        void onBottomAttachedColorChanged(
+                @Nullable @ColorInt Integer color, boolean forceShowDivider);
     }
 
     private boolean mBottomNavbarPresent;
     private final ObserverList<Observer> mObservers;
     private @Nullable @ColorInt Integer mBottomAttachedColor;
+    private boolean mShouldShowDivider;
 
     private final BottomSheetController mBottomSheetController;
     private boolean mBottomSheetVisible;
@@ -68,6 +70,7 @@ public class BottomAttachedUiObserver
     private @Nullable @ColorInt Integer mOverlayPanelColor;
     private boolean mOverlayPanelVisible;
     private boolean mOverlayPanelPeeked;
+    private boolean mOverlayPanelCoversFullWidth;
 
     private Optional<OmniboxSuggestionsVisualState> mOmniboxSuggestionsVisualState;
     private boolean mOmniboxSuggestionsVisible;
@@ -174,15 +177,21 @@ public class BottomAttachedUiObserver
         @Nullable
         @ColorInt
         Integer bottomAttachedColor = mBottomNavbarPresent ? calculateBottomAttachedColor() : null;
-        if (mBottomAttachedColor == null && bottomAttachedColor == null) {
+        boolean shouldShowDivider = mBottomNavbarPresent && shouldShowDivider();
+        if (mBottomAttachedColor == null
+                && bottomAttachedColor == null
+                && shouldShowDivider == mShouldShowDivider) {
             return;
         }
-        if (mBottomAttachedColor != null && mBottomAttachedColor.equals(bottomAttachedColor)) {
+        if (mBottomAttachedColor != null
+                && mBottomAttachedColor.equals(bottomAttachedColor)
+                && shouldShowDivider == mShouldShowDivider) {
             return;
         }
         mBottomAttachedColor = bottomAttachedColor;
+        mShouldShowDivider = shouldShowDivider;
         for (Observer observer : mObservers) {
-            observer.onBottomAttachedColorChanged(mBottomAttachedColor);
+            observer.onBottomAttachedColorChanged(mBottomAttachedColor, mShouldShowDivider);
         }
     }
 
@@ -207,6 +216,20 @@ public class BottomAttachedUiObserver
             return mSnackbarColor;
         }
         return null;
+    }
+
+    /** The divider should be visible for partial width bottom-attached UI. */
+    private boolean shouldShowDivider() {
+        if (mBottomSheetVisible) {
+            return !mBottomSheetController.isFullWidth();
+        }
+        if (mOverlayPanelVisible) {
+            return !mOverlayPanelStateProvider.isFullWidthSizePanel();
+        }
+        if (mSnackbarVisible) {
+            return !mSnackbarStateProvider.isFullWidth();
+        }
+        return false;
     }
 
     // Browser Controls (Tab group UI, Read Aloud)

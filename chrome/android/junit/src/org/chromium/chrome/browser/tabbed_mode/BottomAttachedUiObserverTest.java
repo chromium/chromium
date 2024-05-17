@@ -107,120 +107,168 @@ public class BottomAttachedUiObserverTest {
                 .thenReturn(BOTTOM_SHEET_YELLOW);
         when(mBottomSheetContentCyanBackground.getBackgroundColor()).thenReturn(BOTTOM_SHEET_CYAN);
 
+        when(mBottomSheetController.isFullWidth()).thenReturn(true);
+        when(mSnackbarManager.isFullWidth()).thenReturn(true);
+
+        mContextualSearchManagerSupplier.set(mContextualSearchManager);
+        mOverlayPanelStateProviderSupplier.set(mOverlayPanelStateProvider);
+        when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(true);
+
         mColorChangeObserver = new MockColorChangeObserver();
         mBottomAttachedUiObserver.addObserver(mColorChangeObserver);
     }
 
     @Test
     public void testAdaptsColorToBrowserControls() {
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Show bottom controls.
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
-        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false);
 
         // Scroll off bottom controls partway.
         mBottomAttachedUiObserver.onControlsOffsetChanged(
                 0, 0, BOTTOM_CONTROLS_HEIGHT / 2, 0, false);
-        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false);
 
         // Scroll off bottom controls fully.
         mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, BOTTOM_CONTROLS_HEIGHT, 0, false);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Scroll bottom controls back.
         mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, 0, 0, false);
-        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false);
 
         // Hide bottom controls.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
     public void testAdaptsColorToSnackbars() {
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Set only the snackbar color.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Show the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false);
 
         // Hide the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
+    }
+
+    @Test
+    public void testAdaptsColorToSnackbars_doesNotCoverFullWidth() {
+        when(mSnackbarManager.isFullWidth()).thenReturn(false);
+        mColorChangeObserver.assertState(null, false);
+
+        // Set only the snackbar color.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(null, false);
+
+        // Show the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, true);
+
+        // Hide the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
     public void testSetOverlayPanelObserver() {
-        setOverlayPanelObserver();
         verify(mOverlayPanelStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
         mOverlayPanelStateProviderSupplier.set(null);
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
-    private void setOverlayPanelObserver() {
-        mContextualSearchManagerSupplier.set(mContextualSearchManager);
-        mOverlayPanelStateProviderSupplier.set(mOverlayPanelStateProvider);
-    }
-
     @Test
     public void testAdaptsColorToOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
+    }
+
+    @Test
+    public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth() {
+        when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false);
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, true);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
     public void testAdaptsColorToBottomSheet() {
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentNullBackground);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
         mBottomAttachedUiObserver.onSheetOpened(0);
-        mColorChangeObserver.assertColor(BOTTOM_SHEET_CYAN);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
-        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false);
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
-        mColorChangeObserver.assertColor(BOTTOM_SHEET_CYAN);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
+    }
+
+    @Test
+    public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth() {
+        when(mBottomSheetController.isFullWidth()).thenReturn(false);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mColorChangeObserver.assertState(null, false);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, true);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
@@ -230,99 +278,97 @@ public class BottomAttachedUiObserverTest {
         // Navbar is present at the bottom.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
         mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Show a snackbar to set a color.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false);
 
         // Shift navbar to the side.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SIDE_NAV_BAR_INSETS);
         mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Return navbar to the bottom.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
         mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
-        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false);
 
         // Hide the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
     public void testAdaptsColorToOmniboxSuggestions() {
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR);
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
-        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR);
+        mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR, false);
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR_2);
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
-        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR_2);
+        mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR_2, false);
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
     }
 
     @Test
     public void testColorPrioritization() {
-        mColorChangeObserver.assertColor(null);
+        mColorChangeObserver.assertState(null, false);
 
         // Show the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false);
 
         // Show bottom controls.
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
-        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false);
 
         // Show overlay panel.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false);
 
         // Show bottom sheet.
         mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
         mBottomAttachedUiObserver.onSheetOpened(0);
-        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false);
 
         // Show omnibox suggestions.
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR);
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
-        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR);
+        mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR, false);
 
         // Hide omnibox suggestions.
         mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
-        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false);
 
         // Hide bottom sheet.
         mBottomAttachedUiObserver.onSheetClosed(0);
-        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false);
 
         // Hide overlay panel.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false);
 
         // Hide bottom controls - should fall back to the snackbar color.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
-        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false);
     }
 
     @Test
     public void testDestroy() {
-        setOverlayPanelObserver();
-
         mBottomAttachedUiObserver.destroy();
         verify(mOmniboxSuggestionsVisualState)
                 .setOmniboxSuggestionsVisualStateObserver(eq(Optional.empty()));
@@ -335,14 +381,22 @@ public class BottomAttachedUiObserverTest {
 
     private static class MockColorChangeObserver implements BottomAttachedUiObserver.Observer {
         private @Nullable @ColorInt Integer mColor;
+        private boolean mForceShowDivider;
 
         @Override
-        public void onBottomAttachedColorChanged(@Nullable Integer color) {
+        public void onBottomAttachedColorChanged(
+                @Nullable Integer color, boolean forceShowDivider) {
             mColor = color;
+            mForceShowDivider = forceShowDivider;
         }
 
-        public void assertColor(@Nullable @ColorInt Integer expectedColor) {
+        private void assertState(
+                @Nullable @ColorInt Integer expectedColor, boolean expectedForceShowDivider) {
             assertEquals("Incorrect bottom attached color.", expectedColor, mColor);
+            assertEquals(
+                    "Incorrect value for forceShowDivider.",
+                    expectedForceShowDivider,
+                    mForceShowDivider);
         }
     }
 }

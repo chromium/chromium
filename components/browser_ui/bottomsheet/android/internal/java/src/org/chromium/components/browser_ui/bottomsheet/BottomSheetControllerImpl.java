@@ -622,6 +622,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
+    public boolean isFullWidth() {
+        return mBottomSheet.isFullWidth();
+    }
+
+    @Override
     @VisibleForTesting
     public boolean isSmallScreen() {
         return mBottomSheet.isSmallScreen();

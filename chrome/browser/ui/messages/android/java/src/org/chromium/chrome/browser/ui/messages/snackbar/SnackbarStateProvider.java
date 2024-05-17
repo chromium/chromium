@@ -31,4 +31,7 @@ public interface SnackbarStateProvider {
      * @param observer The observer to remove.
      */
     void removeObserver(Observer observer);
+
+    /** Return whether the snackbars extend across the full width of their container. */
+    boolean isFullWidth();
 }

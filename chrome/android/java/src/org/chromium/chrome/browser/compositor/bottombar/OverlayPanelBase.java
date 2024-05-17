@@ -272,7 +272,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     /**
      * @return Whether the Panel is in full width size.
      */
-    protected boolean isFullWidthSizePanel() {
+    @Override
+    public boolean isFullWidthSizePanel() {
         return doesMatchFullWidthCriteria(getFullscreenWidth());
     }
 

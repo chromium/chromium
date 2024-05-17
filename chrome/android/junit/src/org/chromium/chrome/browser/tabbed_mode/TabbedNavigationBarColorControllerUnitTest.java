@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -23,7 +26,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,9 +42,23 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class})
 public class TabbedNavigationBarColorControllerUnitTest {
+    @Implements(SemanticColorUtils.class)
+    static class ShadowSemanticColorUtils {
+        @Implementation
+        public static int getBottomSystemNavDividerColor(Context context) {
+            return NAV_DIVIDER_COLOR;
+        }
+    }
+
+    private static final int NAV_DIVIDER_COLOR = Color.LTGRAY;
+
     private TabbedNavigationBarColorController mNavColorController;
     @Mock private Window mWindow;
     @Mock private View mDecorView;
@@ -103,7 +124,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertEquals(
                 "Incorrect nav bar divider color.",
                 Color.BLUE,
-                mNavColorController.getNavigationBarDividerColor(false));
+                mNavColorController.getNavigationBarDividerColor(false, false));
     }
 
     @Test
@@ -113,7 +134,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mNavColorController.updateActiveTabForTesting();
 
-        mNavColorController.onBottomAttachedColorChanged(Color.RED);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, false);
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -124,9 +145,9 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertEquals(
                 "The nav bar divider color should be the bottom attached UI color.",
                 Color.RED,
-                mNavColorController.getNavigationBarDividerColor(false));
+                mNavColorController.getNavigationBarDividerColor(false, false));
 
-        mNavColorController.onBottomAttachedColorChanged(null);
+        mNavColorController.onBottomAttachedColorChanged(null, false);
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -137,7 +158,32 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertEquals(
                 "The nav bar divider color should match the tab background.",
                 Color.BLUE,
-                mNavColorController.getNavigationBarDividerColor(false));
+                mNavColorController.getNavigationBarDividerColor(false, false));
+    }
+
+    @Test
+    public void testMatchBottomAttachedColor_forceShowDivider() {
+        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mNavColorController.updateActiveTabForTesting();
+        Mockito.clearInvocations(mWindow);
+
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, true);
+        verify(mWindow, atLeastOnce()).setNavigationBarDividerColor(eq(NAV_DIVIDER_COLOR));
+    }
+
+    @Test
+    public void testGetNavigationBarDividerColor() {
+        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
+        assertEquals(
+                "The nav bar divider color should be the bottom attached UI color.",
+                NAV_DIVIDER_COLOR,
+                mNavColorController.getNavigationBarDividerColor(false, true));
+        assertEquals(
+                "The nav bar divider color should match the tab background.",
+                mContext.getColor(R.color.bottom_system_nav_divider_color_light),
+                mNavColorController.getNavigationBarDividerColor(true, true));
     }
 
     @Test
