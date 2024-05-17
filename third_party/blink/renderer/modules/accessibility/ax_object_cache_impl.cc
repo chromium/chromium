@@ -5080,9 +5080,9 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
     return;
   }
 
-  TRACE_EVENT0("accessibility", "ProcessLocationChanges");
+  TRACE_EVENT0("accessibility", "SerializeLocationChanges");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Accessibility.Performance.ProcessLocationChanges");
+      "Accessibility.Performance.SerializeLocationChanges");
 
   // Ensure enough time has passed since last locations serialization.
   Document& document = GetDocument();
