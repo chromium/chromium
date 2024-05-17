@@ -202,6 +202,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         setHasOptionsMenu(true);
 
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
+            getActivity().setTitle(R.string.account_section_header);
+
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
 
