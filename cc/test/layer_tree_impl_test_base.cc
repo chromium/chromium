@@ -12,7 +12,6 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/mock_occlusion_tracker.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/draw_property_utils.h"
 #include "ui/gfx/geometry/point_conversions.h"
