@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -157,7 +158,9 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     if (tab_organization_service) {
       AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
                           IDS_TAB_CXMENU_ORGANIZE_TABS);
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
+      SetIsNewFeatureAt(GetItemCount() - 1,
+                        UserEducationService::MaybeShowNewBadge(
+                            tab_strip->profile(), features::kTabOrganization));
     }
   }
 
