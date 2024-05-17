@@ -40,4 +40,9 @@ interface InputMethodUserDataService {
   EditJapaneseDictionaryEntry(
       uint64 dict_id, uint32 entry_index, JapaneseDictionaryEntry entry)
       => (Status status);
+
+  // Deletes an entry at entry_index in the Japanese dictionary specified by the
+  // dict_id.
+  DeleteJapaneseDictionaryEntry(uint64 dict_id, uint32 entry_index)
+      => (Status status);
 };

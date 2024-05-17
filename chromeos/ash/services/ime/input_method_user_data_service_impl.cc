@@ -122,6 +122,28 @@ void InputMethodUserDataServiceImpl::EditJapaneseDictionaryEntry(
   std::move(callback).Run(std::move(response));
 }
 
+void InputMethodUserDataServiceImpl::DeleteJapaneseDictionaryEntry(
+    uint64_t dict_id,
+    uint32_t entry_index,
+    DeleteJapaneseDictionaryEntryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+
+  chromeos_input::DeleteJapaneseDictionaryEntryRequest& request =
+      *user_data_request.mutable_delete_japanese_dictionary_entry();
+  request.set_dictionary_id(dict_id);
+  request.set_entry_index(entry_index);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
+  std::move(callback).Run(std::move(response));
+}
+
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));

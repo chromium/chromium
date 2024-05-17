@@ -40,6 +40,11 @@ class InputMethodUserDataServiceImpl
       ash::ime::mojom::JapaneseDictionaryEntryPtr entry,
       EditJapaneseDictionaryEntryCallback callback) override;
 
+  void DeleteJapaneseDictionaryEntry(
+      uint64_t dict_id,
+      uint32_t entry_index,
+      DeleteJapaneseDictionaryEntryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 
