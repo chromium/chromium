@@ -2171,8 +2171,6 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
 }
 
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
-// TODO(crbug.com/40209325): standalone installers are supported on Windows
-// only.
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

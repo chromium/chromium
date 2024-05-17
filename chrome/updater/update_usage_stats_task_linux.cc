@@ -18,7 +18,6 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
 bool AreRawUsageStatsEnabled(
     UpdaterScope scope,
     const std::vector<std::string>& include_only_these_app_ids) {
-  // TODO(b/325316125): Implement.
   return false;
 }
 

@@ -57,7 +57,7 @@ int64_t SecondsSinceEpoch(base::Time t) {
 
 namespace component_updater {
 
-// TODO(crbug.com/40815428): add tests for pinning enforcement.
+// TODO(crbug.com/341136041): add tests for pinning enforcement.
 class PKIMetadataComponentUpdaterTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<CTEnforcement>,

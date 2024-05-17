@@ -341,7 +341,6 @@ PolicyStatus<int> PolicyService::DeprecatedGetLastCheckPeriodMinutes() const {
   return QueryPolicy(
       &PolicyManagerInterface::GetLastCheckPeriod,
       base::BindRepeating([](std::optional<base::TimeDelta> period) {
-        // TODO: C++23: `return period.transform(&base::TimeDelta::InMinutes);`
         return period ? std::make_optional(period->InMinutes()) : std::nullopt;
       }));
 }
