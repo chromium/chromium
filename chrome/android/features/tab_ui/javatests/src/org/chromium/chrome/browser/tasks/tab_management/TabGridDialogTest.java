@@ -1195,8 +1195,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // Swipe action Fails with espresso 3.2. b/329707221
-    @DisableIf.Build(sdk_is_greater_than = android.os.Build.VERSION_CODES.S)
     public void testSwipeToDismiss_Dialog() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create 2 tabs and merge them into one group.
