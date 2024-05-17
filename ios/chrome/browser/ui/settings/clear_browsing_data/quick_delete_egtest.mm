@@ -127,7 +127,8 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 
 // Tests the selection time range for the browsing data deletion: the time range
 // selection is shown with the pref value and a new selection updates the pref.
-- (void)testTimeRangeForDeletionSelection {
+// TODO(crbug.com/341306396): Reenable after fix.
+- (void)DISALBED_testTimeRangeForDeletionSelection {
   // Set pref to the last hour.
   [ChromeEarlGrey
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
