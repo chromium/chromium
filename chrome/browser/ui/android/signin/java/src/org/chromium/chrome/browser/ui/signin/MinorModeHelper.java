@@ -11,6 +11,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -92,7 +94,12 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int NUM_ENTRIES = 8;
     };
 
-    private static final int CAPABILITY_TIMEOUT_MS = 1000;
+    private static final int CAPABILITY_TIMEOUT_MS =
+            SigninFeatureMap.getInstance()
+                    .getFieldTrialParamByFeatureAsInt(
+                            SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN,
+                            "MinorModeRestrictionsFetchDeadlineMs",
+                            1000);
 
     private static boolean sDisableHistorySyncOptInTimeout;
 
