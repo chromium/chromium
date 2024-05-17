@@ -1260,6 +1260,10 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
 
     // Countries using the "Spain" engine set.
     UNHANDLED_COUNTRY(A, D)  // Andorra
+    UNHANDLED_COUNTRY(E, A)  // Ceuta & Melilla (not in ISO 3166-1 but included
+                             // in some Chrome country code lists)
+    UNHANDLED_COUNTRY(I, C)  // Canary Islands (not in ISO 3166-1 but included
+                             // in some Chrome country code lists)
     END_UNHANDLED_COUNTRIES(E, S)
 
     // Countries using the "Finland" engine set.
@@ -1269,6 +1273,7 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
     // Countries using the "France" engine set.
     UNHANDLED_COUNTRY(B, F)  // Burkina Faso
     UNHANDLED_COUNTRY(B, J)  // Benin
+    UNHANDLED_COUNTRY(B, L)  // St. Barthélemy
     UNHANDLED_COUNTRY(C, D)  // Congo - Kinshasa
     UNHANDLED_COUNTRY(C, F)  // Central African Republic
     UNHANDLED_COUNTRY(C, G)  // Congo - Brazzaville
@@ -1284,6 +1289,7 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
     UNHANDLED_COUNTRY(I, P)  // Clipperton Island ('IP' is an WinXP-ism; ISO
                              //                    includes it with France)
 #endif
+    UNHANDLED_COUNTRY(M, F)  // Saint Martin
     UNHANDLED_COUNTRY(M, L)  // Mali
     UNHANDLED_COUNTRY(M, Q)  // Martinique
     UNHANDLED_COUNTRY(N, C)  // New Caledonia
