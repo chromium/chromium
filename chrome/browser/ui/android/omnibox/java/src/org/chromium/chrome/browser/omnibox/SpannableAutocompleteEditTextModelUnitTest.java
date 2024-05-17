@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link SpannableAutocompleteEditTextModel}. */
@@ -106,7 +107,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     @Test
     public void dispatchKeyEvent_processAutocompleteKeysWhenAutocompletionIsAvailable_ltr() {
         mModel.setLayoutDirectionIsLtr(true);
-        mCurrentState.setAutocompleteText("google.com");
+        mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
         confirmAutocompletionApplied(KeyEvent.KEYCODE_DPAD_RIGHT);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
@@ -119,7 +120,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     @Test
     public void dispatchKeyEvent_processAutocompleteKeysWhenAutocompletionIsAvailable_rtl() {
         mModel.setLayoutDirectionIsLtr(false);
-        mCurrentState.setAutocompleteText("google.com");
+        mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
         confirmAutocompletionApplied(KeyEvent.KEYCODE_DPAD_LEFT);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
@@ -132,7 +133,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     @Test
     public void dispatchKeyEvent_passAutocompleteKeysWhenAutocompletionIsNotAvailable_ltr() {
         mModel.setLayoutDirectionIsLtr(true);
-        mCurrentState.setAutocompleteText("");
+        mCurrentState.setAutocompleteText(Optional.empty());
 
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_RIGHT);
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);
@@ -143,7 +144,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     @Test
     public void dispatchKeyEvent_passAutocompleteKeysWhenAutocompletionIsNotAvailable_rtl() {
         mModel.setLayoutDirectionIsLtr(false);
-        mCurrentState.setAutocompleteText("");
+        mCurrentState.setAutocompleteText(Optional.empty());
 
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_RIGHT);
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);

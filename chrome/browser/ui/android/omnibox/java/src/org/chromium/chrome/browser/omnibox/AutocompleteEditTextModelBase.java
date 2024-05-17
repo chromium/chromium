@@ -176,7 +176,7 @@ public interface AutocompleteEditTextModelBase {
      * Returns the length of the autocomplete text currently displayed, zero if none is currently
      * displayed.
      */
-    String getAutocompleteText();
+    int getAutocompleteTextLength();
 
     /**
      * Sets whether text changes should trigger autocomplete.

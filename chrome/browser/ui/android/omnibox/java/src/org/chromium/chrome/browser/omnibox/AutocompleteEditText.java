@@ -212,8 +212,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      * displayed.
      */
     public int getAutocompleteLength() {
-        if (mModel == null) return 0;
-        return mModel.getAutocompleteText().length();
+        return mModel == null ? 0 : mModel.getAutocompleteTextLength();
     }
 
     @Override
