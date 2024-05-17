@@ -38,10 +38,6 @@
 #include "services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "services/passage_embeddings/passage_embeddings_service.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(LINUX)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 #include "chrome/services/util_win/processor_metrics.h"
@@ -69,6 +65,7 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
 #include "components/mirroring/service/mirroring_service.h"
+#include "services/passage_embeddings/passage_embeddings_service.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -218,13 +215,6 @@ auto RunMacNotificationService(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-auto RunPassageEmbeddingsService(
-    mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
-        receiver) {
-  return std::make_unique<passage_embeddings::PassageEmbeddingsService>(
-      std::move(receiver));
-}
-
 auto RunSystemSignalsService(
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
         receiver) {
@@ -258,6 +248,13 @@ auto RunMirroringService(
     mojo::PendingReceiver<mirroring::mojom::MirroringService> receiver) {
   return std::make_unique<mirroring::MirroringService>(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
+}
+
+auto RunPassageEmbeddingsService(
+    mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
+        receiver) {
+  return std::make_unique<passage_embeddings::PassageEmbeddingsService>(
+      std::move(receiver));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -466,6 +463,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
+  services.Add(RunPassageEmbeddingsService);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
@@ -484,7 +482,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  services.Add(RunPassageEmbeddingsService);
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
