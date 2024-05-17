@@ -237,7 +237,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     private void undo(List<TabUndoInfo> data) {
         assert data.size() != 0;
 
-        TabGroupModelFilter tabGroupModelFilter =
+        TabGroupModelFilter filter =
                 (TabGroupModelFilter)
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         TabUndoInfo firstInfo = data.get(0);
@@ -249,7 +249,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         // the group title for that rootID on undo since the destination group never had a group
         // title to begin with, and the merging tabs still have the original group title stored.
         if (firstInfo.destinationGroupTitle == null) {
-            tabGroupModelFilter.deleteTabGroupTitle(firstRootId);
+            filter.deleteTabGroupTitle(firstRootId);
         }
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -267,13 +267,13 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         // need to restore that state.
         if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
             if (firstInfo.destinationGroupTitleCollapsed) {
-                tabGroupModelFilter.setTabGroupCollapsed(firstRootId, true);
+                filter.setTabGroupCollapsed(firstRootId, true);
             }
         }
 
         for (int i = data.size() - 1; i >= 0; i--) {
             TabUndoInfo info = data.get(i);
-            tabGroupModelFilter.undoGroupedTab(
+            filter.undoGroupedTab(
                     info.tab,
                     info.tabOriginalIndex,
                     info.tabOriginalRootId,
