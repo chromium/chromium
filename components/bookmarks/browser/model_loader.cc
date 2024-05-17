@@ -109,6 +109,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
           !loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma);
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
+    } else {
+      // In the failure case, it is still possible that sync metadata was
+      // decoded, which includes legit scenarios like sync metadata indicating
+      // that there were too many bookmarks in sync, server-side.
+      details->set_account_sync_metadata_str(std::move(sync_metadata_str));
     }
   }
 

@@ -89,6 +89,12 @@ void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarks(bool value) {
   is_sync_feature_enabled_including_bookmarks_for_uma = value;
 }
 
+void TestBookmarkClient::SetAccountBookmarkSyncMetadataAndScheduleWrite(
+    const std::string& account_bookmark_sync_metadata) {
+  account_bookmark_sync_metadata_ = account_bookmark_sync_metadata;
+  account_bookmark_sync_metadata_save_closure_.Run();
+}
+
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));
@@ -112,7 +118,7 @@ std::string TestBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {
 }
 
 std::string TestBookmarkClient::EncodeAccountBookmarkSyncMetadata() {
-  return std::string();
+  return account_bookmark_sync_metadata_;
 }
 
 void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
@@ -121,7 +127,10 @@ void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
 
 void TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
-    const base::RepeatingClosure& schedule_save_closure) {}
+    const base::RepeatingClosure& schedule_save_closure) {
+  account_bookmark_sync_metadata_ = metadata_str;
+  account_bookmark_sync_metadata_save_closure_ = schedule_save_closure;
+}
 
 base::CancelableTaskTracker::TaskId
 TestBookmarkClient::GetFaviconImageForPageURL(

@@ -2246,8 +2246,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   // This is necessary to ensure the save completes.
   task_environment.FastForwardUntilNoTasksRemain();
 
-  // Recreate the model and ensure GetBookmarksMatching() returns the url that
-  // was added.
+  // Recreate the model and ensure account nodes are loaded.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
   model->Load(tmp_dir.GetPath());
@@ -2259,6 +2258,52 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   EXPECT_EQ(node_url1, model->bookmark_bar_node()->children()[0]->url());
   EXPECT_EQ(node_url2,
             model->account_bookmark_bar_node()->children()[0]->url());
+}
+
+TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
+  base::test::ScopedFeatureList features{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
+
+  // Since metadata str serialized proto, it could contain non-ASCII characters.
+  const std::string sync_metadata_str("a/2'\"");
+
+  // Create a model with one local-or-syncable url and no account bookmarks.
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  {
+    auto client = std::make_unique<TestBookmarkClient>();
+    TestBookmarkClient* client_ptr = client.get();
+    BookmarkModel model(std::move(client));
+    model.Load(tmp_dir.GetPath());
+    test::WaitForBookmarkModelToLoad(&model);
+
+    ASSERT_EQ(nullptr, model.account_bookmark_bar_node());
+    ASSERT_EQ(nullptr, model.account_other_node());
+    ASSERT_EQ(nullptr, model.account_mobile_node());
+
+    client_ptr->SetAccountBookmarkSyncMetadataAndScheduleWrite(
+        sync_metadata_str);
+
+    // This is necessary to ensure the save completes.
+    task_environment.FastForwardUntilNoTasksRemain();
+  }
+
+  // Recreate the model and ensure account sync metadata is passed to
+  // BookmarkClient although there are no account bookmarks.
+  auto client = std::make_unique<TestBookmarkClient>();
+  TestBookmarkClient* client_ptr = client.get();
+  BookmarkModel model(std::move(client));
+  model.Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(&model);
+
+  EXPECT_EQ(nullptr, model.account_bookmark_bar_node());
+  EXPECT_EQ(nullptr, model.account_other_node());
+  EXPECT_EQ(nullptr, model.account_mobile_node());
+
+  EXPECT_EQ(sync_metadata_str, client_ptr->account_bookmark_sync_metadata());
 }
 
 TEST(BookmarkModelLoadTest, AccountNodesPopulatedOnLoadAsLocalOrSyncable) {

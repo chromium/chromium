@@ -209,7 +209,7 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   EXPECT_FALSE(file_content->empty());
 }
 
-TEST(BookmarkStorageTest, ShouldSaveEmptyFileToDiskIfAccountBookmarksEmpty) {
+TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
   base::test::ScopedFeatureList features{
       syncer::kEnableBookmarkFoldersForAccountStorage};
 
@@ -229,8 +229,10 @@ TEST(BookmarkStorageTest, ShouldSaveEmptyFileToDiskIfAccountBookmarksEmpty) {
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
 
-  EXPECT_EQ(ReadFileToDict(bookmarks_file_path),
-            std::make_optional<base::Value::Dict>());
+  std::optional<base::Value::Dict> file_content =
+      ReadFileToDict(bookmarks_file_path);
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_FALSE(file_content->empty());
 }
 
 }  // namespace bookmarks

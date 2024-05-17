@@ -11,6 +11,8 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
@@ -67,6 +69,16 @@ class TestBookmarkClient : public BookmarkClient {
   // `IsSyncFeatureEnabledIncludingBookmarks()`.
   void SetIsSyncFeatureEnabledIncludingBookmarks(bool value);
 
+  // Returns sync metadata for account bookmarks,  received via
+  // DecodeAccountBookmarkSyncMetadata() or modified via
+  // SetAccountBookmarkSyncMetadataAndScheduleWrite().
+  const std::string& account_bookmark_sync_metadata() const {
+    return account_bookmark_sync_metadata_;
+  }
+
+  void SetAccountBookmarkSyncMetadataAndScheduleWrite(
+      const std::string& account_bookmark_sync_metadata);
+
   // BookmarkClient:
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bool IsSyncFeatureEnabledIncludingBookmarks() override;
@@ -107,6 +119,10 @@ class TestBookmarkClient : public BookmarkClient {
       requests_per_page_url_;
 
   bool is_sync_feature_enabled_including_bookmarks_for_uma = false;
+
+  std::string account_bookmark_sync_metadata_;
+  base::RepeatingClosure account_bookmark_sync_metadata_save_closure_ =
+      base::DoNothing();
 };
 
 }  // namespace bookmarks

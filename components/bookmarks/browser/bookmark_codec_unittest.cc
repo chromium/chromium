@@ -634,15 +634,45 @@ TEST_F(BookmarkCodecTest, CanDecodeMetaInfoAsString) {
 TEST_F(BookmarkCodecTest, EncodeAndDecodeSyncMetadata) {
   std::unique_ptr<BookmarkModel> model(CreateTestModel1());
 
-  // Since metadata str serialized proto, it could contain no ASCII characters.
+  // Since metadata str serialized proto, it could contain non-ASCII characters.
   std::string sync_metadata_str("a/2'\"");
   std::string checksum;
   base::Value::Dict value =
       EncodeModel(model.get(), sync_metadata_str, &checksum);
 
-  std::string decoded_sync_metadata_str;
   // Decode and verify.
+  std::string decoded_sync_metadata_str;
   DecodeHelper(value, checksum, &checksum, false, &decoded_sync_metadata_str);
+  EXPECT_EQ(sync_metadata_str, decoded_sync_metadata_str);
+}
+
+TEST_F(BookmarkCodecTest, EncodeAndDecodeSyncMetadataWithoutPermanentNodes) {
+  // Since metadata str serialized proto, it could contain non-ASCII characters.
+  std::string sync_metadata_str("a/2'\"");
+
+  BookmarkCodec encoder;
+  base::Value::Dict value(encoder.Encode(/*bookmark_bar_node=*/nullptr,
+                                         /*other_folder_node=*/nullptr,
+                                         /*mobile_folder_node=*/nullptr,
+                                         sync_metadata_str));
+  const std::string& computed_checksum = encoder.ComputedChecksumForTest();
+  const std::string& stored_checksum = encoder.StoredChecksumForTest();
+
+  // Computed and stored checksums should not be empty and should be equal.
+  EXPECT_FALSE(computed_checksum.empty());
+  EXPECT_FALSE(stored_checksum.empty());
+  EXPECT_EQ(computed_checksum, stored_checksum);
+
+  // Decode and verify.
+  std::string decoded_sync_metadata_str;
+  BookmarkCodec decoder;
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+
+  // Note that the decoder returns this as a failure case, although
+  // `decoded_sync_metadata_str` is still populated.
+  EXPECT_FALSE(Decode(&decoder, value, /*already_assigned_ids=*/{}, model.get(),
+                      &decoded_sync_metadata_str));
+
   EXPECT_EQ(sync_metadata_str, decoded_sync_metadata_str);
 }
 
