@@ -180,8 +180,7 @@ V8MemoryPerformanceManagerTestHarness::
 void V8MemoryPerformanceManagerTestHarness::SetUp() {
   PerformanceManagerTestHarness::SetUp();
 
-  if (!base::FeatureList::IsEnabled(features::kRunOnMainThread) &&
-      !base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
+  if (!base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
     // Precondition: CallOnGraph must run on a different sequence. Note that
     // all tasks passed to CallOnGraph will only run when run_loop.Run() is
     // called.

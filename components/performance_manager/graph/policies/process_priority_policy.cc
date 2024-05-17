@@ -73,8 +73,7 @@ void DispatchSetProcessPriority(const ProcessNode* process_node,
 
   // If the PM is already running on the UI thread, improve performance by
   // skipping the thread-hop.
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThread) ||
-      base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
+  if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
     SetProcessPriorityOnUIThread(process_node->GetRenderProcessHostProxy(),
                                  foreground);
     return;

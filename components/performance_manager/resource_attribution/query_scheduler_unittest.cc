@@ -53,13 +53,12 @@ namespace resource_attribution::internal {
 namespace {
 
 using performance_manager::features::kResourceAttributionIncludeOrigins;
-using performance_manager::features::kRunOnMainThread;
 using performance_manager::features::kRunOnMainThreadSync;
 using ::testing::_;
+using ::testing::Bool;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
-using ::testing::Values;
 using ::testing::WithParamInterface;
 
 std::unique_ptr<QueryParams> CreateQueryParams(
@@ -92,7 +91,7 @@ void ExpectQueryResult(
 
 class ResourceAttrQuerySchedulerTest
     : public performance_manager::GraphTestHarness,
-      public WithParamInterface<const base::Feature*> {
+      public WithParamInterface<bool> {
  protected:
   using Super = performance_manager::GraphTestHarness;
 
@@ -100,7 +99,7 @@ class ResourceAttrQuerySchedulerTest
     std::vector<base::test::FeatureRef> enabled_features{
         kResourceAttributionIncludeOrigins};
     if (GetParam()) {
-      enabled_features.push_back(*GetParam());
+      enabled_features.push_back(kRunOnMainThreadSync);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
@@ -122,32 +121,20 @@ class ResourceAttrQuerySchedulerTest
   FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ResourceAttrQuerySchedulerTest,
-                         Values(nullptr,
-                                &kRunOnMainThread,
-                                &kRunOnMainThreadSync));
+INSTANTIATE_TEST_SUITE_P(All, ResourceAttrQuerySchedulerTest, Bool());
 
 class ResourceAttrQuerySchedulerPMTest
     : public performance_manager::PerformanceManagerTestHarness,
-      public WithParamInterface<const base::Feature*> {
+      public WithParamInterface<bool> {
  protected:
   ResourceAttrQuerySchedulerPMTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (GetParam()) {
-      enabled_features.push_back(*GetParam());
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitWithFeatureState(kRunOnMainThreadSync, GetParam());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ResourceAttrQuerySchedulerPMTest,
-                         Values(nullptr,
-                                &kRunOnMainThread,
-                                &kRunOnMainThreadSync));
+INSTANTIATE_TEST_SUITE_P(All, ResourceAttrQuerySchedulerPMTest, Bool());
 
 TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   performance_manager::MockMultiplePagesWithMultipleProcessesGraph mock_graph(

@@ -51,20 +51,13 @@ void PostToggleProcessNodePriority(content::RenderProcessHost* rph) {
       }));
 }
 
-struct PMThreadingConfiguration {
-  bool run_on_main_thread;
-  bool run_on_main_thread_sync;
-};
-
 // Tests ProcessPriorityPolicy in different threading configurations.
-class ProcessPriorityPolicyTest
-    : public PerformanceManagerTestHarness,
-      public ::testing::WithParamInterface<PMThreadingConfiguration> {
+class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
+                                  public ::testing::WithParamInterface<bool> {
  public:
   ProcessPriorityPolicyTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kRunOnMainThread, GetParam().run_on_main_thread},
-         {features::kRunOnMainThreadSync, GetParam().run_on_main_thread_sync}});
+    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
+                                              GetParam());
   }
 
   ProcessPriorityPolicyTest(const ProcessPriorityPolicyTest&) = delete;
@@ -118,18 +111,7 @@ class ProcessPriorityPolicyTest
   base::RepeatingClosure quit_closure_ = task_environment()->QuitClosure();
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ProcessPriorityPolicyTest,
-    ::testing::Values(
-        PMThreadingConfiguration{.run_on_main_thread = false,
-                                 .run_on_main_thread_sync = false},
-
-        PMThreadingConfiguration{.run_on_main_thread = true,
-                                 .run_on_main_thread_sync = false},
-
-        PMThreadingConfiguration{.run_on_main_thread = false,
-                                 .run_on_main_thread_sync = true}));
+INSTANTIATE_TEST_SUITE_P(, ProcessPriorityPolicyTest, ::testing::Bool());
 
 }  // namespace
 

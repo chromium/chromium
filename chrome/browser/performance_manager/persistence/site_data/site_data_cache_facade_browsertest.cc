@@ -127,14 +127,13 @@ struct PMThreadingConfiguration {
 // Tests SiteDataCacheFacade in different threading configurations.
 class SiteDataCacheFacadeBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<PMThreadingConfiguration> {
+      public ::testing::WithParamInterface<bool> {
   using Super = InProcessBrowserTest;
 
  protected:
   SiteDataCacheFacadeBrowserTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kRunOnMainThread, GetParam().run_on_main_thread},
-         {features::kRunOnMainThreadSync, GetParam().run_on_main_thread_sync}});
+    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
+                                              GetParam());
   }
 
   void SetUpOnMainThread() override {
@@ -249,18 +248,7 @@ class SiteDataCacheFacadeBrowserTest
   std::optional<ClearSiteDataOnProfileDestroyed> clear_site_data_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SiteDataCacheFacadeBrowserTest,
-    ::testing::Values(
-        PMThreadingConfiguration{.run_on_main_thread = false,
-                                 .run_on_main_thread_sync = false},
-
-        PMThreadingConfiguration{.run_on_main_thread = true,
-                                 .run_on_main_thread_sync = false},
-
-        PMThreadingConfiguration{.run_on_main_thread = false,
-                                 .run_on_main_thread_sync = true}));
+INSTANTIATE_TEST_SUITE_P(, SiteDataCacheFacadeBrowserTest, ::testing::Bool());
 
 // TODO(crbug.com/330771327): This test is consistently failing across multiple
 // builders. Pre-test: Sets up state before the main test by writing some

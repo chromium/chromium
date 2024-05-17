@@ -210,17 +210,10 @@ std::unique_ptr<PerformanceManagerImpl> PerformanceManagerImpl::Create(
   std::unique_ptr<PerformanceManagerImpl> instance =
       base::WrapUnique(new PerformanceManagerImpl());
 
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
-    // Invoke `OnStartImpl()` synchronously instead of via a posted task, so
-    // that any call to `CallOnGraphImpl()` that follows can access
-    // `g_performance_manager->ui_task_runner_`.
-    instance->OnStartImpl(std::move(on_start));
-  } else {
-    GetTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PerformanceManagerImpl::OnStartImpl,
-                       base::Unretained(instance.get()), std::move(on_start)));
-  }
+  GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PerformanceManagerImpl::OnStartImpl,
+                     base::Unretained(instance.get()), std::move(on_start)));
 
   return instance;
 }
@@ -348,30 +341,11 @@ void PerformanceManagerImpl::SetOnDestroyedCallbackForTesting(
 
 PerformanceManagerImpl::PerformanceManagerImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
-    ui_task_runner_ = GetUITaskRunner();
-  }
 }
 
 // static
 scoped_refptr<base::SequencedTaskRunner>
 PerformanceManagerImpl::GetTaskRunner() {
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
-    CHECK(!base::FeatureList::IsEnabled(features::kRunOnMainThreadSync));
-    // Used the cached runner, if available. This prevents doing repeated
-    // lookups.
-    if (g_performance_manager)
-      return g_performance_manager->ui_task_runner_;
-    // Our semantics are that this always returns a valid task runner as long
-    // as there is a task environment alive. We can't cache this in a local
-    // static variable because it will become invalid across test boundaries.
-    // Note that this doesn't result in a new task runner being created; it
-    // simply causes a table lookup to find the existing task runner with the
-    // appropriate type, which will be the same task runner that was cached by
-    // |g_performance_manager| while it was alive.
-    return GetUITaskRunner();
-  }
-
   if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
     return TaskRunnerWithSynchronousRunOnUIThread::GetInstance();
   }

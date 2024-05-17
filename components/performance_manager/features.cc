@@ -15,10 +15,6 @@
 
 namespace performance_manager::features {
 
-BASE_FEATURE(kRunOnMainThread,
-             "RunPerformanceManagerOnMainThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRunOnMainThreadSync,
              "RunPerformanceManagerOnMainThreadSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
