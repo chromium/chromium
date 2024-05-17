@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -711,6 +712,7 @@ void SyncServiceImpl::TryStartImpl() {
 
 void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("sync", "SyncServiceImpl::Shutdown");
 
   NotifyShutdown();
 
@@ -744,6 +746,7 @@ void SyncServiceImpl::RecordReasonIfWaitingForUpdates(
 
 std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
     ResetEngineReason reset_reason) {
+  TRACE_EVENT0("sync", "SyncServiceImpl::ResetEngine");
   CHECK(data_type_manager_);
 
   const ShutdownReason shutdown_reason =

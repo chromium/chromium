@@ -236,6 +236,8 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
 
 SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("sync",
+               "SyncableServiceBasedBridge::~SyncableServiceBasedBridge");
   // Inform the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.
   if (syncable_service_started_) {
