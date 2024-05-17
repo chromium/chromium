@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:util",
     "//testing/gtest",
+    "//url:url",
   ]
 }
 

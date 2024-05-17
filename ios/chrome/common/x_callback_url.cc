@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/url_util.h"
+#include "url/url_features.h"
 
 namespace {
 
@@ -25,9 +26,15 @@ bool IsXCallbackURL(const GURL& url) {
   if (!url.is_valid())
     return false;
 
-  if (url.IsStandard())
+  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
     return url.host_piece() == kXCallbackURLHost;
+  }
 
+  // The following is a workaround when non-special URLs are not properly
+  // supported. We have to parse `url` manually for non-special URL.
+  if (url.IsStandard()) {
+    return url.host_piece() == kXCallbackURLHost;
+  }
   std::string_view path_piece = url.path_piece();
   if (base::StartsWith(path_piece, "//"))
     path_piece = path_piece.substr(2, std::string_view::npos);
