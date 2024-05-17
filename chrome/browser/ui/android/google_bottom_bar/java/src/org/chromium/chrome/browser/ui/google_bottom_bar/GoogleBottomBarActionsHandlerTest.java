@@ -33,9 +33,11 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -86,6 +88,10 @@ public class GoogleBottomBarActionsHandlerTest {
     @Test
     public void testSaveAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.SAVE_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -103,10 +109,15 @@ public class GoogleBottomBarActionsHandlerTest {
         verify(pendingIntent)
                 .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testSaveAction_buttonConfigHasNoPendingIntent_showsTooltip() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.SAVE_DISABLED);
         Context context = mActivity;
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -124,11 +135,16 @@ public class GoogleBottomBarActionsHandlerTest {
 
         Set<TextBubble> textBubbleSet = TextBubble.getTextBubbleSetForTesting();
         assertEquals(1, textBubbleSet.size());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testShareAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.SHARE_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
@@ -147,10 +163,15 @@ public class GoogleBottomBarActionsHandlerTest {
         verify(pendingIntent)
                 .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testShareAction_initiateShareForCurrentTab() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.SHARE_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -166,11 +187,16 @@ public class GoogleBottomBarActionsHandlerTest {
 
         verify(mShareDelegate)
                 .share(eq(mTab), eq(false), eq(ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR));
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void
             testPageInsightsAction_pageInsightCoordinatorNotNull_initiatePageInsightsCoordinatorLaunch() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.PIH_CHROME);
         when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
@@ -187,11 +213,16 @@ public class GoogleBottomBarActionsHandlerTest {
         clickListener.onClick(buttonView);
 
         verify(mPageInsightsCoordinator).launch();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testPageInsightsAction_buttonConfigHasPendingIntent_startsPendingIntent()
             throws PendingIntent.CanceledException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonClicked",
+                        GoogleBottomBarButtonEvent.PIH_EMBEDDER);
         PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
@@ -211,10 +242,15 @@ public class GoogleBottomBarActionsHandlerTest {
         verify(pendingIntent)
                 .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
         assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testPageInsightsAction_buttonConfigHasNoPendingIntent_logsError() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("CustomTabs.GoogleBottomBar.ButtonClicked")
+                        .build();
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -231,5 +267,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
         assertEquals(logItem.msg, "Can't perform page insights action as pending intent is null.");
+        histogramWatcher.assertExpected();
     }
 }

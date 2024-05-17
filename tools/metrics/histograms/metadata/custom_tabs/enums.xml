@@ -184,6 +184,21 @@ chromium-metrics-reviews@google.com.
              memory"/>
 </enum>
 
+<enum name="GoogleBottomBarButtonEvent">
+  <int value="0" label="Unknown button"/>
+  <int value="1" label="Chrome Page Insights button"/>
+  <int value="2" label="Embedder Page Insights button"/>
+  <int value="3" label="Disabled Save button"/>
+  <int value="4" label="Embedder Save button"/>
+  <int value="5" label="Chrome Share button"/>
+  <int value="6" label="Embedder Share button"/>
+</enum>
+
+<enum name="GoogleBottomBarCreatedEvent">
+  <int value="0" label="Even layout"/>
+  <int value="1" label="Spotlight layout"/>
+</enum>
+
 <enum name="IncognitoCCTCallerId">
   <int value="0" label="Other Apps"/>
   <int value="1" label="Google Apps"/>

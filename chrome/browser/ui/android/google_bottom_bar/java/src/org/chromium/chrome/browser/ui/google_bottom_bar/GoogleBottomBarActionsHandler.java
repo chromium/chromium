@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -64,10 +65,12 @@ class GoogleBottomBarActionsHandler {
     private void onPageInsightsButtonClick(ButtonConfig buttonConfig) {
         if (mPageInsightsCoordinatorSupplier.get() != null) {
             mPageInsightsCoordinatorSupplier.get().launch();
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_CHROME);
         } else {
             PendingIntent pendingIntent = buttonConfig.getPendingIntent();
             if (pendingIntent != null) {
                 sendPendingIntentWithUrl(pendingIntent);
+                GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_EMBEDDER);
             } else {
                 Log.e(TAG, "Can't perform page insights action as pending intent is null.");
             }
@@ -78,6 +81,7 @@ class GoogleBottomBarActionsHandler {
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SHARE_EMBEDDER);
         } else {
             initiateShareForCurrentTab();
         }
@@ -97,14 +101,17 @@ class GoogleBottomBarActionsHandler {
         }
         shareDelegate.share(
                 tab, /* shareDirectly= */ false, ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR);
+        GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SHARE_CHROME);
     }
 
-    private void onSaveButtonClick(BottomBarConfig.ButtonConfig buttonConfig, View view) {
+    private void onSaveButtonClick(ButtonConfig buttonConfig, View view) {
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SAVE_EMBEDDER);
         } else {
             showTooltip(view, R.string.google_bottom_bar_save_disabled_tooltip_message);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SAVE_DISABLED);
         }
     }
 
