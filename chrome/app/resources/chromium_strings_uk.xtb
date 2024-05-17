@@ -124,6 +124,7 @@
 <translation id="3155163173539279776">Перезапустити Chromium</translation>
 <translation id="3179665906251668410">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="3185330573522821672">Налаштуйте свій новий профіль Chromium</translation>
+<translation id="318879170965183683">Увійшовши в Chromium, ви можете використовувати паролі з облікового запису Google</translation>
 <translation id="3190315855212034486">Помилка. Chromium аварійно завершив роботу. Перезапустити зараз?</translation>
 <translation id="3224847870593914902">Щоб вилучити обліковий запис Google, вийдіть із Chromium на сторінці налаштувань</translation>
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
@@ -205,6 +206,8 @@
 <translation id="4501471624619070934">Помилка встановлення через обмеження доступу в цій країні.</translation>
 <translation id="4510853178268397146">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chromium радить вилучити його.</translation>
 <translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
+<translation id="4531137820806573936">Вебпереглядачу Chromium потрібен дозвіл, щоб створити карту оточення й відстежувати ваші руки</translation>
+<translation id="4536805923587466102">Ви вже ввійшли як <ph name="USER_EMAIL_ADDRESS" /> в іншому профілі Chromium</translation>
 <translation id="4544142686420020088">Не вдалось оновити веб-переглядач Chromium. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Продовжити в новому профілі Chromium?</translation>
 <translation id="4567424176335768812">Ви ввійшли як <ph name="USER_EMAIL_ADDRESS" />. Ваші закладки, історія й інші налаштування будуть доступні на всіх пристроях, на яких ви ввійдете в цей обліковий запис.</translation>

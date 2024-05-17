@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ваша апошняя ўкладка</translation>
 <translation id="6064125863973209585">Завершаныя спампоўкі</translation>
 <translation id="6071501408666570960">Вы выйдзеце з уліковага запісу на гэтым сайце</translation>
 <translation id="6120483543004435978">Калі гэты параметр уключаны, сайты могуць запытваць звесткі пра тое, калі вы актыўна карыстаецеся прыладай. Калі параметр выключаны, сайты не могуць атрымліваць доступ да такіх звестак.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Выберыце кантакт</translation>
 <translation id="7990211076305263060">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне мікрафона. Калі параметр выключаны, сайты не могуць выкарыстоўваць мікрафон.</translation>
 <translation id="8007176423574883786">Выключана для гэтай прылады</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Крыніца: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8042586301629853791">Сартаваць па:</translation>
 <translation id="8067883171444229417">Прайграць відэа</translation>

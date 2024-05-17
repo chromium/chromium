@@ -566,6 +566,7 @@
 <translation id="2046951263634619614">పుస్తకాల రిటైలర్‌లు</translation>
 <translation id="2048261947532620704">పేజీని అనువదిస్తోంది</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> భాషలో ఉన్న పేజీలు అనువదించబడవు.</translation>
+<translation id="2055461225779831292">మీ కెమెరాలను ఉపయోగించండి &amp; తరలించండి (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">మీ మౌస్ పాయింటర్‌ను లాక్ చేయండి</translation>
 <translation id="2056658168519009885">మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడంలో సహాయపడే సమాచారాన్ని అందించాల్సిందిగా సైట్‌లు Chromeను అడగవచ్చు.</translation>
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
@@ -713,6 +714,7 @@
 <translation id="2300306941146563769">అప్‌లోడ్ చేయలేదు</translation>
 <translation id="2301098101308036335">ఏ వెబ్‌సైట్‌లను సందర్శించారు, అలాగే ఎప్పుడు సందర్శించారు.</translation>
 <translation id="230286397113210245">'అజ్ఞాత విండోను తెరవండి' బటన్, ప్రైవేట్‌గా బ్రౌజ్ చేయడం కోసం కొత్త అజ్ఞాత విండోను తెరవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
+<translation id="2306124309679506798">లీనమయ్యే అనుభవాన్ని అనుమతించాలా?</translation>
 <translation id="2312234273148520048">మసాలాలు &amp; డ్రస్సింగ్</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> కంటే తక్కువ. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
 <translation id="2316159751672436664">ChromeOS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించండి</translation>
@@ -1168,6 +1170,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3240791268468473923">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ తెరవబడలేదు</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="3248329428895535435">ఈ సైట్‌లో చూపవద్దు</translation>
 <translation id="3252772880526154546">ఆర్కిటెక్చర్</translation>
 <translation id="3254301855501243548">18 x 22 అంగుళాలు</translation>
 <translation id="3255926992597692024">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
@@ -3787,6 +3790,7 @@
 <translation id="8263001937536038617">ఫోటో &amp; వీడియో సర్వీస్‌లు</translation>
 <translation id="8265992338205884890">కనిపించే డేటా</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />గా సైన్ ఇన్ చేస్తోంది</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">విడి డాక్యుమెంట్‌లు/సమగ్ర కాపీలు</translation>
 <translation id="8269703227894255363">{0,plural, =1{తెరవకుండా ఫైల్ బ్లాక్ చేయబడింది}other{తెరవకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="8270173610195068258">నేరం &amp; న్యాయం</translation>
@@ -4206,6 +4210,7 @@
 <translation id="9094544726794842788">మీరు ఈ ఫలితాలను ఎందుకు డిస్‌లైక్ చేశారు అనే దాని గురించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను పంపడానికి 'బాగా లేదు' ఆప్షన్ మీ కోసం ఫారమ్‌ను తెరుస్తుంది</translation>
 <translation id="9095388113577226029">మరిన్ని భాషలు...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ట్యాబ్‌ను నొక్కి, ఆపై 'Enter'ను నొక్కి iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
+<translation id="9101450247048146228">కెమెరా ఉపయోగం &amp; తరలింపు (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ట్రే 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> సాధారణంగా మీ సమాచారాన్ని రక్షించడానికి ఎన్‌క్రిప్ష‌న్‌ను ఉపయోగిస్తుంది. Chromium ఈసారి <ph name="SITE" />‌ను కనెక్ట్ చేయడానికి ప్రయత్నించినప్పుడు, వెబ్‌సైట్ అసాధారణ మరియు తప్పు ఆధారాలు అని ప్రతిస్పందించింది. దాడి చేసే వ్యక్తి <ph name="SITE" />గా వ్యవహరించి మోసగించడానికి ప్రయత్నిస్తున్నప్పుడు లేదా Wi-Fi సైన్-ఇన్ స్క్రీన్ కనెక్షన్‌కు అంతరాయం కలిగించినప్పుడు ఇలా జరగవచ్చు. ఎలాంటి డేటా వినిమయం సంభవించక ముందే Chromium, కనెక్షన్‌ను ఆపివేసినందున మీ సమాచారం ఇప్పటికీ సురక్షితంగానే ఉంది.</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" />, మీ బ్రౌజర్‌ను మేనేజ్ చేస్తోంది</translation>
@@ -4228,6 +4233,8 @@
 <translation id="9139318394846604261">షాపింగ్</translation>
 <translation id="9141013498910525015">అడ్రస్‌లను నిర్వహించండి</translation>
 <translation id="9144951720726881238">గడువు తేదీ:</translation>
+<translation id="9145910032514306808">మళ్లీ <ph name="BEGIN_LINK" />సైన్ ఇన్ చేసి<ph name="END_LINK" />,
+    తర్వాత తిరిగి ఈ ట్యాబ్‌కు వచ్చి రాయడంలో సహాయం పొందండి</translation>
 <translation id="9148507642005240123">&amp;సవరించడాన్ని రద్దు చేయండి</translation>
 <translation id="9148599396704355100">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="9150025764986957246">మీరు ఇటువంటి అంశాలను ఎంటర్ చేయవచ్చు:</translation>

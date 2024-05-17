@@ -572,6 +572,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2046951263634619614">Retailer Buku</translation>
 <translation id="2048261947532620704">Menerjemahkan halaman</translation>
 <translation id="2053111141626950936">Halaman dalam bahasa <ph name="LANGUAGE" /> tidak akan diterjemahkan.</translation>
+<translation id="2055461225779831292">Menggunakan &amp; menggerakkan kamera Anda (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Mengunci kursor mouse</translation>
 <translation id="2056658168519009885">Situs dapat meminta informasi kepada Chrome untuk membantu mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
@@ -719,6 +720,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2300306941146563769">Tidak diupload</translation>
 <translation id="2301098101308036335">Situs yang dikunjungi dan kapan kunjungan tersebut dilakukan.</translation>
 <translation id="230286397113210245">Tombol Buka Jendela Samaran, aktifkan untuk membuka jendela Samaran baru dan menjelajah secara pribadi</translation>
+<translation id="2306124309679506798">Izinkan pengalaman imersif?</translation>
 <translation id="2312234273148520048">Bumbu &amp; Saus</translation>
 <translation id="2316087952091171402">Kurang dari <ph name="UPPER_ESTIMATE" />. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="2316159751672436664">Personalisasi alat aksesibilitas Anda di setelan ChromeOS</translation>
@@ -1174,6 +1176,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyesuaikan tampilan browser Anda</translation>
 <translation id="3240791268468473923">Sheet tidak ada kredensial yang cocok untuk Kredensial pembayaran aman terbuka</translation>
 <translation id="324180406144491771">Link “<ph name="HOST_NAME" />” diblokir</translation>
+<translation id="3248329428895535435">Jangan tampilkan di situs ini</translation>
 <translation id="3252772880526154546">Arsitektur</translation>
 <translation id="3254301855501243548">18 x 22 inci (45 x 55 cm)</translation>
 <translation id="3255926992597692024">Chromium mencoba mengubah setelan pengisian metode pembayaran.</translation>
@@ -3790,6 +3793,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8263001937536038617">Layanan Foto &amp; Video</translation>
 <translation id="8265992338205884890">Data yang terlihat</translation>
 <translation id="8267698848189296333">Login sebagai <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Dokumen terpisah/Salinan tersusun</translation>
 <translation id="8269703227894255363">{0,plural, =1{File diblokir agar tidak dapat dibuka}other{<ph name="FILE_COUNT" /> file diblokir agar tidak dapat dibuka}}</translation>
 <translation id="8270173610195068258">Kejahatan &amp; Keadilan</translation>
@@ -4207,6 +4211,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9094544726794842788">Memberi tanda Tidak suka akan membuka formulir untuk mengirim masukan mendetail tentang alasan Anda tidak menyukai hasil ini</translation>
 <translation id="9095388113577226029">Bahasa lainnya...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
+<translation id="9101450247048146228">Penggunaan &amp; gerakan kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Baki 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> biasanya menggunakan enkripsi untuk melindungi informasi Anda. Saat Chromium mencoba menyambung ke <ph name="SITE" /> kali ini, situs web mengembalikan kredensial yang salah dan tidak biasa. Hal ini dapat terjadi jika ada penyerang yang berpura-pura menjadi <ph name="SITE" />, atau layar masuk Wi-Fi mengganggu sambungan. Informasi Anda masih aman karena Chromium menghentikan sambungan sebelum terjadi pertukaran data apa pun.</translation>
 <translation id="9107467864910557787">Browser Anda dikelola oleh <ph name="MANAGER" /></translation>
@@ -4229,6 +4234,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9139318394846604261">Belanja</translation>
 <translation id="9141013498910525015">Kelola alamat</translation>
 <translation id="9144951720726881238">Tanggal kedaluwarsa:</translation>
+<translation id="9145910032514306808"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> 
+    lagi, lalu kembali ke tab ini untuk mendapatkan bantuan menulis</translation>
 <translation id="9148507642005240123">&amp;Urungkan pengeditan</translation>
 <translation id="9148599396704355100">Harga Rendah</translation>
 <translation id="9150025764986957246">Anda dapat memasukkan berbagai teks seperti:</translation>

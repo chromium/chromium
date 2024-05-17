@@ -368,6 +368,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1260810365552581339">O Linux pode não ter espaço em disco suficiente. Pode aumentar o espaço em disco do Linux e tentar restaurar novamente nas <ph name="LINK_START" />Definições<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
+<translation id="1261885284931493480">Remover os separadores e eliminar o grupo?</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para paginar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de ecrã e os títulos dos separadores abertos</translation>
@@ -880,6 +881,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1634224622052500893">Rede Wi-Fi encontrada</translation>
 <translation id="1634783886312010422">Já alterou esta palavra-passe em <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
+<translation id="1636542522761359943">Damos-lhe as boas-vindas, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que uma app guardou (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos. Os dados da cópia de segurança não são contabilizados para a sua quota de armazenamento do Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Obter este marcador no seu iPhone</translation>
@@ -1637,6 +1639,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2187895286714876935">Erro na importação do certificado do servidor</translation>
 <translation id="2187906491731510095">Extensões atualizadas.</translation>
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
+<translation id="2188919919468240749">Eliminar o grupo de separadores?</translation>
 <translation id="2190069059097339078">Obtenção de credenciais de Wi-Fi</translation>
 <translation id="219008588003277019">Módulo Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vazio)</translation>
@@ -1863,6 +1866,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2350133097354918058">Atualizada.</translation>
 <translation id="2350182423316644347">A inicializar a aplicação...</translation>
 <translation id="235028206512346451">Quando se afasta do seu dispositivo, o ecrã é automaticamente bloqueado. Quando está à frente do dispositivo, o ecrã mantém-se ativado durante mais tempo. Se não estiver a usar um ecrã de bloqueio, o seu dispositivo fica suspenso em vez de bloqueado.</translation>
+<translation id="2352305801620974284">Quando inicia sessão neste dispositivo, tem as suas palavras-passe e muito mais da sua Conta Google</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
 <translation id="2352810082280059586">As notas do ecrã de bloqueio são automaticamente guardadas na aplicação <ph name="LOCK_SCREEN_APP_NAME" />. A nota mais recente permanece no ecrã de bloqueio.</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
@@ -2073,6 +2077,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="249113932447298600">Lamentamos, mas de momento o aparelho <ph name="DEVICE_LABEL" /> não é suportado.</translation>
 <translation id="2491587035099903063">pré-visualizar voz em <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">A preparar pedido de assinatura de certificado…</translation>
+<translation id="2492964937550251173">Fechar os separadores e eliminar o grupo?</translation>
 <translation id="249330843868392562">Abrir definições da conversão de texto em voz</translation>
 <translation id="2494555621641843783">Não é possível instalar o Steam</translation>
 <translation id="2495141202137516054">Do seu Drive</translation>
@@ -2242,6 +2247,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="262087792756666314">Pode fixar esta funcionalidade para acesso fácil; clique no botão Fixar na parte superior do painel lateral</translation>
 <translation id="2620900772667816510">Super-resolução Bluetooth</translation>
 <translation id="262154978979441594">Treinar o modelo de voz do Assistente Google</translation>
+<translation id="2622280935687585828">Remover <ph name="SITE_NAME" /> dos sites desativados</translation>
 <translation id="26224892172169984">Não permitir que os Web sites processem protocolos</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">Controlo e reprogramação de dispositivos MIDI permitidos</translation>
@@ -2788,6 +2794,7 @@ Quer pará-lo?</translation>
 <translation id="3021066826692793094">Borboleta</translation>
 <translation id="3021678814754966447">&amp;Ver Origem da Moldura</translation>
 <translation id="3021902017511220299">Falha ao analisar. Esta ação foi bloqueada pelo seu administrador.</translation>
+<translation id="3022068420678496307">Esta ação elimina o grupo de todos os dispositivos com sessão iniciada no Chrome com esta Conta Google.</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não vai ser guardado em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendido.</translation>
 <translation id="3023464535986383522">Selecionar para falar</translation>
@@ -4191,6 +4198,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4078903002989614318">Opções de ordenação e da lista</translation>
 <translation id="4079140982534148664">Usar a verificação ortográfica avançada</translation>
 <translation id="4082333918978320301">Nenhum Website tem autorização para usar o microfone</translation>
+<translation id="4083735423615351075">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada no Chrome com esta Conta Google.</translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084835346725913160">Fechar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">O JavaScript foi bloqueado nesta página.</translation>
@@ -4200,6 +4208,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">Mostrar à direita</translation>
+<translation id="4088879333319441249">Desagrupar o grupo de separadores?</translation>
 <translation id="4089235344645910861">Definições guardadas. A sincronização foi iniciada.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Ativar acesso confirmado</translation>
@@ -4248,6 +4257,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="412022815379960229">Comece a explorar as suas memórias do Google Fotos, sempre que tiver sessão iniciada.</translation>
 <translation id="4120388883569225797">Não é possível repor esta chave de segurança.</translation>
 <translation id="4120817667028078560">Caminho demasiado longo</translation>
+<translation id="412214527668811703">{NUM_SITES,plural, =1{Para proteger os seus dados, foram removidas as autorizações de um site}other{Para proteger os seus dados, foram removidas as autorizações de alguns sites}}</translation>
 <translation id="4124823734405044952">A chave de segurança foi reposta.</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="412730574613779332">Spandex</translation>
@@ -5686,6 +5696,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tente novamente dentro de alguns momentos.</translation>
 <translation id="5244234799035360187">O OneDrive aparece agora na app Files</translation>
+<translation id="5244466461749935369">Manter por agora</translation>
 <translation id="5244474230056479698">A sincronizar com <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Comece com uma conta escolar</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> falhou. Clique neste balão para reiniciar a aplicação.</translation>
@@ -5954,6 +5965,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5453829744223920473">A criança pode usar todos os recursos, marcadores e apps escolares como faz na sala de aula. A escola define as regras básicas.</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Ver mais resultados da pesquisa</translation>
+<translation id="5457082343331641453">Adicione à sua pesquisa</translation>
 <translation id="5457113250005438886">Inválido</translation>
 <translation id="5457459357461771897">Ler e eliminar fotos, música e outros elementos multimédia a partir do computador</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -6431,6 +6443,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5816434091619127343">As alterações solicitadas à impressora deixariam-na inutilizável.</translation>
 <translation id="581659025233126501">Ativar sincronização</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
+<translation id="5817963443108180228">Damos-lhe as boas-vindas de volta, <ph name="PROFILE_NAME" /></translation>
 <translation id="581911254119283028">todas as aplicações</translation>
 <translation id="5821565227679781414">Criar Atalho</translation>
 <translation id="5824976764713185207">Ler automaticamente a página depois de ser carregada</translation>
@@ -7032,6 +7045,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6265159465845424232">Perguntar antes de copiar ou mover ficheiros da Microsoft para o Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Remover porta</translation>
 <translation id="6266532094411434237">A ligar ao dispositivo <ph name="DEVICE" /></translation>
+<translation id="6266984048393265562">Personalizar perfil</translation>
 <translation id="6267166720438879315">Selecione um certificado para se autenticar perante <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir com <ph name="APP" /></translation>
 <translation id="6270309713620950855">Desativar som da chamada de atenção</translation>
@@ -8025,6 +8039,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos numa janela de &amp;navegação anónima}=1{Abrir numa janela de &amp;navegação anónima}other{Abrir todos ({COUNT}) numa janela de &amp;navegação anónima}}</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
+<translation id="7030050505233848371">Site perigoso. O Chrome removeu as autorizações de notificações.</translation>
 <translation id="7030304022046916278">Envia URLs para a Navegação segura para os verificar</translation>
 <translation id="7030695672997239647">Clique com o botão direito do rato num separador, selecione "Adicionar separador a grupo" e, em seguida, "Novo grupo"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - porta de série associada</translation>
@@ -9059,6 +9074,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7810202088502699111">Os pop-ups foram bloqueados nesta página.</translation>
 <translation id="7810367892333449285">A sua entrada deve ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />Endereço de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID correspondente opcional<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Tente novamente ou selecione um dos temas gerados anteriormente abaixo.</translation>
+<translation id="7814090115158024843">Nunca oferecer ajuda na escrita nestes sites</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar atalho <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -9292,6 +9308,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7977451675950311423">Envia-lhe um aviso se usar uma palavra-passe que tenha sido comprometida numa violação de dados.</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7978450511781612192">Deste modo, termina sessão nas suas Contas Google. Os marcadores, o histórico, as palavras-passe e muito mais deixam de ser sincronizados.</translation>
+<translation id="7980066177668669492">ASCII codificado em Base64, vários certificados</translation>
 <translation id="7980084013673500153">ID do recurso: <ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406">Use uma chave de acesso guardada para a app <ph name="APP_NAME" /></translation>
 <translation id="7981662863948574132">Mostrar pop-up do código QR e EID do dispositivo</translation>
@@ -9706,6 +9723,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8276242035951017580">Nenhuma app tem autorização para usar a câmara</translation>
 <translation id="8276560076771292512">Esvaziar cache e recarregamento forçado</translation>
 <translation id="8276850948802942358">Saiba como conceder autorização temporária a um site para usar cookies de terceiros</translation>
+<translation id="8277907305629781277">Criou esta chave de acesso a <ph name="DATE" /></translation>
 <translation id="8280267190418431666">Websites nos seus idiomas</translation>
 <translation id="828180235270931531">Outras impressoras disponíveis</translation>
 <translation id="8281886186245836920">Ignorar</translation>
@@ -10622,6 +10640,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8962863356073277855">O formato do URL deve ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este site está a utilizar sensores de movimento ou de luz.</translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>
+<translation id="8964795217937248330">Fechar os separadores e eliminar o grupo?</translation>
 <translation id="8965037249707889821">Introduzir palavra-passe antiga</translation>
 <translation id="8966809848145604011">Outros perfis</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
@@ -11057,6 +11076,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="979345485590886759">Os sites podem pedir para bloquear o ponteiro do rato</translation>
 <translation id="980731642137034229">Botão menu de ação</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="98235653036850093">Olá, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Fechar todos os separadores</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: gravação da câmara e do microfone</translation>
 <translation id="984275831282074731">Métodos de pagamento</translation>

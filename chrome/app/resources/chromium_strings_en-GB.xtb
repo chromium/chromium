@@ -126,6 +126,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
 <translation id="3185330573522821672">Customise your new Chromium profile</translation>
+<translation id="318879170965183683">You can use your passwords from your Google Account in Chromium while you're signed in</translation>
 <translation id="3190315855212034486">Whoa! Chromium has crashed. Relaunch now?</translation>
 <translation id="3224847870593914902">To remove your Google Account from Chromium, sign out of Chromium in the Settings page</translation>
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
@@ -207,6 +208,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4510853178268397146">This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.</translation>
 <translation id="452711251841752011">Welcome to Chromium; new browser window opened</translation>
+<translation id="4531137820806573936">Chromium needs permission to map your surroundings and track your hands</translation>
+<translation id="4536805923587466102">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chromium profile</translation>
 <translation id="4544142686420020088">Chromium didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chromium update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Continue in a new Chromium profile?</translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>

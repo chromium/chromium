@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">మీ పరికరానికి ఈ సైట్ యాక్సెస్‌ని నియంత్రించండి</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> మీ చివరి ట్యాబ్</translation>
 <translation id="6064125863973209585">పూర్తయిన డౌన్‌లోడ్‌లు</translation>
 <translation id="6071501408666570960">ఈ సైట్ నుండి మీరు సైన్ అవుట్ అయ్యే అవకాశం ఉంది</translation>
 <translation id="6120483543004435978">ఆన్‌లో ఉన్నప్పుడు, మీ పరికరాన్ని మీరు ఎప్పుడు యాక్టివ్‌గా ఉపయోగిస్తున్నారో తెలుసుకోవడానికి సైట్‌లు అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, మీ పరికరాన్ని మీరు ఎప్పుడు యాక్టివ్‌గా ఉపయోగిస్తున్నారో సైట్‌లకు తెలియదు.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">పరిచయాన్ని ఎంచుకోండి</translation>
 <translation id="7990211076305263060">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించమని అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించడం సాధ్యం కాదు.</translation>
 <translation id="8007176423574883786">ఈ పరికరం కోసం ఆఫ్ చేయబడింది</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> నుండి</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8042586301629853791">దీని ఆధారంగా క్రమపద్ధతిలో అమర్చండి:</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>

@@ -49,6 +49,7 @@
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1662146548738125461">ChromeOS Flex 정보</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
+<translation id="1679594062619799116">로그인한 상태로 Chrome에서 Google 계정의 비밀번호를 사용할 수 있습니다</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -184,6 +185,7 @@
 <translation id="3564543103555793392">Chrome에 로그인하면 북마크, 비밀번호 등을 저장하여 휴대전화에서 사용할 수 있습니다.</translation>
 <translation id="3576528680708590453">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 다른 브라우저를 실행하도록 Chrome을 구성했습니다.</translation>
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
+<translation id="3583751698304738917">이미 다른 Chrome 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
 <translation id="3595784445906693824">새 프로필로 Chrome에 로그인하시겠습니까?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
@@ -358,6 +360,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6288788894729749483">Chrome을 기본 브라우저로 설정하여 온라인에서 안전하게 작업하고, 만들고, 탐색하세요.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
+<translation id="6319856120645568262">Chrome에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>

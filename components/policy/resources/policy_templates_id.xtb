@@ -4531,6 +4531,15 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="4483738129334574255">Nonaktifkan game dinosaurus sebagai fitur tersembunyi di perangkat <ph name="PRODUCT_OS_NAME" /> yang terdaftar, aktifkan dalam kondisi lain</translation>
 <translation id="4484515651939984695">Menentukan durasi (dalam detik) perangkat transmisi yang dipilih dengan kode akses atau kode QR untuk tetap berada dalam daftar perangkat transmisi pada menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Mengonfigurasi URL halaman Tab Baru</translation>
+<translation id="4488959486611931919">Catatan: Tidak ada kerusakan situs yang telah dilaporkan sejak Chrome mulai memblokir cookie ini secara default mulai M118, sehingga fungsi ini tidak akan dapat dikonfigurasi (dan kebijakan ini tidak akan terpengaruh) mulai M127.
+
+Kebijakan ini memberikan penghentian sementara untuk perubahan cara Chrome menangani cookie yang ditetapkan melalui JavaScript yang berisi karakter kontrol tertentu (NULL, enter, dan line feed).
+Sebelumnya, keberadaan salah satu karakter ini dalam string cookie akan membuatnya terpotong tetapi masih ditetapkan.
+Sekarang, keberadaan karakter ini akan menyebabkan seluruh string cookie diabaikan.
+
+Jika kebijakan ini disetel ke Benar (True), yang merupakan setelan defaultnya, perilaku baru akan diaktifkan.
+
+Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</translation>
 <translation id="4490420545181481759">Sertifikat X.509 dapat mengenkode batasan, seperti Batasan Nama,
 di ekstensi dalam sertifikat. RFC 5280 menetapkan bahwa menerapkan
 batasan tersebut pada sertifikat trust anchor bersifat opsional. Mulai

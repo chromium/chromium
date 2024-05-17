@@ -571,6 +571,7 @@
 <translation id="2046951263634619614">書籍販売</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
+<translation id="2055461225779831292">カメラの使用と移動（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="2056492565825767809">マウスポインタをロックする</translation>
 <translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトから Chrome に情報を要求することがあります。</translation>
 <translation id="2059166748188874810">市区町村</translation>
@@ -718,6 +719,7 @@
 <translation id="2300306941146563769">アップロードされていません</translation>
 <translation id="2301098101308036335">アクセスしたウェブサイトとその日時が表示されます。</translation>
 <translation id="230286397113210245">[シークレット ウィンドウを開く] ボタンです。実行すると、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングできます</translation>
+<translation id="2306124309679506798">没入型エクスペリエンスを許可しますか？</translation>
 <translation id="2312234273148520048">調味料、ドレッシング</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2316159751672436664">Chrome OS の設定でユーザー補助ツールをカスタマイズします</translation>
@@ -1173,6 +1175,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3240791268468473923">保護されたお支払い認証情報（認証情報の一致なし）シートが開いています</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」リンクはブロックされています</translation>
+<translation id="3248329428895535435">このサイトでは表示しない</translation>
 <translation id="3252772880526154546">アーキテクチャ</translation>
 <translation id="3254301855501243548">18x22 インチ</translation>
 <translation id="3255926992597692024">Chromium がお支払い方法の入力の設定を変更しようとしています。</translation>
@@ -3793,6 +3796,7 @@
 <translation id="8263001937536038617">写真、ビデオ撮影</translation>
 <translation id="8265992338205884890">参照可能なデータ</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> としてログイン</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">個別のドキュメント（丁合いあり）</translation>
 <translation id="8269703227894255363">{0,plural, =1{ファイルを開けません}other{<ph name="FILE_COUNT" /> 個のファイルを開けません}}</translation>
 <translation id="8270173610195068258">犯罪、裁判</translation>
@@ -4213,6 +4217,7 @@
 <translation id="9094544726794842788">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます</translation>
 <translation id="9095388113577226029">その他の言語...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、iOS 設定で Chrome をシステムの既定のブラウザとして設定できます</translation>
+<translation id="9101450247048146228">カメラの使用と移動（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="9101630580131696064">トレイ 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chromium から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chromium によって接続が停止されたため、情報は引き続き保護されています。</translation>
 <translation id="9107467864910557787">ご使用のブラウザは <ph name="MANAGER" /> によって管理されています</translation>
@@ -4235,6 +4240,7 @@
 <translation id="9139318394846604261">ショッピング</translation>
 <translation id="9141013498910525015">住所を管理</translation>
 <translation id="9144951720726881238">有効期限:</translation>
+<translation id="9145910032514306808">もう一度<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してこのタブに戻ると、文章作成サポートを使用できます</translation>
 <translation id="9148507642005240123">編集の取り消し（&amp;U）</translation>
 <translation id="9148599396704355100">低価格</translation>
 <translation id="9150025764986957246">次のような内容を入力できます。</translation>

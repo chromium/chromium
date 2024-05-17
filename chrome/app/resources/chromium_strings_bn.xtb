@@ -124,6 +124,7 @@
 <translation id="3155163173539279776">Chromium আবার লঞ্চ করুন</translation>
 <translation id="3179665906251668410">Chromium ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3185330573522821672">আপনার নতুন Chromium প্রোফাইল কাস্টমাইজ করুন</translation>
+<translation id="318879170965183683">আপনি সাইন-ইন করে থাকাকালীন, Chromium-এ আপনার Google অ্যাকাউন্ট থেকে নিজের পাসওয়ার্ড ব্যবহার করতে পারবেন</translation>
 <translation id="3190315855212034486">ওহো! Chromium ক্র্যাশ করেছে৷ এখন আবার শুরু করবেন?</translation>
 <translation id="3224847870593914902">Chromium থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সেটিংস পৃষ্ঠায় গিয়ে Chromium থেকে সাইন-আউট করুন</translation>
 <translation id="3258596308407688501">Chromium তার ডেটা ডিরেক্টরিতে পড়তে এবং লিখতে পারে না:
@@ -205,6 +206,8 @@
 <translation id="4501471624619070934">এই দেশে অ্যাক্সেস সীমিত হওয়ার কারণে ইনস্টলেশন করা যায়নি।</translation>
 <translation id="4510853178268397146">এই এক্সটেনশন গোপনীয়তা অনুশীলন প্রকাশ করেনি, যেমন কীভাবে এটি ডেটা সংগ্রহ ও ব্যবহার করে। Chromium আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।</translation>
 <translation id="452711251841752011">Chromium-এ স্বাগতম; নতুন ব্রাউজার উইন্ডো খোলা হয়েছে</translation>
+<translation id="4531137820806573936">আপনার আশপাশ সম্পর্কে জানতে ও হাত ট্র্যাক করতে Chromium-এর অনুমতি প্রয়োজন</translation>
+<translation id="4536805923587466102">আপনি আগে থেকেই অন্য Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="4544142686420020088">Chromium আপডেট করা যায়নি, কোনও সমস্যা হয়েছে। <ph name="BEGIN_LINK" />Chromium আপডেট করতে না পারার সমস্যা ও আপডেট করা যায়নি এমন সমস্যার সমাধান করুন।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">এক্ষেত্রে নতুন Chromium প্রোফাইল তৈরি করতে চান?</translation>
 <translation id="4567424176335768812">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন৷ এখন আপনি আপনার সমস্ত সাইন-ইন করা ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস অ্যাক্সেস করতে পারেন৷</translation>

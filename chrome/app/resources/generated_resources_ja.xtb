@@ -368,6 +368,7 @@
 <translation id="1260810365552581339">Linux のディスク空き容量が不足している可能性があります。Linux のディスク空き容量を増やしてから、[<ph name="LINK_START" />設定<ph name="LINK_END" />] でもう一度復元をお試しください。</translation>
 <translation id="1261380933454402672">弱め</translation>
 <translation id="126156426083987769">デモモードデバイスライセンスで問題が発生しました。</translation>
+<translation id="1261885284931493480">タブとグループを削除しますか？</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1263733306853729545"><ph name="MINUS" /> キーと <ph name="EQUAL" /> キーで候補リストのページを切り替える</translation>
 <translation id="126387934568812801">このスクリーンショットと開いているタブの名前を含める</translation>
@@ -880,6 +881,7 @@
 <translation id="1634224622052500893">Wi-Fi ネットワークを検出</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" /> でこのパスワードを変更しましたか？</translation>
 <translation id="1636212173818785548">OK</translation>
+<translation id="1636542522761359943">ようこそ、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">このブックマークは iPhone でも使用できます</translation>
 <translation id="1637765355341780467">プロフィールを開こうとして問題が発生しました。一部の機能を使用できない可能性があります。</translation>
@@ -1634,6 +1636,7 @@
 <translation id="2187895286714876935">サーバー証明書インポート エラー</translation>
 <translation id="2187906491731510095">拡張機能が更新されました</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> を開く</translation>
+<translation id="2188919919468240749">タブグループを削除しますか？</translation>
 <translation id="2190069059097339078">WiFi 認証情報の取得機能</translation>
 <translation id="219008588003277019">ネイティブ クライアント モジュール: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(なし)</translation>
@@ -1858,6 +1861,7 @@
 <translation id="2350133097354918058">再読み込みされました</translation>
 <translation id="2350182423316644347">アプリケーションを初期化しています...</translation>
 <translation id="235028206512346451">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を使用しない場合、デバイスはロックされずにスリープ状態になります。</translation>
+<translation id="2352305801620974284">このデバイスでログインすると、Google アカウントに保存したパスワードなどの情報を利用できます</translation>
 <translation id="2352662711729498748">1 MB 未満</translation>
 <translation id="2352810082280059586">ロック画面のメモは<ph name="LOCK_SCREEN_APP_NAME" />に自動的に保存されます。最新のメモはロック画面に表示されます。</translation>
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
@@ -2068,6 +2072,7 @@
 <translation id="249113932447298600">デバイス <ph name="DEVICE_LABEL" /> は現在サポートされていません。</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> の音声をプレビュー</translation>
 <translation id="2492461744635776704">証明書の署名のリクエストを準備しています</translation>
+<translation id="2492964937550251173">タブを閉じてグループを削除しますか？</translation>
 <translation id="249330843868392562">テキスト読み上げの設定を開く</translation>
 <translation id="2494555621641843783">Steam をインストールできません</translation>
 <translation id="2495141202137516054">ドライブから</translation>
@@ -2236,6 +2241,7 @@
 <translation id="262087792756666314">この機能を固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="2620900772667816510">Bluetooth 超解像</translation>
 <translation id="262154978979441594">Google アシスタントの音声モデルのトレーニング</translation>
+<translation id="2622280935687585828">無効にしたサイトから <ph name="SITE_NAME" /> を削除します</translation>
 <translation id="26224892172169984">すべてのサイトに対してプロトコルの処理を許可しない</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">MIDI デバイスの操作と再プログラムが許可されています</translation>
@@ -2781,6 +2787,7 @@
 <translation id="3021066826692793094">蝶</translation>
 <translation id="3021678814754966447">フレームのソースを表示(&amp;V)</translation>
 <translation id="3021902017511220299">スキャンに失敗しました。この操作は管理者によってブロックされています。</translation>
+<translation id="3022068420678496307">この操作を行うと、この Google アカウントで Chrome にログインしているすべてのデバイスからグループが削除されます。</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> がこの Chromebook から削除され、<ph name="PRIMARY_EMAIL" /> には保存されません。</translation>
 <translation id="3022978424994383087">聞き取れませんでした。</translation>
 <translation id="3023464535986383522">選択して読み上げ</translation>
@@ -4182,6 +4189,7 @@
 <translation id="4078903002989614318">並べ替えとリストのオプション</translation>
 <translation id="4079140982534148664">拡張スペルチェックを使用</translation>
 <translation id="4082333918978320301">マイクの使用が許可されているウェブサイトはありません</translation>
+<translation id="4083735423615351075">タブはこのデバイスで引き続き表示されますが、グループはこの Google アカウントで Chrome にログインしているすべてのデバイスから削除されます。</translation>
 <translation id="4084682180776658562">ブックマーク</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> を閉じる</translation>
 <translation id="4085298594534903246">このページの JavaScript はブロックされました。</translation>
@@ -4191,6 +4199,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">右側に表示</translation>
+<translation id="4088879333319441249">タブグループを解除しますか？</translation>
 <translation id="4089235344645910861">設定が保存され、同期が始まりました。</translation>
 <translation id="4089817585533500276">Shift+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">確認済みアクセスを有効にする</translation>
@@ -4239,6 +4248,7 @@
 <translation id="412022815379960229">ログインすれば、いつでも Google フォトの「思い出」の写真を見ることができます。</translation>
 <translation id="4120388883569225797">このセキュリティ キーはリセットできません</translation>
 <translation id="4120817667028078560">パスが長すぎます</translation>
+<translation id="412214527668811703">{NUM_SITES,plural, =1{データ保護のため、サイトから権限を削除しました}other{データ保護のため、いくつかのサイトから権限を削除しました}}</translation>
 <translation id="4124823734405044952">セキュリティ キーがリセットされました</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="412730574613779332">スパンデックス</translation>
@@ -5674,6 +5684,7 @@
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244234799035360187">ファイル アプリに OneDrive が表示されるようになります</translation>
+<translation id="5244466461749935369">今は残す</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
 <translation id="5245610266855777041">学校用アカウントのご利用開始</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
@@ -5941,6 +5952,7 @@
 <translation id="5453829744223920473">お子様は、学校のすべてのアプリ、ブックマーク、リソースを授業と同じように利用できます。基本ルールは学校が設定します。</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">他の検索結果を表示</translation>
+<translation id="5457082343331641453">検索に追加</translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -6417,6 +6429,7 @@
 <translation id="5816434091619127343">リクエストされた変更を行うと、プリンタを使用できなくります。</translation>
 <translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5817918615728894473">ペア設定</translation>
+<translation id="5817963443108180228">おかえりなさい、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="581911254119283028">すべてのアプリケーション</translation>
 <translation id="5821565227679781414">ショートカットを作成</translation>
 <translation id="5824976764713185207">ページの読み込み後、自動的に読み上げを開始する</translation>
@@ -7018,6 +7031,7 @@
 <translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
+<translation id="6266984048393265562">プロフィールをカスタマイズ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
 <translation id="6268252012308737255"><ph name="APP" /> で開く</translation>
 <translation id="6270309713620950855">ミュートの通知</translation>
@@ -8009,6 +8023,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
+<translation id="7030050505233848371">危険なサイトです。Chrome で通知権限を削除しました。</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
 <translation id="7030695672997239647">タブを右クリックして [タブをグループに追加]、[新しいグループ] の順に選択します</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
@@ -9040,6 +9055,7 @@
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="7811263553491007091">もう一度お試しいただくか、以前に生成された下のテーマから選択してください。</translation>
+<translation id="7814090115158024843">文章作成サポートを表示しないサイト</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> のショートカット <ph name="SHORTCUT" /> を編集</translation>
@@ -9273,6 +9289,7 @@
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7978412674231730200">秘密鍵</translation>
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
+<translation id="7980066177668669492">Base64 エンコード ASCII 形式、複数の証明書</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406">保存した <ph name="APP_NAME" /> のパスキーを使用する</translation>
 <translation id="7981662863948574132">デバイスの EID と QR コードのポップアップを表示します</translation>
@@ -9687,6 +9704,7 @@
 <translation id="8276242035951017580">カメラの使用が許可されているアプリはありません</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
 <translation id="8276850948802942358">サイトにサードパーティ Cookie の使用を一時的に許可することについての詳細</translation>
+<translation id="8277907305629781277"><ph name="DATE" /> にこのパスキーを作成しました</translation>
 <translation id="8280267190418431666">ウェブサイトの表示言語</translation>
 <translation id="828180235270931531">その他の利用可能なプリンタ</translation>
 <translation id="8281886186245836920">スキップ</translation>
@@ -10603,6 +10621,7 @@
 <translation id="8962863356073277855">URL は https://www.example.com の形式で入力してください</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
 <translation id="8963117664422609631">サイトの設定に移動します</translation>
+<translation id="8964795217937248330">タブを閉じてグループを削除しますか？</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>
@@ -11038,6 +11057,7 @@
 <translation id="979345485590886759">サイトがマウスポインタのロックを要求できるようにする</translation>
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>
+<translation id="98235653036850093">こんにちは、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - カメラ録画とマイク録音</translation>
 <translation id="984275831282074731">お支払い方法</translation>

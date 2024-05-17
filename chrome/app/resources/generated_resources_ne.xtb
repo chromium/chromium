@@ -366,6 +366,7 @@
 <translation id="1260810365552581339">Linux को डिस्कमा पर्याप्त खाली ठाउँ नहुन सक्छ। तपाईं Linux को डिस्कमा थप ठाउँ खाली गरेर <ph name="LINK_START" />सेटिङ<ph name="LINK_END" />मा गई फेरि रिस्टोर गर्ने प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="1261380933454402672">सामान्य</translation>
 <translation id="126156426083987769">डेमो मोडका यन्त्रको इजाजतपत्रसम्बन्धी कुनै समस्या भयो।</translation>
+<translation id="1261885284931493480">ट्याब(हरू) हटाउने र समूह मेटाउने हो?</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1263733306853729545">उम्मेदवारहरूको सूचीलाई पृष्ठमा ल्याउन <ph name="MINUS" /> र <ph name="EQUAL" /> कुञ्जीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="126387934568812801">यो स्क्रिनसट तथा खुला रहेका ट्याबका शीर्षकहरू समावेश गर्नुहोस्</translation>
@@ -877,6 +878,7 @@
 <translation id="1634224622052500893">WiFi नेटवर्क भेटिएको छ</translation>
 <translation id="1634783886312010422">तपाईंले <ph name="WEBSITE" /> मा यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="1636212173818785548">ठिक छ</translation>
+<translation id="1636542522761359943">स्वागत छ, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />एपसम्बन्धी डेटा सम्पर्क ठेगाना, म्यासेज र फोटो जस्ता डेटा र कुनै एपले (विकासकर्ताका सेटिङका आधारमा) सेभ गरेको कुनै पनि डेटा हुन सक्छ। डेटा ब्याकअप गर्दा तपाईंको Drive को भण्डारण कोटा प्रयोग हुने छैन।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं सेटिङमा गई यो सेवा अफ गर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">आफ्नो iPhone मा यो बुकमार्क प्राप्त गर्नुहोस्</translation>
@@ -1634,6 +1636,7 @@
 <translation id="2187895286714876935">सर्भर सर्टिफिकेट आयात त्रुटि</translation>
 <translation id="2187906491731510095">विस्तारहरू अद्यावधिक गरिए</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> खोल्नुहोस्</translation>
+<translation id="2188919919468240749">ट्याब समूह मेटाउने हो?</translation>
 <translation id="2190069059097339078">Wi-Fi प्रमाणपत्रहरू प्राप्तकर्ता</translation>
 <translation id="219008588003277019">स्वदेशी ग्राहक मोड्युल: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(खालि)</translation>
@@ -1860,6 +1863,7 @@
 <translation id="2350133097354918058">पुनः लोड गरियो</translation>
 <translation id="2350182423316644347">एप्लिकेसन आरम्भ गर्दै...</translation>
 <translation id="235028206512346451">तपाईं आफ्नो डिभाइसबाट टाढा जानुभयो भने तपाईंको डिभाइसको स्क्रिन स्वतः लक हुन्छ। तपाईं आफ्नो डिभाइसको अगाडि हुँदा तपाईंको डिभाइसको स्क्रिन अझ लामो समयसम्म अन रहने छ। तपाईं लक स्क्रिन प्रयोग गर्नुभएन भने तपाईंको डिभाइस लक हुनुको साटो स्लिप मोडमा जाने छ।</translation>
+<translation id="2352305801620974284">यो डिभाइसमा साइन इन गर्दा तपाईंलाई आफ्नो Google खातामा सेभ गरिएका पासवर्डलगायत अन्य जानकारी प्राप्त हुन्छन्।</translation>
 <translation id="2352662711729498748">&lt; 1 एमबी</translation>
 <translation id="2352810082280059586">लक स्क्रिनका टिपोटहरू <ph name="LOCK_SCREEN_APP_NAME" /> मा स्वत: सुरक्षित हुन्छन्। तपाईंको सबैभन्दा पछिल्लो टिपोट लक स्क्रिनमा रहनेछ।</translation>
 <translation id="2353297238722298836">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
@@ -2070,6 +2074,7 @@
 <translation id="249113932447298600">माफ गर्नुहोला, साधन<ph name="DEVICE_LABEL" /> यस समयमा समर्थित छैन।</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> भाषामा आवाजको प्रिभ्यू सुन्नुहोस्</translation>
 <translation id="2492461744635776704">प्रमाणपत्रमा हस्ताक्षर गर्ने अनुरोध तयार पार्दै</translation>
+<translation id="2492964937550251173">ट्याब(हरू) बन्द गर्ने र समूह मेटाउने हो?</translation>
 <translation id="249330843868392562">पाठवाचकसम्बन्धी सेटिङहरू खोल्नुहोस्</translation>
 <translation id="2494555621641843783">Steam इन्स्टल सकिँदैन</translation>
 <translation id="2495141202137516054">तपाईंको Drive बाट</translation>
@@ -2239,6 +2244,7 @@
 <translation id="262087792756666314">तपाईं यो सुविधा सजिलैसँग एक्सेस गर्नका निम्ति यसलाई पिन गर्न सक्नुहुन्छ; साइड प्यानलको सिरानमा रहेको "पिन गर्नुहोस्" बटनमा क्लिक गर्नुहोस्</translation>
 <translation id="2620900772667816510">ब्लुटुथ सुपर रिजोल्युसन</translation>
 <translation id="262154978979441594">Google सहायकको आवाजको मोडेललाई आफ्नो आवाज चिन्न सिकाउनुहोस्</translation>
+<translation id="2622280935687585828">अफ गरिएका साइटहरूबाट <ph name="SITE_NAME" /> हटाउनुहोस्</translation>
 <translation id="26224892172169984">कुनै पनि साइटलाई प्रोटोकलहरू ह्यान्डल गर्न अनुमति नदिनुहोस्</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति दिनुहोस्</translation>
@@ -2785,6 +2791,7 @@
 <translation id="3021066826692793094">पुतली</translation>
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;हेर्नुहोस्</translation>
 <translation id="3021902017511220299">स्क्यान गर्न सकिएन। तपाईंका एड्मिनले यो कारबाही गर्न रोक लगाउनुभएको छ।</translation>
+<translation id="3022068420678496307">यो समूह मेटाउँदा यो Google खाताबाट Chrome मा साइन इन गरिएका सबै डिभाइसहरूमा रहेको समूह मेटाइने छ।</translation>
 <translation id="3022361196600037287">यो Chromebook बाट <ph name="DEVICE" /> हटाइने छ र उक्त डिभाइस अब <ph name="PRIMARY_EMAIL" /> मा सेभ गरिने छैन।</translation>
 <translation id="3022978424994383087">मैले बुझिनँ।</translation>
 <translation id="3023464535986383522">सेलेक्ट टु स्पिक सुविधा</translation>
@@ -4187,6 +4194,7 @@
 <translation id="4078903002989614318">क्रमबद्ध र सूचीबद्ध गर्ने विकल्पहरू</translation>
 <translation id="4079140982534148664">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा प्रयोग गर्नुहोस्</translation>
 <translation id="4082333918978320301">कुनै पनि वेबसाइटलाई तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
+<translation id="4083735423615351075">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर यो समूह भने यो Google खाताबाट Chrome मा साइन इन गरिएका सबै डिभाइसहरूबाट मेटाइने छ।</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />बन्द गर्नुहोस्</translation>
 <translation id="4085298594534903246">जावास्क्रिप्टले यो पेजमा अवरुद्ध भएको गरेको थियो ।</translation>
@@ -4196,6 +4204,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">दायाँपट्टि देखाउनुहोस्</translation>
+<translation id="4088879333319441249">ट्याबहरू समूहबाट हटाउने हो?</translation>
 <translation id="4089235344645910861">सेटिङहरू सेभ गरियो। सिंक सुरु भयो।</translation>
 <translation id="4089817585533500276">सिफ्ट + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">रुजू गरिएको पहुँच सक्षम बनाउनुहोस्</translation>
@@ -4244,6 +4253,7 @@
 <translation id="412022815379960229">Google Photos मा भएका आफ्ना स्मरणीय क्षणहरू हेर्न थाल्नुहोस्। तपाईं साइन इन भएका बेला मात्र तपाईं ती क्षणहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="4120388883569225797">यो सुरक्षा साँचो रिसेट गर्न सकिँदैन</translation>
 <translation id="4120817667028078560">बाटो निकै लामो</translation>
+<translation id="412214527668811703">{NUM_SITES,plural, =1{तपाईंका डेटाको सुरक्षाका निम्ति साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{तपाईंका डेटाको सुरक्षाका निम्ति केही साइटहरूलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
 <translation id="4124823734405044952">तपाईंको सुरक्षा साँचो रिसेट गरिएको छ</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="412730574613779332">स्प्यानडेक्स</translation>
@@ -5682,6 +5692,7 @@
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" /> " सक्षम गर्ने?</translation>
 <translation id="5243522832766285132">कृपया केही क्षणमा फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5244234799035360187">OneDrive अब Files एपमा देखिने छ</translation>
+<translation id="5244466461749935369">अहिले राखिराख्नुहोस्</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> मा सिंक गर्दै</translation>
 <translation id="5245610266855777041">विद्यालयको खाता प्रयोग गरेर सुरु गर्नुहोस्</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रयास भएको छ। एप पुन: चालू गर्नको लागि यस बेलुनलाई क्लिक गर्नुहोस्।</translation>
@@ -5950,6 +5961,7 @@
 <translation id="5453829744223920473">तपाईंका बच्चा कक्षामा जसरी नै उनको स्कुलका सबै एप, बुकमार्क तथा स्रोतहरू प्रयोग गर्न सक्छन्। तर उक्त स्कुलले आधारभूत नियमहरू तोक्छ।</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सँग</translation>
 <translation id="545484289444831485">खोजका थप परिणामहरू हेर्नुहोस्</translation>
+<translation id="5457082343331641453">आफ्नो खोजमा हाल्नुहोस्</translation>
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5457459357461771897">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत, र अन्य मिडिया पहुँच गर्नुहोस् र हटाउनुहोस्</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -6426,6 +6438,7 @@
 <translation id="5816434091619127343">अनुरोध गरिएका प्रिन्टरसम्बन्धी परिवर्तनहरूले यस प्रिन्टरलाई काम नलाग्ने बनाउने छ।</translation>
 <translation id="581659025233126501">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="5817918615728894473">जोडा  बनाउनुहोस्</translation>
+<translation id="5817963443108180228">फेरि स्वागत छ, <ph name="PROFILE_NAME" /></translation>
 <translation id="581911254119283028">सबै एपहरू</translation>
 <translation id="5821565227679781414">सर्टकट सिर्जना गर्नुहोस्</translation>
 <translation id="5824976764713185207">पृष्ठ लोड भइसकेपछि उक्त पृष्ठ स्वतः पढ्नुहोस्</translation>
@@ -7026,6 +7039,7 @@
 <translation id="6265159465845424232">Microsoft फाइलहरू Microsoft OneDrive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोध्नुहोस्</translation>
 <translation id="6265687851677020761">पोर्ट हटाउनुहोस्</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> मा कनेक्ट गरिँदै छ</translation>
+<translation id="6266984048393265562">प्रोफाइल कस्टमाइज गर्नुहोस्</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6268252012308737255"><ph name="APP" /> मार्फत खोल्नुहोस्</translation>
 <translation id="6270309713620950855">म्युट नज</translation>
@@ -8018,6 +8032,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{सबै URL &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}=1{&amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}other{सबै URL ({COUNT}) &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="7029307918966275733">Crostini इन्स्टल गरिएको छैन। कृपया क्रेडिटहरू हेर्न Crostini इन्स्टल गर्नुहोस्।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
+<translation id="7030050505233848371">खतरनाक साइट। Chrome ले सूचनासम्बन्धी अनुमति हटाएको छ।</translation>
 <translation id="7030304022046916278">यो सुविधाले URL सुरक्षित छ कि छैन भनी जाँच गर्नका निम्ति URL हरू Safe Browsing मा पठाउँछ</translation>
 <translation id="7030695672997239647">ट्याबमा दायाँ क्लिक गर्नुहोस् र "यो ट्याब समूहमा हाल्नुहोस्" चयन गर्नुहोस् अनि "नयाँ समूह" चयन गर्नुहोस्</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - क्रमिक पोर्टमा जडान गरियो</translation>
@@ -9052,6 +9067,7 @@
 <translation id="7810202088502699111">पप-अप यो पेजमा अवरुद्ध भएको थियो ।</translation>
 <translation id="7810367892333449285">तपाईंले हालेको कोड <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> फर्म्याटमा हुनु पर्छ</translation>
 <translation id="7811263553491007091">फेरि प्रयास गर्नुहोस् वा तल दिइएका यसअघि सिर्जना गरिएका थिममध्ये एउटा थिम चयन गर्नुहोस्।</translation>
+<translation id="7814090115158024843">यी साइटहरूमा लेखाइसम्बन्धी सहायता कहिल्यै उपलब्ध नगराउनुहोस्</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> का लागि सर्टकट <ph name="SHORTCUT" /> बदल्नुहोस्</translation>
@@ -9285,6 +9301,7 @@
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7978412674231730200">निजी कुञ्जी</translation>
 <translation id="7978450511781612192">यस कार्यले तपाईंलाई आफ्ना Google खाताहरूबाट साइन आउट गराउने छ। तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू अब उप्रान्त सिंक‍ हुने छैनन्।</translation>
+<translation id="7980066177668669492">Base64-मा इन्कोड गरिएको ASCII, एकभन्दा बढी प्रमाणपत्रहरू</translation>
 <translation id="7980084013673500153">सम्पत्ति ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406"><ph name="APP_NAME" /> मा साइन इन गर्न सेभ गरिएको कुनै पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="7981662863948574132">डिभाइसको EID नम्बर र QR कोड पपअप देखाउनुहोस्</translation>
@@ -9698,6 +9715,7 @@
 <translation id="8276242035951017580">कुनै पनि एपलाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="8276560076771292512">क्यास खालि गर्नुहोस् र हार्ड पुन: लोड गर्नुहोस्</translation>
 <translation id="8276850948802942358">साइटलाई तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिने तरिकाका बारेमा थप जान्नुहोस्</translation>
+<translation id="8277907305629781277">तपाईंले <ph name="DATE" /> मा यो पासकी बनाउनुभयो</translation>
 <translation id="8280267190418431666">तपाईंका भाषामा उपलब्ध वेबसाइटहरू</translation>
 <translation id="828180235270931531">उपलब्ध अन्य प्रिन्टरहरू</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
@@ -10614,6 +10632,7 @@
 <translation id="8962863356073277855">URL को फर्म्याट https://www.example.com हुनु पर्छ</translation>
 <translation id="8962918469425892674">यो साइटले चाल वा प्रकाशसम्बन्धी सेन्सरहरू प्रयोग गर्दै छ।</translation>
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
+<translation id="8964795217937248330">ट्याब(हरू) बन्द गर्ने र समूह मेटाउने हो?</translation>
 <translation id="8965037249707889821">पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="8966809848145604011">अन्य प्रोफाइलहरू</translation>
 <translation id="8967427617812342790">पाठ्य सूचीमा थप्नुहोस्</translation>
@@ -11049,6 +11068,7 @@
 <translation id="979345485590886759">साइटहरूले माउसको पोइन्टर लक गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="980731642137034229">कारबाहीको मेनु नामक बटन</translation>
 <translation id="981121421437150478">अफलाइन</translation>
+<translation id="98235653036850093">नमस्ते, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - क्यामेरा र माइक्रोफोनले रेकर्ड गरिरहेका छन्</translation>
 <translation id="984275831282074731">भुक्तानी विधिहरू</translation>

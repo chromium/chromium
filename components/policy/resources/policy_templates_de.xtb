@@ -4366,6 +4366,15 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="4483738129334574255">Easter-Egg-Dinosaurierspiel auf registrierten <ph name="PRODUCT_OS_NAME" />-Geräten deaktivieren, aber auf anderen Geräten aktivieren</translation>
 <translation id="4484515651939984695">Gibt an, wie lange (in Sekunden) ein Übertragungsgerät, das mit einem Zugriffscode oder QR-Code ausgewählt wurde, im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte angezeigt wird.</translation>
 <translation id="4485425108474077672">URL für "Neuer Tab"-Seite konfigurieren</translation>
+<translation id="4488959486611931919">Hinweis: Seit Chrome diese Cookies ab M118 standardmäßig blockiert, wurde keine Websitebeschädigung gemeldet. Daher kann diese Funktion ab M127 nicht konfiguriert werden und diese Richtlinie ist dann nicht mehr wirksam.
+
+Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Cookies widerrufen, die per JavaScript mit bestimmten Steuerzeichen festgelegt werden (NULL, Zeilenumbruch und Zeilenvorschub).
+Bisher führten diese Zeichen in einem Cookie-String dazu, dass der String abgeschnitten, aber dennoch festgelegt wurde.
+Jetzt führen diese Zeichen dazu, dass der gesamte Cookie-String ignoriert wird.
+
+Wenn diese Richtlinie auf „true“ gesetzt ist (Standardeinstellung), ist das neue Verhalten aktiviert.
+
+Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="4490420545181481759">Mit X.509-Zertifikaten können Einschränkungen wie Namensbeschränkungen in Erweiterungen in das Zertifikat codiert werden. RFC 5280 gibt an, dass die Durchsetzung solcher Einschränkungen für Trust-Anchor-Zertifikate optional ist. Ab <ph name="PRODUCT_NAME" /> 112 werden solche Einschränkungen in Zertifikaten, die aus dem Shop für Plattformzertifikate geladen werden, erzwungen.
 
 Diese Richtlinie ist ein vorübergehender Deaktivierungsmechanismus für den Fall, dass Unternehmen Probleme mit den in ihre privaten Root-Zertifikate codierten Einschränkungen haben. Diese Richtlinie kann dann verwendet werden, um die Erzwingung der Einschränkungen vorübergehend zu deaktivieren und die Probleme mit dem Zertifikat zu beheben.

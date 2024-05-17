@@ -571,6 +571,7 @@
 <translation id="2046951263634619614">서점</translation>
 <translation id="2048261947532620704">페이지 번역 중</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
+<translation id="2055461225779831292">카메라 사용 및 이동(<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">마우스 포인터 잠금</translation>
 <translation id="2056658168519009885">사이트에서 광고 개인 최적화에 도움이 되는 정보를 Chrome에 요청할 수 있습니다.</translation>
 <translation id="2059166748188874810">지방 자치제</translation>
@@ -718,6 +719,7 @@
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2301098101308036335">방문한 웹사이트 및 방문 시기</translation>
 <translation id="230286397113210245">시크릿 창 열기 버튼, 새 시크릿 창을 열어 비공개로 탐색하려면 활성화하세요.</translation>
+<translation id="2306124309679506798">몰입형 경험을 허용하시겠습니까?</translation>
 <translation id="2312234273148520048">양념 및 드레싱</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="2316159751672436664">ChromeOS 설정에서 접근성 도구 맞춤설정</translation>
@@ -1173,6 +1175,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” 링크가 차단되었습니다</translation>
+<translation id="3248329428895535435">이 사이트에서 표시하지 않음</translation>
 <translation id="3252772880526154546">아키텍처</translation>
 <translation id="3254301855501243548">18x22인치</translation>
 <translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
@@ -3791,6 +3794,7 @@
 <translation id="8263001937536038617">사진 및 동영상 서비스</translation>
 <translation id="8265992338205884890">표시되는 데이터</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />(으)로 로그인</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">별도 문서/모은 사본</translation>
 <translation id="8269703227894255363">{0,plural, =1{파일 열기 차단됨}other{파일 <ph name="FILE_COUNT" />개 열기 차단됨}}</translation>
 <translation id="8270173610195068258">범죄 및 정의</translation>
@@ -4210,6 +4214,7 @@
 <translation id="9094544726794842788">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다</translation>
 <translation id="9095388113577226029">다른 언어...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, tab 키를 누른 다음 Enter 키를 눌러 iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정</translation>
+<translation id="9101450247048146228">카메라 사용 및 이동(<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">트레이 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" />에서는 사용자 정보를 보호하기 위해 일반적으로 암호화를 사용합니다. 이번에 Chromium에서 <ph name="SITE" />에 연결을 시도했을 때 웹사이트에서 비정상적이고 잘못된 사용자 인증 정보를 반환했습니다. 이는 공격자가 <ph name="SITE" />인 것처럼 가장하려고 하거나 Wi-Fi 로그인 화면이 연결을 방해했기 때문일 수 있습니다. 데이터 교환이 발생하기 전에 Chromium에서 연결을 중단했으므로 사용자 정보는 안전합니다.</translation>
 <translation id="9107467864910557787">내 브라우저는 <ph name="MANAGER" />에서 관리합니다</translation>
@@ -4232,6 +4237,7 @@
 <translation id="9139318394846604261">쇼핑</translation>
 <translation id="9141013498910525015">주소 관리</translation>
 <translation id="9144951720726881238">유효기간:</translation>
+<translation id="9145910032514306808">다시 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />한 후 이 탭으로 돌아와 작성 지원 기능을 이용하세요.</translation>
 <translation id="9148507642005240123">수정 실행 취소(&amp;U)</translation>
 <translation id="9148599396704355100">가격이 저렴함</translation>
 <translation id="9150025764986957246">다음과 같은 정보를 입력할 수 있습니다</translation>

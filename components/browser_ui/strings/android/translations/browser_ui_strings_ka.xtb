@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6042308850641462728">სხვა</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> თქვენი ბოლო ჩანართი</translation>
 <translation id="6064125863973209585">დასრულებული ჩამოტვირთვები</translation>
 <translation id="6071501408666570960">ამ საიტზე, შესაძლოა, სისტემიდან გამოხვიდეთ</translation>
 <translation id="6120483543004435978">ჩართვის შემთხვევაში საიტებს შეეძლება ნებართვის მოთხოვნა იმის შესატყობად, თუ როდის იყენებთ აქტიურად თქვენს მოწყობილობას. გამორთვის შემთხვევაში საიტებს არ ეცოდინება, თუ როდის იყენებთ აქტიურად თქვენს მოწყობილობას.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">აირჩიეთ კონტაქტი</translation>
 <translation id="7990211076305263060">ჩართვის შემთხვევაში საიტებს შეეძლება თქვენი მიკროფონის გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება თქვენი მიკროფონის გამოყენება.</translation>
 <translation id="8007176423574883786">გამორთულია ამ მოწყობილობისთვის</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" />-დან</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="8042586301629853791">დალაგება კრიტერიუმით:</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>
