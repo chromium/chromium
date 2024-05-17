@@ -10303,6 +10303,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GameDashboard.ControlsFeatureToggleState">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls feature is toggled on or off.
+  </summary>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Game Controls feature is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.ControlsHintToggleSource">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls mapping hint is toggled on or off.
+  </summary>
+  <metric name="Source" enum="GameDashboardMenu">
+    <summary>
+      Where the mapping hint is toggled from.
+    </summary>
+  </metric>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Game Controls mapping hint is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
 <event name="GameDashboard.EditControlsWithEmptyState">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
@@ -10313,6 +10346,20 @@ be describing additional metrics about the same event.
   <metric name="Empty" enum="Boolean">
     <summary>
       Whether Game Controls is empty.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.FunctionTriggered">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard functions are triggered.
+  </summary>
+  <metric name="Function" enum="GameDashboardFunction">
+    <summary>
+      Game dashboard function.
     </summary>
   </metric>
 </event>
@@ -10365,6 +10412,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GameDashboard.ToolbarClickToExpandState">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard toolbar is expanded or collapsed.
+  </summary>
+  <metric name="Expanded" enum="Boolean">
+    <summary>
+      Whether the toolbar is expanded.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.ToolbarNewLocation">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard toolbar is snapped to a new location.
+  </summary>
+  <metric name="Location" enum="GameDashboardToolbarSnapLocation">
+    <summary>
+      Toolbar new snap location.
+    </summary>
+  </metric>
+</event>
+
 <event name="GameDashboard.ToolbarToggleState">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
@@ -10375,6 +10450,21 @@ be describing additional metrics about the same event.
   <metric name="ToggleOn" enum="Boolean">
     <summary>
       Whether the toolbar is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.WelcomeDialogNotificationToggleState">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard welcome dialog notification is toggled on or
+    off.
+  </summary>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Welcome dialog notification is toggled on or off.
     </summary>
   </metric>
 </event>

@@ -222,7 +222,7 @@ void GameDashboardContext::SetGameDashboardToolbarSnapLocation(
   toolbar_snap_location_ = new_location;
   AnimateToolbarWidgetBoundsChange(CalculateToolbarWidgetBounds());
   MaybeUpdateCameraPreview();
-  RecordGameDashboardToolbarNewLocation(new_location);
+  RecordGameDashboardToolbarNewLocation(app_id_, new_location);
 }
 
 void GameDashboardContext::OnWindowBoundsChanged() {

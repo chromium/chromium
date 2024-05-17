@@ -339,7 +339,8 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
     }
   }
   UpdateGamepadButtonTooltipText();
-  RecordGameDashboardToolbarClickToExpandState(is_expanded_);
+  RecordGameDashboardToolbarClickToExpandState(context_->app_id(),
+                                               is_expanded_);
   context_->MaybeUpdateToolbarWidgetBounds();
 }
 
@@ -352,8 +353,8 @@ void GameDashboardToolbarView::OnGameControlsButtonPressed() {
           game_window->GetProperty(kArcGameControlsFlagsKey),
           static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kHint),
           /*enable_flag=*/!was_toggled));
-  RecordGameDashboardControlsHintToggleSource(GameDashboardMenu::kToolbar,
-                                              !was_toggled);
+  RecordGameDashboardControlsHintToggleSource(
+      context_->app_id(), GameDashboardMenu::kToolbar, !was_toggled);
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
