@@ -10,6 +10,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
 #include "chromeos/ash/components/audio/audio_device_metrics_handler.h"
@@ -39,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   AudioSelectionNotificationHandler& operator=(
       const AudioSelectionNotificationHandler&) = delete;
   ~AudioSelectionNotificationHandler();
+
+  // Time delta to debounce the audio selection notification.
+  static constexpr base::TimeDelta kDebounceTime = base::Milliseconds(1500);
 
   // The audio selection notification id, used to identify the notification
   // itself.
@@ -128,6 +133,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::optional<std::string>& active_input_device_name,
       const std::optional<std::string>& active_output_device_name);
 
+  // A helper function to determine notification type and show notification.
+  void ShowNotification(
+      const std::optional<std::string>& active_input_device_name,
+      const std::optional<std::string>& active_output_device_name,
+      SwitchToDeviceCallback switch_to_device_callback,
+      OpenSettingsAudioPageCallback open_settings_audio_page_callback);
+
   // Handles firing of audio selection related metrics.
   AudioDeviceMetricsHandler audio_device_metrics_handler_;
 
@@ -135,6 +147,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // notification is removed.
   AudioDeviceList hotplug_input_devices_;
   AudioDeviceList hotplug_output_devices_;
+
+  // Used to debounce the notification.
+  base::RetainingOneShotTimer show_notification_debounce_timer_;
 
   base::WeakPtrFactory<AudioSelectionNotificationHandler> weak_ptr_factory_{
       this};

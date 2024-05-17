@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -33,6 +34,7 @@
 #include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -423,7 +425,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
  public:
   CrasAudioHandlerTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   CrasAudioHandlerTest(const CrasAudioHandlerTest&) = delete;
   CrasAudioHandlerTest& operator=(const CrasAudioHandlerTest&) = delete;
@@ -751,6 +753,17 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     return message_center->NotificationCount();
   }
 
+  // Gets the title of audio selection notification. If not found, return
+  // std::nullopt.
+  const std::optional<std::u16string> GetNotificationTitle() {
+    auto* message_center = message_center::MessageCenter::Get();
+    message_center::Notification* notification =
+        message_center->FindNotificationById(
+            AudioSelectionNotificationHandler::kAudioSelectionNotificationId);
+    return notification ? std::make_optional(notification->title())
+                        : std::nullopt;
+  }
+
   // Helper function to call SyncDevicePrefSetMap.
   void SyncDevicePrefSetMap(bool is_input) {
     cras_audio_handler_->SyncDevicePrefSetMap(is_input);
@@ -760,6 +773,11 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   std::map<std::string, std::string>& GetDevicePrefSetMap(bool is_input) {
     return is_input ? cras_audio_handler_->input_device_pref_set_map_
                     : cras_audio_handler_->output_device_pref_set_map_;
+  }
+
+  // Mock time fast forward.
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
   }
 
  protected:
@@ -1239,6 +1257,7 @@ TEST_P(CrasAudioHandlerTest,
   system_monitor_observer_.reset_count();
 
   // Verify notification shows up for unseen new connected HDMI device.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Disconnect hdmi headset.
@@ -1401,6 +1420,7 @@ TEST_P(CrasAudioHandlerTest,
   system_monitor_observer_.reset_count();
 
   // Verify notification shows up for unseen new connected USB headphone device.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Unplug usb headphone.
@@ -1496,6 +1516,7 @@ TEST_P(CrasAudioHandlerTest,
 
   // Expect that notification is displayed since the device set was unseen
   // before.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Plug in another usb headphone.
@@ -1525,6 +1546,7 @@ TEST_P(CrasAudioHandlerTest,
                      /*has_alternative_device=*/true);
 
   // Verify notification shows up for unseen new connected USB headphone device.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Unplug the 2nd usb headphone.
@@ -1955,6 +1977,7 @@ TEST_P(CrasAudioHandlerTest, PlugUSBMic_AudioSelectionImprovementFlagOn) {
   EXPECT_TRUE(cras_audio_handler_->has_alternative_input());
 
   // Verify notification shows up for unseen new connected USB mic device.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 }
 
@@ -2096,6 +2119,7 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_TRUE(cras_audio_handler_->has_alternative_input());
 
   // Verify notification shows up for unseen new connected USB mic device.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Verify the active output device is not changed.
@@ -7264,6 +7288,7 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 }
 
@@ -7281,6 +7306,7 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 }
 
@@ -7361,6 +7387,126 @@ TEST_P(CrasAudioHandlerTest, SyncDevicePrefSetMap) {
   SyncDevicePrefSetMap(/*is_input=*/false);
   EXPECT_TRUE(input_device_pref_set_map.empty());
   EXPECT_TRUE(output_device_pref_set_map.empty());
+}
+
+// Tests that showing notification is debounced for audio output device.
+TEST_P(CrasAudioHandlerTest,
+       DebounceNotificationForOutput_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Initialize with internal speaker.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/false);
+
+  // Expect that notification is not displayed since there is only one output
+  // device connected.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in a usb headphone without fast forward time.
+  AudioNodeList audio_nodes;
+  AudioNode inernal_speaker = GenerateAudioNode(kInternalSpeaker);
+  inernal_speaker.active = true;
+  audio_nodes.push_back(inernal_speaker);
+  AudioNode usb_headphone_1 = GenerateAudioNode(kUSBHeadphone1);
+  audio_nodes.push_back(usb_headphone_1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Although notification is supposed to show up for unseen new connected USB
+  // headphone device, the debounce function will delay the display of
+  // notification.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in another usb headphone with fast forward time.
+  AudioNode usb_headphone_2 = GenerateAudioNode(kUSBHeadphone2);
+  audio_nodes.push_back(usb_headphone_2);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the active output device is not switched because the new connected
+  // device is not seen before.
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  ExpectActiveDevice(/*is_input=*/false,
+                     /*expected_active_device=*/kInternalSpeaker,
+                     /*has_alternative_device=*/true);
+
+  // Verify notification is displayed at this moment.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Verify that the notification is for multiple audio sources detected.
+  // when two new devices are hot plugged quickly, due to the debounce
+  // mechanism, rather than showing different notifications for each of them
+  // (with the first one being overridden quickly), we show notification to
+  // handle both of them together.
+  std::optional<std::u16string> title = GetNotificationTitle();
+  EXPECT_TRUE(title.has_value());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE),
+      title.value());
+}
+
+// Tests that showing notification is debounced for audio input device.
+TEST_P(CrasAudioHandlerTest,
+       DebounceNotificationForInput_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Initialize with internal mic.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/std::nullopt);
+
+  // Expect that notification is not displayed since there is only one input
+  // device connected.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in a usb mic without fast forward time.
+  AudioNodeList audio_nodes;
+  AudioNode inernal_mic = GenerateAudioNode(kInternalMic);
+  inernal_mic.active = true;
+  audio_nodes.push_back(inernal_mic);
+  AudioNode usb_mic_1 = GenerateAudioNode(kUSBMic1);
+  audio_nodes.push_back(usb_mic_1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Although notification is supposed to show up for unseen new connected USB
+  // mic device, the debounce function will delay the display of
+  // notification.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in another usb mic with fast forward time.
+  AudioNode usb_mic_2 = GenerateAudioNode(kUSBMic2);
+  audio_nodes.push_back(usb_mic_2);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the active output device is not switched because the new connected
+  // device is not seen before.
+  EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
+  ExpectActiveDevice(/*is_input=*/true,
+                     /*expected_active_device=*/kInternalMic,
+                     /*has_alternative_device=*/true);
+
+  // Verify notification is displayed at this moment.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Verify that the notification is for multiple audio sources detected.
+  // when two new devices are hot plugged quickly, due to the debounce
+  // mechanism, rather than showing different notifications for each of them
+  // (with the first one being overridden quickly), we show notification to
+  // handle both of them together.
+  std::optional<std::u16string> title = GetNotificationTitle();
+  EXPECT_TRUE(title.has_value());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE),
+      title.value());
 }
 
 }  // namespace ash

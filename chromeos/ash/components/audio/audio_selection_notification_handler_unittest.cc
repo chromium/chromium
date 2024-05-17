@@ -141,6 +141,7 @@ TEST_F(AudioSelectionNotificationHandlerTest, ShowAudioSelectionNotification) {
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
 
   // Expect notification is shown.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Expect new notification to replace the old one and the current notification
@@ -242,6 +243,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -301,6 +303,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -368,6 +371,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -435,6 +439,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -487,6 +492,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
   std::optional<std::u16string> title = GetNotificationTitle();
   EXPECT_TRUE(title.has_value());
@@ -529,6 +535,7 @@ TEST_F(AudioSelectionNotificationHandlerTest, HandleSwitchButtonClicked) {
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
 
   // Expect notification displays.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Clicking notification body does not have any effects.
@@ -664,6 +671,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If a non related device is removed, notification should stay.
@@ -699,6 +707,7 @@ TEST_F(AudioSelectionNotificationHandlerTest,
           &AudioSelectionNotificationHandlerTest::SwitchToDevice),
       base::BindRepeating(
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If a non related device is removed, notification should stay.
@@ -734,6 +743,7 @@ TEST_F(AudioSelectionNotificationHandlerTest, HandleSettingsButtonClicked) {
           &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
 
   // Expect notification displays.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
   // Clicking notification body does not have any effects.

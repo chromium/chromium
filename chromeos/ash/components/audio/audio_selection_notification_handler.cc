@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,12 +112,38 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
   // At least input or output has hotplug device.
   CHECK(!hotplug_input_devices.empty() || !hotplug_output_devices.empty());
 
-  // Update hotplug_input_devices_ and hotplug_output_devices_.
-  hotplug_input_devices_.clear();
-  hotplug_input_devices_ = hotplug_input_devices;
-  hotplug_output_devices_.clear();
-  hotplug_output_devices_ = hotplug_output_devices;
+  // If show_notification callback is already in the queue, stop it and append
+  // new hot plugged devices to the existing list, so that the notification can
+  // handle them together. Otherwise, reset the existing hot plugged list.
+  if (show_notification_debounce_timer_.IsRunning()) {
+    show_notification_debounce_timer_.Stop();
+    for (const AudioDevice& device : hotplug_input_devices) {
+      hotplug_input_devices_.push_back(device);
+    }
+    for (const AudioDevice& device : hotplug_output_devices) {
+      hotplug_output_devices_.push_back(device);
+    }
+  } else {
+    hotplug_input_devices_.clear();
+    hotplug_input_devices_ = hotplug_input_devices;
+    hotplug_output_devices_.clear();
+    hotplug_output_devices_ = hotplug_output_devices;
+  }
 
+  show_notification_debounce_timer_.Start(
+      FROM_HERE, kDebounceTime,
+      base::BindRepeating(&AudioSelectionNotificationHandler::ShowNotification,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          active_input_device_name, active_output_device_name,
+                          switch_to_device_callback,
+                          open_settings_audio_page_callback));
+}
+
+void AudioSelectionNotificationHandler::ShowNotification(
+    const std::optional<std::string>& active_input_device_name,
+    const std::optional<std::string>& active_output_device_name,
+    SwitchToDeviceCallback switch_to_device_callback,
+    OpenSettingsAudioPageCallback open_settings_audio_page_callback) {
   AudioDeviceList devices_to_activate;
   std::u16string title_message_id;
   std::u16string body_message_id;
@@ -125,7 +152,7 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
       notification_event;
 
   NotificationTemplate notification_template = GetNotificationTemplate(
-      hotplug_input_devices, hotplug_output_devices, active_input_device_name,
+      hotplug_input_devices_, hotplug_output_devices_, active_input_device_name,
       active_output_device_name);
 
   // Use different notification titles and messages based on notification types.
@@ -135,8 +162,8 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
           l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_TITLE);
       body_message_id = l10n_util::GetStringFUTF16(
           IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_OR_OUTPUT_BODY,
-          base::UTF8ToUTF16(hotplug_input_devices.front().display_name));
-      devices_to_activate.push_back(hotplug_input_devices.front());
+          base::UTF8ToUTF16(hotplug_input_devices_.front().display_name));
+      devices_to_activate.push_back(hotplug_input_devices_.front());
       buttons_info.emplace_back(
           l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH));
       notification_event =
@@ -148,8 +175,8 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
           IDS_ASH_AUDIO_SELECTION_SWITCH_OUTPUT_TITLE);
       body_message_id = l10n_util::GetStringFUTF16(
           IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_OR_OUTPUT_BODY,
-          base::UTF8ToUTF16(hotplug_output_devices.front().display_name));
-      devices_to_activate.push_back(hotplug_output_devices.front());
+          base::UTF8ToUTF16(hotplug_output_devices_.front().display_name));
+      devices_to_activate.push_back(hotplug_output_devices_.front());
       buttons_info.emplace_back(
           l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH));
       notification_event =
@@ -162,9 +189,9 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
       body_message_id = l10n_util::GetStringFUTF16(
           IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_AND_OUTPUT_BODY,
           base::UTF8ToUTF16(
-              ExtractDeviceSourceName(hotplug_output_devices.front())));
-      devices_to_activate.push_back(hotplug_input_devices.front());
-      devices_to_activate.push_back(hotplug_output_devices.front());
+              ExtractDeviceSourceName(hotplug_output_devices_.front())));
+      devices_to_activate.push_back(hotplug_input_devices_.front());
+      devices_to_activate.push_back(hotplug_output_devices_.front());
       buttons_info.emplace_back(
           l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH));
       notification_event =
