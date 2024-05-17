@@ -3547,6 +3547,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that is being checked for malware.">
         Checking for malware...
       </message>
+      <message name="IDS_DOWNLOAD_LOCAL_DECRYPTION_PROMPT_ALERT"
+               desc="Accessible alert announced when a local decryption prompt appears on a suspicious archive">
+        <ph name="FILENAME">$1<ex>bla.exe</ex></ph> may be dangerous. Add a password if you want Chrome to verify it or you can download it directly.
+      </message>
 
       <!-- Web App Window Title string -->
       <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with app_title.">
