@@ -12,8 +12,6 @@ blink_core_sources_permissions_policy = [
   "permissions_policy_devtools_support.h",
   "permissions_policy_devtools_support.cc",
   "iframe_policy.h",
-  "layout_animations_policy.cc",
-  "layout_animations_policy.h",
   "policy_helper.h",
 ]
 

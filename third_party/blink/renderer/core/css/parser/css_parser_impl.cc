@@ -920,12 +920,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     }
 
     CSSParserTokenStream::BlockGuard guard(stream);
-    StyleRuleKeyframe* keyframe_style_rule =
-        ConsumeKeyframeStyleRule(prelude, prelude_offset, stream);
-    if (keyframe_style_rule) {
-      context_->ReportLayoutAnimationsViolationIfNeeded(*keyframe_style_rule);
-    }
-    return keyframe_style_rule;
+    return ConsumeKeyframeStyleRule(prelude, prelude_offset, stream);
   }
   if (allowed_rules == kFontFeatureRules) {
     // We get here if something other than an at rule (e.g. @swash,

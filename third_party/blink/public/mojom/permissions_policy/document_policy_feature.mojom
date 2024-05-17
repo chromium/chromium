@@ -25,7 +25,7 @@ enum DocumentPolicyFeature {
   // disabled, default size (300 x 150) is used to prevent relayout.
   // kUnsizedMedia = 7, // Removed.
   // Restricts the usage of layout-causing animations in a document.
-  kLayoutAnimations = 8,
+  // kLayoutAnimations = 8, // Removed.
   // Controls the ability of the document to use several dynamic markup API
   // which interfere with document's input stream (document.write(),
   // document.close(), etc.).

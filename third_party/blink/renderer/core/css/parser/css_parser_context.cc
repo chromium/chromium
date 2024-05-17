@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -247,25 +246,6 @@ const Document* CSSParserContext::GetDocument() const {
 // thus this method can return null.
 const ExecutionContext* CSSParserContext::GetExecutionContext() const {
   return (document_.Get()) ? document_.Get()->GetExecutionContext() : nullptr;
-}
-
-void CSSParserContext::ReportLayoutAnimationsViolationIfNeeded(
-    const StyleRuleKeyframe& rule) const {
-  if (!document_ || !document_->GetExecutionContext()) {
-    return;
-  }
-  for (unsigned i = 0; i < rule.Properties().PropertyCount(); ++i) {
-    CSSPropertyID id = rule.Properties().PropertyAt(i).Id();
-    if (id == CSSPropertyID::kVariable) {
-      continue;
-    }
-    const CSSProperty& property = CSSProperty::Get(id);
-    if (!LayoutAnimationsPolicy::AffectedCSSProperties().Contains(&property)) {
-      continue;
-    }
-    LayoutAnimationsPolicy::ReportViolation(property,
-                                            *document_->GetExecutionContext());
-  }
 }
 
 bool CSSParserContext::IsForMarkupSanitization() const {

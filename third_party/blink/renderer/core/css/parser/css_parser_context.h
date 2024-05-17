@@ -24,7 +24,6 @@ namespace blink {
 class CSSStyleSheet;
 class Document;
 class ExecutionContext;
-class StyleRuleKeyframe;
 class StyleSheetContents;
 enum class SecureContextMode;
 
@@ -123,12 +122,6 @@ class CORE_EXPORT CSSParserContext final
   const ExecutionContext* GetExecutionContext() const;
 
   const DOMWrapperWorld* JavascriptWorld() const { return world_.Get(); }
-
-  // TODO(ekaramad): We currently only report @keyframes violations. We need to
-  // report CSS transitions as well (https://crbug.com/906147).
-  // TODO(ekaramad): We should provide a source location in the violation
-  // report (https://crbug.com/906150, ).
-  void ReportLayoutAnimationsViolationIfNeeded(const StyleRuleKeyframe&) const;
 
   bool IsForMarkupSanitization() const;
 
