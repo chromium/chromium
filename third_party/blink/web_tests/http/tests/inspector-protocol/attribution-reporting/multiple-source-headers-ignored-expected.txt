@@ -1,0 +1,11 @@
+Test that clicking an attributionsrc anchor which returns multiple Attribution-Reporting-Register-Source headers triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : SourceIgnored
+        }
+    }
+}
+
