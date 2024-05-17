@@ -111,6 +111,10 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   // future-proofed and support multiple `GattService`s created at a time.
   bool did_any_gatt_services_fail_to_register_ = false;
 
+  // `task_runner_` is required to prevent blocking in calls over the Mojo
+  // remote during GATT service registration.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // `registration_barrier_` is initialized during `RegisterGattServices()`
   // with the number of `GattService`s that need to be registered via
   // `RegisterGattService()`. This is needed because `RegisterGattServices()`

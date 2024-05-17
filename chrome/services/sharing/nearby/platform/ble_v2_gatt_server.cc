@@ -89,7 +89,9 @@ BleV2GattServer::GattService::~GattService() = default;
 BleV2GattServer::BleV2GattServer(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter,
     std::unique_ptr<GattService::Factory> gatt_service_factory)
-    : gatt_service_factory_(std::move(gatt_service_factory)),
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      gatt_service_factory_(std::move(gatt_service_factory)),
       bluetooth_adapter_(std::make_unique<BluetoothAdapter>(adapter)),
       adapter_remote_(adapter) {
   CHECK(adapter_remote_.is_bound());
@@ -136,11 +138,11 @@ BleV2GattServer::CreateCharacteristic(
     auto gatt_service = gatt_service_factory_->Create();
     gatt_service->gatt_service_remote.Bind(
         std::move(gatt_service_pending_remote),
-        /*bind_task_runner=*/nullptr);
+        /*bind_task_runner=*/task_runner_);
     gatt_service->gatt_service_remote.set_disconnect_handler(
         base::BindOnce(&BleV2GattServer::OnGattServiceDisconnected,
                        base::Unretained(this), service_uuid),
-        /*handler_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
+        /*handler_task_runner=*/task_runner_);
     service_it =
         uuid_to_gatt_service_map_.emplace(service_uuid, std::move(gatt_service))
             .first;
