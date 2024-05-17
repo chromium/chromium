@@ -6,16 +6,17 @@ import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons_lit.html.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '../demo.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_action_menu_demo.html.js';
+import {getCss} from './cr_action_menu_demo.css.js';
+import {getHtml} from './cr_action_menu_demo.html.js';
 
-interface CrActionMenuDemoElement {
+type AnchorAlignmentKey = keyof typeof AnchorAlignment;
+
+export interface CrActionMenuDemoElement {
   $: {
     menu: CrActionMenuElement,
     minMaxContainer: HTMLDivElement,
@@ -23,51 +24,49 @@ interface CrActionMenuDemoElement {
   };
 }
 
-class CrActionMenuDemoElement extends PolymerElement {
+export class CrActionMenuDemoElement extends CrLitElement {
   static get is() {
     return 'cr-action-menu-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      alignmentOptions_: Array,
-      customAlignmentX_: {
-        type: String,
-        value: 'CENTER',
-      },
-      customAlignmentY_: {
-        type: String,
-        value: 'CENTER',
-      },
-      statusText_: String,
+      alignmentOptions_: {type: Array},
+      customAlignmentX_: {type: String},
+      customAlignmentY_: {type: String},
+      statusText_: {type: String},
     };
   }
 
-  private alignmentOptions_: Array<keyof typeof AnchorAlignment> = [
+  protected alignmentOptions_: AnchorAlignmentKey[] = [
     'BEFORE_START',
     'AFTER_START',
     'CENTER',
     'BEFORE_END',
     'AFTER_END',
   ];
-  private customAlignmentX_: keyof typeof AnchorAlignment;
-  private customAlignmentY_: keyof typeof AnchorAlignment;
+  protected customAlignmentX_: AnchorAlignmentKey = 'CENTER';
+  protected customAlignmentY_: AnchorAlignmentKey = 'CENTER';
 
-  private onShowAnchoredMenuClick_(event: MouseEvent) {
+  protected onShowAnchoredMenuClick_(event: MouseEvent) {
     this.$.menu.showAt(event.target as HTMLElement);
   }
 
-  private onContextMenu_(event: MouseEvent) {
+  protected onContextMenu_(event: MouseEvent) {
     event.preventDefault();
     this.$.menu.close();
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
-  private onShowMinMaxMenu_(event: MouseEvent) {
+  protected onShowMinMaxMenu_(event: MouseEvent) {
     const minMaxContainerRect = this.$.minMaxContainer.getBoundingClientRect();
     const config = {
       minX: minMaxContainerRect.left,
@@ -78,16 +77,26 @@ class CrActionMenuDemoElement extends PolymerElement {
     this.$.menu.showAt(event.target as HTMLElement, config);
   }
 
-  private onAnchorAlignmentDemoClick_() {
+  protected onAnchorAlignmentDemoClick_() {
     this.$.menu.showAt(this.$.anchorAlignmentDemo, {
       anchorAlignmentX: AnchorAlignment[this.customAlignmentX_],
       anchorAlignmentY: AnchorAlignment[this.customAlignmentY_],
     });
   }
 
-  private isSelectedAlignment_(
-      selectedAlignment: AnchorAlignment, option: AnchorAlignment) {
+  protected isSelectedAlignment_(
+      selectedAlignment: AnchorAlignmentKey, option: AnchorAlignmentKey) {
     return selectedAlignment === option;
+  }
+
+  protected onCustomAlignmentXChanged_(e: Event) {
+    this.customAlignmentX_ =
+        (e.target as HTMLSelectElement).value as AnchorAlignmentKey;
+  }
+
+  protected onCustomAlignmentYChanged_(e: Event) {
+    this.customAlignmentY_ =
+        (e.target as HTMLSelectElement).value as AnchorAlignmentKey;
   }
 }
 

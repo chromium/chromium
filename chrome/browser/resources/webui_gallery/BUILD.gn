@@ -15,7 +15,11 @@ build_webui("build") {
     "webui_gallery.html",
   ]
 
-  css_files = [ "demos/demo.css" ]
+  css_files = [
+    "demos/cr_action_menu/cr_action_menu_demo.css",
+    "demos/demo.css",
+    "demos/demo_lit.css",
+  ]
 
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
@@ -52,6 +56,7 @@ build_webui("build") {
 
   ts_deps = [
     "//chrome/browser/resources/side_panel/shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
