@@ -41,6 +41,7 @@ suite('DestinationSelect', () => {
 
     DestinationManager.resetInstanceForTesting();
     destinationManager = DestinationManager.getInstance();
+    destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
     element = document.createElement(DestinationSelectElement.is) as
         DestinationSelectElement;
@@ -125,10 +126,7 @@ suite('DestinationSelect', () => {
             isChildVisible(element, loadingSelector),
             `${loadingSelector} should be visible`);
 
-        // Move time forward to resolve getLocalDestinations in manager and
-        // ensure manager is initialized.
-        destinationManager.initializeSession(
-            FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        // Move time forward to resolve getLocalDestinations in manager.
         const changeEvent =
             eventToPromise(DESTINATION_SELECT_SHOW_LOADING_CHANGED, controller);
         mockTimer.tick(testDelay);

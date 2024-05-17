@@ -71,6 +71,7 @@ export class DestinationManager extends EventTarget implements
     assert(
         !this.sessionContext, 'SessionContext should only be configured once');
     this.sessionContext = sessionContext;
+    this.fetchInitialDestinations();
     this.dispatchEvent(
         createCustomEvent(DESTINATION_MANAGER_SESSION_INITIALIZED));
   }
@@ -92,20 +93,6 @@ export class DestinationManager extends EventTarget implements
     // Digital destinations can be added at creation and will be removed during
     // session initialization if not supported by policy.
     this.insertDigitalDestinations();
-
-    // Request initial data.
-    this.updateState(DestinationManagerState.FETCHING);
-    // TODO(b/323421684): Once the initial local destinations fetch completes
-    // update has initial destination set, determine relevant initial
-    // destination, and create the initial print ticket. If policy restricts
-    // fetching a destination type an empty destination list will be returned.
-    this.destinationProvider.getLocalDestinations().then(
-        (destinations: Destination[]): void => {
-          this.addOrUpdateDestinations(destinations);
-          this.updateActiveDestination(PDF_DESTINATION.id);
-          this.initialDestinationsLoaded = true;
-          this.updateState(DestinationManagerState.LOADED);
-        });
   }
 
   // TODO(b/323421684): Returns true if initial fetch has returned
@@ -182,6 +169,26 @@ export class DestinationManager extends EventTarget implements
     assert(index !== -1);
     this.destinationCache.set(destination.id, destination);
     this.destinations[index] = destination;
+  }
+
+  // Requests destinations from backend and updates manager state to `FETCHING`.
+  // Once destinations have been stored, the state is updated to `LOADED` and
+  // attempts to select an initial destination.
+  private fetchInitialDestinations(): void {
+    assert(this.isSessionInitialized);
+    // Request initial data.
+    this.updateState(DestinationManagerState.FETCHING);
+    // TODO(b/323421684): Once the initial local destinations fetch completes
+    // update has initial destination set, determine relevant initial
+    // destination, and create the initial print ticket. If policy restricts
+    // fetching a destination type an empty destination list will be returned.
+    this.destinationProvider.getLocalDestinations().then(
+        (destinations: Destination[]): void => {
+          this.addOrUpdateDestinations(destinations);
+          this.initialDestinationsLoaded = true;
+          this.updateActiveDestination(PDF_DESTINATION.id);
+          this.updateState(DestinationManagerState.LOADED);
+        });
   }
 
   // Insert hard-coded digital destinations into set of known destinations.

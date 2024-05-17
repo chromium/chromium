@@ -72,13 +72,21 @@ suite('DestinationManager', () => {
     assertNotEquals(notFoundIndex, pdfIndex, 'PDF destination available');
   });
 
-  // Verify getLocalDestinations is called on construction of manager.
-  test('on create getLocalDestinations is called', () => {
-    const expectedCallCount = 1;
+  // Verify getLocalDestinations is called during initializeSession.
+  test('initializeSession calls getLocalDestinations', () => {
+    let expectedCallCount = 0;
     assertEquals(
         expectedCallCount,
         destinationProvider.getCallCount(GET_LOCAL_DESTINATIONS_METHOD),
-        `${GET_LOCAL_DESTINATIONS_METHOD} called in construction of manager`);
+        `${GET_LOCAL_DESTINATIONS_METHOD} not called`);
+
+    // Initialize destination manager.
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    ++expectedCallCount;
+    assertEquals(
+        expectedCallCount,
+        destinationProvider.getCallCount(GET_LOCAL_DESTINATIONS_METHOD),
+        `${GET_LOCAL_DESTINATIONS_METHOD} called`);
   });
 
   // Verify destination manager state updated called when getLocalDestinations
@@ -86,14 +94,18 @@ suite('DestinationManager', () => {
   test(
       'starting and resolving getLocalDestinations triggers state update',
       async () => {
+        let stateChange =
+            eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        await stateChange;
         assertEquals(
             DestinationManagerState.FETCHING, instance.getState(),
             'Fetch in progress');
 
-        const stateChanged =
+        stateChange =
             eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
         mockTimer.tick(testDelay);
-        await stateChanged;
+        await stateChange;
 
         assertEquals(
             DestinationManagerState.LOADED, instance.getState(),
@@ -101,28 +113,23 @@ suite('DestinationManager', () => {
       });
 
   // Verify destination manager sets fallback destination to PDF if no other
-  // destinations are returned in local printer fetch.
+  // destinations are returned in local printer fetch and session is
+  // initialized.
   test(
       'starting and resolving getLocalDestinations triggers state active' +
           ' destination update',
       async () => {
         assertEquals(
-            DestinationManagerState.FETCHING, instance.getState(),
-            'Fetch in progress');
-        assertEquals(
             null, instance.getActiveDestination(),
             'Fallback destination is not set before loading local printers');
 
-        const stateChanged = eventToPromise(
+        // Resolve local printers fetch and initialize session.
+        const activeDestChange = eventToPromise(
             DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
-
-        // Resolve local printers fetch.
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         mockTimer.tick(testDelay);
-        await stateChanged;
+        await activeDestChange;
 
-        assertEquals(
-            DestinationManagerState.LOADED, instance.getState(),
-            'Fetch complete');
         assertDeepEquals(
             PDF_DESTINATION, instance.getActiveDestination(),
             `Fallback destination is ${PDF_DESTINATION.displayName}`);
@@ -265,6 +272,7 @@ suite('DestinationManager', () => {
       async () => {
         const destinations = [createTestDestination()];
         destinationProvider.setLocalDestinationResult(destinations);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         const stateChanged =
             eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
 
@@ -286,7 +294,7 @@ suite('DestinationManager', () => {
         const testDestination = createTestDestination();
         testDestination.printerManuallySelected = true;
         instance.setDestinationForTesting(testDestination);
-
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         let managerDestinations = instance.getDestinations();
         let expectedDestinations = [PDF_DESTINATION, testDestination];
         assertDeepEquals(expectedDestinations, managerDestinations);
