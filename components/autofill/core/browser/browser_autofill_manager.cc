@@ -579,50 +579,6 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 }
 
-SuggestionType GetSuggestionTypeFromLastAcceptedAddressSuggestion(
-    SuggestionType last_suggestion_type,
-    FieldType trigger_field_type) {
-  switch (last_suggestion_type) {
-    case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      return SuggestionType::kAddressEntry;
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
-    case SuggestionType::kFillFullEmail:
-      switch (GroupTypeOfFieldType(trigger_field_type)) {
-        case FieldTypeGroup::kName:
-          return SuggestionType::kFillFullName;
-        case FieldTypeGroup::kEmail:
-          return SuggestionType::kFillFullEmail;
-        case FieldTypeGroup::kCompany:
-        case FieldTypeGroup::kAddress:
-          return SuggestionType::kFillFullAddress;
-        case FieldTypeGroup::kPhone:
-          return SuggestionType::kFillFullPhoneNumber;
-        case FieldTypeGroup::kCreditCard:
-        case FieldTypeGroup::kPasswordField:
-        case FieldTypeGroup::kTransaction:
-        case FieldTypeGroup::kUsernameField:
-        case FieldTypeGroup::kUnfillable:
-        case FieldTypeGroup::kIban:
-        case FieldTypeGroup::kNoGroup:
-          // This function should only be called when triggering suggestions on
-          // an address field. Suggestions on non-address fields always get
-          // SuggestionType::kAddress and are handled elsewhere.
-          NOTREACHED_NORETURN();
-      }
-      NOTREACHED_NORETURN();
-    case SuggestionType::kAddressFieldByFieldFilling:
-      return SuggestionType::kAddressFieldByFieldFilling;
-    default:
-      // `last_suggestion_type` is only one of the address filling suggestion
-      // types, therefore no other type should be passed to this function.
-      NOTREACHED_NORETURN();
-  }
-  NOTREACHED_NORETURN();
-}
-
 FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     SuggestionType suggestion_type,
     FieldType trigger_field_type) {
@@ -640,7 +596,47 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
       return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
     case SuggestionType::kAddressFieldByFieldFilling:
       return FieldTypeSet{trigger_field_type};
-    default:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kShowAccountCards:
+    case SuggestionType::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kPasswordAccountStorageReSignin:
+    case SuggestionType::kPasswordAccountStorageEmpty:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kCreditCardFieldByFieldFilling:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kTitle:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kClearForm:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressEntry:
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
@@ -2480,10 +2476,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   address_form_event_logger_->OnDidPollSuggestions(trigger_field,
                                                    signin_state_for_metrics_);
 
-  const bool trigger_field_type_is_address_type =
-      form_structure && trigger_autofill_field &&
-      IsAddressType(trigger_autofill_field->Type().GetStorableType());
-  if (!trigger_field_type_is_address_type) {
+  const FieldType trigger_field_type =
+      trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
+                             : UNKNOWN_TYPE;
+  if (!IsAddressType(trigger_field_type)) {
     // Since Autofill was triggered from a field that is not classified as
     // address, we consider the `field_types` (i.e, the fields found in the
     // "form") to be a single unclassified field. Note that in this flow it is
@@ -2493,24 +2489,59 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
         SuggestionType::kAddressEntry, trigger_source);
   }
 
-  CHECK(trigger_field_type_is_address_type);
-  SuggestionType current_suggestion_type =
-      GetSuggestionTypeFromLastAcceptedAddressSuggestion(
-          external_delegate_->GetLastAcceptedSuggestionToFillForSection(
-              trigger_autofill_field->section()),
-          trigger_autofill_field->Type().GetStorableType());
+  CHECK(IsAddressType(trigger_field_type));
+  SuggestionType current_suggestion_type = [&] {
+    switch (external_delegate_->GetLastAcceptedSuggestionToFillForSection(
+        trigger_autofill_field->section())) {
+      case SuggestionType::kAddressEntry:
+      case SuggestionType::kFillEverythingFromAddressProfile:
+        return SuggestionType::kAddressEntry;
+      case SuggestionType::kFillFullAddress:
+      case SuggestionType::kFillFullName:
+      case SuggestionType::kFillFullPhoneNumber:
+      case SuggestionType::kFillFullEmail:
+        switch (GroupTypeOfFieldType(trigger_field_type)) {
+          case FieldTypeGroup::kName:
+            return SuggestionType::kFillFullName;
+          case FieldTypeGroup::kEmail:
+            return SuggestionType::kFillFullEmail;
+          case FieldTypeGroup::kCompany:
+          case FieldTypeGroup::kAddress:
+            return SuggestionType::kFillFullAddress;
+          case FieldTypeGroup::kPhone:
+            return SuggestionType::kFillFullPhoneNumber;
+          case FieldTypeGroup::kCreditCard:
+          case FieldTypeGroup::kPasswordField:
+          case FieldTypeGroup::kTransaction:
+          case FieldTypeGroup::kUsernameField:
+          case FieldTypeGroup::kUnfillable:
+          case FieldTypeGroup::kIban:
+          case FieldTypeGroup::kNoGroup:
+            // Since `trigger_field_type` is an address type:
+            NOTREACHED_NORETURN();
+        }
+        NOTREACHED_NORETURN();
+      case SuggestionType::kAddressFieldByFieldFilling:
+        return SuggestionType::kAddressFieldByFieldFilling;
+      default:
+        // `last_suggestion_type` is only one of the address filling suggestion
+        // types, therefore no other type should be passed to this function.
+        NOTREACHED_NORETURN();
+    }
+  }();
+
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
   // assumes that the passed FormData and FormStructure have the same size. If
   // it's not the case we just assume as a fallback that all fields are
   // relevant.
+  size_t num_fields = form_structure ? form_structure->field_count() : 0;
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
-      form.fields.size() == form_structure->field_count()
+      form_structure && form.fields.size() == num_fields
           ? form_filler_->GetFieldFillingSkipReasons(
                 form, *form_structure, *trigger_autofill_field,
                 GetTargetFieldsForAddressFillingSuggestionType(
-                    current_suggestion_type,
-                    trigger_autofill_field->Type().GetStorableType()),
+                    current_suggestion_type, trigger_field_type),
                 /*type_groups_originally_filled=*/std::nullopt,
                 FillingProduct::kAddress,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
@@ -2518,7 +2549,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                 /*is_refill=*/false, /*is_expired_credit_card=*/false)
           : base::flat_map<FieldGlobalId, FieldFillingSkipReason>();
   FieldTypeSet field_types;
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+  for (size_t i = 0; i < num_fields; ++i) {
     const AutofillField* autofill_field = form_structure->field(i);
     auto it = skip_reasons.find(autofill_field->global_id());
     if (it == skip_reasons.end() ||
@@ -2527,8 +2558,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
-      field_types, trigger_field,
-      trigger_autofill_field->Type().GetStorableType(), current_suggestion_type,
+      field_types, trigger_field, trigger_field_type, current_suggestion_type,
       trigger_source);
 }
 
