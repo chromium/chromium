@@ -290,7 +290,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     document.body.style.cursor = 'crosshair';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
-    this.cursorImgUri = 'search.svg';
+    this.cursorImgUri = 'lens.svg';
   }
 
   // Called on object hover.
@@ -298,7 +298,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // No dragging for objects, so no need to set body cursor style.
     this.cursorOffsetX = 4;
     this.cursorOffsetY = 8;
-    this.cursorImgUri = 'search.svg';
+    this.cursorImgUri = 'lens.svg';
   }
 
   private resetCursor() {
