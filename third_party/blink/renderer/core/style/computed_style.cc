@@ -970,6 +970,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kTransformData) {
     diff.SetTransformDataChanged();
   }
+  if (field_diff & kTransformOther) {
+    diff.SetOtherTransformPropertyChanged();
+  }
   if (field_diff & kTransformProperty) {
     diff.SetTransformPropertyChanged();
   }

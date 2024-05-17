@@ -340,6 +340,7 @@
         "stroke",
         "text-decoration",
         "transform-data",
+        "transform-other",
         "transform-property",
         "visibility",
         "visual-overflow",
@@ -3946,7 +3947,7 @@
       converter: "ConvertPositionOrAuto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Position"],
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "offset-distance",
@@ -3957,7 +3958,7 @@
       default_value: "Length::Fixed(0)",
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "offset-path",
@@ -3972,7 +3973,7 @@
       converter: "ConvertOffsetPath",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "offset-position",
@@ -3986,7 +3987,7 @@
       converter: "ConvertOffsetPosition",
       keywords: ["auto", "normal"],
       typedom_types: ["Keyword", "Position"],
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "offset-rotate",
@@ -4000,7 +4001,7 @@
       converter: "ConvertOffsetRotate",
       keywords: ["auto", "reverse"],
       typedom_types: ["Keyword", "Angle"],
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "opacity",
@@ -4428,6 +4429,7 @@
       converter: "ConvertPerspective",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length"],
+      invalidate: ["transform-other"],
     },
     {
       name: "perspective-origin",
@@ -4443,6 +4445,7 @@
       typedom_types: ["Position"],
       // Overlaps with -webkit-perspective-origin-[x,y].
       overlapping: true,
+      invalidate: ["transform-other"],
     },
     {
       name: "pointer-events",
@@ -5798,7 +5801,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       supports_incremental_style: true,
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "transform-origin",
@@ -5815,7 +5818,7 @@
       supports_incremental_style: true,
       // Overlaps with -webkit-transform-origin-[x,y,z].
       overlapping: true,
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "transform-style",
@@ -5842,7 +5845,7 @@
       type_name: "TranslateTransformOperation",
       converter: "ConvertTranslate",
       supports_incremental_style: true,
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "rotate",
@@ -5857,7 +5860,7 @@
       type_name: "RotateTransformOperation",
       converter: "ConvertRotate",
       supports_incremental_style: true,
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "scale",
@@ -5872,7 +5875,7 @@
       type_name: "ScaleTransformOperation",
       converter: "ConvertScale",
       supports_incremental_style: true,
-      invalidate: ["transform-data"],
+      invalidate: ["transform-data", "transform-other"],
     },
     {
       name: "unicode-bidi",
