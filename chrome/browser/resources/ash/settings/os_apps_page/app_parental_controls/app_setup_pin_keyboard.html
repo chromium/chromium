@@ -1,0 +1,22 @@
+<style include="settings-shared">
+  #problemDiv {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+    height: 32px;
+    min-height: 0;
+    padding-bottom: 8px;
+  }
+
+  /* Hide this using 'visibility: hidden' instead of 'hidden' so that the
+      dialog does not resize when there are no problems to display. */
+  #problemDiv[invisible] {
+    visibility: hidden;
+  }
+</style>
+<pin-keyboard id="pinKeyboard" value="{{pinKeyboardValue_}}">
+  <div id="problemDiv">
+      <!--TODO(b/332936223): Add problem message here.-->
+  </div>
+</pin-keyboard>

@@ -389,11 +389,13 @@ suite('AppsPageTests', () => {
 
     if (isAppParentalControlsAvailable) {
       test(
-        'Clicking set up sets up parental controls and navigates to subpage',
-        () => {
-          const parentalControlsRow =
-            appsPage.shadowRoot!.querySelector<HTMLElement>(
-              '#appParentalControls');
+          `Clicking set up and dismissing the PIN setup dialog sets up parental
+           controls and navigates to subpage`,
+          async () => {
+            const parentalControlsRow =
+                appsPage.shadowRoot!.querySelector<HTMLElement>(
+                    '#appParentalControls');
+            // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
             assertTrue(isVisible(parentalControlsRow));
 
@@ -401,42 +403,155 @@ suite('AppsPageTests', () => {
                 parentalControlsRow.querySelector<HTMLElement>('cr-button');
             assertTrue(!!setUpButton);
             setUpButton.click();
-            flush();
+            await flushTasks();
 
-            assertNull(appsPage.shadowRoot!.querySelector(
+            const setupPinDialog =
+                parentalControlsRow.querySelector<HTMLElement>('#setupPin');
+            assertTrue(!!setupPinDialog);
+
+            // TODO(b/332936223): When setup flow is implemented, simulate a
+            // successful PIN submission here instead.
+            const cancelPinSetupButton =
+                setupPinDialog.shadowRoot!
+                    .querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.cancel-button');
+            assertTrue(!!cancelPinSetupButton);
+            cancelPinSetupButton.click();
+            await waitAfterNextRender(appsPage);
+
+            assertTrue(!!appsPage.shadowRoot!.querySelector(
                 'settings-app-parental-controls-subpage'));
+          });
+
+      test(
+          `Clicking the subpage arrow and dismissing the verification dialog
+           when parental controls are enabled navigates to the subpage`,
+          async () => {
+            const parentalControlsRow =
+                appsPage.shadowRoot!.querySelector<HTMLElement>(
+                    '#appParentalControls');
+            // Wait for the row to become visible.
+            assertTrue(!!parentalControlsRow);
+            assertTrue(isVisible(parentalControlsRow));
+
+            const setUpButton =
+                parentalControlsRow.querySelector<HTMLElement>('cr-button');
+            assertTrue(!!setUpButton);
+            setUpButton.click();
+            await flushTasks();
+
+            const setupPinDialog =
+                parentalControlsRow.querySelector<HTMLElement>('#setupPin');
+            assertTrue(!!setupPinDialog);
+
+            // TODO(b/332936223): When setup flow is implemented, simulate a
+            // successful PIN submission here instead.
+            const cancelPinSetupButton =
+                setupPinDialog.shadowRoot!
+                    .querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.cancel-button');
+            assertTrue(!!cancelPinSetupButton);
+            cancelPinSetupButton.click();
+            await waitAfterNextRender(appsPage);
+
+            assertTrue(!!appsPage.shadowRoot!.querySelector(
+                'settings-app-parental-controls-subpage'));
+
+            // Navigate back to apps page from the subpage.
+            const popStateEventPromise = eventToPromise('popstate', window);
+            Router.getInstance().navigateToPreviousRoute();
+            await popStateEventPromise;
+            await waitAfterNextRender(appsPage);
+
+            // Click subpage arrow to navigate to the subpage.
             const subpageArrow = parentalControlsRow.querySelector<HTMLElement>(
                 '.subpage-arrow');
             assertTrue(!!subpageArrow);
             subpageArrow.click();
-            flush();
+            await flushTasks();
+
+            const verifyPinDialog =
+                parentalControlsRow.querySelector<HTMLElement>('#verifyPin');
+            assertTrue(!!verifyPinDialog);
+
+            // TODO(b/332936481): When verification flow is implemented,
+            // simulate a successful PIN verification here instead.
+            const cancelVerifyPinButton =
+                verifyPinDialog.shadowRoot!
+                    .querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.cancel-button');
+            assertTrue(!!cancelVerifyPinButton);
+            cancelVerifyPinButton.click();
+            await waitAfterNextRender(appsPage);
 
             assertTrue(!!appsPage.shadowRoot!.querySelector(
               'settings-app-parental-controls-subpage'));
-        });
+          });
 
-      test('Toggling parental controls resets parental controls', () => {
-        const parentalControlsRow =
-          appsPage.shadowRoot!.querySelector<HTMLElement>(
-            '#appParentalControls');
-        assertTrue(!!parentalControlsRow);
-        assertTrue(isVisible(parentalControlsRow));
+      test(
+          `Toggling parental controls and dismissing the PIN verification
+          dialog resets parental controls`,
+          async () => {
+            const parentalControlsRow =
+                appsPage.shadowRoot!.querySelector<HTMLElement>(
+                    '#appParentalControls');
+            // Wait for the row to become visible.
+            assertTrue(!!parentalControlsRow);
+            assertTrue(isVisible(parentalControlsRow));
 
-        const setUpButton =
-            parentalControlsRow.querySelector<HTMLElement>('cr-button');
-        assertTrue(!!setUpButton);
-        setUpButton.click();
-        flush();
+            const setUpButton =
+                parentalControlsRow.querySelector<HTMLElement>('cr-button');
+            assertTrue(!!setUpButton);
+            setUpButton.click();
+            await flushTasks();
 
-        const toggle =
-            parentalControlsRow.querySelector<HTMLElement>('cr-toggle');
-        assertTrue(!!toggle);
-        toggle.click();
-        flush();
+            const setupPinDialog =
+                parentalControlsRow.querySelector<HTMLElement>('#setupPin');
+            assertTrue(!!setupPinDialog);
 
-        assertTrue(
-            !!parentalControlsRow.querySelector<HTMLElement>('cr-button'));
-      });
+            // TODO(b/332936223): When setup flow is implemented, simulate a
+            // successful PIN submission here instead.
+            const cancelPinSetupButton =
+                setupPinDialog.shadowRoot!
+                    .querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.cancel-button');
+            assertTrue(!!cancelPinSetupButton);
+            cancelPinSetupButton.click();
+            await waitAfterNextRender(appsPage);
+
+            assertTrue(!!appsPage.shadowRoot!.querySelector(
+                'settings-app-parental-controls-subpage'));
+
+            // Navigate back to apps page from the subpage.
+            const popStateEventPromise = eventToPromise('popstate', window);
+            Router.getInstance().navigateToPreviousRoute();
+            await popStateEventPromise;
+            await waitAfterNextRender(appsPage);
+
+            // Click the toggle to disable parental controls.
+            const toggle =
+                parentalControlsRow.querySelector<HTMLElement>('cr-toggle');
+            assertTrue(!!toggle);
+            toggle.click();
+            await flushTasks();
+
+            const disableDialog =
+                parentalControlsRow.querySelector<HTMLElement>(
+                    '#disableDialog');
+            assertTrue(!!disableDialog);
+
+            // TODO(b/334102223): When disable flow is implemented, simulate a
+            // successful PIN verification here instead.
+            const cancelDisableButton =
+                disableDialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.cancel-button');
+            assertTrue(!!cancelDisableButton);
+            cancelDisableButton.click();
+            await flushTasks();
+
+            assertTrue(
+                !!parentalControlsRow.querySelector<HTMLElement>('cr-button'));
+          });
     }
 
     if (!isAppParentalControlsAvailable) {

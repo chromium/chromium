@@ -34,7 +34,8 @@
       <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
         <div id="appParentalControls"
             class="settings-box"
-            actionable$="[[prefs.on_device_app_controls.setup_completed.value]]"
+            actionable$=
+                "[[prefs.on_device_app_controls.setup_completed.value]]"
             on-click="onClickParentalControls_">
           <iron-icon id="parentalControlsRowIcon"
               icon="[[rowIcons_.manageApps]]">
@@ -65,6 +66,24 @@
                 checked="[[prefs.on_device_app_controls.setup_completed.value]]"
                 on-change="disableParentalControls_">
             </cr-toggle>
+          </template>
+          <template is="dom-if" if="[[showParentalControlsSetupPinDialog_]]"
+              restamp>
+            <app-setup-pin-dialog id="setupPin"
+                on-close="onSetupPinDialogClose_">
+            </app-setup-pin-dialog>
+          </template>
+          <template is="dom-if" if="[[showParentalControlsVerifyPinDialog_]]"
+              restamp>
+            <app-verify-pin-dialog id="verifyPin"
+              on-close="onVerifyPinDialogClose_">
+            </app-verify-pin-dialog>
+          </template>
+          <template is="dom-if" if="[[showParentalControlsDisablePinDialog_]]"
+              restamp>
+            <app-verify-pin-dialog id="disableDialog"
+              on-close="onDisablePinDialogClose_">
+            </app-verify-pin-dialog>
           </template>
         </div>
       </template>

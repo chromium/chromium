@@ -1,0 +1,64 @@
+<style include="settings-shared">
+  #errorDiv {
+    align-items: center;
+    color: var(--cros-text-color-alert);
+    display: flex;
+    flex-direction: row;
+    /* Enough height for two rows. */
+    min-height: 48px;
+  }
+
+  /* Hide this using visibility: hidden instead of hidden so that the
+     dialog does not resize when there are no problems to display. */
+  #errorDiv[invisible] {
+    visibility: hidden;
+  }
+
+  #forgotPinLink {
+    margin-inline-start: 12px;
+    margin-top: 6px;
+  }
+
+  cr-dialog [slot=button-container] {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: var(--cr-dialog-button-container-padding-bottom, 16px);
+    padding-inline-end:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    padding-inline-start:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    padding-top: var(--cr-dialog-button-container-padding-top, 16px);
+  }
+
+  #pinKeyboardDiv {
+    justify-content: center;
+  }
+
+  #pinKeyboard {
+    --cr-input-placeholder-letter-spacing: normal;
+  }
+
+  #verifyPinDialogSubtitle {
+    padding-bottom: 16px;
+  }
+</style>
+<cr-dialog id="dialog" on-close="close" close-text="$i18n{close}">
+  <div slot="title">$i18n{appParentalControlsAccessDialogTitle}</div>
+  <div slot="body">
+    <div id="pinKeyboardDiv" class="settings-box continuation">
+      <pin-keyboard id="pinKeyboard"
+          on-submit="onPinSubmit_" value="{{pinValue_}}"
+          enable-placeholder>
+        <!-- TODO(b/332936223): Add PIN error message here. -->
+        <div id="errorDiv" invisible$="[[!error_]]"></div>
+      </pin-keyboard>
+    </div>
+  </div>
+  <div slot="button-container">
+    <!--TODO(b/339219535): Link to help center article here. -->
+    <a id="forgotPinLink">$i18n{appParentalControlsForgotPinLinkName}</a>
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+  </div>
+</cr-dialog>

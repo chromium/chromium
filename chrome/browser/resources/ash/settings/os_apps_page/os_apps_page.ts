@@ -25,6 +25,8 @@ import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
 import './app_management_page/uninstall_button.js';
+import './app_parental_controls/app_setup_pin_dialog.js';
+import './app_parental_controls/app_verify_pin_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -133,6 +135,30 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         value() {
           return loadTimeData.getBoolean('showManageIsolatedWebAppsRow');
         },
+      },
+
+      /**
+       * Whether the Disable Parental Controls dialog should be shown.
+       */
+      showParentalControlsDisablePinDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the Parental Controls PIN setup dialog should be shown.
+       */
+      showParentalControlsSetupPinDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the Parental Controls PIN verification dialog should be shown.
+       */
+      showParentalControlsVerifyPinDialog_: {
+        type: Boolean,
+        value: false,
       },
 
       isPluginVmAvailable_: {
@@ -251,6 +277,9 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private readonly showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
   private showManageIsolatedWebAppsRow_: boolean;
+  private showParentalControlsDisablePinDialog_: boolean;
+  private showParentalControlsSetupPinDialog_: boolean;
+  private showParentalControlsVerifyPinDialog_: boolean;
   private readonly shouldShowStartup_: boolean;
 
   constructor() {
@@ -328,21 +357,45 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   private onClickParentalControls_(): void {
-    const isParentalControlsSetup =
+    const isParentalControlsSetupCompleted =
         this.getPref('on_device_app_controls.setup_completed').value;
-    if (isParentalControlsSetup) {
-      Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    if (isParentalControlsSetupCompleted) {
+      this.showParentalControlsVerifyPinDialog_ = true;
     }
   }
 
   private setUpParentalControls_(e: Event): void {
-    this.setPrefValue('on_device_app_controls.setup_completed', true);
+    this.showParentalControlsSetupPinDialog_ = true;
     // Stop propagation to keep the subpage from opening.
     e.stopPropagation();
   }
 
-  private disableParentalControls_(): void {
+  private disableParentalControls_(e: Event): void {
+    this.showParentalControlsDisablePinDialog_ = true;
+    // Stop propagation to keep the subpage from opening.
+    e.stopPropagation();
+  }
+
+  private onVerifyPinDialogClose_(): void {
+    this.showParentalControlsVerifyPinDialog_ = false;
+    // TODO(b/332936481): Only navigate to the subpage on successful PIN
+    // verification.
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+  }
+
+  private onDisablePinDialogClose_(): void {
+    this.showParentalControlsDisablePinDialog_ = false;
+    // TODO(b/334102223): Only set setup pref to false on successful PIN
+    // verification.
     this.setPrefValue('on_device_app_controls.setup_completed', false);
+  }
+
+  private onSetupPinDialogClose_(): void {
+    this.showParentalControlsSetupPinDialog_ = false;
+    // TODO(b/332936223): Only set setup pref to true and navigate to the
+    // subpage on PIN submission success.
+    this.setPrefValue('on_device_app_controls.setup_completed', true);
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
   }
 
   private onClickManageIsolatedWebApps_(): void {

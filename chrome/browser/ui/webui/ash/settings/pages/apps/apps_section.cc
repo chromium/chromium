@@ -408,6 +408,16 @@ void AddBorealisStrings(content::WebUIDataSource* html_source) {
 
 void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appParentalControlsAccessDialogTitle",
+       IDS_SETTINGS_APP_PARENTAL_CONTROLS_ACCESS_DIALOG_TITLE},
+      {"appParentalControlsChoosePinSubtitle",
+       IDS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_SUBTITLE},
+      {"appParentalControlsChoosePinTitle",
+       IDS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_TITLE},
+      {"appParentalControlsConfirmPinTitle",
+       IDS_SETTINGS_APP_PARENTAL_CONTROLS_CONFIRM_PIN_TITLE},
+      {"appParentalControlsForgotPinLinkName",
+       IDS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME},
       {"appParentalControlsTitle", IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL},
       {"appParentalControlsSubtitle",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL},

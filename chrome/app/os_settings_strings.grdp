@@ -6237,6 +6237,22 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications Do Not Disturb toggle that lets the user silence all app notifications.">
     Do Not Disturb
   </message>
+  <message name="IDS_SETTINGS_APP_PARENTAL_CONTROLS_ACCESS_DIALOG_TITLE" desc="The title of the Parental Controls PIN verification dialog which lets the user access the App Parental Controls subpage.">
+    Enter your PIN for parental controls
+  </message>
+  <message name="IDS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_SUBTITLE" desc="The subtitle of the dialog which lets the user set up a PIN for App Parental Controls.">
+    Use this PIN to change parental controls settings.
+    If you forget the PIN, powerwash this device and set up again.
+  </message>
+  <message name="IDS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_TITLE" desc="The title of the dialog which lets the user set up a PIN for App Parental Controls.">
+    Set up your PIN
+  </message>
+  <message name="IDS_SETTINGS_APP_PARENTAL_CONTROLS_CONFIRM_PIN_TITLE" desc="The title of the dialog which lets the user confirm a PIN for App Parental Controls.">
+    Confirm your PIN
+  </message>
+  <message name="IDS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME" desc="The name of the link which sends the user to an article with instructions to follow in the case of a forgotten App Parental Controls PIN.">
+    Forgot PIN?
+  </message>
    <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the Do Not Disturb toggle within help icon tooltip.">
     Notifications won't pop up on the screen. You can still see notifications by clicking the Do Not Disturb icon on the bottom right of your screen.
   </message>
