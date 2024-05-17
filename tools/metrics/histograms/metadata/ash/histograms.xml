@@ -4384,7 +4384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.HotseatWidgetAnimation.AnimationSmoothness{HotseatTransitionType}"
-    units="%" expires_after="2024-05-30">
+    units="%" expires_after="2025-05-15">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -4398,7 +4398,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.HotseatWidgetAnimation.{HotseatWidgetElement}AnimationSmoothness"
-    units="%" expires_after="2024-05-30">
+    units="%" expires_after="2025-05-15">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

@@ -1102,12 +1102,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.ContinueResultRemoved"
-    enum="LauncherContinueSectionResultType" expires_after="2024-04-28">
+    enum="LauncherContinueSectionResultType" expires_after="2025-05-15">
   <owner>anasalazar@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Records the type of a zero-state result when it is removed from the Continue
     section. Recorded once every time a result is removed. Chrome OS only.
+
+    Warning: this histogram was expired from 2024-04-28 to 2024-05-16; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2819,7 +2822,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ScrollableShelf.AnimationSmoothness{HomeLauncherVisibility}"
-    units="%" expires_after="2023-06-14">
+    units="%" expires_after="2025-05-15">
   <owner>tbarzic@chromium.org</owner>
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2829,6 +2832,9 @@ chromium-metrics-reviews@google.com.
     frames per second is achieved during the animations. 0% should not happen.
     This metric is recorded exactly once when the user scrolls over the
     scrollable shelf. {HomeLauncherVisibility}
+
+    Warning: this histogram was expired from 2023-06-14 to 2024-05-16; data may
+    be missing.
   </summary>
   <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility">
     <variant name=""/>
@@ -2837,20 +2843,23 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency{HomeLauncherVisibility}"
-    units="ms" expires_after="2023-06-06">
+    units="ms" expires_after="2025-05-15">
   <owner>tbarzic@chromium.org</owner>
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     Maximum latency of the presentation time of the drag scroll in the
     scrollable shelf. {HomeLauncherVisibility}
+
+    Warning: this histogram was expired from 2023-06-06 to 2024-05-16; data may
+    be missing.
   </summary>
   <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility"/>
 </histogram>
 
 <histogram
     name="Apps.ScrollableShelf.Drag.PresentationTime{HomeLauncherVisibility}"
-    units="ms" expires_after="2023-06-02">
+    units="ms" expires_after="2025-05-15">
   <owner>tbarzic@chromium.org</owner>
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2860,6 +2869,9 @@ chromium-metrics-reviews@google.com.
 
     Warning: This histogram was expired from 2021-01-10 to 2022-06-02; data may
     be missing. {HomeLauncherVisibility}
+
+    Warning: this histogram was expired from 2023-06-02 to 2024-05-16; data may
+    be missing.
   </summary>
   <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility"/>
 </histogram>
