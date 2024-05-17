@@ -467,14 +467,18 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     can_read_raw_cookies_ = false;
   }
 
-  void GrantOpaqueOriginForLoadDataWithBaseURL(const url::Origin& origin) {
-    CHECK(origin.opaque());
-    load_data_with_base_url_origin_set_.insert(origin);
+  void GrantOriginCheckExemptionForWebView(const url::Origin& origin) {
+    // This should only be allowed for opaque origins with LoadDataWithBaseURL
+    // and file origins with allow_universal_access_from_file_urls.
+    CHECK(origin.opaque() || origin.scheme() == url::kFileScheme);
+    webview_origin_exemption_set_.insert(origin);
   }
 
-  bool IsOpaqueOriginForLoadDataWithBaseURL(const url::Origin& origin) {
-    CHECK(origin.opaque());
-    return base::Contains(load_data_with_base_url_origin_set_, origin);
+  bool HasOriginCheckExemptionForWebView(const url::Origin& origin) {
+    // This should only be allowed for opaque origins with LoadDataWithBaseURL
+    // and file origins with allow_universal_access_from_file_urls.
+    CHECK(origin.opaque() || origin.scheme() == url::kFileScheme);
+    return base::Contains(webview_origin_exemption_set_, origin);
   }
 
   void GrantPermissionForMidi() { can_send_midi_ = true; }
@@ -709,9 +713,11 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // The set of files the child process is permitted to load.
   FileSet request_file_set_;
 
-  // The set of opaque origins loaded with LoadDataWithBaseURL in the child
-  // process, which are allowed to bypass some navigation checks.
-  OriginSet load_data_with_base_url_origin_set_;
+  // The set of origins in Android WebView and <webview> tags that are allowed
+  // to bypass some navigation checks. Limited to opaque origins loaded with
+  // LoadDataWithBaseURL and file origins loaded with
+  // allow_universal_access_from_file_urls.
+  OriginSet webview_origin_exemption_set_;
 
   int enabled_bindings_;
 
@@ -1215,7 +1221,7 @@ void ChildProcessSecurityPolicyImpl::RevokeReadRawCookies(int child_id) {
   state->second->RevokeReadRawCookies();
 }
 
-void ChildProcessSecurityPolicyImpl::GrantOpaqueOriginForLoadDataWithBaseURL(
+void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
     int child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
@@ -1225,10 +1231,10 @@ void ChildProcessSecurityPolicyImpl::GrantOpaqueOriginForLoadDataWithBaseURL(
     return;
   }
 
-  state->GrantOpaqueOriginForLoadDataWithBaseURL(origin);
+  state->GrantOriginCheckExemptionForWebView(origin);
 }
 
-bool ChildProcessSecurityPolicyImpl::IsOpaqueOriginForLoadDataWithBaseURL(
+bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView(
     int child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
@@ -1238,7 +1244,7 @@ bool ChildProcessSecurityPolicyImpl::IsOpaqueOriginForLoadDataWithBaseURL(
     return false;
   }
 
-  return state->IsOpaqueOriginForLoadDataWithBaseURL(origin);
+  return state->HasOriginCheckExemptionForWebView(origin);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanRequestURL(
@@ -1644,23 +1650,43 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
+  DCHECK(url_info.origin.has_value());
+  const url::Origin& origin = *url_info.origin;
   // First check whether the URL is allowed to commit, without considering the
   // origin. This involves scheme checks as well as CanAccessDataForOrigin.
   if (base::FeatureList::IsEnabled(
           features::kAdditionalNavigationCommitChecks) &&
       !CanCommitURL(child_id, url_info.url)) {
+    // WebView's allow_universal_access_from_file_urls setting allows file
+    // origins to access any other origin and bypass normal commit checks. When
+    // this mode is enabled, RenderFrameHostImpl::ValidateURLAndOrigin returns
+    // early before this function is called.
+    //
+    // However, there are also cases where WebView apps in the wild turn on this
+    // mode, load one file:// document, then turn it off again and call
+    // document.open on another file:// document, causing it to inherit a URL
+    // that is not permitted by CanCommitURL anymore. We exempt these cases from
+    // the CanCommitURL check specifically, by ignoring a failure if it occurs
+    // in a file:// origin within a process which previously had universal
+    // access. (This exemption could be done in ValidateURLAndOrigin alongside
+    // the universal access check, but in practice no apps in the wild seem to
+    // be failing any other types of validation, so doing it here is a narrower
+    // exemption.) See https://crbug.com/326250356.
+    bool exempt_due_to_webview_universal_access =
+        (origin.scheme() == url::kFileScheme) &&
+        HasOriginCheckExemptionForWebView(child_id, origin);
+
     // This enforcement is currently skipped on Android WebView due to crashes.
     // TODO(https://crbug.com/326250356): Diagnose and enable for Android
     // WebView as well.
-    if (GetContentClient()->browser()->ShouldEnforceNewCanCommitUrlChecks()) {
+    if (GetContentClient()->browser()->ShouldEnforceNewCanCommitUrlChecks() &&
+        !exempt_due_to_webview_universal_access) {
       return CanCommitStatus::CANNOT_COMMIT_URL;
     }
   }
 
   // Next check whether the origin resolved from the URL is allowed to commit.
-  DCHECK(url_info.origin.has_value());
-  const url::Origin url_origin =
-      url::Origin::Resolve(url_info.url, *url_info.origin);
+  const url::Origin url_origin = url::Origin::Resolve(url_info.url, origin);
   if (!CanAccessOrigin(child_id, url_origin, AccessType::kCanCommitNewOrigin)) {
     // Check for special cases, like blob:null/ and data: URLs, where the
     // origin does not contain information to match against the process lock,
@@ -1678,8 +1704,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   }
 
   // Finally check the origin on its own.
-  if (!CanAccessOrigin(child_id, *url_info.origin,
-                       AccessType::kCanCommitNewOrigin)) {
+  if (!CanAccessOrigin(child_id, origin, AccessType::kCanCommitNewOrigin)) {
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
   }
 
@@ -1689,7 +1714,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   const auto url_tuple_or_precursor_tuple =
       url_origin.GetTupleOrPrecursorTupleIfOpaque();
   const auto origin_tuple_or_precursor_tuple =
-      url_info.origin->GetTupleOrPrecursorTupleIfOpaque();
+      origin.GetTupleOrPrecursorTupleIfOpaque();
 
   if (url_tuple_or_precursor_tuple.IsValid() &&
       origin_tuple_or_precursor_tuple.IsValid() &&

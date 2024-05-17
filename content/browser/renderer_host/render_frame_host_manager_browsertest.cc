@@ -3564,6 +3564,47 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       ExecJs(root, JsReplace("history.pushState({}, '', $1);", file_url)));
   ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_EQ(4, web_contents->GetController().GetEntryCount());
+
+  // Illegal schemes would not normally be allowed to commit by CanCommitURL,
+  // but they are granted an exception if allow_universal_access_from_file_urls
+  // is in use.
+  GURL illegal_url("google:com");
+  EXPECT_TRUE(ExecJs(
+      root, JsReplace("history.replaceState({}, '', $1);", illegal_url)));
+  ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(4, web_contents->GetController().GetEntryCount());
+
+  // Illegal schemes should also work for document.open on same-origin frames,
+  // where the initiator's URL is inherited (in the renderer process).
+  std::string create_frame_and_open_script =
+      "var new_iframe = document.createElement('iframe');"
+      "document.documentElement.appendChild(new_iframe);"
+      "new_iframe.contentDocument.open();";
+  EXPECT_TRUE(ExecJs(shell(), create_frame_and_open_script));
+  EXPECT_EQ(
+      illegal_url,
+      root->child_at(0)->current_frame_host()->last_document_url_in_renderer());
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
+  ASSERT_TRUE(root->child_at(0)->current_frame_host()->IsRenderFrameLive());
+
+  // Now disable universal access, while still allowing file URLs to access each
+  // other. This generally turns off the exemption from commit-time security
+  // checks, while still allowing document.open to work in file:// origins.
+  prefs.allow_universal_access_from_file_urls = false;
+  prefs.allow_file_access_from_file_urls = true;
+  web_contents->SetWebPreferences(prefs);
+
+  // Calling document.open on another iframe should remember that the process
+  // already had an exemption for file:// origins and continue to work.
+  // See https://crbug.com/326250356#comment26.
+  EXPECT_TRUE(ExecJs(shell(), create_frame_and_open_script));
+  EXPECT_EQ(
+      illegal_url,
+      root->child_at(1)->current_frame_host()->last_document_url_in_renderer());
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
+  ASSERT_TRUE(root->child_at(1)->current_frame_host()->IsRenderFrameLive());
 }
 
 // Ensure that navigating back from a sad tab to an existing process works

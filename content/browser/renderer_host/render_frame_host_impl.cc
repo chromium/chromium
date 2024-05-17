@@ -13379,11 +13379,17 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
     bool is_same_document_navigation,
     NavigationRequest* navigation_request,
     std::string origin_calculation_debug_info) {
-  // file: URLs can be allowed to access any other origin, based on settings.
+  // WebView's allow_universal_access_from_file_urls setting allows file origins
+  // to access any other origin and bypass normal commit checks. If new
+  // documents in the same process and origin may also bypass these checks after
+  // the setting is disabled (e.g., due to document.open), they are allowed a
+  // narrower exemption in ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl
+  // due to compatibility requirements for existing apps.
   if (origin.scheme() == url::kFileScheme) {
     auto prefs = GetOrCreateWebPreferences();
-    if (prefs.allow_universal_access_from_file_urls)
+    if (prefs.allow_universal_access_from_file_urls) {
       return true;
+    }
   }
 
   // If the --disable-web-security flag is specified, all bets are off and the
@@ -13418,7 +13424,7 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
        renderer_url_info_.was_loaded_from_load_data_with_base_url) ||
       (origin.opaque() &&
        ChildProcessSecurityPolicyImpl::GetInstance()
-           ->IsOpaqueOriginForLoadDataWithBaseURL(process->GetID(), origin))) {
+           ->HasOriginCheckExemptionForWebView(process->GetID(), origin))) {
     // Allow bypass if the process isn't locked. Otherwise run normal checks.
     if (!process->GetProcessLock().is_locked_to_site())
       return true;
@@ -13672,14 +13678,25 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // CanCommitURL checks (unlike opaque origins for pseudoschemes, as seen in
   // https://crbug.com/326250356).
   //
-  // TODO(crbug.com/40092527): Move this to UpdatePermissionsForNavigation
+  // A similar exemption is granted for file origins when WebView's
+  // allow_universal_access_from_file_urls setting is enabled, in case that
+  // setting is later disabled and then a previously-exempted URL is inherited
+  // by a new same-origin document via document.open.
+  //
+  // TODO(crbug.com/40092527): Move these to UpdatePermissionsForNavigation
   // once origin can be reliably computed by NavigationRequest at commit time.
   if (navigation_request && navigation_request->IsLoadDataWithBaseURL() &&
       params->origin.opaque() &&
       !GetProcess()->GetProcessLock().is_locked_to_site()) {
     ChildProcessSecurityPolicyImpl::GetInstance()
-        ->GrantOpaqueOriginForLoadDataWithBaseURL(GetProcess()->GetID(),
-                                                  params->origin);
+        ->GrantOriginCheckExemptionForWebView(GetProcess()->GetID(),
+                                              params->origin);
+  }
+  if (GetOrCreateWebPreferences().allow_universal_access_from_file_urls &&
+      params->origin.scheme() == url::kFileScheme) {
+    ChildProcessSecurityPolicyImpl::GetInstance()
+        ->GrantOriginCheckExemptionForWebView(GetProcess()->GetID(),
+                                              params->origin);
   }
 
   if (!ValidateDidCommitParams(navigation_request.get(), params.get(),
