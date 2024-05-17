@@ -4130,6 +4130,7 @@ if (!is_android) {
         # chrome_extensions_browsertests_sources target for more.
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
+        "//extensions/browser/api/storage:settings_namespace",
         "//extensions/browser/updater",
         "//extensions/buildflags",
         "//extensions/common:mojom",
@@ -9452,6 +9453,7 @@ test("unit_tests") {
       "//components/value_store:test_support",
       "//extensions:extensions_resources",
       "//extensions/browser:test_support",
+      "//extensions/browser/api/storage:settings_observer",
       "//extensions/browser/updater",
       "//extensions/buildflags",
       "//extensions/common",

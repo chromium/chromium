@@ -7,6 +7,28 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
+source_set("settings_observer") {
+  sources = [ "settings_observer.h" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/common/api",
+  ]
+}
+
+source_set("settings_namespace") {
+  sources = [
+    "settings_namespace.cc",
+    "settings_namespace.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("storage") {
   sources = [
     "backend_task_runner.cc",
@@ -34,6 +56,8 @@ source_set("storage") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":settings_namespace",
+    ":settings_observer",
     "//base",
     "//components/keyed_service/content",
     "//components/value_store",

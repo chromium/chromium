@@ -169,6 +169,7 @@ static_library("test_support") {
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/browser/api",
+    "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:core_api_provider",
