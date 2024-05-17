@@ -949,7 +949,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
                     base::NumberToString(url_counter_++))) {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackgroundResourceFetch,
-          {{"background-response-processor", "true"}}}},
+          {{"background-script-response-processor", "true"}}}},
         {});
   }
   ~BackgroundResourceScriptStreamerTest() override = default;

@@ -1330,8 +1330,7 @@ void ResourceLoader::RequestAsynchronously() {
   // kBackgroundResponseProcessorBackground feature param is enabled, creates a
   // BackgroundResponseProcessor for the `resource_`, and set it to the
   // `loader_`.
-  if (loader_->CanHandleResponseOnBackground() &&
-      features::kBackgroundResponseProcessor.Get()) {
+  if (loader_->CanHandleResponseOnBackground()) {
     if (auto factory =
             resource_->MaybeCreateBackgroundResponseProcessorFactory()) {
       loader_->SetBackgroundResponseProcessorFactory(std::move(factory));

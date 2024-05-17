@@ -586,6 +586,9 @@ void ScriptResource::CheckConsumeCacheState() const {
 
 std::unique_ptr<BackgroundResponseProcessorFactory>
 ScriptResource::MaybeCreateBackgroundResponseProcessorFactory() {
+  if (!features::kBackgroundScriptResponseProcessor.Get()) {
+    return nullptr;
+  }
   CHECK(!streamer_);
   background_streamer_ = nullptr;
   if (no_streamer_reason_ != ScriptStreamer::NotStreamingReason::kInvalid) {

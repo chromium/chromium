@@ -168,7 +168,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kBackgroundResponseProcessor;
+    kBackgroundScriptResponseProcessor;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
 
