@@ -3734,11 +3734,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-secure-payment-confirmation-extensions",
-    "owners": [ "slobodan@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-segmentation-platform-android-home-module-ranker",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 140
