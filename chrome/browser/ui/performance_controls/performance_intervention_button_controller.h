@@ -8,8 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class Browser;
+class TabStripModel;
 
 namespace {
 
@@ -22,7 +24,8 @@ using performance_manager::user_tuning::PerformanceDetectionManager;
 // performance health and update the visibility of the intervention toolbar
 // button through a delegate interface.
 class PerformanceInterventionButtonController
-    : public PerformanceDetectionManager::ActionableTabsObserver {
+    : public TabStripModelObserver,
+      public PerformanceDetectionManager::ActionableTabsObserver {
  public:
   PerformanceInterventionButtonController(
       PerformanceInterventionButtonControllerDelegate* delegate,
@@ -38,6 +41,12 @@ class PerformanceInterventionButtonController
   void OnActionableTabListChanged(
       PerformanceDetectionManager::ResourceType type,
       PerformanceDetectionManager::ActionableTabsResult result) override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
   raw_ptr<PerformanceInterventionButtonControllerDelegate> delegate_ = nullptr;

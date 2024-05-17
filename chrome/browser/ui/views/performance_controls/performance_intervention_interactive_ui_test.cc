@@ -24,7 +24,9 @@
 
 namespace {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 }  // namespace
@@ -85,6 +87,13 @@ class PerformanceInterventionInteractiveTest
     });
   }
 
+  auto CloseTab(int index) {
+    return Do(base::BindLambdaForTesting([=]() {
+      browser()->tab_strip_model()->CloseWebContentsAt(
+          index, TabCloseTypes::CLOSE_NONE);
+    }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -113,6 +122,40 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForHide(kToolbarPerformanceInterventionButtonElementId),
       TriggerOnActionableTabListChange({0}),
       EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId));
+}
+
+// Making an actionable tab active should hide the intervention toolbar button
+// because the actionable tab list is no longer valid.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       ActivateActionableTab) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0), AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
+      TriggerOnActionableTabListChange({0, 1}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      // Flush the event queue to ensure that we trigger the button to hide
+      // after it is shown.
+      FlushEvents(), SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+}
+
+// The intervention toolbar button should remain visible after closing an
+// actionable tab is there are more tabs that are still actionable.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       CloseActionableTab) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0), AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
+      TriggerOnActionableTabListChange({0, 1}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      // Flush the event queue to ensure that we trigger the button to hide
+      // after it is shown.
+      FlushEvents(), CloseTab(1),
+      // Button should still be showing since there is another actionable tab
+      EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
+      CloseTab(0), WaitForHide(kToolbarPerformanceInterventionButtonElementId));
 }
 
 // Pixel test to verify that the performance intervention toolbar
