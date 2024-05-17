@@ -8,6 +8,7 @@
 #import "base/time/time.h"
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -141,6 +142,14 @@ void ClearRelevantData() {
     config.features_disabled.push_back(switches::kMigrateSyncingUserToSignedIn);
   }
 
+  if ([self isRunningTest:@selector
+            (testSyncCheckDifferentCacheGuid_SignOutAndSignIn)]) {
+    config.features_disabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
+  } else if ([self isRunningTest:@selector
+                   (testSyncCheckSameCacheGuid_SignOutAndSignIn)]) {
+    config.features_enabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
+  }
+
   return config;
 }
 
@@ -243,11 +252,10 @@ void ClearRelevantData() {
 
 // Tests that the local cache guid changes when the user signs out and then
 // signs back in with the same account.
-// TODO(crbug.com/341053184): Re-enable this test.
-- (void)DISABLED_testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
+// Note that for this test, kSyncAccountKeyedTransportPrefs is DISabled.
+- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
@@ -265,6 +273,55 @@ void ClearRelevantData() {
   GREYAssertTrue(
       [ChromeEarlGrey syncCacheGUID] != original_guid,
       @"guid didn't change after user signed out and signed back in");
+}
+
+// Tests that the local cache guid is reused when the user signs out and then
+// signs back in with the same account.
+// Note that for this test, kSyncAccountKeyedTransportPrefs is ENabled.
+- (void)testSyncCheckSameCacheGuid_SignOutAndSignIn {
+  // Sign in a fake identity, and store the initial sync guid.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signOut];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncOperationTimeout];
+
+  // Sign the user back in, and verify the guid has *not* changed.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  GREYAssertTrue([ChromeEarlGrey syncCacheGUID] == original_guid,
+                 @"guid changed after user signed out and signed back in");
+}
+
+// Tests that the local cache guid changes when the user signs out and then
+// signs back in with a different account.
+- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignInWithDifferentAccount {
+  // Sign in a fake identity, and store the initial sync guid.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signOut];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncOperationTimeout];
+
+  // Sign a different user in, and verify the guid has changed.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity2];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  GREYAssertTrue(
+      [ChromeEarlGrey syncCacheGUID] != original_guid,
+      @"guid didn't change after user signed out and different user signed in");
 }
 
 // Tests that tabs opened on this client are committed to the Sync server and
