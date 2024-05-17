@@ -17,7 +17,7 @@ namespace performance_manager::features {
 
 BASE_FEATURE(kRunOnMainThreadSync,
              "RunPerformanceManagerOnMainThreadSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,

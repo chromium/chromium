@@ -13825,6 +13825,27 @@
             ]
         }
     ],
+    "PMProcessPriorityPolicy": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PMProcessPriorityPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageAllocatorRetryOnCommitFailure": [
         {
             "platforms": [
@@ -17278,9 +17299,8 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledBoth",
+                    "name": "Enabled",
                     "enable_features": [
-                        "PMProcessPriorityPolicy",
                         "RunPerformanceManagerOnMainThreadSync"
                     ]
                 }
