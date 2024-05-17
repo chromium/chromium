@@ -335,6 +335,10 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
   return nullptr;
 }
 
+void BackdropController::HideOnTakingPineScreenshot() {
+  Hide(/*destroy=*/false, /*animate=*/false);
+}
+
 base::ScopedClosureRunner BackdropController::PauseUpdates() {
   DCHECK(!pause_update_);
 

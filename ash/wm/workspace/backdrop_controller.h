@@ -79,6 +79,10 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // Returns the current visible top level window in the container.
   aura::Window* GetTopmostWindowWithBackdrop();
 
+  // Hides the backdrop window for taking the pine screenshot in order to not
+  // include it in the screenshot.
+  void HideOnTakingPineScreenshot();
+
   aura::Window* backdrop_window() { return backdrop_window_; }
 
   aura::Window* window_having_backdrop() { return window_having_backdrop_; }

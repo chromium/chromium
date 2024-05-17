@@ -33,7 +33,9 @@
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
-#include "base/command_line.h"
+#include "ash/wm/workspace/backdrop_controller.h"
+#include "ash/wm/workspace/workspace_layout_manager.h"
+#include "ash/wm/workspace_controller.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -174,7 +176,7 @@ void DeletePineImage(base::OnceClosure& for_test_callback,
 
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode.
 // Returns true if the pine screenshot should be taken on shutdown.
-bool ShouldTakePineScreeshot() {
+bool ShouldTakePineScreenshot() {
   auto* shell = Shell::Get();
   // Do not take the pine screenshot if it is in overview mode, lock screen,
   // home launcher or pinned mode.
@@ -829,7 +831,7 @@ void LockStateController::ShutdownOnPine(bool cancelable_shutdown) {
 void LockStateController::TakePineImageAndShutdown(bool cancelable_shutdown) {
   const base::FilePath file_path = GetShutdownPineImagePath();
 
-  if (!ShouldTakePineScreeshot()) {
+  if (!ShouldTakePineScreenshot()) {
     DeletePineImage(pine_image_callback_for_test_, file_path);
     StartShutdownProcess(cancelable_shutdown);
     return;
@@ -886,6 +888,14 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
         FROM_HERE, kTakeScreenshotFailTimeout,
         base::BindOnce(&LockStateController::OnTakeScreenshotFailTimeout,
                        base::Unretained(this), cancelable_shutdown));
+  }
+
+  if (auto* workspace_controller = GetWorkspaceController(
+          desks_util::GetActiveDeskContainerForRoot(root))) {
+    if (BackdropController* backdrop_controller =
+            workspace_controller->layout_manager()->backdrop_controller()) {
+      backdrop_controller->HideOnTakingPineScreenshot();
+    }
   }
 
   // Take the screenshot on the shutdown screenshot container, thus the float
