@@ -30,6 +30,7 @@ class NonClientFrameView;
 
 namespace ash {
 
+enum class PickerLayoutType;
 class PickerContentsView;
 class PickerSearchFieldView;
 class PickerPageView;
@@ -48,11 +49,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
-  enum class PickerLayoutType {
-    kResultsBelowSearchField,
-    kResultsAboveSearchField,
-  };
-
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
                       PickerLayoutType layout_type,
@@ -60,8 +56,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;
-
-  static constexpr auto kMaxSize = gfx::Size(320, 340);
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_widget.h"
 
 #include "ash/bubble/bubble_event_filter.h"
+#include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -21,24 +22,24 @@ namespace ash {
 namespace {
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
-PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + PickerView::kMaxSize.height() <=
+PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
+  return anchor_bounds.bottom() + kPickerViewMaxSize.height() <=
                  display::Screen::GetScreen()
                      ->GetDisplayMatching(anchor_bounds)
                      .work_area()
                      .bottom()
-             ? PickerView::PickerLayoutType::kResultsBelowSearchField
-             : PickerView::PickerLayoutType::kResultsAboveSearchField;
+             ? PickerLayoutType::kMainResultsBelowSearchField
+             : PickerLayoutType::kMainResultsAboveSearchField;
 }
 
 views::Widget::InitParams CreateInitParams(
     PickerViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     const base::TimeTicks trigger_event_timestamp) {
-  const PickerView::PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
+  const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(delegate, layout_type,
                                                   trigger_event_timestamp);
-  picker_view->SetSize(PickerView::kMaxSize);
+  picker_view->SetSize(kPickerViewMaxSize);
 
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;

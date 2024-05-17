@@ -1071,6 +1071,7 @@ component("ash") {
     "picker/views/picker_small_item_grid_view.h",
     "picker/views/picker_strings.cc",
     "picker/views/picker_strings.h",
+    "picker/views/picker_style.h",
     "picker/views/picker_symbol_item_view.cc",
     "picker/views/picker_symbol_item_view.h",
     "picker/views/picker_traversable_item_container.h",
