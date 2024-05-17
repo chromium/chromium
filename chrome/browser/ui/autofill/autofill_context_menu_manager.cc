@@ -41,7 +41,9 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -503,36 +505,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     menu_model_->SetIsNewFeatureAt(menu_model_->GetItemCount() - 1, true);
   }
   if (add_passwords_fallback) {
-    // TODO(b/321678141): If the user has passwords saved, assign "Select
-    // password" entry instead.
-    int regular_password_entry_command_id =
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
-    int regular_password_entry_string_id =
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
-
-    // TODO(b/321678141): Update strings once we have UX decision.
-    if (password_manager_util::ManualPasswordGenerationEnabled(
-            password_manager_driver)) {
-      // If the user is syncing, create a passwords submenu. The submenu
-      // contains the regular passwords manual fallback entry, plus an extra
-      // entry for generating passwords.
-      passwords_submenu_model_.AddItemWithStringId(
-          regular_password_entry_command_id, regular_password_entry_string_id);
-
-      passwords_submenu_model_.AddItemWithStringId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
-          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
-
-      menu_model_->AddSubMenuWithStringId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-          &passwords_submenu_model_);
-    } else {
-      // If the user is not syncing, add the regular passwords manual fallback
-      // passwords entry.
-      menu_model_->AddItemWithStringId(regular_password_entry_command_id,
-                                       regular_password_entry_string_id);
-    }
+    AddPasswordsManualFallbackItems(*password_manager_driver);
   }
   // TODO(b/327566698): Log metrics for plus address fallbacks, too.
   // TODO(b/321678141): Log metrics for passwords manual fallback, too.
@@ -591,6 +564,64 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
                  password_manager_driver.GetLastCommittedURL()) &&
          base::FeatureList::IsEnabled(
              password_manager::features::kPasswordManualFallbackAvailable);
+}
+
+void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
+    ContentPasswordManagerDriver& password_manager_driver) {
+  int regular_password_entry_command_id;
+  int regular_password_entry_string_id;
+
+  password_manager::PasswordManagerClient* client =
+      password_manager_driver.GetPasswordManager()->GetClient();
+  const bool user_is_syncing =
+      password_manager_util::ManualPasswordGenerationEnabled(
+          &password_manager_driver);
+  const bool user_has_passwords_saved =
+      client->GetPrefs()->GetBoolean(
+          password_manager::prefs::
+              kAutofillableCredentialsProfileStoreLoginDatabase) ||
+      client->GetPrefs()->GetBoolean(
+          password_manager::prefs::
+              kAutofillableCredentialsAccountStoreLoginDatabase);
+
+  // TODO(b/321678141): Update strings once we have UX decision.
+  if (user_has_passwords_saved) {
+    regular_password_entry_command_id =
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
+    regular_password_entry_string_id =
+        user_is_syncing
+            ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD
+            : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS;
+  } else {
+    // If the user doesn't have passwords saved, display "Import passwords"
+    // option.
+    regular_password_entry_command_id =
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
+    regular_password_entry_string_id =
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
+  }
+
+  if (user_is_syncing) {
+    // If the user is syncing, create a passwords submenu. The submenu
+    // contains the regular passwords manual fallback entry, plus an extra
+    // entry for generating passwords.
+    passwords_submenu_model_.AddItemWithStringId(
+        regular_password_entry_command_id, regular_password_entry_string_id);
+
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
+
+    menu_model_->AddSubMenuWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
+        &passwords_submenu_model_);
+  } else {
+    // If the user is not syncing, add the regular passwords manual fallback
+    // passwords entry.
+    menu_model_->AddItemWithStringId(regular_password_entry_command_id,
+                                     regular_password_entry_string_id);
+  }
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(

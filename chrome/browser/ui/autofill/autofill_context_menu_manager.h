@@ -89,6 +89,16 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   bool ShouldAddPasswordsManualFallbackItem(
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
+  // Adds the passwords manual fallback context menu entries.
+  // If the user has passwords saved, display "Select password" (if the user
+  // is syncing) or "Passwords" (if the user is not syncing) option.
+  // The latter doesn't open a submenu, instead it behaves like the "Select
+  // password" entry.
+  // If the user doesn't have passwords saved, display "Import passwords".
+  // Additionally, a syncing user will have a "Suggest password" entry.
+  void AddPasswordsManualFallbackItems(
+      password_manager::ContentPasswordManagerDriver& password_manager_driver);
+
   // Emits metrics about showing the manual fallback context menu entries to the
   // user.
   // `address_option_shown` specifies whether address manual fallback was

@@ -13,10 +13,14 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -45,7 +49,11 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
@@ -61,6 +69,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -855,7 +865,7 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
 
 IN_PROC_BROWSER_TEST_F(
     PasswordsFallbackTest,
-    SyncingUser_ManualFallbackWithGeneratePasswordOptionAdded) {
+    SyncingUser_NoPasswordsSaved_ManualFallbackAddedWithGeneratePasswordOptionAndImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(),
@@ -864,12 +874,136 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     PasswordsFallbackTest,
-    NotSyncingUserManualFallbackWithoutGeneratePasswordOptionAdded) {
+    NotSyncingUser_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/false);
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(), OnlyPasswordsNotSyncingFallbackAdded(
                                 /*has_passwords_saved=*/false));
 }
+
+enum class PasswordDatabaseEntryType {
+  kNormal,
+  kBlocklisted,
+  kFederated,
+  kUsernameOnly,
+};
+
+// Not all password database entries are autofillable. This tests fixture goes
+// through all relevant categories of password database entries: normal
+// credentials, blocklisted entries, federated credentials and username-only
+// credentials. Only the first category is autofillable.
+// The tests in this fixture test that the "Select password" entry is displayed
+// if and only if they have at least one normal credential in the password
+// database.
+class PasswordsFallbackWithPasswordDatabaseEntriesTest
+    : public PasswordsFallbackTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, PasswordDatabaseEntryType>> {
+ public:
+  void AddPasswordToStore() {
+    password_manager::PasswordStoreInterface* password_store =
+        use_profile_store()
+            ? ProfilePasswordStoreFactory::GetForProfile(
+                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                  .get()
+            : AccountPasswordStoreFactory::GetForProfile(
+                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                  .get();
+
+    password_manager::PasswordForm password_form;
+    password_form.signon_realm = "http://test.com";
+    password_form.url = GURL("http://test.com");
+    switch (password_database_entry_type()) {
+      case PasswordDatabaseEntryType::kNormal:
+        break;
+      case PasswordDatabaseEntryType::kBlocklisted:
+        password_form.blocked_by_user = true;
+        break;
+      case PasswordDatabaseEntryType::kFederated:
+        password_form.federation_origin =
+            url::Origin::Create(GURL("http://test.com"));
+        break;
+      case PasswordDatabaseEntryType::kUsernameOnly:
+        password_form.scheme =
+            password_manager::PasswordForm::Scheme::kUsernameOnly;
+        break;
+    }
+
+    const std::string pref =
+        use_profile_store()
+            ? password_manager::prefs::
+                  kAutofillableCredentialsProfileStoreLoginDatabase
+            : password_manager::prefs::
+                  kAutofillableCredentialsAccountStoreLoginDatabase;
+
+    if (!has_autofillable_credentials()) {
+      // `base::test::RunUntil()` can detect whether a change in the prefs
+      // occur, but cannot detect anything if the prefs don't change. The pref
+      // is set to `true`, because it is expected to turn to `false` when
+      // `PasswordStoreInterface::AddLogin()` is called.
+      password_manager_client()->GetPrefs()->SetBoolean(pref, true);
+    }
+
+    password_store->AddLogin(password_form);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return password_manager_client()->GetPrefs()->GetBoolean(pref) ==
+             has_autofillable_credentials();
+    })) << "Adding the login timed out.";
+  }
+
+  ChromePasswordManagerClient* password_manager_client() {
+    return ChromePasswordManagerClient::FromWebContents(web_contents());
+  }
+
+  // If false, then use account store.
+  bool use_profile_store() { return std::get<0>(GetParam()); }
+
+  PasswordDatabaseEntryType password_database_entry_type() {
+    return std::get<1>(GetParam());
+  }
+
+  bool has_autofillable_credentials() {
+    return password_database_entry_type() == PasswordDatabaseEntryType::kNormal;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      password_manager::features::kPasswordManualFallbackAvailable};
+};
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordsFallbackWithPasswordDatabaseEntriesTest,
+    SyncingUser_HasPasswordDatabaseEntries_ManualFallbackAddedWithGeneratePasswordOption) {
+  UpdateSyncStatus(/*sync_enabled=*/true);
+  AddPasswordToStore();
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsSyncingFallbackAdded(
+                  /*has_passwords_saved=*/has_autofillable_credentials()));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordsFallbackWithPasswordDatabaseEntriesTest,
+    NotSyncingUser_HasPasswordDatabaseEntries_ManualFallbackAddedWithoutGeneratePasswordOption) {
+  UpdateSyncStatus(/*sync_enabled=*/false);
+  AddPasswordToStore();
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsNotSyncingFallbackAdded(
+                  /*has_passwords_saved=*/has_autofillable_credentials()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PasswordsFallbackTest,
+    PasswordsFallbackWithPasswordDatabaseEntriesTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(PasswordDatabaseEntryType::kNormal,
+                        PasswordDatabaseEntryType::kBlocklisted,
+                        PasswordDatabaseEntryType::kFederated,
+                        PasswordDatabaseEntryType::kUsernameOnly)));
 
 class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTest {
  public:
@@ -903,6 +1037,8 @@ class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTest {
 #endif
 
  private:
+  base::test::ScopedFeatureList feature_{
+      password_manager::features::kPasswordManualFallbackAvailable};
   raw_ptr<Browser> guest_browser_ = nullptr;
 };
 
