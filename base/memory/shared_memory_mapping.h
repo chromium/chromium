@@ -74,9 +74,8 @@ class BASE_EXPORT SharedMemoryMapping {
                       size_t size,
                       const UnguessableToken& guid,
                       SharedMemoryMapper* mapper);
-  void* raw_memory_ptr() const {
-    return reinterpret_cast<void*>(mapped_span_.data());
-  }
+  // Returns a span over the full mapped memory.
+  span<uint8_t> mapped_memory() const { return mapped_span_; }
 
  private:
   friend class SharedMemoryTracker;
@@ -108,7 +107,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
 
   // Returns the base address of the read-only mapping. Returns nullptr for
   // invalid instances.
-  const void* memory() const { return raw_memory_ptr(); }
+  const void* memory() const { return mapped_memory().data(); }
 
   // Returns a pointer to a page-aligned const T if the mapping is valid and
   // large enough to contain a T, or nullptr otherwise.
@@ -121,7 +120,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
       return nullptr;
     if (sizeof(T) > size())
       return nullptr;
-    return static_cast<const T*>(raw_memory_ptr());
+    return reinterpret_cast<const T*>(mapped_memory().data());
   }
 
   // Returns a span of const T. The number of elements is autodeduced from the
@@ -153,7 +152,12 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
       return span<const T>();
     if (size() / sizeof(T) < count)
       return span<const T>();
-    return span<const T>(static_cast<const T*>(raw_memory_ptr()), count);
+    // SAFETY: There is an internal invariant (enforced in the constructors)
+    // that `size() <= mapped_memory().size()`. `count` is the number of objects
+    // of type T that fit within size(), so the pointer given to span() points
+    // to at least that many T objects.
+    return UNSAFE_BUFFERS(
+        span(reinterpret_cast<const T*>(mapped_memory().data()), count));
   }
 
  private:
@@ -183,7 +187,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
 
   // Returns the base address of the writable mapping. Returns nullptr for
   // invalid instances.
-  void* memory() const { return raw_memory_ptr(); }
+  void* memory() const { return mapped_memory().data(); }
 
   // Returns a pointer to a page-aligned T if the mapping is valid and large
   // enough to contain a T, or nullptr otherwise.
@@ -196,7 +200,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
       return nullptr;
     if (sizeof(T) > size())
       return nullptr;
-    return static_cast<T*>(raw_memory_ptr());
+    return reinterpret_cast<T*>(mapped_memory().data());
   }
 
   // Returns a span of T. The number of elements is autodeduced from the size of
@@ -227,7 +231,12 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
       return span<T>();
     if (size() / sizeof(T) < count)
       return span<T>();
-    return span<T>(static_cast<T*>(raw_memory_ptr()), count);
+    // SAFETY: There is an internal invariant (enforced in the constructors)
+    // that `size() <= mapped_memory().size()`. `count` is the number of objects
+    // of type T that fit within size(), so the pointer given to span() points
+    // to at least that many T objects.
+    return UNSAFE_BUFFERS(
+        span(reinterpret_cast<T*>(mapped_memory().data()), count));
   }
 
  private:
@@ -243,17 +252,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
                               const UnguessableToken& guid,
                               SharedMemoryMapper* mapper);
 
-  friend class DiscardableSharedMemory;
-  // Returns a span over the entire mapped memory, which may be more than the
-  // logical requested memory. Bytes outside of the logical size should not be
-  // used.
-  span<uint8_t> mapped_memory() const {
-    if (!IsValid()) {
-      return span<uint8_t>();
-    }
-    return UNSAFE_BUFFERS(
-        span(static_cast<uint8_t*>(raw_memory_ptr()), mapped_size()));
-  }
+  friend class DiscardableSharedMemory;  // Give access to mapped_memory().
 };
 
 }  // namespace base

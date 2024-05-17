@@ -45,28 +45,28 @@ const trace_event::MemoryAllocatorDump*
 SharedMemoryTracker::GetOrCreateSharedMemoryDump(
     const SharedMemoryMapping& shared_memory,
     trace_event::ProcessMemoryDump* pmd) {
-  return GetOrCreateSharedMemoryDumpInternal(shared_memory.raw_memory_ptr(),
-                                             shared_memory.mapped_size(),
-                                             shared_memory.guid(), pmd);
+  return GetOrCreateSharedMemoryDumpInternal(
+      shared_memory.mapped_memory().data(),
+      shared_memory.mapped_memory().size(), shared_memory.guid(), pmd);
 }
 
 void SharedMemoryTracker::IncrementMemoryUsage(
     const SharedMemoryMapping& mapping) {
   AutoLock hold(usages_lock_);
-  DCHECK(usages_.find(mapping.raw_memory_ptr()) == usages_.end());
-  usages_.emplace(mapping.raw_memory_ptr(),
-                  UsageInfo(mapping.mapped_size(), mapping.guid()));
+  DCHECK(usages_.find(mapping.mapped_memory().data()) == usages_.end());
+  usages_.emplace(mapping.mapped_memory().data(),
+                  UsageInfo(mapping.mapped_memory().size(), mapping.guid()));
 }
 
 void SharedMemoryTracker::DecrementMemoryUsage(
     const SharedMemoryMapping& mapping) {
   AutoLock hold(usages_lock_);
-  const auto it = usages_.find(mapping.raw_memory_ptr());
+  const auto it = usages_.find(mapping.mapped_memory().data());
   // TODO(pbos): When removing this NotFatalUntil, use erase(it) below. We can't
   // do that now because if this CHECK is actually failing there'd be a memory
   // bug.
   CHECK(it != usages_.end(), base::NotFatalUntil::M125);
-  usages_.erase(mapping.raw_memory_ptr());
+  usages_.erase(mapping.mapped_memory().data());
 }
 
 SharedMemoryTracker::SharedMemoryTracker() {

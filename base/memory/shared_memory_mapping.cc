@@ -49,6 +49,7 @@ SharedMemoryMapping::SharedMemoryMapping(span<uint8_t> mapped_span,
                                          const UnguessableToken& guid,
                                          SharedMemoryMapper* mapper)
     : mapped_span_(mapped_span), size_(size), guid_(guid), mapper_(mapper) {
+  CHECK_LE(size_, mapped_span_.size());
   // Note: except on Windows, `mapped_span_.size() == size_`.
   SharedMemoryTracker::GetInstance()->IncrementMemoryUsage(*this);
 }
