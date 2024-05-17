@@ -25,7 +25,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -178,9 +177,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   bool IsThirdPartyPhaseoutEnabled() const;
 
-  const ContentSettingsForOneType& GetContentSettings(
-      ContentSettingsType type) const;
-
   // Returns a vector of host-indexed content settings associated with the input
   // `type`. Each element of the vector corresponds to a Provider from
   // HostContentSettingsMap with the highest priority Provider first.
@@ -244,9 +240,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       std::vector<content_settings::HostIndexedContentSettings>>
       EntryIndex;
 
-  // Holds an EntryIndex if kHostIndexedMetadataGrants is enabled.
-  // Holds an EntryMap otherwise.
-  absl::variant<EntryMap, EntryIndex> content_settings_;
+  EntryIndex content_settings_;
 
   raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 };

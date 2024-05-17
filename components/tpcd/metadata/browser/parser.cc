@@ -185,31 +185,8 @@ void Parser::CallOnMetadataReady() {
   }
 }
 
-Metadata GenerateLargeTestMetadata() {
-  Metadata metadata;
-  for (int i = 1; i < content_settings::features::kUseTestMetadata.Get() + 1;
-       ++i) {
-    std::string hostname = "";
-    int j = i;
-    while (j > 0) {
-      hostname.push_back('a' + j % 24);
-      j /= 24;
-    }
-    helpers::AddEntryToMetadata(metadata,
-                                base::StrCat({"http://", hostname, ".test"}),
-                                "*", Parser::kSourceTest, /*dtrp=*/0);
-  }
-  CHECK(Parser::IsValidMetadata(metadata, base::NullCallback()));
-  return metadata;
-}
-
 MetadataEntries Parser::GetMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (content_settings::features::kUseTestMetadata.Get() > 0) {
-    metadata_source_ = MetadataSource::kClient;
-    return ToMetadataEntries(GenerateLargeTestMetadata());
-  }
 
   base::FieldTrialParams params;
   bool has_feature_params = base::GetFieldTrialParamsByFeature(

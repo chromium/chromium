@@ -256,11 +256,9 @@ class CookieSettingsTest : public CookieSettingsTestBase,
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsIndexedContentSettingsEnabled()) {
-      enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
       enabled_features.push_back(
           {features::kIndexedHostContentSettingsMap, {}});
     } else {
-      disabled_features.push_back(features::kHostIndexedMetadataGrants);
       disabled_features.push_back(features::kIndexedHostContentSettingsMap);
     }
 
@@ -292,11 +290,9 @@ class CookieSettingsTestP
     }
 
     if (IsIndexedContentSettingsEnabled()) {
-      enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
       enabled_features.push_back(
           {features::kIndexedHostContentSettingsMap, {}});
     } else {
-      disabled_features.push_back(features::kHostIndexedMetadataGrants);
       disabled_features.push_back(features::kIndexedHostContentSettingsMap);
     }
 

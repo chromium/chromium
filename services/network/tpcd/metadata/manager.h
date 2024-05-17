@@ -35,13 +35,7 @@ class Manager : public ::tpcd::metadata::common::ManagerBase {
       content_settings::SettingInfo* out_info) const;
 
  private:
-  typedef absl::variant<ContentSettingsForOneType,
-                        content_settings::HostIndexedContentSettings>
-      Grants;
-  // grants_ holds a `content_settings::HostIndexedContentSettings` if
-  // `IsHostIndexedMetadataGrantsEnabled()` is true, otherwise, it holds a
-  // `ContentSettingsForOneType`.
-  Grants grants_;
+  content_settings::HostIndexedContentSettings grants_;
 };
 
 }  // namespace network::tpcd::metadata

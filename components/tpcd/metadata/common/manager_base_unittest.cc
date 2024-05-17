@@ -86,42 +86,38 @@ TEST_P(ManagerBaseFeatureTest, GetContentSetting) {
       std::move(value), content_settings::ProviderType::kNone,
       /*incognito=*/false, rule_metadata);
 
-  std::vector<common::Grants> v_grants;
-  v_grants.emplace_back(grants);
-  v_grants.emplace_back(std::move(
-      content_settings::HostIndexedContentSettings::Create(grants).front()));
+  auto index = std::move(
+      content_settings::HostIndexedContentSettings::Create(grants).front());
 
-  for (const auto& itr : v_grants) {
+  {
+    content_settings::SettingInfo out_info;
+    EXPECT_EQ(GetManagerBase()->GetContentSetting(index, third_party_url,
+                                                  first_party_url, &out_info),
+              IsTpcdMetadataGrantsEnabled() ? CONTENT_SETTING_ALLOW
+                                            : CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(out_info.primary_pattern.ToString(),
+              IsTpcdMetadataGrantsEnabled() ? primary_pattern_spec : "*");
+    EXPECT_EQ(out_info.secondary_pattern.ToString(),
+              IsTpcdMetadataGrantsEnabled() ? secondary_pattern_spec : "*");
+    EXPECT_EQ(out_info.metadata.tpcd_metadata_rule_source(),
+              IsTpcdMetadataGrantsEnabled()
+                  ? content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST
+                  : content_settings::mojom::TpcdMetadataRuleSource::
+                        SOURCE_UNSPECIFIED);
+  }
+
     {
       content_settings::SettingInfo out_info;
-      EXPECT_EQ(GetManagerBase()->GetContentSetting(itr, third_party_url,
-                                                    first_party_url, &out_info),
-                IsTpcdMetadataGrantsEnabled() ? CONTENT_SETTING_ALLOW
-                                              : CONTENT_SETTING_BLOCK);
-      EXPECT_EQ(out_info.primary_pattern.ToString(),
-                IsTpcdMetadataGrantsEnabled() ? primary_pattern_spec : "*");
-      EXPECT_EQ(out_info.secondary_pattern.ToString(),
-                IsTpcdMetadataGrantsEnabled() ? secondary_pattern_spec : "*");
       EXPECT_EQ(
-          out_info.metadata.tpcd_metadata_rule_source(),
-          IsTpcdMetadataGrantsEnabled()
-              ? content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST
-              : content_settings::mojom::TpcdMetadataRuleSource::
-                    SOURCE_UNSPECIFIED);
-    }
-
-    {
-      content_settings::SettingInfo out_info;
-      EXPECT_EQ(GetManagerBase()->GetContentSetting(
-                    itr, third_party_url_no_grants, first_party_url, &out_info),
-                CONTENT_SETTING_BLOCK);
+          GetManagerBase()->GetContentSetting(index, third_party_url_no_grants,
+                                              first_party_url, &out_info),
+          CONTENT_SETTING_BLOCK);
       EXPECT_EQ(out_info.primary_pattern.ToString(), "*");
       EXPECT_EQ(out_info.secondary_pattern.ToString(), "*");
       EXPECT_EQ(
           out_info.metadata.tpcd_metadata_rule_source(),
           content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED);
     }
-  }
 }
 
 class ManagerBaseCohortTest
@@ -174,6 +170,7 @@ INSTANTIATE_TEST_SUITE_P(
             content_settings::mojom::TpcdMetadataCohort::kMaxValue) +
             1,
         /*step=*/1));
+
 TEST_P(ManagerBaseCohortTest, GetContentSetting) {
   const std::string primary_pattern_spec = "https://www.der.com";
   const std::string secondary_pattern_spec = "https://www.foo.com";
@@ -195,9 +192,12 @@ TEST_P(ManagerBaseCohortTest, GetContentSetting) {
       std::move(value), content_settings::ProviderType::kNone,
       /*incognito=*/false, rule_metadata);
 
+  auto index = std::move(
+      content_settings::HostIndexedContentSettings::Create(grants).front());
+
   {
     content_settings::SettingInfo out_info;
-    EXPECT_EQ(GetManagerBase()->GetContentSetting(grants, third_party_url,
+    EXPECT_EQ(GetManagerBase()->GetContentSetting(index, third_party_url,
                                                   first_party_url, &out_info),
               ExpectedContentSetting(GetCohortBeingTested()));
     EXPECT_EQ(out_info.primary_pattern.ToString(), primary_pattern_spec);
@@ -209,10 +209,9 @@ TEST_P(ManagerBaseCohortTest, GetContentSetting) {
 
   {
     content_settings::SettingInfo out_info;
-    EXPECT_EQ(
-        GetManagerBase()->GetContentSetting(grants, third_party_url_no_grants,
-                                            first_party_url, &out_info),
-        CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetManagerBase()->GetContentSetting(
+                  index, third_party_url_no_grants, first_party_url, &out_info),
+              CONTENT_SETTING_BLOCK);
     EXPECT_EQ(out_info.primary_pattern.ToString(), "*");
     EXPECT_EQ(out_info.secondary_pattern.ToString(), "*");
     EXPECT_EQ(

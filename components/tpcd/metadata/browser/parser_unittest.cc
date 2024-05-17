@@ -56,12 +56,6 @@ class ParserTest : public ::testing::Test {
         net::features::kTpcdMetadataGrants, params);
   }
 
-  void EnableFeatureWithLargeMetadata() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content_settings::features::kHostIndexedMetadataGrants,
-        {{content_settings::features::kUseTestMetadataName, "10000"}});
-  }
-
   void EnableFeature() {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kTpcdMetadataGrants);
@@ -374,18 +368,6 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
     ASSERT_EQ(me.front().primary_pattern_spec(), wildcard_spec);
     ASSERT_EQ(me.front().secondary_pattern_spec(), wildcard_spec);
   }
-}
-
-TEST_F(ParserTest, GetMetadata_TestMetadataOnly) {
-  const std::string primary_pattern_spec = "http://b.test";
-  const std::string secondary_pattern_spec = "*";
-
-  EnableFeatureWithLargeMetadata();
-
-  MetadataEntries me = parser()->GetMetadata();
-  ASSERT_EQ(me.size(), 10000u);
-  ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
-  ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);
 }
 
 }  // namespace tpcd::metadata

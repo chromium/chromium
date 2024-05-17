@@ -138,17 +138,6 @@ BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kUseTestMetadataName[];
 
-// Enables writing and reading metadata grants as a host-indexed data structure.
-// This is meant to optimize lookups when the list is large.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
-
-// Enables generating and using test metadata. Used to test performance at
-// large list sizes. Set to a value greater than 0 to use that many generated
-// entries for testing.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::FeatureParam<int> kUseTestMetadata;
-
 // Enable indexing HostContentSettings to allow for faster lookups of content
 // setting rules.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)

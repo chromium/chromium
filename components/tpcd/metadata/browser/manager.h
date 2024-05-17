@@ -113,10 +113,8 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   raw_ptr<Parser> parser_;
   GrantsSyncCallback grants_sync_callback_;
   mutable base::Lock grants_lock_;
-  // grants_ holds a `content_settings::HostIndexedContentSettings` if
-  // `IsHostIndexedMetadataGrantsEnabled()` returns true, otherwise, it holds a
-  // `ContentSettingsForOneType`.
-  common::Grants grants_ GUARDED_BY(grants_lock_);
+
+  content_settings::HostIndexedContentSettings grants_ GUARDED_BY(grants_lock_);
   std::unique_ptr<RandGenerator> rand_generator_;
 
   // TODO(b/333529481): Get rid of this dangling pointer during re-architecture

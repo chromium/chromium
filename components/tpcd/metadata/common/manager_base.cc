@@ -31,34 +31,19 @@ bool IgnoreTpcdDtGracePeriodMetadataGrant(
 }
 
 ContentSetting ManagerBase::GetContentSetting(
-    const Grants& grants,
+    const content_settings::HostIndexedContentSettings& grants,
     const GURL& third_party_url,
     const GURL& first_party_url,
     content_settings::SettingInfo* out_info) const {
   ContentSetting result = CONTENT_SETTING_BLOCK;
 
   if (base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
-    if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
-            grants)) {
-      const content_settings::RuleEntry* found =
-          absl::get<content_settings::HostIndexedContentSettings>(grants).Find(
-              third_party_url, first_party_url);
-      if (found) {
-        result = content_settings::ValueToContentSetting(found->second.value);
-        if (out_info) {
-          out_info->SetAttributes(*found);
-        }
-      }
-    } else {
-      const ContentSettingPatternSource* found =
-          content_settings::FindContentSetting(
-              third_party_url, first_party_url,
-              absl::get<ContentSettingsForOneType>(grants));
-      if (found) {
-        result = found->GetContentSetting();
-        if (out_info) {
-          out_info->SetAttributes(*found);
-        }
+    const content_settings::RuleEntry* found =
+        grants.Find(third_party_url, first_party_url);
+    if (found) {
+      result = content_settings::ValueToContentSetting(found->second.value);
+      if (out_info) {
+        out_info->SetAttributes(*found);
       }
     }
   }

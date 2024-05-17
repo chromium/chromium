@@ -10,10 +10,6 @@
 
 namespace tpcd::metadata::common {
 
-typedef absl::variant<ContentSettingsForOneType,
-                      content_settings::HostIndexedContentSettings>
-    Grants;
-
 class ManagerBase {
  public:
   ManagerBase();
@@ -23,7 +19,7 @@ class ManagerBase {
   ManagerBase& operator=(const ManagerBase&) = delete;
 
   [[nodiscard]] ContentSetting GetContentSetting(
-      const Grants& grants,
+      const content_settings::HostIndexedContentSettings& grants,
       const GURL& third_party_url,
       const GURL& first_party_url,
       content_settings::SettingInfo* out_info) const;

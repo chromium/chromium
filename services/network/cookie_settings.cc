@@ -140,12 +140,6 @@ net::NetworkDelegate::PrivacySetting CookieSettings::PrivacySetting(
 }
 
 CookieSettings::CookieSettings() {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
-    content_settings_ = EntryIndex();
-  } else {
-    content_settings_ = EntryMap();
-  }
   // Initialize content_settings_ until we receive data.
   for (auto type : GetContentSettingsTypes()) {
     set_content_settings(type, {});
@@ -162,15 +156,8 @@ void CookieSettings::set_content_settings(
          "`network::tpcd::metadata::Manager`.";
   CHECK(IsValidType(type)) << static_cast<int>(type);
 
-  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
-  // value during execution and leading to "bad variant access".
-  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-    absl::get<EntryIndex>(content_settings_)[type] =
-        content_settings::HostIndexedContentSettings::Create(settings);
-  } else {
-    absl::get<EntryMap>(content_settings_)[type] = settings;
-  }
+  content_settings_[type] =
+      content_settings::HostIndexedContentSettings::Create(settings);
 
   if (type == ContentSettingsType::COOKIES) {
     // Ensure that a default cookie setting is specified.
@@ -178,24 +165,11 @@ void CookieSettings::set_content_settings(
         settings.back().primary_pattern != ContentSettingsPattern::Wildcard() ||
         settings.back().secondary_pattern !=
             ContentSettingsPattern::Wildcard()) {
-      // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-      // holds_alternative<>, not the flag, because b/328475709 is changing the
-      // flag value during execution and leading to "bad variant access".
-      if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-        auto& index =
-            absl::get<EntryIndex>(content_settings_)[type].emplace_back(
-                content_settings::ProviderType::kDefaultProvider, false);
-        index.SetValue(ContentSettingsPattern::Wildcard(),
-                       ContentSettingsPattern::Wildcard(),
-                       base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
-      } else {
-        absl::get<EntryMap>(content_settings_)[type].emplace_back(
-            ContentSettingsPattern::Wildcard(),
-            ContentSettingsPattern::Wildcard(),
-            base::Value(CONTENT_SETTING_ALLOW),
-            content_settings::ProviderType::kDefaultProvider,
-            /*incognito=*/false);
-      }
+      auto& index = content_settings_[type].emplace_back(
+          content_settings::ProviderType::kDefaultProvider, false);
+      index.SetValue(ContentSettingsPattern::Wildcard(),
+                     ContentSettingsPattern::Wildcard(),
+                     base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
     }
   }
 }
@@ -206,25 +180,19 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     return DeleteCookiePredicate();
   }
   ContentSettingsForOneType settings;
-  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
-  // value during execution and leading to "bad variant access".
-  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-    // TODO(b/316530672): Ideally, clear on exit would work with the index
-    // directly to benefit from faster lookup times instead of iterating over
-    // a vector of content settings.
-    for (const auto& index :
-         GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
-      for (const auto& entry : index) {
-        settings.emplace_back(entry.first.primary_pattern,
-                              entry.first.secondary_pattern,
-                              entry.second.value.Clone(), index.source(),
-                              *index.off_the_record(), entry.second.metadata);
-      }
+  // TODO(b/316530672): Ideally, clear on exit would work with the index
+  // directly to benefit from faster lookup times instead of iterating over
+  // a vector of content settings.
+  for (const auto& index :
+       GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
+    for (const auto& entry : index) {
+      settings.emplace_back(entry.first.primary_pattern,
+                            entry.first.secondary_pattern,
+                            entry.second.value.Clone(), index.source(),
+                            *index.off_the_record(), entry.second.metadata);
     }
-  } else {
-    settings = GetContentSettings(ContentSettingsType::COOKIES);
   }
+
   return base::BindRepeating(&CookieSettings::ShouldDeleteCookieOnExit,
                              base::Unretained(this), std::move(settings));
 }
@@ -350,45 +318,22 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {
-  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
-  // value during execution and leading to "bad variant access".
-  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-    for (const auto& index :
-         GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
-      for (const auto& entry : index) {
-        if (content_settings::ValueToContentSetting(entry.second.value) ==
-            CONTENT_SETTING_SESSION_ONLY) {
-          return true;
-        }
+  for (const auto& index :
+       GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
+    for (const auto& entry : index) {
+      if (content_settings::ValueToContentSetting(entry.second.value) ==
+          CONTENT_SETTING_SESSION_ONLY) {
+        return true;
       }
     }
-    return false;
   }
-  return base::ranges::any_of(
-      GetContentSettings(ContentSettingsType::COOKIES), [](const auto& entry) {
-        return entry.GetContentSetting() == CONTENT_SETTING_SESSION_ONLY;
-      });
-}
-
-const ContentSettingsForOneType& CookieSettings::GetContentSettings(
-    ContentSettingsType type) const {
-  CHECK(IsValidType(type)) << "network::CookieSettings::GetContentSettings() "
-                              "called with invalid type "
-                           << type;
-  CHECK(absl::holds_alternative<EntryMap>(content_settings_))
-      << "network::CookieSettings::content_settings_ held an EntryIndex "
-         "instead of an EntryMap";
-  CHECK(absl::get<EntryMap>(content_settings_).contains(type))
-      << "network::CookieSettings::content_settings_ did not contain type "
-      << type;
-  return absl::get<EntryMap>(content_settings_).at(type);
+  return false;
 }
 
 const std::vector<content_settings::HostIndexedContentSettings>&
 CookieSettings::GetHostIndexedContentSettings(ContentSettingsType type) const {
   CHECK(IsValidType(type)) << static_cast<int>(type);
-  return absl::get<EntryIndex>(content_settings_).at(type);
+  return content_settings_.at(type);
 }
 
 ContentSetting CookieSettings::GetContentSetting(
@@ -405,33 +350,16 @@ ContentSetting CookieSettings::GetContentSetting(
                                                        secondary_url, info);
     }
   } else {
-    // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-    // holds_alternative<>, not the flag, because b/328475709 is changing the
-    // flag value during execution and leading to "bad variant access".
-    if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-      for (const auto& index : GetHostIndexedContentSettings(content_type)) {
-        const content_settings::RuleEntry* result =
-            index.Find(primary_url, secondary_url);
-        if (result) {
-          if (info) {
-            info->SetAttributes(*result);
-            info->source = content_settings::GetSettingSourceFromProviderType(
-                index.source());
-          }
-          return content_settings::ValueToContentSetting(result->second.value);
-        }
-      }
-    } else {
-      const ContentSettingPatternSource* result =
-          content_settings::FindContentSetting(
-              primary_url, secondary_url, GetContentSettings(content_type));
+    for (const auto& index : GetHostIndexedContentSettings(content_type)) {
+      const content_settings::RuleEntry* result =
+          index.Find(primary_url, secondary_url);
       if (result) {
         if (info) {
           info->SetAttributes(*result);
           info->source = content_settings::GetSettingSourceFromProviderType(
-              result->source);
+              index.source());
         }
-        return result->GetContentSetting();
+        return content_settings::ValueToContentSetting(result->second.value);
       }
     }
   }

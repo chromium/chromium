@@ -16,29 +16,17 @@
 
 namespace network::tpcd::metadata {
 
-Manager::Manager() {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
-    grants_ = content_settings::HostIndexedContentSettings();
-  } else {
-    grants_ = ContentSettingsForOneType();
-  }
-}
+Manager::Manager() = default;
 
 Manager::~Manager() = default;
 
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
-  if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
-          grants_)) {
-    auto indices = content_settings::HostIndexedContentSettings::Create(grants);
-    if (indices.empty()) {
-      grants_ = content_settings::HostIndexedContentSettings();
-    } else {
-      CHECK_EQ(indices.size(), 1u);
-      grants_ = std::move(indices.front());
-    }
+  auto indices = content_settings::HostIndexedContentSettings::Create(grants);
+  if (indices.empty()) {
+    grants_ = content_settings::HostIndexedContentSettings();
   } else {
-    grants_ = grants;
+    CHECK_EQ(indices.size(), 1u);
+    grants_ = std::move(indices.front());
   }
 }
 
@@ -55,13 +43,7 @@ ContentSettingsForOneType Manager::GetGrants() const {
     return ContentSettingsForOneType();
   }
 
-  if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
-          grants_)) {
-    return ManagerBase::GetContentSettingForOneType(
-        absl::get<content_settings::HostIndexedContentSettings>(grants_));
-  }
-
-  return absl::get<ContentSettingsForOneType>(grants_);
+  return ManagerBase::GetContentSettingForOneType(grants_);
 }
 
 }  // namespace network::tpcd::metadata

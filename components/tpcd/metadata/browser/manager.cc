@@ -60,15 +60,6 @@ Manager::Manager(Parser* parser,
 
   rand_generator_ = std::make_unique<RandGenerator>();
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
-    base::AutoLock lock(grants_lock_);
-    grants_ = content_settings::HostIndexedContentSettings();
-  } else {
-    base::AutoLock lock(grants_lock_);
-    grants_ = ContentSettingsForOneType();
-  }
-
   parser_->AddObserver(this);
   if (!parser_->GetMetadata().empty()) {
     OnMetadataReady();
@@ -96,20 +87,14 @@ bool Manager::IsAllowed(const GURL& url,
 }
 
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
-    auto indices = content_settings::HostIndexedContentSettings::Create(grants);
-    if (indices.empty()) {
-      base::AutoLock lock(grants_lock_);
-      grants_ = content_settings::HostIndexedContentSettings();
-    } else {
-      CHECK_EQ(indices.size(), 1u);
-      base::AutoLock lock(grants_lock_);
-      grants_ = std::move(indices.front());
-    }
-  } else {
+  auto indices = content_settings::HostIndexedContentSettings::Create(grants);
+  if (indices.empty()) {
     base::AutoLock lock(grants_lock_);
-    grants_ = grants;
+    grants_ = content_settings::HostIndexedContentSettings();
+  } else {
+    CHECK_EQ(indices.size(), 1u);
+    base::AutoLock lock(grants_lock_);
+    grants_ = std::move(indices.front());
   }
 
   if (grants_sync_callback_) {
@@ -236,15 +221,8 @@ ContentSettingsForOneType Manager::GetGrants() const {
     return ContentSettingsForOneType();
   }
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
     base::AutoLock lock(grants_lock_);
-    return GetContentSettingForOneType(
-        absl::get<content_settings::HostIndexedContentSettings>(grants_));
-  }
-
-  base::AutoLock lock(grants_lock_);
-  return absl::get<ContentSettingsForOneType>(grants_);
+    return GetContentSettingForOneType(grants_);
 }
 
 void Manager::ResetCohorts() {
