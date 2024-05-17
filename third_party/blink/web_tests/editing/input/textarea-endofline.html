@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<textarea rows="3" cols="50">foo&#13;&#10;&#13;&#10;bar</textarea>
+<script language="javascript" type="text/javascript">
+test(function() {
+    const textarea = document.querySelector("textarea");
+    //Place the cursor at the start of second line (Empty Line) inside textarea.
+    textarea.setSelectionRange(4, 4);
+    textarea.focus();
+    const cursorPositionBefore = textarea.selectionStart;
+    eventSender.keyDown("End");
+    const cursorPositionAfter = textarea.selectionStart;
+    assert_equals(cursorPositionAfter, cursorPositionBefore);
+},'Pressing End key on empty line should keep the cursor at the same position.');
+</script>
+</body>
+</html>

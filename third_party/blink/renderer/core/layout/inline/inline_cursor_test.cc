@@ -420,6 +420,49 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
+TEST_P(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
+  SetBodyContent(
+      "<textarea rows=\"3\" cols=\"50\">foo&#10;&#10;bar</textarea>");
+  const auto& textarea =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const LayoutObject* textarea_layout =
+      textarea.InnerEditorElement()->GetLayoutObject();
+  const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
+
+  InlineCursor move_to_end_of_line(block_flow);
+  // Preparing the InlineCursor to start from beginning
+  // of second line(Empty Line).
+  move_to_end_of_line.MoveToNextLine();
+  InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
+  // Verify if it has been successfully placed at the correct position.
+  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  const PositionWithAffinity end_position =
+      move_to_end_of_line.PositionForEndOfLine();
+  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+}
+
+TEST_P(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
+  SetBodyContent(
+      "<textarea rows=\"3\" cols=\"50\" "
+      "dir=\"rtl\">foo&#10;&#10;bar</textarea>");
+  const auto& textarea =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const LayoutObject* textarea_layout =
+      textarea.InnerEditorElement()->GetLayoutObject();
+  const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
+
+  InlineCursor move_to_end_of_line(block_flow);
+  // Preparing the InlineCursor to start from beginning
+  // of second line(Empty Line).
+  move_to_end_of_line.MoveToNextLine();
+  InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
+  // Verify if it has been successfully placed at the correct position.
+  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  const PositionWithAffinity end_position =
+      move_to_end_of_line.PositionForEndOfLine();
+  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+}
+
 TEST_P(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
   InsertStyleElement("b { display: inline-block; }");
   InlineCursor cursor = SetupCursor(

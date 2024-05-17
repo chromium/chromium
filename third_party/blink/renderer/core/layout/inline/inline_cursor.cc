@@ -919,11 +919,18 @@ PositionWithAffinity InlineCursor::PositionForEndOfLine() const {
     return PositionWithAffinity(Position::BeforeNode(*node));
   if (!IsA<Text>(node))
     return PositionWithAffinity(Position::AfterNode(*node));
-  const unsigned text_offset =
-      Current().BaseDirection() == last_leaf.Current().ResolvedDirection()
-          ? last_leaf.Current().TextOffset().end
-          : last_leaf.Current().TextOffset().start;
+  const wtf_size_t text_offset = GetTextOffsetForEndOfLine(last_leaf);
   return last_leaf.PositionForPointInText(text_offset);
+}
+
+inline wtf_size_t InlineCursor::GetTextOffsetForEndOfLine(
+    InlineCursor& last_leaf) const {
+  wtf_size_t text_offset = last_leaf.Current().TextOffset().start;
+  if (Current().BaseDirection() == last_leaf.Current().ResolvedDirection() &&
+      !last_leaf.Current().IsLineBreak()) {
+    text_offset = last_leaf.Current().TextOffset().end;
+  }
+  return text_offset;
 }
 
 void InlineCursor::MoveTo(const InlineCursorPosition& position) {
