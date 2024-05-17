@@ -1244,8 +1244,7 @@ bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
     char16_t ch) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Only check for acceleration when the current input text is "@" exactly.
-  if (input_text.size() != 1 ||
-      !input_text.starts_with('@') ||
+  if (input_text.size() != 1 || !input_text.starts_with('@') ||
       !history_embeddings::kAtKeywordAcceleration.Get()) {
     return false;
   }
@@ -1828,12 +1827,13 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                        std::u16string(), keyword, is_keyword_hint,
                        std::u16string(), AutocompleteMatch());
   } else if (old_selection.line != popup_selection_.line ||
-             (old_selection.IsButtonFocused() &&
-              !new_selection.IsButtonFocused() &&
+             (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
               new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
-    // Otherwise, only update the edit model for line number changes, or
-    // when the old selection was a button and we're not entering keyword mode.
-    // Updating the edit model for every state change breaks keyword mode.
+    // Don't update the edit model if entering or leaving keyword mode; doing so
+    // breaks keyword mode. Updating when there is no line change is necessary
+    // because omnibox text changes when:
+    // a) Moving down from a header row.
+    // b) Focusing other states; e.g. the switch-to-tab chip.
     if (reset_to_default) {
       OnPopupDataChanged(std::u16string(),
                          /*is_temporary_text=*/false,
