@@ -21,6 +21,7 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 
@@ -43,7 +44,7 @@ class Widget;
 //
 // In most cases, subclasses of |ViewAccessibility| own the |AXPlatformNode|
 // that implements the native accessibility APIs on a specific platform.
-class VIEWS_EXPORT ViewAccessibility {
+class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
  public:
   using AccessibilityEventsCallback =
       base::RepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
@@ -54,7 +55,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   ViewAccessibility(const ViewAccessibility&) = delete;
   ViewAccessibility& operator=(const ViewAccessibility&) = delete;
-  virtual ~ViewAccessibility();
+  ~ViewAccessibility() override;
 
   // Modifies |node_data| to reflect the current accessible state of the
   // associated View, taking any custom overrides into account
@@ -400,6 +401,11 @@ class VIEWS_EXPORT ViewAccessibility {
   const AccessibilityEventsCallback& accessibility_events_callback() const;
   void set_accessibility_events_callback(AccessibilityEventsCallback callback);
 
+  // Widget Observer
+  // Views may misbehave if their widget is closed; set "null-like" attributes
+  // rather than possibly crashing.
+  void OnWidgetClosing(Widget* widget) override;
+
  protected:
   explicit ViewAccessibility(View* view);
 
@@ -421,6 +427,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
   // is 'kNone'.
   void UpdateIgnoredState();
+
+  void OnWidgetClosingRecursive();
+
+  void SetDataForClosedWidget(ui::AXNodeData* data) const;
 
   // Weak. Owns this.
   const raw_ptr<View> view_;
@@ -485,6 +495,10 @@ class VIEWS_EXPORT ViewAccessibility {
   bool pause_accessibility_events_ = false;
 
   bool ignore_missing_widget_for_testing_ = false;
+
+  bool is_widget_closed_ = false;
+
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 };
 
 class IgnoreMissingWidgetForTestingScopedSetter {

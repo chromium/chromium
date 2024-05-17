@@ -266,9 +266,17 @@ RootView::RootView(Widget* widget)
   AddPostTargetHandler(post_dispatch_handler_.get());
   SetEventTargeter(
       std::unique_ptr<ViewTargeter>(new RootViewTargeter(this, this)));
+
+  // We need to add the RootView's ViewAccessibility as an observer of the
+  // widget, so that when the widget is closed, the accessible data is set
+  // accordingly.
+  widget->AddObserver(&GetViewAccessibility());
 }
 
 RootView::~RootView() {
+  if (GetWidget()) {
+    GetWidget()->RemoveObserver(&GetViewAccessibility());
+  }
   // If we have children remove them explicitly so to make sure a remove
   // notification is sent for each one of them.
   RemoveAllChildViews();
