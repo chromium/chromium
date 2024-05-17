@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "components/version_info/version_info.h"
@@ -29,6 +30,14 @@ bool IsRunningInKioskMode() {
 }
 }  // namespace
 #endif
+
+base::span<const char* const> GetControlledFrameFeatureList() {
+  static constexpr const char* feature_list[] = {
+      "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
+      "webRequestInternal",      "webViewInternal",
+  };
+  return base::make_span(feature_list);
+}
 
 namespace controlled_frame {
 
