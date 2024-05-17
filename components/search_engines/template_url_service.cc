@@ -2171,6 +2171,14 @@ void TemplateURLService::UpdateTemplateURLIfPrepopulated(
 }
 
 void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
+  // The DSE is not synced anymore when the `kSearchEngineChoiceTrigger` feature
+  // is enabled.
+  // TODO(b/341011768): Revisit whether we need to keep the DSE sync code.
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    return;
+  }
+
   if (prefs_ && (synced_turl->sync_guid() ==
                  GetDefaultSearchProviderPrefValue(*prefs_))) {
     default_search_manager_.SetUserSelectedDefaultSearchEngine(
@@ -2755,8 +2763,17 @@ void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
 
   const TemplateURL* turl = GetTemplateURLForGUID(new_guid);
   if (turl) {
-    default_search_manager_.SetUserSelectedDefaultSearchEngine(
-        turl->data(), search_engines::ChoiceMadeLocation::kOther);
+    // The choice location should remain the same as it was before calling
+    // `OnDefaultSearchProviderGUIDChanged` if we the search engine wasn't
+    // modified.
+    search_engines::ChoiceMadeLocation choice_location =
+        GetDefaultSearchProvider()->prepopulate_id() == turl->prepopulate_id()
+            ? default_search_manager_
+                  .GetChoiceMadeLocationForUserSelectedDefaultSearchEngine()
+            : search_engines::ChoiceMadeLocation::kOther;
+
+    default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data(),
+                                                               choice_location);
   }
 }
 
