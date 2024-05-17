@@ -13,39 +13,21 @@
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
-namespace ui {
-
 namespace {
 
-bool AlignUpToPageSizeChecked(size_t size, size_t* aligned_size) {
-  static_assert(base::IsValueInRangeForNumericType<size_t>(ZX_PAGE_SIZE) &&
-                    std::has_single_bit(ZX_PAGE_SIZE),
-                "The page size must fit in a size_t and be a power of 2.");
-  constexpr size_t kPageSizeMinusOne = ZX_PAGE_SIZE - 1;
-  base::CheckedNumeric<size_t> aligned_size_checked =
-      base::CheckAdd(size, kPageSizeMinusOne) & (~kPageSizeMinusOne);
-  if (!aligned_size_checked.IsValid()) {
-    return false;
-  }
-  *aligned_size = aligned_size_checked.ValueOrDie();
-  return true;
-}
-
-}  // namespace
-
-class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
+class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  public:
-  explicit ClientNativePixmapFuchsia(gfx::NativePixmapHandle handle)
-      : handle_(std::move(handle)) {}
-
   ~ClientNativePixmapFuchsia() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (mapping_) {
       // Flush the cache if Unmap is not called before the pixmap is destroyed.
       if (logically_mapped_) {
@@ -63,50 +45,27 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
       delete;
 
   bool Map() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (handle_.planes.empty()) {
+      CHECK(!mapping_);
+      return false;
+    }
+
     if (mapping_) {
       logically_mapped_ = true;
       return true;
     }
 
-    if (handle_.planes.empty() || !handle_.planes[0].vmo) {
-      return false;
-    }
+    // When reaching here, we can assume,
+    // 1. all the planes are pointing to the same underlying VM objects.
+    // 2. the end of last plane should cover all the memory blocks.
+    // 3. vmo.get_size() should return a size to cover all the planes.
+    // 4. vmo.get_size() should return a size well aligned with ZX_PAGE_SIZE.
+    // See checks being performed in the CreateFromHandle.
 
-    // Assume that the last plane is at the end of the VMO. If this assumption
-    // is violated, we shouldn't get here because
-    // FlatlandClientNativePixmapFactory::ImportFromHandle() validates (through
-    // CanFitImageForSizeAndFormat()) that the (offset + size) for each plane is
-    // less than or equal to |last_plane_end|.
-    //
-    // Note: the |last_plane_end| computation has been determined to not
-    // overflow in FlatlandClientNativePixmapFactory::ImportFromHandle()
-    // (through CanFitImageForSizeAndFormat()).
-    const size_t last_plane_end =
-        base::CheckAdd(handle_.planes.back().offset, handle_.planes.back().size)
-            .ValueOrDie<size_t>();
-
-#if DCHECK_IS_ON()
-    // All planes should fall within the range that ends with the last plane.
-    // This has been verified by
-    // FlatlandClientNativePixmapFactory::ImportFromHandle() (through
-    // CanFitImageForSizeAndFormat()).
-    for (auto& plane : handle_.planes) {
-      DCHECK(base::CheckAdd(plane.offset, plane.size).ValueOrDie<size_t>() <=
-             last_plane_end);
-    }
-#endif
-
-    // Round mapping size to align with the page size. Mapping
-    // |aligned_mapping_size| bytes should be safe because
-    // FlatlandClientNativePixmapFactory::ImportFromHandle() ensures that
-    // |last_plane_end| <= <size of the VMO> where <size of the VMO> is
-    // page_aligned which implies that |aligned_mapping_size| <= <size of the
-    // VMO>.
-    size_t aligned_mapping_size;
-    if (!AlignUpToPageSizeChecked(last_plane_end, &aligned_mapping_size)) {
-      return false;
-    }
-    mapping_size_ = aligned_mapping_size;
+    CHECK(handle_.planes[0].vmo);
+    CHECK_EQ(handle_.planes[0].vmo.get_size(&mapping_size_), ZX_OK);
+    CHECK_EQ(mapping_size_ % ZX_PAGE_SIZE, 0UL);
 
     // Pre-commit the pages of the pixmap, since it is likely that every page
     // will be touched. This is also necessary to successfully pre-fill the page
@@ -132,6 +91,7 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
   }
 
   void Unmap() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(mapping_);
     DCHECK(logically_mapped_);
 
@@ -164,33 +124,14 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     return gfx::CloneHandleForIPC(handle_);
   }
 
- private:
-  gfx::NativePixmapHandle handle_;
-
-  bool logically_mapped_ = false;
-  uint8_t* mapping_ = nullptr;
-  size_t mapping_size_ = 0;
-};
-
-class FlatlandClientNativePixmapFactory
-    : public gfx::ClientNativePixmapFactory {
- public:
-  FlatlandClientNativePixmapFactory() = default;
-  ~FlatlandClientNativePixmapFactory() override = default;
-  FlatlandClientNativePixmapFactory(const FlatlandClientNativePixmapFactory&) =
-      delete;
-  FlatlandClientNativePixmapFactory& operator=(
-      const FlatlandClientNativePixmapFactory&) = delete;
-
-  std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
+  static std::unique_ptr<gfx::ClientNativePixmap> CreateFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
+      gfx::BufferFormat format) {
     // |planes| may be empty for non-mappable pixmaps. No need to validate the
     // handle in that case.
     if (handle.planes.empty()) {
-      return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
+      return CreateUniquePtr(std::move(handle));
     }
 
     // Validate that all planes refer to a single memory object.
@@ -240,7 +181,52 @@ class FlatlandClientNativePixmapFactory
     }
 #endif
 
-    return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
+    return CreateUniquePtr(std::move(handle));
+  }
+
+ private:
+  // Allow being created only by the factory method above.
+  explicit ClientNativePixmapFuchsia(gfx::NativePixmapHandle handle)
+      : handle_(std::move(handle)) {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
+
+  // A shortcut to call private constructor.
+  static std::unique_ptr<gfx::ClientNativePixmap> CreateUniquePtr(
+      gfx::NativePixmapHandle handle) {
+    return base::WrapUnique<gfx::ClientNativePixmap>(
+        new ClientNativePixmapFuchsia(std::move(handle)));
+  }
+
+  gfx::NativePixmapHandle handle_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  bool logically_mapped_ = false;
+  uint8_t* mapping_ = nullptr;
+  size_t mapping_size_ = 0;
+};
+
+}  // namespace
+
+namespace ui {
+
+class FlatlandClientNativePixmapFactory final
+    : public gfx::ClientNativePixmapFactory {
+ public:
+  FlatlandClientNativePixmapFactory() = default;
+  ~FlatlandClientNativePixmapFactory() override = default;
+  FlatlandClientNativePixmapFactory(const FlatlandClientNativePixmapFactory&) =
+      delete;
+  FlatlandClientNativePixmapFactory& operator=(
+      const FlatlandClientNativePixmapFactory&) = delete;
+
+  std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
+      gfx::NativePixmapHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) override {
+    return ClientNativePixmapFuchsia::CreateFromHandle(std::move(handle), size,
+                                                       format);
   }
 };
 
