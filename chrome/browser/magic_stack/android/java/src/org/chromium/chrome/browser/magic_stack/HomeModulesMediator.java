@@ -398,7 +398,7 @@ public class HomeModulesMediator {
         mModel.add(item);
 
         HomeModulesMetricsUtils.recordModuleBuiltPosition(
-                mHostSurface, item.type, mModel.size() - 1);
+                mHostSurface, item.type, mModel.size() - 1, mModuleDelegateHost.isHomeSurface());
 
         if (mModel.size() == 1) {
             mSetVisibilityCallback.onResult(true);
