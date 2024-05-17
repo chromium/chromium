@@ -182,6 +182,7 @@ ModelExecutionManager::ModelExecutionManager(
     return;
   }
 
+  did_register_for_supplementary_on_device_models_ = true;
   model_provider_->AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
       /*model_metadata=*/std::nullopt, this);
@@ -191,8 +192,7 @@ ModelExecutionManager::ModelExecutionManager(
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
-  if (model_provider_ && on_device_model_service_controller_ &&
-      features::ShouldUseTextSafetyClassifierModel()) {
+  if (did_register_for_supplementary_on_device_models_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
     model_provider_->RemoveObserverForOptimizationTargetModel(
