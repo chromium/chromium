@@ -112,7 +112,7 @@ ui::TextInputClient* TestRenderWidgetHostView::GetTextInputClient() {
 }
 
 bool TestRenderWidgetHostView::HasFocus() {
-  return true;
+  return has_focus_;
 }
 
 void TestRenderWidgetHostView::ShowWithVisibility(
@@ -127,6 +127,7 @@ void TestRenderWidgetHostView::Hide() {
   if (!host()->is_hidden())
     host()->WasHidden();
   is_showing_ = false;
+  has_focus_ = false;
 }
 
 bool TestRenderWidgetHostView::IsShowing() {
@@ -231,6 +232,10 @@ const viz::LocalSurfaceId& TestRenderWidgetHostView::GetLocalSurfaceId() const {
 
 viz::SurfaceId TestRenderWidgetHostView::GetCurrentSurfaceId() const {
   return viz::SurfaceId();
+}
+
+bool TestRenderWidgetHostView::IsTestRenderWidgetHostView() const {
+  return true;
 }
 
 void TestRenderWidgetHostView::OnFirstSurfaceActivation(
