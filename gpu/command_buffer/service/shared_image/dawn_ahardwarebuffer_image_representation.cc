@@ -95,10 +95,6 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
     begin_access_desc.fenceCount = 1;
     begin_access_desc.fences = &shared_fence;
     begin_access_desc.signaledValues = &signaled_value;
-
-    // We save the SyncFD passed to BeginAccess() in case we need to restore it
-    // in EndAccess() (otherwise we will drop it in EndAccess()).
-    begin_access_sync_fd_ = std::move(sync_fd);
   }
 
   if (!shared_texture_memory_) {
@@ -118,7 +114,7 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
 
     // End the access on the backing and restore its fence, as Dawn did not
     // consume it.
-    android_backing()->EndWrite(std::move(begin_access_sync_fd_));
+    android_backing()->EndWrite(std::move(sync_fd));
     auto texture = std::move(texture_);
     texture_ = nullptr;
     return texture;
@@ -151,31 +147,19 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
   export_info.nextInChain = &sync_fd_export_info;
 
+  // Note: Dawn may export zero fences if there were no begin fences,
+  // AND the WGPUTexture was not used on the GPU queue within the
+  // access scope. Otherwise, it should either export fences from Dawn
+  // signaled after the WGPUTexture's last use, or it should re-export
+  // the begin fences if the WGPUTexture was unused.
   base::ScopedFD end_access_sync_fd;
-
-  // Dawn currently has a bug wherein if it doesn't access the texture during
-  // the access, it will return 2 fences: the fence that this instance gave it
-  // in BeginAccess() (which Dawn didn't consume), and a fence that Dawn created
-  // in EndAccess(). In this case, restore the fence created in BeginAccess() to
-  // the backing, as it is still the fence that the next access should wait on.
-  // TODO(crbug.com/dawn/2454): Remove this special-case after Dawn fixes its
-  // bug and simply returns the fence that it dup'd from that given to it in
-  // BeginAccess().
-  if (end_access_desc.fenceCount == 2u) {
-    end_access_sync_fd = std::move(begin_access_sync_fd_);
-  } else if (end_access_desc.fenceCount == 1u) {
+  if (end_access_desc.fenceCount) {
+    DCHECK_EQ(end_access_desc.fenceCount, 1u);
     end_access_desc.fences[0].ExportInfo(&export_info);
-
     // Dawn will close its FD when `end_access_desc` falls out of scope, and
     // so it is necessary to dup() it to give AndroidImageBacking an FD that
     // it can own.
     end_access_sync_fd = base::ScopedFD(dup(sync_fd_export_info.handle));
-
-    // In this case `begin_access_sync_fd_` is no longer needed, so drop it.
-    begin_access_sync_fd_.reset();
-  } else {
-    DCHECK_EQ(end_access_desc.fenceCount, 0u);
-    DCHECK(!begin_access_sync_fd_.is_valid());
   }
 
   android_backing()->EndWrite(std::move(end_access_sync_fd));
