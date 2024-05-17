@@ -127,6 +127,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayFeedbackButton) {
   RunOverlayTest("lens/overlay/overlay_feedback_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayInfoButton) {
+  RunOverlayTest("lens/overlay/overlay_info_button_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayScreenshot) {
   RunOverlayTest("lens/overlay/overlay_screenshot_test.js", "mocha.run()");
 }

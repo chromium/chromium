@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -532,6 +533,8 @@ class LensOverlayController : public LensSearchboxClient,
   void CloseRequestedByOverlayBackgroundClick() override;
   void CloseRequestedByOverlayEscapeKeyPress() override;
   void FeedbackRequestedByOverlay() override;
+  void InfoRequestedByOverlay(
+      ui::mojom::ClickModifiersPtr click_modifiers) override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
   void IssueObjectSelectionRequest(const std::string& object_id);

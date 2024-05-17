@@ -23,8 +23,7 @@
     position: absolute;
   }
 
-  #closeButton,
-  #feedbackButton {
+  .action-button {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
@@ -43,6 +42,10 @@
     --cr-icon-image: url("feedback.svg");
   }
 
+  #infoButton {
+    --cr-icon-image: url("info.svg");
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }
@@ -50,7 +53,6 @@
   :host([is-closing]) .app-container :not(lens-selection-overlay) {
     opacity: 0;
   }
-
 
   initial-toast {
     pointer-events: none;
@@ -69,6 +71,10 @@
     <cr-icon-button id="feedbackButton" class="action-button"
         on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
         title="$i18n{sendFeedback}"></cr-icon-button>
+    <cr-icon-button id="infoButton" class="action-button"
+        on-click="onInfoButtonClick" aria-label="$i18n{info}"
+        title="$i18n{info}">
+    </cr-icon-button>
     <cr-icon-button id="closeButton" class="action-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
         title="$i18n{close}"></cr-icon-button>

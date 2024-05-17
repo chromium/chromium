@@ -45,6 +45,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -1279,6 +1280,19 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
       l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"lens_overlay",
       /*extra_diagnostics=*/std::string());
+}
+
+void LensOverlayController::InfoRequestedByOverlay(
+    ui::mojom::ClickModifiersPtr click_modifiers) {
+  // The tab is expected to be in the foreground.
+  CHECK(tab_->IsInForeground());
+  tab_->GetBrowserWindowInterface()->OpenURL(
+      GURL(lens::features::GetLensOverlayHelpCenterURL()),
+      ui::DispositionFromClick(
+          click_modifiers->middle_button, click_modifiers->alt_key,
+          click_modifiers->ctrl_key, click_modifiers->meta_key,
+          click_modifiers->shift_key,
+          WindowOpenDisposition::NEW_BACKGROUND_TAB));
 }
 
 void LensOverlayController::IssueLensRequest(

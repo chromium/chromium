@@ -30,6 +30,7 @@ export interface LensOverlayAppElement {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
     feedbackButton: CrIconButtonElement,
+    infoButton: CrIconButtonElement,
     initialToast: InitialToastElement,
   };
 }
@@ -105,6 +106,16 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onFeedbackButtonClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
+  }
+
+  private onInfoButtonClick(event: MouseEvent|KeyboardEvent) {
+    this.browserProxy.handler.infoRequestedByOverlay({
+      middleButton: (event as MouseEvent).button === 1,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
   }
 
   private onNotifyResultsPanelOpened() {
