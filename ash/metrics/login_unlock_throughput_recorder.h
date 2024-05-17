@@ -176,7 +176,8 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // was received.
   base::flat_set<int> restore_windows_presented_;
 
-  base::TimeTicks primary_user_logged_in_;
+  std::optional<base::TimeTicks> timestamp_on_auth_success_;
+  std::optional<base::TimeTicks> timestamp_primary_user_logged_in_;
 
   bool shelf_initialized_ = false;
 
