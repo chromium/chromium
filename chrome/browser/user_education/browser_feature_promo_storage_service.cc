@@ -350,6 +350,8 @@ void BrowserFeaturePromoStorageService::SaveRecentSessionData(
   ScopedListPrefUpdate update(profile_->GetPrefs(),
                               kRecentSessionStartTimesPath);
   auto& pref_data = update.Get();
+  // `recent_session_data` contains the pref data, so rewrite the pref.
+  pref_data.clear();
   for (const auto& time : recent_session_data.recent_session_start_times) {
     pref_data.Append(base::TimeToValue(time));
   }
