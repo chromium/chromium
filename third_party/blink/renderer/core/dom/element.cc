@@ -7871,6 +7871,9 @@ PseudoElement* Element::UpdatePseudoElement(
   if (change.ShouldUpdatePseudoElement(*element)) {
     bool generate_pseudo = CanGeneratePseudoElement(pseudo_id);
     if (generate_pseudo) {
+      if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+        cache->RemoveSubtree(this, /*remove_root*/ false);
+      }
       element->RecalcStyle(change.ForPseudoElement(), style_recalc_context);
       if (element->NeedsReattachLayoutTree() &&
           !PseudoElementLayoutObjectIsNeeded(element->GetComputedStyle(),
