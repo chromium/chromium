@@ -228,6 +228,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DisableAcceleration(std::unique_ptr<CanvasResourceProvider>
                                new_provider_for_testing = nullptr);
+  bool EnableAcceleration() final;
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
@@ -377,6 +378,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   static std::pair<blink::Image*, float> BrokenCanvas(
       float device_scale_factor);
+
+  bool RecreateCanvasInGPURasterMode();
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 

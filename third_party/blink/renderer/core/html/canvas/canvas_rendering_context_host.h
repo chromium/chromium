@@ -108,6 +108,17 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
 
+  // This method attempts to ensure that the canvas' resource exists on the GPU.
+  // A HTMLCanvasElement can downgrade itself from GPU to CPU when readback
+  // occurs too frequently, so a canvas may exist on the CPU even if the browser
+  // is normally GPU-capable.
+  // Returns true if the canvas resources live on the GPU. If the canvas needed
+  // to be migrated off of the CPU, the canvas resource provider and canvas 2D
+  // layer bridge will be destroyed and recreated; when this occurs, any
+  // existing pointers to these objects will be invalidated. If the canvas
+  // resource provider did not exist at all, it may be created.
+  virtual bool EnableAcceleration() = 0;
+
  protected:
   ~CanvasRenderingContextHost() override = default;
 

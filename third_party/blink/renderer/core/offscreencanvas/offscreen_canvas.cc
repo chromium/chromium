@@ -469,6 +469,19 @@ bool OffscreenCanvas::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
 }
 
+bool OffscreenCanvas::EnableAcceleration() {
+  // Unlike HTML canvases, offscreen canvases don't automatically shift between
+  // CPU and GPU. Instead, we just return true if the canvas exists on GPU, or
+  // false if the canvas is CPU-bound. If the canvas' resource provider doesn't
+  // exist yet, we create it here.
+  // Note that `OffscreenCanvas::IsAccelerated` above is not equivalent! This
+  // returns false if the canvas resource provider doesn't exist yet, even if it
+  // will be an accelerated canvas once it has been created.
+  CanvasResourceProvider* provider =
+      GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  return provider->IsAccelerated();
+}
+
 bool OffscreenCanvas::HasPlaceholderCanvas() const {
   return placeholder_canvas_id_ != kInvalidDOMNodeId;
 }

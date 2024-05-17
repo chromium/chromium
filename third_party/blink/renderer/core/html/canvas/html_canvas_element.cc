@@ -1572,16 +1572,32 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
-  if (SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() &&
-      source->IsAccelerated() && (GetRasterMode() == RasterMode::kCPU) &&
-      ShouldAccelerate()) {
-    SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    std::unique_ptr<Canvas2DLayerBridge> surface = Create2DLayerBridge();
-    if (surface) {
-      ReplaceExisting2dLayerBridge(std::move(surface));
+  // If the source is GPU-accelerated, and the canvas is not, but could be...
+  if (source->IsAccelerated() && ShouldAccelerate() &&
+      GetRasterMode() == RasterMode::kCPU) {
+    // Recreate the canvas in GPU raster mode, and update its contents.
+    if (RecreateCanvasInGPURasterMode()) {
       SetNeedsCompositingUpdate();
     }
   }
+}
+
+bool HTMLCanvasElement::EnableAcceleration() {
+  return GetRasterMode() == RasterMode::kCPU ? RecreateCanvasInGPURasterMode()
+                                             : true;
+}
+
+bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
+  if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
+    return false;
+  }
+  SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  std::unique_ptr<Canvas2DLayerBridge> surface = Create2DLayerBridge();
+  if (!surface) {
+    return false;
+  }
+  ReplaceExisting2dLayerBridge(std::move(surface));
+  return true;
 }
 
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(

@@ -3507,19 +3507,45 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
     return nullptr;
   }
 
-  // We can't rely on the HTMLCanvasElement, because the canvas may not actually
-  // exist in the HTML. (e.g. `new OffscreenCanvas` has no HTML element.)
-  // We also can't use GetImage() here, because that will return null if the
-  // canvas is brand new. We always want an image, even if the canvas doesn't
-  // have a bridge yet.
+  // Prepare to flush the canvas to a WebGPU texture.
   FinalizeFrame(FlushReason::kWebGPUTexture);
+
+  // We will need to access the canvas' resource provider in order to snapshot
+  // its image below.
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
-  scoped_refptr<StaticBitmapImage> image =
-      host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->Snapshot(FlushReason::kWebGPUTexture);
-  if (!image) {
+  if (!host) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to access canvas image.");
+    return nullptr;
+  }
+
+  // Ensure that the canvas host lives on the GPU. This call is a no-op if the
+  // host is already accelerated.
+  // TODO(crbug.com/340911120): if the user requested WillReadFrequently, do we
+  // want to behave differently here?
+  const bool host_is_accelerated = host->EnableAcceleration();
+
+  // A texture needs to exist on the GPU. If we aren't able to enable
+  // acceleration, the canvas pixels live on the CPU and we weren't able to
+  // transfer them; in that case, WebGPU access is not possible.
+  CanvasResourceProvider* provider =
+      host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  if (!host_is_accelerated || !provider || !provider->IsAccelerated()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to transfer canvas to GPU.");
+    return nullptr;
+  }
+
+  // Snapshot the image from the CanvasResourceProvider.
+  // We use Snapshot instead of GetImage here to ensure that we get an image,
+  // even if the canvas is empty.
+  // TODO(crbug.com/340922308): when possible, we should steal the existing
+  // texture from the resource provider, instead of cloning it.
+  scoped_refptr<StaticBitmapImage> image =
+      provider->Snapshot(FlushReason::kWebGPUTexture);
+  if (!image) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to snapshot the canvas image.");
     return nullptr;
   }
 
@@ -3532,7 +3558,7 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
           /*is_dummy_mailbox_texture=*/false);
   if (!texture) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to access canvas texture.");
+                                      "Unable to transfer canvas to WebGPU.");
     return nullptr;
   }
 

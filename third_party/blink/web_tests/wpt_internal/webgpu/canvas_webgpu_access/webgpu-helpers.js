@@ -31,6 +31,11 @@ function isMacSwiftShader(adapterInfo) {
          navigator.platform.startsWith('Mac');
 }
 
+/** Returns true if we are running on Linux. */
+function isLinux() {
+  return navigator.platform.startsWith('Linux');
+}
+
 /** Returns the upper-left hand pixel from the texture in a buffer. */
 function copyOnePixelFromTextureAndSubmit(device, tex) {
   // Make a buffer which will allow us to copy one pixel from the texture, and
@@ -452,5 +457,27 @@ function test_endWebGPUAccess_exchanges_texture(device, canvasA, canvasB) {
   } catch (ex) {
     assert_true(ex instanceof DOMException);
     assert_equals(ex.name, 'InvalidStateError');
+  }
+}
+
+/**
+ * WebGPU access should work normally on a canvas which has been downgraded to
+ * CPU, transparently bringing it back to the GPU.
+ */
+function test_canvas_works_after_cpu_downgrade(adapterInfo, device, canvas) {
+  const ctx = canvas.getContext('2d');
+
+  // Force the canvas into software.
+  internals.disableCanvasAcceleration(canvas);
+
+  // Perform a GPU clear to demonstrate that the canvas still works in WebGPU.
+  const tex = ctx.beginWebGPUAccess({device: device});
+  clearTextureToColor(device, tex, { r: 0.0, g: 1.0, b: 0.0, a: 1.0 });
+  ctx.endWebGPUAccess(tex);
+
+  // Verify that WebGPU did its job; every pixel on the canvas should be green.
+  // TODO(crbug.com/40218893): Linux with an Intel GPU returns the wrong color.
+  if (!isLinux()) {
+    checkCanvasColor(ctx, [0x00, 0xFF, 0x00, 0xFF]);
   }
 }
