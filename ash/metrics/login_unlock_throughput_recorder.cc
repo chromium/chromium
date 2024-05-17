@@ -443,13 +443,6 @@ void LoginUnlockThroughputRecorder::UpdateShelfIconList(
     return;
   }
 
-  // We do not collect this histogram from real users because it's not
-  // really universal. It is tied to the flow from the ui.LoginPerf tast test
-  // and therefore not listed in the histograms metadata.
-  base::UmaHistogramSparse(
-      "Ash.LoginSessionRestore.ExpectedShelfIconsInitialNumber",
-      model->item_count());
-
   OnAllExpectedShelfIconsLoaded();
 }
 
