@@ -102,9 +102,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   main_image_->SetVisible(false);
   subtitle_->SetVisible(false);
 
-  if (features::IsChromeRefresh2023()) {
-    default_title_->SetTextStyle(style::STYLE_HEADLINE_4);
-  }
+  default_title_->SetTextStyle(style::STYLE_HEADLINE_4);
 
   auto minimize = CreateMinimizeButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
@@ -157,9 +155,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
 std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
     Button::PressedCallback callback) {
   auto close_button = CreateVectorImageButtonWithNativeTheme(
-      std::move(callback), features::IsChromeRefresh2023()
-                               ? vector_icons::kCloseChromeRefreshIcon
-                               : vector_icons::kCloseRoundedIcon);
+      std::move(callback), vector_icons::kCloseChromeRefreshIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();
@@ -433,31 +429,21 @@ void BubbleFrameView::UpdateMainImage() {
     // consider moving that functionality into ImageView or ImageModel without
     // having to specify an external size before painting.
     constexpr int kMainImageDialogWidthIncrease = 128;
-    constexpr int kBorderMargin = 16;
     constexpr int kBorderStrokeThickness = 1;
 
-    // Under CR2023, use the `title_margins_` for the outer margins between the
-    // content and the visible frame border. `border_insets` is the space
-    // outside the visible border mask that incorporates the rounded corners.
-    // This will ensure that the *perceived* margin will be what is expected
-    // since the origin for the view is outside the visible border.
-    // For pre-CR2023, there should be no visual change.
-    const int border_margin_left =
-        features::IsChromeRefresh2023() ? title_margins_.left() : kBorderMargin;
-    const int border_margin_top =
-        features::IsChromeRefresh2023() ? title_margins_.top() : kBorderMargin;
+    // Use the `title_margins_` for the outer margins between the content and
+    // the visible frame border. `border_insets` is the space outside the
+    // visible border mask that incorporates the rounded corners. This will
+    // ensure that the *perceived* margin will be what is expected since the
+    // origin for the view is outside the visible border.
+    const int border_margin_left = title_margins_.left();
+    const int border_margin_top = title_margins_.top();
     const gfx::Insets border_insets = GetBorder()->GetInsets();
     const int main_image_dimension = kMainImageDialogWidthIncrease -
                                      border_insets.left() - border_margin_left -
                                      kBorderStrokeThickness;
-    const int image_inset_left =
-        features::IsChromeRefresh2023()
-            ? border_insets.left() + border_margin_left
-            : border_margin_left - kBorderStrokeThickness;
-    const int image_inset_top =
-        features::IsChromeRefresh2023()
-            ? border_insets.top() + border_margin_top
-            : border_margin_top - kBorderStrokeThickness;
+    const int image_inset_left = border_insets.left() + border_margin_left;
+    const int image_inset_top = border_insets.top() + border_margin_top;
     const gfx::Insets image_insets =
         gfx::Insets::TLBR(image_inset_top, image_inset_left, border_margin_top,
                           border_margin_left);
@@ -1088,10 +1074,6 @@ bool BubbleFrameView::HasTitle() const {
 
 BubbleFrameView::ButtonsPositioning BubbleFrameView::GetButtonsPositioning()
     const {
-  if (!features::IsChromeRefresh2023()) {
-    return ButtonsPositioning::kOnFrameEdge;
-  }
-
   // Positions the buttons in the title row when there's no header row.
   return HasTitle() && !(header_view_ && header_view_->GetVisible())
              ? ButtonsPositioning::kInTitleRow
