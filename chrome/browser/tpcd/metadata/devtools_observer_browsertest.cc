@@ -126,15 +126,17 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                             uint32_t opt_out_percentage,
                             bool is_opt_out_top_level) {
     auto is_metadata_issue = [](const base::Value::Dict& params) {
-      return *(params.FindStringByDottedPath("issue.code")) ==
-             "CookieDeprecationMetadataIssue";
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "CookieDeprecationMetadataIssue";
     };
 
     // Wait for notification of a Metadata Issue.
     base::Value::Dict params = WaitForMatchingNotification(
         "Audits.issueAdded", base::BindRepeating(is_metadata_issue));
-    ASSERT_EQ(*params.FindStringByDottedPath("issue.code"),
-              "CookieDeprecationMetadataIssue");
+    const std::string* issue_code = params.FindStringByDottedPath("issue.code");
+    ASSERT_TRUE(issue_code);
+    ASSERT_EQ(*issue_code, "CookieDeprecationMetadataIssue");
 
     base::Value::Dict* metadata_issue_details = params.FindDictByDottedPath(
         "issue.details.cookieDeprecationMetadataIssueDetails");

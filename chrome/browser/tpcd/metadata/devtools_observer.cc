@@ -66,12 +66,13 @@ void TpcdMetadataDevtoolsObserver::EmitMetadataGrantDevtoolsIssue(
     content_settings::SettingInfo out_info;
     bool allowed = tpcd_metadata_manager_->IsAllowed(
         third_party_url, first_party_url, &out_info);
-    CHECK(allowed);
-    metadata_issue_details->opt_out_percentage =
-        out_info.metadata.tpcd_metadata_elected_dtrp();
-    metadata_issue_details->is_opt_out_top_level =
-        (out_info.metadata.tpcd_metadata_rule_source() ==
-         TpcdMetadataRuleSource::SOURCE_1P_DT);
+    if (allowed) {
+      metadata_issue_details->opt_out_percentage =
+          out_info.metadata.tpcd_metadata_elected_dtrp();
+      metadata_issue_details->is_opt_out_top_level =
+          (out_info.metadata.tpcd_metadata_rule_source() ==
+           TpcdMetadataRuleSource::SOURCE_1P_DT);
+    }
   }
 
   details->cookie_deprecation_metadata_issue_details =
