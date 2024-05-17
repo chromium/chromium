@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -195,9 +194,10 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            MarginLayoutParams lp = (MarginLayoutParams) view.getLayoutParams();
-            // Allow for a bit of margin for the hit boundary.
-            if ((event.getRawX() <= mBackArrow.getIntrinsicWidth() + (2 * lp.leftMargin))) {
+            // We get onTouch events for the whole contentViewTitle, but we're not interested in
+            // clicks on the whole label, only the Back arrow (which is the left-most part of it).
+            if (event.getX() <= mBackArrow.getIntrinsicWidth()) {
+                // Let the OS know we're interested in updates for this event.
                 return true;
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
