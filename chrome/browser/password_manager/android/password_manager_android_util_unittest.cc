@@ -1185,9 +1185,11 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
             profile->GetPrefs());
     auto is_db_empty_cb =
         base::BindPostTaskToCurrentDefault(base::BindRepeating(
-            &password_manager::SetEmptyStorePref, profile->GetPrefs(),
+            &password_manager::IntermediateCallbackForSettingPrefs,
             profile_backend->AsWeakPtr(),
-            password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+            base::BindRepeating(
+                &password_manager::SetEmptyStorePref, profile->GetPrefs(),
+                password_manager::prefs::kEmptyProfileStoreLoginDatabase)));
     login_db_ptr->SetIsEmptyCb(std::move(is_db_empty_cb));
     ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         profile,

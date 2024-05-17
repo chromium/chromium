@@ -77,31 +77,31 @@ void RemoveUselessCredentials(
   }
 }
 
+void IntermediateCallbackForSettingPrefs(
+    base::WeakPtr<PasswordStoreBackend> backend,
+    base::RepeatingCallback<void(LoginDatabase::LoginDatabaseEmptinessState)>
+        set_prefs_callback,
+    LoginDatabase::LoginDatabaseEmptinessState value) {
+  // When a `PasswordStoreBackend` is shut down, the weak pointers are
+  // invalidated.
+  if (backend) {
+    set_prefs_callback.Run(value);
+  }
+}
+
 void SetEmptyStorePref(PrefService* prefs,
-                       base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
                        LoginDatabase::LoginDatabaseEmptinessState value) {
-  // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
-  // called, because it will lead to a use-after-free failure. When any backend
-  // is shut down, the weak pointers are invalidated.
-  if (backend) {
     CHECK(prefs);
     prefs->SetBoolean(pref, value.no_login_found);
-  }
 }
 
 void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
-    base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
     LoginDatabase::LoginDatabaseEmptinessState value) {
-  // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
-  // called, because it will lead to a use-after-free failure. When any backend
-  // is shut down, the weak pointers are invalidated.
-  if (backend) {
     CHECK(prefs);
     prefs->SetBoolean(pref, value.autofillable_credentials_exist);
-  }
 }
 
 }  // namespace password_manager

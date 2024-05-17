@@ -53,17 +53,43 @@ void RemoveUselessCredentials(
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter);
 
+// Checks that the backend was not yet shut down (i.e. the weak pointer to the
+// backend was not yet invalidated) before calling `set_prefs_callback`.
+//
+// Example of usage:
+//
+// base::BindRepeating(
+//     &password_manager::IntermediateCallbackForSettingPrefs,
+//     backend->AsWeakPtr(), base::BindRepeating(
+//         &password_manager::SetEmptyStorePref, pref_service,
+//        password_manager::prefs::
+//            kEmptyProfileStoreLoginDatabase))
+void IntermediateCallbackForSettingPrefs(
+    base::WeakPtr<PasswordStoreBackend> backend,
+    base::RepeatingCallback<void(LoginDatabase::LoginDatabaseEmptinessState)>
+        set_prefs_callback,
+    LoginDatabase::LoginDatabaseEmptinessState value);
+
 // Extracts `value.no_login_found` and uses it as a value for the pref.
+// Important! Always wrap this method in
+// `IntermediateCallbackForSettingPrefs()`. No prefs should be set after
+// `PasswordStoreBackend::Shutdown()` was called, because it will lead to
+// use-after-free.
+// If this method didn't rely on `IntermediateCallbackForSettingPrefs()` to
+// check whether the backend has been shut down, and instead did this check
+// itself, a dangling pointer error would occur in `base::Unretained()` (because
+// `prefs` would be dangling). The error occurs in spite of the fact that
+// `prefs` is never dereferenced after the backend was shut down.
 void SetEmptyStorePref(PrefService* prefs,
-                       base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
                        LoginDatabase::LoginDatabaseEmptinessState value);
 
-// Extracts `value.autofillable_credentials_exist` and uses it as a value for
-// the pref.
+// Same as `SetEmptyStorePref()`, with the only difference that it extracts
+// `value.autofillable_credentials_exist` and uses it as a value for the pref.
+// Important! Always wrap this method in
+// `IntermediateCallbackForSettingPrefs()`.
 void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
-    base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
     LoginDatabase::LoginDatabaseEmptinessState value);
 

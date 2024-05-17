@@ -147,12 +147,18 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
   auto is_profile_db_empty_cb =
-#if BUILDFLAG(IS_ANDROID)
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &password_manager::SetEmptyStorePref, prefs, backend->AsWeakPtr(),
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+          &password_manager::IntermediateCallbackForSettingPrefs,
+          backend->AsWeakPtr(),
+#if BUILDFLAG(IS_ANDROID)
+          base::BindRepeating(
+              &password_manager::SetEmptyStorePref, prefs,
+              password_manager::prefs::kEmptyProfileStoreLoginDatabase)));
 #else
-      base::NullCallback();
+          base::BindRepeating(
+              &password_manager::SetAutofillableCredentialsStorePref, prefs,
+              password_manager::prefs::
+                  kAutofillableCredentialsProfileStoreLoginDatabase)));
 #endif
   login_db_ptr->SetIsEmptyCb(std::move(is_profile_db_empty_cb));
 
@@ -168,6 +174,9 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
       password_manager::CreateLoginDatabaseForAccountStorage(
           login_db_directory));
   std::unique_ptr<PasswordStoreBackend> backend;
+#if !BUILDFLAG(IS_ANDROID)
+  password_manager::LoginDatabase* login_db_ptr = login_db.get();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   backend = std::make_unique<PasswordStoreBuiltInBackend>(
@@ -193,5 +202,18 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
           prefs, /*password_affiliation_adapter=*/nullptr,
           password_manager::kAccountStore));
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  auto is_account_db_empty_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &password_manager::IntermediateCallbackForSettingPrefs,
+          backend->AsWeakPtr(),
+          base::BindRepeating(
+              &password_manager::SetAutofillableCredentialsStorePref, prefs,
+              password_manager::prefs::
+                  kAutofillableCredentialsAccountStoreLoginDatabase)));
+  login_db_ptr->SetIsEmptyCb(std::move(is_account_db_empty_cb));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return backend;
 }
