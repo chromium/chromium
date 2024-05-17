@@ -39,5 +39,12 @@ std::unique_ptr<Profile> FakeProfileManager::CreateProfileAsyncHelper(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
 
-  return BuildTestingProfile(path, this);
+  auto profile = BuildTestingProfile(path, this);
+
+// TODO(b/341267441): Remove this buildflag if statement after this change does
+// not cause test failure on ChromeOS ash anymore,
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  OnProfileCreationStarted(profile.get(), Profile::CREATE_MODE_ASYNCHRONOUS);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  return profile;
 }
