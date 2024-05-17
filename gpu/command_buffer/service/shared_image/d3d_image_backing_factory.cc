@@ -26,6 +26,15 @@ namespace gpu {
 
 namespace {
 
+// Formats supported by CreateSharedImage() for uploading initial data.
+bool IsFormatSupportedForInitialData(viz::SharedImageFormat format) {
+  // The set of formats is artificially limited to avoid needing to handle
+  // formats outside of what is required. If more are needed, we may need to
+  // adjust our initial data's packing or the |D3D11_SUBRESOURCE_DATA|'s pitch.
+  return format == viz::SinglePlaneFormat::kRGBA_8888 ||
+         format == viz::SinglePlaneFormat::kBGRA_8888;
+}
+
 // Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
 DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_F16) {
@@ -390,7 +399,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   D3D11_SUBRESOURCE_DATA initial_data = {};
   if (!pixel_data.empty()) {
-    if (format != viz::SinglePlaneFormat::kRGBA_8888) {
+    if (!IsFormatSupportedForInitialData(format)) {
       LOG(ERROR) << "Unsupported format: " << format.ToString();
       return nullptr;
     }
@@ -525,7 +534,7 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  if (!pixel_data.empty() && format != viz::SinglePlaneFormat::kRGBA_8888) {
+  if (!pixel_data.empty() && !IsFormatSupportedForInitialData(format)) {
     return false;
   }
 
