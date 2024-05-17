@@ -287,15 +287,33 @@ export class ObjectLayerElement extends PolymerElement {
     context.clip();
     context.drawImage(
         this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
-
-    // Draw a solid mask fill over the path of the image.
     context.restore();
+
+    // Stroke the path on top of the image.
     context.lineCap = 'round';
     context.lineJoin = 'round';
     context.lineWidth = 2;
-    context.filter = 'none';
-    context.fillStyle = 'rgba(255, 255, 255, 0.2)';
-    context.fill();
+    context.filter = 'blur(4px)';
+    // Fit a square around the bounding box to use for gradient coordinates.
+    const objectBoundingBox = object.geometry.boundingBox;
+    const longestEdge =
+        Math.max(objectBoundingBox.box.width, objectBoundingBox.box.height);
+    const left = (objectBoundingBox.box.x - longestEdge / 2) * this.canvasWidth;
+    const top = (objectBoundingBox.box.y - longestEdge / 2) * this.canvasHeight;
+    const right =
+        (objectBoundingBox.box.x + longestEdge / 2) * this.canvasWidth;
+    const bottom =
+        (objectBoundingBox.box.y + longestEdge / 2) * this.canvasHeight;
+    const gradient = context.createLinearGradient(
+        left,
+        top,
+        right,
+        bottom,
+    );
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(1, '#ffffff');
+    context.strokeStyle = gradient;
+    context.stroke();
   }
 
   private clearCanvas(context: CanvasRenderingContext2D) {
