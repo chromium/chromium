@@ -1,0 +1,5 @@
+# crbug.com/327663433
+-AttributionOsLevelManagerAndroidTest.Register
+-AttributionOsLevelManagerAndroidTest.ClearData
+# crbug.com/340939237
+-FirstPartySetsHandlerImplEnabledTest.ClearSiteDataOnChangedSetsForContext_PublicSetsWithDiff_Successful
