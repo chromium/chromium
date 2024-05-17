@@ -181,6 +181,7 @@
         </div>
       </template>
       <settings-internet-subpage
+          prefs="{{prefs}}"
           default-network="[[defaultNetwork]]"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]"
           tether-device-state="[[getTetherDeviceState_(deviceStates)]]"

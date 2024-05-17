@@ -4262,6 +4262,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS" desc="Name of the settings page which displays the list of known networks.">
     Known Networks
   </message>
+  <message name="IDS_SETTINGS_INTERNET_YOUR_DEVICE_HOTSPOTS" desc="Name of a settings page header displayed over a list of the user's devices available for Instant Hotspot.">
+    Your device hotspots
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_TITLE" desc="Title of a control allowing users to disable notifications for Instant Hotspot.">
+    Show notification
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_DESCRIPTION" desc="Description of a control allowing users to disable notifications for Instant Hotspot.">
+    When your Chromebook is offline and hotspots are available
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NO_NETWORKS" desc="Entry when there are no preferred networks or no networks of a particular type.">
     None
   </message>

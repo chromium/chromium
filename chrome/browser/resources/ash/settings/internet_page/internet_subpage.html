@@ -12,6 +12,17 @@
     margin-top: calc(-1*var(--cr-section-vertical-margin));
   }
 
+  #instant-tether-notifications-toggle {
+    border-bottom: var(--cr-separator-line);
+    min-height: var(--cr-section-min-height);
+  }
+
+  #your-device-hotspots-header {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-button-1-font);
+    margin-bottom: 5px;
+  }
+
   /* Set padding on children instead of the container itself to ensure that
       separator lines can fill the entire width of the page. */
   #networkListDiv > * {
@@ -116,6 +127,16 @@
   </cr-link-row>
 </template>
 
+
+<template is="dom-if" if="[[shouldShowTetherNotificationControl_(deviceState)]]">
+  <settings-toggle-button
+     id="instant-tether-notifications-toggle"
+     label="$i18n{internetTetherNotificationControlTitle}"
+     sub-label="$i18n{internetTetherNotificationControlDescription}"
+     pref="{{prefs.tether.notifications_enabled}}">
+  </settings-toggle-button>
+</template>
+
 <template is="dom-if" if="[[deviceIsEnabled_(deviceState)]]">
   <div id="networkListDiv" class="layout vertical flex">
     <!-- VPN only header for built-in VPNs. -->
@@ -139,6 +160,9 @@
     <!-- List of networks (empty if no networks exist). -->
     <template is="dom-if"
         if="[[shouldShowNetworkList_(networkStateList_, deviceState)]]">
+      <template is="dom-if" if="[[shouldShowTetherDeviceListHeader_(deviceState)]]">
+          <div id="your-device-hotspots-title">$i18n{internetYourDeviceHotspots}</div>
+      </template>
       <network-list id="networkList" show-buttons
           show-technology-badge="[[showTechnologyBadge_]]"
           networks="[[networkStateList_]]"

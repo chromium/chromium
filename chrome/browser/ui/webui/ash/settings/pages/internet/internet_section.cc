@@ -805,6 +805,12 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetDeviceBusy", IDS_SETTINGS_INTERNET_DEVICE_BUSY},
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
+      {"internetYourDeviceHotspots",
+       IDS_SETTINGS_INTERNET_YOUR_DEVICE_HOTSPOTS},
+      {"internetTetherNotificationControlTitle",
+       IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_TITLE},
+      {"internetTetherNotificationControlDescription",
+       IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_DESCRIPTION},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
       {"internetNoTetherHosts", IDS_SETTINGS_INTERNET_NO_TETHER_HOSTS},
       {"internetPageTitle", features::IsInstantHotspotRebrandEnabled()

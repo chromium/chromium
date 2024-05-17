@@ -23,12 +23,14 @@ import '../os_settings_icons.css.js';
 import './cellular_networks_list.js';
 import './network_always_on_vpn.js';
 import './internet_subpage_menu.js';
+import '/shared/settings/prefs/prefs.js';
 
+import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AlwaysOnVpnMode, AlwaysOnVpnProperties, CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT, VpnProvider, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -50,9 +52,11 @@ const SettingsInternetSubpageElementBase =
           NetworkListenerBehavior,
           CrPolicyNetworkBehaviorMojo,
         ],
-        DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)))) as {
+        DeepLinkingMixin(
+            PrefsMixin(RouteOriginMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface & RouteOriginMixinInterface &
-          DeepLinkingMixinInterface & NetworkListenerBehaviorInterface &
+          PrefsMixinInterface & DeepLinkingMixinInterface &
+          NetworkListenerBehaviorInterface &
           CrPolicyNetworkBehaviorMojoInterface,
     };
 
@@ -965,6 +969,28 @@ export class SettingsInternetSubpageElement extends
     // displayed on managed devices while the legacy always-on VPN based on ARC
     // is not replaced/extended by the new implementation.
     return !this.isManaged_ && this.isShowingVpn_;
+  }
+
+  /**
+   * Tells whether the Tether notification control should be displayed. It is
+   * displayed when instant-hotspot-rebrand is enabled and there are Tether
+   * networks.
+   */
+  private shouldShowTetherNotificationControl_(
+      deviceState: OncMojo.DeviceStateProperties|undefined): boolean {
+    return !!deviceState && deviceState.type === NetworkType.kTether &&
+        this.isInstantHotspotRebrandEnabled_;
+  }
+
+  /*
+   * Says whether header for the Tether network list should be displayed.
+   * Returns true if the rebrand is enabled and the device state is Tether
+   */
+  private shouldShowTetherDeviceListHeader_(deviceState:
+                                                OncMojo.DeviceStateProperties|
+                                            undefined): boolean {
+    return !!deviceState && deviceState.type === NetworkType.kTether &&
+        this.isInstantHotspotRebrandEnabled_;
   }
 
   /**

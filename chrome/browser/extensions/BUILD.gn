@@ -1244,6 +1244,7 @@ static_library("extensions") {
       "//chromeos/ash/components/proximity_auth",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/system",
+      "//chromeos/ash/components/tether:tether",
       "//chromeos/ash/components/tpm",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/chromebox_for_meetings/public/cpp",
