@@ -48,7 +48,7 @@ class GoogleBottomBarActionsHandler {
                 return v -> onSaveButtonClick(buttonConfig, v);
             }
             case ButtonId.SHARE -> {
-                return v -> onShareButtonClick();
+                return v -> onShareButtonClick(buttonConfig);
             }
             case ButtonId.PIH_BASIC, ButtonId.PIH_EXPANDED, ButtonId.PIH_COLORED -> {
                 return v -> onPageInsightsButtonClick(buttonConfig);
@@ -74,7 +74,16 @@ class GoogleBottomBarActionsHandler {
         }
     }
 
-    private void onShareButtonClick() {
+    private void onShareButtonClick(ButtonConfig buttonConfig) {
+        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+        if (pendingIntent != null) {
+            sendPendingIntentWithUrl(pendingIntent);
+        } else {
+            initiateShareForCurrentTab();
+        }
+    }
+
+    private void initiateShareForCurrentTab() {
         Tab tab = mTabProvider.get();
         if (tab == null) {
             Log.e(TAG, "Can't perform share action as tab is null.");

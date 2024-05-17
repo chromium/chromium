@@ -127,6 +127,29 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
+    public void testShareAction_buttonConfigHasPendingIntent_startsPendingIntent()
+            throws PendingIntent.CanceledException {
+        PendingIntent pendingIntent = mock(PendingIntent.class);
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        BottomBarConfigCreator.ButtonId.SHARE,
+                        context.getDrawable(R.drawable.ic_share_white_24dp),
+                        context.getString(R.string.google_bottom_bar_share_button_description),
+                        pendingIntent);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(pendingIntent)
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+    }
+
+    @Test
     public void testShareAction_initiateShareForCurrentTab() {
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
