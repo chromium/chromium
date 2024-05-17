@@ -1170,7 +1170,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // When the resumable protocol is in use and the `blocked_password_protected`
   // setting is off, the final verdict is determined by the server, not by the
   // policy value. So this specific scenario only applies to multi-part upload.
-  if (is_resumable() && setting_param() == false) {
+  //
+  // TODO(b/341264970): Add test support when setting_param is on.
+  if (is_resumable() && !setting_param()) {
     return;
   }
 
@@ -1271,7 +1273,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // When the resumable protocol is in use and the `blocked_large_files` setting
   // is off, the final verdict is determined by the server, not by the policy
   // value. So this specific testcase only applies to multi-part upload.
-  if (is_resumable() && setting_param() == false) {
+  //
+  // TODO(b/341264970): Add test support when setting_param is on.
+  if (is_resumable() && !setting_param()) {
     return;
   }
 
@@ -1371,6 +1375,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                        BlockLargePages) {
+  // When the resumable protocol is in use and the `blocked_large_files` setting
+  // is off, the final verdict is determined by the server, not by the policy
+  // value. So this specific testcase only applies to multi-part upload.
+  //
+  // TODO(b/341264970): Add test support when setting_param is on.
+  if (is_resumable() && !setting_param()) {
+    return;
+  }
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
@@ -1409,6 +1422,30 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),
                                                  GURL(kTestUrl), &data, PRINT));
 
+  // The page should be reported as unscanned.
+  test::EventReportValidator validator(client());
+  validator.ExpectUnscannedFileEvent(
+      /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ "about:blank",
+      // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
+      // sha256sum |  tr '[:lower:]' '[:upper:]'
+      /*sha*/ "",
+      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*reason*/ "FILE_TOO_LARGE",
+      /*mimetypes*/ DocMimeTypes(),
+      /*size*/ std::nullopt,
+      /*result*/
+      expected_result() ? safe_browsing::EventResultToString(
+                              safe_browsing::EventResult::ALLOWED)
+                        : safe_browsing::EventResultToString(
+                              safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*content_transfer_method*/ std::nullopt);
+
   bool called = false;
   base::RunLoop run_loop;
   SetQuitClosure(run_loop.QuitClosure());
@@ -1427,12 +1464,17 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
           }),
       safe_browsing::DeepScanAccessPoint::PRINT);
 
-  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+  // If the block setting is on, the large page content won't be sent for deep
+  // scanning, so no authorization is needed.
+  if (!setting_param()) {
+    FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+  }
 
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the
+  // test.
   content_analysis_run_loop.Run();
 }
 
