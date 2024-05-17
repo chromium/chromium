@@ -162,6 +162,27 @@ void InputMethodUserDataServiceImpl::CreateJapaneseDictionary(
   std::move(callback).Run(std::move(response));
 }
 
+void InputMethodUserDataServiceImpl::RenameJapaneseDictionary(
+    uint64_t dict_id,
+    const std::string& dictionary_name,
+    RenameJapaneseDictionaryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_rename_japanese_dictionary()->set_dictionary_id(
+      dict_id);
+  user_data_request.mutable_rename_japanese_dictionary()->set_name(
+      dictionary_name);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
+  std::move(callback).Run(std::move(response));
+}
+
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));

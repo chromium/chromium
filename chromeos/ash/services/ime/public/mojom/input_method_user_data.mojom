@@ -48,4 +48,8 @@ interface InputMethodUserDataService {
 
   // Create a new Japanese dictionary with the name provided.
   CreateJapaneseDictionary(string dictionary_name) => (Status status);
+
+  // Rename the Japanese dictionary specified by the dict_id.
+  RenameJapaneseDictionary(uint64 dict_id, string dictionary_name)
+      => (Status status);
 };
