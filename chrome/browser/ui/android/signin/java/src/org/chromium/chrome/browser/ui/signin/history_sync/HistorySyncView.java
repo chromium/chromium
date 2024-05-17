@@ -33,14 +33,7 @@ class HistorySyncView extends LinearLayout {
 
         // TODO(crbug.com/41493766): Set up scrollView.
         mAccountImage = findViewById(R.id.history_sync_account_image);
-        TextView title = findViewById(R.id.sync_consent_title);
-        TextView subtitle = findViewById(R.id.sync_consent_subtitle);
-        mDetailsDescription = findViewById(R.id.sync_consent_details_description);
-
-        // TODO(crbug.com/41493766): Confirm that these are the correct title and subtitle strings.
-        // Using group C from the strings variation experiment as a placeholder in the meantime.
-        title.setText(R.string.history_sync_consent_title_c);
-        subtitle.setText(R.string.history_sync_consent_subtitle_c);
+        mDetailsDescription = findViewById(R.id.history_sync_footer);
     }
 
     ImageView getAccountImageView() {
@@ -69,8 +62,8 @@ class HistorySyncView extends LinearLayout {
             mDeclineButton.setVisibility(VISIBLE);
         }
         assert mAcceptButton != null && mDeclineButton != null;
-        mAcceptButton.setText(R.string.signin_accept_button);
-        mDeclineButton.setText(R.string.no_thanks);
+        mAcceptButton.setText(R.string.history_sync_primary_action);
+        mDeclineButton.setText(R.string.history_sync_secondary_action);
     }
 
     private void createButtonBar() {

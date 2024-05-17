@@ -47,7 +47,7 @@ found in the LICENSE file.
             android:id="@+id/sync_consent_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/sync_consent_details_description"
+            android:layout_above="@id/history_sync_footer"
             android:fadeScrollbars="false"
             android:fillViewport="true">
 
@@ -58,19 +58,21 @@ found in the LICENSE file.
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sync_consent_title"
+                    android:id="@+id/history_sync_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
+                    android:text="@string/history_sync_title"
                     android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
                 <org.chromium.ui.widget.TextViewWithLeading
-                    android:id="@+id/sync_consent_subtitle"
+                    android:id="@+id/history_sync_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="105dp"
                     android:paddingVertical="8dp"
                     android:gravity="start"
+                    android:text="@string/history_sync_subtitle"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                     app:leading="@dimen/text_size_medium_leading"/>
 
@@ -83,7 +85,7 @@ found in the LICENSE file.
         </ScrollView>
 
         <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/sync_consent_details_description"
+            android:id="@+id/history_sync_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"

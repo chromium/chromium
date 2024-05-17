@@ -95,16 +95,16 @@ public class HistorySyncTest {
         buildHistorySyncCoordinator();
 
         histogramWatcher.assertExpected();
-        onView(withId(R.id.sync_consent_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.sync_consent_subtitle)).check(matches(isDisplayed()));
+        onView(withId(R.id.history_sync_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.history_sync_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.history_sync_account_image)).check(matches(isDisplayed()));
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.no_thanks)).check(matches(isDisplayed()));
+        onView(withText(R.string.history_sync_primary_action)).check(matches(isDisplayed()));
+        onView(withText(R.string.history_sync_secondary_action)).check(matches(isDisplayed()));
         onView(
                         allOf(
-                                withId(R.id.sync_consent_details_description),
-                                withText(R.string.history_sync_footer)))
+                                withId(R.id.history_sync_footer),
+                                withText(R.string.history_sync_footer_without_email)))
                 .check(matches(isDisplayed()));
     }
 
@@ -115,13 +115,13 @@ public class HistorySyncTest {
                 mActivityTestRule
                         .getActivity()
                         .getString(
-                                R.string.history_sync_signed_in_footer,
+                                R.string.history_sync_footer_with_email,
                                 mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
 
-        onView(allOf(withId(R.id.sync_consent_details_description), withText(expectedFooter)))
+        onView(allOf(withId(R.id.history_sync_footer), withText(expectedFooter)))
                 .check(matches(isDisplayed()));
     }
 
@@ -133,7 +133,7 @@ public class HistorySyncTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT);
 
-        onView(withText(R.string.signin_accept_button)).perform(click());
+        onView(withText(R.string.history_sync_primary_action)).perform(click());
 
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
@@ -149,7 +149,7 @@ public class HistorySyncTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
 
-        onView(withText(R.string.no_thanks)).perform(click());
+        onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
@@ -166,7 +166,7 @@ public class HistorySyncTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
 
-        onView(withText(R.string.no_thanks)).perform(click());
+        onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
@@ -212,6 +212,6 @@ public class HistorySyncTest {
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.sync_consent_title), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
     }
 }

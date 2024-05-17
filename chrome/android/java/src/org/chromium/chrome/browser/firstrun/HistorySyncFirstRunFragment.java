@@ -62,7 +62,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         // Ignore calls before view is created.
         if (getView() == null) return;
 
-        final View title = getView().findViewById(R.id.sync_consent_title);
+        final View title = getView().findViewById(R.id.history_sync_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 

@@ -60,8 +60,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         // When the email address is not displayable, fall back on the other string.
         String footerString =
                 showEmailInFooter && profileData.hasDisplayableEmailAddress()
-                        ? context.getString(R.string.history_sync_signed_in_footer, mAccountEmail)
-                        : context.getString(R.string.history_sync_footer);
+                        ? context.getString(R.string.history_sync_footer_with_email, mAccountEmail)
+                        : context.getString(R.string.history_sync_footer_without_email);
         mModel =
                 HistorySyncProperties.createModel(
                         profileData, this::onAcceptClicked, this::onDeclineClicked, footerString);

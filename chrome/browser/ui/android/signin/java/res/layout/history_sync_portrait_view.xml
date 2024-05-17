@@ -64,20 +64,22 @@ found in the LICENSE file.
                 </RelativeLayout>
 
             <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/sync_consent_title"
+                android:id="@+id/history_sync_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
+                android:text="@string/history_sync_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
                 app:leading="@dimen/headline_size_leading" />
 
             <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/sync_consent_subtitle"
+                android:id="@+id/history_sync_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:gravity="center"
+                android:text="@string/history_sync_subtitle"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 app:leading="@dimen/text_size_medium_leading" />
 
@@ -115,7 +117,7 @@ found in the LICENSE file.
         android:visibility="gone"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/sync_consent_details_description"
+        android:id="@+id/history_sync_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

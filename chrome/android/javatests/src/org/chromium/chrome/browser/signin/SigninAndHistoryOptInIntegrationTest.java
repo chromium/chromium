@@ -162,7 +162,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         // The footer should show the email of the signed in account.
-        onView(withId(R.id.sync_consent_details_description))
+        onView(withId(R.id.history_sync_footer))
                 .inRoot(isDialog())
                 .check(
                         matches(
@@ -193,7 +193,7 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Verify that the history opt-in dialog is shown and decline.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
         // The user has just signed in, so the footer shouldn't show the email.
-        onView(withId(R.id.sync_consent_details_description))
+        onView(withId(R.id.history_sync_footer))
                 .inRoot(isDialog())
                 .check(
                         matches(
