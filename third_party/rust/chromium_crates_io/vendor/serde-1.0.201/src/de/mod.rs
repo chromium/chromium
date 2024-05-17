@@ -2312,13 +2312,17 @@ impl Display for WithDecimalPoint {
             }
         }
 
-        let mut writer = LookForDecimalPoint {
-            formatter,
-            has_decimal_point: false,
-        };
-        tri!(write!(writer, "{}", self.0));
-        if !writer.has_decimal_point {
-            tri!(formatter.write_str(".0"));
+        if self.0.is_finite() {
+            let mut writer = LookForDecimalPoint {
+                formatter,
+                has_decimal_point: false,
+            };
+            tri!(write!(writer, "{}", self.0));
+            if !writer.has_decimal_point {
+                tri!(formatter.write_str(".0"));
+            }
+        } else {
+            tri!(write!(formatter, "{}", self.0));
         }
         Ok(())
     }

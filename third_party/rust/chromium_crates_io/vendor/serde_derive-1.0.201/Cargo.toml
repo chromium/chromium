@@ -13,11 +13,17 @@
 edition = "2015"
 rust-version = "1.56"
 name = "serde_derive"
-version = "1.0.198"
+version = "1.0.201"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
 ]
+build = false
+exclude = ["build.rs"]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
 homepage = "https://serde.rs"
 documentation = "https://serde.rs/derive.html"
@@ -41,6 +47,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 name = "serde_derive"
+path = "src/lib.rs"
 proc-macro = true
 
 [dependencies.proc-macro2]
