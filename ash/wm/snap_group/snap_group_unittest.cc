@@ -646,15 +646,22 @@ TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
   expected_window_bounds.set_width(initial_bounds.width() + drag_x);
   EXPECT_EQ(expected_window_bounds, w1->GetBoundsInScreen());
 
-  gfx::Rect expected_grid_bounds(work_area_bounds());
-  expected_grid_bounds.Subtract(w1->GetBoundsInScreen());
-  EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds(w1->GetRootWindow()));
+  gfx::Rect expected_autosnap_bounds(work_area_bounds());
+  expected_autosnap_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_EQ(expected_autosnap_bounds,
+            GetOverviewGridBounds(w1->GetRootWindow()));
 
   // Create a window and test that it auto snaps.
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w3.get())->GetStateType());
-  EXPECT_EQ(expected_grid_bounds, w3->GetBoundsInScreen());
+  const int divider_delta = IsSnapGroupEnabledInClamshellMode()
+                                ? kSplitviewDividerShortSideLength / 2
+                                : 0;
+  expected_autosnap_bounds.Subtract(
+      gfx::Rect(expected_window_bounds.top_right(),
+                gfx::Size(divider_delta, work_area_bounds().height())));
+  EXPECT_EQ(expected_autosnap_bounds, w3->GetBoundsInScreen());
 }
 
 // Verify the window focus behavior both when activing a window or skipping
@@ -1467,9 +1474,12 @@ TEST_F(FasterSplitScreenTest,
   EXPECT_EQ(window1_state->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_LT(window1_state->snap_ratio().value(), chromeos::kTwoThirdSnapRatio);
 
+  const int divider_delta = IsSnapGroupEnabledInClamshellMode()
+                                ? kSplitviewDividerShortSideLength
+                                : 0;
   // Both windows will fit within the work are with no overlap
   EXPECT_EQ(window1->GetBoundsInScreen().width() +
-                window2->GetBoundsInScreen().width(),
+                window2->GetBoundsInScreen().width() + divider_delta,
             work_area_bounds().width());
 }
 

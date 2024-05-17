@@ -15,13 +15,14 @@
 
 namespace ash {
 
-class SplitViewMultiDisplayTest : public AshTestBase {
+class SplitViewMultiDisplayClamshellTest : public AshTestBase {
  public:
-  SplitViewMultiDisplayTest() = default;
-  SplitViewMultiDisplayTest(const SplitViewMultiDisplayTest&) = delete;
-  SplitViewMultiDisplayTest& operator=(const SplitViewMultiDisplayTest&) =
-      delete;
-  ~SplitViewMultiDisplayTest() override = default;
+  SplitViewMultiDisplayClamshellTest() = default;
+  SplitViewMultiDisplayClamshellTest(
+      const SplitViewMultiDisplayClamshellTest&) = delete;
+  SplitViewMultiDisplayClamshellTest& operator=(
+      const SplitViewMultiDisplayClamshellTest&) = delete;
+  ~SplitViewMultiDisplayClamshellTest() override = default;
 
   display::Display GetPrimaryDisplay() {
     return display::Screen::GetScreen()->GetPrimaryDisplay();
@@ -63,7 +64,7 @@ class SplitViewMultiDisplayTest : public AshTestBase {
 
 // Tests that using the shortcut to move the snapped window to another display
 // works as intended.
-TEST_F(SplitViewMultiDisplayTest, MoveWindowToDisplayShortcut) {
+TEST_F(SplitViewMultiDisplayClamshellTest, MoveWindowToDisplayShortcut) {
   UpdateDisplay("1200x900,800x600");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
@@ -146,9 +147,10 @@ TEST_F(SplitViewMultiDisplayTest, MoveWindowToDisplayShortcut) {
   }
 }
 
-// Tests that snap across multi-displays works correctly. Regression test for
-// b/331663949.
-TEST_F(SplitViewMultiDisplayTest, SnapToCorrectDisplay) {
+// Tests that snap across multi-displays works correctly. Pressing escape key
+// afte each test to avoid Snap Group creation with `kSnapGroup` enabled.
+// Regression test for b/331663949.
+TEST_F(SplitViewMultiDisplayClamshellTest, SnapToCorrectDisplay) {
   UpdateDisplay("800x600,800x600");
 
   // Create 2 test windows with non-overlapping bounds so we can drag them.
@@ -162,24 +164,28 @@ TEST_F(SplitViewMultiDisplayTest, SnapToCorrectDisplay) {
   event_generator->DragMouseTo(0, 100);
   EXPECT_EQ(GetExpectedSnappedBounds(GetPrimaryDisplay()).first,
             w1->GetBoundsInScreen());
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // Drag to snap `w2` to secondary on display 1.
   event_generator->set_current_screen_location(GetDragPoint(w2.get()));
   event_generator->DragMouseTo(799, 100);
   EXPECT_EQ(GetExpectedSnappedBounds(GetPrimaryDisplay()).second,
             w2->GetBoundsInScreen());
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // Drag to snap `w2` to primary on display 2.
   event_generator->set_current_screen_location(GetDragPoint(w2.get()));
   event_generator->DragMouseTo(800, 100);
   EXPECT_EQ(GetExpectedSnappedBounds(GetSecondaryDisplay()).first,
             w2->GetBoundsInScreen());
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // Drag to snap `w2` back to secondary on display 1.
   event_generator->set_current_screen_location(GetDragPoint(w2.get()));
   event_generator->DragMouseTo(799, 100);
   EXPECT_EQ(GetExpectedSnappedBounds(GetPrimaryDisplay()).second,
             w2->GetBoundsInScreen());
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // Drag to snap `w2` back to primary on display 2.
   event_generator->set_current_screen_location(GetDragPoint(w2.get()));
@@ -189,7 +195,9 @@ TEST_F(SplitViewMultiDisplayTest, SnapToCorrectDisplay) {
 }
 
 // Tests that drag to snap across different display sizes works correctly.
-TEST_F(SplitViewMultiDisplayTest, SnapDifferentDisplaySizes) {
+// Pressing escape key after each test to avoid Snap Group creation with
+// `kSnapGroup` enabled.
+TEST_F(SplitViewMultiDisplayClamshellTest, SnapDifferentDisplaySizes) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
   std::unique_ptr<aura::Window> w2(
       CreateTestWindow(gfx::Rect(400, 0, 200, 200)));
@@ -210,6 +218,7 @@ TEST_F(SplitViewMultiDisplayTest, SnapDifferentDisplaySizes) {
     event_generator->DragMouseTo(work_area1.origin());
     EXPECT_EQ(GetExpectedSnappedBounds(display1).first,
               w1->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
     // Drag to snap `w2` to secondary on display 1.
     wm::ActivateWindow(w2.get());
@@ -217,6 +226,7 @@ TEST_F(SplitViewMultiDisplayTest, SnapDifferentDisplaySizes) {
     event_generator->DragMouseTo(work_area1.right() - 1, work_area1.y());
     EXPECT_EQ(GetExpectedSnappedBounds(display1).second,
               w2->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
     // Drag to snap `w2` to primary on display 2.
     event_generator->set_current_screen_location(GetDragPoint(w2.get()));
@@ -225,18 +235,21 @@ TEST_F(SplitViewMultiDisplayTest, SnapDifferentDisplaySizes) {
     event_generator->DragMouseTo(work_area2.origin());
     EXPECT_EQ(GetExpectedSnappedBounds(display2).first,
               w2->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
     // Drag to snap `w2` back to secondary on display 1.
     event_generator->set_current_screen_location(GetDragPoint(w2.get()));
     event_generator->DragMouseTo(work_area1.right() - 1, work_area1.y());
     EXPECT_EQ(GetExpectedSnappedBounds(display1).second,
               w2->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
     // Drag to snap `w2` back to primary on display 2.
     event_generator->set_current_screen_location(GetDragPoint(w2.get()));
     event_generator->DragMouseTo(work_area2.origin());
     EXPECT_EQ(GetExpectedSnappedBounds(display2).first,
               w2->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
     // Drag to snap `w1` to secondary on display 2.
     wm::ActivateWindow(w1.get());
@@ -244,11 +257,12 @@ TEST_F(SplitViewMultiDisplayTest, SnapDifferentDisplaySizes) {
     event_generator->DragMouseTo(work_area2.right() - 1, work_area2.y());
     EXPECT_EQ(GetExpectedSnappedBounds(display2).second,
               w1->GetBoundsInScreen());
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   }
 }
 
 // Tests that snapping across a landscape and portrait display works correctly.
-TEST_F(SplitViewMultiDisplayTest, LandscapeAndPortrait) {
+TEST_F(SplitViewMultiDisplayClamshellTest, LandscapeAndPortrait) {
   UpdateDisplay("800x600,600x800");
 
   std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
