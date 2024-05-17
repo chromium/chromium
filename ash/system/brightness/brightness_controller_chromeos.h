@@ -81,6 +81,7 @@ class ASH_EXPORT BrightnessControllerChromeos
  private:
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
   void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
+  void RestoreBrightnessSettings(const AccountId& account_id);
 
   raw_ptr<PrefService> local_state_;
   raw_ptr<SessionControllerImpl> session_controller_;

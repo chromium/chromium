@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_data_dispatcher.h"
@@ -176,6 +177,32 @@ void BrightnessControllerChromeos::OnSessionStateChanged(
 
 void BrightnessControllerChromeos::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
+
+  if (features::IsBrightnessControlInSettingsEnabled()) {
+    RestoreBrightnessSettings(account_id);
+  }
+}
+
+void BrightnessControllerChromeos::RestoreBrightnessSettings(
+    const AccountId& account_id) {
+  // TODO(cambickel): Check if this is the first time the user is logging in,
+  // and restore the value of ambient light sensor from the synced profile pref
+  // if it exists.
+
+  // Get the user's stored preference for whether the ambient light sensor
+  // should be enabled. If there is no saved preference for the ambient light
+  // sensor value, set the ambient light sensor to be enabled to match the
+  // default behavior.
+  user_manager::KnownUser known_user(local_state_);
+  const bool ambient_light_sensor_enabled_for_account =
+      known_user
+          .FindBoolPath(account_id, prefs::kDisplayAmbientLightSensorEnabled)
+          .value_or(true);
+
+  SetAmbientLightSensorEnabled(ambient_light_sensor_enabled_for_account);
+
+  // TODO(cambickel): If the ambient light sensor is disabled, restore the
+  // user's preferred brightness level.
 }
 
 void BrightnessControllerChromeos::OnActiveUserSessionChanged(

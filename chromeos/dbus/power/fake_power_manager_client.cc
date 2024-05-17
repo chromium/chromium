@@ -126,9 +126,17 @@ void FakePowerManagerClient::SetRenderProcessManagerDelegate(
   render_process_manager_delegate_ = delegate;
 }
 
-void FakePowerManagerClient::DecreaseScreenBrightness(bool allow_off) {}
+void FakePowerManagerClient::DecreaseScreenBrightness(bool allow_off) {
+  // Simulate the real behavior of the platform by disabling the ambient light
+  // sensor when the brightness is manually changed.
+  SetAmbientLightSensorEnabled(false);
+}
 
-void FakePowerManagerClient::IncreaseScreenBrightness() {}
+void FakePowerManagerClient::IncreaseScreenBrightness() {
+  // Simulate the real behavior of the platform by disabling the ambient light
+  // sensor when the brightness is manually changed.
+  SetAmbientLightSensorEnabled(false);
+}
 
 void FakePowerManagerClient::SetScreenBrightness(
     const power_manager::SetBacklightBrightnessRequest& request) {
@@ -143,6 +151,10 @@ void FakePowerManagerClient::SetScreenBrightness(
       FROM_HERE,
       base::BindOnce(&FakePowerManagerClient::SendScreenBrightnessChanged,
                      weak_ptr_factory_.GetWeakPtr(), change));
+
+  // Simulate the real behavior of the platform by disabling the ambient light
+  // sensor when the brightness is manually changed.
+  SetAmbientLightSensorEnabled(false);
 }
 
 void FakePowerManagerClient::GetScreenBrightnessPercent(
