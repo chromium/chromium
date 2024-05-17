@@ -4724,6 +4724,27 @@
             ]
         }
     ],
+    "ConcurrentViewTransitionsSPA": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConcurrentViewTransitionsSPA"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConditionalImageResize": [
         {
             "platforms": [
