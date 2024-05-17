@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 
 #import <memory>
 
@@ -13,6 +12,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -38,6 +38,9 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -208,6 +211,10 @@ class AppStateTest : public BlockCleanupTest {
   void SetUp() override {
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         test_cbs_builder.Build());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
@@ -215,6 +222,9 @@ class AppStateTest : public BlockCleanupTest {
 
     browser_state_ =
         browser_state_manager_->GetLastUsedBrowserStateForTesting();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   void TearDown() override {

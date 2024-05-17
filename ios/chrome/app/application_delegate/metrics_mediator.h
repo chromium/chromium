@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 
-@protocol ConnectionInformation;
 @class SceneState;
 @protocol StartupInformation;
 namespace feature_engagement {

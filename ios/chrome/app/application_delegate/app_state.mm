@@ -342,19 +342,21 @@ void FlushCookieStoreOnIOThread(
   }
   // Don't go further with foregrounding the app when the app has not passed
   // safe mode yet or was initialized from the background.
-  if (self.initStage <= InitStageSafeMode || !_applicationInBackground)
+  if (self.initStage <= InitStageSafeMode || !_applicationInBackground) {
     return;
+  }
 
   _applicationInBackground = NO;
-  // TODO(crbug.com/325596368): Signal this for every browser state, so this
-  // update and the feature_engagement::TrackerFactory() update need to happen
-  // in parallel. Maybe: add per-profile observer methods.
-  if (self.mainBrowserState) {
-    AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+    AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
         ->OnApplicationWillEnterForeground();
     if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
       enterprise_idle::IdleServiceFactory::GetForBrowserState(
-          self.mainBrowserState)
+          chromeBrowserState)
           ->OnApplicationWillEnterForeground();
     }
   }
@@ -366,8 +368,9 @@ void FlushCookieStoreOnIOThread(
   [metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
 
   // Send any feedback that might be still on temporary storage.
-  if (ios::provider::IsUserFeedbackSupported())
+  if (ios::provider::IsUserFeedbackSupported()) {
     ios::provider::UploadAllPendingUserFeedback();
+  }
 
   GetApplicationContext()->OnAppEnterForeground();
 
@@ -376,10 +379,6 @@ void FlushCookieStoreOnIOThread(
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
   for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(

@@ -61,6 +61,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/safe_mode",
