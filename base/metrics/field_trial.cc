@@ -226,7 +226,10 @@ bool FieldTrial::FieldTrialEntry::GetParams(
 
 PickleIterator FieldTrial::FieldTrialEntry::GetPickleIterator() const {
   Pickle pickle = Pickle::WithUnownedBuffer(
-      span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size)));
+      // TODO(crbug.com/40284755): FieldTrialEntry should be constructed with a
+      // span over the pickle memory.
+      UNSAFE_BUFFERS(
+          span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size))));
   return PickleIterator(pickle);
 }
 
