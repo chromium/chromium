@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Osauth-error"/>
   <variant name="Parental-handoff"/>
   <variant name="Password-selection"/>
+  <variant name="Personalized-apps"/>
   <variant name="Pin-setup"/>
   <variant name="Quick-start"/>
   <variant name="Recommend-apps"/>
@@ -362,6 +363,9 @@ chromium-metrics-reviews@google.com.
   <variant name="Password-selection.GaiaPasswordFallback"/>
   <variant name="Password-selection.LocalPasswordChoice"/>
   <variant name="Password-selection.LocalPasswordForced"/>
+  <variant name="Personalized-apps.Back"/>
+  <variant name="Personalized-apps.Next"/>
+  <variant name="Personalized-apps.Skip"/>
   <variant name="Pin-setup.Done"/>
   <variant name="Pin-setup.Skipped"/>
   <variant name="Pin-setup.TimedOut"/>

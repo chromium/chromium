@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
@@ -108,6 +109,7 @@
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
+#include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -127,9 +129,10 @@
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
-// LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
-#include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
+// Add new screens before this block. Add screens and exit reasons to
+// OOBE histograms.
+// LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
