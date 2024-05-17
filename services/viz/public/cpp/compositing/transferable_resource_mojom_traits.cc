@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
 
+#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
@@ -59,12 +60,11 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
     Read(viz::mojom::TransferableResourceDataView data,
          viz::TransferableResource* out) {
   viz::ResourceId id;
-  gpu::Mailbox mailbox;
-  viz::SharedBitmapId shared_bitmap_id;
+
   gpu::SyncToken sync_token;
+  viz::MemoryBufferId memory_buffer_id;
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
-      !data.ReadMailbox(&mailbox) ||
-      !data.ReadSharedBitmapId(&shared_bitmap_id) ||
+      !data.ReadMemoryBufferId(&memory_buffer_id) ||
       !data.ReadSyncToken(&sync_token) ||
       !data.ReadColorSpace(&out->color_space) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
@@ -74,9 +74,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   }
   out->id = id;
   out->is_software = data.is_software();
-  out->is_shared_bitmap = data.is_shared_bitmap();
-  out->set_mailbox(mailbox);
-  out->set_shared_bitmap_id(shared_bitmap_id);
+  out->set_memory_buffer_id(memory_buffer_id);
   out->set_sync_token(sync_token);
   out->set_texture_target(data.texture_target());
   out->is_overlay_candidate = data.is_overlay_candidate();
@@ -91,6 +89,48 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
 #endif
 
   return true;
+}
+
+// static
+viz::mojom::MemoryBufferIdDataView::Tag
+UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::GetTag(
+    const viz::MemoryBufferId& memory_buffer_id) {
+  return absl::visit(
+      base::Overloaded{
+          [](gpu::Mailbox) {
+            return viz::mojom::MemoryBufferIdDataView::Tag::kMailbox;
+          },
+
+          [](viz::SharedBitmapId) {
+            return viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId;
+          },
+      },
+      memory_buffer_id);
+}
+
+// static
+bool UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::Read(
+    viz::mojom::MemoryBufferIdDataView memory_buffer_id,
+    viz::MemoryBufferId* out) {
+  switch (memory_buffer_id.tag()) {
+    case viz::mojom::MemoryBufferIdDataView::Tag::kMailbox: {
+      gpu::Mailbox mailbox;
+      if (!memory_buffer_id.ReadMailbox(&mailbox)) {
+        return false;
+      }
+      *out = mailbox;
+      return true;
+    }
+    case viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId: {
+      viz::SharedBitmapId shared_bitmap_id;
+      if (!memory_buffer_id.ReadSharedBitmapId(&shared_bitmap_id)) {
+        return false;
+      }
+      *out = shared_bitmap_id;
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace mojo

@@ -22,6 +22,11 @@ enum SynchronizationType {
   kReleaseFence,
 };
 
+// See components/viz/common/resources/transferable_resource.h.
+union MemoryBufferId {
+  gpu.mojom.Mailbox mailbox;
+  SharedBitmapId shared_bitmap_id;
+};
 
 // Represents a visual resource (e.g., image, video frame) that can be
 // transferred between processes for rendering and compositing within Chromium's
@@ -33,13 +38,11 @@ struct TransferableResource {
   ResourceId id;
   SharedImageFormat format;
   gfx.mojom.Size size;
-  gpu.mojom.Mailbox mailbox;
-  SharedBitmapId shared_bitmap_id;
+  MemoryBufferId memory_buffer_id;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
   SynchronizationType synchronization_type;
   bool is_software;
-  bool is_shared_bitmap;
   bool is_overlay_candidate;
 
   [EnableIf=is_android]

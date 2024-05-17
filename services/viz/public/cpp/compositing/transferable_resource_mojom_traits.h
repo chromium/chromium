@@ -44,14 +44,9 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.size;
   }
 
-  static const gpu::Mailbox& mailbox(
+  static viz::MemoryBufferId memory_buffer_id(
       const viz::TransferableResource& resource) {
-    return resource.mailbox();
-  }
-
-  static const viz::SharedBitmapId& shared_bitmap_id(
-      const viz::TransferableResource& resource) {
-    return resource.shared_bitmap_id();
+    return resource.memory_buffer_id();
   }
 
   static const gpu::SyncToken& sync_token(
@@ -70,10 +65,6 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool is_software(const viz::TransferableResource& resource) {
     return resource.is_software;
-  }
-
-  static bool is_shared_bitmap(const viz::TransferableResource& resource) {
-    return resource.is_shared_bitmap;
   }
 
   static bool is_overlay_candidate(const viz::TransferableResource& resource) {
@@ -122,6 +113,24 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool Read(viz::mojom::TransferableResourceDataView data,
                    viz::TransferableResource* out);
+};
+
+template <>
+struct UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId> {
+  static viz::mojom::MemoryBufferIdDataView::Tag GetTag(
+      const viz::MemoryBufferId& memory_buffer_id);
+
+  static gpu::Mailbox mailbox(const viz::MemoryBufferId& memory_buffer_id) {
+    return absl::get<gpu::Mailbox>(memory_buffer_id);
+  }
+
+  static viz::SharedBitmapId shared_bitmap_id(
+      const viz::MemoryBufferId& memory_buffer_id) {
+    return absl::get<viz::SharedBitmapId>(memory_buffer_id);
+  }
+
+  static bool Read(viz::mojom::MemoryBufferIdDataView memory_buffer_id,
+                   viz::MemoryBufferId* out);
 };
 
 }  // namespace mojo
