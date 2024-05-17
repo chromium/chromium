@@ -124,6 +124,54 @@ enum FieldTypeGroupForMetrics {
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
 
+// This defines a second-to-minute-scale prioritized set of buckets for
+// recording user interaction time with forms. Pure exponential bucketing is
+// generally not appropriate for analyzing interactions at this time scale, as
+// we tend not to care about durations at the millisecond level, while small
+// changes at the 2-3 minute scale may be invisible with exponential buckets.
+// This set of buckets contains a large linear section between 1 and 30s, and
+// between 30s and 10m, after which it proceeds in the same way as
+// ukm::GetSemanticBucketMinForDurationTiming
+int64_t GetSemanticBucketMinForAutofillDurationTiming(int64_t sample) {
+  if (sample == 0) {
+    return 0;
+  }
+  DCHECK(sample > 0);
+  constexpr int64_t kMillisecondsPerSecond = 1000;
+  constexpr int64_t kMillisecondsPerMinute = 60 * 1000;
+  constexpr int64_t kMillisecondsPerHour = 60 * 60 * 1000;
+  constexpr int64_t kMillisecondsPerDay = 24 * kMillisecondsPerHour;
+  int64_t modulus;
+
+  // If |sample| is a duration longer than a day, then use exponential bucketing
+  // by number of days.
+  // Algorithm is: convert ms to days, rounded down. Exponentially bucket.
+  // Convert back to milliseconds, return sample.
+  if (sample > kMillisecondsPerDay) {
+    sample = sample / kMillisecondsPerDay;
+    sample = ukm::GetExponentialBucketMinForUserTiming(sample);
+    return sample * kMillisecondsPerDay;
+  }
+
+  if (sample > kMillisecondsPerHour) {
+    // Above 1h, 1h granularity
+    modulus = kMillisecondsPerHour;
+  } else if (sample > 20 * kMillisecondsPerMinute) {
+    // Above 20m, 10m granularity
+    modulus = 10 * kMillisecondsPerMinute;
+  } else if (sample > 10 * kMillisecondsPerMinute) {
+    // Above 10m, 1m granularity
+    modulus = kMillisecondsPerMinute;
+  } else if (sample > 30 * kMillisecondsPerSecond) {
+    // Above 30s, 5s granularity
+    modulus = 5 * kMillisecondsPerSecond;
+  } else {
+    // Below 30s, 1s granularity
+    modulus = kMillisecondsPerSecond;
+  }
+  return sample - (sample % modulus);
+}
+
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -2462,7 +2510,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     builder.SetSubmittedType1(submitted_type1)
         .SetSubmissionSource(static_cast<int>(form.submission_source()))
         .SetMillisecondsFromFormParsedUntilSubmission(
-            ukm::GetSemanticBucketMinForDurationTiming(
+            GetSemanticBucketMinForAutofillDurationTiming(
                 (form_submitted_timestamp - form.form_parsed_timestamp())
                     .InMilliseconds()))
         .Record(ukm_recorder);
@@ -2496,7 +2544,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       !form_structure.form_parsed_timestamp().is_null() &&
       form_submitted_timestamp > form_structure.form_parsed_timestamp()) {
     builder.SetMillisecondsFromFormParsedUntilSubmission(
-        ukm::GetSemanticBucketMinForDurationTiming(
+        GetSemanticBucketMinForAutofillDurationTiming(
             (form_submitted_timestamp - form_structure.form_parsed_timestamp())
                 .InMilliseconds()));
   }
@@ -2505,7 +2553,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       !initial_interaction_timestamp.is_null() &&
       form_submitted_timestamp > initial_interaction_timestamp) {
     builder.SetMillisecondsFromFirstInteratctionUntilSubmission(
-        ukm::GetSemanticBucketMinForDurationTiming(
+        GetSemanticBucketMinForAutofillDurationTiming(
             (form_submitted_timestamp - initial_interaction_timestamp)
                 .InMilliseconds()));
   }
