@@ -32,7 +32,7 @@ from devil.android.sdk import intent # pylint: disable=import-error
 #
 # 1. Configure for Release Official flavor to get the most representative
 #    results:
-#    shell> gn gen --args='use_goma=true target_os="android" target_cpu="arm" \
+#    shell> gn gen --args='use_remoteexec=true target_os="android" target_cpu="arm" \
 #           is_debug=false is_official_build=true' out/AndroidReleaseOfficial
 #
 # 2.1. Build Monochrome:
