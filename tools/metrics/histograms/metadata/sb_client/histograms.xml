@@ -494,6 +494,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientPhishing.AddPhishingReportSuccessful"
+    enum="BooleanSuccess" expires_after="2025-05-17">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether adding phishing report times to profile preferences list
+    before sending ClientPhishingRequest is successful or not.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
     expires_after="2024-09-15">
   <owner>andysjlim@chromium.org</owner>
@@ -654,6 +664,17 @@ chromium-metrics-reviews@google.com.
     Logs whether the image embedding model version is matched or not so that the
     correctly paired trigger and image embedidng model are sent together to the
     renderer process
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.LoadReportTimesFromPrefAtServiceCreationSuccessful"
+    enum="BooleanSuccess" expires_after="2025-05-17">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether phishing report times load from profile at client side
+    detection service creation is successful or not.
   </summary>
 </histogram>
 
@@ -823,6 +844,16 @@ chromium-metrics-reviews@google.com.
     <variant name=".TriggerModel" summary="trigger model"/>
     <variant name=".Unknown" summary="Unknown"/>
   </token>
+</histogram>
+
+<histogram name="SBClientPhishing.SkipPhishingRequestCheck"
+    enum="BooleanSuccess" expires_after="2025-05-17">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether phishing request was skipped because the profile prefs for
+    report times was not loaded at service creation.
+  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"

@@ -392,7 +392,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // We want to limit the number of requests, but if we're dumping features
     // for debugging, allow us to exceed the report limit.
     if (!HasDebugFeatureDirectory() && csd_service_ &&
-        csd_service_->OverPhishingReportLimit()) {
+        csd_service_->AtPhishingReportLimit()) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);
     }
