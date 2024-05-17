@@ -1,4 +1,4 @@
-//! Implementation for FreeBSD and NetBSD
+//! Implementation for NetBSD
 use crate::{
     util_libc::{sys_fill_exact, Weak},
     Error,
@@ -28,7 +28,7 @@ fn kern_arnd(buf: &mut [MaybeUninit<u8>]) -> libc::ssize_t {
 type GetRandomFn = unsafe extern "C" fn(*mut u8, libc::size_t, libc::c_uint) -> libc::ssize_t;
 
 pub fn getrandom_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
-    // getrandom(2) was introduced in FreeBSD 12.0 and NetBSD 10.0
+    // getrandom(2) was introduced in NetBSD 10.0
     static GETRANDOM: Weak = unsafe { Weak::new("getrandom\0") };
     if let Some(fptr) = GETRANDOM.ptr() {
         let func: GetRandomFn = unsafe { core::mem::transmute(fptr) };
@@ -37,7 +37,7 @@ pub fn getrandom_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
         });
     }
 
-    // Both FreeBSD and NetBSD will only return up to 256 bytes at a time, and
+    // NetBSD will only return up to 256 bytes at a time, and
     // older NetBSD kernels will fail on longer buffers.
     for chunk in dest.chunks_mut(256) {
         sys_fill_exact(chunk, kern_arnd)?

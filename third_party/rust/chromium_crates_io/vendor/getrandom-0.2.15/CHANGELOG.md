@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.15] - 2024-05-06
+### Added
+- Apple visionOS support [#410]
+
+### Changed
+- Use `libc::getrandom` on DragonflyBSD, FreeBSD, illumos, and Solaris [#411] [#416] [#417] [#420]
+- Unify `libc::getentropy`-based implementations [#418]
+
+[#410]: https://github.com/rust-random/getrandom/pull/410
+[#411]: https://github.com/rust-random/getrandom/pull/411
+[#416]: https://github.com/rust-random/getrandom/pull/416
+[#417]: https://github.com/rust-random/getrandom/pull/417
+[#418]: https://github.com/rust-random/getrandom/pull/418
+[#420]: https://github.com/rust-random/getrandom/pull/420
+
 ## [0.2.14] - 2024-04-08
 ### Fixed
 - Enable `/dev/urandom` fallback for MUSL-based Linux targets [#408]
@@ -439,6 +454,7 @@ Publish initial implementation.
 ## [0.0.0] - 2019-01-19
 Publish an empty template library.
 
+[0.2.15]: https://github.com/rust-random/getrandom/compare/v0.2.14...v0.2.15
 [0.2.14]: https://github.com/rust-random/getrandom/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/rust-random/getrandom/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/rust-random/getrandom/compare/v0.2.11...v0.2.12

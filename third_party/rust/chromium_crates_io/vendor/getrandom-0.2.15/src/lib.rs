@@ -8,11 +8,12 @@
 //! | Windows           | `*‑windows‑*`      | [`BCryptGenRandom`]
 //! | macOS             | `*‑apple‑darwin`   | [`getentropy`][3]
 //! | iOS, tvOS, watchOS | `*‑apple‑ios`, `*-apple-tvos`, `*-apple-watchos` | [`CCRandomGenerateBytes`]
-//! | FreeBSD           | `*‑freebsd`        | [`getrandom`][5] if available, otherwise [`kern.arandom`][6]
+//! | FreeBSD           | `*‑freebsd`        | [`getrandom`][5]
 //! | OpenBSD           | `*‑openbsd`        | [`getentropy`][7]
 //! | NetBSD            | `*‑netbsd`         | [`getrandom`][16] if available, otherwise [`kern.arandom`][8]
-//! | Dragonfly BSD     | `*‑dragonfly`      | [`getrandom`][9] if available, otherwise [`/dev/urandom`][10] (identical to `/dev/random`)
-//! | Solaris, illumos  | `*‑solaris`, `*‑illumos` | [`getrandom`][11] if available, otherwise [`/dev/random`][12]
+//! | Dragonfly BSD     | `*‑dragonfly`      | [`getrandom`][9]
+//! | Solaris           | `*‑solaris`        | [`getrandom`][11] (with `GRND_RANDOM`)
+//! | illumos           | `*‑illumos`        | [`getrandom`][12]
 //! | Fuchsia OS        | `*‑fuchsia`        | [`cprng_draw`]
 //! | Redox             | `*‑redox`          | `/dev/urandom`
 //! | Haiku             | `*‑haiku`          | `/dev/urandom` (identical to `/dev/random`)
@@ -25,14 +26,10 @@
 //! | WASI              | `wasm32‑wasi`      | [`random_get`]
 //! | Web Browser and Node.js | `wasm*‑*‑unknown` | [`Crypto.getRandomValues`] if available, then [`crypto.randomFillSync`] if on Node.js, see [WebAssembly support]
 //! | SOLID             | `*-kmc-solid_*`    | `SOLID_RNG_SampleRandomBytes`
-//! | Nintendo 3DS      | `armv6k-nintendo-3ds` | [`getrandom`][1]
-//! | PS Vita           | `armv7-sony-vita-newlibeabihf` | [`getentropy`][13]
-//! | QNX Neutrino      | `*‑nto-qnx*`          | [`/dev/urandom`][14] (identical to `/dev/random`)
+//! | Nintendo 3DS      | `*-nintendo-3ds`   | [`getrandom`][18]
+//! | PS Vita           | `*-vita-*`         | [`getentropy`][13]
+//! | QNX Neutrino      | `*‑nto-qnx*`       | [`/dev/urandom`][14] (identical to `/dev/random`)
 //! | AIX               | `*-ibm-aix`        | [`/dev/urandom`][15]
-//!
-//! There is no blanket implementation on `unix` targets that reads from
-//! `/dev/urandom`. This ensures all supported targets are using the recommended
-//! interface and respect maximum buffer sizes.
 //!
 //! Pull Requests that add support for new targets to `getrandom` are always welcome.
 //!
@@ -173,18 +170,17 @@
 //! [3]: https://www.unix.com/man-page/mojave/2/getentropy/
 //! [4]: https://www.unix.com/man-page/mojave/4/urandom/
 //! [5]: https://www.freebsd.org/cgi/man.cgi?query=getrandom&manpath=FreeBSD+12.0-stable
-//! [6]: https://www.freebsd.org/cgi/man.cgi?query=random&sektion=4
 //! [7]: https://man.openbsd.org/getentropy.2
 //! [8]: https://man.netbsd.org/sysctl.7
 //! [9]: https://leaf.dragonflybsd.org/cgi/web-man?command=getrandom
-//! [10]: https://leaf.dragonflybsd.org/cgi/web-man?command=random&section=4
 //! [11]: https://docs.oracle.com/cd/E88353_01/html/E37841/getrandom-2.html
-//! [12]: https://docs.oracle.com/cd/E86824_01/html/E54777/random-7d.html
+//! [12]: https://illumos.org/man/2/getrandom
 //! [13]: https://github.com/emscripten-core/emscripten/pull/12240
 //! [14]: https://www.qnx.com/developers/docs/7.1/index.html#com.qnx.doc.neutrino.utilities/topic/r/random.html
 //! [15]: https://www.ibm.com/docs/en/aix/7.3?topic=files-random-urandom-devices
 //! [16]: https://man.netbsd.org/getrandom.2
 //! [17]: https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-getrandom
+//! [18]: https://github.com/rust3ds/shim-3ds/commit/b01d2568836dea2a65d05d662f8e5f805c64389d
 //!
 //! [`BCryptGenRandom`]: https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
 //! [`Crypto.getRandomValues`]: https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
@@ -205,7 +201,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/getrandom/0.2.14"
+    html_root_url = "https://docs.rs/getrandom/0.2.15"
 )]
 #![no_std]
 #![warn(rust_2018_idioms, unused_lifetimes, missing_docs)]
@@ -239,6 +235,25 @@ cfg_if! {
     if #[cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "aix"))] {
         mod util_libc;
         #[path = "use_file.rs"] mod imp;
+    } else if #[cfg(any(
+        target_os = "macos",
+        target_os = "openbsd",
+        target_os = "vita",
+        target_os = "emscripten",
+    ))] {
+        mod util_libc;
+        #[path = "getentropy.rs"] mod imp;
+    } else if #[cfg(any(
+        target_os = "dragonfly",
+        target_os = "freebsd",
+        target_os = "hurd",
+        target_os = "illumos",
+        // Check for target_arch = "arm" to only include the 3DS. Does not
+        // include the Nintendo Switch (which is target_arch = "aarch64").
+        all(target_os = "horizon", target_arch = "arm"),
+    ))] {
+        mod util_libc;
+        #[path = "getrandom.rs"] mod imp;
     } else if #[cfg(all(
         not(feature = "linux_disable_fallback"),
         any(
@@ -286,27 +301,16 @@ cfg_if! {
     } else if #[cfg(any(target_os = "android", target_os = "linux"))] {
         mod util_libc;
         #[path = "linux_android.rs"] mod imp;
-    } else if #[cfg(any(target_os = "illumos", target_os = "solaris"))] {
+    } else if #[cfg(target_os = "solaris")] {
         mod util_libc;
-        mod use_file;
-        #[path = "solaris_illumos.rs"] mod imp;
-    } else if #[cfg(any(target_os = "freebsd", target_os = "netbsd"))] {
+        #[path = "solaris.rs"] mod imp;
+    } else if #[cfg(target_os = "netbsd")] {
         mod util_libc;
-        #[path = "bsd_arandom.rs"] mod imp;
-    } else if #[cfg(target_os = "dragonfly")] {
-        mod util_libc;
-        mod use_file;
-        #[path = "dragonfly.rs"] mod imp;
+        #[path = "netbsd.rs"] mod imp;
     } else if #[cfg(target_os = "fuchsia")] {
         #[path = "fuchsia.rs"] mod imp;
-    } else if #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))] {
+    } else if #[cfg(any(target_os = "ios", target_os = "visionos", target_os = "watchos", target_os = "tvos"))] {
         #[path = "apple-other.rs"] mod imp;
-    } else if #[cfg(target_os = "macos")] {
-        mod util_libc;
-        #[path = "macos.rs"] mod imp;
-    } else if #[cfg(target_os = "openbsd")] {
-        mod util_libc;
-        #[path = "openbsd.rs"] mod imp;
     } else if #[cfg(all(target_arch = "wasm32", target_os = "wasi"))] {
         #[path = "wasi.rs"] mod imp;
     } else if #[cfg(target_os = "hermit")] {
@@ -320,17 +324,6 @@ cfg_if! {
         #[path = "espidf.rs"] mod imp;
     } else if #[cfg(windows)] {
         #[path = "windows.rs"] mod imp;
-    } else if #[cfg(all(target_os = "horizon", target_arch = "arm"))] {
-        // We check for target_arch = "arm" because the Nintendo Switch also
-        // uses Horizon OS (it is aarch64).
-        mod util_libc;
-        #[path = "3ds.rs"] mod imp;
-    } else if #[cfg(target_os = "vita")] {
-        mod util_libc;
-        #[path = "vita.rs"] mod imp;
-    } else if #[cfg(target_os = "emscripten")] {
-        mod util_libc;
-        #[path = "emscripten.rs"] mod imp;
     } else if #[cfg(all(target_arch = "x86_64", target_env = "sgx"))] {
         mod lazy;
         #[path = "rdrand.rs"] mod imp;
@@ -342,9 +335,6 @@ cfg_if! {
                         any(target_arch = "wasm32", target_arch = "wasm64"),
                         target_os = "unknown"))] {
         #[path = "js.rs"] mod imp;
-    } else if #[cfg(target_os = "hurd")] {
-        mod util_libc;
-        #[path = "hurd.rs"] mod imp;
     } else if #[cfg(feature = "custom")] {
         use custom as imp;
     } else if #[cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"),

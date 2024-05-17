@@ -1,6 +1,6 @@
 [package]
 name = "getrandom"
-version = "0.2.14" # Also update html_root_url in lib.rs when bumping this
+version = "0.2.15" # Also update html_root_url in lib.rs when bumping this
 edition = "2018"
 authors = ["The Rand Project Developers"]
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 
 [target.'cfg(unix)'.dependencies]
-libc = { version = "0.2.149", default-features = false }
+libc = { version = "0.2.154", default-features = false }
 
 [target.'cfg(target_os = "wasi")'.dependencies]
 wasi = { version = "0.11", default-features = false }

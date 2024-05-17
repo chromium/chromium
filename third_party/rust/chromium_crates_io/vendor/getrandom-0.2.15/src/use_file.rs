@@ -9,21 +9,12 @@ use core::{
     sync::atomic::{AtomicUsize, Ordering::Relaxed},
 };
 
-// We prefer using /dev/urandom and only use /dev/random if the OS
-// documentation indicates that /dev/urandom is insecure.
-// On Solaris/Illumos, see src/solaris_illumos.rs
-// On Dragonfly, Haiku, and QNX Neutrino the devices are identical.
-#[cfg(any(target_os = "solaris", target_os = "illumos"))]
-const FILE_PATH: &str = "/dev/random\0";
-#[cfg(any(
-    target_os = "aix",
-    target_os = "android",
-    target_os = "linux",
-    target_os = "redox",
-    target_os = "dragonfly",
-    target_os = "haiku",
-    target_os = "nto",
-))]
+/// For all platforms, we use `/dev/urandom` rather than `/dev/random`.
+/// For more information see the linked man pages in lib.rs.
+///   - On Linux, "/dev/urandom is preferred and sufficient in all use cases".
+///   - On Redox, only /dev/urandom is provided.
+///   - On AIX, /dev/urandom will "provide cryptographically secure output".
+///   - On Haiku and QNX Neutrino they are identical.
 const FILE_PATH: &str = "/dev/urandom\0";
 const FD_UNINIT: usize = usize::max_value();
 

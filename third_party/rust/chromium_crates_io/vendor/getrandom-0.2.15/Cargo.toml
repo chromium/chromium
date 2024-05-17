@@ -12,9 +12,14 @@
 [package]
 edition = "2018"
 name = "getrandom"
-version = "0.2.14"
+version = "0.2.15"
 authors = ["The Rand Project Developers"]
+build = false
 exclude = [".*"]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A small cross-platform library for retrieving random data from system source"
 documentation = "https://docs.rs/getrandom"
 readme = "README.md"
@@ -44,6 +49,26 @@ rustdoc-args = [
     "--cfg",
     "docsrs",
 ]
+
+[lib]
+name = "getrandom"
+path = "src/lib.rs"
+
+[[test]]
+name = "custom"
+path = "tests/custom.rs"
+
+[[test]]
+name = "normal"
+path = "tests/normal.rs"
+
+[[test]]
+name = "rdrand"
+path = "tests/rdrand.rs"
+
+[[bench]]
+name = "buffer"
+path = "benches/buffer.rs"
 
 [dependencies.cfg-if]
 version = "1"
@@ -91,5 +116,5 @@ version = "0.11"
 default-features = false
 
 [target."cfg(unix)".dependencies.libc]
-version = "0.2.149"
+version = "0.2.154"
 default-features = false
