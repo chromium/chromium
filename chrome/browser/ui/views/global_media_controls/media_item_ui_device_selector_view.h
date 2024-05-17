@@ -98,6 +98,8 @@ class MediaItemUIDeviceSelectorView
   void OnDropdownButtonClicked() override;
 
   // views::View
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
   void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
