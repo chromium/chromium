@@ -82,10 +82,14 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   int GetNumberOfPages() const override;
 
-  // Returns an empty bookmark list.
-  base::Value::List GetBookmarks() override;
+  MOCK_METHOD(bool, IsPageVisible, (int), (const override));
+
+  MOCK_METHOD(gfx::Rect, GetPageContentsRect, (int), (override));
 
   MOCK_METHOD(gfx::Rect, GetPageScreenRect, (int), (const override));
+
+  // Returns an empty bookmark list.
+  base::Value::List GetBookmarks() override;
 
   MOCK_METHOD(void, SetGrayscale, (bool), (override));
 

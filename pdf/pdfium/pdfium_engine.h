@@ -144,6 +144,7 @@ class PDFiumEngine : public PDFEngine,
   std::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
+  bool IsPageVisible(int index) const override;
   gfx::Rect GetPageBoundsRect(int index) override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Rect GetPageScreenRect(int page_index) const override;
@@ -348,10 +349,6 @@ class PDFiumEngine : public PDFEngine,
 
   // Calculates which pages should be displayed right now.
   void CalculateVisiblePages();
-
-  // Returns true iff the given page index is visible.  CalculateVisiblePages
-  // must have been called first.
-  bool IsPageVisible(int index) const;
 
   // Internal interface that caches the page index requested by PDFium to get
   // scrolled to. The cache is to be be used during the interval the PDF

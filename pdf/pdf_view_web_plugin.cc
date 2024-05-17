@@ -1971,7 +1971,17 @@ SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
-  // TODO(crbug.com/335524380): Implement.
+  gfx::Point rounded_point = gfx::ToRoundedPoint(point);
+  for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
+    if (!engine_->IsPageVisible(i)) {
+      continue;
+    }
+    auto rect = engine_->GetPageContentsRect(i);
+    if (!rect.Contains(rounded_point)) {
+      continue;
+    }
+    return i;
+  }
   return -1;
 }
 

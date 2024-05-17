@@ -3029,6 +3029,8 @@ void PDFiumEngine::CalculateVisiblePages() {
 }
 
 bool PDFiumEngine::IsPageVisible(int index) const {
+  // CalculateVisiblePages() must have been called first to populate
+  // `visible_pages_`. Otherwise, this will always return false.
   return base::Contains(visible_pages_, index);
 }
 
