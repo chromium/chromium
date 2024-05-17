@@ -225,7 +225,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // code uses its computations for buffer sizing.
   void InitializeViewport(DrawingFrame* frame,
                           const gfx::Rect& draw_rect,
-                          const gfx::Rect& viewport_rect,
+                          const gfx::Size& viewport_size,
                           const gfx::Size& surface_size);
   gfx::Rect MoveFromDrawToWindowSpace(const gfx::Rect& draw_rect) const;
 
@@ -399,7 +399,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // stores the values for the current render pass; in between draws, they
   // retain the values for the root render pass of the last draw.
   gfx::Rect current_draw_rect_;
-  gfx::Rect current_viewport_rect_;
+  gfx::Size current_viewport_size_;
   gfx::Size current_surface_size_;
 
   DrawingFrame* current_frame() {

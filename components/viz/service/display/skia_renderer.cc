@@ -1497,7 +1497,7 @@ void SkiaRenderer::BeginDrawingRenderPass(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::BeginDrawingRenderPass");
 
-  if (render_pass_update_rect == current_viewport_rect_) {
+  if (render_pass_update_rect == gfx::Rect(current_viewport_size_)) {
     EnsureScissorTestDisabled();
   } else {
     SetScissorTestRect(render_pass_update_rect);

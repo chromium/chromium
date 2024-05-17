@@ -100,19 +100,16 @@ void DirectRenderer::QuadRectTransform(gfx::Transform* quad_rect_transform,
 
 void DirectRenderer::InitializeViewport(DrawingFrame* frame,
                                         const gfx::Rect& draw_rect,
-                                        const gfx::Rect& viewport_rect,
+                                        const gfx::Size& viewport_size,
                                         const gfx::Size& surface_size) {
-  DCHECK_GE(viewport_rect.x(), 0);
-  DCHECK_GE(viewport_rect.y(), 0);
-  DCHECK_LE(viewport_rect.right(), surface_size.width());
-  DCHECK_LE(viewport_rect.bottom(), surface_size.height());
+  DCHECK_LE(viewport_size.width(), surface_size.width());
+  DCHECK_LE(viewport_size.height(), surface_size.height());
   frame->target_to_device_transform = gfx::OrthoProjectionTransform(
       draw_rect.x(), draw_rect.right(), draw_rect.y(), draw_rect.bottom());
-  frame->target_to_device_transform.PostConcat(
-      gfx::WindowTransform(viewport_rect.x(), viewport_rect.y(),
-                           viewport_rect.width(), viewport_rect.height()));
+  frame->target_to_device_transform.PostConcat(gfx::WindowTransform(
+      0, 0, viewport_size.width(), viewport_size.height()));
   current_draw_rect_ = draw_rect;
-  current_viewport_rect_ = viewport_rect;
+  current_viewport_size_ = viewport_size;
   current_surface_size_ = surface_size;
 }
 
@@ -120,7 +117,6 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
     const gfx::Rect& draw_rect) const {
   gfx::Rect window_rect = draw_rect;
   window_rect -= current_draw_rect_.OffsetFromOrigin();
-  window_rect += current_viewport_rect_.OffsetFromOrigin();
   return window_rect;
 }
 
@@ -452,10 +448,9 @@ gfx::Rect DirectRenderer::GetTargetDamageBoundingRect() const {
 }
 
 gfx::Rect DirectRenderer::DeviceViewportRectInDrawSpace() const {
-  gfx::Rect device_viewport_rect(current_frame()->device_viewport_size);
-  device_viewport_rect -= current_viewport_rect_.OffsetFromOrigin();
-  device_viewport_rect += current_draw_rect_.OffsetFromOrigin();
-  return device_viewport_rect;
+  gfx::Rect device_viewport_size(current_frame()->device_viewport_size);
+  device_viewport_size += current_draw_rect_.OffsetFromOrigin();
+  return device_viewport_size;
 }
 
 gfx::Rect DirectRenderer::OutputSurfaceRectInDrawSpace() const {
@@ -841,7 +836,7 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
     BindFramebufferToOutputSurface();
     InitializeViewport(current_frame(), render_pass->output_rect,
-                       gfx::Rect(current_frame()->device_viewport_size),
+                       current_frame()->device_viewport_size,
                        current_frame()->device_viewport_size);
     return;
   }
@@ -862,7 +857,7 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
 
   BindFramebufferToTexture(render_pass->id);
   InitializeViewport(current_frame(), render_pass->output_rect,
-                     gfx::Rect(render_pass->output_rect.size()),
+                     render_pass->output_rect.size(),
                      // If the render pass backing is cached, we might have
                      // bigger size comparing to the size that was generated.
                      GetRenderPassBackingPixelSize(render_pass->id));
