@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -439,9 +440,6 @@ class ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature
             switches::kExplicitBrowserSigninUIOnDesktop) {}
 
   bool uno_enabled() const { return IsParamFeatureEnabled(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that signout opens a new logout tab.
@@ -804,6 +802,80 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
   loop.Run();
 }
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
+                                         public InProcessBrowserTest {
+ public:
+  ProfileMenuViewSigninPendingTest() = default;
+
+  CoreAccountInfo account_info() const { return account_info_; }
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+
+    // Add an account, non-syncing and in authentication error.
+    Profile* profile = browser()->profile();
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    account_info_ = signin::MakePrimaryAccountAvailable(
+        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
+    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+        identity_manager, account_info_.account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
+    ASSERT_TRUE(
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info_.account_id));
+    ASSERT_TRUE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+    ASSERT_FALSE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
+
+  void ClickReauthButton() {
+    base::HistogramTester histogram_tester;
+    OpenProfileMenu();
+    static_cast<ProfileMenuView*>(profile_menu_view())
+        ->OnSigninButtonClicked(
+            account_info(),
+            ProfileMenuViewBase::ActionableItem::kSigninReauthButton);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
+        /*expected_bucket_count=*/1);
+  }
+
+ protected:
+  CoreAccountInfo account_info_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninPendingTest, OpenReauthTab) {
+  // Start from a page that is not the NTP, so that the reauth opens a new tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ClickReauthButton();
+  content::WebContents* reauth_page = tab_waiter.Wait();
+  std::string reauth_url = reauth_page->GetURL().spec();
+  // The signin page opens (not the sync page).
+  EXPECT_THAT(
+      reauth_url,
+      testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
+  // The email is pre-filled.
+  EXPECT_THAT(reauth_url, testing::HasSubstr(base::EscapeQueryParamValue(
+                              account_info_.email, true)));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // This class is used to test the existence, the correct order and the call to
 // the correct action of the buttons in the profile menu. This is done by
@@ -1459,6 +1531,56 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu with
+// Uno enabled in signin pending state. If a new button is added to the menu,
+// it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_WithPendingAccount_UnoEnabled[] = {
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+        ProfileMenuViewBase::ActionableItem::kAddressesButton,
+        ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+        // Signout is not allowed in the main profile.
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+#endif
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WithPendingAccount_UnoEnabled,
+    ProfileMenuClickTest_WithPendingAccount_UnoEnabled,
+    /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+    /*disabled_features=*/{}) {
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "user@example.com", signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
 
   RunTest();
 }
