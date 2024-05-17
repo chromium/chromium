@@ -15,6 +15,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/brightness_control_delegate.h"
 #include "ash/system/power/power_status.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -199,10 +200,22 @@ void BrightnessControllerChromeos::RestoreBrightnessSettings(
           .FindBoolPath(account_id, prefs::kDisplayAmbientLightSensorEnabled)
           .value_or(true);
 
-  SetAmbientLightSensorEnabled(ambient_light_sensor_enabled_for_account);
+  if (!ambient_light_sensor_enabled_for_account) {
+    // If the ambient light sensor is disabled, restore the user's preferred
+    // brightness level.
+    const std::optional<double> brightness_for_account =
+        known_user
+            .FindPath(account_id,
+                      prefs::kInternalDisplayScreenBrightnessPercent)
+            ->GetIfDouble();
+    if (brightness_for_account.has_value()) {
+      SetBrightnessPercent(brightness_for_account.value(), /*gradual=*/true,
+                           BrightnessControlDelegate::BrightnessChangeSource::
+                               kRestoredFromUserPref);
+    }
+  }
 
-  // TODO(cambickel): If the ambient light sensor is disabled, restore the
-  // user's preferred brightness level.
+  SetAmbientLightSensorEnabled(ambient_light_sensor_enabled_for_account);
 }
 
 void BrightnessControllerChromeos::OnActiveUserSessionChanged(

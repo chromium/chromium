@@ -28,7 +28,8 @@ class BrightnessControlDelegate {
     kUnknown = 0,
     kQuickSettings = 1,
     kSettingsApp = 2,
-    kMaxValue = kSettingsApp,
+    kRestoredFromUserPref = 3,
+    kMaxValue = kRestoredFromUserPref,
   };
 
   // Requests that the brightness be set to |percent|, in the range
