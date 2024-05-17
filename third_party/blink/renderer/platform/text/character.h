@@ -163,6 +163,15 @@ class PLATFORM_EXPORT Character {
     return TreatAsZeroWidthSpaceInComplexScript(c) ||
            c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
   }
+  static bool TreatAsZeroWidthSpaceInComplexScriptLegacy(UChar32 c) {
+    return c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
+           c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
+           (c >= kLeftToRightMarkCharacter && c <= kRightToLeftMarkCharacter) ||
+           (c >= kLeftToRightEmbedCharacter &&
+            c <= kRightToLeftOverrideCharacter) ||
+           c == kZeroWidthNoBreakSpaceCharacter ||
+           c == kObjectReplacementCharacter;
+  }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
     if (c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
         c == kObjectReplacementCharacter) {
@@ -170,14 +179,8 @@ class PLATFORM_EXPORT Character {
     }
     if (RuntimeEnabledFeatures::TextAlignJustifyBidiIsolateEnabled()) {
       return IsDefaultIgnorable(c);
-    } else {
-      return c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
-             (c >= kLeftToRightMarkCharacter &&
-              c <= kRightToLeftMarkCharacter) ||
-             (c >= kLeftToRightEmbedCharacter &&
-              c <= kRightToLeftOverrideCharacter) ||
-             c == kZeroWidthNoBreakSpaceCharacter;
     }
+    return TreatAsZeroWidthSpaceInComplexScriptLegacy(c);
   }
   // https://unicode.org/reports/tr44/#Default_Ignorable_Code_Point
   static bool IsDefaultIgnorable(UChar32 c) {

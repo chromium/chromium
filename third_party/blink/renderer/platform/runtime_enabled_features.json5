@@ -3911,7 +3911,7 @@
     {
       // crbug.com/331680200
       name: "TextAlignJustifyBidiIsolate",
-      status: "test",
+      status: "stable",
     },
     {
       // crbug.com/331729346

@@ -83,10 +83,11 @@ String TextRun::NormalizedUTF16() const {
     } else if (Character::TreatAsSpace(character) &&
                character != kNoBreakSpaceCharacter) {
       character = kSpaceCharacter;
-    } else if (Character::TreatAsZeroWidthSpaceInComplexScript(character) &&
-               character < 0x10000) {
+    } else if (Character::TreatAsZeroWidthSpaceInComplexScriptLegacy(
+                   character)) {
       // Repalce only ZWS-like characters in BMP because we'd like to avoid
       // changing the string length.
+      DCHECK_LT(character, 0x10000);
       character = kZeroWidthSpaceCharacter;
     }
 
