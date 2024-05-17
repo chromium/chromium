@@ -46,7 +46,8 @@ inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 
 // Device Targeting paths.
 inline constexpr char kDeviceTargeting[] = "device";
-inline constexpr char kDeviceLocales[] = "locales";
+inline constexpr char kApplicationLocales[] = "locales";
+inline constexpr char kUserLocales[] = "userLocales";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
@@ -279,7 +280,11 @@ DeviceTargeting::DeviceTargeting(const Targeting* targeting_dict)
 DeviceTargeting::~DeviceTargeting() = default;
 
 const base::Value::List* DeviceTargeting::GetLocales() const {
-  return GetListCriteria(kDeviceLocales);
+  return GetListCriteria(kApplicationLocales);
+}
+
+const base::Value::List* DeviceTargeting::GetUserLocales() const {
+  return GetListCriteria(kUserLocales);
 }
 
 const std::optional<int> DeviceTargeting::GetMinMilestone() const {

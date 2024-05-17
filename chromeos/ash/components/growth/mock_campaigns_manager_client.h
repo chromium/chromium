@@ -29,6 +29,7 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
   MOCK_METHOD(bool, IsCloudGamingDevice, (), (const, override));
   MOCK_METHOD(bool, IsFeatureAwareDevice, (), (const, override));
   MOCK_METHOD(std::string&, GetApplicationLocale, (), (const, override));
+  MOCK_METHOD(std::string&, GetUserLocale, (), (const, override));
   MOCK_METHOD(const base::Version&,
               GetDemoModeAppVersion,
               (),

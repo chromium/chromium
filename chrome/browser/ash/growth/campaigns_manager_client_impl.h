@@ -41,6 +41,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   bool IsCloudGamingDevice() const override;
   bool IsFeatureAwareDevice() const override;
   const std::string& GetApplicationLocale() const override;
+  const std::string& GetUserLocale() const override;
   const base::Version& GetDemoModeAppVersion() const override;
   growth::ActionMap GetCampaignsActions() override;
   void RegisterSyntheticFieldTrial(const std::optional<int> study_id,

@@ -36,6 +36,8 @@
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace {
@@ -100,7 +102,18 @@ bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
 }
 
 const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
+  // User selected locale, then resolved using
+  // `l10n_util::CheckAndResolveLocale` to a platform locale.
+  // For example: `en-IN` will be resolved to `en-GB`.
   return g_browser_process->GetApplicationLocale();
+}
+
+const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
+  // The locale as selected by the user, such as "en-IN". This is different
+  // from `GetApplication` locale which is actually platform locale that
+  // resolved using `l10n_util::CheckAndResolveLocale`.
+  return GetProfile()->GetPrefs()->GetString(
+      language::prefs::kApplicationLocale);
 }
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {

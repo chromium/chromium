@@ -328,7 +328,6 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
 
 bool CampaignsMatcher::MatchMilestone(const DeviceTargeting& targeting) const {
   const auto milestone = GetMilestone();
-
   auto min_milestone = targeting.GetMinMilestone();
   if (min_milestone && milestone < min_milestone) {
     return false;
@@ -359,6 +358,11 @@ bool CampaignsMatcher::MatchDeviceTargeting(
   const auto* targeting_locales = targeting.GetLocales();
   if (targeting_locales &&
       !Contains(*targeting_locales, client_->GetApplicationLocale())) {
+    return false;
+  }
+
+  const auto* user_locales = targeting.GetUserLocales();
+  if (user_locales && !Contains(*user_locales, client_->GetUserLocale())) {
     return false;
   }
 

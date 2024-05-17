@@ -54,6 +54,9 @@ class CampaignsManagerClient {
   // Returns application locale.
   virtual const std::string& GetApplicationLocale() const = 0;
 
+  // Returns user selected locale.
+  virtual const std::string& GetUserLocale() const = 0;
+
   // Get demo mode app component version.
   virtual const base::Version& GetDemoModeAppVersion() const = 0;
 

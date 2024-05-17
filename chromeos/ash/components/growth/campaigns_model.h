@@ -232,6 +232,7 @@ class DeviceTargeting : public TargetingBase {
   ~DeviceTargeting();
 
   const base::Value::List* GetLocales() const;
+  const base::Value::List* GetUserLocales() const;
   const std::optional<int> GetMinMilestone() const;
   const std::optional<int> GetMaxMilestone() const;
   const std::optional<bool> GetFeatureAwareDevice() const;
