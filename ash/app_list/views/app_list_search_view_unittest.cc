@@ -762,6 +762,60 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   app_list_client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
+TEST_P(SearchResultImageViewTest,
+       TypingInitialCharacterWithMenuOpenTogglesCheckbox) {
+  GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps,
+       AppListSearchControlCategory::kFiles,
+       AppListSearchControlCategory::kWeb});
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  EXPECT_TRUE(filter_button->GetVisible());
+
+  // Open the filter menu.
+  LeftClickOn(filter_button);
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+
+  // Set up the search callback to notify that the search is triggered.
+  bool is_search_triggered = false;
+  app_list_client->set_search_callback(base::BindLambdaForTesting(
+      [&](const std::u16string& query) { is_search_triggered = true; }));
+
+  // Toggleable categories are on by default.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_TRUE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+                  .FindBool(GetAppListControlCategoryName(
+                      AppListSearchControlCategory::kApps))
+                  .value_or(true));
+
+  // Pressing a key that is not an initial of the items does not do anything to
+  // the menu.
+  PressAndReleaseKey(ui::VKEY_X);
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+
+  // As "A" is the initial character if "Apps", the corresponding menu item is
+  // automatically toggled and the menu is closed.
+  PressAndReleaseKey(ui::VKEY_A);
+  std::optional apps_search_enabled =
+      prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+          .FindBool(GetAppListControlCategoryName(
+              AppListSearchControlCategory::kApps));
+  ASSERT_TRUE(apps_search_enabled.has_value());
+  EXPECT_FALSE(*apps_search_enabled);
+  EXPECT_FALSE(GetSearchBoxView()->IsFilterMenuOpen());
+  EXPECT_TRUE(is_search_triggered);
+
+  // Reset the search callback.
+  app_list_client->set_search_callback(TestAppListClient::SearchCallback());
+}
+
 // Verifies that the filter button and all menu items in the search category
 // filter have tooltips.
 TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
