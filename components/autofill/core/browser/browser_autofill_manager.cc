@@ -2508,17 +2508,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   const FieldType trigger_field_type =
       trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
                              : UNKNOWN_TYPE;
-  if (!IsAddressType(trigger_field_type)) {
-    // Since Autofill was triggered from a field that is not classified as
-    // address, we consider the `field_types` (i.e, the fields found in the
-    // "form") to be a single unclassified field. Note that in this flow it is
-    // not used and only holds semantic value.
-    return suggestion_generator_->GetSuggestionsForProfiles(
-        /*field_types=*/{UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
-        SuggestionType::kAddressEntry, trigger_source);
-  }
 
-  CHECK(IsAddressType(trigger_field_type));
   SuggestionType current_suggestion_type = [&] {
     switch (external_delegate_->GetLastAcceptedSuggestionToFillForSection(
         trigger_autofill_field->section())) {
@@ -2546,11 +2536,18 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           case FieldTypeGroup::kUnfillable:
           case FieldTypeGroup::kIban:
           case FieldTypeGroup::kNoGroup:
-            // Since `trigger_field_type` is an address type:
-            NOTREACHED_NORETURN();
+            // If Autofill was triggered from a field that is not classified as
+            // address, `current_suggestion_type` is irrelevant and we just use
+            // `SuggestionType::kAddressEntry` as a placeholder.
+            return SuggestionType::kAddressEntry;
         }
         NOTREACHED_NORETURN();
       case SuggestionType::kAddressFieldByFieldFilling:
+        if (!IsAddressType(trigger_field_type)) {
+          // TODO(crbug.com/339543182): Is this special case reasonable?
+          // Shouldn't we continue with field-by-field filling?
+          return SuggestionType::kAddressEntry;
+        }
         return SuggestionType::kAddressFieldByFieldFilling;
       default:
         // `last_suggestion_type` is only one of the address filling suggestion
@@ -2559,33 +2556,43 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
   }();
 
-  // Getting the filling-relevant fields so that suggestions are based only on
-  // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
-  // assumes that the passed FormData and FormStructure have the same size. If
-  // it's not the case we just assume as a fallback that all fields are
-  // relevant.
-  size_t num_fields = form_structure ? form_structure->field_count() : 0;
-  base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
-      form_structure && form.fields.size() == num_fields
-          ? form_filler_->GetFieldFillingSkipReasons(
-                form, *form_structure, *trigger_autofill_field,
-                GetTargetFieldsForAddressFillingSuggestionType(
-                    current_suggestion_type, trigger_field_type),
-                /*type_groups_originally_filled=*/std::nullopt,
-                FillingProduct::kAddress,
-                /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
-                    AutofillSuggestionTriggerSource::kManualFallbackAddress,
-                /*is_refill=*/false, /*is_expired_credit_card=*/false)
-          : base::flat_map<FieldGlobalId, FieldFillingSkipReason>();
-  FieldTypeSet field_types;
-  for (size_t i = 0; i < num_fields; ++i) {
-    const AutofillField* autofill_field = form_structure->field(i);
-    auto it = skip_reasons.find(autofill_field->global_id());
-    if (it == skip_reasons.end() ||
-        it->second == FieldFillingSkipReason::kNotSkipped) {
-      field_types.insert(autofill_field->Type().GetStorableType());
+  FieldTypeSet field_types = [&] {
+    if (!IsAddressType(trigger_field_type)) {
+      // Since Autofill was triggered from a field that is not classified as
+      // address, we consider the `field_types` (i.e, the fields found in the
+      // "form") to be a single unclassified field. Note that in this flow it is
+      // not used and only holds semantic value.
+      // TODO(crbug.com/339543182): Is this special case reasonable? Shouldn't
+      // we pass the fields that are available?
+      return FieldTypeSet{UNKNOWN_TYPE};
     }
-  }
+    // If the FormData and FormStructure do not have the same size, we assume
+    // as a fallback that all fields are fillable.
+    base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons;
+    size_t num_fields = form_structure ? form_structure->field_count() : 0;
+    if (form_structure && form.fields.size() == num_fields) {
+      skip_reasons = form_filler_->GetFieldFillingSkipReasons(
+          form, *form_structure, *trigger_autofill_field,
+          GetTargetFieldsForAddressFillingSuggestionType(
+              current_suggestion_type, trigger_field_type),
+          /*type_groups_originally_filled=*/std::nullopt,
+          FillingProduct::kAddress,
+          /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
+              AutofillSuggestionTriggerSource::kManualFallbackAddress,
+          /*is_refill=*/false, /*is_expired_credit_card=*/false);
+    }
+    FieldTypeSet field_types;
+    for (size_t i = 0; i < num_fields; ++i) {
+      const AutofillField* autofill_field = form_structure->field(i);
+      auto it = skip_reasons.find(autofill_field->global_id());
+      if (it == skip_reasons.end() ||
+          it->second == FieldFillingSkipReason::kNotSkipped) {
+        field_types.insert(autofill_field->Type().GetStorableType());
+      }
+    }
+    return field_types;
+  }();
+
   return suggestion_generator_->GetSuggestionsForProfiles(
       field_types, trigger_field, trigger_field_type, current_suggestion_type,
       trigger_source);
