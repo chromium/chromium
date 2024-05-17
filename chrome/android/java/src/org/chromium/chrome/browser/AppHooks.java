@@ -11,7 +11,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
-import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.metrics.VariationsSession;
@@ -187,10 +186,6 @@ public abstract class AppHooks {
     /** Returns a Chime Delegate if the chime module is defined. */
     public ChimeDelegate getChimeDelegate() {
         return new ChimeDelegate();
-    }
-
-    public ChromeStartupDelegate createChromeStartupDelegate() {
-        return new ChromeStartupDelegate();
     }
 
     public String getDefaultQueryTilesServerUrl() {

@@ -287,9 +287,6 @@ public class ProcessInitializationHandler {
                         }
                     }
                 });
-
-        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
-        startupDelegate.initGlobals();
     }
 
     /**
@@ -511,9 +508,6 @@ public class ProcessInitializationHandler {
         ChromeCachedFlags.getInstance().cacheMinimalBrowserFlags();
 
         ModuleUtil.recordStartupTime();
-
-        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
-        startupDelegate.init();
     }
 
     public final void initNetworkChangeNotifier() {
