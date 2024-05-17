@@ -2724,6 +2724,16 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
             wc->web_input_event_audit_callbacks_.erase(*callback_id);
           } else {
             --wc->ignore_input_events_count_;
+            // Reset gesture detection so that we don't continue to generate new
+            // gestures from suppressed touches. These suppressed gestures would
+            // otherwise confuse the event stream validator when input is
+            // re-enabled.
+            if (wc->ignore_input_events_count_ == 0) {
+              if (auto* view = wc->GetRenderWidgetHostView()) {
+                static_cast<RenderWidgetHostViewBase*>(view)
+                    ->ResetGestureDetection();
+              }
+            }
           }
         }
       },

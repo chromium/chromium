@@ -648,6 +648,8 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
   return screen_infos_;
 }
 
+void RenderWidgetHostViewBase::ResetGestureDetection() {}
+
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
 }

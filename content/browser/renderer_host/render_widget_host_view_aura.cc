@@ -2544,6 +2544,13 @@ bool RenderWidgetHostViewAura::IsHTMLFormPopup() const {
   return !!popup_parent_host_view_;
 }
 
+void RenderWidgetHostViewAura::ResetGestureDetection() {
+  // TODO(bokan): See the Android implementation - Aura likely needs to
+  // implement this as well so that suppressing input
+  // (WebContentsImpl::IgnoreInputEvents) doesn't continue to generate gestures
+  // which can confuse event validation.
+}
+
 bool RenderWidgetHostViewAura::FocusedFrameHasStickyActivation() const {
   // Unless user has interacted with the iframe, we shouldn't be displaying VK
   // or fire geometrychange event.

@@ -133,6 +133,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   bool IsHTMLFormPopup() const override;
+  void ResetGestureDetection() override;
 
   // Overridden from RenderWidgetHostViewBase:
   void InitAsPopup(RenderWidgetHostView* parent_host_view,

@@ -127,6 +127,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       override;
   display::ScreenInfo GetScreenInfo() const override;
   display::ScreenInfos GetScreenInfos() const override;
+  virtual void ResetGestureDetection();
 
   // RenderWidgetHostViewInput implementation
   base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() override;
