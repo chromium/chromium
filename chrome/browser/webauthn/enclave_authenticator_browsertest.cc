@@ -351,6 +351,18 @@ bool IsReady(GPMEnclaveController::AccountState state) {
   }
 }
 
+bool IsMechanismEnclaveCredential(
+    const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
+  if (absl::holds_alternative<
+          AuthenticatorRequestDialogModel::Mechanism::Credential>(
+          mechanism.type)) {
+    return absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+               mechanism.type)
+               ->source == device::AuthenticatorType::kEnclave;
+  }
+  return false;
+}
+
 struct TempDir {
  public:
   TempDir() { CHECK(dir_.CreateUniqueTempDir()); }
@@ -440,6 +452,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       pending_connection_ = std::move(connection);
     }
 
+    void SetUseSyncedDeviceCablePairing(bool use_pairing) {
+      use_synced_device_cable_pairing_ = use_pairing;
+    }
+
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(delegate);
@@ -457,7 +473,13 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>>
     GetCablePairingsFromSyncedDevices() override {
-      return {};
+      std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
+      if (use_synced_device_cable_pairing_) {
+        ret.emplace_back(TestPhone("phone", /*public_key=*/0,
+                                   /*last_updated=*/base::Time::FromTimeT(1),
+                                   /*channel_priority=*/1));
+      }
+      return ret;
     }
 
     void OnTransportAvailabilityEnumerated(
@@ -479,6 +501,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
    private:
     raw_ptr<EnclaveAuthenticatorBrowserTest> test_instance_;
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
+    bool use_synced_device_cable_pairing_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
     std::unique_ptr<base::RunLoop> destruction_run_loop_;
   };
@@ -2689,6 +2712,73 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
+}
+
+// Attempt a GetAssertion multiple times with GPM passkey bootstrapping
+// offered, and decline each time. The default should change to hybrid after
+// two times declined.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       MultipleDeclinedBootstrappings) {
+  EnableUVKeySupport();
+  security_domain_service_->pretend_there_are_members();
+  delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerAssertion);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kMechanismSelection);
+  dialog_model()->StartOver();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerAssertion);
+  EXPECT_TRUE(base::ranges::any_of(
+      dialog_model()->mechanisms,
+      [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
+  for (auto& mechanism : request_delegate_->dialog_model()->mechanisms) {
+    if (IsMechanismEnclaveCredential(mechanism)) {
+      mechanism.callback.Run();
+      break;
+    }
+  }
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kMechanismSelection);
+  dialog_model()->StartOver();
+  model_observer()->WaitForStep();
+
+  // Cancel and send a new request so newly-enumerated credentials will be used.
+  dialog_model()->CancelAuthenticatorRequest();
+  delegate_observer()->WaitForDelegateDestruction();
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  // Synced GPM passkeys should be hybrid credentials now.
+  EXPECT_FALSE(base::ranges::any_of(
+      dialog_model()->mechanisms,
+      [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
 }
 
 }  // namespace

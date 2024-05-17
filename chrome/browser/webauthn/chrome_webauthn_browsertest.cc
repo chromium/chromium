@@ -28,6 +28,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -74,22 +75,6 @@ constexpr char kUsername1[] = "flandre";
 constexpr char kDisplayName1[] = "Flandre Scarlet";
 constexpr char kUsername2[] = "sakuya";
 constexpr char kDisplayName2[] = "Sakuya Izayoi";
-
-std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,
-                                                    uint8_t public_key,
-                                                    base::Time last_updated,
-                                                    int channel_priority) {
-  auto phone = std::make_unique<device::cablev2::Pairing>();
-  phone->name = name;
-  phone->contact_id = {10, 11, 12};
-  phone->id = {4, 5, 6};
-  std::fill(phone->peer_public_key_x962.begin(),
-            phone->peer_public_key_x962.end(), public_key);
-  phone->last_updated = last_updated;
-  phone->channel_priority = channel_priority;
-  phone->from_sync_deviceinfo = true;
-  return phone;
-}
 
 sync_pb::WebauthnCredentialSpecifics CreateWebAuthnCredentialSpecifics(
     base::span<const uint8_t> credential_id,

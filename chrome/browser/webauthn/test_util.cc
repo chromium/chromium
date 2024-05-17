@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_constants.h"
 #include "net/base/port_util.h"
@@ -107,4 +108,20 @@ device::enclave::ScopedEnclaveOverride TestWebAuthnEnclaveIdentity(
   identity.public_key = kTestPublicKey;
 
   return device::enclave::ScopedEnclaveOverride(std::move(identity));
+}
+
+std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,
+                                                    uint8_t public_key,
+                                                    base::Time last_updated,
+                                                    int channel_priority) {
+  auto phone = std::make_unique<device::cablev2::Pairing>();
+  phone->name = name;
+  phone->contact_id = {10, 11, 12};
+  phone->id = {4, 5, 6};
+  std::fill(phone->peer_public_key_x962.begin(),
+            phone->peer_public_key_x962.end(), public_key);
+  phone->last_updated = last_updated;
+  phone->channel_priority = channel_priority;
+  phone->from_sync_deviceinfo = true;
+  return phone;
 }

@@ -1787,6 +1787,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/extensions",
       "//chrome/browser/webaudio:browser_tests",
+      "//chrome/browser/webauthn:test_support",
       "//chrome/common:version_header",
       "//chrome/common/companion/visual_query:flags",
       "//chrome/common/privacy_budget:test_support",
@@ -5582,10 +5583,7 @@ if (!is_android) {
 
     if (!is_chromeos) {
       sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
-      deps += [
-        "//chrome/browser/webauthn:test_support",
-        "//components/os_crypt/sync:test_support",
-      ]
+      deps += [ "//components/os_crypt/sync:test_support" ]
     }
   }
 }
