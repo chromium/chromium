@@ -6244,25 +6244,6 @@
             ]
         }
     ],
-    "DesktopOmniboxMLScoringWithCaching": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MlUrlScoreCaching"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxMLScoringWithLinearMapping": [
         {
             "platforms": [
@@ -13102,6 +13083,25 @@
                     },
                     "enable_features": [
                         "LogUrlScoringSignals"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxMlScoringWithCachingDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MlUrlScoreCaching"
                     ]
                 }
             ]
