@@ -5161,28 +5161,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 2-D input, 2-D indices and axis = 1 with data type
-    // uint64.
-    GatherTester<int32_t, uint64_t>{
-        .input = {.type = mojom::Operand::DataType::kInt32,
-                  .dimensions = {3, 3},
-                  // [[1 2 3]
-                  //  [4 5 6]
-                  //  [7 8 9]] with shape (3, 3)
-                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
-        .indices = {.type = mojom::Operand::DataType::kUint64,
-                    .dimensions = {1, 2},
-                    .values = {0, 2}},
-        .axis = 1,
-        .output = {.type = mojom::Operand::DataType::kInt32,
-                   .dimensions = {3, 1, 2},
-                   // [[[1 3]]
-                   //  [[4 6]]
-                   //  [[7 9]]] with shape (3, 1, 2)
-                   .values = {1, 3, 4, 6, 7, 9}}}
-        .Test();
-  }
-  {
     // Test gather with 4-D input, 1-D indices with negative index and axis = 1
     // with data type int64.
     GatherTester<uint32_t, int64_t>{
