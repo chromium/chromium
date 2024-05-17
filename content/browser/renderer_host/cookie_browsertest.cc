@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -280,36 +279,8 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
-class TruncatedCookieBrowserTestP : public CookieBrowserTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  TruncatedCookieBrowserTestP() {
-    truncated_cookies_blocked_ = GetParam();
-
-    if (TruncatedCookiesBlocked()) {
-      feature_list_.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          net::features::kBlockTruncatedCookies);
-    }
-  }
-
-  bool TruncatedCookiesBlocked() { return truncated_cookies_blocked_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  bool truncated_cookies_blocked_;
-};
-
-INSTANTIATE_TEST_SUITE_P(TruncatedCookieBrowserTests,
-                         TruncatedCookieBrowserTestP,
-                         testing::Values(true, false));
-
-IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
-                       CookieTruncatingCharFromJavascript) {
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
   using std::string_literals::operator""s;
-
-  base::HistogramTester histogram;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -343,31 +314,7 @@ IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
     SetCookieFromJS(frame, cookie_string);
   }
 
-  int expected_histogram_hit_count;
-  if (TruncatedCookiesBlocked()) {
-    EXPECT_EQ("", GetCookieFromJS(frame));
-    expected_histogram_hit_count = 0;
-  } else {
-    // Note: the last three test cases above are detectable as truncations
-    // (since the first case results in a failure that occurs before the
-    // histogram is recorded), so check for that below.
-    EXPECT_EQ("foo2=bar; foo3=ba; foo4=bar", GetCookieFromJS(frame));
-    expected_histogram_hit_count = 3;
-  }
-
-  FetchHistogramsFromChildProcesses();
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull,
-      expected_histogram_hit_count);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline,
-      expected_histogram_hit_count);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed,
-      expected_histogram_hit_count);
+  EXPECT_EQ("", GetCookieFromJS(frame));
 }
 
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
@@ -385,7 +332,6 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL http_url = embedded_test_server()->GetURL("/");
-  base::HistogramTester histogram;
 
   // Test scenarios where a control char may appear at start, middle and end of
   // a cookie line. Control char array with NULL (\x0), CR (\xD), and LF (xA)
@@ -412,17 +358,6 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
   // Test if there are multiple control characters that terminate.
   cookie_string = "foo=bar;\xA\xDhttponly"s;
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
-
-  FetchHistogramsFromChildProcesses();
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull, 0);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline, 0);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed, 0);
 }
 
 class RestrictedCookieManagerInterceptor

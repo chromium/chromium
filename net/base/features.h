@@ -248,10 +248,6 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // key in partitioned cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
 
-// When enabled, cookie-related code will treat cookies containing '\0', '\r',
-// and '\n' as invalid and reject the cookie.
-NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);
-
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 

@@ -282,13 +282,6 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Port 9095"/>
 </enum>
 
-<enum name="TruncatingCharacterInCookieStringType">
-  <int value="0" label="No truncating character"/>
-  <int value="1" label="NULL (\x0)"/>
-  <int value="2" label="New Line (\xD)"/>
-  <int value="3" label="Line Feed (\xA)"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

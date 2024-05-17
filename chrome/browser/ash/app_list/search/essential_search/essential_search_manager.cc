@@ -208,7 +208,7 @@ void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       google_url, cookie_header, base::Time::Now(),
       std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
-      /*block_truncated=*/true, net::CookieSourceType::kOther,
+      net::CookieSourceType::kOther,
       /*status=*/nullptr));
 
   if (!cc) {

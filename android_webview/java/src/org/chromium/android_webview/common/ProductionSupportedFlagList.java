@@ -662,10 +662,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
         Flag.baseFeature(
-                NetFeatures.BLOCK_TRUNCATED_COOKIES,
-                "When enabled, cookies containing '\\0', '\\r', and '\\n' characters will be "
-                        + "deemed invalid and the cookie won't be set."),
-        Flag.baseFeature(
                 NetFeatures.SPDY_HEADERS_TO_HTTP_RESPONSE_USE_BUILDER,
                 "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
                         + " change."),

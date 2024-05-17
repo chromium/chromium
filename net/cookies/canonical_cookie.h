@@ -104,10 +104,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // will be unpartitioned even when the cookie line has the Partitioned
   // attribute.
   //
-  // The `block_truncated` argument indicates whether the '\0', '\n', and '\r'
-  // characters should cause the cookie to fail to be created if present
-  // (instead of truncating `cookie_line` at the first occurrence).
-  //
   // If a cookie is returned, `cookie->IsCanonical()` will be true.
   //
   // NOTE: Do not add any defaults to this constructor, we want every caller to
@@ -118,7 +114,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       const base::Time& creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
-      bool block_truncated,
       CookieSourceType source_type,
       CookieInclusionStatus* status);
 
@@ -202,7 +197,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       const base::Time& creation_time,
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
-      bool block_truncated = true,
       CookieSourceType source_type = CookieSourceType::kUnknown,
       CookieInclusionStatus* status = nullptr);
 

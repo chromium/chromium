@@ -334,23 +334,6 @@ CookieSourceSchemeName GetSchemeNameEnum(const GURL& url);
 // Empty string was chosen because it is the smallest, non-null value.
 NET_EXPORT extern const char kEmptyCookiePartitionKey[];
 
-// Used for a histogram that measures which character caused the cookie
-// string to be truncated.
-//
-// Do not reorder or renumber. Used for metrics.
-enum class TruncatingCharacterInCookieStringType {
-  // No truncating character in the cookie line.
-  kTruncatingCharNone = 0,
-  // Cookie line truncated because of \x0.
-  kTruncatingCharNull = 1,
-  // Cookie line truncated because of \xD.
-  kTruncatingCharNewline = 2,
-  // Cookie line truncated because of \xA.
-  kTruncatingCharLineFeed = 3,
-
-  kMaxValue = kTruncatingCharLineFeed,  // Keep as the last value.
-};
-
 // Enum for measuring usage patterns of CookiesAllowedForUrls.
 // The policy supports wildcards in the primary or secondary content setting
 // pattern, and explicit patterns for both. Each variant of this enum represents

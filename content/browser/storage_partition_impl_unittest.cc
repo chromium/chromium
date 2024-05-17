@@ -154,8 +154,7 @@ class RemoveCookieTester {
             origin.GetURL(), "A=1", base::Time::Now(),
             /*server_time=*/std::nullopt,
             /*cookie_partition_key=*/std::nullopt,
-            /*block_truncated=*/true, net::CookieSourceType::kUnknown,
-            &status));
+            net::CookieSourceType::kUnknown, &status));
     base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
         *cc, origin.GetURL(), net::CookieOptions::MakeAllInclusive(),

@@ -128,8 +128,7 @@ TEST(CookieSyncConversionsTest, PartitionKeyShouldBeSerializable) {
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
       GURL(kUrlForTesting), cookie_line, creation_time, server_time,
-      partition_key_with_nonce, /*block_truncated=*/true,
-      net::CookieSourceType::kHTTP, &status);
+      partition_key_with_nonce, net::CookieSourceType::kHTTP, &status);
 
   ASSERT_TRUE(cookie);
 

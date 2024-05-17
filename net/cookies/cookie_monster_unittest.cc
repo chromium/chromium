@@ -5513,11 +5513,11 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
 
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
-  auto cookie = CanonicalCookie::CreateForTesting(
-      url, cookie_line, base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt,
-      /*block_truncated=*/true, CookieSourceType::kUnknown, &status);
+  auto cookie =
+      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/std::nullopt,
+                                        /*cookie_partition_key=*/std::nullopt,
+                                        CookieSourceType::kUnknown, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
 
@@ -5540,8 +5540,8 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // on Create.
   auto cookie = CanonicalCookie::CreateForTesting(
       http_url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, /*block_truncated=*/true,
-      CookieSourceType::kUnknown, &status);
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
+      &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -5563,11 +5563,11 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieMonster cm(nullptr, nullptr);
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
-  auto cookie = CanonicalCookie::CreateForTesting(
-      url, cookie_line, base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt,
-      /*block_truncated=*/true, CookieSourceType::kUnknown, &status);
+  auto cookie =
+      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/std::nullopt,
+                                        /*cookie_partition_key=*/std::nullopt,
+                                        CookieSourceType::kUnknown, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());

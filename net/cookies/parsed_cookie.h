@@ -36,10 +36,7 @@ class NET_EXPORT ParsedCookie {
   // informative exclusion reasons if the resulting ParsedCookie is invalid.
   // The CookieInclusionStatus will not be altered if the resulting ParsedCookie
   // is valid.
-  // `block_truncated` indicates whether cookies containing '\00', '\r', or '\n'
-  // characters should be treated as invalid.
   explicit ParsedCookie(const std::string& cookie_line,
-                        bool block_truncated = true,
                         CookieInclusionStatus* status_out = nullptr);
 
   ParsedCookie(const ParsedCookie&) = delete;
@@ -87,10 +84,6 @@ class NET_EXPORT ParsedCookie {
   CookiePriority Priority() const;
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasInternalHtab() const { return internal_htab_; }
-  TruncatingCharacterInCookieStringType
-  GetTruncatingCharacterInCookieStringType() const {
-    return truncating_char_in_cookie_string_type_;
-  }
   // Returns the number of attributes, for example, returning 2 for:
   //   "BLAH=hah; path=/; domain=.google.com"
   size_t NumberOfAttributes() const { return pairs_.size() - 1; }
@@ -175,7 +168,6 @@ class NET_EXPORT ParsedCookie {
 
  private:
   void ParseTokenValuePairs(const std::string& cookie_line,
-                            bool block_truncated,
                             CookieInclusionStatus& status_out);
   void SetupAttributes();
 
@@ -212,8 +204,6 @@ class NET_EXPORT ParsedCookie {
   size_t same_site_index_ = 0;
   size_t priority_index_ = 0;
   size_t partitioned_index_ = 0;
-  TruncatingCharacterInCookieStringType truncating_char_in_cookie_string_type_ =
-      TruncatingCharacterInCookieStringType::kTruncatingCharNone;
   // For metrics on cookie name/value internal HTABS
   bool internal_htab_ = false;
 };

@@ -307,7 +307,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const base::Time& creation_time,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
-    bool block_truncated,
     CookieSourceType source_type,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
@@ -325,7 +324,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  ParsedCookie parsed_cookie(cookie_line, block_truncated, status);
+  ParsedCookie parsed_cookie(cookie_line, status);
 
   // We record this metric before checking validity because the presence of an
   // HTAB will invalidate the ParsedCookie.
@@ -490,10 +489,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
                         name_prefixed_with_underscores);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.TruncatingCharacterInCookieString",
-      parsed_cookie.GetTruncatingCharacterInCookieStringType());
 
   return cc;
 }
@@ -764,12 +759,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
     const base::Time& creation_time,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
-    bool block_truncated,
     CookieSourceType source_type,
     CookieInclusionStatus* status) {
   return CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
-                                 cookie_partition_key, block_truncated,
-                                 source_type, status);
+                                 cookie_partition_key, source_type, status);
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

@@ -1179,16 +1179,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TruncatingCharacterInCookieString"
-    enum="TruncatingCharacterInCookieStringType" expires_after="2024-06-16">
-  <owner>bingler@chromium.org</owner>
-  <owner>awillia@chromium.org</owner>
-  <summary>
-    Measures which character caused the cookie string to be truncated. Logged
-    whenever a cookie is created via CanonicalCookie::Create().
-  </summary>
-</histogram>
-
 <histogram name="Cookie.Type2" enum="CookieType" expires_after="2025-03-28">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
