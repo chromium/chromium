@@ -273,7 +273,9 @@ void AppViewGuest::CompleteCreateWebContents(
       content::SiteInstance::CreateForURL(browser_context(),
                                           guest_extension->url()));
   params.guest_delegate = this;
-  std::move(callback).Run(std::move(owned_this), WebContents::Create(params));
+  auto web_contents = WebContents::Create(params);
+  app_delegate_->InitWebContents(web_contents.get());
+  std::move(callback).Run(std::move(owned_this), std::move(web_contents));
 }
 
 void AppViewGuest::LaunchAppAndFireEvent(
