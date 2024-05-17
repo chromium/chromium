@@ -10,6 +10,30 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** The domain for user or system errors reported by CRURegistration. */
+extern NSString* const CRURegistrationErrorDomain;
+
+/**
+ * The domain for internal errors from CRURegistration. Clients should never
+ * encounter these; please file a bug if you get errors in this domain.
+ */
+extern NSString* const CRURegistrationInternalErrorDomain;
+
+/**
+ * NSError userInfo dict key mapped to the POSIX errno for NSErrors in
+ * CRURegistrationErrorDomain with underlying POSIX causes.
+ */
+extern NSString* const CRUErrnoKey;
+
+typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
+    /**
+     * CRURegistration couldn't read a stream (stdout or stderr) when running
+     * a subprocess. The POSIX error code for the error is available in the
+     * error's user data under CRUErrnoKey.
+     */
+    CRURegistrationErrorTaskStreamUnreadable = 1,
+};
+
 /**
  * CRURegistration interfaces with Chromium Updater to configure and retrieve
  * information about an app, or to install the updater for the current user. Its

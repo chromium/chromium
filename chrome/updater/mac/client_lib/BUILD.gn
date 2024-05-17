@@ -6,6 +6,7 @@ import("//testing/test.gni")
 
 source_set("public_sources") {
   sources = [
+    "CRURegistration-Private.h",
     "CRURegistration.h",
     "CRURegistration.m",
   ]
@@ -17,6 +18,10 @@ source_set("test_sources") {
   sources = [ "CRURegistration_unittests.mm" ]
   deps = [
     ":public_sources",
+    "//base",
+    "//net/",
     "//testing/gtest",
+    "//url/",
   ]
+  data_deps = [ "//chrome/updater/mac/client_lib/test_helpers" ]
 }
