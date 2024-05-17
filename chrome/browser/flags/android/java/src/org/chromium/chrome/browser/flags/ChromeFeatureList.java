@@ -238,6 +238,7 @@ public abstract class ChromeFeatureList {
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_MINIMIZED_ENABLED_BY_DEFAULT = "CCTMinimizedEnabledByDefault";
+    public static final String CCT_NAVIGATIONAL_PREFETCH = "CCTNavigationalPrefetch";
     public static final String CCT_NESTED_SECURITY_ICON = "CCTNestedSecurityIcon";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
@@ -554,6 +555,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
     public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, false);
     public static final CachedFlag sCctPageInsightsHub = newCachedFlag(CCT_PAGE_INSIGHTS_HUB, true);
+    public static final CachedFlag sCctNavigationalPrefetch =
+            newCachedFlag(CCT_NAVIGATIONAL_PREFETCH, false);
     public static final CachedFlag sCctGoogleBottomBar =
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctResizableForThirdParties =
@@ -702,6 +705,7 @@ public abstract class ChromeFeatureList {
                     sCctIncognitoAvailableToThirdParty,
                     sCctIntentFeatureOverrides,
                     sCctMinimized,
+                    sCctNavigationalPrefetch,
                     sCctPageInsightsHub,
                     sCctGoogleBottomBar,
                     sCctResizableForThirdParties,
