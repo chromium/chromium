@@ -137,8 +137,9 @@ CORE_EXPORT bool IsFeatureForMeasurementOnly(
 CORE_EXPORT void AllowFeatureEverywhere(mojom::blink::PermissionsPolicyFeature,
                                         ParsedPermissionsPolicy&);
 
-CORE_EXPORT const String& GetNameForFeature(
-    mojom::blink::PermissionsPolicyFeature);
+CORE_EXPORT const String
+GetNameForFeature(mojom::blink::PermissionsPolicyFeature,
+                  bool is_isolated_context);
 
 }  // namespace blink
 

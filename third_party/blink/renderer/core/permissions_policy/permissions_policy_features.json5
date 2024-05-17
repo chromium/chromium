@@ -52,6 +52,17 @@
     default_value_behind_flag: {
       default: [],
       valid_type: "list",
+    },
+
+    // "visibility" specifies which contexts a feature should be visible to. If
+    // a features is not visibile to a document, it cannot be granted, but also
+    // will not be exposed in `document.featurePolicy.features()`.
+    visibility: {
+      default: "All",
+      valid_values: [
+        "All",
+        "IsolatedContext"
+      ]
     }
   },
 
@@ -219,6 +230,7 @@
       name: "DirectSockets",
       permissions_policy_name: "direct-sockets",
       depends_on: ["DirectSockets"],
+      visibility: "IsolatedContext",
     },
     {
       name: "DisplayCapture",
@@ -385,6 +397,7 @@
       name: "SmartCard",
       permissions_policy_name: "smart-card",
       depends_on: ["SmartCard"],
+      visibility: "IsolatedContext",
     },
     {
       name: "SpeakerSelection",
@@ -400,6 +413,7 @@
       name: "SubApps",
       permissions_policy_name: "sub-apps",
       depends_on: ["DesktopPWAsSubApps"],
+      visibility: "IsolatedContext",
     },
     {
       name: "SyncXHR",
@@ -438,6 +452,7 @@
       name: "WebPrinting",
       permissions_policy_name: "web-printing",
       depends_on: ["WebPrinting"],
+      visibility: "IsolatedContext",
     },
     {
       name: "WebShare",

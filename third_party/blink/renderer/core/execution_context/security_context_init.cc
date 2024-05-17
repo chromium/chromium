@@ -231,12 +231,14 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         for (const auto& policy : container_policy) {
           if (!base::Contains(blink::kFencedFrameAllowedFeatures,
                               policy.feature)) {
+            bool is_isolated_context =
+                execution_context_ && execution_context_->IsIsolatedContext();
             execution_context_->AddConsoleMessage(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::blink::ConsoleMessageSource::kSecurity,
                     mojom::blink::ConsoleMessageLevel::kWarning,
                     "The permissions policy '" +
-                        GetNameForFeature(policy.feature) +
+                        GetNameForFeature(policy.feature, is_isolated_context) +
                         "' is disallowed in fenced frames and will not be "
                         "enabled."));
           }

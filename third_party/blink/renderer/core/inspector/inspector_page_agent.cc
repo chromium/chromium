@@ -893,7 +893,10 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
   auto feature_states = std::make_unique<
       protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>();
 
-  for (const auto& entry : blink::GetDefaultFeatureNameMap()) {
+  bool is_isolated_context =
+      frame->DomWindow() && frame->DomWindow()->IsIsolatedContext();
+  for (const auto& entry :
+       blink::GetDefaultFeatureNameMap(is_isolated_context)) {
     const String& feature_name = entry.key;
     const mojom::blink::PermissionsPolicyFeature feature = entry.value;
 
@@ -906,7 +909,8 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
     std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
         feature_state =
             protocol::Page::PermissionsPolicyFeatureState::create()
-                .setFeature(blink::PermissionsPolicyFeatureToProtocol(feature))
+                .setFeature(blink::PermissionsPolicyFeatureToProtocol(
+                    feature, frame->DomWindow()))
                 .setAllowed(!locator.has_value())
                 .build();
 

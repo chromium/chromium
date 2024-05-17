@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -59,17 +60,42 @@ class PolicyParserMessageBuffer {
   bool discard_message_ = false;
 };
 
+struct FeatureNameMapCacheKey {
+  bool IsIsolatedContext = false;
+  bool is_deleted_value = false;
+  bool is_empty_value = false;
+
+  FeatureNameMapCacheKey() : is_empty_value(true) {}
+  explicit FeatureNameMapCacheKey(const bool& IsIsolatedContext)
+      : IsIsolatedContext(IsIsolatedContext) {}
+  explicit FeatureNameMapCacheKey(WTF::HashTableDeletedValueType)
+      : is_deleted_value(true) {}
+
+  bool IsHashTableDeletedValue() const { return is_deleted_value; }
+
+  bool operator==(const FeatureNameMapCacheKey& other) const {
+    return IsIsolatedContext == other.IsIsolatedContext &&
+           is_deleted_value == other.is_deleted_value &&
+           is_empty_value == other.is_empty_value;
+  }
+  bool operator!=(const FeatureNameMapCacheKey& other) const {
+    return !(*this == other);
+  }
+};
 using FeatureNameMap = HashMap<String, mojom::blink::PermissionsPolicyFeature>;
+using FeatureNameMapCache = HashMap<FeatureNameMapCacheKey, FeatureNameMap>;
 
 using DocumentPolicyFeatureSet = HashSet<mojom::blink::DocumentPolicyFeature>;
 
+class ExecutionContext;
 class FeatureContext;
 
 // This method defines the feature names which will be recognized by the parser
 // for the Permissions-Policy HTTP header and the <iframe> "allow" attribute, as
 // well as the features which will be recognized by the document or iframe
 // policy object.
-const FeatureNameMap& GetDefaultFeatureNameMap();
+CORE_EXPORT const FeatureNameMap
+GetDefaultFeatureNameMap(bool is_isolated_context);
 
 // This method defines the feature names which will be recognized by the parser
 // for the Document-Policy HTTP header and the <iframe> "policy" attribute, as
@@ -94,8 +120,30 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature,
 // Converts |mojom::blink::PermissionsPolicyFeature| to enum used in devtools
 // protocol.
 String PermissionsPolicyFeatureToProtocol(
-    mojom::blink::PermissionsPolicyFeature);
+    mojom::blink::PermissionsPolicyFeature,
+    ExecutionContext*);
 
 }  // namespace blink
+
+namespace WTF {
+
+// A helper that defines the hash function and the invalid 'empty value' that
+// HashMap should use internally.
+template <>
+struct HashTraits<blink::FeatureNameMapCacheKey>
+    : SimpleClassHashTraits<blink::FeatureNameMapCacheKey> {
+  static unsigned GetHash(const blink::FeatureNameMapCacheKey& key) {
+    unsigned hash = HashInt(key.IsIsolatedContext);
+    AddIntToHash(hash, key.is_deleted_value);
+    AddIntToHash(hash, key.is_empty_value);
+    return hash;
+  }
+  static const bool kEmptyValueIsZero = false;
+  static blink::FeatureNameMapCacheKey EmptyValue() {
+    return blink::FeatureNameMapCacheKey();
+  }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_POLICY_HELPER_H_

@@ -75,6 +75,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   // TODO(mkwst): We need a specification for these restrictions:
   // https://crbug.com/1206150.
   static bool IsIsolatedContext();
+  static void ResetIsIsolatedContextForTest();
   // Only called from blink::SetIsIsolatedContext.
   static void SetIsIsolatedContext(bool value);
 

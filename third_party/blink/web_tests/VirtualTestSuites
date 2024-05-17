@@ -634,6 +634,21 @@
     "expires": "Nov 10, 2024"
   },
   {
+    "prefix": "isolated-context",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/permissions-policy"],
+    "exclusive_tests": "ALL",
+    "args": ["--isolated-context-origins=https://web-platform.test",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": [
+      "cmp@chromium.org",
+      "reillyg@chromium.org",
+      "rmcelrath@chromium.org",
+      "zelin@chromium.org"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "direct-sockets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets"],
