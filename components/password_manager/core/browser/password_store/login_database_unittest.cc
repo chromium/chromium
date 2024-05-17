@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -2315,6 +2316,41 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
        {features::kClearUndecryptablePasswords, true}});
 
   // Set the ecryption selection switch
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kEnableEncryptionSelection);
+
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> forms;
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+
+TEST_F(LoginDatabaseUndecryptableLoginsTest,
+       DontDeleteUndecryptableLoginsIfEnvVariableSetTest) {
+  // Init with feature states allowing for password deletion.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kSkipUndecryptablePasswords, false},
+       {features::kClearUndecryptablePasswords, true}});
+
+  // Set the home dir env variable.
+  std::string orig_chrome_config_home = "test/path";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  env->SetVar("CHROME_CONFIG_HOME", orig_chrome_config_home);
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       password_manager::kEnableEncryptionSelection);
 

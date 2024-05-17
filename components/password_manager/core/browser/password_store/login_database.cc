@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -999,6 +1000,16 @@ LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
 }
 
 bool ShouldDeleteUndecryptablePasswords() {
+#if BUILDFLAG(IS_LINUX)
+  std::string user_data_dir_string;
+  std::unique_ptr<base::Environment> environment(base::Environment::Create());
+  // On Linux user data directory ca be specified using an env variable. If it
+  // exists, passwords shouldn't be deleted.
+  if (environment->GetVar("CHROME_USER_DATA_DIR", &user_data_dir_string)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool has_pwm_related_switches_enabled =
       command_line->HasSwitch(password_manager::kUserDataDir);
@@ -1008,7 +1019,8 @@ bool ShouldDeleteUndecryptablePasswords() {
       has_pwm_related_switches_enabled ||
       command_line->HasSwitch(password_manager::kPasswordStore) ||
       command_line->HasSwitch(password_manager::kEnableEncryptionSelection);
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
+
   return !has_pwm_related_switches_enabled &&
          OSCrypt::IsEncryptionAvailable() &&
          base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
