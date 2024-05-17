@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
@@ -199,11 +200,11 @@ void SetJsonDeviceSetting(const std::string& setting_name,
                           const std::string& policy_name,
                           const std::string& json_string,
                           PrefValueMap* pref_value_map) {
-  std::string error;
-  std::optional<base::Value> decoded_json =
-      policy::DecodeJsonStringAndNormalize(json_string, policy_name, &error);
-  if (decoded_json.has_value()) {
-    pref_value_map->SetValue(setting_name, std::move(decoded_json.value()));
+  auto decoding_result =
+      policy::DecodeJsonStringAndNormalize(json_string, policy_name);
+  if (decoding_result.has_value()) {
+    pref_value_map->SetValue(setting_name,
+                             std::move(decoding_result->decoded_json));
   }
 }
 

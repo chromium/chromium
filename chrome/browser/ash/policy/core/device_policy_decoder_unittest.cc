@@ -176,12 +176,12 @@ void DevicePolicyDecoderTest::DecodeUnsetDevicePolicyTestHelper(
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeJSONParseError) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kInvalidJson, key::kDeviceWallpaperImage, &error);
-  std::string localized_error = l10n_util::GetStringFUTF8(
-      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
-  EXPECT_FALSE(decoded_json.has_value());
+  auto decoding_result =
+      DecodeJsonStringAndNormalize(kInvalidJson, key::kDeviceWallpaperImage);
+  ASSERT_FALSE(decoding_result.has_value());
+  std::string localized_error =
+      l10n_util::GetStringFUTF8(IDS_POLICY_PROTO_PARSING_ERROR,
+                                base::UTF8ToUTF16(decoding_result.error()));
   EXPECT_NE(std::string::npos,
             localized_error.find("Policy parsing error: Invalid JSON string"));
 }
@@ -189,19 +189,19 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeJSONParseError) {
 #if GTEST_HAS_DEATH_TEST
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidSchema) {
   std::string error;
-  EXPECT_DEATH(
-      DecodeJsonStringAndNormalize(kWallpaperJson, kInvalidPolicyName, &error),
-      "");
+  EXPECT_DEATH(std::ignore = DecodeJsonStringAndNormalize(kWallpaperJson,
+                                                          kInvalidPolicyName),
+               "");
 }
 #endif
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage, &error);
-  EXPECT_FALSE(decoded_json.has_value());
-  std::string localized_error = l10n_util::GetStringFUTF8(
-      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage);
+  ASSERT_FALSE(decoding_result.has_value());
+  std::string localized_error =
+      l10n_util::GetStringFUTF8(IDS_POLICY_PROTO_PARSING_ERROR,
+                                base::UTF8ToUTF16(decoding_result.error()));
   EXPECT_EQ(
       "Policy parsing error: Invalid policy value: Policy type mismatch: "
       "expected: \"string\", actual: \"integer\". (at "
@@ -210,12 +210,15 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage);
+  ASSERT_TRUE(decoding_result.has_value());
+  ASSERT_TRUE(decoding_result->non_fatal_errors.has_value());
+
   std::string localized_error = l10n_util::GetStringFUTF8(
-      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
-  EXPECT_EQ(GetWallpaperDict(), decoded_json.value());
+      IDS_POLICY_PROTO_PARSING_ERROR,
+      base::UTF8ToUTF16(decoding_result->non_fatal_errors.value()));
+  EXPECT_EQ(GetWallpaperDict(), decoding_result->decoded_json);
   EXPECT_EQ(
       "Policy parsing error: Dropped unknown properties: Unknown property: "
       "unknown-field (at DeviceWallpaperImage)",
@@ -223,11 +226,11 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kWallpaperJson, key::kDeviceWallpaperImage, &error);
-  EXPECT_EQ(GetWallpaperDict(), decoded_json.value());
-  EXPECT_TRUE(error.empty());
+  auto decoding_result =
+      DecodeJsonStringAndNormalize(kWallpaperJson, key::kDeviceWallpaperImage);
+  ASSERT_TRUE(decoding_result.has_value());
+  EXPECT_EQ(GetWallpaperDict(), decoding_result->decoded_json);
+  EXPECT_FALSE(decoding_result->non_fatal_errors.has_value());
 }
 
 TEST_F(DevicePolicyDecoderTest, DeviceActivityHeartbeatEnabled) {
@@ -489,24 +492,21 @@ TEST_F(DevicePolicyDecoderTest, DeviceReportNetworkEvents) {
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
-      &error);
-  EXPECT_EQ(GetBluetoothServiceAllowedList(), decoded_json.value());
-  EXPECT_TRUE(error.empty());
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices);
+  ASSERT_TRUE(decoding_result.has_value());
+  EXPECT_EQ(GetBluetoothServiceAllowedList(), decoding_result->decoded_json);
+  EXPECT_FALSE(decoding_result->non_fatal_errors.has_value());
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListError) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
-      &error);
-  EXPECT_FALSE(decoded_json.has_value());
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices);
+  ASSERT_FALSE(decoding_result.has_value());
   EXPECT_EQ(
       "Invalid policy value: Invalid value for string (at "
       "DeviceAllowedBluetoothServices[0])",
-      error);
+      decoding_result.error());
 }
 
 TEST_F(DevicePolicyDecoderTest,
@@ -783,15 +783,14 @@ TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeDeviceWeeklyScheduledSuspendSuccess) {
-  std::string error;
-  std::optional<base::Value> decoded_json =
+  auto decoding_result =
       DecodeJsonStringAndNormalize(kValidDeviceWeeklyScheduledSuspendList,
-                                   key::kDeviceWeeklyScheduledSuspend, &error);
-  ASSERT_TRUE(decoded_json.has_value());
-  ASSERT_TRUE(decoded_json->is_list());
+                                   key::kDeviceWeeklyScheduledSuspend);
+  ASSERT_TRUE(decoding_result.has_value());
+  ASSERT_TRUE(decoding_result->decoded_json.is_list());
 
   std::vector<WeeklyTimeInterval> actual_list;
-  for (const auto& item : decoded_json->GetList()) {
+  for (const auto& item : decoding_result->decoded_json.GetList()) {
     ASSERT_TRUE(item.is_dict());
     std::unique_ptr<WeeklyTimeInterval> interval =
         WeeklyTimeInterval::ExtractFromDict(item.GetDict(),
@@ -801,19 +800,16 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceWeeklyScheduledSuspendSuccess) {
   }
 
   EXPECT_EQ(GetDeviceWeeklyScheduledSuspendList(), actual_list);
-  EXPECT_THAT(error, ::testing::IsEmpty());
 }
 
 TEST_F(DevicePolicyDecoderTest,
        DecodeDeviceWeeklyScheduledSuspendInvalidJsonError) {
-  std::string error;
-  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
-      kInvalidJson, key::kDeviceWeeklyScheduledSuspend, &error);
-  EXPECT_FALSE(decoded_json.has_value());
-  std::string localized_error = l10n_util::GetStringFUTF8(
-      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kInvalidJson, key::kDeviceWeeklyScheduledSuspend);
+  EXPECT_FALSE(decoding_result.has_value());
   EXPECT_THAT(
-      localized_error,
+      l10n_util::GetStringFUTF8(IDS_POLICY_PROTO_PARSING_ERROR,
+                                base::UTF8ToUTF16(decoding_result.error())),
       ::testing::HasSubstr("Policy parsing error: Invalid JSON string"));
 }
 

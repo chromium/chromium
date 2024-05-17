@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
@@ -51,6 +52,21 @@ const char hostNameRegex[] = "^([A-z0-9][A-z0-9-]*\\.)+[A-z0-9]+$";
 
 namespace {
 
+void SetJsonDevicePolicyWithError(
+    const std::string& policy_name,
+    const std::string& json_string,
+    std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
+    PolicyMap* policies,
+    std::string error) {
+  policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                POLICY_SOURCE_CLOUD, base::Value(json_string),
+                std::move(external_data_fetcher));
+
+  policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
+                       IDS_POLICY_PROTO_PARSING_ERROR,
+                       {base::UTF8ToUTF16(error)});
+}
+
 // If the |json_string| can be decoded and validated against the schema
 // identified by |policy_name| in policy_templates.json, the policy
 // |policy_name| in |policies| will be set to the decoded base::Value.
@@ -62,19 +78,21 @@ void SetJsonDevicePolicy(
     const std::string& json_string,
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
     PolicyMap* policies) {
-  std::string error;
-  std::optional<base::Value> decoded_json =
-      DecodeJsonStringAndNormalize(json_string, policy_name, &error);
-  base::Value value_to_set = decoded_json.has_value()
-                                 ? std::move(decoded_json.value())
-                                 : base::Value(json_string);
-  policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                POLICY_SOURCE_CLOUD, std::move(value_to_set),
-                std::move(external_data_fetcher));
-  if (!error.empty()) {
-    policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
-                         IDS_POLICY_PROTO_PARSING_ERROR,
-                         {base::UTF8ToUTF16(error)});
+  if (auto result = DecodeJsonStringAndNormalize(json_string, policy_name);
+      result.has_value()) {
+    policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD, std::move(result->decoded_json),
+                  std::move(external_data_fetcher));
+
+    if (result->non_fatal_errors.has_value()) {
+      policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
+                           IDS_POLICY_PROTO_PARSING_ERROR,
+                           {base::UTF8ToUTF16(*result->non_fatal_errors)});
+    }
+  } else {
+    SetJsonDevicePolicyWithError(policy_name, json_string,
+                                 std::move(external_data_fetcher), policies,
+                                 result.error());
   }
 }
 
@@ -2272,17 +2290,26 @@ void DecodeKioskPolicies(const em::ChromeDeviceSettingsProto& policy,
 
 }  // namespace
 
-std::optional<base::Value> DecodeJsonStringAndNormalize(
+DecodeJsonResult::DecodeJsonResult(base::Value decoded_json,
+                                   std::optional<std::string> non_fatal_errors)
+    : decoded_json(std::move(decoded_json)),
+      non_fatal_errors(std::move(non_fatal_errors)) {}
+
+DecodeJsonResult::DecodeJsonResult(DecodeJsonResult&& other) = default;
+DecodeJsonResult& DecodeJsonResult::operator=(DecodeJsonResult&& other) =
+    default;
+
+DecodeJsonResult::~DecodeJsonResult() = default;
+
+base::expected<DecodeJsonResult, DecodeJsonError> DecodeJsonStringAndNormalize(
     const std::string& json_string,
-    const std::string& policy_name,
-    std::string* error) {
-  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
-      json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.has_value()) {
-    *error = "Invalid JSON string: " + value_with_error.error().message;
-    return std::nullopt;
-  }
-  base::Value root = std::move(*value_with_error);
+    const std::string& policy_name) {
+  ASSIGN_OR_RETURN(auto parsed_json,
+                   base::JSONReader::ReadAndReturnValueWithError(
+                       json_string, base::JSON_ALLOW_TRAILING_COMMAS),
+                   [](base::JSONReader::Error error) {
+                     return "Invalid JSON string: " + std::move(error).message;
+                   });
 
   const Schema& schema = GetChromeSchema().GetKnownProperty(policy_name);
   CHECK(schema.valid());
@@ -2290,17 +2317,17 @@ std::optional<base::Value> DecodeJsonStringAndNormalize(
   std::string schema_error;
   PolicyErrorPath error_path;
   bool changed = false;
-  if (!schema.Normalize(&root, SCHEMA_ALLOW_UNKNOWN, &error_path, &schema_error,
-                        &changed)) {
+  if (!schema.Normalize(&parsed_json, SCHEMA_ALLOW_UNKNOWN, &error_path,
+                        &schema_error, &changed)) {
     std::ostringstream msg;
     msg << "Invalid policy value: " << schema_error << " (at "
         << (error_path.empty()
                 ? policy_name
                 : policy::ErrorPathToString(policy_name, error_path))
         << ")";
-    *error = msg.str();
-    return std::nullopt;
+    return base::unexpected(msg.str());
   }
+
   if (changed) {
     std::ostringstream msg;
     msg << "Dropped unknown properties: " << schema_error << " (at "
@@ -2308,10 +2335,12 @@ std::optional<base::Value> DecodeJsonStringAndNormalize(
                 ? policy_name
                 : policy::ErrorPathToString(policy_name, error_path))
         << ")";
-    *error = msg.str();
+    return base::ok(DecodeJsonResult(/*decoded_json=*/std::move(parsed_json),
+                                     /*non_fatal_errors=*/msg.str()));
   }
 
-  return root;
+  return base::ok(DecodeJsonResult(/*decoded_json=*/std::move(parsed_json),
+                                   /*non_fatal_errors=*/std::nullopt));
 }
 
 void DecodeDevicePolicy(
