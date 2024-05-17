@@ -10196,6 +10196,7 @@ test("unit_tests") {
       "../browser/ui/views/confirm_bubble_views_unittest.cc",
       "../browser/ui/views/content_setting_bubble_contents_unittest.cc",
       "../browser/ui/views/content_setting_site_row_view_unittest.cc",
+      "../browser/ui/views/desktop_capture/desktop_media_pane_view_unittest.cc",
       "../browser/ui/views/desktop_capture/desktop_media_picker_views_unittest.cc",
       "../browser/ui/views/desktop_capture/desktop_media_tab_list_unittest.cc",
       "../browser/ui/views/device_chooser_content_view_unittest.cc",

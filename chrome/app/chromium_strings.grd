@@ -1478,6 +1478,12 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB" desc="Text for the button on the window picker dialog, clicking which takes one to tab sharing">
         Chromium Tab
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a screen." >
+        To share your screen, allow screen recording for Chromium in System Preferences
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a window." >
+        To share your window, allow screen recording for Chromium in System Preferences
+      </message>
 
       <!-- Runtime permission strings -->
       <if expr="is_android">

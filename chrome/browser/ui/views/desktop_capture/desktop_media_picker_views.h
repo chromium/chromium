@@ -13,6 +13,8 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
+#include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
@@ -151,6 +153,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   //   but no such sources were available.
   std::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
 
+  void OnPermissionUpdate(bool has_permission);
+
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
   const DesktopMediaPicker::Params::RequestSource request_source_;
@@ -174,8 +178,13 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   std::optional<content::DesktopMediaID> accepted_source_;
 
+  std::unique_ptr<ScreenCapturePermissionChecker>
+      screen_capture_permission_checker_;
+
   // For recording dialog-duration UMA histograms.
   const base::TimeTicks dialog_open_time_;
+
+  base::WeakPtrFactory<DesktopMediaPickerDialogView> weak_factory_{this};
 };
 
 // Implementation of DesktopMediaPicker for Views.

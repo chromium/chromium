@@ -14819,6 +14819,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_MANAGED" desc="Text to display when picker choices have been limited by enterprise policies.">
         Options for sharing are managed by your organization. Some items may be hidden.
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC" desc="Text for a button to open the screen recording setting page in system preferences on Mac." >
+        Open System Preferences
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_RESELECT_SCREEN" desc="Text for a button appearing on the window picker dialog which is displayed when there is a secondary, system-level picker in which the user must select the content to share. Clicking this button will re-open the picker to allow the user to choose a new monitor/desktop/screen to share." >
         Choose a different screen
       </message>
