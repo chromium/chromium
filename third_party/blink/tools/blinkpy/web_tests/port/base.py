@@ -1314,15 +1314,12 @@ class Port(object):
         return hasher.hexdigest()
 
     @classmethod
-    def wpt_dir(cls, test: str) -> Optional[str]:
-        """Return which WPT directory (if any) a test belongs to.
-
-        Returns `None` if the test is not a WPT.
-        """
+    def split_wpt_dir(cls, test: str) -> Tuple[Optional[str], str]:
+        """Split a test path into its WPT directory (if any) and the rest."""
         for wpt_dir in cls.WPT_DIRS:
             if test.startswith(wpt_dir):
-                return wpt_dir
-        return None
+                return wpt_dir, test[len(f'{wpt_dir}/'):]
+        return None, test
 
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""

@@ -577,7 +577,8 @@ class WPTResultsProcessor:
         self._iteration += 1
 
     def _get_chromium_test_name(self, test: str, subsuite: str):
-        if self.port.wpt_dir(test) != 'wpt_internal':
+        wpt_dir, _ = self.port.split_wpt_dir(test)
+        if wpt_dir != 'wpt_internal':
             test = self.path_finder.wpt_prefix() + test
         if subsuite:
             test = f'virtual/{subsuite}/{test}'
@@ -603,9 +604,9 @@ class WPTResultsProcessor:
             baseline=baseline)
 
     def get_path_from_test_root(self, test: str) -> str:
-        wpt_dir = self.port.wpt_dir(test)
+        wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)
         manifest = self.port.wpt_manifest(wpt_dir)
-        return manifest.file_path_for_test_url(test[len(f'{wpt_dir}/'):])
+        return manifest.file_path_for_test_url(url_from_wpt_dir)
 
     @memoized
     def _file_path_for_test(self, test: str) -> str:
@@ -614,15 +615,15 @@ class WPTResultsProcessor:
         if not path_from_test_root:
             raise EventProcessingError(
                 'Test ID %r does not exist in the manifest' % test)
-        wpt_dir = self.port.wpt_dir(test)
+        wpt_dir, _ = self.port.split_wpt_dir(test)
         return self.path_finder.path_from_web_tests(*posixpath.split(wpt_dir),
                                                     path_from_test_root)
 
     def get_test_type(self, test: str) -> str:
         _, test = self.port.get_suite_name_and_base_test(test)
-        manifest = self.port.wpt_manifest(self.port.wpt_dir(test))
-        path_from_root = self.get_path_from_test_root(test)
-        return manifest.get_test_type(path_from_root)
+        wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)
+        manifest = self.port.wpt_manifest(wpt_dir)
+        return manifest.get_test_type(url_from_wpt_dir)
 
     def test_status(self,
                     event: Event,
@@ -887,18 +888,15 @@ class WPTResultsProcessor:
         _, base_test = self.port.get_suite_name_and_base_test(test_name)
         test_url = self.path_finder.strip_wpt_path(base_test)
 
-        wpt_dir = self.port.wpt_dir(base_test)
-        assert wpt_dir, f'{base_test!r} is not a WPT'
-        manifest = self.port.wpt_manifest(wpt_dir)
         # `test_url` is the globally mounted URL (i.e., its canonical ID),
-        # whereas `url_from_root`'s path part is relative to the test root
+        # whereas `url_from_wpt_dir`'s path part is relative to the test root
         # (i.e., `external/wpt` or `wpt_internal`). These URLs happen to be
         # identical for `external/wpt`, which wptserve mounts to `/`.
-        url_from_root = base_test[len(f'{wpt_dir}/'):]
-        relation_by_ref = {
-            url: relation
-            for relation, url in manifest.extract_reference_list(url_from_root)
-        }
+        wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(base_test)
+        assert wpt_dir, f'{base_test!r} is not a WPT'
+        manifest = self.port.wpt_manifest(wpt_dir)
+        references = manifest.extract_reference_list(url_from_wpt_dir)
+        relation_by_ref = {url: relation for relation, url in references}
         assert set(relation_by_ref.values()) <= {'==', '!='}
 
         test_screenshot = match_screenshot = mismatch_screenshot = None

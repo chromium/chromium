@@ -176,14 +176,11 @@ class AbstractRebaseliningCommand(Command):
         return not wpt_type
 
     def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
-            if test_name.startswith(wpt_dir):
-                manifest = self._host_port.wpt_manifest(wpt_dir)
-                file_path = manifest.file_path_for_test_url(
-                    test_name[len(f'{wpt_dir}/'):])
-                assert file_path, f'{test_name!r} not in the {url_base!r} manifest'
-                return manifest.get_test_type(file_path)
-        return None  # Not a WPT.
+        wpt_dir, url_from_wpt_dir = self._host_port.split_wpt_dir(test_name)
+        if not wpt_dir:
+            return None  # Not a WPT.
+        manifest = self._host_port.wpt_manifest(wpt_dir)
+        return manifest.get_test_type(url_from_wpt_dir)
 
 
 class ChangeSet(object):

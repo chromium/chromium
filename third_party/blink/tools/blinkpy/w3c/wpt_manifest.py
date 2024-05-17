@@ -66,6 +66,7 @@ class _Test(NamedTuple):
     # To save space, `file_path` is `None` if it's identical to the URL, which
     # it is for most tests.
     file_path: Optional[str]
+    test_type: str
     references: List[Reference]
     extras: Dict[str, Any]
 
@@ -160,12 +161,13 @@ class WPTManifest:
 
         items = self._raw_dict.get('items', {})
         for test_type in self.test_types:
-            self._map_tests(items.get(test_type, {}))
+            self._map_tests(test_type, items.get(test_type, {}))
 
-    def _map_tests(self, trie, path: str = ''):
+    def _map_tests(self, test_type: str, trie, path: str = ''):
         """Record tests present in a trie for some test type.
 
         Arguments:
+            test_type: The WPT test type.
             trie: Either:
               * A list, which represents a test file (a leaf in the trie).
               * A map representing a test directory. It maps the next path
@@ -182,7 +184,7 @@ class WPTManifest:
                 # URLs always use `/` for path separators. Don't add a leading
                 # `/`, since that's the convention in `blinkpy` for test paths.
                 child_path = f'{path}/{component}' if path else component
-                self._map_tests(child, child_path)
+                self._map_tests(test_type, child, child_path)
             return
 
         assert len(trie) >= 2, f'{trie!r} must contain at least one test'
@@ -196,9 +198,9 @@ class WPTManifest:
                 # Trim any leading `/`, which WPT URLs use by convention.
                 if url.startswith('/'):
                     url = url[1:]
-                test = _Test(path, refs, extras)
+                test = _Test(path, test_type, refs, extras)
             else:
-                url, test = path, _Test(None, refs, extras)
+                url, test = path, _Test(None, test_type, refs, extras)
             assert url not in self._tests_by_url, f'duplicate URL {url!r}'
             if not self._exclude_jsshell or not test.jsshell:
                 self._tests_by_url[url] = test
@@ -221,22 +223,21 @@ class WPTManifest:
         """Returns a set of the URLs for all items in the manifest."""
         return frozenset(self._tests_by_url)
 
-    def is_test_file(self, path_in_wpt):
-        """Checks if path_in_wpt is a test file according to the manifest."""
-        assert not path_in_wpt.startswith('/')
-        return self.get_test_type(path_in_wpt) is not None
-
-    def get_test_type(self, file_path: str) -> Optional[str]:
+    def get_test_type(self, url: str) -> Optional[str]:
         """Returns the test type of the given test file path."""
+        assert not url.startswith('/')
+        test = self._tests_by_url.get(url)
+        return test and test.test_type
+
+    def is_test_file(self, file_path: str) -> bool:
+        """Checks if file_path is a test file according to the manifest."""
         assert not file_path.startswith('/')
         components = file_path.split('/')
         assert components, file_path
         tries_by_type = self._raw_dict.get('items', {})
-        for test_type in self.test_types:
-            if self._contains_file(tries_by_type.get(test_type, {}),
-                                   components):
-                return test_type
-        return None
+        return any(
+            self._contains_file(tries_by_type.get(test_type, {}), components)
+            for test_type in self.test_types)
 
     def _contains_file(self, trie, components: Sequence[str]) -> bool:
         """Determine if a test trie contains a test file."""
@@ -257,18 +258,15 @@ class WPTManifest:
 
     def is_crash_test(self, url):
         """Checks if a WPT is a crashtest according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'crashtest'
+        return self.get_test_type(url) == 'crashtest'
 
     def is_manual_test(self, url):
         """Checks if a WPT is a manual according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'manual'
+        return self.get_test_type(url) == 'manual'
 
     def is_print_reftest(self, url):
         """Checks if a WPT is a print reftest according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'print-reftest'
+        return self.get_test_type(url) == 'print-reftest'
 
     def is_slow_test(self, url):
         """Checks if a WPT is slow (long timeout) according to the manifest.
@@ -330,7 +328,7 @@ class WPTManifest:
             fuzzy information, a pair of Nones are returned.
         """
         test = self._tests_by_url.get(url)
-        test_type = self.get_test_type(test.file_path or url)
+        test_type = self.get_test_type(url)
         if test_type not in {'reftest', 'print-reftest'}:
             return None, None
         return test.fuzzy_params
