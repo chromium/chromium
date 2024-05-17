@@ -806,10 +806,11 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)stopAllWebStatesLoading {
-  // TODO(crbug.com/327330181): Avoid using
-  // mainController.browserProviderInterface.
+  if (!chrome_test_util::GetForegroundActiveScene()) {
+    return;
+  }
   WebStateList* web_state_list =
-      chrome_test_util::GetMainController()
+      chrome_test_util::GetForegroundActiveScene()
           .browserProviderInterface.currentBrowserProvider.browser
           ->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -1367,10 +1368,8 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - Keyboard Command Utilities
 
 + (NSInteger)registeredKeyCommandCount {
-  // TODO(crbug.com/327330181): Avoid using
-  // mainController.browserProviderInterface.
   UIViewController* browserViewController =
-      chrome_test_util::GetMainController()
+      chrome_test_util::GetForegroundActiveScene()
           .browserProviderInterface.mainBrowserProvider.viewController;
   // The BVC delegates its key commands to its next responder,
   // KeyCommandsProvider.
