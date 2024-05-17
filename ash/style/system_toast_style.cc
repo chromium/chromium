@@ -35,7 +35,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace ash {
+namespace ash::deprecated {
 
 namespace {
 
@@ -247,4 +247,4 @@ void SystemToastStyle::UpdateInsideBorderInsets() {
 BEGIN_METADATA(SystemToastStyle)
 END_METADATA
 
-}  // namespace ash
+}  // namespace ash::deprecated
