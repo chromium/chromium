@@ -24,6 +24,7 @@ use_dlcloseshim = use_libfuzzer && is_linux
 # Contains the dependencies needed for sanitizers to link into executables and
 # shared_libraries.
 group("deps") {
+  deps = []
   if (using_sanitizer) {
     public_configs = [
       # Even when a target removes default_sanitizer_flags, it may be depending
@@ -31,7 +32,6 @@ group("deps") {
       # to add the ldflags here as well as in default_sanitizer_flags.
       ":default_sanitizer_ldflags",
     ]
-    deps = []
     if (!is_fuchsia) {
       if (is_win) {
         exe = ".exe"
@@ -179,7 +179,6 @@ static_library("options_sources") {
     sources += [ tsan_suppressions_file ]
   }
 }
-
 
 if (use_dlcloseshim) {
   source_set("dlclose_shim") {
