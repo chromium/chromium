@@ -1434,7 +1434,8 @@ void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
   }
 
   if (UseTestConfigForPlatformWindows()) {
-    for (auto i = in_flight_requests_.begin(); i != iter; ++i) {
+    const auto end = std::next(iter);
+    for (auto i = in_flight_requests_.begin(); i != end; ++i) {
       // We need to set `latest_latched_viz_seq_for_testing_` to the highest viz
       // seq for all requests at or before the last request we latch.
       latest_latched_viz_seq_for_testing_ =
@@ -1557,14 +1558,6 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   }
   latest.applied = true;
 
-  if (UseTestConfigForPlatformWindows()) {
-    latest_applied_viz_seq_for_testing_ = std::max(
-        latest_applied_viz_seq_for_testing_,
-        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
-          return req.viz_seq;
-        }).viz_seq);
-  }
-
   // Set the applied state here so it can be used by e.g. OnBoundsChanged to
   // pick up the new bounds.
   auto old = applied_state_;
@@ -1575,6 +1568,14 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // old and new states are the same, or it only changes the origin of the
   // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
+
+  if (UseTestConfigForPlatformWindows()) {
+    latest_applied_viz_seq_for_testing_ = std::max(
+        latest_applied_viz_seq_for_testing_,
+        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
+          return req.viz_seq;
+        }).viz_seq);
+  }
 
   // `ProcessSequencePoint` may re-entrantly call
   // `MaybeApplyLatestStateRequest`. This is safe as long as we do not hold
