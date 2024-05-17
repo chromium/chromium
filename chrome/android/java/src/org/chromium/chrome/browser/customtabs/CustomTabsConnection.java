@@ -2073,6 +2073,27 @@ public class CustomTabsConnection {
         return false;
     }
 
+    /**
+     * Checks whether Google Bottom Bar buttons are present in the Intent data. False by default.
+     *
+     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
+     *     launched this CCT.
+     */
+    public boolean hasExtraGoogleBottomBarButtons(BrowserServicesIntentDataProvider intentData) {
+        return false;
+    }
+
+    /**
+     * Returns Google Bottom Bar buttons that are added to the Intent.
+     *
+     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
+     *     launched this CCT.
+     * @return An ArrayList of Bundles, each representing a Google Bottom Bar item.
+     */
+    public List<Bundle> getGoogleBottomBarButtons(BrowserServicesIntentDataProvider intentData) {
+        return new ArrayList<>();
+    }
+
     public GoogleBottomBarIntentParams getGoogleBottomBarIntentParams(
             BrowserServicesIntentDataProvider intentData) {
         return GoogleBottomBarIntentParams.getDefaultInstance();

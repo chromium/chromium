@@ -174,8 +174,11 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
 
     /**
      * Parses a list of {@link CustomButtonParams} from the intent sent by clients.
+     *
+     * @param context The context.
      * @param intent The intent sent by the client.
-     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is invalid
+     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is
+     *     invalid.
      */
     public static List<CustomButtonParams> fromIntent(Context context, Intent intent) {
         List<CustomButtonParams> paramsList = new ArrayList<>(1);
@@ -193,6 +196,43 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             CustomButtonParams singleParams = fromBundle(context, singleBundle, tinted, false);
             if (singleParams != null) paramsList.add(singleParams);
         }
+        return addToParamListfromBundleList(paramsList, context, bundleList, tinted);
+    }
+
+    /**
+     * Parses a list of {@link CustomButtonParams} from a bundle list.
+     *
+     * @param context The context
+     * @param bundleList The list of bundles, each expected to contain the data for a single {@link
+     *     CustomButtonParams}.
+     * @param tinted A flag indicating whether the buttons should be tinted.
+     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is
+     *     invalid.
+     */
+    public static List<CustomButtonParams> fromBundleList(
+            Context context, List<Bundle> bundleList, boolean tinted) {
+        return addToParamListfromBundleList(new ArrayList<>(1), context, bundleList, tinted);
+    }
+
+    /**
+     * Adds {@link CustomButtonParams} objects to an existing list from a bundle list.
+     *
+     * <p>This method iterates through a list of bundles, parsing each one into a {@link
+     * CustomButtonParams} object and adding it to the provided `paramsList`.
+     *
+     * @param paramsList The list to which parsed {@link CustomButtonParams} objects will be added.
+     * @param context The context.
+     * @param bundleList The list of bundles, each expected to contain the data for a single {@link
+     *     CustomButtonParams}.
+     * @param tinted A flag indicating whether the buttons should be tinted.
+     * @return The original `paramsList` with additional parsed {@link CustomButtonParams} objects
+     *     added. If the `bundleList` is null or empty, the `paramsList` is returned unchanged.
+     */
+    private static List<CustomButtonParams> addToParamListfromBundleList(
+            List<CustomButtonParams> paramsList,
+            Context context,
+            List<Bundle> bundleList,
+            boolean tinted) {
         if (bundleList != null) {
             Set<Integer> ids = new HashSet<>();
             for (Bundle bundle : bundleList) {

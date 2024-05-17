@@ -114,6 +114,10 @@ chromium-metrics-reviews@google.com.
       label="Scroll content may resize tab
              EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
   <int value="55" label="Incognito EXTRA_OPEN_NEW_EPHEMERAL_TAB"/>
+  <int value="56"
+      label="Enable google bottom bar EXTRA_ENABLE_GOOGLE_BOTTOM_BAR"/>
+  <int value="57"
+      label="Google bottom bar buttons EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">
