@@ -148,7 +148,7 @@ void PrintTo(CallbackReceivedState state, std::ostream* os) {
 class ReceivedCallback {
  public:
   ReceivedCallback()
-      : ReceivedCallback(CallbackReceivedState::kPending, false) {}
+      : ReceivedCallback(CallbackReceivedState::kPending, false, kNotFound) {}
 
   ReceivedCallback(CallbackReceivedState state,
                    bool coalesced_latency,
@@ -159,20 +159,14 @@ class ReceivedCallback {
   bool operator==(const ReceivedCallback& other) const {
     return state_ == other.state_ &&
            coalesced_latency_ == other.coalesced_latency_ &&
-           // Tests not caring about after_handled_tasks_ can leave it as
-           // kNotFound to ignore it.
-           (after_handled_tasks_ == kNotFound ||
-            other.after_handled_tasks_ == kNotFound ||
-            after_handled_tasks_ == other.after_handled_tasks_);
+           after_handled_tasks_ == other.after_handled_tasks_;
   }
   friend void PrintTo(const ReceivedCallback& callback, std::ostream* os) {
     PrintTo(callback.state_, os);
     if (callback.coalesced_latency_) {
       *os << " coalesced";
     }
-    if (callback.after_handled_tasks_ != kNotFound) {
-      *os << " after_handled_tasks=" << callback.after_handled_tasks_;
-    }
+    *os << " after_handled_tasks=" << callback.after_handled_tasks_;
   }
 
  private:
@@ -405,7 +399,7 @@ TEST_P(MainThreadEventQueueTest, ClientDoesntHandleInputEvent) {
   // or was not called at all (kPending).
   EXPECT_THAT(received,
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 0)));
 }
 
 TEST_P(MainThreadEventQueueTest, NonBlockingWheel) {
@@ -435,7 +429,7 @@ TEST_P(MainThreadEventQueueTest, NonBlockingWheel) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(2u, handled_tasks_.size());
@@ -525,7 +519,7 @@ TEST_P(MainThreadEventQueueTest, NonBlockingTouch) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(3u, handled_tasks_.size());
@@ -627,13 +621,13 @@ TEST_P(MainThreadEventQueueTest, BlockingTouch) {
         GetAndResetCallbackResults(),
         testing::ElementsAre(
             ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
-                             false),
+                             false, 0),
             ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                             false),
+                             false, 2),
             ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                             true),
+                             true, 2),
             ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                             true)));
+                             true, 2)));
     EXPECT_EQ(0u, event_queue().size());
 
     const WebTouchEvent* last_touch_event = static_cast<const WebTouchEvent*>(
@@ -649,7 +643,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouch) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 2)));
 }
 
 TEST_P(MainThreadEventQueueTest, InterleavedEvents) {
@@ -686,7 +680,7 @@ TEST_P(MainThreadEventQueueTest, InterleavedEvents) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(2u, handled_tasks_.size());
@@ -763,7 +757,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedMouseInput) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
 
   // Simulate the rAF running before the PostTask occurs. The rAF
   // will consume everything.
@@ -778,7 +772,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedMouseInput) {
   main_task_runner_->RunUntilIdle();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 4)));
 
   // Simulate event consumption but no rAF signal. The mouse wheel events
   // should still be in the queue.
@@ -799,7 +793,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedMouseInput) {
   RunSimulatedRafOnce();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_EQ(wheelEvents[2].GetModifiers(),
             handled_tasks_.at(3)->taskAsEvent()->Event().GetModifiers());
   EXPECT_EQ(wheelEvents[0].GetModifiers(),
@@ -836,7 +830,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInput) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
 
   // Simulate the rAF running before the PostTask occurs. The rAF
   // will consume everything.
@@ -850,7 +844,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInput) {
   main_task_runner_->RunUntilIdle();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 3)));
 
   // Simulate event consumption but no rAF signal. The touch events
   // should still be in the queue.
@@ -865,7 +859,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInput) {
   RunSimulatedRafOnce();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
 
   // Simulate the touch move being discrete
   kEvents[0].touch_start_or_first_touch_move = true;
@@ -878,9 +872,15 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInput) {
   EXPECT_TRUE(main_task_runner_->HasPendingTask());
   EXPECT_TRUE(needs_main_frame_);
   main_task_runner_->RunUntilIdle();
-  EXPECT_THAT(GetAndResetCallbackResults(),
-              testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+  EXPECT_THAT(
+      GetAndResetCallbackResults(),
+      testing::ElementsAre(
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 3),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 4),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 5)));
 }
 
 TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
@@ -915,9 +915,9 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
         GetAndResetCallbackResults(),
         testing::ElementsAre(
             ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
-                             false),
+                             false, 0),
             ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                             true)));
+                             true, 1)));
   }
 
   // Send a non-cancelable ack required event, and then a non-ack
@@ -934,7 +934,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
 
   // Send a non-ack required event, and then a non-cancelable ack
   // required event they should be coalesced together.
@@ -950,7 +950,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 2)));
 }
 
 TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
@@ -978,7 +978,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   HandleEvent(kEvents[0], blink::mojom::InputEventResultState::kNotConsumed);
   HandleEvent(kEvents[1], blink::mojom::InputEventResultState::kNotConsumed);
   EXPECT_EQ(1u, event_queue().size());
@@ -995,7 +995,7 @@ TEST_P(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
   EXPECT_EQ(0u, event_queue().size());
 }
 
@@ -1022,7 +1022,7 @@ TEST_P(MainThreadEventQueueTest, LowLatency) {
   main_task_runner_->RunUntilIdle();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
 
@@ -1041,7 +1041,7 @@ TEST_P(MainThreadEventQueueTest, LowLatency) {
   main_task_runner_->RunUntilIdle();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 2)));
   EXPECT_EQ(0u, event_queue().size());
 
   // Now turn off low latency mode.
@@ -1055,7 +1055,7 @@ TEST_P(MainThreadEventQueueTest, LowLatency) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 4)));
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
 
@@ -1069,7 +1069,7 @@ TEST_P(MainThreadEventQueueTest, LowLatency) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 6)));
   EXPECT_EQ(0u, event_queue().size());
 }
 
@@ -1088,7 +1088,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesDuringFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(1u, handled_tasks_.size());
@@ -1109,7 +1109,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesDuringFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledWhileHandlingEvent, false)));
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(2u, handled_tasks_.size());
@@ -1129,7 +1129,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesDuringFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 3)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(3u, handled_tasks_.size());
@@ -1146,7 +1146,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesDuringFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 4)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(4u, handled_tasks_.size());
@@ -1171,7 +1171,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 1)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(1u, handled_tasks_.size());
@@ -1187,7 +1187,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 2)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(2u, handled_tasks_.size());
@@ -1203,7 +1203,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 3)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(3u, handled_tasks_.size());
@@ -1220,7 +1220,7 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+                  CallbackReceivedState::kCalledAfterHandleEvent, false, 4)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_EQ(4u, handled_tasks_.size());
@@ -1305,9 +1305,13 @@ TEST_P(MainThreadEventQueueTest, QueuingClosureWithRafEvent) {
   RunPendingTasksWithSimulatedRaf();
 
   EXPECT_EQ(0u, event_queue().size());
-  EXPECT_THAT(GetAndResetCallbackResults(),
-              testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+  EXPECT_THAT(
+      GetAndResetCallbackResults(),
+      testing::ElementsAre(
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 2),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 4)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
 
@@ -1340,9 +1344,13 @@ TEST_P(MainThreadEventQueueTest, QueuingClosuresBetweenEvents) {
   EXPECT_FALSE(needs_main_frame_);
   main_task_runner_->RunUntilIdle();
   EXPECT_EQ(0u, event_queue().size());
-  EXPECT_THAT(GetAndResetCallbackResults(),
-              testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+  EXPECT_THAT(
+      GetAndResetCallbackResults(),
+      testing::ElementsAre(
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 1),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 4)));
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
 
@@ -1380,26 +1388,31 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchMoveBecomesNonBlocking) {
   HandleEvent(scroll_start, blink::mojom::InputEventResultState::kNotConsumed);
   EXPECT_EQ(3u, event_queue().size());
   RunPendingTasksWithSimulatedRaf();
-  EXPECT_THAT(GetAndResetCallbackResults(),
-              testing::ElementsAre(
-                  ReceivedCallback(
-                      CallbackReceivedState::kCalledAfterHandleEvent, false),
-                  ReceivedCallback(
-                      CallbackReceivedState::kCalledWhileHandlingEvent, false),
-                  ReceivedCallback(
-                      CallbackReceivedState::kCalledAfterHandleEvent, false)));
+  EXPECT_THAT(
+      GetAndResetCallbackResults(),
+      testing::ElementsAre(
+          ReceivedCallback(
+              CallbackReceivedState::kCalledAfterHandleEvent, false,
+              RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled() ? 0 : 1),
+          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
+                           false, 0),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 3)));
+  EXPECT_THAT(
+      handled_tasks_,
+      ::testing::ElementsAre(
+          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                              kEvents[0].unique_touch_event_id,
+                              WebInputEvent::DispatchType::kEventNonBlocking),
+          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                              kEvents[1].unique_touch_event_id,
+                              WebInputEvent::DispatchType::kEventNonBlocking),
+          IsHandledTouchEvent(WebInputEvent::Type::kTouchScrollStarted,
+                              scroll_start.unique_touch_event_id,
+                              WebInputEvent::DispatchType::kBlocking)));
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
-
-  EXPECT_EQ(WebInputEvent::DispatchType::kEventNonBlocking,
-            static_cast<const WebTouchEvent&>(
-                handled_tasks_.at(0)->taskAsEvent()->Event())
-                .dispatch_type);
-  EXPECT_EQ(WebInputEvent::DispatchType::kEventNonBlocking,
-            static_cast<const WebTouchEvent&>(
-                handled_tasks_.at(1)->taskAsEvent()->Event())
-                .dispatch_type);
 }
 
 TEST_P(MainThreadEventQueueTest, BlockingTouchMoveWithTouchEnd) {
@@ -1425,36 +1438,40 @@ TEST_P(MainThreadEventQueueTest, BlockingTouchMoveWithTouchEnd) {
   HandleEvent(scroll_start, blink::mojom::InputEventResultState::kNotConsumed);
   EXPECT_EQ(3u, event_queue().size());
   RunPendingTasksWithSimulatedRaf();
-  EXPECT_THAT(GetAndResetCallbackResults(),
-              testing::Each(ReceivedCallback(
-                  CallbackReceivedState::kCalledAfterHandleEvent, false)));
+  EXPECT_THAT(
+      GetAndResetCallbackResults(),
+      testing::ElementsAre(
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 1),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 2),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 3)));
+  EXPECT_THAT(handled_tasks_,
+              ::testing::ElementsAre(
+                  IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                      kEvents[0].unique_touch_event_id,
+                                      WebInputEvent::DispatchType::kBlocking),
+                  IsHandledTouchEvent(WebInputEvent::Type::kTouchEnd,
+                                      kEvents[1].unique_touch_event_id,
+                                      WebInputEvent::DispatchType::kBlocking),
+                  IsHandledTouchEvent(WebInputEvent::Type::kTouchScrollStarted,
+                                      scroll_start.unique_touch_event_id,
+                                      WebInputEvent::DispatchType::kBlocking)));
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
-
-  EXPECT_EQ(WebInputEvent::DispatchType::kBlocking,
-            static_cast<const WebTouchEvent&>(
-                handled_tasks_.at(0)->taskAsEvent()->Event())
-                .dispatch_type);
-  EXPECT_EQ(WebInputEvent::DispatchType::kBlocking,
-            static_cast<const WebTouchEvent&>(
-                handled_tasks_.at(1)->taskAsEvent()->Event())
-                .dispatch_type);
 }
 
 TEST_P(MainThreadEventQueueTest,
        UnblockTouchMoveAfterTouchStartAndFirstTouchMoveNotConsumed) {
-  if (!RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled()) {
-    return;
-  }
-
   SyntheticWebTouchEvent touch_start;
   touch_start.PressPoint(10, 10);
   touch_start.touch_start_or_first_touch_move = true;
   ASSERT_EQ(WebInputEvent::Type::kTouchStart, touch_start.GetType());
   ASSERT_EQ(WebInputEvent::DispatchType::kBlocking, touch_start.dispatch_type);
 
-  SyntheticWebTouchEvent touch_moves[3];
+  SyntheticWebTouchEvent touch_moves[5];
   for (auto& touch_move : touch_moves) {
     touch_move.MovePoint(0, 20, 30);
     ASSERT_EQ(WebInputEvent::Type::kTouchMove, touch_move.GetType());
@@ -1473,17 +1490,23 @@ TEST_P(MainThreadEventQueueTest,
       }
       auto touch_id = static_cast<const WebTouchEvent&>(event.Event())
                           .unique_touch_event_id;
-      if (touch_id == touch_moves[0].unique_touch_event_id &&
-          consume_first_touch_move) {
-        test.set_main_thread_ack_state(
-            blink::mojom::InputEventResultState::kConsumed);
-      }
-      // Simulates two new blocking touchmove events enqueued while the first
-      // touchmove is being dispatched, respectively.
       if (touch_id == touch_moves[0].unique_touch_event_id) {
+        if (consume_first_touch_move) {
+          test.set_main_thread_ack_state(
+              blink::mojom::InputEventResultState::kConsumed);
+        }
+        // Simulates two new blocking touchmove events enqueued while the
+        // first touchmove is being dispatched.
         test.HandleEvent(touch_moves[1],
                          blink::mojom::InputEventResultState::kNotConsumed);
         test.HandleEvent(touch_moves[2],
+                         blink::mojom::InputEventResultState::kNotConsumed);
+      } else if (touch_id == touch_moves[1].unique_touch_event_id) {
+        // Simulates two new blocking touchmove events enqueued while the
+        // second touchmove is being dispatched.
+        test.HandleEvent(touch_moves[3],
+                         blink::mojom::InputEventResultState::kNotConsumed);
+        test.HandleEvent(touch_moves[4],
                          blink::mojom::InputEventResultState::kNotConsumed);
       }
     }
@@ -1504,7 +1527,7 @@ TEST_P(MainThreadEventQueueTest,
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
-      .Times(4);
+      .Times(6);
   HandleEvent(touch_start, blink::mojom::InputEventResultState::kNotConsumed);
   HandleEvent(touch_moves[0],
               blink::mojom::InputEventResultState::kNotConsumed);
@@ -1513,34 +1536,79 @@ TEST_P(MainThreadEventQueueTest,
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
-  EXPECT_THAT(
-      GetAndResetCallbackResults(),
-      testing::ElementsAre(
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 1u),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
-          // These callbacks were run just after handling the first touchmove.
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           2u)));
-  EXPECT_THAT(
-      handled_tasks_,
-      ::testing::ElementsAre(
-          // touch_start should remain blocking.
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
-                              touch_start.unique_touch_event_id,
-                              WebInputEvent::DispatchType::kBlocking),
-          // touch_moves[0] should remain blocking.
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
-                              touch_moves[0].unique_touch_event_id,
-                              WebInputEvent::DispatchType::kBlocking),
-          // touch_moves[1] was unblocked while it was in the queue.
-          // touch_moves[2] was coalesced into touch_moves[1].
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
-                              touch_moves[1].unique_touch_event_id,
-                              WebInputEvent::DispatchType::kEventNonBlocking)));
+  if (RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled()) {
+    EXPECT_THAT(
+        GetAndResetCallbackResults(),
+        testing::ElementsAre(
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 1),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            // These callbacks were run just after handling the first touchmove.
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 2),
+            // These callbacks were run just after handling the second
+            // touchmove.
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 3)));
+    EXPECT_THAT(
+        handled_tasks_,
+        ::testing::ElementsAre(
+            // touch_start should remain blocking.
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
+                                touch_start.unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            // touch_moves[0] should remain blocking.
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[0].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            // touch_moves[1] was unblocked while it was in the queue.
+            // touch_moves[2] was coalesced into touch_moves[1].
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[1].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kEventNonBlocking),
+            // touch_moves[3] was unblocked while it was in the queue.
+            // touch_moves[4] was coalesced into touch_moves[3].
+            IsHandledTouchEvent(
+                WebInputEvent::Type::kTouchMove,
+                touch_moves[3].unique_touch_event_id,
+                WebInputEvent::DispatchType::kEventNonBlocking)));
+  } else {
+    EXPECT_THAT(
+        GetAndResetCallbackResults(),
+        testing::ElementsAre(
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 1),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 4),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 4)));
+    EXPECT_THAT(
+        handled_tasks_,
+        ::testing::ElementsAre(
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
+                                touch_start.unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[0].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[1].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[3].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking)));
+  }
 
   // Start another touch sequence, with the first touch_move consumed. This
   // is not in a standalone test case to test the last unblocking status won't
@@ -1549,7 +1617,7 @@ TEST_P(MainThreadEventQueueTest,
   will_handle_input_event_callback.consume_first_touch_move = true;
   EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
-      .Times(4);
+      .Times(6);
   HandleEvent(touch_start, blink::mojom::InputEventResultState::kNotConsumed);
   HandleEvent(touch_moves[0],
               blink::mojom::InputEventResultState::kNotConsumed);
@@ -1558,13 +1626,17 @@ TEST_P(MainThreadEventQueueTest,
       GetAndResetCallbackResults(),
       testing::ElementsAre(
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 1u),
+                           false, 1),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
+                           false, 2),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 3u),
+                           false, 3),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           3u)));
+                           3),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 4),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
+                           4)));
   EXPECT_THAT(handled_tasks_,
               ::testing::ElementsAre(
                   IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
@@ -1575,6 +1647,9 @@ TEST_P(MainThreadEventQueueTest,
                                       WebInputEvent::DispatchType::kBlocking),
                   IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
                                       touch_moves[1].unique_touch_event_id,
+                                      WebInputEvent::DispatchType::kBlocking),
+                  IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                      touch_moves[3].unique_touch_event_id,
                                       WebInputEvent::DispatchType::kBlocking)));
 
   // Start another touch sequence, with the touch start consumed.
@@ -1583,7 +1658,7 @@ TEST_P(MainThreadEventQueueTest,
   will_handle_input_event_callback.consume_first_touch_move = false;
   EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
-      .Times(4);
+      .Times(6);
   HandleEvent(touch_start, blink::mojom::InputEventResultState::kNotConsumed);
   HandleEvent(touch_moves[0],
               blink::mojom::InputEventResultState::kNotConsumed);
@@ -1592,13 +1667,17 @@ TEST_P(MainThreadEventQueueTest,
       GetAndResetCallbackResults(),
       testing::ElementsAre(
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 1u),
+                           false, 1),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
+                           false, 2),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 3u),
+                           false, 3),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           3u)));
+                           3),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 4),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
+                           4)));
   EXPECT_THAT(handled_tasks_,
               ::testing::ElementsAre(
                   IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
@@ -1609,6 +1688,9 @@ TEST_P(MainThreadEventQueueTest,
                                       WebInputEvent::DispatchType::kBlocking),
                   IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
                                       touch_moves[1].unique_touch_event_id,
+                                      WebInputEvent::DispatchType::kBlocking),
+                  IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                      touch_moves[3].unique_touch_event_id,
                                       WebInputEvent::DispatchType::kBlocking)));
 
   // Start another touch sequence, neither the touch start nor the first touch
@@ -1617,34 +1699,75 @@ TEST_P(MainThreadEventQueueTest,
   will_handle_input_event_callback.consume_touch_start = false;
   EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
-      .Times(4);
+      .Times(6);
   HandleEvent(touch_start, blink::mojom::InputEventResultState::kNotConsumed);
   HandleEvent(touch_moves[0],
               blink::mojom::InputEventResultState::kNotConsumed);
   RunPendingTasksWithSimulatedRaf();
-  EXPECT_THAT(
-      GetAndResetCallbackResults(),
-      testing::ElementsAre(
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 1u),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2u),
-          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           2u)));
-  EXPECT_THAT(
-      handled_tasks_,
-      ::testing::ElementsAre(
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
-                              touch_start.unique_touch_event_id,
-                              WebInputEvent::DispatchType::kBlocking),
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
-                              touch_moves[0].unique_touch_event_id,
-                              WebInputEvent::DispatchType::kBlocking),
-          IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
-                              touch_moves[1].unique_touch_event_id,
-                              WebInputEvent::DispatchType::kEventNonBlocking)));
+  if (RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled()) {
+    EXPECT_THAT(
+        GetAndResetCallbackResults(),
+        testing::ElementsAre(
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 1),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 3)));
+    EXPECT_THAT(
+        handled_tasks_,
+        ::testing::ElementsAre(
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
+                                touch_start.unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[0].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[1].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kEventNonBlocking),
+            IsHandledTouchEvent(
+                WebInputEvent::Type::kTouchMove,
+                touch_moves[3].unique_touch_event_id,
+                WebInputEvent::DispatchType::kEventNonBlocking)));
+  } else {
+    EXPECT_THAT(
+        GetAndResetCallbackResults(),
+        testing::ElementsAre(
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 1),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 2),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 3),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             false, 4),
+            ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                             true, 4)));
+    EXPECT_THAT(
+        handled_tasks_,
+        ::testing::ElementsAre(
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchStart,
+                                touch_start.unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[0].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[1].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking),
+            IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
+                                touch_moves[3].unique_touch_event_id,
+                                WebInputEvent::DispatchType::kBlocking)));
+  }
 }
 
 TEST_P(MainThreadEventQueueTest, UnbufferedDispatchTouchEvent) {
