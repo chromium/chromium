@@ -65,6 +65,8 @@ class StructuredMetricsServiceTest : public testing::Test {
         prefs_.registry());
   }
 
+  ~StructuredMetricsServiceTest() override = default;
+
   void SetUp() override {
     feature_list_.InitWithFeatures({kEnabledStructuredMetricsService}, {});
 
@@ -82,17 +84,16 @@ class StructuredMetricsServiceTest : public testing::Test {
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
   void Init() {
-    auto key_data_provider = std::make_unique<TestKeyDataProvider>(
-        DeviceKeyFilePath(), ProfileKeyFilePath());
+    auto key_data_provider =
+        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath());
     TestKeyDataProvider* test_key_data_provider = key_data_provider.get();
     auto recorder = std::make_unique<StructuredMetricsRecorder>(
         std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
-    // Register the profile with the key data provider.
-    test_key_data_provider->OnProfileAdded(temp_dir_.GetPath());
-
     service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,
                                                           std::move(recorder));
+    // Register the profile with the key data provider.
+    test_key_data_provider->OnProfileAdded(temp_dir_.GetPath());
     Wait();
   }
 
@@ -207,6 +208,7 @@ TEST_F(StructuredMetricsServiceTest, PurgeInMemory) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1.0)));
+  Wait();
 
   service_->Purge();
   service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
@@ -225,6 +227,7 @@ TEST_F(StructuredMetricsServiceTest, PurgePersisted) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1.0)));
+  Wait();
 
   service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
@@ -247,11 +250,13 @@ TEST_F(StructuredMetricsServiceTest, RotateLogs) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
 
   service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
   const auto uma_proto = GetPersistedLog();
   EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+  service_.reset();
 }
 
 TEST_F(StructuredMetricsServiceTest, SystemProfileFilled) {
@@ -264,6 +269,7 @@ TEST_F(StructuredMetricsServiceTest, SystemProfileFilled) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
 
   service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
@@ -285,6 +291,7 @@ TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
 
   DisableRecording();
 
@@ -292,6 +299,7 @@ TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
 
   EnableRecording();
 
@@ -310,6 +318,7 @@ TEST_F(StructuredMetricsServiceTest, FlushOnShutdown) {
       std::move(TestEventOne().SetTestMetricTwo(1)));
   StructuredMetricsClient::Record(
       std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
 
   // Will flush the log.
   service_.reset();

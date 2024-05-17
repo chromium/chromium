@@ -283,6 +283,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   StructuredDataProto GetEventMetrics() {
     ChromeUserMetricsExtension uma_proto;
     recorder_->ProvideEventMetrics(uma_proto);
+    recorder_->ProvideLogMetadata(uma_proto);
     Wait();
     return uma_proto.structured_data();
   }

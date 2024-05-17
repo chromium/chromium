@@ -44,6 +44,8 @@ using ::metrics::ChromeUserMetricsExtension;
 // TODO(b/282031543): Remove this class and merge remaining logic into
 // structured_metrics_recorder.h since the Record() is exposed via
 // StructuredMetricsClient interface now.
+//
+// TODO(b/339914565): Move recording off of the UI sequence onto an IO sequence.
 class Recorder {
  public:
   class RecorderImpl {
@@ -68,6 +70,8 @@ class Recorder {
 
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  base::SequencedTaskRunner* GetUiTaskRunner() { return ui_task_runner_.get(); }
 
   void SetRecorder(RecorderImpl* recorder);
   void UnsetRecorder(RecorderImpl* recorder);

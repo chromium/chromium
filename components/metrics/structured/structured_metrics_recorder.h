@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_RECORDER_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_RECORDER_H_
 
+#include <atomic>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -70,6 +71,12 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // This calls OnIndependentMetrics() to populate |uma_proto| with metadata
   // fields.
   virtual void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
+
+  // Provides any additional metadata needed by the UMA proto.
+  //
+  // This should be called on the UI thread.
+  // If this method is overwritten the base implementation must be called.
+  virtual void ProvideLogMetadata(ChromeUserMetricsExtension& uma_proto);
 
   // Returns true if ready to provide metrics via ProvideEventMetrics.
   bool CanProvideMetrics();
@@ -225,6 +232,17 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   InitState init_state_;
 
  private:
+  // Lock and release event storage. This is to mitigate a potential race
+  // condition between TakeEvents() and RecordEvent().
+  //
+  // If storage is locked then recorded events are stored in-memory until
+  // storage is released.
+  void LockStorage();
+  void ReleaseStorage();
+
+  // Once storage is released then record in-memory events into storage.
+  void StoreLockedEvents();
+
   // Tracks the recording state signalled to the metrics provider by
   // OnRecordingEnabled and OnRecordingDisabled. This is false until
   // OnRecordingEnabled is called, which sets it true if structured metrics'
@@ -242,6 +260,13 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   base::flat_set<uint64_t> disallowed_projects_;
 
   base::ObserverList<Observer> watchers_;
+
+  // A flag to determine if the storage has been locked without actually
+  // acquiring a lock.
+  std::atomic_bool storage_lock_;
+
+  // Events recorded while recording was locked.
+  std::vector<StructuredEventProto> locked_events_;
 
   // Callbacks for tests whenever an event is recorded.
   base::RepeatingClosure test_callback_on_record_ = base::DoNothing();

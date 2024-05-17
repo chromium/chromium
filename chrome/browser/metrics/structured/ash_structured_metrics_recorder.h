@@ -54,6 +54,7 @@ class AshStructuredMetricsRecorder : public StructuredMetricsRecorder,
                            const Event& event,
                            const ProjectValidator& project_validator,
                            const KeyData& key_data) override;
+  void ProvideLogMetadata(ChromeUserMetricsExtension& uma_proto) override;
 
   // Recorder::RecorderImpl:
   void OnSystemProfileInitialized() override;

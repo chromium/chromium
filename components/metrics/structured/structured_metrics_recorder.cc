@@ -64,23 +64,26 @@ void StructuredMetricsRecorder::ProvideUmaEventMetrics(
 
 void StructuredMetricsRecorder::ProvideEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
-  if (!CanProvideMetrics()) {
+  if (!CanProvideMetrics() || !event_storage_->HasEvents()) {
     return;
   }
+
+  LockStorage();
 
   // Get the events from event storage.
   auto events = event_storage_->TakeEvents();
 
-  if (events.size() == 0) {
-    return;
-  }
+  ReleaseStorage();
 
   StructuredDataProto& structured_data = *uma_proto.mutable_structured_data();
   *structured_data.mutable_events() = std::move(events);
 
   LogUploadSizeBytes(structured_data.ByteSizeLong());
   LogNumEventsInUpload(structured_data.events_size());
+}
 
+void StructuredMetricsRecorder::ProvideLogMetadata(
+    ChromeUserMetricsExtension& uma_proto) {
   // Applies custom metadata providers.
   Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
 }
@@ -227,7 +230,11 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   NotifyEventRecorded(event_proto);
 
   // Add new event to storage.
-  event_storage_->AddEvent(event_proto);
+  if (storage_lock_.load()) {
+    locked_events_.push_back(event_proto);
+  } else {
+    event_storage_->AddEvent(event_proto);
+  }
 
   test_callback_on_record_.Run();
 }
@@ -456,6 +463,34 @@ void StructuredMetricsRecorder::NotifyEventRecorded(
   for (Observer& watcher : watchers_) {
     watcher.OnEventRecorded(event);
   }
+}
+
+void StructuredMetricsRecorder::LockStorage() {
+  storage_lock_.store(true);
+}
+
+void StructuredMetricsRecorder::ReleaseStorage() {
+  storage_lock_.store(false);
+
+  StoreLockedEvents();
+}
+
+void StructuredMetricsRecorder::StoreLockedEvents() {
+  base::SequencedTaskRunner* task_runner =
+      Recorder::GetInstance()->GetUiTaskRunner();
+
+  if (!task_runner->RunsTasksInCurrentSequence()) {
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&StructuredMetricsRecorder::StoreLockedEvents,
+                                  weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  for (const auto& event : locked_events_) {
+    event_storage_->AddEvent(event);
+  }
+
+  locked_events_.clear();
 }
 
 }  // namespace metrics::structured

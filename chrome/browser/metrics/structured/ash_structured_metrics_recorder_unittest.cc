@@ -231,6 +231,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   ChromeUserMetricsExtension GetUmaProto() {
     ChromeUserMetricsExtension uma_proto;
     recorder_->ProvideEventMetrics(uma_proto);
+    recorder_->ProvideLogMetadata(uma_proto);
     Wait();
     return uma_proto;
   }

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/structured_metrics_scheduler.h"
@@ -94,8 +95,44 @@ class StructuredMetricsService final {
   // Creates a new log and sends any currently stages logs.
   void RotateLogsAndSend();
 
-  // Collects the events from the recorder and builds a new log.
-  void BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason reason);
+  // Collects the events from the recorder and builds a new log on a separate
+  // task.
+  //
+  // An upload is triggered once the task is completed.
+  void BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason reason,
+                        bool notify_scheduler);
+
+  // Collects the events from the recorder and builds a new log on the current
+  // thread.
+  //
+  // An upload is triggered after the log has been stored.
+  // Used on Windows, Mac, and Linux and during shutdown.
+  void BuildAndStoreLogSync(
+      metrics::MetricsLogsEventManager::CreateReason reason,
+      bool notify_scheduler);
+
+  // Populates an UMA proto with data that must be accessed form the UI
+  // sequence. A task to collect events is posted which updates the created UMA
+  // proto. On Windows, Mac, and Linux logs are built synchronously.
+  //
+  // Must be called from the UI sequence.
+  void CreateLogs(metrics::MetricsLogsEventManager::CreateReason reason,
+                  bool notify_scheduler);
+
+  // Collects events from the EventStorage. The log is also serialized and
+  // stored in |log_store_|.
+  //
+  // Must be called from an IO sequence.
+  void CollectEventsAndStoreLog(
+      ChromeUserMetricsExtension&& uma_proto,
+      metrics::MetricsLogsEventManager::CreateReason reason);
+
+  // Once a log has been created, start an upload. Potentially, notify the log
+  // rotation scheduler.
+  //
+  // |notify_scheduler| is only false when an upload is attempted when the
+  // service starts.
+  void OnCollectEventsAndStoreLog(bool notify_scheduler);
 
   // Starts the initialization process for |this|.
   void Initialize();
@@ -145,6 +182,9 @@ class StructuredMetricsService final {
   raw_ptr<MetricsServiceClient> client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // An IO task runner for creating logs.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<StructuredMetricsService> weak_factory_{this};
 };

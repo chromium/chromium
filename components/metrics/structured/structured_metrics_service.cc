@@ -4,6 +4,13 @@
 
 #include "components/metrics/structured/structured_metrics_service.h"
 
+#include <memory>
+
+#include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
@@ -22,7 +29,11 @@ StructuredMetricsService::StructuredMetricsService(
       structured_metrics_enabled_(
           base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
           base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
-      client_(client) {
+      client_(client),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+           // Blocking because the works being done isn't to expensive.
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   CHECK(client_);
   CHECK(local_state);
   CHECK(recorder_);
@@ -119,11 +130,14 @@ void StructuredMetricsService::Flush(
     metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The log should not be built if there aren't any events to log.
-  // This is mirroring a check in RotateLogsAndSend.
   if (!recorder_->event_storage()->HasEvents()) {
     return;
   }
-  BuildAndStoreLog(reason);
+
+  ChromeUserMetricsExtension uma_proto;
+  InitializeUmaProto(uma_proto);
+  CollectEventsAndStoreLog(std::move(uma_proto), reason);
+
   reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
 }
 
@@ -150,21 +164,75 @@ void StructuredMetricsService::RotateLogsAndSend() {
     return;
   }
 
+  // If we do not have any logs then nothing to do.
   if (!reporting_service_->log_store()->has_unsent_logs()) {
-    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+    CreateLogs(metrics::MetricsLogsEventManager::CreateReason::kPeriodic,
+               /*notify_scheduler=*/true);
+    return;
   }
+
+  // If we already have a completed log then we can upload here.
   reporting_service_->Start();
   scheduler_->RotationFinished();
 }
 
-void StructuredMetricsService::BuildAndStoreLog(
-    metrics::MetricsLogsEventManager::CreateReason reason) {
-  ChromeUserMetricsExtension uma_proto;
+void StructuredMetricsService::CreateLogs(
+    metrics::MetricsLogsEventManager::CreateReason reason,
+    bool notify_scheduler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+// An async version is used on Ash because events could potentially be stored on
+// disk and must be accessed from an IO sequence.
+// Other platforms (Windows, Mac, and Linux), the events are stored only
+// in-memory and thus a blocking function isn't needed.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  BuildAndStoreLog(reason, notify_scheduler);
+#else
+  BuildAndStoreLogSync(reason, notify_scheduler);
+#endif
+}
+
+void StructuredMetricsService::BuildAndStoreLog(
+    metrics::MetricsLogsEventManager::CreateReason reason,
+    bool notify_scheduler) {
+  ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
-  recorder_->ProvideEventMetrics(uma_proto);
+
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&StructuredMetricsService::CollectEventsAndStoreLog,
+                     base::Unretained(this), std::move(uma_proto), reason),
+      base::BindOnce(&StructuredMetricsService::OnCollectEventsAndStoreLog,
+                     base::Unretained(this), notify_scheduler));
+}
+
+void StructuredMetricsService::BuildAndStoreLogSync(
+    metrics::MetricsLogsEventManager::CreateReason reason,
+    bool notify_scheduler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ChromeUserMetricsExtension uma_proto;
+  InitializeUmaProto(uma_proto);
+
+  CollectEventsAndStoreLog(std::move(uma_proto), reason);
+
+  OnCollectEventsAndStoreLog(notify_scheduler);
+}
+
+void StructuredMetricsService::CollectEventsAndStoreLog(
+    ChromeUserMetricsExtension&& uma_proto,
+    metrics::MetricsLogsEventManager::CreateReason reason) {
+  recorder_->ProvideEventMetrics(uma_proto);  // Potentially blocking.
   const std::string serialized_log = SerializeLog(uma_proto);
   reporting_service_->StoreLog(serialized_log, reason);
+}
+
+void StructuredMetricsService::OnCollectEventsAndStoreLog(
+    bool notify_scheduler) {
+  reporting_service_->Start();
+  if (notify_scheduler) {
+    scheduler_->RotationFinished();
+  }
 }
 
 void StructuredMetricsService::Initialize() {
@@ -183,6 +251,8 @@ void StructuredMetricsService::InitializeUmaProto(
   if (product != uma_proto.product()) {
     uma_proto.set_product(product);
   }
+
+  recorder_->ProvideLogMetadata(uma_proto);
 
   SystemProfileProto* system_profile = uma_proto.mutable_system_profile();
   metrics::MetricsLog::RecordCoreSystemProfile(client_, system_profile);
@@ -211,7 +281,9 @@ void StructuredMetricsService::ManualUpload() {
   }
 
   if (!reporting_service_->log_store()->has_unsent_logs()) {
-    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+    CreateLogs(metrics::MetricsLogsEventManager::CreateReason::kUnknown,
+               /*notify_scheduler=*/false);
+    return;
   }
   reporting_service_->Start();
 }

@@ -78,9 +78,6 @@ void AshStructuredMetricsRecorder::ProvideEventMetrics(
   // Base class handles most of the work that is needed.
   StructuredMetricsRecorder::ProvideEventMetrics(uma_proto);
 
-  // Add the system profile.
-  ProvideSystemProfile(uma_proto.mutable_system_profile());
-
   // Handle External Metrics statistics.
   LogExternalMetricsScanInUpload(external_metrics_scans_);
   external_metrics_scans_ = 0;
@@ -115,6 +112,13 @@ void AshStructuredMetricsRecorder::AddSequenceMetadata(
   if (secondary_id.has_value()) {
     proto->set_device_project_id(secondary_id.value());
   }
+}
+
+void AshStructuredMetricsRecorder::ProvideLogMetadata(
+    ChromeUserMetricsExtension& uma_proto) {
+  StructuredMetricsRecorder::ProvideLogMetadata(uma_proto);
+  // Add the system profile.
+  ProvideSystemProfile(uma_proto.mutable_system_profile());
 }
 
 void AshStructuredMetricsRecorder::OnSystemProfileInitialized() {
