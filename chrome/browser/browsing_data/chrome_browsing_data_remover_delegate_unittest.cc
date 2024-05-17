@@ -4049,6 +4049,20 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ(3u, prefs->GetDict(kPermissionActionsPrefPath)
                     .FindList("notifications")
                     ->size());
+
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain("example.com");
+  BlockUntilOriginDataRemoved(first_recorded_time, third_recorded_time,
+                              constants::DATA_TYPE_SITE_USAGE_DATA,
+                              std::move(filter_builder));
+
+  // This data type doesn't implement per-origin deletion so just test that
+  // nothing got removed.
+  EXPECT_EQ(3u, prefs->GetDict(kPermissionActionsPrefPath)
+                    .FindList("notifications")
+                    ->size());
+
   // Remove the first and the second element.
   BlockUntilBrowsingDataRemoved(first_recorded_time, third_recorded_time,
                                 constants::DATA_TYPE_SITE_USAGE_DATA, false);

@@ -831,13 +831,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::SITE_ENGAGEMENT, base::Time(), base::Time::Max(),
         website_settings_filter);
 
-    if (MediaEngagementService::IsEnabled()) {
-      MediaEngagementService::Get(profile_)->ClearDataBetweenTime(delete_begin_,
-                                                                  delete_end_);
-    }
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      if (MediaEngagementService::IsEnabled()) {
+        MediaEngagementService::Get(profile_)->ClearDataBetweenTime(
+            delete_begin_, delete_end_);
+      }
 
-    PermissionActionsHistoryFactory::GetForProfile(profile_)->ClearHistory(
-        delete_begin_, delete_end_);
+      PermissionActionsHistoryFactory::GetForProfile(profile_)->ClearHistory(
+          delete_begin_, delete_end_);
+    }
   }
 
   if ((remove_mask & constants::DATA_TYPE_SITE_USAGE_DATA) ||
@@ -1066,39 +1068,48 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // dependencies or reimplement the relevant part of WebCacheManager
     // in content/browser.
     // TODO(crbug.com/40657761): add a test for this.
-    for (content::RenderProcessHost::iterator iter =
-             content::RenderProcessHost::AllHostsIterator();
-         !iter.IsAtEnd(); iter.Advance()) {
-      content::RenderProcessHost* render_process_host = iter.GetCurrentValue();
-      if (render_process_host->GetBrowserContext() == profile_ &&
-          render_process_host->IsInitializedAndNotDead()) {
-        web_cache::WebCacheManager::GetInstance()->ClearCacheForProcess(
-            render_process_host->GetID());
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      for (content::RenderProcessHost::iterator iter =
+               content::RenderProcessHost::AllHostsIterator();
+           !iter.IsAtEnd(); iter.Advance()) {
+        content::RenderProcessHost* render_process_host =
+            iter.GetCurrentValue();
+        if (render_process_host->GetBrowserContext() == profile_ &&
+            render_process_host->IsInitializedAndNotDead()) {
+          web_cache::WebCacheManager::GetInstance()->ClearCacheForProcess(
+              render_process_host->GetID());
+        }
       }
     }
 
 #if BUILDFLAG(ENABLE_NACL)
-    nacl::NaClBrowser::GetInstance()->ClearValidationCache(UIThreadTrampoline(
-        CreateTaskCompletionClosure(TracingDataType::kNaclCache)));
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      nacl::NaClBrowser::GetInstance()->ClearValidationCache(UIThreadTrampoline(
+          CreateTaskCompletionClosure(TracingDataType::kNaclCache)));
 
-    pnacl::PnaclHost::GetInstance()->ClearTranslationCacheEntriesBetween(
-        delete_begin_, delete_end_,
-        UIThreadTrampoline(
-            CreateTaskCompletionClosure(TracingDataType::kPnaclCache)));
+      pnacl::PnaclHost::GetInstance()->ClearTranslationCacheEntriesBetween(
+          delete_begin_, delete_end_,
+          UIThreadTrampoline(
+              CreateTaskCompletionClosure(TracingDataType::kPnaclCache)));
+    }
 #endif
 
-    browsing_data::RemovePrerenderCacheData(
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            profile_));
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      browsing_data::RemovePrerenderCacheData(
+          prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+              profile_));
+    }
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
-    // Don't bridge through if the service isn't present, which means we're
-    // probably running in a native unit test.
-    feed::FeedService* service =
-        feed::FeedServiceFactory::GetForBrowserContext(profile_);
-    if (service) {
-      service->ClearCachedData();
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      // Don't bridge through if the service isn't present, which means
+      // we're probably running in a native unit test.
+      feed::FeedService* service =
+          feed::FeedServiceFactory::GetForBrowserContext(profile_);
+      if (service) {
+        service->ClearCachedData();
+      }
     }
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
@@ -1120,18 +1131,19 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #endif
 
     // TODO(crbug.com/41380998): Remove null-check.
-    auto* webrtc_event_log_manager = WebRtcEventLogManager::GetInstance();
-    if (webrtc_event_log_manager) {
-      webrtc_event_log_manager->ClearCacheForBrowserContext(
-          profile_, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kWebrtcEventLogs));
-    } else {
-      LOG(ERROR) << "WebRtcEventLogManager not instantiated.";
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      auto* webrtc_event_log_manager = WebRtcEventLogManager::GetInstance();
+      if (webrtc_event_log_manager) {
+        webrtc_event_log_manager->ClearCacheForBrowserContext(
+            profile_, delete_begin_, delete_end_,
+            CreateTaskCompletionClosure(TracingDataType::kWebrtcEventLogs));
+      } else {
+        LOG(ERROR) << "WebRtcEventLogManager not instantiated.";
+      }
     }
 
     // Mark cached favicons as expired to force redownload on next visit.
-    if (filter_builder->GetMode() ==
-        BrowsingDataFilterBuilder::Mode::kPreserve) {
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
       history::HistoryService* history_service =
           HistoryServiceFactory::GetForProfile(
               profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -1156,7 +1168,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // On Chrome OS, delete any content protection platform keys.
     // Platform keys do not support filtering by domain, so skip this if
     // clearing only a specified set of sites.
-    if (filter_builder->GetMode() != BrowsingDataFilterBuilder::Mode::kDelete) {
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
       const user_manager::User* user =
           ash::ProfileHelper::Get()->GetUserByProfile(profile_);
       if (!user) {
@@ -1277,9 +1289,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   //
   // TODO(alexmos): Support finer-grained filtering based on time ranges and
   // |filter|. For now, conservatively delete all saved isolated origins.
-  if (remove_mask &
-      (constants::DATA_TYPE_ISOLATED_ORIGINS | constants::DATA_TYPE_HISTORY))
+  if (remove_mask & (constants::DATA_TYPE_ISOLATED_ORIGINS |
+                     constants::DATA_TYPE_HISTORY) &&
+      filter_builder->MatchesMostOriginsAndDomains()) {
     browsing_data::RemoveSiteIsolationData(prefs);
+  }
 
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
     network::mojom::NetworkContext* network_context =
@@ -1317,7 +1331,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   //////////////////////////////////////////////////////////////////////////////
   // Remove external protocol data.
   if (remove_mask & constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA &&
-      filter_builder->GetMode() == BrowsingDataFilterBuilder::Mode::kPreserve) {
+      filter_builder->MatchesMostOriginsAndDomains()) {
     ExternalProtocolHandler::ClearData(profile_);
   }
 
@@ -1339,7 +1353,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // site data are cleared, or when history is cleared. This is because clearing
   // cookies or history implies forgetting that the user has logged into sites.
   if (remove_mask &
-      (constants::DATA_TYPE_SITE_DATA | constants::DATA_TYPE_HISTORY)) {
+          (constants::DATA_TYPE_SITE_DATA | constants::DATA_TYPE_HISTORY) &&
+      filter_builder->MatchesMostOriginsAndDomains()) {
     login_detection::prefs::RemoveLoginDetectionData(prefs);
   }
 

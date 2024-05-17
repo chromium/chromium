@@ -100,9 +100,9 @@ class ChromeBrowsingDataRemoverDelegate
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml
-  // and History.ClearBrowsingData.Duration.ChromeTask.{Task}
-  // in histograms/metadata/history/histograms.xml.
+  // Entries must also be added to ChromeBrowsingDataRemoverTasks in
+  // enums.xml and History.ClearBrowsingData.Duration.ChromeTask.{Task} in
+  // histograms/metadata/history/histograms.xml.
   enum class TracingDataType {
     kSynchronous = 1,
     kHistory = 2,

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -40,6 +42,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/nacl/common/buildflags.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
@@ -100,6 +103,8 @@
 using content::BrowserThread;
 using content::BrowsingDataFilterBuilder;
 
+using testing::UnorderedElementsAreArray;
+
 namespace {
 static const char* kExampleHost = "example.com";
 static const char* kLocalHost = "localhost";
@@ -128,6 +133,23 @@ base::Time TimeEnumToTime(TimeEnum time) {
       return base::Time();
   }
 }
+
+std::vector<std::string> GetHistogramSuffixes(
+    const base::HistogramTester& tester,
+    const std::string& prefix) {
+  std::vector<std::string> types;
+  for (const auto& entry : tester.GetTotalCountsForPrefix(prefix)) {
+    types.push_back(entry.first.substr(prefix.length()));
+  }
+  return types;
+}
+
+void AppendRange(std::vector<std::string>& target,
+                 const std::vector<std::string_view> append) {
+  // Use std append_range() when c++23 is available.
+  target.insert(target.end(), append.begin(), append.end());
+}
+
 }  // namespace
 
 class BrowsingDataRemoverBrowserTest
@@ -645,6 +667,25 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, WebrtcVideoPerfHistory) {
     run_loop.Run();
   }
 
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain("example.com");
+  RemoveWithFilterAndWait(chrome_browsing_data_remover::FILTERABLE_DATA_TYPES,
+                          std::move(filter_builder));
+
+  // This data type doesn't implement per-origin deletion so just test that
+  // nothing got removed.
+  {
+    base::RunLoop run_loop;
+    webrtc_video_perf_history->GetPerfInfo(
+        media::mojom::WebrtcPredictionFeatures::New(features), kFrameRate,
+        base::BindLambdaForTesting([&](bool smooth) {
+          EXPECT_FALSE(smooth);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
   // Clear history.
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
 
@@ -1039,6 +1080,97 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverStorageBucketsBrowserTest,
                             error_or_buckets) {
         EXPECT_EQ(1u, error_or_buckets.value().size());
       }));
+}
+
+const char kDelegateHistogramPrefix[] =
+    "History.ClearBrowsingData.Duration.ChromeTask.";
+const char kImplHistogramPrefix[] = "History.ClearBrowsingData.Duration.Task.";
+
+// Add data types here that support filtering and only delete data that matches
+// the BrowsingDataFilterBuilder.
+const std::vector<std::string_view> kSupportsOriginFilteringImpl{
+    "AuthCache",           "EmbedderData",     "HttpCache",
+    "NetworkErrorLogging", "PreflightCache",   "ReportingCache",
+    "SharedDictionary",    "StoragePartition", "Synchronous",
+    "TrustTokens",
+};
+const std::vector<std::string_view> kSupportsOriginFilteringDelegate{
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+    "CdmLicenses",
+#endif
+    "Cookies",           "DisableAutoSigninForProfilePasswords",
+    "DomainReliability", "MediaDeviceSalts",
+    "Synchronous",
+};
+
+// This test ensures that all deletions that are part of FILTERABLE_DATA_TYPES
+// fully support the BrowsingDataFilterBuilder if they are running for
+// origin-specific deletions. Ideally, every web-visible data type should
+// support filtering. If you implemented filtering already, just add your type
+// to kSupportsOriginFiltering above.
+//
+// If it is not important that your data is cleared with per-origin deletions,
+// you can add your type to kDoesNotSupportOriginFiltering and ensure that
+// deletions are only performed when the filter builder
+// MatchesMostOriginsAndDomains().
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, FullyFilteredDataTypes) {
+  base::HistogramTester tester;
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain("example.com");
+  RemoveWithFilterAndWait(chrome_browsing_data_remover::FILTERABLE_DATA_TYPES,
+                          std::move(filter_builder));
+
+  EXPECT_THAT(GetHistogramSuffixes(tester, kImplHistogramPrefix),
+              UnorderedElementsAreArray(kSupportsOriginFilteringImpl));
+  EXPECT_THAT(GetHistogramSuffixes(tester, kDelegateHistogramPrefix),
+              UnorderedElementsAreArray(kSupportsOriginFilteringDelegate));
+}
+
+// Add data types here that do not support the BrowsingDataFilterBuilder.
+// These deletions should only run when the mode of the filter builder is
+// "kPreserve" and MatchesMostOriginsAndDomains() is true. Otherwise data for
+// these types will be cleared when per-origin deletions like those from the
+// Clear-Site-Data header are performed.
+const std::vector<std::string_view> kDoesNotSupportOriginFilteringImpl{
+    "CodeCaches",
+    "NetworkHistory",
+};
+const std::vector<std::string_view> kDoesNotSupportOriginFilteringDelegate{
+    "FaviconCacheExpiration",
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+    "UserDataSnapshot",
+#endif
+    "WebrtcEventLogs",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "TpmAttestationKeys",
+#endif
+#if BUILDFLAG(ENABLE_NACL)
+    "NaclCache",
+    "PnaclCache",
+#endif
+};
+
+// See comment on FullyFilteredDataTypes test for advice when this test fails.
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, AllFilterableDataTypes) {
+  base::HistogramTester tester;
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  filter_builder->AddRegisterableDomain("example.com");
+  RemoveWithFilterAndWait(chrome_browsing_data_remover::FILTERABLE_DATA_TYPES,
+                          std::move(filter_builder));
+
+  std::vector<std::string> all_impl_types;
+  AppendRange(all_impl_types, kSupportsOriginFilteringImpl);
+  AppendRange(all_impl_types, kDoesNotSupportOriginFilteringImpl);
+  EXPECT_THAT(GetHistogramSuffixes(tester, kImplHistogramPrefix),
+              UnorderedElementsAreArray(all_impl_types));
+
+  std::vector<std::string> all_delegate_types;
+  AppendRange(all_delegate_types, kSupportsOriginFilteringDelegate);
+  AppendRange(all_delegate_types, kDoesNotSupportOriginFilteringDelegate);
+  EXPECT_THAT(GetHistogramSuffixes(tester, kDelegateHistogramPrefix),
+              UnorderedElementsAreArray(all_delegate_types));
 }
 
 // Parameterized to run tests for different deletion time ranges.
