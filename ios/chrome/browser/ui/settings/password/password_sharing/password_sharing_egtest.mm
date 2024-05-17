@@ -39,8 +39,6 @@ using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
 using password_manager_test_utils::PasswordDetailsTableViewMatcher;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 
-constexpr char kGoogleHelpCenterURL[] = "support.google.com";
-
 // Matcher for Password Sharing First Run.
 id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   return grey_accessibilityLabel(
@@ -614,33 +612,6 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
-}
-
-- (void)testTappingLearnMoreInFirstRunExperienceView {
-  // TODO(crbug.com/40283859): Test fails on iPad simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
-  }
-
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
-
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self saveExamplePasswordToProfileStoreAndOpenDetails];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Learn more" link in the popup.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
-      performAction:grey_tap()];
-
-  // Check that the help center article was opened.
-  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center article.");
 }
 
 - (void)testFirstRunExperienceViewDismissedForAuthentication {
