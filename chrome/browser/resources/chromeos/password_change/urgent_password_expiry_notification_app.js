@@ -19,7 +19,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './urgent_password_expiry_notification_app.html.js';
 
@@ -27,32 +27,54 @@ const ONE_SECOND_IN_MS = 1000;
 const ONE_MINUTE_IN_MS = ONE_SECOND_IN_MS * 60;
 const ONE_HOUR_IN_MS = ONE_MINUTE_IN_MS * 60;
 
-Polymer({
-  is: 'urgent-password-expiry-notification',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const UrgentPasswordExpiryNotificationElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: getTemplate(),
+/** @polymer */
+class UrgentPasswordExpiryNotificationElement extends
+    UrgentPasswordExpiryNotificationElementBase {
+  static get is() {
+    return 'urgent-password-expiry-notification';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
-    /** @private {string} */
-    title_: {
-      type: String,
-      value: '',
-    },
-  },
+  static get properties() {
+    return {
+      /** @private {string} */
+      title_: {
+        type: String,
+        value: '',
+      },
 
-  /** @type {?Date} */
-  expirationTime_: null,
+    };
+  }
 
-  /** @type {?number} */
-  countDownIntervalId_: null,
+  constructor() {
+    super();
 
-  /** @type {?number} */
-  countDownIntervalMs_: null,
+    /** @type {?Date} */
+    this.expirationTime_ = null;
+
+    /** @type {?number} */
+    this.countDownIntervalId_ = null;
+
+    /** @type {?number} */
+    this.countDownIntervalMs_ = null;
+  }
+
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
     if (loadTimeData.valueExists('initialTitle')) {
       this.title_ = loadTimeData.getString('initialTitle');
@@ -68,7 +90,7 @@ Polymer({
         this.ensureCountDownCalledOftenEnough_();
       }
     }
-  },
+  }
 
   /** @private */
   ensureCountDownCalledOftenEnough_() {
@@ -83,7 +105,7 @@ Polymer({
       // Expires some time in the future - update UI every hour.
       this.ensureCountDownCalledWithInterval_(ONE_HOUR_IN_MS);
     }
-  },
+  }
 
   /** @private */
   ensureCountDownCalledWithInterval_(intervalMs) {
@@ -94,7 +116,7 @@ Polymer({
     this.countDownIntervalId_ =
         setInterval(this.countDown_.bind(this), intervalMs);
     this.countDownIntervalMs_ = intervalMs;
-  },
+  }
 
   /** @private */
   stopCountDownCalls_() {
@@ -104,7 +126,7 @@ Polymer({
     clearInterval(this.countDownIntervalId_);
     this.countDownIntervalId_ = null;
     this.countDownIntervalMs_ = null;
-  },
+  }
 
   /** @private */
   countDown_() {
@@ -113,11 +135,14 @@ Polymer({
     cr.sendWithPromise('getTitleText', msUntilExpiry).then((title) => {
       this.title_ = title;
     });
-  },
+  }
 
   /** @private */
   onButtonTap_() {
     chrome.send('continue');
-  },
+  }
+}
 
-});
+customElements.define(
+    UrgentPasswordExpiryNotificationElement.is,
+    UrgentPasswordExpiryNotificationElement);
