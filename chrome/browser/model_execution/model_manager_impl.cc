@@ -201,7 +201,8 @@ void ModelManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
   // false.
   optimization_guide::OnDeviceModelEligibilityReason debug_reason;
   if (!service->CanCreateOnDeviceSession(
-          optimization_guide::ModelBasedCapabilityKey::kTest, &debug_reason)) {
+          optimization_guide::ModelBasedCapabilityKey::kPromptApi,
+          &debug_reason)) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         ConvertOnDeviceModelEligibilityReasonToString(debug_reason));
