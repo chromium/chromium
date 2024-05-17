@@ -41,6 +41,7 @@ template("base_webview_instrumentation_apk") {
              "//components/policy/android:policy_java_test_support",
              "//content/public/android:content_java",
              "//third_party/androidx:androidx_annotation_annotation_java",
+             "//third_party/androidx:androidx_test_monitor_java",
              "//third_party/androidx_javascriptengine:javascriptengine_java",
              "//third_party/jni_zero:jni_zero_java",
              "//third_party/junit",

@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import androidx.annotation.CallSuper;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -31,6 +32,9 @@ import java.util.List;
 public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
     private static final String MULTIPROCESS_TEST_NAME_SUFFIX = "__multiprocess_mode";
+
+    private static final String ONLY_RUN_MULTI_PROCESS_MODE_FLAG =
+            "AwJUnit4ClassRunner.MultiProcessOnly";
 
     private final TestHook mWebViewMultiProcessHook =
             (targetContext, testMethod) -> {
@@ -77,11 +81,18 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
     @Override
     protected List<FrameworkMethod> getChildren() {
+        boolean runSingleProcess =
+                !"true"
+                        .equals(
+                                InstrumentationRegistry.getArguments()
+                                        .getString(ONLY_RUN_MULTI_PROCESS_MODE_FLAG));
         List<FrameworkMethod> result = new ArrayList<>();
         for (FrameworkMethod method : computeTestMethods()) {
             switch (processModeForMethod(method)) {
                 case SINGLE_PROCESS:
-                    result.add(method);
+                    if (runSingleProcess) {
+                        result.add(method);
+                    }
                     break;
                 case MULTI_PROCESS:
                     result.add(new WebViewMultiProcessFrameworkMethod(method));
@@ -89,7 +100,9 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
                 case SINGLE_AND_MULTI_PROCESS:
                 default:
                     result.add(new WebViewMultiProcessFrameworkMethod(method));
-                    result.add(method);
+                    if (runSingleProcess) {
+                        result.add(method);
+                    }
                     break;
             }
         }
