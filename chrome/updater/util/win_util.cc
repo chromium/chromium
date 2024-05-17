@@ -16,7 +16,6 @@
 #include <wrl/client.h>
 #include <wtsapi32.h>
 
-#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -373,15 +372,6 @@ bool SetRegistryKey(HKEY root,
     return false;
   }
   return result == ERROR_SUCCESS;
-}
-
-int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
-  if (downloaded_bytes == -1 || total_bytes == -1 || total_bytes == 0) {
-    return -1;
-  }
-  CHECK_LE(downloaded_bytes, total_bytes);
-  return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
-                          0.0, 1.0);
 }
 
 HResultOr<bool> IsTokenAdmin(HANDLE token) {

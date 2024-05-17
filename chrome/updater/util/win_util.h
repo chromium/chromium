@@ -233,10 +233,6 @@ bool SetRegistryKey(HKEY root,
                     const std::wstring& name,
                     const std::wstring& value);
 
-// Returns a value in the [0, 100] range or -1 if the progress could not
-// be computed.
-int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
-
 // Returns `true` if the token is an elevated administrator. If
 // `token` is `NULL`, the current thread token is used.
 HResultOr<bool> IsTokenAdmin(HANDLE token);

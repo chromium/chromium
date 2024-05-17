@@ -191,4 +191,15 @@ TEST(Util, OptionalBaseInsertion) {
   EXPECT_EQ(os.str(), "test\n");
 }
 
+TEST(WinUtil, GetDownloadProgress) {
+  EXPECT_EQ(GetDownloadProgress(0, 50), 0);
+  EXPECT_EQ(GetDownloadProgress(12, 50), 24);
+  EXPECT_EQ(GetDownloadProgress(25, 50), 50);
+  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
+  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
+  EXPECT_EQ(GetDownloadProgress(0, -1), -1);
+  EXPECT_EQ(GetDownloadProgress(-1, -1), -1);
+  EXPECT_EQ(GetDownloadProgress(50, 0), -1);
+}
+
 }  // namespace updater

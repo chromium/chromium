@@ -232,6 +232,11 @@ template <typename T>
   return std::ceil(static_cast<double>(m) / n);
 }
 
+// Returns a value in the [0, 100] range or -1 if the progress could not
+// be computed.
+[[nodiscard]] int GetDownloadProgress(int64_t downloaded_bytes,
+                                      int64_t total_bytes);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UTIL_H_
