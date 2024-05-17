@@ -2515,6 +2515,8 @@ BASE_FEATURE(kQuickAppAccessTestUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables fingerprint quick unlock.
+// Note, that this feature is set from session manager via
+// command-line flag.
 BASE_FEATURE(kQuickUnlockFingerprint,
              "QuickUnlockFingerprint",
              base::FEATURE_DISABLED_BY_DEFAULT);
