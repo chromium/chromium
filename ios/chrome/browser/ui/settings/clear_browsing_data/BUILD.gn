@@ -4,8 +4,12 @@
 
 source_set("clear_browsing_data") {
   sources = [
+    "browsing_data_consumer.h",
     "browsing_data_counter_wrapper_producer.h",
     "browsing_data_counter_wrapper_producer.mm",
+    "browsing_data_mediator.h",
+    "browsing_data_mediator.mm",
+    "browsing_data_mutator.h",
     "clear_browsing_data_consumer.h",
     "clear_browsing_data_coordinator.h",
     "clear_browsing_data_coordinator.mm",
@@ -21,6 +25,8 @@ source_set("clear_browsing_data") {
     "quick_delete_presentation_commands.h",
     "quick_delete_view_controller.h",
     "quick_delete_view_controller.mm",
+    "table_view_pop_up_cell.h",
+    "table_view_pop_up_cell.mm",
     "time_range_selector_table_view_controller+Testing.h",
     "time_range_selector_table_view_controller.h",
     "time_range_selector_table_view_controller.mm",
@@ -151,6 +157,7 @@ source_set("eg2_tests") {
   deps = [
     ":features",
     "//base/test:test_support",
+    "//components/browsing_data/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",

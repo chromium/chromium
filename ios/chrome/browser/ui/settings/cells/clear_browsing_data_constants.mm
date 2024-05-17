@@ -18,5 +18,5 @@ NSString* const kClearSavedPasswordsCellAccessibilityIdentifier =
 NSString* const kClearAutofillCellAccessibilityIdentifier =
     @"kClearAutofillCellAccessibilityIdentifier";
 
-NSString* const kQuickDeleteViewAccessibilityIdentifier =
-    @"kQuickDeleteViewAccessibilityIdentifier";
+NSString* const kQuickDeletePopUpButtonIdentifier =
+    @"kQuickDeletePopUpButtonIdentifier";

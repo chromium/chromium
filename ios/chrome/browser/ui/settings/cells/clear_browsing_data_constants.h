@@ -17,7 +17,7 @@ extern NSString* const kClearCacheCellAccessibilityIdentifier;
 extern NSString* const kClearSavedPasswordsCellAccessibilityIdentifier;
 extern NSString* const kClearAutofillCellAccessibilityIdentifier;
 
-// The accessibility identifier of the quick delete view.
-extern NSString* const kQuickDeleteViewAccessibilityIdentifier;
+// The accessibility identifier for the button inside a pop-up cell.
+extern NSString* const kQuickDeletePopUpButtonIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_CLEAR_BROWSING_DATA_CONSTANTS_H_
