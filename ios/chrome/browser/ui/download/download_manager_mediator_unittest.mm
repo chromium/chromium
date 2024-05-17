@@ -43,7 +43,6 @@ class DownloadManagerMediatorTest : public PlatformTest {
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
   ~DownloadManagerMediatorTest() override {
-    mediator_.Disconnect();
     [application_ stopMocking];
   }
 
