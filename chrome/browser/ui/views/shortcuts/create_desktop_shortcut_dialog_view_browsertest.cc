@@ -49,8 +49,7 @@ class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
   }
 
  protected:
-  void OverrideShortcutShownCallback(
-      chrome::CreateShortcutDialogCallback callback) {
+  void OverrideShortcutShownCallback(CreateShortcutDialogCallback callback) {
     shortcut_callback = std::move(callback);
   }
 
@@ -59,13 +58,13 @@ class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
         ui_test_utils::NavigateToURL(browser, GURL("https://example.com")));
 
     std::u16string title = base::UTF8ToUTF16(name);
-    chrome::ShowCreateDesktopShortcutDialogForTesting(
+    ShowCreateDesktopShortcutDialogForTesting(
         browser->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
         title, std::move(shortcut_callback));
   }
 
  private:
-  chrome::CreateShortcutDialogCallback shortcut_callback = base::DoNothing();
+  CreateShortcutDialogCallback shortcut_callback = base::DoNothing();
 };
 
 IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
@@ -241,13 +240,13 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
-  chrome::ShowCreateDesktopShortcutDialogForTesting(
+  ShowCreateDesktopShortcutDialogForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[0], test_future1.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   // Verify that a second request fails before the first dialog is closed.
-  chrome::ShowCreateDesktopShortcutDialogForTesting(
+  ShowCreateDesktopShortcutDialogForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[1], test_future2.GetCallback());
   EXPECT_TRUE(test_future2.Wait());
@@ -278,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
 
   base::test::TestFuture<bool> final_callback;
-  chrome::CreateShortcutForWebContents(
+  CreateShortcutForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents(),
       final_callback.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();

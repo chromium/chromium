@@ -17,7 +17,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace chrome {
+namespace shortcuts {
 
 // Used to return the following information from the Create Desktop Shortcut
 // dialog:
@@ -41,6 +41,6 @@ void CreateShortcutForWebContents(
     base::OnceCallback<void(bool shortcuts_created)>
         shortcut_creation_callback);
 
-}  // namespace chrome
+}  // namespace shortcuts
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_H_

@@ -45,7 +45,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CreateDesktopShortcutDelegate,
 
 CreateDesktopShortcutDelegate::CreateDesktopShortcutDelegate(
     content::WebContents* web_contents,
-    chrome::CreateShortcutDialogCallback final_callback)
+    CreateShortcutDialogCallback final_callback)
     : content::WebContentsObserver(web_contents),
       final_callback_(std::move(final_callback)) {}
 
