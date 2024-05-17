@@ -219,10 +219,10 @@ UIImage* PlusAddressesLogo() {
 }
 
 - (void)didConfirmPlusAddress {
-  plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+  plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
       plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
           kModalConfirmed,
-      base::Time::Now() - _bottomSheetShownTime);
+      base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   [_activityIndicator stopAnimating];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -361,14 +361,14 @@ UIImage* PlusAddressesLogo() {
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
           kModalCanceled);
   if (_bottomSheetErrorStatus.has_value()) {
-    plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+    plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
         _bottomSheetErrorStatus.value(),
-        base::Time::Now() - _bottomSheetShownTime);
+        base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   } else {
-    plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+    plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
         plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
             kModalCanceled,
-        base::Time::Now() - _bottomSheetShownTime);
+        base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   }
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }

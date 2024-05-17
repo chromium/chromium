@@ -19,15 +19,22 @@ void PlusAddressMetrics::RecordModalEvent(
 }
 
 // static
-void PlusAddressMetrics::RecordModalShownDuration(
+void PlusAddressMetrics::RecordModalShownOutcome(
     PlusAddressModalCompletionStatus status,
-    base::TimeDelta modal_shown_duration) {
+    base::TimeDelta modal_shown_duration,
+    int refresh_count) {
   base::UmaHistogramTimes(
       base::ReplaceStringPlaceholders(
           "Autofill.PlusAddresses.Modal.$1.ShownDuration",
           {PlusAddressModalCompletionStatusToString(status)},
           /*offsets=*/nullptr),
       modal_shown_duration);
+  base::UmaHistogramExactLinear(
+      base::ReplaceStringPlaceholders(
+          "Autofill.PlusAddresses.Modal.$1.Refreshes",
+          {PlusAddressModalCompletionStatusToString(status)},
+          /*offsets=*/nullptr),
+      refresh_count, /*exclusive_max=*/31);
 }
 
 // static

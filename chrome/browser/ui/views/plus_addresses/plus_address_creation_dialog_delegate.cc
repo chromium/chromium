@@ -75,6 +75,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressCancelButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressRefreshButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressSuggestedEmailElementId);
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
@@ -221,6 +223,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     views::SetImageFromVectorIconWithColorId(refresh_button_,
                                              vector_icons::kReloadIcon,
                                              ui::kColorIcon, ui::kColorIcon);
+    refresh_button_->SetProperty(views::kElementIdentifierKey,
+                                 kPlusAddressRefreshButtonElementId);
     refresh_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME));
     refresh_button_->SetProperty(views::kMarginsKey,

@@ -70,9 +70,10 @@ class PlusAddressCreationControllerDesktop
   // This is set by OnPlusAddressReserved and cleared when the dialog is closed.
   std::optional<PlusProfile> plus_profile_;
 
-  // Record the time between `modal_shown_time_` and now as modal shown duration
-  // and clear `modal_shown_time_`.
-  void RecordModalShownDuration(
+  // Records the time between `modal_shown_time_` and now as modal shown
+  // duration and the number of refresh attempts. Resets both
+  // `modal_shown_time_` and `reserve_response_count_`.
+  void RecordModalShownOutcome(
       const PlusAddressMetrics::PlusAddressModalCompletionStatus status);
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
@@ -80,6 +81,9 @@ class PlusAddressCreationControllerDesktop
   std::optional<base::Time> modal_shown_time_;
   std::optional<PlusAddressMetrics::PlusAddressModalCompletionStatus>
       modal_error_status_;
+  // The number of responses from calls to reserve a plus address that a user
+  // has made. This equals 1 + number of refreshes.
+  int reserve_response_count_ = 0;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
       this};

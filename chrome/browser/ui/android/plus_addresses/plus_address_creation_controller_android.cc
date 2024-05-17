@@ -155,8 +155,8 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
 void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
     const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
   if (modal_shown_time_.has_value()) {
-    PlusAddressMetrics::RecordModalShownDuration(
-        status, clock_->Now() - modal_shown_time_.value());
+    PlusAddressMetrics::RecordModalShownOutcome(
+        status, clock_->Now() - modal_shown_time_.value(), /*refresh_count=*/0);
     modal_shown_time_.reset();
   }
 }

@@ -54,8 +54,9 @@ class PlusAddressMetrics {
   static void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event);
   // Log plus address creation modal/bottom sheet shown duration for each
   // closing `status`.
-  static void RecordModalShownDuration(PlusAddressModalCompletionStatus status,
-                                       base::TimeDelta modal_shown_duration);
+  static void RecordModalShownOutcome(PlusAddressModalCompletionStatus status,
+                                      base::TimeDelta modal_shown_duration,
+                                      int refresh_count);
   // Log plus address autofill suggestion events.
   static void RecordAutofillSuggestionEvent(
       autofill::AutofillPlusAddressDelegate::SuggestionEvent

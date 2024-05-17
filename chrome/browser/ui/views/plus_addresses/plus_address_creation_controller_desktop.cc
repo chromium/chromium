@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -125,10 +126,10 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
   if (modal_error_status_.has_value()) {
-    RecordModalShownDuration(modal_error_status_.value());
+    RecordModalShownOutcome(modal_error_status_.value());
     modal_error_status_.reset();
   } else {
-    RecordModalShownDuration(
+    RecordModalShownOutcome(
         PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
   }
 }
@@ -142,12 +143,16 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
   return dialog_delegate_.get();
 }
 
-void PlusAddressCreationControllerDesktop::RecordModalShownDuration(
+void PlusAddressCreationControllerDesktop::RecordModalShownOutcome(
     const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
   if (modal_shown_time_.has_value()) {
-    PlusAddressMetrics::RecordModalShownDuration(
-        status, clock_->Now() - modal_shown_time_.value());
+    // The number of refreshes is equal to the number of `reserve` responses
+    // minus 1, since the first displayed plus address also calls `reserve`.
+    PlusAddressMetrics::RecordModalShownOutcome(
+        status, clock_->Now() - modal_shown_time_.value(),
+        std::max(0, reserve_response_count_ - 1));
     modal_shown_time_.reset();
+    reserve_response_count_ = 0;
   }
 }
 
@@ -170,6 +175,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
+    ++reserve_response_count_;
   } else {
     modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
         kReservePlusAddressError;
@@ -190,7 +196,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   if (maybe_plus_profile.has_value()) {
     std::move(callback_).Run(maybe_plus_profile->plus_address);
     // PlusAddress successfully confirmed, closing the modal.
-    RecordModalShownDuration(
+    RecordModalShownOutcome(
         PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   } else {
     modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::

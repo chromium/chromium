@@ -23,6 +23,7 @@ class PlusAddressCreationView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorTextElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressConfirmButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressCancelButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressRefreshButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressSuggestedEmailElementId);
 
   // Updates the view to either show the plus address in the bottom sheet and
