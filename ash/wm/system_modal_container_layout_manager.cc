@@ -98,10 +98,7 @@ void SystemModalContainerLayoutManager::OnWindowAddedToLayout(
 
 void SystemModalContainerLayoutManager::OnWillRemoveWindowFromLayout(
     aura::Window* child) {
-  child->RemoveObserver(this);
-  windows_to_center_.erase(child);
-  if (GetModalType(child) == ui::MODAL_TYPE_SYSTEM)
-    RemoveModalWindow(child);
+  StopObservingWindow(child);
 }
 
 void SystemModalContainerLayoutManager::SetChildBounds(
@@ -132,6 +129,11 @@ void SystemModalContainerLayoutManager::OnWindowPropertyChanged(
     if (RemoveModalWindow(window))
       OnModalWindowRemoved(window);
   }
+}
+
+void SystemModalContainerLayoutManager::OnWindowDestroying(
+    aura::Window* window) {
+  StopObservingWindow(window);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -247,16 +249,22 @@ void SystemModalContainerLayoutManager::OnModalWindowRemoved(
     aura::Window* removed) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   for (aura::Window* root_window : root_windows) {
-    if (RootWindowController::ForWindow(root_window)
-            ->GetSystemModalLayoutManager(removed)
-            ->ActivateNextModalWindow()) {
+    // system modal layout manager can be nullptr in some cases.
+    auto* system_modal_layout_manager =
+        RootWindowController::ForWindow(root_window)
+            ->GetSystemModalLayoutManager(removed);
+    if (system_modal_layout_manager &&
+        system_modal_layout_manager->ActivateNextModalWindow()) {
       return;
     }
   }
   for (aura::Window* root_window : root_windows) {
-    RootWindowController::ForWindow(root_window)
-        ->GetSystemModalLayoutManager(removed)
-        ->DestroyModalBackground();
+    auto* system_modal_layout_manager =
+        RootWindowController::ForWindow(root_window)
+            ->GetSystemModalLayoutManager(removed);
+    if (system_modal_layout_manager) {
+      system_modal_layout_manager->DestroyModalBackground();
+    }
   }
 }
 
@@ -325,6 +333,16 @@ bool SystemModalContainerLayoutManager::IsBoundsCentered(
   return std::abs(window_center.x() - container_center.x()) <
              kCenterPixelDelta &&
          std::abs(window_center.y() - container_center.y()) < kCenterPixelDelta;
+}
+
+void SystemModalContainerLayoutManager::StopObservingWindow(
+    aura::Window* window) {
+  window->RemoveObserver(this);
+  windows_to_center_.erase(window);
+  if (GetModalType(window) == ui::MODAL_TYPE_SYSTEM &&
+      RemoveModalWindow(window)) {
+    OnModalWindowRemoved(window);
+  }
 }
 
 }  // namespace ash
