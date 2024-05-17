@@ -19,6 +19,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -234,6 +235,38 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withId(R.id.review_button)).perform(click());
 
         onView(withText("Older")).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testBackButton() {
+        // This test opens the dialog, clicks the Review button to expand the bottom sheet dialog
+        // and then presses the Back in the OS twice to see what happens (first click should
+        // navigate back to the initial dialog state, second click closes the dialog).
+
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+
+        // Verify we're in initial state for the dialog.
+        assertDialogShown(true);
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
+
+        // Go to PWA list mode.
+        onView(withId(R.id.review_button)).perform(click());
+        onViewWaiting(withText("Web apps used in the last month")).check(matches(isDisplayed()));
+
+        // Pressing the Back button in Android once should bring us to the initial dialog state.
+        Espresso.pressBack();
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
+
+        // Pressing the Back button again should close the bottom sheet.
+        Espresso.pressBack();
+        assertDialogShown(false);
     }
 
     @Test

@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.webapps.R;
 
@@ -19,8 +20,19 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     // This content's priority.
     private @ContentPriority int mPriority = ContentPriority.LOW;
 
-    public PwaRestoreBottomSheetContent(PwaRestoreBottomSheetView view) {
+    // Helps keep track of whether the Back button was pressed.
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
+
+    // The handler to notify when the (Android) Back button is pressed.
+    Runnable mOsBackButtonClicked;
+
+    public PwaRestoreBottomSheetContent(
+            PwaRestoreBottomSheetView view, Runnable onOsBackButtonClicked) {
         mView = view;
+
+        mOsBackButtonClicked = onOsBackButtonClicked;
+        mBackPressStateChangedSupplier.set(true);
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -51,6 +63,16 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
         // This disables that functionality so we can go straight to full screen (minus the top
         // system toolbar).
         return BottomSheetContent.HeightMode.DISABLED;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        mOsBackButtonClicked.run();
     }
 
     @Override

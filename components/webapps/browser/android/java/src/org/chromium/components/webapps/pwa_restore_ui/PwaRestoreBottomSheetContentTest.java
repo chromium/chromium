@@ -45,7 +45,8 @@ public final class PwaRestoreBottomSheetContentTest {
                                 .useConstructor(mActivity)
                                 .defaultAnswer(Mockito.RETURNS_MOCKS));
         PwaRestoreBottomSheetContent pwaRestoreBottomSheetContent =
-                new PwaRestoreBottomSheetContent((PwaRestoreBottomSheetView) mockedView);
+                new PwaRestoreBottomSheetContent(
+                        (PwaRestoreBottomSheetView) mockedView, /* onOsBackButtonClicked= */ null);
 
         Assert.assertTrue(pwaRestoreBottomSheetContent.getContentView() != null);
         Assert.assertTrue(pwaRestoreBottomSheetContent.getToolbarView() != null);

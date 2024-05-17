@@ -12,6 +12,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,14 +51,14 @@ public class PwaRestoreBottomSheetCoordinator {
 
         mView = new PwaRestoreBottomSheetView(activity);
         mView.initialize(backArrowId);
-        mContent = new PwaRestoreBottomSheetContent(mView);
+        mContent = new PwaRestoreBottomSheetContent(mView, this::onOsBackButtonClicked);
         mMediator =
                 new PwaRestoreBottomSheetMediator(
                         apps,
                         activity,
                         this::onReviewButtonClicked,
                         this::onRestoreButtonClicked,
-                        this::onBackButtonClicked);
+                        this::onDialogBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);
@@ -77,9 +78,20 @@ public class PwaRestoreBottomSheetCoordinator {
         mController.expandSheet();
     }
 
-    protected void onBackButtonClicked() {
+    protected void onDialogBackButtonClicked() {
         mMediator.setPeekingState();
         mController.collapseSheet(/* animate= */ true);
+    }
+
+    protected void onOsBackButtonClicked() {
+        if (mMediator.getModel().get(PwaRestoreProperties.VIEW_STATE) == ViewState.VIEW_PWA_LIST) {
+            // When the Android Back button is pressed while showing the PWA list, we should go back
+            // to the initial stage (essentially do what the Back button on the dialog does).
+            onDialogBackButtonClicked();
+        } else {
+            // If we are already in initial stage, we should just close the dialog.
+            mController.hideContent(mContent, /* animate= */ true);
+        }
     }
 
     protected void onRestoreButtonClicked() {
