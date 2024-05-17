@@ -182,20 +182,11 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
   }
 }
 void ThreadControllerWithMessagePumpImpl::BeginNativeWorkBeforeDoWork() {
-  do_work_needed_before_wait_ = true;
-
   if (!g_avoid_schedule_calls_during_native_event_processing.load(
           std::memory_order_relaxed)) {
     return;
   }
-
-  // Native nested loops don't guarantee that `DoWork()` will be called after
-  // executing native work. This is the invariant that is needed to avoid
-  // calls to `ScheduleWork()`. Since these calls can't be skipped there is
-  // nothing left to do in this function.
-  if (task_execution_allowed_in_native_nested_loop_) {
-    return;
-  }
+  in_native_work_batch_ = true;
 
   // Reuse the deduplicator facility to indicate that there is no need for
   // ScheduleWork() until the next time we look for work.
@@ -313,7 +304,7 @@ void ThreadControllerWithMessagePumpImpl::OnEndWorkItemImpl(
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   // DoWork is guaranteed to be called after native work batches and before
   // wait.
-  CHECK(!do_work_needed_before_wait_);
+  CHECK(!in_native_work_batch_);
 
   // In most cases, DoIdleWork() will already have cleared the
   // `hang_watch_scope_` but in some cases where the native side of the
@@ -329,6 +320,8 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
+  in_native_work_batch_ = false;
+
 #if BUILDFLAG(IS_WIN)
   // We've been already in a wakeup here. Deactivate the high res timer of OS
   // immediately instead of waiting for next DoIdleWork().
@@ -357,10 +350,6 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
            main_thread_only().yield_to_native_after_batch)) {
     next_work_info.yield_to_native = true;
   }
-
-  // There was just a check for more work.
-  do_work_needed_before_wait_ = false;
-
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
       (next_wake_up && next_wake_up->is_immediate())
@@ -725,7 +714,6 @@ void ThreadControllerWithMessagePumpImpl::
       pump_->ScheduleWork();
     }
   }
-  task_execution_allowed_in_native_nested_loop_ = allowed;
   main_thread_only().task_execution_allowed = allowed;
 }
 
