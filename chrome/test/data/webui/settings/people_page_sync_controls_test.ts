@@ -14,8 +14,7 @@ import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import type {SyncRoutes} from './sync_test_util.js';
-import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes} from './sync_test_util.js';
+import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="chromeos_lacros">
@@ -32,7 +31,6 @@ suite('SyncControlsTest', async function() {
   let radioGroup: HTMLElement;
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -197,7 +195,7 @@ suite('SyncControlsSubpageTest', function() {
 
     syncControls = document.createElement('settings-sync-controls');
     const router = Router.getInstance();
-    router.navigateTo((router.getRoutes() as SyncRoutes).SYNC_ADVANCED);
+    router.navigateTo(router.getRoutes().SYNC_ADVANCED);
     document.body.appendChild(syncControls);
 
     syncControls.syncStatus = {
@@ -208,9 +206,7 @@ suite('SyncControlsSubpageTest', function() {
     };
     flush();
 
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC_ADVANCED,
-        router.getCurrentRoute());
+    assertEquals(router.getRoutes().SYNC_ADVANCED, router.getCurrentRoute());
   });
 
   test('SignedOut', function() {
@@ -221,9 +217,7 @@ suite('SyncControlsSubpageTest', function() {
       statusAction: StatusAction.NO_ACTION,
     };
     const router = Router.getInstance();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC.path,
-        router.getCurrentRoute().path);
+    assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
   });
 
   test('PassphraseError', function() {
@@ -235,8 +229,7 @@ suite('SyncControlsSubpageTest', function() {
     };
     const router = Router.getInstance();
     assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC_ADVANCED.path,
-        router.getCurrentRoute().path);
+        router.getRoutes().SYNC_ADVANCED.path, router.getCurrentRoute().path);
   });
 
   test('SyncPaused', function() {
@@ -247,9 +240,7 @@ suite('SyncControlsSubpageTest', function() {
       statusAction: StatusAction.REAUTHENTICATE,
     };
     const router = Router.getInstance();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC.path,
-        router.getCurrentRoute().path);
+    assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
   });
 });
 
@@ -263,7 +254,6 @@ suite('SyncControlsManagedTest', async function() {
   let radioGroup: HTMLElement;
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -362,7 +352,6 @@ suite('AutofillAndPaymentsToggles', async function() {
   }
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 

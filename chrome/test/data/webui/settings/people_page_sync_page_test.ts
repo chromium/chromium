@@ -25,8 +25,7 @@ import {isChildVisible, microtasksFinished, eventToPromise} from 'chrome://webui
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
 
-import type {SyncRoutes} from './sync_test_util.js';
-import {getSyncAllPrefs, setupRouterWithSyncRoutes} from './sync_test_util.js';
+import {getSyncAllPrefs} from './sync_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
@@ -44,7 +43,7 @@ suite('SyncSettings', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncPage = document.createElement('settings-sync-page');
     const router = Router.getInstance();
-    router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);
+    router.navigateTo(router.getRoutes().SYNC);
     // Preferences should exist for embedded
     // 'personalization_options.html'. We don't perform tests on them.
     syncPage.prefs = {
@@ -84,7 +83,6 @@ suite('SyncSettings', function() {
   });
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -118,12 +116,12 @@ suite('SyncSettings', function() {
 
     // Navigate away.
     const router = Router.getInstance();
-    router.navigateTo((router.getRoutes() as SyncRoutes).PEOPLE);
+    router.navigateTo(router.getRoutes().PEOPLE);
     await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
 
     // Navigate back to the page.
     browserProxy.resetResolver('didNavigateToSyncPage');
-    router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);
+    router.navigateTo(router.getRoutes().SYNC);
     await browserProxy.whenCalled('didNavigateToSyncPage');
 
     // Remove page element.
@@ -134,7 +132,7 @@ suite('SyncSettings', function() {
     // Recreate page element.
     browserProxy.resetResolver('didNavigateToSyncPage');
     syncPage = document.createElement('settings-sync-page');
-    router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);
+    router.navigateTo(router.getRoutes().SYNC);
     document.body.appendChild(syncPage);
     await browserProxy.whenCalled('didNavigateToSyncPage');
   });
@@ -611,8 +609,7 @@ suite('SyncSettings', function() {
     // Confirm that the page navigates away form the sync setup.
     await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     const router = Router.getInstance();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).PEOPLE, router.getCurrentRoute());
+    assertEquals(router.getRoutes().PEOPLE, router.getCurrentRoute());
   });
 
   test('EnterExistingPassphraseDoesNotExistIfSignedOut', async function() {
@@ -806,8 +803,7 @@ suite('SyncSettings', function() {
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC);
     await eventToPromise('cr-dialog-open', syncPage);
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
     assertTrue(syncPage.shadowRoot!
                    .querySelector<CrDialogElement>('#setupCancelDialog')!.open);
 
@@ -820,8 +816,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<CrDialogElement>(
             '#setupCancelDialog')!);
     flush();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
     assertFalse(!!syncPage.shadowRoot!.querySelector<CrDialogElement>(
         '#setupCancelDialog'));
 
@@ -880,8 +875,7 @@ suite('SyncSettings', function() {
     // Entering passphrase should not display the cancel dialog and should not
     // abort the sync setup.
     const router = Router.getInstance();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
     const setupCancelDialog =
         syncPage.shadowRoot!.querySelector<CrDialogElement>(
             '#setupCancelDialog');
@@ -930,8 +924,7 @@ suite('SyncSettings', function() {
     // Creating passphrase should not display the cancel dialog and should not
     // abort the sync setup.
     const router = Router.getInstance();
-    assertEquals(
-        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
     const setupCancelDialog =
         syncPage.shadowRoot!.querySelector<CrDialogElement>(
             '#setupCancelDialog');
@@ -950,8 +943,7 @@ suite('SyncSettings', function() {
     // Searching settings while setup is in progress cancels sync.
     const router = Router.getInstance();
     router.navigateTo(
-        (router.getRoutes() as SyncRoutes).BASIC,
-        new URLSearchParams('search=foo'));
+        router.getRoutes().BASIC, new URLSearchParams('search=foo'));
 
     const abort = await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     assertTrue(abort);

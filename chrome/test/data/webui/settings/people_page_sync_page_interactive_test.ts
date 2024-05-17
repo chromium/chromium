@@ -11,8 +11,6 @@ import type {CrInputElement, SettingsSyncPageElement} from 'chrome://settings/la
 import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import type {SyncRoutes} from './sync_test_util.js';
-import {setupRouterWithSyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
@@ -21,11 +19,10 @@ suite('sync-page-test', function() {
   let syncPage: SettingsSyncPageElement;
 
   setup(function() {
-    setupRouterWithSyncRoutes();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     SyncBrowserProxyImpl.setInstance(new TestSyncBrowserProxy());
     const router = Router.getInstance();
-    router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);
+    router.navigateTo(router.getRoutes().SYNC);
     syncPage = document.createElement('settings-sync-page');
     document.body.appendChild(syncPage);
     flush();

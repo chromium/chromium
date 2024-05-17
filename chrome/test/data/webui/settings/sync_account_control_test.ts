@@ -15,8 +15,7 @@ import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SignedInState, StatusAction, SyncBr
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import type {SyncRoutes} from './sync_test_util.js';
-import {setupRouterWithSyncRoutes, simulateStoredAccounts} from './sync_test_util.js';
+import {simulateStoredAccounts} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
@@ -44,7 +43,6 @@ suite('SyncAccountControl', function() {
   }
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -361,7 +359,7 @@ suite('SyncAccountControl', function() {
 
     assertEquals(
         Router.getInstance().getCurrentRoute(),
-        (Router.getInstance().getRoutes() as SyncRoutes).SIGN_OUT);
+        Router.getInstance().getRoutes().SIGN_OUT);
   });
 
   test('signed in, has error', function() {

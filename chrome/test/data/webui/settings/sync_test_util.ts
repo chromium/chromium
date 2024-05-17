@@ -5,8 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsRoutes, StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
-import {resetRouterForTesting, Route, Router} from 'chrome://settings/settings.js';
+import type {StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 // clang-format on
 
 /**
@@ -91,38 +90,6 @@ export function getSyncAllPrefsManaged(): SyncPrefs {
     wifiConfigurationsManaged: true,
     wifiConfigurationsSynced: false,
   });
-}
-
-export interface SyncRoutes {
-  BASIC: Route;
-  PEOPLE: Route;
-  SYNC: Route;
-  SYNC_ADVANCED: Route;
-  SIGN_OUT: Route;
-  ADVANCED: Route;
-  ABOUT: Route;
-}
-
-export function setupRouterWithSyncRoutes() {
-  const BASIC = new Route('/');
-  const PEOPLE = BASIC.createSection('/people', 'people');
-  const SYNC = PEOPLE.createChild('/syncSetup');
-  const SYNC_ADVANCED = SYNC.createChild('/syncSetup/advanced');
-
-  const SIGN_OUT = BASIC.createChild('/signOut');
-  SIGN_OUT.isNavigableDialog = true;
-
-  const routes: SyncRoutes = {
-    BASIC,
-    PEOPLE,
-    SYNC,
-    SYNC_ADVANCED,
-    SIGN_OUT,
-    ADVANCED: new Route('/advanced'),
-    ABOUT: new Route('/help'),
-  };
-
-  resetRouterForTesting(new Router(routes as unknown as SettingsRoutes));
 }
 
 export function simulateSyncStatus(status: SyncStatus|undefined) {
