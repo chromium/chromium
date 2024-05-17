@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
@@ -137,6 +138,10 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                         mContext,
                         this::invalidateShownMessage,
                         (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
+            case ARCHIVED_TABS_MESSAGE:
+                assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageData;
+                return CustomMessageCardViewModel.create(
+                        ((ArchivedTabsMessageService.ArchivedTabsMessageData) data).getProvider());
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MessageCardViewProperties.IS_INCOGNITO, false)
@@ -145,6 +150,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     // MessageObserver implementations.
+
     @Override
     public void messageReady(
             @MessageService.MessageType int type, MessageService.MessageData data) {

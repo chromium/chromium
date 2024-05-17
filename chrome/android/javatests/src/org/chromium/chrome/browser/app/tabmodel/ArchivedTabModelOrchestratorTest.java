@@ -125,7 +125,7 @@ public class ArchivedTabModelOrchestratorTest {
                 () -> {
                     mDeferredStartupHandler.runAllTasks();
                     assert mOrchestrator.areTabModelsInitialized();
-                    mOrchestrator.getArchiveSettingsForTesting().resetSettingsForTesting();
+                    mOrchestrator.getTabArchiveSettings().resetSettingsForTesting();
                     mArchivedTabModel = mOrchestrator.getTabModelSelector().getModel(false);
                     mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
                     mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
@@ -171,7 +171,7 @@ public class ArchivedTabModelOrchestratorTest {
     @MediumTest
     public void testScheduledDeclutter() {
         finishLoading();
-        mOrchestrator.getArchiveSettingsForTesting().setArchiveEnabled(false);
+        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false);
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
@@ -187,7 +187,7 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
-        mOrchestrator.getArchiveSettingsForTesting().setArchiveEnabled(true);
+        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(true);
         // A task was scheduled to perform a scheduled declutter, get it and run it.
         runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
 

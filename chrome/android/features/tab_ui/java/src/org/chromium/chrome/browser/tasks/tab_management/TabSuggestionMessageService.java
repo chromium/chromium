@@ -4,18 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ARCHIVED_TABS_EXPAND_CLICK_HANDLER;
-import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ARCHIVED_TAB_COUNT;
-import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.DECLUTTER_INFO_TEXT;
-import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.DECLUTTER_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.ACCEPTED;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.DISMISSED;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -31,9 +24,6 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabContext;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsObserver;
-import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,27 +32,18 @@ import java.util.List;
 /**
  * One of the concrete {@link MessageService} that only serve {@link MessageType#TAB_SUGGESTION}.
  */
-public class TabSuggestionMessageService extends MessageService
-        implements TabSuggestionsObserver, CustomMessageCardProvider {
+public class TabSuggestionMessageService extends MessageService implements TabSuggestionsObserver {
     private static boolean sSuggestionAvailableForTesting;
 
     /** This is the data type that this MessageService is serving to its Observer. */
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
-        private CustomMessageCardProvider mCustomMessageCardProvider;
 
         public TabSuggestionMessageData(
-                TabSuggestion tabSuggestion,
-                Callback<TabSuggestionFeedback> feedbackCallback,
-                CustomMessageCardProvider customMessageCardProvider) {
+                TabSuggestion tabSuggestion, Callback<TabSuggestionFeedback> feedbackCallback) {
             mTabSuggestion = tabSuggestion;
             mTabSuggestionFeedback = feedbackCallback;
-            mCustomMessageCardProvider = customMessageCardProvider;
-        }
-
-        public View getView() {
-            return mCustomMessageCardProvider.getCustomView();
         }
 
         /**
@@ -122,9 +103,6 @@ public class TabSuggestionMessageService extends MessageService
     private final Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final Supplier<TabListEditorCoordinator.TabListEditorController>
             mTabListEditorControllerSupplier;
-    private final CustomMessageCardProvider mCustomMessageCardProvider;
-    private final View mCustomCardView;
-    private final PropertyModel mModel;
 
     public TabSuggestionMessageService(
             Context context,
@@ -137,21 +115,6 @@ public class TabSuggestionMessageService extends MessageService
         mProfile = profile;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
-        mCustomMessageCardProvider = this;
-        mCustomCardView =
-                LayoutInflater.from(context).inflate(R.layout.declutter_message_card_layout, null);
-        mModel =
-                new PropertyModel.Builder(ALL_KEYS)
-                        .with(DECLUTTER_INFO_TEXT, R.plurals.tab_declutter_message_card_text_info)
-                        .with(
-                                ARCHIVED_TAB_COUNT,
-                                currentTabModelFilterSupplier.get().getTotalTabCount())
-                        .with(ARCHIVED_TABS_EXPAND_CLICK_HANDLER, () -> {})
-                        .with(DECLUTTER_SETTINGS_CLICK_HANDLER, () -> {})
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mModel, mCustomCardView, DeclutterMessageCardViewBinder::bind);
     }
 
     @VisibleForTesting
@@ -270,10 +233,7 @@ public class TabSuggestionMessageService extends MessageService
         sSuggestionAvailableForTesting = true;
         for (TabSuggestion tabSuggestion : tabSuggestions) {
             sendAvailabilityNotification(
-                    new TabSuggestionMessageData(
-                            tabSuggestion,
-                            tabSuggestionFeedback,
-                            mCustomMessageCardProvider));
+                    new TabSuggestionMessageData(tabSuggestion, tabSuggestionFeedback));
         }
     }
 
@@ -285,26 +245,5 @@ public class TabSuggestionMessageService extends MessageService
 
     public static boolean isSuggestionAvailableForTesting() {
         return sSuggestionAvailableForTesting;
-    }
-
-    // CustomMessageCardProvider implementation
-    @Override
-    public View getCustomView() {
-        return mCustomCardView;
-    }
-
-    @Override
-    public int getMessageCardVisibilityControl() {
-        return MessageCardViewProperties.MessageCardScope.REGULAR;
-    }
-
-    @Override
-    public int getCardType() {
-        return TabListModel.CardProperties.ModelType.MESSAGE;
-    }
-
-    @Override
-    public void setIsIncognito(boolean isIncognito) {
-        // Intentional noop - this card will not appear on incognito.
     }
 }

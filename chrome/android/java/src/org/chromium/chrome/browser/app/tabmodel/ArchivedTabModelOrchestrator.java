@@ -163,6 +163,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mObservers.removeObserver(observer);
     }
 
+    /** Returns whether the archived tab model has been initialized. */
+    public boolean isTabModelInitialized() {
+        return mInitCalled;
+    }
+
     /**
      * Creates and initiailzes the class and fields, this must be called in the UI thread and can be
      * expensive therefore it should be called from DeferredStartupHandler. Although the lifecycle
@@ -175,7 +180,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * <p>Calling this multiple times (e.g. from separate chrome windows) has no effect and is safe
      * to do.
      */
-    public void maybCreateAndInitTabModels(TabContentManager tabContentManager) {
+    public void maybeCreateAndInitTabModels(TabContentManager tabContentManager) {
         if (mInitCalled) return;
         ThreadUtils.assertOnUiThread();
         assert tabContentManager != null;
@@ -287,6 +292,12 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert false : "Not reached.";
     }
 
+    // Getter methods
+
+    public TabArchiveSettings getTabArchiveSettings() {
+        return mTabArchiveSettings;
+    }
+
     // Private methods
 
     /**
@@ -309,10 +320,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public void resetBeginDeclutterForTesting() {
         mDeclutterInitializationCalled = false;
-    }
-
-    public TabArchiveSettings getArchiveSettingsForTesting() {
-        return mTabArchiveSettings;
     }
 
     public void setTaskRunnerForTesting(TaskRunner taskRunner) {

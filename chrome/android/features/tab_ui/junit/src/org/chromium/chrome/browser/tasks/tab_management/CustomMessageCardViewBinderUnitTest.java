@@ -4,21 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.tasks.tab_management.CustomMessageCardViewProperties.MESSAGE_CARD_VIEW;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_INCOGNITO;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,42 +43,30 @@ public class CustomMessageCardViewBinderUnitTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
+        doReturn(mChildView).when(mProvider).getCustomView();
+        doReturn(MessageCardViewProperties.MessageCardScope.BOTH)
+                .when(mProvider)
+                .getMessageCardVisibilityControl();
+        doReturn(TabListModel.CardProperties.ModelType.MESSAGE).when(mProvider).getCardType();
+
         mCustomMessageCardView =
                 (CustomMessageCardView)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.custom_message_card_item, /* root= */ null);
 
-        mModel =
-                new PropertyModel.Builder(ALL_KEYS)
-                        .with(
-                                MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
-                                MessageCardViewProperties.MessageCardScope.BOTH)
-                        .with(CARD_TYPE, TabListModel.CardProperties.ModelType.MESSAGE)
-                        .build();
+        mModel = CustomMessageCardViewModel.create(mProvider);
 
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel,
-                        new CustomMessageCardViewBinder.ViewHolder(
-                                mCustomMessageCardView, mProvider),
-                        CustomMessageCardViewBinder::bind);
+                        mModel, mCustomMessageCardView, CustomMessageCardViewBinder::bind);
     }
 
     @Test
-    public void testSetChildView() {
-        mModel.set(MESSAGE_CARD_VIEW, mChildView);
-        Assert.assertEquals(1, mCustomMessageCardView.getChildCount());
-    }
+    public void testSetup() {
+        assertEquals(1, mCustomMessageCardView.getChildCount());
+        assertEquals(1f, mCustomMessageCardView.getAlpha(), MathUtils.EPSILON);
 
-    @Test
-    public void testSetCardAlpha() {
-        mModel.set(CARD_ALPHA, 1f);
-        Assert.assertEquals(1f, mCustomMessageCardView.getAlpha(), MathUtils.EPSILON);
-    }
-
-    @Test
-    public void testSetIsIncognito() {
-        mModel.set(IS_INCOGNITO, true);
+        mModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         verify(mProvider, times(1)).setIsIncognito(true);
     }
 }

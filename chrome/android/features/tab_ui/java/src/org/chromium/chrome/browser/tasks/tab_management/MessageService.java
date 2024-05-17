@@ -24,6 +24,7 @@ public class MessageService {
         MessageType.IPH,
         MessageType.PRICE_MESSAGE,
         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+        MessageType.ARCHIVED_TABS_MESSAGE,
         MessageType.ALL
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -33,13 +34,14 @@ public class MessageService {
         int IPH = 2;
         int PRICE_MESSAGE = 3;
         int INCOGNITO_REAUTH_PROMO_MESSAGE = 4;
-        int ALL = 5;
+        int ARCHIVED_TABS_MESSAGE = 5;
+        int ALL = 6;
     }
 
     /**
      * The reason why we disable the message in grid tab switcher and no longer show it.
      *
-     * Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
+     * <p>Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
@@ -76,13 +78,22 @@ public class MessageService {
     public interface MessageData {}
 
     /**
-     * An interface to be notified about changes to a Message.
-     * TODO(meiliang): Need to define this interface in more detail.
+     * Extends {@link MessageData} for CUSTOM_MESSAGE types which require a {@link
+     * CustomMessageCardProvider}.
+     */
+    public interface CustomMessageData extends MessageData {
+        /** Returns a provider of information used for custom messages. */
+        CustomMessageCardProvider getProvider();
+    }
+
+    /**
+     * An interface to be notified about changes to a Message. TODO(meiliang): Need to define this
+     * interface in more detail.
      */
     public interface MessageObserver {
         /**
-         * Called when a message is available.
-         * TODO(meiliang): message data is needed.
+         * Called when a message is available. TODO(meiliang): message data is needed.
+         *
          * @param type The type of the message.
          * @param data {@link MessageData} associated with the message.
          */
@@ -132,7 +143,7 @@ public class MessageService {
         }
     }
 
-    /** Notifies all {@link MessageObserver} that a message is became invalid. */
+    /** Notifies all {@link MessageObserver} that a message was invalidated. */
     public void sendInvalidNotification() {
         for (MessageObserver observer : mObservers) {
             observer.messageInvalidate(mMessageType);

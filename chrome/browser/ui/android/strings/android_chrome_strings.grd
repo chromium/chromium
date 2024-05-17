@@ -6258,6 +6258,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_TRANSIENT_TAB_TITLE" desc="This string is shown as the temporary tab title when a PDF file is loading in a tab. The tab title will be updated to the actual PDF file name once available.">
         Loading PDF…
       </message>
+
+      <!-- Tab declutter -->
+      <message name="IDS_ARCHIVED_TAB_CARD_TITLE" desc="Shown in the tab switcher to prompt the user to review their inactive tabs. Indicates how many tabs are inactive.">
+        {ARCHIVED_TAB_COUNT, plural,
+          =1 {Inactive tab (1)}
+          other {Inactive tabs (#)}}
+      </message>
+      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE" desc="Shown in the tab switcher to inform the user how long the relevant tabs have been in active for.">
+        {INACTIVE_TIME_DAYS, plural,
+          =1 {Not used for 1 day or more}
+          other {Not used for # days or more}}
+      </message>
     </messages>
   </release>
 </grit>

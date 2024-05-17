@@ -422,20 +422,6 @@
           Close without reviewing
       </message>
 
-      <!-- Tab Declutter strings -->
-      <message name="IDS_TAB_DECLUTTER_MESSAGE_CARD_TEXT_INFO" desc="Text info for the Tab Declutter message card that indicates the number of archived tabs a user can review to close.">
-          {TABS_COUNT, plural,
-            =1 {You have <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> archived tab}
-            other {You have <ph name="TABS_COUNT_MANY">%1$s<ex>8</ex></ph> archived tabs}
-          }
-      </message>
-      <message name="IDS_TAB_DECLUTTER_MESSAGE_CARD_REVIEW_SETTINGS_DESCRIPTION" desc="Acessibility string describing the settings icon on the tab declutter message card interface.">
-          Review the current declutter settings.
-      </message>
-      <message name="IDS_TAB_DECLUTTER_MESSAGE_CARD_REVIEW_ARCHIVED_TABS_DESCRIPTION" desc="Acessibility string describing the expand icon for reviewing archived tabs on the tab declutter message card interface.">
-          Review all archived tabs for declutter by entering this editor.
-      </message>
-
       <!-- Accessibility strings for Tab Suggestion -->
       <message name="IDS_ACCESSIBILITY_TAB_SUGGESTION_REVIEW_BUTTON" desc="The accessibility text to read when the text button 'Review' is focused. The 'Review' button is shown next to the message 'X of your tabs haven't been used lately. Close them?', or 'X tabs seem related. Group them?'. User uses that text button to enter a selection mode where they can see the suggested tabs to close or to group, see the rest of their open tabs, and choose what tabs to close or to group.">
         Review the suggestions.

@@ -163,7 +163,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             @NonNull RecyclerView.ViewHolder current,
             @NonNull RecyclerView.ViewHolder target) {
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
-                || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE) {
+                || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
+                || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
             return false;
         }
         return super.canDropOver(recyclerView, current, target);

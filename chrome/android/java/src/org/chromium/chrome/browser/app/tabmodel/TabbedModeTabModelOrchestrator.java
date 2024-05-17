@@ -194,7 +194,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         assert profile != null;
 
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
-        mArchivedTabModelOrchestrator.maybCreateAndInitTabModels(tabContentManager);
+        mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(tabContentManager);
 
         // If the feature flag is enabled, then start the declutter process. Otherwise, rescue
         // tabs that may have been archived previously.
