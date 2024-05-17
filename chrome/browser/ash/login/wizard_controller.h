@@ -62,8 +62,6 @@
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/enter_old_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/factor_setup_success_screen.h"
-#include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
-#include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
@@ -341,8 +339,6 @@ class WizardController : public OobeUI::Observer {
   void ShowChoobeScreen();
   void ShowTouchpadScrollScreen();
   void ShowDisplaySizeScreen();
-  // TODO(b/315829727): remove now unused codepath.
-  void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
   void ShowDrivePinningScreen();
   void ShowGaiaInfoScreen();
   void ShowAddChildScreen();
@@ -443,9 +439,6 @@ class WizardController : public OobeUI::Observer {
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
   void OnOnlineAuthenticationScreenExit(OnlineAuthenticationScreen::Result);
   void OnUserAllowlistCheckScreenExit(UserAllowlistCheckScreen::Result);
-  void OnPasswordChangeLegacyScreenExit(
-      GaiaPasswordChangedScreenLegacy::Result result);
-  void OnPasswordChangeScreenExit(GaiaPasswordChangedScreen::Result result);
   void OnSignInFatalErrorScreenExit();
   void OnEduCoexistenceLoginScreenExit(
       EduCoexistenceLoginScreen::Result result);

@@ -12,6 +12,7 @@
 
 namespace ash {
 
+// TODO(b/315829727): remove now unused handler + all dependent resources.
 // Interface for dependency injection between GaiaPasswordChangedScreen and its
 // WebUI representation.
 class GaiaPasswordChangedView {
