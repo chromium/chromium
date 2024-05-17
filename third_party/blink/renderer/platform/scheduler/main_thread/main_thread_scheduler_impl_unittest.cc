@@ -416,22 +416,14 @@ class MainThreadSchedulerImplTest : public testing::Test {
 
     default_task_runner_ =
         scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
-    if (!scheduler_->scheduling_settings()
-             .mbi_compositor_task_runner_per_agent_scheduling_group) {
-      compositor_task_runner_ =
-          scheduler_->CompositorTaskQueue()->GetTaskRunnerWithDefaultTaskType();
-    }
     idle_task_runner_ = scheduler_->IdleTaskRunner();
     v8_task_runner_ =
         scheduler_->V8TaskQueue()->GetTaskRunnerWithDefaultTaskType();
 
     agent_group_scheduler_ = static_cast<AgentGroupSchedulerImpl*>(
         scheduler_->CreateAgentGroupScheduler());
-    if (scheduler_->scheduling_settings()
-            .mbi_compositor_task_runner_per_agent_scheduling_group) {
-      compositor_task_runner_ = agent_group_scheduler_->CompositorTaskQueue()
-                                    ->GetTaskRunnerWithDefaultTaskType();
-    }
+    compositor_task_runner_ = agent_group_scheduler_->CompositorTaskQueue()
+                                  ->GetTaskRunnerWithDefaultTaskType();
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
         scheduler_.get(), *agent_group_scheduler_);
     agent_group_scheduler_->AddPageSchedulerForTesting(page_scheduler_.get());
@@ -459,12 +451,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
   MainThreadTaskQueue* compositor_task_queue() {
-    if (scheduler_->scheduling_settings()
-            .mbi_compositor_task_runner_per_agent_scheduling_group) {
-      return agent_group_scheduler_->CompositorTaskQueue().get();
-    } else {
-      return scheduler_->CompositorTaskQueue().get();
-    }
+    return agent_group_scheduler_->CompositorTaskQueue().get();
   }
 
   MainThreadTaskQueue* loading_task_queue() {

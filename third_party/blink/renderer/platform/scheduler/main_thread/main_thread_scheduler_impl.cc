@@ -542,10 +542,6 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
 
-  mbi_compositor_task_runner_per_agent_scheduling_group =
-      base::FeatureList::IsEnabled(
-          kMbiCompositorTaskRunnerPerAgentSchedulingGroup);
-
   compositor_tq_policy_during_threaded_scroll =
       base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)
           ? kCompositorTQPolicyDuringThreadedScroll.Get()

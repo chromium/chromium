@@ -81,13 +81,7 @@ AgentGroupSchedulerImpl::DefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 AgentGroupSchedulerImpl::CompositorTaskRunner() {
-  if (main_thread_scheduler_->scheduling_settings()
-          .mbi_compositor_task_runner_per_agent_scheduling_group) {
-    return compositor_task_runner_;
-  }
-  // We temporarily redirect the per-AGS compositor task runner to the main
-  // thread's compositor task runner.
-  return main_thread_scheduler_->CompositorTaskRunner();
+  return compositor_task_runner_;
 }
 
 scoped_refptr<MainThreadTaskQueue>

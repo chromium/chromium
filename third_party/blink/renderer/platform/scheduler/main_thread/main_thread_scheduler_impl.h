@@ -130,10 +130,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // per-ASG task runner instead of the per-thread task runner.
     bool mbi_override_task_runner_handle;
 
-    // If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used
-    // instead of per-MainThreadScheduler CompositorTaskRunner.
-    bool mbi_compositor_task_runner_per_agent_scheduling_group;
-
     // If ThreadedScrollPreventRenderingStarvation is enabled, this is set to
     // the policy set in the associated feature param, otherwise this is
     // equivalent to the existing behavior.

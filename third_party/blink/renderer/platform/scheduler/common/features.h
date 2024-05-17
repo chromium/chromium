@@ -66,12 +66,6 @@ BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
              "MbiOverrideTaskRunnerHandle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used instead
-// of per-MainThreadScheduler CompositorTaskRunner.
-BASE_FEATURE(kMbiCompositorTaskRunnerPerAgentSchedulingGroup,
-             "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to experiment with different values for: "prioritize main thread
 // compositing tasks if we haven't done a main frame in this many milliseconds."
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPrioritizeCompositingAfterDelayTrials);
