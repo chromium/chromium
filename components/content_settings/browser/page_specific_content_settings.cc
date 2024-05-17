@@ -1562,10 +1562,13 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
     // Camera and Microphone share the same activity indicator view. If one of
     // them is in use, reset a blocked state for another as we cannot display
     // in-use and blocked indicator at once.
+    // If permission is blocked on the system level, it should be reset as well
+    // as the in use indicator has higher priority.
     auto t = type == ContentSettingsType::MEDIASTREAM_CAMERA
                  ? ContentSettingsType::MEDIASTREAM_MIC
                  : ContentSettingsType::MEDIASTREAM_CAMERA;
-    if (media_blocked_indicator_timer_.contains(t)) {
+    if (media_blocked_indicator_timer_.contains(t) ||
+        delegate_->IsBlockedOnSystemLevel(t)) {
       ResetMediaBlockedState(t, /*update_indicators=*/false);
     }
   } else {

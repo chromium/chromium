@@ -53,6 +53,11 @@ void TestPageSpecificContentSettingsDelegate::OnContentAllowed(
 void TestPageSpecificContentSettingsDelegate::OnContentBlocked(
     ContentSettingsType type) {}
 
+bool TestPageSpecificContentSettingsDelegate::IsBlockedOnSystemLevel(
+    ContentSettingsType type) {
+  return false;
+}
+
 bool TestPageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
     content::RenderFrameHost* render_frame_host) {
   return false;

@@ -33,6 +33,7 @@ class TestPageSpecificContentSettingsDelegate
       content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
+  bool IsBlockedOnSystemLevel(ContentSettingsType type) override;
   bool IsFrameAllowlistedForJavaScript(
       content::RenderFrameHost* render_frame_host) override;
 
