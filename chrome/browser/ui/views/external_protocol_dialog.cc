@@ -100,14 +100,14 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       false /* checkbox_selected */, ExternalProtocolHandler::BLOCK));
   SetModalType(ui::MODAL_TYPE_CHILD);
 
-  message_box_view_ =
-      new views::MessageBoxView(GetMessageTextForOrigin(initiating_origin_));
+  message_box_view_ = AddChildView(std::make_unique<views::MessageBoxView>(
+      GetMessageTextForOrigin(initiating_origin_)));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   set_margins(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -178,18 +178,6 @@ void ExternalProtocolDialog::OnDialogAccepted() {
 
   ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
       url_, web_contents_.get(), initiator_document_);
-}
-
-views::View* ExternalProtocolDialog::GetContentsView() {
-  return message_box_view_;
-}
-
-views::Widget* ExternalProtocolDialog::GetWidget() {
-  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
-}
-
-const views::Widget* ExternalProtocolDialog::GetWidget() const {
-  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
 }
 
 void ExternalProtocolDialog::SetRememberSelectionCheckboxCheckedForTesting(
