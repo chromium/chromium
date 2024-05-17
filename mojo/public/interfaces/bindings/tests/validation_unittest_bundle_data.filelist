@@ -146,10 +146,14 @@
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd21_empty_extensible_enum_accepts_any_value.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd22_empty_nonextensible_enum_accepts_no_values.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd22_empty_nonextensible_enum_accepts_no_values.expected
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_array_of_optionals_less_than_necessary_bytes.data
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_array_of_optionals_less_than_necessary_bytes.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_good.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_good.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_good.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_good.expected
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_map_of_optionals_less_than_necessary_bytes.data
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_map_of_optionals_less_than_necessary_bytes.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_good.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_good.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_multiple_pointers_to_same_struct.data
