@@ -194,8 +194,15 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   raw_ptr<TpcdMetadataDevtoolsObserver> devtools_observer_ = nullptr;
 };
 
+// TODO(https://crbug.com/341211478): Flaky on Linux ChromiumOS MSan Tests and
+// Windows
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
+#define MAYBE_EmitsDevtoolsIssues DISABLED_EmitsDevtoolsIssues
+#else
+#define MAYBE_EmitsDevtoolsIssues EmitsDevtoolsIssues
+#endif
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       EmitsDevtoolsIssues) {
+                       MAYBE_EmitsDevtoolsIssues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
   WaitForIssueAndCheck({"b.test"}, 50u, true);
 
