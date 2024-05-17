@@ -129,6 +129,7 @@ void PerformanceEventTiming::SetDuration(double duration) {
 
 void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
+  builder.AddInteger("interactionId", interactionId());
   builder.AddNumber("processingStart", processingStart());
   builder.AddNumber("processingEnd", processingEnd());
   builder.AddBoolean("cancelable", cancelable_);
