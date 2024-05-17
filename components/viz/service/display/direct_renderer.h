@@ -390,11 +390,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool visible_ = false;
   bool disable_color_checks_for_testing_ = false;
 
-  // For use in coordinate conversion, this stores the output rect, viewport
-  // rect (= unflipped version of glViewport rect), the size of target
-  // framebuffer, and the current window space viewport. During a draw, this
-  // stores the values for the current render pass; in between draws, they
-  // retain the values for the root render pass of the last draw.
+  // For use in deciding whether to enable the scissor rect test.
+  //
+  // During a draw, this stores the value for the current render pass; between
+  // draws, it retains the value for the root render pass of the last draw.
   gfx::Size current_viewport_size_;
 
   DrawingFrame* current_frame() {
