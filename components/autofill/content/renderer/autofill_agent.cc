@@ -413,6 +413,13 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
   HidePopup();
 }
 
+// With the old focus behavior, the context menu may be opened in a
+// contenteditable without AutofillDriverRouter in the browser process
+// knowing about the contenteditable and therefore may have not known
+// the frame. The old, hacky fix was to call
+// `ShowSuggestionsForContentEditable()` in `HandleFocusChangeComplete()`
+// even if `!focused_node_was_last_clicked`. This behavior has been removed
+// in crrev.com/c/5502049 in the anticipation of `kAutofillNewFocusEvents`.
 void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
   CHECK(!base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents));
   HidePopup();
@@ -1546,19 +1553,16 @@ void AutofillAgent::HandleFocusChangeComplete(
     }
   }
 
-  // TODO(crbug.com/1490372, b/308811729): This is not conditioned on
-  // `focused_node_was_last_clicked`. This has two advantages:
-  // - The AutofillDriverRouter is informed about the form and then can route
-  //   ExtractForm() messages to the right frame.
-  //   TODO(crbug.com/1490372, b/308811729): Check whether the context menu
-  //   event arrives after this one. (Probably it does, analogously to the IME.)
-  // - On click into a nested contenteditable `focused_node_was_last_clicked` is
-  //   false. The call comes from DidCompleteFocusChangeInFrame() which passes
-  //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
-  //   call `node.Focused()` was false.
-  ShowSuggestionsForContentEditable(
-      focused_element,
-      AutofillSuggestionTriggerSource::kContentEditableClicked);
+  // Preventing suggestions shown on contenteditable for right click or
+  // non-click focus.
+  // TODO(crbug.com/40284726): This seems to be redundant. Remove call to
+  // ShowSuggestionsForContentEditable.
+  if (focused_node_was_last_clicked ||
+      !base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents)) {
+    ShowSuggestionsForContentEditable(
+        focused_element,
+        AutofillSuggestionTriggerSource::kContentEditableClicked);
+  }
 }
 
 void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
