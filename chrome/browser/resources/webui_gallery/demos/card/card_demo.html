@@ -1,22 +1,3 @@
-<style include="cr-page-host-style cr-shared-style">
-  .card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-    margin: 0 auto;
-    margin-block-end: 36px;
-    max-width: var(--card-max-width);
-  }
-
-  .flex {
-    flex: 1;
-  }
-
-  #expandedContent {
-    padding-inline-end: var(--cr-section-padding);
-    padding-inline-start: var(--cr-section-indent-padding);
-  }
-</style>
 <div class="cr-centered-card-container">
   <h2>Cards and rows with content</h2>
   <div class="card">
@@ -55,7 +36,7 @@
     </cr-link-row>
     <cr-link-row class="hr" external
         label="A row that links to an external website"
-        on-click="onExternalLinkClick_"></cr-link-row>
+        @click="${this.onExternalLinkClick_}"></cr-link-row>
     <cr-link-row no-hover class="hr" label="Link row with no hover effect">
     </cr-link-row>
     <cr-link-row start-icon="cr:check" label="Row with an icon"></cr-link-row>
@@ -68,10 +49,11 @@
 
   <h2>Other examples</h2>
   <div class="card">
-    <cr-expand-button class="cr-row first" expanded="{{expanded_}}">
+    <cr-expand-button class="cr-row first" ?expanded="${this.expanded_}"
+        @expanded-changed="${this.onExpandedChanged_}">
       A row that expands...
     </cr-expand-button>
-    <cr-collapse id="expandedContent" opened="[[expanded_]]">
+    <cr-collapse id="expandedContent" ?opened="${this.expanded_}">
       <div class="cr-padded-text">...into more rows!</div>
       <div class="cr-padded-text hr">...into more rows!</div>
       <div class="cr-padded-text hr">...into more rows!</div>

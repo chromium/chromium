@@ -1,10 +1,4 @@
-<style include="demo">
-  cr-expand-button {
-    min-width: 100px;
-    padding: 0 12px;
-    width: 45%;
-  }
-</style>
+
 
 <h1>cr-button</h1>
 <div class="demos">
@@ -59,12 +53,13 @@
 
 <h1>cr-expand-button</h1>
 <div class="demos">
-  <cr-expand-button expanded="{{expanded_}}"
+  <cr-expand-button ?expanded="${this.expanded_}"
+      @expanded-changed="${this.onExpandedChanged_}"
       expand-title="Expand" collapse-title="Collapse">
-    <div hidden$="[[expanded_]]">Expand row</div>
-    <div hidden$="[[!expanded_]]">Collapse row</div>
+    <div ?hidden="${this.expanded_}">Expand row</div>
+    <div ?hidden="${!this.expanded_}">Collapse row</div>
   </cr-expand-button>
-  <cr-collapse opened="[[expanded_]]">Some content goes here.</cr-collapse>
+  <cr-collapse ?opened="${this.expanded_}">Some content goes here.</cr-collapse>
 
   <cr-expand-button expand-icon="cr:arrow-drop-down"
       collapse-icon="cr:arrow-drop-up">

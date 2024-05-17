@@ -8,34 +8,40 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons_lit.html.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './card_demo.html.js';
+import {getCss} from './card_demo.css.js';
+import {getHtml} from './card_demo.html.js';
 
-class CardDemoElement extends PolymerElement {
+export class CardDemoElement extends CrLitElement {
   static get is() {
     return 'card-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      expanded_: Boolean,
+      expanded_: {type: Boolean},
     };
   }
 
-  private expanded_: boolean = false;
+  protected expanded_: boolean = false;
 
-  private onExternalLinkClick_() {
+  protected onExternalLinkClick_() {
     window.open('https://chromium.org');
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
   }
 }
 

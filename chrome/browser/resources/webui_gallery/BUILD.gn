@@ -16,6 +16,8 @@ build_webui("build") {
   ]
 
   css_files = [
+    "demos/buttons/buttons_demo.css",
+    "demos/card/card_demo.css",
     "demos/cr_action_menu/cr_action_menu_demo.css",
     "demos/demo.css",
     "demos/demo_lit.css",
