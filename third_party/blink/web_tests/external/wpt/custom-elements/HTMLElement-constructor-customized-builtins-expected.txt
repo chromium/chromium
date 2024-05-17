@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] HTMLElement constructor must not get .prototype until it finishes its extends sanity checks, calling proxy constructor directly
+  assert_equals: Should never have gotten .prototype expected 0 but got 1
+[FAIL] HTMLElement constructor must not get .prototype until it finishes its extends sanity checks, calling via Reflect
+  assert_equals: Should never have gotten .prototype expected 0 but got 1
+Harness: the test ran to completion.
+

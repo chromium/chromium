@@ -328643,10 +328643,6 @@
       "overlay-transition-dialog-ref.html": [
        "b0b8d52e78e9ee26303f49976b00193d46bed7a1",
        []
-      ],
-      "overlay-transition-property-expected.txt": [
-       "bf769106cb32a99e14f2210651d8959d44bf0348",
-       []
       ]
      },
      "position-absolute-iframe-print-ref.html": [
@@ -339322,20 +339318,8 @@
        "4da279daa391f56226f7c324790de8dfe6277514",
        []
       ],
-      "transition-behavior-expected.txt": [
-       "42b08d5872ee00aa553969f034b85d370d813276",
-       []
-      ],
-      "transition-computed-expected.txt": [
-       "29c9f00c7671de1fe0b2adbfc7bb02e68fe63527",
-       []
-      ],
       "transition-timing-function-valid-expected.txt": [
        "38c33e6977a64c46b0f4f4ceb6adc8dff48de44e",
-       []
-      ],
-      "transition-valid-expected.txt": [
-       "665912cf362f61dfc7bd755fc1e315ded545b622",
        []
       ]
      },
@@ -348486,6 +348470,10 @@
     ],
     "ElementInternals-accessibility-expected.txt": [
      "02df05e9503ca4a3506668a36a37271d4ba62f43",
+     []
+    ],
+    "HTMLElement-constructor-customized-builtins-expected.txt": [
+     "33120592683372bb76ed19017a461bf05dd79d8d",
      []
     ],
     "HTMLElement-constructor-customized-bulitins-expected.txt": [
@@ -371661,7 +371649,7 @@
          []
         ],
         "form-submission.py": [
-         "f0c2d4cf61fed10f8854fc9b3d93d7099199a655",
+         "3f6079c5dc7fd912c9c7879a31dd2cd8daed4046",
          []
         ],
         "form.html": [
@@ -399685,7 +399673,7 @@
        []
       ],
       "gather.json": [
-       "acd7ad8775e6df514547ed5871d386b42b82c78a",
+       "a01654637f14e29d3cdb69609b583e2f223cb3d7",
        []
       ],
       "gemm.json": [
@@ -481814,7 +481802,7 @@
       {}
      ]
     ],
-    "CustomElementRegistry-getName.tentative.html": [
+    "CustomElementRegistry-getName.html": [
      "9bd43d51080a838d0377f2eda15e09e71fafa5d5",
      [
       null,
@@ -481877,7 +481865,7 @@
       {}
      ]
     ],
-    "HTMLElement-constructor-customized-bulitins.html": [
+    "HTMLElement-constructor-customized-builtins.html": [
      "9244dfe4adc6f1facab71e770641c1f1fdda9d52",
      [
       null,
@@ -580915,7 +580903,7 @@
         ]
        ],
        "constructing-form-data-set.html": [
-        "c27270ea30bb8922516a082d204f7a348cc38aba",
+        "f891bac55afd6907201e0ef0a1d51ad3c92faf80",
         [
          null,
          {}
@@ -581099,7 +581087,7 @@
         ]
        ],
        "submit-entity-body.html": [
-        "be9c5f0696eda41b652c9653fee1a70a2304e8f5",
+        "4467d497f111bbef5bde1d7cc7f82789de32300b",
         [
          null,
          {
@@ -674252,6 +674240,39 @@
       }
      ]
     ],
+    "videoFrame-drawImage-hbd.any.js": [
+     "f03fce796b089d9c058aedfc352f7aaada928080",
+     [
+      "webcodecs/videoFrame-drawImage-hbd.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoFrame-drawImage-hbd.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "videoFrame-drawImage.any.js": [
      "9830181c4f50a83a36c74453f58b403d91f75493",
      [
@@ -682591,7 +682612,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "96082437289e87c4a98cd8c5336a2c15c33a0bc0",
+      "184e8033e6624cfd433494d7c01f917195c5b65d",
       [
        "webnn/validation_tests/gather.https.any.html",
        {
