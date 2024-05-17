@@ -277,8 +277,10 @@ base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
 
 #if !BUILDFLAG(IS_FUCHSIA)
   base::File::Error error = file.Lock(base::File::LockMode::kExclusive);
-  if (error != base::File::FILE_OK)
+  if (error != base::File::FILE_OK) {
+    UnlockFileLocal(path);
     return base::unexpected(error);
+  }
 #endif
 
   return file;
