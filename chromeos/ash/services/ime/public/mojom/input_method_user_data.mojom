@@ -45,4 +45,7 @@ interface InputMethodUserDataService {
   // dict_id.
   DeleteJapaneseDictionaryEntry(uint64 dict_id, uint32 entry_index)
       => (Status status);
+
+  // Create a new Japanese dictionary with the name provided.
+  CreateJapaneseDictionary(string dictionary_name) => (Status status);
 };

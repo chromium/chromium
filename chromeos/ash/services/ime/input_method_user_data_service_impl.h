@@ -45,6 +45,10 @@ class InputMethodUserDataServiceImpl
       uint32_t entry_index,
       DeleteJapaneseDictionaryEntryCallback callback) override;
 
+  void CreateJapaneseDictionary(
+      const std::string& dictionary_name,
+      CreateJapaneseDictionaryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 

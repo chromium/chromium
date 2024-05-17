@@ -295,5 +295,47 @@ TEST(InputMethodUserDataServiceTest, DeleteJapaneseDictionaryEntryOnError) {
   EXPECT_EQ(config_future.Get(), expected);
 }
 
+TEST(InputMethodUserDataServiceTest, CreateJapaneseDictionaryOnSuccess) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_create_japanese_dictionary()->set_name("name");
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.CreateJapaneseDictionary(/*dictionary_name=*/"name",
+                                   config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, CreateJapaneseDictionaryOnError) {
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(false);
+  response_pb.mutable_status()->set_reason("Unknown Error");
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest)
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.CreateJapaneseDictionary(/*dictionary_name=*/"name",
+                                   config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = false;
+  expected->reason = "Unknown Error";
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
 }  // namespace
 }  // namespace ash::ime
