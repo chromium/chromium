@@ -14,7 +14,6 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
@@ -22,6 +21,8 @@
 #endif
 
 namespace net {
+
+class SiteForCookies;
 
 class NET_EXPORT CookiePartitionKey {
  public:
@@ -99,8 +100,8 @@ class NET_EXPORT CookiePartitionKey {
   // is the url of the context running the code.
   static std::optional<CookiePartitionKey> FromNetworkIsolationKey(
       const NetworkIsolationKey& network_isolation_key,
-      SiteForCookies site_for_cookies,
-      SchemefulSite request_site,
+      const SiteForCookies& site_for_cookies,
+      const SchemefulSite& request_site,
       bool main_frame_navigation);
 
   // Create a new CookiePartitionKey from the site of an existing

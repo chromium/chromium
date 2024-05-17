@@ -122,8 +122,8 @@ CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
 
 std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key,
-    SiteForCookies site_for_cookies,
-    SchemefulSite request_site,
+    const SiteForCookies& site_for_cookies,
+    const SchemefulSite& request_site,
     bool main_frame_navigation) {
   if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
     return std::nullopt;
