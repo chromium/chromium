@@ -80,8 +80,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleFactoryWebUIInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
   }
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
 

@@ -195,7 +195,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #endif
           features::kPersistentOriginTrials,
           features::kSidePanelPinning,
-          features::kChromeRefresh2023,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,

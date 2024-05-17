@@ -53,9 +53,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
             {feature_engagement::kIPHTabSearchFeature})) {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures(
-        {features::kResponsiveToolbar, features::kSidePanelPinning,
-         features::kChromeRefresh2023},
-        {});
+        {features::kResponsiveToolbar, features::kSidePanelPinning}, {});
   }
 
   void SetUpOnMainThread() override {

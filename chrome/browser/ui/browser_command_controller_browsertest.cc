@@ -83,9 +83,7 @@ class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
 class BrowserCommandControllerBrowserTestRefreshOnly
     : public BrowserCommandControllerBrowserTest {
  public:
-  BrowserCommandControllerBrowserTestRefreshOnly() {
-    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
-  }
+  BrowserCommandControllerBrowserTestRefreshOnly() = default;
   BrowserCommandControllerBrowserTestRefreshOnly(
       const BrowserCommandControllerBrowserTestRefreshOnly&) = delete;
   BrowserCommandControllerBrowserTestRefreshOnly& operator=(
@@ -117,9 +115,6 @@ class BrowserCommandControllerBrowserTestRefreshOnly
     net::NetworkChangeNotifier::CreateMockIfNeeded();
     browser()->command_controller()->TabStateChanged();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that showing a constrained window disables find.

@@ -46,7 +46,7 @@ class PerformanceSidePanelInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023,
+        {features::kSidePanelPinning,
          performance_manager::features::kPerformanceControlsSidePanel},
         {});
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(

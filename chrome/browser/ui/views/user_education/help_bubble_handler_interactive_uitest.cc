@@ -31,8 +31,7 @@ constexpr char kUserEducationInternalsUrl[] =
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleHandlerInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
   }
   ~HelpBubbleHandlerInteractiveUiTest() override = default;
 

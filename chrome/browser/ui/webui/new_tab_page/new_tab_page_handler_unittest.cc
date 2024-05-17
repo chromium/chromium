@@ -1201,9 +1201,6 @@ TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeChrome) {
 }
 
 TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeChromeRefresh) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kChromeRefresh2023}, {});
-
   EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
       .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(*mock_feature_promo_helper_,

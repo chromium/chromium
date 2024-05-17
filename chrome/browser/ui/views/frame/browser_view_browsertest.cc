@@ -110,15 +110,6 @@ class BrowserViewTest : public InProcessBrowserTest {
   raw_ptr<DevToolsWindow> devtools_;
 };
 
-class BrowserViewTestRefreshOnly : public BrowserViewTest {
- public:
-  BrowserViewTestRefreshOnly() {
-    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 namespace {
 
 // Used to simulate scenario in a crash. When WebContentsDestroyed() is invoked
@@ -254,8 +245,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
 }
 
 // Verifies that the side panel's rounded corner is being correctly layed out.
-IN_PROC_BROWSER_TEST_F(BrowserViewTestRefreshOnly,
-                       SidePanelRoundedCornerLayout) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
   SidePanelCoordinator* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser()));
   coordinator->SetNoDelaysForTesting(true);

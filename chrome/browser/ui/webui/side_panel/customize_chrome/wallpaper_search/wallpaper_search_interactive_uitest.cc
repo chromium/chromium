@@ -42,7 +42,6 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
         /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
                               optimization_guide::features::
                                   kOptimizationGuideModelExecution,
-                              features::kChromeRefresh2023,
                               ntp_features::kNtpWallpaperSearchButton,
                               optimization_guide::features::internal::
                                   kWallpaperSearchSettingsVisibility},

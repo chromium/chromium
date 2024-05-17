@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -36,7 +35,7 @@ class MaterialNewTabPageColorMixerTest : public testing::Test {
 
 TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedDisabled) {
   feature_list().InitWithFeatures(
-      /* enabled_features */ {features::kChromeRefresh2023},
+      /* enabled_features */ {},
       /* disabled_features */ {ntp_features::kNtpModulesRedesigned});
 
   AddMaterialColorMixers();
@@ -49,8 +48,8 @@ TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedDisabled) {
 
 TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedEnabled) {
   feature_list().InitWithFeatures(
-      /* enabled_features */ {ntp_features::kNtpModulesRedesigned,
-                              features::kChromeRefresh2023},
+      /* enabled_features */
+      {ntp_features::kNtpModulesRedesigned},
       /* disabled_features */ {});
 
   AddMaterialColorMixers();

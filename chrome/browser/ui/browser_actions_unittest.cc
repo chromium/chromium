@@ -16,8 +16,7 @@ class BrowserActionsTest : public BrowserWithTestWindowTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/std::vector<
             base::test::FeatureRef>{features::kSidePanelPinning,
-                                    features::kToolbarPinning,
-                                    features::kChromeRefresh2023},
+                                    features::kToolbarPinning},
         /*disabled_features=*/{});
   }
 

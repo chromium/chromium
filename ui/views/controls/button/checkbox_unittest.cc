@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/base_event_utils.h"
@@ -75,16 +74,6 @@ class CheckboxTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 };
 
-class CheckboxTestRefreshOnly : public CheckboxTest {
- public:
-  CheckboxTestRefreshOnly() {
-    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 TEST_F(CheckboxTest, AccessibilityTest) {
   const std::u16string label_text = u"Some label";
   StyledLabel label;
@@ -126,7 +115,7 @@ TEST_F(CheckboxTest, TestCorrectCheckColor) {
   EXPECT_EQ(actual, expected);
 }
 
-TEST_F(CheckboxTestRefreshOnly, TestCorrectContainerColor) {
+TEST_F(CheckboxTest, TestCorrectContainerColor) {
   // Enabled
   checkbox()->SetChecked(true);
   int icon_state = checkbox()->GetIconState(Button::ButtonState::STATE_NORMAL);

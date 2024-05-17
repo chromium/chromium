@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,15 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 class TestWebAppMenuModelCR2023 : public WebAppBrowserTestBase {
  public:
-  TestWebAppMenuModelCR2023()
-      : WebAppBrowserTestBase({features::kChromeRefresh2023}, {}) {}
+  TestWebAppMenuModelCR2023() : WebAppBrowserTestBase({}, {}) {}
 
   TestWebAppMenuModelCR2023(const TestWebAppMenuModelCR2023&) = delete;
   TestWebAppMenuModelCR2023& operator=(const TestWebAppMenuModelCR2023&) =

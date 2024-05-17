@@ -177,10 +177,10 @@ class AppMenuBrowserTestRefreshOnly : public AppMenuBrowserTest {
     // testing that seemed to result in them always being skipped when the
     // default feature state wasn't correct, even when setting the correct state
     // via command-line flags. Probably I was doing something wrong...
-    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023,
-                                           // Needed for the "extensions" test
-                                           features::kExtensionsMenuInAppMenu},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {// Needed for the "extensions" test
+         features::kExtensionsMenuInAppMenu},
+        {});
   }
 
  private:

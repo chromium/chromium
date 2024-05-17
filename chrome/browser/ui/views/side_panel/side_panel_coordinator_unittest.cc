@@ -80,9 +80,7 @@ std::unique_ptr<KeyedService> BuildSidePanelService(
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023},
-        {});
+    feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
     TestWithBrowserView::SetUp();
 
     AddTabToBrowser(GURL("http://foo1.com"));
@@ -1836,9 +1834,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kResponsiveToolbar},
-        {});
+        {features::kSidePanelPinning, features::kResponsiveToolbar}, {});
     TestWithBrowserView::SetUp();
 
     AddTabToBrowser(GURL("http://foo1.com"));

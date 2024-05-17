@@ -34,8 +34,7 @@ namespace chrome {
 class BrowserCommandsTest : public InProcessBrowserTest {
  public:
   BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
   base::test::ScopedFeatureList feature_list_;

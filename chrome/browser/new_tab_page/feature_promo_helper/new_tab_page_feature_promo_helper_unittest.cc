@@ -14,7 +14,6 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/ui_base_features.h"
 
 class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
  protected:
@@ -40,8 +39,7 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
   void SetChromeRefresh2023() {
     iph_feature_list_.Reset();
     iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-         features::kChromeRefresh2023});
+        {feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature});
   }
 
   NewTabPageFeaturePromoHelper* helper() { return helper_.get(); }

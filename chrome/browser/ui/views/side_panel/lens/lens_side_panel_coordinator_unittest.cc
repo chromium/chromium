@@ -51,8 +51,7 @@ class LensSidePanelCoordinatorTest
       features.InitWithFeaturesAndParameters(
           {{lens::features::kLensStandalone,
             {{lens::features::kHomepageURLForLens.name, kLensHomepageURL}}},
-           {features::kSidePanelPinning, {}},
-           {features::kChromeRefresh2023, {}}},
+           {features::kSidePanelPinning, {}}},
           {});
     } else {
       features.InitWithFeaturesAndParameters(

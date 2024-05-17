@@ -244,9 +244,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023,
-         features::kReadAnything},
-        {});
+        {features::kSidePanelPinning, features::kReadAnything}, {});
     InteractiveBrowserTest::SetUp();
   }
 

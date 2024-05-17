@@ -30,8 +30,7 @@
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 

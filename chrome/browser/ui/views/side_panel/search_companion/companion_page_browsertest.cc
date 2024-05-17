@@ -2390,8 +2390,7 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
 
   void SetUpFeatureList() override {
     CompanionPageBrowserTest::SetUpFeatureList();
-    pinning_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+    pinning_feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
   }
 
   ~CompanionSidePanelPinningBrowserTest() override = default;

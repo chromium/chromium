@@ -36,8 +36,7 @@
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+    scoped_feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);

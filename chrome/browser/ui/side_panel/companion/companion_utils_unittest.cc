@@ -27,8 +27,8 @@ class CompanionUtilsTest : public BrowserWithTestWindowTest {
  public:
   CompanionUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kSidePanelPinning, ::features::kChromeRefresh2023,
-         ::features::kResponsiveToolbar, features::internal::kSidePanelCompanionChromeOS},
+        {::features::kSidePanelPinning, ::features::kResponsiveToolbar,
+         features::internal::kSidePanelCompanionChromeOS},
         {});
   }
   ~CompanionUtilsTest() override = default;

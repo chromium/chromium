@@ -92,8 +92,7 @@ class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
   PinnedToolbarActionsModelBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kSidePanelPinning,
-         companion::features::internal::kSidePanelCompanion,
-         features::kChromeRefresh2023},
+         companion::features::internal::kSidePanelCompanion},
         {});
   }
 

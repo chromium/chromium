@@ -176,8 +176,7 @@ IN_PROC_BROWSER_TEST_F(
 class TabStripModelBrowserTest : public InProcessBrowserTest {
  public:
   TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
   base::test::ScopedFeatureList feature_list_;

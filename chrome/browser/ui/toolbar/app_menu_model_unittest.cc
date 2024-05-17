@@ -155,8 +155,7 @@ class ExtensionsMenuModelTest : public AppMenuModelTest {
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
@@ -372,8 +371,7 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
 TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kChromeRefresh2023,
-                            performance_manager::features::
+      /*enabled_features=*/{performance_manager::features::
                                 kPerformanceControlsSidePanel},
       /*disabled_features=*/{});
   AppMenuModel model(this, browser());

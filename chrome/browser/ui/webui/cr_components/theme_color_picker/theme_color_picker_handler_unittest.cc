@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -35,7 +34,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
@@ -152,8 +150,6 @@ class ThemeColorPickerHandlerTest : public testing::Test {
         web_contents_);
     mock_client_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
-
-    scoped_feature_list_.Reset();
   }
 
   TestingProfile& profile() { return *profile_; }
@@ -178,7 +174,6 @@ class ThemeColorPickerHandlerTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockClient> mock_client_;
   raw_ptr<MockThemeService> mock_theme_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ThemeColorPickerHandler> handler_;
 };
 
@@ -212,7 +207,6 @@ TEST_F(ThemeColorPickerHandlerTest, GetChromeColorsExtended) {
 }
 
 TEST_F(ThemeColorPickerHandlerTest, GetChromeColors) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   std::vector<theme_color_picker::mojom::ChromeColorPtr> colors;
   base::MockCallback<ThemeColorPickerHandler::GetChromeColorsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
@@ -345,7 +339,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   theme_color_picker::mojom::ThemePtr theme;
   EXPECT_CALL(mock_client_, SetTheme)
       .Times(2)
@@ -400,7 +393,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   theme_color_picker::mojom::ThemePtr theme;
   EXPECT_CALL(mock_client_, SetTheme)
       .Times(1)
@@ -539,7 +531,6 @@ INSTANTIATE_TEST_SUITE_P(
                       ThemeUpdateSource::kCustomBackgroundService));
 
 TEST_F(ThemeColorPickerHandlerTest, SetDefaultColor) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   std::optional<SkColor> color;
   EXPECT_CALL(mock_theme_service(), SetUserColor)
       .Times(1)
@@ -562,7 +553,6 @@ TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColor) {
 }
 
 TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColorGM3) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   bool is_grey;
   EXPECT_CALL(mock_theme_service(), SetIsGrayscale)
       .Times(1)
@@ -574,7 +564,6 @@ TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColorGM3) {
 }
 
 TEST_F(ThemeColorPickerHandlerTest, SetSeedColor) {
-  scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
   std::optional<SkColor> color;
   ui::mojom::BrowserColorVariant variant;
   EXPECT_CALL(mock_theme_service(), SetUserColorAndBrowserColorVariant)
