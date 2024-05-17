@@ -5113,6 +5113,8 @@ crbug.com/1159463 crbug.com/1278570 [ Mac12 Release ] virtual/gpu-rasterization/
 # Sheriff 2021-12-21
 crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failure Pass ]
 
+crbug.com/335630145 external/wpt/client-hints/sec-ch-width-auto-sizes-001.https.html [ Failure ]
+crbug.com/335630145 external/wpt/client-hints/sec-ch-width-auto-sizes-003.https.html [ Failure ]
 
 # Sheriff 2021-12-22
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
