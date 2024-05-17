@@ -132,7 +132,7 @@ TEST_F(ResourceTest, RevalidationFailed) {
   EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url));
 
   resource->AppendData(kData);
 
@@ -174,7 +174,7 @@ TEST_F(ResourceTest, RevalidationSucceeded) {
   EXPECT_TRUE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(4u, resource->ResourceBuffer()->size());
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url));
 
   MemoryCache::Get()->Remove(resource);
 
@@ -208,7 +208,7 @@ TEST_F(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   EXPECT_TRUE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url));
   MemoryCache::Get()->Remove(resource);
 
   resource->RemoveClient(client);
@@ -368,7 +368,7 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   EXPECT_EQ(redirect_target_url, resource->LastResourceRequest().Url());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(3u, resource->ResourceBuffer()->size());
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url));
 
   EXPECT_TRUE(client->NotifyFinishedCalled());
 

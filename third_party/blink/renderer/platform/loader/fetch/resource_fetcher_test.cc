@@ -224,7 +224,7 @@ TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
   ASSERT_TRUE(resource);
   EXPECT_TRUE(resource->ErrorOccurred());
   EXPECT_TRUE(resource->GetResourceError().IsAccessCheck());
-  EXPECT_FALSE(MemoryCache::Get()->ResourceForURL(secure_url));
+  EXPECT_FALSE(MemoryCache::Get()->ResourceForURLForTesting(secure_url));
 
   // Start by calling StartLoad() directly, rather than via RequestResource().
   // This shouldn't crash. Setting the resource type to image, as StartLoad with

@@ -119,7 +119,11 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
     TypeStatistic other;
   };
 
-  Resource* ResourceForURL(const KURL&) const;
+  // Do not use this method outside test purposes.
+  // A resourfe URL is not enough to do a correct MemoryCache lookup, and
+  // relying on the method would likely yield wrong results.
+  Resource* ResourceForURLForTesting(const KURL&) const;
+
   Resource* ResourceForURL(const KURL&, const String& cache_identifier) const;
   HeapVector<Member<Resource>> ResourcesForURL(const KURL&) const;
 

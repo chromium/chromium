@@ -223,7 +223,8 @@ bool MemoryCache::Contains(const Resource* resource) const {
   return resource == resources_it->value->GetResource();
 }
 
-Resource* MemoryCache::ResourceForURL(const KURL& resource_url) const {
+Resource* MemoryCache::ResourceForURLForTesting(
+    const KURL& resource_url) const {
   return ResourceForURL(resource_url, DefaultCacheIdentifier());
 }
 

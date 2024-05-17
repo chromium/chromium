@@ -384,11 +384,11 @@ TEST_F(MemoryCacheTest, ResourceMapIsolation) {
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
   const KURL url = KURL("http://test/resource");
-  EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURLForTesting(url));
   EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURL(
                            url, MemoryCache::Get()->DefaultCacheIdentifier()));
   EXPECT_EQ(resource2, MemoryCache::Get()->ResourceForURL(url, "foo"));
-  EXPECT_EQ(nullptr, MemoryCache::Get()->ResourceForURL(NullURL()));
+  EXPECT_EQ(nullptr, MemoryCache::Get()->ResourceForURLForTesting(NullURL()));
 
   auto* resource3 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
@@ -414,10 +414,10 @@ TEST_F(MemoryCacheTest, FragmentIdentifier) {
   MemoryCache::Get()->Add(resource);
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
 
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url1));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url1));
 
   const KURL url2 = MemoryCache::RemoveFragmentIdentifierIfNeeded(url1);
-  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url2));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURLForTesting(url2));
 }
 
 TEST_F(MemoryCacheTest, RemoveURLFromCache) {
