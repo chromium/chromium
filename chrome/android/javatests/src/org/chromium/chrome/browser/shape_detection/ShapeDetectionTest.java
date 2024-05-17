@@ -21,10 +21,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.util.concurrent.TimeoutException;
 
@@ -48,7 +48,7 @@ public class ShapeDetectionTest {
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
     @LargeTest
-    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02)
     @DisabledTest(message = "https://crbug.com/1139470")
     public void testBarcodeDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
@@ -67,7 +67,7 @@ public class ShapeDetectionTest {
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
     @LargeTest
-    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02)
     public void testTextDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import androidx.test.filters.MediumTest;
 
@@ -20,7 +19,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -61,7 +59,6 @@ public class WebXrVrCardboardTabTest {
     /** Tests that non-focused tabs don't get WebXR rAFs called. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR"})
     public void testPoseDataUnfocusedTab_WebXr() {
         testPoseDataUnfocusedTabImpl("webxr_test_pose_data_unfocused_tab", mWebXrVrTestFramework);

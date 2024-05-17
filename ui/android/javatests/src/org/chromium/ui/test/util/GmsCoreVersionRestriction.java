@@ -15,4 +15,7 @@ import org.chromium.base.test.util.Restriction;
 public final class GmsCoreVersionRestriction {
     /** Specifies the test to run only with the GMS Core version greater or equal 22w30. */
     public static final String RESTRICTION_TYPE_VERSION_GE_22W30 = "GMSCoreVersion22w30";
+
+    /** Specifies the test to run only with the GMS Core version greater or equal 2020w02. */
+    public static final String RESTRICTION_TYPE_VERSION_GE_2020W02 = "GMSCoreVersion2020w02";
 }

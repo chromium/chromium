@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -25,7 +24,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
@@ -135,7 +133,6 @@ public class WebXrVrCardboardInputTest {
      */
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testScreenTapsRegistered_WebXr() {
@@ -165,7 +162,6 @@ public class WebXrVrCardboardInputTest {
      */
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testTransientScreenTapsRegistered_WebXr() {
@@ -213,7 +209,6 @@ public class WebXrVrCardboardInputTest {
      */
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrInputSourceWithoutGamepad() {

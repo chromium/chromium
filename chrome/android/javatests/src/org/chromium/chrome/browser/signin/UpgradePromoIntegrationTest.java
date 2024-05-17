@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -71,6 +70,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for the re-FRE. */
@@ -83,7 +83,7 @@ import org.chromium.ui.test.util.ViewUtils;
 // re-enabled once the new sign-in flow is implemented for automotive.
 @Restriction({
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
-    ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES
+    GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02
 })
 public class UpgradePromoIntegrationTest {
     @Rule

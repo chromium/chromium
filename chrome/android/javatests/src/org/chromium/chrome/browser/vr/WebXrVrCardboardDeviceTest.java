@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import androidx.test.filters.MediumTest;
 
@@ -20,7 +19,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
@@ -64,7 +62,6 @@ public class WebXrVrCardboardDeviceTest {
     /** Tests that reported WebXR capabilities match expectations. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrCapabilities() {

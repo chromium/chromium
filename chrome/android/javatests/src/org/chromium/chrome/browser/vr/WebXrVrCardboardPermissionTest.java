@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.vr;
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_LONG_MS;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import androidx.test.filters.MediumTest;
 
@@ -22,7 +21,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
@@ -69,7 +67,6 @@ public class WebXrVrCardboardPermissionTest {
     /** Tests that denying permission blocks the session from being created. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPermissionDenyFailsSessionCreation() {
         mWebXrVrPermissionTestFramework.setPermissionPromptAction(
@@ -93,7 +90,6 @@ public class WebXrVrCardboardPermissionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testVrPermissionPersistance() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(
@@ -112,7 +108,6 @@ public class WebXrVrCardboardPermissionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPermissionNotNeededForInline() {
         mWebXrVrPermissionTestFramework.setPermissionPromptExpected(false);
@@ -130,7 +125,6 @@ public class WebXrVrCardboardPermissionTest {
     /** Tests that granted permissions persist after a page reload. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPermissionPersistsAfterReload() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(

@@ -5,7 +5,6 @@
 package org.chromium.ui.test.util;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
@@ -13,6 +12,7 @@ import org.chromium.base.test.util.RestrictionSkipCheck;
 
 /** Checks if any restrictions exist and skip the test if it meets those restrictions. */
 public class GmsCoreVersionRestrictionSkipCheck extends RestrictionSkipCheck {
+    private static final int VERSION_2020W02 = 20415000;
     private static final int VERSION_22W30 = 223012000;
 
     public GmsCoreVersionRestrictionSkipCheck(Context targetContext) {
@@ -21,10 +21,12 @@ public class GmsCoreVersionRestrictionSkipCheck extends RestrictionSkipCheck {
 
     @Override
     protected boolean restrictionApplies(String restriction) {
-        boolean restrictedToGmsVersion =
-                TextUtils.equals(
-                        restriction, GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30);
-        if (!restrictedToGmsVersion) {
+        boolean v2022w30 =
+                GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30.equals(restriction);
+        boolean v2020w02 =
+                GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02.equals(restriction);
+
+        if (!v2020w02 && !v2022w30) {
             return false;
         }
 
@@ -32,6 +34,9 @@ public class GmsCoreVersionRestrictionSkipCheck extends RestrictionSkipCheck {
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> BuildInfo.getInstance().gmsVersionCode);
         int version = tryParseInt(gmsVersionStr, 0);
+        if (v2020w02) {
+            return version < VERSION_2020W02;
+        }
         return version < VERSION_22W30;
     }
 
