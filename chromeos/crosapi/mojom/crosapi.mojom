@@ -48,6 +48,7 @@ import "chromeos/crosapi/mojom/editor_panel.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
+import "chromeos/crosapi/mojom/extension_printer.mojom";
 import "chromeos/crosapi/mojom/eye_dropper.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
@@ -165,8 +166,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 139
-// Next method id: 141
+// Next version: 140
+// Next method id: 142
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -391,6 +392,11 @@ interface Crosapi {
   // to get and set system properties. Implemented in Ash.
   [MinVersion=72] BindExtensionInfoPrivate@75(
       pending_receiver<ExtensionInfoPrivate> receiver);
+
+  // Binds the ExtensionPrinterService which gives ash access to lacros
+  // extension printers.
+  [MinVersion=139] BindExtensionPrinterService@141(
+      pending_receiver<ExtensionPrinterService> receiver);
 
   // Deprecated in M114; use chromeos::FirewallHole directly.
   [MinVersion=101] REMOVED_105@105(

@@ -50,6 +50,7 @@ mojom("mojom") {
     "emoji_picker.mojom",
     "extension_info_private.mojom",
     "extension_keeplist.mojom",
+    "extension_printer.mojom",
     "eye_dropper.mojom",
     "feedback.mojom",
     "field_trial.mojom",

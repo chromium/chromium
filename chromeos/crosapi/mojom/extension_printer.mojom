@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+// Interface between the Ash system and lacros browser. Implemented in Ash,
+// Interface to allow lacros-chrome to register a service provider and to
+// communicate with ash to report extension printers.
+// Implemented by ash-chrome.
+//
+// Next version: 1.
+// Next method id: 2.
+[Stable, Uuid="def89e7c-8e4f-4718-92db-24f1329fcd29"]
+interface ExtensionPrinterService {
+  // An ExtensionPrinterServiceProvider can register itself with
+  // ExtensionPrinterService, so that ExtensionPrinterService can communicate
+  // with the remote ExtensionPrinterServiceProvider associated with the main
+  // profile.
+  RegisterServiceProvider@0(
+    pending_remote<ExtensionPrinterServiceProvider> client);
+
+  // Runs when a printing extension reports printers in response to a
+  // DispatchGetPrintersRequest. A true value of |is_done| means no more
+  // printers will be reported.
+  PrintersAdded@1(mojo_base.mojom.UnguessableToken request_id,
+    mojo_base.mojom.ListValue printers, bool is_done);
+};
+
+// Implemented by lacros-chrome. Used by ash-chrome to forward printing related
+// requests to lacros-chrome.
+//
+// Next version: 1.
+// Next method id: 1.
+[Stable, Uuid="74d95a4e-56e3-4fdf-8df5-62660939dc73"]
+interface ExtensionPrinterServiceProvider {
+  // Dispatch StartGetPrinters requests to lacros from ash-chrome. The
+  // |request_id| will be used when reporting printers back to ash-chrome by
+  // lacros printing extensions.
+  DispatchGetPrintersRequest@0(mojo_base.mojom.UnguessableToken request_id);
+  // TODO(http://b/40273973): Add Reset().
+  // TODO(http://b/40273973): Add DispatchStartGetCapability().
+  // TODO(http://b/40273973): Add DispatchStartPrint().
+  // TODO(http://b/40273973): Add DispatchStartGrantPrinterAccess().
+};

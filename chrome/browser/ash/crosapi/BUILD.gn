@@ -139,6 +139,8 @@ source_set("crosapi") {
     "environment_provider.h",
     "extension_info_private_ash.cc",
     "extension_info_private_ash.h",
+    "extension_printer_service_ash.cc",
+    "extension_printer_service_ash.h",
     "eye_dropper_ash.cc",
     "eye_dropper_ash.h",
     "feedback_ash.cc",
