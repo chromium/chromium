@@ -165,19 +165,22 @@ class GraphBuilder {
                        std::string_view op_name,
                        uint64_t input_operand_id,
                        uint64_t output_operand_id,
-                       CoreML::Specification::MILSpec::Block& block);
+                       CoreML::Specification::MILSpec::Block& block,
+                       std::string_view operand_op_name);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,
       std::string_view op_name,
       uint64_t input_operand_id,
       uint64_t output_operand_id,
-      CoreML::Specification::MILSpec::Block& block);
+      CoreML::Specification::MILSpec::Block& block,
+      std::string_view operand_op_name);
   template <typename T>
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,
       std::string_view op_name,
       const T& operation,
-      CoreML::Specification::MILSpec::Block& block);
+      CoreML::Specification::MILSpec::Block& block,
+      std::string_view operand_op_name);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddUnaryFloatsOperationWithEpsilon(
       std::string_view op_name,
@@ -185,14 +188,16 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::DataType input_mil_data_type,
       uint64_t output_operand_id,
       float epsilon,
-      CoreML::Specification::MILSpec::Block& block);
+      CoreML::Specification::MILSpec::Block& block,
+      std::string_view operand_op_name);
   template <typename T>
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddUnaryFloatsOperationWithEpsilon(
       std::string_view op_name,
       const T& operation,
       float epsilon,
-      CoreML::Specification::MILSpec::Block& block);
+      CoreML::Specification::MILSpec::Block& block,
+      std::string_view operand_op_name);
 
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.

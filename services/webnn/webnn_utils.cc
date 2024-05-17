@@ -14,9 +14,9 @@ namespace {
 std::string OpKindToString(mojom::Conv2d::Kind kind) {
   switch (kind) {
     case mojom::Conv2d::Kind::kDirect:
-      return "conv2d";
+      return ops::kConv2d;
     case mojom::Conv2d::Kind::kTransposed:
-      return "convTranspose2d";
+      return ops::kConvTranspose2d;
   }
   NOTREACHED_NORETURN();
 }
@@ -24,31 +24,11 @@ std::string OpKindToString(mojom::Conv2d::Kind kind) {
 std::string OpKindToString(mojom::Pool2d::Kind kind) {
   switch (kind) {
     case mojom::Pool2d::Kind::kAveragePool2d:
-      return "averagePool2d";
+      return ops::kAveragePool2d;
     case mojom::Pool2d::Kind::kL2Pool2d:
-      return "l2Pool2d";
+      return ops::kL2Pool2d;
     case mojom::Pool2d::Kind::kMaxPool2d:
-      return "maxPool2d";
-  }
-}
-
-std::string GetOpName(const mojom::Operation& op) {
-  const mojom::Operation::Tag& tag = op.which();
-  switch (tag) {
-    case mojom::Operation::Tag::kArgMinMax:
-      return webnn::OpKindToString(op.get_arg_min_max()->kind);
-    case mojom::Operation::Tag::kConv2d:
-      return OpKindToString(op.get_conv2d()->kind);
-    case mojom::Operation::Tag::kElementWiseBinary:
-      return webnn::OpKindToString(op.get_element_wise_binary()->kind);
-    case mojom::Operation::Tag::kElementWiseUnary:
-      return webnn::OpKindToString(op.get_element_wise_unary()->kind);
-    case mojom::Operation::Tag::kReduce:
-      return webnn::OpKindToString(op.get_reduce()->kind);
-    case mojom::Operation::Tag::kPool2d:
-      return OpKindToString(op.get_pool2d()->kind);
-    default:
-      return OpTagToString(tag);
+      return ops::kMaxPool2d;
   }
 }
 
@@ -59,83 +39,83 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
     case mojom::Operation::Tag::kArgMinMax:
       return "argMin/Max";
     case mojom::Operation::Tag::kBatchNormalization:
-      return "batchNormalization";
+      return ops::kBatchNormalization;
     case mojom::Operation::Tag::kClamp:
-      return "clamp";
+      return ops::kClamp;
     case mojom::Operation::Tag::kConcat:
-      return "concat";
+      return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
-      return "conv2d";
+      return ops::kConv2d;
     case mojom::Operation::Tag::kElementWiseBinary:
       return "element-wise binary";
     case mojom::Operation::Tag::kElu:
-      return "elu";
+      return ops::kElu;
     case mojom::Operation::Tag::kElementWiseUnary:
       return "element-wise unary";
     case mojom::Operation::Tag::kExpand:
-      return "expand";
+      return ops::kExpand;
     case mojom::Operation::Tag::kGather:
-      return "gather";
+      return ops::kGather;
     case mojom::Operation::Tag::kGelu:
-      return "gelu";
+      return ops::kGelu;
     case mojom::Operation::Tag::kGemm:
-      return "gemm";
+      return ops::kGemm;
     case mojom::Operation::Tag::kGru:
-      return "gru";
+      return ops::kGru;
     case mojom::Operation::Tag::kGruCell:
-      return "gruCell";
+      return ops::kGruCell;
     case mojom::Operation::Tag::kHardSigmoid:
-      return "hardSigmoid";
+      return ops::kHardSigmoid;
     case mojom::Operation::Tag::kHardSwish:
-      return "hardSwish";
+      return ops::kHardSwish;
     case mojom::Operation::Tag::kInstanceNormalization:
-      return "instanceNormalization";
+      return ops::kInstanceNormalization;
     case mojom::Operation::Tag::kLayerNormalization:
-      return "layerNormalization";
+      return ops::kLayerNormalization;
     case mojom::Operation::Tag::kLeakyRelu:
-      return "leakyRelu";
+      return ops::kLeakyRelu;
     case mojom::Operation::Tag::kLinear:
-      return "linear";
+      return ops::kLinear;
     case mojom::Operation::Tag::kLstm:
-      return "lstm";
+      return ops::kLstm;
     case mojom::Operation::Tag::kLstmCell:
-      return "lstmCell";
+      return ops::kLstmCell;
     case mojom::Operation::Tag::kMatmul:
-      return "matmul";
+      return ops::kMatmul;
     case mojom::Operation::Tag::kPad:
-      return "pad";
+      return ops::kPad;
     case mojom::Operation::Tag::kPool2d:
       return "pool2d";
     case mojom::Operation::Tag::kPrelu:
-      return "prelu";
+      return ops::kPrelu;
     case mojom::Operation::Tag::kReduce:
       return "reduce";
     case mojom::Operation::Tag::kRelu:
-      return "relu";
+      return ops::kRelu;
     case mojom::Operation::Tag::kResample2d:
-      return "resample2d";
+      return ops::kResample2d;
     case mojom::Operation::Tag::kReshape:
-      return "reshape";
+      return ops::kReshape;
     case mojom::Operation::Tag::kSigmoid:
-      return "sigmoid";
+      return ops::kSigmoid;
     case mojom::Operation::Tag::kSlice:
-      return "slice";
+      return ops::kSlice;
     case mojom::Operation::Tag::kSoftmax:
-      return "softmax";
+      return ops::kSoftmax;
     case mojom::Operation::Tag::kSoftplus:
-      return "softplus";
+      return ops::kSoftplus;
     case mojom::Operation::Tag::kSoftsign:
-      return "softsign";
+      return ops::kSoftsign;
     case mojom::Operation::Tag::kSplit:
-      return "split";
+      return ops::kSplit;
     case mojom::Operation::Tag::kTanh:
-      return "tanh";
+      return ops::kTanh;
     case mojom::Operation::Tag::kTranspose:
-      return "transpose";
+      return ops::kTranspose;
     case mojom::Operation::Tag::kTriangular:
-      return "triangular";
+      return ops::kTriangular;
     case mojom::Operation::Tag::kWhere:
-      return "where";
+      return ops::kWhere;
   }
   NOTREACHED_NORETURN();
 }
@@ -143,9 +123,9 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
   switch (kind) {
     case mojom::ArgMinMax::Kind::kMin:
-      return "argMin";
+      return ops::kArgMin;
     case mojom::ArgMinMax::Kind::kMax:
-      return "argMax";
+      return ops::kArgMax;
   }
   NOTREACHED_NORETURN();
 }
@@ -153,89 +133,89 @@ std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
   switch (kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      return "add";
+      return ops::kAdd;
     case mojom::ElementWiseBinary::Kind::kSub:
-      return "sub";
+      return ops::kSub;
     case mojom::ElementWiseBinary::Kind::kMul:
-      return "mul";
+      return ops::kMul;
     case mojom::ElementWiseBinary::Kind::kDiv:
-      return "div";
+      return ops::kDiv;
     case mojom::ElementWiseBinary::Kind::kMax:
-      return "max";
+      return ops::kMax;
     case mojom::ElementWiseBinary::Kind::kMin:
-      return "min";
+      return ops::kMin;
     case mojom::ElementWiseBinary::Kind::kPow:
-      return "pow";
+      return ops::kPow;
     case mojom::ElementWiseBinary::Kind::kEqual:
-      return "equal";
+      return ops::kEqual;
     case mojom::ElementWiseBinary::Kind::kGreater:
-      return "greater";
+      return ops::kGreater;
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return "greaterOrEqual";
+      return ops::kGreaterOrEqual;
     case mojom::ElementWiseBinary::Kind::kLesser:
-      return "lesser";
+      return ops::kLesser;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return "lesserOrEqual";
+      return ops::kLesserOrEqual;
   }
 }
 
 std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
   switch (kind) {
     case mojom::ElementWiseUnary::Kind::kAbs:
-      return "abs";
+      return ops::kAbs;
     case mojom::ElementWiseUnary::Kind::kCeil:
-      return "ceil";
+      return ops::kCeil;
     case mojom::ElementWiseUnary::Kind::kCos:
-      return "cos";
+      return ops::kCos;
     case mojom::ElementWiseUnary::Kind::kExp:
-      return "exp";
+      return ops::kExp;
     case mojom::ElementWiseUnary::Kind::kFloor:
-      return "floor";
+      return ops::kFloor;
     case mojom::ElementWiseUnary::Kind::kLog:
-      return "log";
+      return ops::kLog;
     case mojom::ElementWiseUnary::Kind::kNeg:
-      return "neg";
+      return ops::kNeg;
     case mojom::ElementWiseUnary::Kind::kSin:
-      return "sin";
+      return ops::kSin;
     case mojom::ElementWiseUnary::Kind::kTan:
-      return "tan";
+      return ops::kTan;
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      return "logicalNot";
+      return ops::kLogicalNot;
     case mojom::ElementWiseUnary::Kind::kIdentity:
-      return "identity";
+      return ops::kIdentity;
     case mojom::ElementWiseUnary::Kind::kSqrt:
-      return "sqrt";
+      return ops::kSqrt;
     case mojom::ElementWiseUnary::Kind::kErf:
-      return "erf";
+      return ops::kErf;
     case mojom::ElementWiseUnary::Kind::kReciprocal:
-      return "reciprocal";
+      return ops::kReciprocal;
     case mojom::ElementWiseUnary::Kind::kCast:
-      return "cast";
+      return ops::kCast;
   }
 }
 
 std::string OpKindToString(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
-      return "reduceL1";
+      return ops::kReduceL1;
     case mojom::Reduce::Kind::kL2:
-      return "reduceL2";
+      return ops::kReduceL2;
     case mojom::Reduce::Kind::kLogSum:
-      return "reduceLogSum";
+      return ops::kReduceLogSum;
     case mojom::Reduce::Kind::kLogSumExp:
-      return "reduceLogSumExp";
+      return ops::kReduceLogSumExp;
     case mojom::Reduce::Kind::kMax:
-      return "reduceMax";
+      return ops::kReduceMax;
     case mojom::Reduce::Kind::kMean:
-      return "reduceMean";
+      return ops::kReduceMean;
     case mojom::Reduce::Kind::kMin:
-      return "reduceMin";
+      return ops::kReduceMin;
     case mojom::Reduce::Kind::kProduct:
-      return "reduceProduct";
+      return ops::kReduceProduct;
     case mojom::Reduce::Kind::kSum:
-      return "reduceSum";
+      return ops::kReduceSum;
     case mojom::Reduce::Kind::kSumSquare:
-      return "reduceSumSquare";
+      return ops::kReduceSumSquare;
   }
 }
 
@@ -260,12 +240,63 @@ std::string DataTypeToString(mojom::Operand::DataType type) {
   }
 }
 
+std::string GetOpName(const mojom::Operation& op) {
+  const mojom::Operation::Tag& tag = op.which();
+  switch (tag) {
+    case mojom::Operation::Tag::kArgMinMax:
+      return webnn::OpKindToString(op.get_arg_min_max()->kind);
+    case mojom::Operation::Tag::kConv2d:
+      return OpKindToString(op.get_conv2d()->kind);
+    case mojom::Operation::Tag::kElementWiseBinary:
+      return webnn::OpKindToString(op.get_element_wise_binary()->kind);
+    case mojom::Operation::Tag::kElementWiseUnary:
+      return webnn::OpKindToString(op.get_element_wise_unary()->kind);
+    case mojom::Operation::Tag::kReduce:
+      return webnn::OpKindToString(op.get_reduce()->kind);
+    case mojom::Operation::Tag::kPool2d:
+      return OpKindToString(op.get_pool2d()->kind);
+    default:
+      return OpTagToString(tag);
+  }
+}
+
 std::string NotSupportedOperatorError(const mojom::Operation& op) {
-  return base::StrCat({"Unsupported operator ", GetOpName(op)});
+  return base::StrCat({"Unsupported operator ", GetOpName(op), "."});
 }
 
 std::string NotSupportedOperatorError(const mojom::ElementWiseUnary& op) {
-  return base::StrCat({"Unsupported operator ", OpKindToString(op.kind)});
+  return base::StrCat({"Unsupported operator ", OpKindToString(op.kind), "."});
+}
+
+std::string NotSupportedArgumentTypeError(std::string_view op_name,
+                                          std::string_view argument_name,
+                                          mojom::Operand::DataType type) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for ", op_name, " argument ", argument_name, "."});
+}
+
+std::string NotSupportedConstantTypeError(mojom::Operand::DataType type) {
+  return base::StrCat(
+      {"Unsupported data type ", DataTypeToString(type), " for constant."});
+}
+
+std::string NotSupportedInputArgumentTypeError(std::string_view op_name,
+                                               mojom::Operand::DataType type) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for ", op_name, " argument input."});
+}
+
+std::string NotSupportedInputTypeError(std::string_view input_name,
+                                       mojom::Operand::DataType type) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for input operand ", input_name});
+}
+
+std::string NotSupportedOptionTypeError(std::string_view op_name,
+                                        std::string_view option_name,
+                                        mojom::Operand::DataType type) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for ", op_name, " option ", option_name});
 }
 
 }  // namespace webnn
