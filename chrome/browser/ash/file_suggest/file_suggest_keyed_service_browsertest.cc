@@ -195,8 +195,14 @@ INSTANTIATE_TEST_SUITE_P(UseDriveRecents,
 
 // Verifies that the file suggest keyed service works as expected when the item
 // suggest cache is empty.
+// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_QueryWithEmptyCache DISABLED_QueryWithEmptyCache
+#else
+#define MAYBE_QueryWithEmptyCache QueryWithEmptyCache
+#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       QueryWithEmptyCache) {
+                       MAYBE_QueryWithEmptyCache) {
   base::HistogramTester histogram_tester;
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
@@ -245,8 +251,15 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly.
+// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RespondToItemSuggestCacheUpdate \
+  DISABLED_RespondToItemSuggestCacheUpdate
+#else
+#define MAYBE_RespondToItemSuggestCacheUpdate RespondToItemSuggestCacheUpdate
+#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       RespondToItemSuggestCacheUpdate) {
+                       MAYBE_RespondToItemSuggestCacheUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -364,8 +377,16 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly when item fetch fails.
+// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RespondToItemSuggestCacheInvalidUpdate \
+  DISABLED_RespondToItemSuggestCacheInvalidUpdate
+#else
+#define MAYBE_RespondToItemSuggestCacheInvalidUpdate \
+  RespondToItemSuggestCacheInvalidUpdate
+#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       RespondToItemSuggestCacheInvalidUpdate) {
+                       MAYBE_RespondToItemSuggestCacheInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -438,8 +459,16 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly if some item fetches fail.
+// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate \
+  DISABLED_RespondToItemSuggestCachePartiallyInvalidUpdate
+#else
+#define MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate \
+  RespondToItemSuggestCachePartiallyInvalidUpdate
+#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       RespondToItemSuggestCachePartiallyInvalidUpdate) {
+                       MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
