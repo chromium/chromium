@@ -38,9 +38,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // it's initialization.
   using CommandId = base::StrongAlias<class CommandIdTag, int>;
 
-  // Returns true if the given id is one generated for autofill context menu.
-  static bool IsAutofillCustomCommandId(CommandId command_id);
-
   AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
                              RenderViewContextMenuBase* delegate,
                              ui::SimpleMenuModel* menu_model);
@@ -66,10 +63,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   }
 
  private:
-  // Triggers the feedback flow for Autofill command.
-  void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
-                                      AutofillManager& manager);
-
   // Conditionally adds the feedback manual fallback item if Autofill is
   // available for the field.
   void MaybeAddAutofillFeedbackItem();
@@ -78,6 +71,11 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // fallbacks to the context menu model depending on whether there's data to
   // suggest.
   void MaybeAddAutofillManualFallbackItems();
+
+  // Checks if the plus address context menu entry can be shown for the
+  // currently focused field.
+  bool ShouldAddPlusAddressManualFallbackItem(
+      ContentAutofillDriver& autofill_driver);
 
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.
@@ -115,6 +113,14 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       BrowserAutofillManager& manager,
       const FillingProduct filling_product);
 
+  // Triggers the feedback flow for Autofill command.
+  void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
+                                      AutofillManager& manager);
+
+  // Triggers Plus Address suggestions on the field that the context menu was
+  // opened on.
+  void ExecuteFallbackForPlusAddressesCommand(AutofillDriver& driver);
+
   // Triggers Autofill address suggestions on the field that the context menu
   // was opened on.
   void ExecuteFallbackForAddressesCommand(AutofillManager& manager);
@@ -122,10 +128,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // Triggers Autofill payments suggestions on the field that the context menu
   // was opened on.
   void ExecuteFallbackForPaymentsCommand(AutofillManager& manager);
-
-  // Triggers Plus Address suggestions on the field that the context menu was
-  // opened on.
-  void ExecuteFallbackForPlusAddressesCommand(AutofillDriver& driver);
 
   // Gets the `AutofillField` described by the `params_` from the `manager`.
   // The `frame_token` is used to map from the `params_` renderer id to a global
