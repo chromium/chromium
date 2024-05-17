@@ -855,7 +855,6 @@ src/webgpu/shader/validation/functions/restrictions.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
 src/webgpu/shader/validation/parse/blankspace.spec.ts
 src/webgpu/shader/validation/parse/comments.spec.ts
-src/webgpu/shader/validation/parse/const.spec.ts
 src/webgpu/shader/validation/parse/diagnostic.spec.ts
 src/webgpu/shader/validation/parse/enable.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
