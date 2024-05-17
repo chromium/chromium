@@ -54,15 +54,11 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
                         WebFeature::kEffectiveAlignContentForTableCell);
     }
   }
-  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
-    position = ContentPosition::kNormal;
-  }
 
   // https://drafts.csswg.org/css-align/#typedef-overflow-position
   // UAs that have not implemented the "smart" default behavior must behave as
   // safe for align-content on block containers
-  if (RuntimeEnabledFeatures::AlignContentForScrollableBlocksEnabled() &&
-      overflow == OverflowAlignment::kDefault) {
+  if (overflow == OverflowAlignment::kDefault) {
     overflow = OverflowAlignment::kSafe;
   }
   const bool is_safe = overflow == OverflowAlignment::kSafe;
@@ -197,10 +193,6 @@ void AlignBlockContent(const ComputedStyle& style,
     return;
   }
 
-  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
-    ComputeContentAlignmentForBlock(style, &builder.Node().GetDocument());
-    return;
-  }
   if (!ShouldIncludeBlockEndBorderPadding(builder)) {
     // Do nothing for the first fragment without block-end border and padding.
     // See css/css-align/blocks/align-content-block-break-overflow-010.html

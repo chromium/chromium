@@ -283,16 +283,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/1500511
-      name: "AlignContentForBlocks",
-      status: "stable",
-    },
-    {
-      // crbug.com/331454369
-      name: "AlignContentForScrollableBlocks",
-      status: "stable",
-    },
-    {
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },
