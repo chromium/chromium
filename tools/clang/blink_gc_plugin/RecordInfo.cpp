@@ -642,8 +642,10 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
   std::string typeName = typedefType->getDecl()->getNameAsString();
   if (!Config::IsIterator(typeName))
     return nullptr;
-  RecordInfo* info =
-      cache_->Lookup(elaboratedType->getQualifier()->getAsType());
+  const NestedNameSpecifier* qualifier = elaboratedType->getQualifier();
+  if (!qualifier)
+    return nullptr;
+  RecordInfo* info = cache_->Lookup(qualifier->getAsType());
 
   bool on_heap = false;
   // Silently handle unknown types; the on-heap collection types will
