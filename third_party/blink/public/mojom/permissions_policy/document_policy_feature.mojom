@@ -31,7 +31,7 @@ enum DocumentPolicyFeature {
   // document.close(), etc.).
   // kDocumentWrite = 9, // Removed.
   // Controls whether synchronous script elements will run.
-  kSyncScript = 10,
+  // kSyncScript = 10, // Removed.
   // Controls whether or not the JS Self-Profiling API is enabled.
   kJSProfiling = 11,
   // Controls use of synchronous XMLHTTPRequest API.
