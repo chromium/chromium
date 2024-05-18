@@ -992,6 +992,23 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "Compose",
         OnDeviceModelEligibilityReason::kSuccess, 1);
   }
+
+  // No safety model received yet but feature flag should disable safety check.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kTextSafetyClassifier);
+    base::HistogramTester histogram_tester;
+
+    test_controller_->MaybeUpdateSafetyModel(std::nullopt);
+    EXPECT_TRUE(test_controller_->CreateSession(
+        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSuccess, 1);
+  }
 }
 
 TEST(SafetyConfigTest, MissingScoreIsUnsafe) {

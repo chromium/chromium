@@ -88,7 +88,8 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
   // Check safety info.
-  if (!adapter->CanSkipTextSafety()) {
+  if (features::ShouldUseTextSafetyClassifierModel() &&
+      !adapter->CanSkipTextSafety()) {
     if (!safety_model_info_) {
       return OnDeviceModelEligibilityReason::kSafetyModelNotAvailable;
     }
@@ -156,7 +157,8 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
-  if (!adapter->CanSkipTextSafety()) {
+  if (features::ShouldUseTextSafetyClassifierModel() &&
+      !adapter->CanSkipTextSafety()) {
     CHECK(safety_model_info_);
     safety_config =
         safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
