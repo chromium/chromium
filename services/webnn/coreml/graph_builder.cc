@@ -117,6 +117,7 @@ constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
 constexpr char kOpSliceTypeName[] = "slice_by_size";
+constexpr char kOpSoftmaxTypeName[] = "softmax";
 constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTanhTypeName[] = "tanh";
@@ -739,6 +740,11 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForSlice(*operation->get_slice(), block));
         break;
       }
+      case mojom::Operation::Tag::kSoftmax: {
+        RETURN_IF_ERROR(
+            AddOperationForSoftmax(*operation->get_softmax(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -754,7 +760,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
-      case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
@@ -2288,6 +2293,26 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSlice(
       {{kParamBegin, Create1DTensorImmediateValue<int32_t>(beginnings)},
        {kParamSize, Create1DTensorImmediateValue<int32_t>(sizes)}});
 
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftmax(
+    const mojom::Softmax& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpSoftmaxTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  // TODO: crbug.com/341341298 - support axis parameter.
+  SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
+                    CreateScalarImmediateValue<int32_t>(-1));
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
