@@ -319,8 +319,9 @@
         "background-current-color",
         "blend-mode",
         "border-image",
-        "border-radius",
         "border-outline-visited-color",
+        "border-radius",
+        "border-visual",
         "border-width",
         "clip",
         "clip-path",
@@ -1172,7 +1173,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["accent-color", "color", "background-current-color"],
+      invalidate: ["accent-color", "background-current-color", "border-visual", "color"],
     },
     {
       name: "direction",
@@ -2108,6 +2109,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-visual"],
     },
     {
       name: "border-bottom-left-radius",
@@ -2173,7 +2175,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-bottom-width",
@@ -2197,7 +2199,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-collapse",
@@ -2302,6 +2304,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-visual"],
     },
     {
       name: "border-left-style",
@@ -2323,7 +2326,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-left-width",
@@ -2347,7 +2350,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-right-color",
@@ -2372,6 +2375,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-visual"],
     },
     {
       name: "border-right-style",
@@ -2393,7 +2397,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-right-width",
@@ -2417,7 +2421,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-top-color",
@@ -2442,6 +2446,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-visual"],
     },
     {
       name: "border-top-left-radius",
@@ -2508,7 +2513,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "border-top-width",
@@ -2532,7 +2537,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["border-width"],
+      invalidate: ["border-width", "border-visual"],
     },
     {
       name: "bottom",
@@ -8286,7 +8291,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
-      invalidate: ["background-current-color", "color"],
+      invalidate: ["background-current-color", "border-visual", "color"],
     },
     {
       name: "-internal-visited-caret-color",

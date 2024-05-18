@@ -1172,12 +1172,12 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     }
   }
 
-  if ((field_diff & kBorderOutlineVisitedColor) &&
-      BorderOutlineVisitedColorChanged(other)) {
+  if ((field_diff & kBorderVisual) && !BorderVisuallyEqual(other)) {
     return true;
   }
 
-  if (!BorderVisuallyEqual(other)) {
+  if ((field_diff & kBorderOutlineVisitedColor) &&
+      BorderOutlineVisitedColorChanged(other)) {
     return true;
   }
 

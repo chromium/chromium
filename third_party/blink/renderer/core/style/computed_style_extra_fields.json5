@@ -86,7 +86,7 @@
       default_value: "not-inside-link",
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
-      invalidate: ["paint"],
+      invalidate: ["border-visual", "paint"],
     },
     {
       name: "InForcedColorsMode",
@@ -333,7 +333,7 @@
       type_name: "NinePieceImage",
       field_group: "surround",
       default_value: "NinePieceImage()",
-      invalidate: ["border-image"],
+      invalidate: ["border-image", "border-visual"],
     },
     {
       name: "Background",
@@ -931,7 +931,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      invalidate: ["accent-color", "background-current-color", "paint"],
+      invalidate: ["accent-color", "background-current-color", "border-visual", "paint"],
     },
     {
       name: "ColorSchemeFlagsIsNormal",
