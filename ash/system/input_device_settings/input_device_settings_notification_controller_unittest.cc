@@ -901,4 +901,28 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "welcome_experience_pointing_stick_2"));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotificationsForBluetoothDevicesDisplaysBatteryLevel) {
+  size_t expected_notification_count = 1;
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  mojom_mouse->device_key = "0001:0001";
+  mojom_mouse->id = 1;
+  mojom_mouse->settings = mojom::MouseSettings::New();
+  mojom_mouse->battery_info =
+      mojom::BatteryInfo::New(78, mojom::ChargeState::kDischarging);
+
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  const auto* notification = message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1");
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_BATTERY_DESCRIPTION,
+          base::NumberToString16(
+              mojom_mouse->battery_info->battery_percentage)),
+      notification->message());
+}
+
 }  // namespace ash

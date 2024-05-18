@@ -475,6 +475,13 @@ bool ButtonRemappingListsAreEqual(
   return true;
 }
 
+const std::u16string GetBatteryLevelMessage(
+    const mojom::BatteryInfo& battery_info) {
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_BATTERY_DESCRIPTION,
+      base::NumberToString16(battery_info.battery_percentage));
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -914,6 +921,12 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
     const mojom::Mouse& mouse) {
   const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
   const auto notification_id = GetMouseNotificationID(mouse.id);
+  const auto message =
+      mouse.battery_info.is_null()
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION,
+                peripheral_name)
+          : GetBatteryLevelMessage(*mouse.battery_info);
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -921,10 +934,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE),
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION,
-          peripheral_name),
-      std::u16string(), GURL(),
+      message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -941,6 +951,12 @@ void InputDeviceSettingsNotificationController::
   const auto peripheral_name = base::UTF8ToUTF16(keyboard.name);
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kKeyboardNotificationPrefix, keyboard.id);
+  const auto message =
+      keyboard.battery_info.is_null()
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD,
+                peripheral_name)
+          : GetBatteryLevelMessage(*keyboard.battery_info);
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -948,10 +964,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD_TITLE),
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD,
-          peripheral_name),
-      std::u16string(), GURL(),
+      message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -966,6 +979,12 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     ShowTouchpadSettingsNotification(const mojom::Touchpad& touchpad) {
   const auto peripheral_name = base::UTF8ToUTF16(touchpad.name);
+  const auto message =
+      touchpad.battery_info.is_null()
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD,
+                peripheral_name)
+          : GetBatteryLevelMessage(*touchpad.battery_info);
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kTouchpadNotificationPrefix, touchpad.id);
   message_center::RichNotificationData rich_notification_data;
@@ -975,10 +994,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD_TITLE),
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD,
-          peripheral_name),
-      std::u16string(), GURL(),
+      message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -994,6 +1010,12 @@ void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletIsCustomizable(
         const mojom::GraphicsTablet& graphics_tablet) {
   const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
+  const auto message =
+      graphics_tablet.battery_info.is_null()
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION,
+                peripheral_name)
+          : GetBatteryLevelMessage(*graphics_tablet.battery_info);
   const auto notification_id =
       GetGraphicsTabletNotificationID(graphics_tablet.id);
   message_center::RichNotificationData rich_notification_data;
@@ -1003,10 +1025,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_GRAPHICS_TABLET_TITLE),
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION,
-          peripheral_name),
-      std::u16string(), GURL(),
+      message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
