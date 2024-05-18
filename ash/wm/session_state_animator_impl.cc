@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/utility/layer_copy_animator.h"
 #include "ash/wm/desks/desks_util.h"
@@ -262,16 +261,12 @@ void GetContainersInRootWindow(int container_mask,
     if (aura::Window* non_lock_screen_containers = Shell::GetContainer(
             root_window, kShellWindowId_NonLockScreenContainersContainer);
         non_lock_screen_containers) {
-      constexpr int ContainersToAnimate[] = {
-          kShellWindowId_HomeScreenContainer,
-          kShellWindowId_AlwaysOnTopContainer,
-          kShellWindowId_FloatContainer,
-          kShellWindowId_PipContainer,
-          kShellWindowId_SystemModalContainer,
-      };
-      for (const int id : ContainersToAnimate) {
+      for (const int id : SessionStateAnimatorImpl::
+               ContainersToAnimateInNonLockScreenContainer) {
         containers->push_back(Shell::GetContainer(root_window, id));
       }
+      // The active desk container should be animated as well besides the ones
+      // inside `ContainersToAnimateInNonLockScreenContainer`.
       containers->push_back(
           desks_util::GetActiveDeskContainerForRoot(root_window));
     }

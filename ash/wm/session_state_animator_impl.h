@@ -6,13 +6,14 @@
 #define ASH_WM_SESSION_STATE_ANIMATOR_IMPL_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/session_state_animator.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 
 namespace ui {
 class LayerAnimationObserver;
-}
+}  // namespace ui
 
 namespace ash {
 
@@ -20,6 +21,14 @@ namespace ash {
 // out, shut down).
 class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
  public:
+  // Child containers of `NON_LOCK_SCREEN_CONTAINERS` should be animated on
+  // session state changes.
+  static constexpr int ContainersToAnimateInNonLockScreenContainer[] = {
+      kShellWindowId_HomeScreenContainer,  kShellWindowId_AlwaysOnTopContainer,
+      kShellWindowId_FloatContainer,       kShellWindowId_PipContainer,
+      kShellWindowId_SystemModalContainer,
+  };
+
   // Helper class used by tests to access internal state.
   class ASH_EXPORT TestApi {
    public:
