@@ -612,17 +612,13 @@ MLOperand* BuildElementWiseBinary(
     const MLOperand* b,
     ExceptionState& exception_state) {
   if (a->DataType() != b->DataType()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input operand data types don't match.");
+    exception_state.ThrowTypeError("The input operand data types don't match.");
     return nullptr;
   }
   std::optional<Vector<uint32_t>> dims_output =
       BroadcastShapes(a->Dimensions(), b->Dimensions());
   if (!dims_output) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input shapes are not broadcastable.");
+    exception_state.ThrowTypeError("The input shapes are not broadcastable.");
     return nullptr;
   }
 
@@ -638,8 +634,7 @@ MLOperand* BuildElementWiseBinary(
   auto output = MLOperand::ValidateAndCreateOutput(builder, data_type,
                                                    dims_output.value(), binary);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   binary->Connect({a, b}, {output.value()});
