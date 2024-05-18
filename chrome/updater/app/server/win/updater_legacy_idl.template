@@ -579,6 +579,32 @@ interface IPolicyStatus3 : IPolicyStatus2 {
 };
 END_INTERFACE
 
+// IPolicyStatus4 exposes everything IPolicyStatus3 does, and in addition,
+// exposes the cloudPolicyOverridesPlatformPolicy policy.
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-0F6696F3-7F48-446B-97FA-6B34EC2ADB32",
+      "system":"PLACEHOLDER-GUID-423FDEC3-0DBC-441E-B51D-FD8B82B9DCF2"
+    },
+    "tokensToSuffix": ["IPolicyStatus4", "IPolicyStatus3",
+                       "IPolicyStatusValue"],
+    "addToLibrary": ["", "user", "system"]
+  }
+)
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-C07BC046-32E0-4184-BC9F-13C4533C24AC),
+  helpstring("IPolicyStatus4 Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatus4 : IPolicyStatus3 {
+  [propget] HRESULT cloudPolicyOverridesPlatformPolicy(
+      [out, retval] IPolicyStatusValue** value);
+};
+END_INTERFACE
+
 BEGIN_INTERFACE(
   {
     "uuid": {

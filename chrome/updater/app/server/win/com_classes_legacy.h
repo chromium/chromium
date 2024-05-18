@@ -329,8 +329,10 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 // and device management.
 //
 // This class is used by chrome://policy to show the current updater policies.
-class PolicyStatusImpl
-    : public IDispatchImpl<IPolicyStatus3, IPolicyStatus2, IPolicyStatus> {
+class PolicyStatusImpl : public IDispatchImpl<IPolicyStatus4,
+                                              IPolicyStatus3,
+                                              IPolicyStatus2,
+                                              IPolicyStatus> {
  public:
   PolicyStatusImpl();
   PolicyStatusImpl(const PolicyStatusImpl&) = delete;
@@ -338,7 +340,7 @@ class PolicyStatusImpl
 
   HRESULT RuntimeClassInitialize();
 
-  // IPolicyStatus/IPolicyStatus2/IPolicyStatus3. See
+  // IPolicyStatus/IPolicyStatus2/IPolicyStatus3/IPolicyStatus4. See
   // `updater_legacy_idl.template` for the description of the properties below.
   IFACEMETHODIMP get_lastCheckPeriodMinutes(DWORD* minutes) override;
   IFACEMETHODIMP get_updatesSuppressedTimes(
@@ -389,6 +391,8 @@ class PolicyStatusImpl
                                    IPolicyStatusValue** value) override;
   IFACEMETHODIMP get_forceInstallApps(VARIANT_BOOL is_machine,
                                       IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_cloudPolicyOverridesPlatformPolicy(
+      IPolicyStatusValue** value) override;
 
  private:
   ~PolicyStatusImpl() override;

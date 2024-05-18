@@ -149,6 +149,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
                 INTERFACE_PAIR(IPolicyStatusUser),
                 INTERFACE_PAIR(IPolicyStatus2User),
                 INTERFACE_PAIR(IPolicyStatus3User),
+                INTERFACE_PAIR(IPolicyStatus4User),
                 INTERFACE_PAIR(IPolicyStatusValueUser),
             };
           case UpdaterScope::kSystem:
@@ -171,6 +172,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
                 INTERFACE_PAIR(IPolicyStatusSystem),
                 INTERFACE_PAIR(IPolicyStatus2System),
                 INTERFACE_PAIR(IPolicyStatus3System),
+                INTERFACE_PAIR(IPolicyStatus4System),
                 INTERFACE_PAIR(IPolicyStatusValueSystem),
                 INTERFACE_PAIR(IProcessLauncher),
                 INTERFACE_PAIR(IProcessLauncherSystem),
@@ -573,6 +575,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatus), updater_legacy_index},
       {__uuidof(IPolicyStatus2), updater_legacy_index},
       {__uuidof(IPolicyStatus3), updater_legacy_index},
+      {__uuidof(IPolicyStatus4), updater_legacy_index},
       {__uuidof(IPolicyStatusValue), updater_legacy_index},
       {__uuidof(IProcessLauncher), updater_legacy_index},
       {__uuidof(IProcessLauncher2), updater_legacy_index},
@@ -587,6 +590,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatusUser), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatus2User), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatus3User), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatus4User), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyUserIndex},
 
       // Updater legacy system typelib.
@@ -599,6 +603,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatusSystem), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatus2System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatus3System), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatus4System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacySystemIndex},
       {__uuidof(IProcessLauncherSystem), kUpdaterLegacySystemIndex},
       {__uuidof(IProcessLauncher2System), kUpdaterLegacySystemIndex},

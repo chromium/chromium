@@ -193,6 +193,20 @@ typedef interface IPolicyStatus3System IPolicyStatus3System;
 #endif 	/* __IPolicyStatus3System_FWD_DEFINED__ */
 
 
+#ifndef __IPolicyStatus4_FWD_DEFINED__
+#define __IPolicyStatus4_FWD_DEFINED__
+typedef interface IPolicyStatus4 IPolicyStatus4;
+
+#endif 	/* __IPolicyStatus4_FWD_DEFINED__ */
+
+
+#ifndef __IPolicyStatus4System_FWD_DEFINED__
+#define __IPolicyStatus4System_FWD_DEFINED__
+typedef interface IPolicyStatus4System IPolicyStatus4System;
+
+#endif 	/* __IPolicyStatus4System_FWD_DEFINED__ */
+
+
 #ifndef __IProcessLauncher_FWD_DEFINED__
 #define __IProcessLauncher_FWD_DEFINED__
 typedef interface IProcessLauncher IProcessLauncher;
@@ -431,6 +445,20 @@ typedef interface IPolicyStatus3 IPolicyStatus3;
 typedef interface IPolicyStatus3System IPolicyStatus3System;
 
 #endif 	/* __IPolicyStatus3System_FWD_DEFINED__ */
+
+
+#ifndef __IPolicyStatus4_FWD_DEFINED__
+#define __IPolicyStatus4_FWD_DEFINED__
+typedef interface IPolicyStatus4 IPolicyStatus4;
+
+#endif 	/* __IPolicyStatus4_FWD_DEFINED__ */
+
+
+#ifndef __IPolicyStatus4System_FWD_DEFINED__
+#define __IPolicyStatus4System_FWD_DEFINED__
+typedef interface IPolicyStatus4System IPolicyStatus4System;
+
+#endif 	/* __IPolicyStatus4System_FWD_DEFINED__ */
 
 
 #ifndef __IProcessLauncher_FWD_DEFINED__
@@ -5210,6 +5238,570 @@ EXTERN_C const IID IID_IPolicyStatus3System;
 #endif 	/* __IPolicyStatus3System_INTERFACE_DEFINED__ */
 
 
+#ifndef __IPolicyStatus4_INTERFACE_DEFINED__
+#define __IPolicyStatus4_INTERFACE_DEFINED__
+
+/* interface IPolicyStatus4 */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IPolicyStatus4;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("C07BC046-32E0-4184-BC9F-13C4533C24AC")
+    IPolicyStatus4 : public IPolicyStatus3
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_cloudPolicyOverridesPlatformPolicy( 
+            /* [retval][out] */ IPolicyStatusValue **value) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IPolicyStatus4Vtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IPolicyStatus4 * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IPolicyStatus4 * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IPolicyStatus4 * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IPolicyStatus4 * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IPolicyStatus4 * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IPolicyStatus4 * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IPolicyStatus4 * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_updaterVersion)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_updaterVersion )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ BSTR *version);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_lastCheckedTime)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastCheckedTime )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ DATE *last_checked);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, refreshPolicies)
+        HRESULT ( STDMETHODCALLTYPE *refreshPolicies )( 
+            IPolicyStatus4 * This);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_lastCheckPeriodMinutes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastCheckPeriodMinutes )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_updatesSuppressedTimes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_updatesSuppressedTimes )( 
+            IPolicyStatus4 * This,
+            /* [out] */ IPolicyStatusValue **value,
+            VARIANT_BOOL *are_updates_suppressed);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_downloadPreferenceGroupPolicy)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadPreferenceGroupPolicy )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_packageCacheSizeLimitMBytes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_packageCacheSizeLimitMBytes )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_packageCacheExpirationTimeDays)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_packageCacheExpirationTimeDays )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_proxyMode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyMode )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_proxyPacUrl)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyPacUrl )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_proxyServer)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyServer )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_effectivePolicyForAppInstalls)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_effectivePolicyForAppInstalls )( 
+            IPolicyStatus4 * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_effectivePolicyForAppUpdates)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_effectivePolicyForAppUpdates )( 
+            IPolicyStatus4 * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_targetVersionPrefix)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_targetVersionPrefix )( 
+            IPolicyStatus4 * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_isRollbackToTargetVersionAllowed)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isRollbackToTargetVersionAllowed )( 
+            IPolicyStatus4 * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2, get_targetChannel)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_targetChannel )( 
+            IPolicyStatus4 * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus3, get_forceInstallApps)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_forceInstallApps )( 
+            IPolicyStatus4 * This,
+            /* [in] */ VARIANT_BOOL is_machine,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus4, get_cloudPolicyOverridesPlatformPolicy)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_cloudPolicyOverridesPlatformPolicy )( 
+            IPolicyStatus4 * This,
+            /* [retval][out] */ IPolicyStatusValue **value);
+        
+        END_INTERFACE
+    } IPolicyStatus4Vtbl;
+
+    interface IPolicyStatus4
+    {
+        CONST_VTBL struct IPolicyStatus4Vtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IPolicyStatus4_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IPolicyStatus4_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IPolicyStatus4_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IPolicyStatus4_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IPolicyStatus4_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IPolicyStatus4_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IPolicyStatus4_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IPolicyStatus4_get_updaterVersion(This,version)	\
+    ( (This)->lpVtbl -> get_updaterVersion(This,version) ) 
+
+#define IPolicyStatus4_get_lastCheckedTime(This,last_checked)	\
+    ( (This)->lpVtbl -> get_lastCheckedTime(This,last_checked) ) 
+
+#define IPolicyStatus4_refreshPolicies(This)	\
+    ( (This)->lpVtbl -> refreshPolicies(This) ) 
+
+#define IPolicyStatus4_get_lastCheckPeriodMinutes(This,value)	\
+    ( (This)->lpVtbl -> get_lastCheckPeriodMinutes(This,value) ) 
+
+#define IPolicyStatus4_get_updatesSuppressedTimes(This,value,are_updates_suppressed)	\
+    ( (This)->lpVtbl -> get_updatesSuppressedTimes(This,value,are_updates_suppressed) ) 
+
+#define IPolicyStatus4_get_downloadPreferenceGroupPolicy(This,value)	\
+    ( (This)->lpVtbl -> get_downloadPreferenceGroupPolicy(This,value) ) 
+
+#define IPolicyStatus4_get_packageCacheSizeLimitMBytes(This,value)	\
+    ( (This)->lpVtbl -> get_packageCacheSizeLimitMBytes(This,value) ) 
+
+#define IPolicyStatus4_get_packageCacheExpirationTimeDays(This,value)	\
+    ( (This)->lpVtbl -> get_packageCacheExpirationTimeDays(This,value) ) 
+
+#define IPolicyStatus4_get_proxyMode(This,value)	\
+    ( (This)->lpVtbl -> get_proxyMode(This,value) ) 
+
+#define IPolicyStatus4_get_proxyPacUrl(This,value)	\
+    ( (This)->lpVtbl -> get_proxyPacUrl(This,value) ) 
+
+#define IPolicyStatus4_get_proxyServer(This,value)	\
+    ( (This)->lpVtbl -> get_proxyServer(This,value) ) 
+
+#define IPolicyStatus4_get_effectivePolicyForAppInstalls(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_effectivePolicyForAppInstalls(This,app_id,value) ) 
+
+#define IPolicyStatus4_get_effectivePolicyForAppUpdates(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_effectivePolicyForAppUpdates(This,app_id,value) ) 
+
+#define IPolicyStatus4_get_targetVersionPrefix(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_targetVersionPrefix(This,app_id,value) ) 
+
+#define IPolicyStatus4_get_isRollbackToTargetVersionAllowed(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_isRollbackToTargetVersionAllowed(This,app_id,value) ) 
+
+#define IPolicyStatus4_get_targetChannel(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_targetChannel(This,app_id,value) ) 
+
+
+#define IPolicyStatus4_get_forceInstallApps(This,is_machine,value)	\
+    ( (This)->lpVtbl -> get_forceInstallApps(This,is_machine,value) ) 
+
+
+#define IPolicyStatus4_get_cloudPolicyOverridesPlatformPolicy(This,value)	\
+    ( (This)->lpVtbl -> get_cloudPolicyOverridesPlatformPolicy(This,value) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IPolicyStatus4_INTERFACE_DEFINED__ */
+
+
+#ifndef __IPolicyStatus4System_INTERFACE_DEFINED__
+#define __IPolicyStatus4System_INTERFACE_DEFINED__
+
+/* interface IPolicyStatus4System */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IPolicyStatus4System;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("423FDEC3-0DBC-441E-B51D-FD8B82B9DCF2")
+    IPolicyStatus4System : public IPolicyStatus3System
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_cloudPolicyOverridesPlatformPolicy( 
+            /* [retval][out] */ IPolicyStatusValueSystem **value) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IPolicyStatus4SystemVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IPolicyStatus4System * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IPolicyStatus4System * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IPolicyStatus4System * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IPolicyStatus4System * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IPolicyStatus4System * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IPolicyStatus4System * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IPolicyStatus4System * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_updaterVersion)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_updaterVersion )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ BSTR *version);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_lastCheckedTime)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastCheckedTime )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ DATE *last_checked);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, refreshPolicies)
+        HRESULT ( STDMETHODCALLTYPE *refreshPolicies )( 
+            IPolicyStatus4System * This);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_lastCheckPeriodMinutes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastCheckPeriodMinutes )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_updatesSuppressedTimes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_updatesSuppressedTimes )( 
+            IPolicyStatus4System * This,
+            /* [out] */ IPolicyStatusValueSystem **value,
+            VARIANT_BOOL *are_updates_suppressed);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_downloadPreferenceGroupPolicy)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadPreferenceGroupPolicy )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_packageCacheSizeLimitMBytes)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_packageCacheSizeLimitMBytes )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_packageCacheExpirationTimeDays)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_packageCacheExpirationTimeDays )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_proxyMode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyMode )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_proxyPacUrl)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyPacUrl )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_proxyServer)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_proxyServer )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_effectivePolicyForAppInstalls)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_effectivePolicyForAppInstalls )( 
+            IPolicyStatus4System * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_effectivePolicyForAppUpdates)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_effectivePolicyForAppUpdates )( 
+            IPolicyStatus4System * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_targetVersionPrefix)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_targetVersionPrefix )( 
+            IPolicyStatus4System * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_isRollbackToTargetVersionAllowed)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isRollbackToTargetVersionAllowed )( 
+            IPolicyStatus4System * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus2System, get_targetChannel)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_targetChannel )( 
+            IPolicyStatus4System * This,
+            /* [in] */ BSTR app_id,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus3System, get_forceInstallApps)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_forceInstallApps )( 
+            IPolicyStatus4System * This,
+            /* [in] */ VARIANT_BOOL is_machine,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        DECLSPEC_XFGVIRT(IPolicyStatus4System, get_cloudPolicyOverridesPlatformPolicy)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_cloudPolicyOverridesPlatformPolicy )( 
+            IPolicyStatus4System * This,
+            /* [retval][out] */ IPolicyStatusValueSystem **value);
+        
+        END_INTERFACE
+    } IPolicyStatus4SystemVtbl;
+
+    interface IPolicyStatus4System
+    {
+        CONST_VTBL struct IPolicyStatus4SystemVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IPolicyStatus4System_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IPolicyStatus4System_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IPolicyStatus4System_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IPolicyStatus4System_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IPolicyStatus4System_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IPolicyStatus4System_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IPolicyStatus4System_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IPolicyStatus4System_get_updaterVersion(This,version)	\
+    ( (This)->lpVtbl -> get_updaterVersion(This,version) ) 
+
+#define IPolicyStatus4System_get_lastCheckedTime(This,last_checked)	\
+    ( (This)->lpVtbl -> get_lastCheckedTime(This,last_checked) ) 
+
+#define IPolicyStatus4System_refreshPolicies(This)	\
+    ( (This)->lpVtbl -> refreshPolicies(This) ) 
+
+#define IPolicyStatus4System_get_lastCheckPeriodMinutes(This,value)	\
+    ( (This)->lpVtbl -> get_lastCheckPeriodMinutes(This,value) ) 
+
+#define IPolicyStatus4System_get_updatesSuppressedTimes(This,value,are_updates_suppressed)	\
+    ( (This)->lpVtbl -> get_updatesSuppressedTimes(This,value,are_updates_suppressed) ) 
+
+#define IPolicyStatus4System_get_downloadPreferenceGroupPolicy(This,value)	\
+    ( (This)->lpVtbl -> get_downloadPreferenceGroupPolicy(This,value) ) 
+
+#define IPolicyStatus4System_get_packageCacheSizeLimitMBytes(This,value)	\
+    ( (This)->lpVtbl -> get_packageCacheSizeLimitMBytes(This,value) ) 
+
+#define IPolicyStatus4System_get_packageCacheExpirationTimeDays(This,value)	\
+    ( (This)->lpVtbl -> get_packageCacheExpirationTimeDays(This,value) ) 
+
+#define IPolicyStatus4System_get_proxyMode(This,value)	\
+    ( (This)->lpVtbl -> get_proxyMode(This,value) ) 
+
+#define IPolicyStatus4System_get_proxyPacUrl(This,value)	\
+    ( (This)->lpVtbl -> get_proxyPacUrl(This,value) ) 
+
+#define IPolicyStatus4System_get_proxyServer(This,value)	\
+    ( (This)->lpVtbl -> get_proxyServer(This,value) ) 
+
+#define IPolicyStatus4System_get_effectivePolicyForAppInstalls(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_effectivePolicyForAppInstalls(This,app_id,value) ) 
+
+#define IPolicyStatus4System_get_effectivePolicyForAppUpdates(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_effectivePolicyForAppUpdates(This,app_id,value) ) 
+
+#define IPolicyStatus4System_get_targetVersionPrefix(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_targetVersionPrefix(This,app_id,value) ) 
+
+#define IPolicyStatus4System_get_isRollbackToTargetVersionAllowed(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_isRollbackToTargetVersionAllowed(This,app_id,value) ) 
+
+#define IPolicyStatus4System_get_targetChannel(This,app_id,value)	\
+    ( (This)->lpVtbl -> get_targetChannel(This,app_id,value) ) 
+
+
+#define IPolicyStatus4System_get_forceInstallApps(This,is_machine,value)	\
+    ( (This)->lpVtbl -> get_forceInstallApps(This,is_machine,value) ) 
+
+
+#define IPolicyStatus4System_get_cloudPolicyOverridesPlatformPolicy(This,value)	\
+    ( (This)->lpVtbl -> get_cloudPolicyOverridesPlatformPolicy(This,value) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IPolicyStatus4System_INTERFACE_DEFINED__ */
+
+
 #ifndef __IProcessLauncher_INTERFACE_DEFINED__
 #define __IProcessLauncher_INTERFACE_DEFINED__
 
@@ -5682,6 +6274,8 @@ EXTERN_C const IID IID_IProcessLauncher2System;
 
 /* library UpdaterLegacyLib */
 /* [helpstring][version][uuid] */ 
+
+
 
 
 

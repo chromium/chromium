@@ -954,13 +954,13 @@ to a non-zero DWORD value, then the search order of `Group policy` and
 
 #### COM interfaces (Windows only)
 The updater exposes
-[IPolicyStatus3](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template;l=555?q=IPolicyStatus3&ss=chromium)
+[IPolicyStatus4](https://source.chromium.org/search?q=IPolicyStatus4%20file:updater_legacy_idl.template)
 and the corresponding `IDispatch` implementation to provide clients such as
 Chrome the ability to query the updater enterprise policies.
 
 A client can `CoCreateInstance` the `PolicyStatusUserClass` or the
 `PolicyStatusSystemClass` to get the corresponding policy status object and
-query it via the `IPolicyStatus3` methods.
+query it via the `IPolicyStatus4` methods.
 
 #### Deploying enterprise applications via updater policy
 For each application that needs to be deployed via the updater, the policy for
@@ -1670,10 +1670,12 @@ In addition there is a delay between when the GPO is set on the server and when
 the value is propagated on the client so being able to verify that the updater
 picks up the policy can help debug propagation issues as well.
 
-The IPolicyStatus/IPolicyStatus2/IPolicyStatus3 interfaces therefore expose this
-functionality that can be queried and shown in chrome://policy.
+The IPolicyStatus/IPolicyStatus2/IPolicyStatus3/IPolicyStatus4 interfaces
+therefore expose this functionality that can be queried and shown in
+chrome://policy.
 
-[IPolicyStatus/IPolicyStatus2/IPolicyStatus3 interface definition](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template?q=IPolicyStatus)
+[IPolicyStatus/IPolicyStatus2/IPolicyStatus3/IPolicyStatus4 interface definition]
+(https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template?q=IPolicyStatus)
 
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path

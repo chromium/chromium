@@ -330,6 +330,8 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
             L"{34527502-D3DB-4205-A69B-789B27EE0414}");
   EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatus3)),
             L"{05A30352-EB25-45B6-8449-BCA7B0542CE5}");
+  EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatus4)),
+            L"{FD0FDA43-AF97-4F1C-BD68-3355FB4F1C92}");
   EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatusValue)),
             L"{27634814-8E41-4C35-8577-980134A96544}");
   EXPECT_EQ(StringFromGuid(__uuidof(IProcessLauncher)),
@@ -367,6 +369,8 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
             L"{9D31EA63-2E06-4D41-98C7-CB1F307DB597}");
   EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatus3)),
             L"{5C674FC1-80E3-48D2-987B-79D9D286065B}");
+  EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatus4)),
+            L"{4F08E832-C4AF-4D77-840F-8884083E8324}");
   EXPECT_EQ(StringFromGuid(__uuidof(IPolicyStatusValue)),
             L"{47C8886A-A4B5-4F6C-865A-41A207074DFA}");
   EXPECT_EQ(StringFromGuid(__uuidof(IProcessLauncher)),
