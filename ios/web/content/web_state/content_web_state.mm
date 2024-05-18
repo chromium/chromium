@@ -191,7 +191,7 @@ void ContentWebState::SerializeMetadataToProto(
 }
 
 WebStateDelegate* ContentWebState::GetDelegate() {
-  return nullptr;
+  return delegate_;
 }
 
 std::unique_ptr<WebState> ContentWebState::Clone() const {

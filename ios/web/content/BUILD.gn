@@ -76,13 +76,18 @@ source_set("threads") {
 
 source_set("ui") {
   sources = [
+    "ui/content_context_menu_controller.h",
+    "ui/content_context_menu_controller.mm",
     "ui/web_contents_view_delegate_impl.h",
     "ui/web_contents_view_delegate_impl.mm",
   ]
 
   deps = [
+    ":content",
     "//base",
     "//content/public/browser",
+    "//ios/web/public:public",
+    "//ios/web/public/ui:ui",
   ]
 }
 
