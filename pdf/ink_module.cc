@@ -213,6 +213,7 @@ void InkModule::HandleSetAnnotationModeMessage(
 
 void InkModule::ConvertInkInputsIntoStroke() {
   auto stroke = InkInProgressStroke::Create();
+  CHECK(stroke);
   std::unique_ptr<InkBrush> brush = CreateBrush();
   CHECK(brush);
   stroke->Start(*brush);
