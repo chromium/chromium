@@ -141,7 +141,7 @@ void OnDeviceModelAdaptationLoader::StateChanged(
     return;
   }
   base_model_spec_ = state->GetBaseModelSpec();
-  if (!base_model_spec_) {
+  if (!switches::GetOnDeviceModelExecutionOverride() && !base_model_spec_) {
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid);
     return;
@@ -152,8 +152,10 @@ void OnDeviceModelAdaptationLoader::StateChanged(
       "type.googleapis.com/"
       "google.internal.chrome.optimizationguide.v1.OnDeviceBaseModelMetadata");
   proto::OnDeviceBaseModelMetadata model_metadata;
-  model_metadata.set_base_model_version(base_model_spec_->model_version);
-  model_metadata.set_base_model_name(base_model_spec_->model_name);
+  if (base_model_spec_) {
+    model_metadata.set_base_model_version(base_model_spec_->model_version);
+    model_metadata.set_base_model_name(base_model_spec_->model_name);
+  }
   model_metadata.SerializeToString(any_metadata.mutable_value());
 
   model_provider_->AddObserverForOptimizationTargetModel(
@@ -213,18 +215,19 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
     return base::unexpected(
         OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid);
   }
-  if (!base_model_spec_) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
-  }
-  // When base model override was specified, skip the incompatibility check.
-  if (!switches::GetOnDeviceModelExecutionOverride() &&
-      (supported_model_spec->base_model_name() !=
-           base_model_spec_->model_name ||
-       supported_model_spec->base_model_version() !=
-           base_model_spec_->model_version)) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
+  // Check for incompatibility when base model override is not specified
+  if (!switches::GetOnDeviceModelExecutionOverride()) {
+    if (!base_model_spec_) {
+      return base::unexpected(
+          OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
+    }
+    if (supported_model_spec->base_model_name() !=
+            base_model_spec_->model_name ||
+        supported_model_spec->base_model_version() !=
+            base_model_spec_->model_version) {
+      return base::unexpected(
+          OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
+    }
   }
 
   auto weights_file = model_info->GetAdditionalFileWithBaseName(
