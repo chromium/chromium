@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Контролирајте го пристапот на сајтов до вашиот уред</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Повеќе</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Вашата последна картичка</translation>
 <translation id="6064125863973209585">Преземањата завршија</translation>
 <translation id="6071501408666570960">Можно е да сте одјавени од сајтов</translation>
 <translation id="6120483543004435978">Кога е вклучено, сајтовите може да бараат да знаат кога го користите уредот активно. Кога е исклучено, сајтовите не може да знаат кога го користите уредот активно.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7990211076305263060">Кога е вклучено, сајтовите може да бараат да го користат микрофонот. Кога е исклучено, сајтовите не може да го користат микрофонот.</translation>
 <translation id="8007176423574883786">Исклучена за овој уред</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Од <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8042586301629853791">Подреди по:</translation>
 <translation id="8067883171444229417">Пушти го видеото</translation>

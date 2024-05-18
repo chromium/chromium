@@ -572,6 +572,7 @@
 <translation id="2046951263634619614">किताबों के खुदरा दुकानदार</translation>
 <translation id="2048261947532620704">पेज का अनुवाद किया जा रहा है</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषा के पेजों का अनुवाद नहीं किया जाएगा.</translation>
+<translation id="2055461225779831292">कैमरे इस्तेमाल करना और उन्हें मूव करना (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">अपना माउस पॉइंटर लॉक करें</translation>
 <translation id="2056658168519009885">आपको दिखने वाले विज्ञापनों को आपके हिसाब से बनाने के लिए साइटें, Chrome से जानकारी मांग सकती हैं.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
@@ -719,6 +720,7 @@
 <translation id="2300306941146563769">अपलोड नहीं की गई</translation>
 <translation id="2301098101308036335">कौनसी वेबसाइटें देखी गई हैं और कब.</translation>
 <translation id="230286397113210245">'गुप्त विंडो में खोलें' बटन, नई गुप्त विंडो खोलकर निजी तौर पर ब्राउज़ करने के लिए इसे चालू करें</translation>
+<translation id="2306124309679506798">क्या आपको इमर्सिव सेशन शुरू करने की अनुमति देनी है?</translation>
 <translation id="2312234273148520048">चटनी और ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
 <translation id="2316159751672436664">ChromeOS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
@@ -1173,6 +1175,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
+<translation id="3248329428895535435">इस साइट पर न दिखाएं</translation>
 <translation id="3252772880526154546">आर्किटेक्चर</translation>
 <translation id="3254301855501243548">18 x 22 इंच</translation>
 <translation id="3255926992597692024">Chromium, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
@@ -3792,6 +3795,7 @@
 <translation id="8263001937536038617">फ़ोटो और वीडियो सेवाएं</translation>
 <translation id="8265992338205884890">दिख रहा डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> के रूप में प्रवेश करना</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">अलग-अलग दस्तावेज़/क्रम से लगाई गई कॉपी</translation>
 <translation id="8269703227894255363">{0,plural, =1{फ़ाइल को खोलने से रोका गया है}one{<ph name="FILE_COUNT" /> फ़ाइल को खोलने से रोका गया है}other{<ph name="FILE_COUNT" /> फ़ाइलों को खोलने से रोका गया है}}</translation>
 <translation id="8270173610195068258">अपराध और न्याय</translation>
@@ -4212,6 +4216,7 @@
 <translation id="9094544726794842788">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं</translation>
 <translation id="9095388113577226029">और भाषाएं...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="9101450247048146228">कैमरा इस्तेमाल करना और उसे मूव करना (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे 1</translation>
 <translation id="9103872766612412690">आपकी जानकारी की सुरक्षा करने के लिए <ph name="SITE" /> आम तौर पर, सुरक्षित करने के तरीके (एन्क्रिप्शन) का उपयोग करती है. जब 'क्रोमियम' ने इस बार <ph name="SITE" /> से कनेक्ट करने की कोशिश की तो, वेबसाइट ने असामान्य और गलत क्रेडेंशियल वापस भेजे. ऐसा तब हो सकता है जब कोई हमलावर <ph name="SITE" /> होने का दावा करने की कोशिश कर रहा हो या किसी वाई-फ़ाई 'साइन इन स्क्रीन' की वजह से कनेक्शन में खराबी आ गई हो. आपकी जानकारी अभी भी सुरक्षित है क्योंकि किसी भी डेटा को एक्सचेंज करने से पहले ही 'क्रोमियम' ने कनेक्शन रोक दिया था.</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> आपके ब्राउज़र को मैनेज करता है</translation>
@@ -4234,6 +4239,8 @@
 <translation id="9139318394846604261">खरीदारी</translation>
 <translation id="9141013498910525015">पते प्रबंधित करें</translation>
 <translation id="9144951720726881238">खत्म होने की तारीख:</translation>
+<translation id="9145910032514306808">फिर से <ph name="BEGIN_LINK" />साइन इन<ph name="END_LINK" /> 
+    करें. इसके बाद, लिखने में मदद पाने के लिए इस टैब पर वापस आएं</translation>
 <translation id="9148507642005240123">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="9148599396704355100">कीमत कम है</translation>
 <translation id="9150025764986957246">इसमें इस तरह की चीज़ें डाली जा सकती हैं:</translation>

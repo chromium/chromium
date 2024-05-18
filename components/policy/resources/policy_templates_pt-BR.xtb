@@ -4521,6 +4521,15 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="4483738129334574255">Desativar o jogo easter egg de dinossauro nos dispositivos <ph name="PRODUCT_OS_NAME" /> registrados e ativar em outras circunstâncias</translation>
 <translation id="4484515651939984695">Especificar por quanto tempo (em segundos) um dispositivo de transmissão selecionado com um código de acesso ou QR permanece na lista aparelhos desse tipo no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurar o URL da página "Nova guia"</translation>
+<translation id="4488959486611931919">Observação: nenhum site falhou desde que o Chrome passou a bloquear esses cookies por padrão na versão M118. Por isso, essa funcionalidade não será configurável e esta política não terá efeito a partir da versão M127.
+
+Esta política fornece uma desativação temporária para mudanças na forma como o Chrome lida com cookies definidos pelo JavaScript e que contêm determinados caracteres de controle (NULL, retorno de carro e feed de linha).
+Antes, a presença de qualquer um desses caracteres em uma string de cookies faria com que eles fossem truncados, mas ainda assim definidos.
+Agora, a presença desses caracteres vai fazer com que toda a string de cookies seja ignorada.
+
+Se esta política for definida como verdadeira (padrão), o novo comportamento será ativado.
+
+Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
 <translation id="4490420545181481759">Os certificados X.509 podem codificar restrições, como as de nome,
 em extensões do certificado. A RFC 5280 especifica que a aplicação dessas
 restrições a certificados de âncoras de confiança é opcional. Da versão 112 em diante

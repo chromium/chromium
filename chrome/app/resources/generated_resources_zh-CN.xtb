@@ -368,6 +368,7 @@
 <translation id="1260810365552581339">Linux 可能没有足够的磁盘可用空间。您可在<ph name="LINK_START" />设置<ph name="LINK_END" />中增加 Linux 磁盘可用空间并再次尝试恢复。</translation>
 <translation id="1261380933454402672">审慎</translation>
 <translation id="126156426083987769">演示模式设备许可出问题了。</translation>
+<translation id="1261885284931493480">要移除标签页并删除分组吗？</translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1263733306853729545">用 <ph name="MINUS" /> 键和 <ph name="EQUAL" /> 键在候选字词列表中翻页</translation>
 <translation id="126387934568812801">包含此屏幕截图以及已打开标签页的标题</translation>
@@ -875,6 +876,7 @@
 <translation id="1634224622052500893">找到 Wi-Fi 网络了</translation>
 <translation id="1634783886312010422">您是否已在 <ph name="WEBSITE" /> 上更改了此密码？</translation>
 <translation id="1636212173818785548">确定</translation>
+<translation id="1636542522761359943">欢迎您，<ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用已保存的任何数据（具体取决于开发者的设置），包括联系人、消息和照片等数据。备份数据不会计入您的云端硬盘存储空间配额。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">在您的 iPhone 上获取此书签</translation>
@@ -1630,6 +1632,7 @@
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
 <translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
+<translation id="2188919919468240749">要删除标签页分组吗？</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">（空）</translation>
@@ -1856,6 +1859,7 @@
 <translation id="2350133097354918058">已重新加载</translation>
 <translation id="2350182423316644347">正在初始化应用…</translation>
 <translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
+<translation id="2352305801620974284">在该设备上登录后，您可以从您的 Google 账号中获取密码等信息</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
@@ -2066,6 +2070,7 @@
 <translation id="249113932447298600">抱歉，系统目前不支持设备“<ph name="DEVICE_LABEL" />”。</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" />语音预览</translation>
 <translation id="2492461744635776704">正在准备证书签名请求</translation>
+<translation id="2492964937550251173">要关闭标签页并删除分组吗？</translation>
 <translation id="249330843868392562">打开文字转语音设置</translation>
 <translation id="2494555621641843783">无法安装 Steam</translation>
 <translation id="2495141202137516054">来自您的云端硬盘</translation>
@@ -2234,6 +2239,7 @@
 <translation id="262087792756666314">您可以固定此功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
 <translation id="2620900772667816510">超高解析度蓝牙</translation>
 <translation id="262154978979441594">训练 Google 助理语音模型</translation>
+<translation id="2622280935687585828">从已停用的网站中移除 <ph name="SITE_NAME" /></translation>
 <translation id="26224892172169984">不允许任何网站处理协议</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">已获准控制 MIDI 设备以及为其重新编程</translation>
@@ -2779,6 +2785,7 @@
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">查看框架的源代码(&amp;V)</translation>
 <translation id="3021902017511220299">扫描失败。您的管理员已禁用此操作。</translation>
+<translation id="3022068420678496307">此操作会从已使用此 Google 账号登录 Chrome 的所有设备中删除该分组。</translation>
 <translation id="3022361196600037287">系统会将“<ph name="DEVICE" />”从此 Chromebook 中移除，并且不会将其保存到 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">无法解析您所说的内容。</translation>
 <translation id="3023464535986383522">随选朗读</translation>
@@ -4181,6 +4188,7 @@
 <translation id="4078903002989614318">排序和列表选项</translation>
 <translation id="4079140982534148664">使用增强的“拼写检查”功能</translation>
 <translation id="4082333918978320301">不允许任何网站使用您的麦克风</translation>
+<translation id="4083735423615351075">相应标签页将在此设备上保持打开状态，但系统会从已使用此 Google 账号登录 Chrome 的所有设备中删除该分组。</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084835346725913160">关闭 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">已拦截此网页上的 JavaScript。</translation>
@@ -4190,6 +4198,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">显示在右侧</translation>
+<translation id="4088879333319441249">要取消标签页分组吗？</translation>
 <translation id="4089235344645910861">设置已保存。已开始同步。</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
@@ -4238,6 +4247,7 @@
 <translation id="412022815379960229">登录后即可开始浏览您在 Google 相册中的回忆。</translation>
 <translation id="4120388883569225797">无法重置此安全密钥</translation>
 <translation id="4120817667028078560">路径过长</translation>
+<translation id="412214527668811703">{NUM_SITES,plural, =1{为保护您的数据，已撤消某个网站的权限}other{为保护您的数据，已撤消某些网站的权限}}</translation>
 <translation id="4124823734405044952">您的安全密钥已重置完毕</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="412730574613779332">勇士</translation>
@@ -5676,6 +5686,7 @@
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
 <translation id="5244234799035360187">OneDrive 现在会显示在“文件”应用内</translation>
+<translation id="5244466461749935369">暂时保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">开始使用学校账号</translation>
 <translation id="5246282308050205996">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重启该应用。</translation>
@@ -5944,6 +5955,7 @@
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">查看更多搜索结果</translation>
+<translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -6418,6 +6430,7 @@
 <translation id="5816434091619127343">所请求的打印机更改会导致打印机不可用。</translation>
 <translation id="581659025233126501">开启同步功能</translation>
 <translation id="5817918615728894473">配对</translation>
+<translation id="5817963443108180228">欢迎回来，<ph name="PROFILE_NAME" /></translation>
 <translation id="581911254119283028">所有应用</translation>
 <translation id="5821565227679781414">创建快捷方式</translation>
 <translation id="5824976764713185207">在网页加载完毕后自动朗读网页内容</translation>
@@ -7018,6 +7031,7 @@
 <translation id="6265159465845424232">将 Microsoft 文件复制到或移到 Microsoft OneDrive 前询问我</translation>
 <translation id="6265687851677020761">移除此端口</translation>
 <translation id="6266532094411434237">正在连接到<ph name="DEVICE" /></translation>
+<translation id="6266984048393265562">自定义个人资料</translation>
 <translation id="6267166720438879315">请选择证书，以在 <ph name="HOST_NAME" /> 上对您本人进行身份验证</translation>
 <translation id="6268252012308737255">使用<ph name="APP" />打开</translation>
 <translation id="6270309713620950855">静音状态智能推送</translation>
@@ -8011,6 +8025,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
+<translation id="7030050505233848371">危险网站。Chrome 移除了通知权限。</translation>
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
 <translation id="7030695672997239647">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
@@ -9045,6 +9060,7 @@
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="7810367892333449285">所输入代码的格式应为：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />可选匹配 ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">请重试，或从之前生成的以下主题中任选其一。</translation>
+<translation id="7814090115158024843">在这些网站上一律停用写作帮助</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">修改“<ph name="EXTENSION_NAME" />”的快捷方式 <ph name="SHORTCUT" /></translation>
@@ -9278,6 +9294,7 @@
 <translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 账号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
+<translation id="7980066177668669492">Base64 编码的 ASCII，多个证书</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406">使用已保存的通行密钥登录 <ph name="APP_NAME" /></translation>
 <translation id="7981662863948574132">显示包含设备 EID 和二维码的弹出式窗口</translation>
@@ -9692,6 +9709,7 @@
 <translation id="8276242035951017580">不允许任何应用使用您的摄像头</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
 <translation id="8276850948802942358">详细了解如何向网站授予对第三方 Cookie 的临时使用权限</translation>
+<translation id="8277907305629781277">您在 <ph name="DATE" />创建了此通行密钥</translation>
 <translation id="8280267190418431666">网站使用的语言</translation>
 <translation id="828180235270931531">其他可用打印机</translation>
 <translation id="8281886186245836920">跳过</translation>
@@ -10608,6 +10626,7 @@
 <translation id="8962863356073277855">网址格式应为 https://www.example.com</translation>
 <translation id="8962918469425892674">此网站正在使用动态传感器或光传感器。</translation>
 <translation id="8963117664422609631">转到网站设置</translation>
+<translation id="8964795217937248330">要关闭标签页并删除分组吗？</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="8966809848145604011">其他个人资料</translation>
 <translation id="8967427617812342790">添加到阅读清单</translation>
@@ -11043,6 +11062,7 @@
 <translation id="979345485590886759">网站可以请求锁定鼠标指针</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>
+<translation id="98235653036850093"><ph name="PROFILE_NAME" />，您好</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 摄像头正在录像且麦克风正在录音</translation>
 <translation id="984275831282074731">付款方式</translation>

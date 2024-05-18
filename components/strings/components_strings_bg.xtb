@@ -571,6 +571,7 @@
 <translation id="2046951263634619614">Книжарници</translation>
 <translation id="2048261947532620704">Страницата се превежда</translation>
 <translation id="2053111141626950936">Страниците на <ph name="LANGUAGE" /> няма да се превеждат.</translation>
+<translation id="2055461225779831292">Използване и преместване на камерите ви (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Заключване на курсора на мишката</translation>
 <translation id="2056658168519009885">Сайтовете могат да поискат от Chrome информация, с чиято помощ да персонализират показваните ви реклами.</translation>
 <translation id="2059166748188874810">Община</translation>
@@ -718,6 +719,7 @@
 <translation id="2300306941146563769">Не е качено</translation>
 <translation id="2301098101308036335">Кои уебсайтове са посетени и кога.</translation>
 <translation id="230286397113210245">Бутон „Отваряне на прозорец в режим „инкогнито“. Активирайте, за да отворите нов прозорец в режим „инкогнито“ и да сърфирате частно</translation>
+<translation id="2306124309679506798">Да се разреши ли виртуалната практическа работа?</translation>
 <translation id="2312234273148520048">Подправки и сосове</translation>
 <translation id="2316087952091171402">По-малко от <ph name="UPPER_ESTIMATE" />. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
 <translation id="2316159751672436664">Персонализиране на инструментите за достъпност в настройките на Chrome OS</translation>
@@ -1173,6 +1175,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
 <translation id="324180406144491771">Връзките от тип <ph name="HOST_NAME" /> са блокирани</translation>
+<translation id="3248329428895535435">Да не се показва на този сайт</translation>
 <translation id="3252772880526154546">Архитектура</translation>
 <translation id="3254301855501243548">18 x 22 инча</translation>
 <translation id="3255926992597692024">Chromium се опитва да промени настройките за попълване на начините на плащане.</translation>
@@ -3792,6 +3795,7 @@
 <translation id="8263001937536038617">Фотографски и видеоуслуги</translation>
 <translation id="8265992338205884890">Видими данни</translation>
 <translation id="8267698848189296333">Влизате като <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Отделни документи/подредени копия</translation>
 <translation id="8269703227894255363">{0,plural, =1{Отварянето на файла е блокирано}other{Отварянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="8270173610195068258">Престъпност и правосъдие</translation>
@@ -4211,6 +4215,7 @@
 <translation id="9094544726794842788">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати</translation>
 <translation id="9095388113577226029">Още езици...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, натиснете Tab и след това Enter за задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
+<translation id="9101450247048146228">Използване и преместване на камерите (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Тава 1</translation>
 <translation id="9103872766612412690">Обикновено <ph name="SITE" /> използва шифроване за защита на информацията ви. Когато Chromium опита да установи връзка с/ъс <ph name="SITE" /> този път, уебсайтът върна необичайни и неправилни идентификационни данни. Това може да се случи, когато извършител на атака пробва да се представи за <ph name="SITE" /> или връзката е прекъсната от екран за вход в Wi-Fi. Информацията ви продължава да е защитена, тъй като Chromium спря връзката, преди да бъдат обменени данни.</translation>
 <translation id="9107467864910557787">Браузърът ви се управлява от <ph name="MANAGER" /></translation>
@@ -4233,6 +4238,8 @@
 <translation id="9139318394846604261">Пазаруване</translation>
 <translation id="9141013498910525015">Управление на адресите</translation>
 <translation id="9144951720726881238">Дата на валидност:</translation>
+<translation id="9145910032514306808"><ph name="BEGIN_LINK" />Влезте в профила си<ph name="END_LINK" />
+    отново, след което се върнете в този раздел, за да получите помощ с писането</translation>
 <translation id="9148507642005240123">&amp;Отмяна на редактирането</translation>
 <translation id="9148599396704355100">Цената е ниска</translation>
 <translation id="9150025764986957246">Можете да въведете различни неща, като например:</translation>

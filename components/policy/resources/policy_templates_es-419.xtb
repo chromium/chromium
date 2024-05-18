@@ -4522,6 +4522,15 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="4483738129334574255">Inhabilitar el juego del huevo de pascua del dinosaurio en los dispositivos <ph name="PRODUCT_OS_NAME" /> inscritos y habilitarlo en otras circunstancias</translation>
 <translation id="4484515651939984695">Especificar el tiempo (en segundos) que un dispositivo de transmisión seleccionado con un código QR o de acceso permanece en la lista de dispositivos de transmisión del menú de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
+<translation id="4488959486611931919">Nota: No se informó de fallas en los sitios desde que Chrome comenzó a bloquear estas cookies de forma predeterminada a partir de la versión M118, por lo que esta funcionalidad no se podrá configurar (y esta política no tendrá efecto) a partir de la versión M127.
+
+Esta política permite inhabilitar temporalmente los cambios en la forma en que Chrome maneja las cookies configuradas a través de JavaScript que contienen determinados caracteres de control (NULL, retorno de carro y salto de línea).
+Anteriormente, la presencia de cualquiera de estos caracteres en una cadena de cookies hacía que se truncara, pero aun así se establecía.
+Ahora, la presencia de estos caracteres hará que se ignore toda la cadena de cookies.
+
+Si estableces la política como verdadera (configuración predeterminada), se habilitará el nuevo comportamiento.
+
+Si la estableces como falsa, se habilitará el comportamiento anterior.</translation>
 <translation id="4490420545181481759">Los certificados X.509 pueden codificar restricciones, como limitaciones de nombres,
 en las extensiones del certificado. RFC 5280 especifica que la aplicación forzosa de tales
 restricciones en los certificados de anclas de confianza es opcional. A partir de

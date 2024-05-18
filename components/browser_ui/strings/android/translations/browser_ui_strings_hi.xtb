@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">इस साइट के लिए अपने डिवाइस का ऐक्सेस कंट्रोल करें</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> आपका आखिरी टैब</translation>
 <translation id="6064125863973209585">पूरे हो चुके डाउनलोड</translation>
 <translation id="6071501408666570960">आपको इस साइट से साइन आउट किया जा सकता है</translation>
 <translation id="6120483543004435978">इस सेटिंग के चालू होने पर, साइटें यह जानने की अनुमति मांग सकती हैं कि कब-कब आपके डिवाइस का इस्तेमाल किया जाता है. इस सेटिंग के बंद होने पर, साइटों को यह पता नहीं चल सकता कि आपके डिवाइस का कब-कब इस्तेमाल किया जाता है.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">कोई संपर्क चुनें</translation>
 <translation id="7990211076305263060">इस सेटिंग के चालू होने पर, साइटें आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति मांग सकती हैं. इस सेटिंग के बंद होने पर, साइटें आपके माइक्रोफ़ोन का इस्तेमाल नहीं कर सकतीं.</translation>
 <translation id="8007176423574883786">इस डिवाइस के लिए बंद कर दिया गया है</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> से</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8042586301629853791">इसके अनुसार क्रम से लगाएं:</translation>
 <translation id="8067883171444229417">वीडियो चलाएं</translation>

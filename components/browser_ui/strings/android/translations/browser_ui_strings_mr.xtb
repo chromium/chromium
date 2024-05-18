@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> तुमचा शेवटचा टॅब</translation>
 <translation id="6064125863973209585">डाउनलोड पूर्ण झाले</translation>
 <translation id="6071501408666570960">तुम्हाला या साइटमधून साइन आउट केले जाऊ शकते</translation>
 <translation id="6120483543004435978">सुरू असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेण्याची विनंती करू शकतात. बंद असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेऊ शकत नाहीत.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7990211076305263060">सुरू असताना, साइट तुमचा मायक्रोफोन वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा मायक्रोफोन वापरू शकत नाहीत.</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> वरून</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8042586301629853791">यानुसार क्रमाने लावा:</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
