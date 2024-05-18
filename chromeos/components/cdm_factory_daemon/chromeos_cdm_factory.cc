@@ -164,8 +164,7 @@ void OnCdmCreated(media::CdmCreatedCB callback,
   std::string err;
   switch (result) {
     case cdm::mojom::CdmFactory::CreateCdmStatus::kSuccess:
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(cdm), ""));
+      std::move(callback).Run(std::move(cdm), "");
       return;
     case cdm::mojom::CdmFactory::CreateCdmStatus::kNoMoreInstances:
       err = "Only one instance allowed";
@@ -174,8 +173,7 @@ void OnCdmCreated(media::CdmCreatedCB callback,
       err = "Insufficient GPU memory available";
       break;
   }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), nullptr, err));
+  std::move(callback).Run(nullptr, err);
 }
 }  // namespace
 
@@ -413,7 +411,8 @@ void ChromeOsCdmFactory::CreateCdm(
       cdm->GetClientInterface(), std::move(storage_remote),
       std::move(output_protection_remote), cdm_origin.host(),
       std::move(cros_cdm_pending_receiver),
-      base::BindOnce(&OnCdmCreated, std::move(cdm_created_cb), std::move(cdm)));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &OnCdmCreated, std::move(cdm_created_cb), std::move(cdm))));
 }
 
 void ChromeOsCdmFactory::OnFactoryMojoConnectionError() {
