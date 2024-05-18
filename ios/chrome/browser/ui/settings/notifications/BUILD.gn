@@ -16,6 +16,7 @@ source_set("notifications") {
     "//base",
     "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/push_notification/model:browser_state_service",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client",

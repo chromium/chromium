@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -103,6 +104,8 @@
         [[NotificationsBannerViewController alloc] init];
     self.updatedViewController.presentationDelegate = self;
     self.updatedViewController.modelDelegate = self.mediator;
+    self.updatedViewController.isContentNotificationEnabled =
+        IsContentNotificationEnabled(self.browser->GetBrowserState());
     self.mediator.consumer = self.updatedViewController;
     [self.baseNavigationController pushViewController:self.updatedViewController
                                              animated:YES];
@@ -111,6 +114,8 @@
         initWithStyle:ChromeTableViewStyle()];
     self.viewController.presentationDelegate = self;
     self.viewController.modelDelegate = self.mediator;
+    self.updatedViewController.isContentNotificationEnabled =
+        IsContentNotificationEnabled(self.browser->GetBrowserState());
     self.mediator.consumer = self.viewController;
     [self.baseNavigationController pushViewController:self.viewController
                                              animated:YES];

@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     [model addItem:self.priceTrackingItem
         toSectionWithIdentifier:SectionIdentifierNotificationsPriceTracking];
   }
-  if (IsContentPushNotificationsEnabled()) {
+  if ([self isContentNotificationEnabled]) {
     [model addSectionWithIdentifier:SectionIdentifierNotificationsContent];
     [model addItem:self.contentNotificationsItem
         toSectionWithIdentifier:SectionIdentifierNotificationsContent];

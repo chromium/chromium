@@ -27,6 +27,9 @@
 @property(nonatomic, weak) id<NotificationsOptInViewControllerDelegate>
     notificationsDelegate;
 
+// YES if Content Notifications are enabled.
+@property(nonatomic, assign) BOOL isContentNotificationEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_VIEW_CONTROLLER_H_
