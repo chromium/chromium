@@ -214,6 +214,7 @@ aggregate_vector_icons("components_vector_icons") {
     "skip_next.icon",
     "skip_previous.icon",
     "sms.icon",
+    "stop_circle.icon",
     "storage_access.icon",
     "storage_access_off.icon",
     "submenu_arrow.icon",

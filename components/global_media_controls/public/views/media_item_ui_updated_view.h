@@ -8,6 +8,7 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
+#include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -46,7 +47,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       media_message_center::MediaColorTheme media_color_theme,
-      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
+      std::unique_ptr<MediaItemUIFooter> footer_view);
   MediaItemUIUpdatedView(const MediaItemUIUpdatedView&) = delete;
   MediaItemUIUpdatedView& operator=(const MediaItemUIUpdatedView&) = delete;
   ~MediaItemUIUpdatedView() override;
@@ -83,6 +85,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateDeviceSelectorVisibility(bool visible) override;
   void UpdateDeviceSelectorAvailability(bool has_devices) override;
 
+  // MediaItemUIUpdatedView:
+  void UpdateDeviceSelectorView(
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
+  void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
+
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
   views::Label* GetSourceLabelForTesting();
@@ -93,6 +100,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   MediaProgressView* GetProgressViewForTesting();
   MediaActionButton* GetStartCastingButtonForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
+  MediaItemUIFooter* GetFooterForTesting();
 
  private:
   MediaActionButton* CreateMediaActionButton(views::View* parent,
@@ -148,6 +156,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   base::WeakPtr<media_message_center::MediaNotificationItem> item_;
   media_message_center::MediaColorTheme media_color_theme_;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
+  raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
 };
 
 }  // namespace global_media_controls

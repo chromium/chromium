@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
+#include "chrome/browser/ui/views/global_media_controls/cast_device_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
@@ -255,14 +256,9 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
   if (item->GetSourceType() == media_message_center::SourceType::kCast &&
       media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
 #if BUILDFLAG(IS_CHROMEOS)
-    bool use_updated_ui =
-        base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
-#else
-    bool use_updated_ui =
-        base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
-#endif
-
-    if (use_updated_ui && media_color_theme.has_value()) {
+    if (base::FeatureList::IsEnabled(
+            media::kGlobalMediaControlsCrOSUpdatedUI) &&
+        media_color_theme.has_value()) {
       return std::make_unique<MediaItemUICastFooterView>(
           base::BindRepeating(
               &CastMediaNotificationItem::StopCasting,
@@ -270,6 +266,16 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
                   ->GetWeakPtr()),
           media_color_theme.value());
     }
+#else
+    if (media_color_theme.has_value()) {
+      return std::make_unique<CastDeviceFooterView>(
+          base::BindRepeating(
+              &CastMediaNotificationItem::StopCasting,
+              static_cast<CastMediaNotificationItem*>(item.get())
+                  ->GetWeakPtr()),
+          media_color_theme.value());
+    }
+#endif
 
     return std::make_unique<MediaItemUILegacyCastFooterView>(
         base::BindRepeating(
@@ -282,6 +288,13 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
   if (stop_casting_cb.is_null()) {
     return nullptr;
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (media_color_theme.has_value()) {
+    return std::make_unique<CastDeviceFooterView>(std::move(stop_casting_cb),
+                                                  media_color_theme.value());
+  }
+#endif
 
   return std::make_unique<MediaItemUILegacyCastFooterView>(
       std::move(stop_casting_cb));
@@ -306,6 +319,7 @@ media_message_center::MediaColorTheme GetMediaColorTheme() {
 
   theme.background_color_id = ui::kColorSysSurface2;
   theme.device_selector_border_color_id = ui::kColorSysDivider;
+  theme.device_selector_foreground_color_id = ui::kColorSysPrimary;
   theme.device_selector_background_color_id = ui::kColorSysSurface5;
   theme.error_foreground_color_id = ui::kColorSysError;
   theme.error_container_color_id = ui::kColorSysErrorContainer;

@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
+#include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
@@ -19,6 +20,7 @@
 namespace global_media_controls {
 
 using ::global_media_controls::test::MockMediaItemUIDeviceSelector;
+using ::global_media_controls::test::MockMediaItemUIFooter;
 using ::global_media_controls::test::MockMediaItemUIObserver;
 using ::media_message_center::test::MockMediaNotificationItem;
 using ::media_session::mojom::MediaSessionAction;
@@ -49,7 +51,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     device_selector_ = device_selector.get();
     view_ = widget_->SetContentsView(std::make_unique<MediaItemUIUpdatedView>(
         kTestId, item_->GetWeakPtr(), media_message_center::MediaColorTheme(),
-        std::move(device_selector)));
+        std::move(device_selector), /*footer_view=*/nullptr));
 
     observer_ = std::make_unique<NiceMock<MockMediaItemUIObserver>>();
     view_->AddObserver(observer_.get());
@@ -275,6 +277,19 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
             views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
                 ->GetInkDrop()
                 ->GetTargetInkDropState());
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, FooterViewCheck) {
+  EnableAllMediaActions();
+  auto* pip_button = view()->GetMediaActionButtonForTesting(
+      MediaSessionAction::kEnterPictureInPicture);
+  EXPECT_TRUE(pip_button->GetVisible());
+
+  auto footer_view = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
+  auto* footer_ptr = footer_view.get();
+  view()->UpdateFooterView(std::move(footer_view));
+  EXPECT_FALSE(pip_button->GetVisible());
+  EXPECT_EQ(footer_ptr, view()->GetFooterForTesting());
 }
 
 }  // namespace global_media_controls
