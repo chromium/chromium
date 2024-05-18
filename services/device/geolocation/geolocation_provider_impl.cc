@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/network_change_notifier.h"
-#include "services/device/geolocation/location_arbitrator.h"
+#include "services/device/geolocation/location_provider_manager.h"
 #include "services/device/geolocation/position_cache_impl.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -201,12 +201,12 @@ GeolocationProviderImpl::~GeolocationProviderImpl() {
   }
 #endif
   Stop();
-  DCHECK(!arbitrator_);
+  DCHECK(!location_provider_manager_);
 }
 
-void GeolocationProviderImpl::SetArbitratorForTesting(
-    std::unique_ptr<LocationProvider> arbitrator) {
-  arbitrator_ = std::move(arbitrator);
+void GeolocationProviderImpl::SetLocationProviderManagerForTesting(
+    std::unique_ptr<LocationProvider> location_provider_manager) {
+  location_provider_manager_ = std::move(location_provider_manager);
 }
 
 bool GeolocationProviderImpl::OnGeolocationThread() const {
@@ -302,19 +302,19 @@ void GeolocationProviderImpl::OnInternalsObserverDisconnected(
 
 void GeolocationProviderImpl::StopProviders() {
   DCHECK(OnGeolocationThread());
-  DCHECK(arbitrator_);
+  DCHECK(location_provider_manager_);
   GEOLOCATION_LOG(DEBUG) << "Stop provider.";
-  arbitrator_->StopProvider();
+  location_provider_manager_->StopProvider();
   OnInternalsUpdated();
 }
 
 void GeolocationProviderImpl::StartProviders(bool enable_high_accuracy,
                                              bool enable_diagnostics) {
   DCHECK(OnGeolocationThread());
-  DCHECK(arbitrator_);
+  DCHECK(location_provider_manager_);
   GEOLOCATION_LOG(DEBUG) << "Start provider: high_accuracy="
                          << enable_high_accuracy;
-  arbitrator_->StartProvider(enable_high_accuracy);
+  location_provider_manager_->StartProvider(enable_high_accuracy);
   if (enable_diagnostics) {
     // Enable diagnostics in the case where internals observers are added before
     // the provider is started.
@@ -334,8 +334,8 @@ void GeolocationProviderImpl::InformProvidersPermissionGranted() {
     return;
   }
   DCHECK(OnGeolocationThread());
-  DCHECK(arbitrator_);
-  arbitrator_->OnPermissionGranted();
+  DCHECK(location_provider_manager_);
+  location_provider_manager_->OnPermissionGranted();
 }
 
 void GeolocationProviderImpl::NotifyClients(
@@ -378,8 +378,9 @@ void GeolocationProviderImpl::NotifyNetworkLocationReceived(
 void GeolocationProviderImpl::Init() {
   DCHECK(OnGeolocationThread());
 
-  if (arbitrator_)
+  if (location_provider_manager_) {
     return;
+  }
 
   LocationProvider::LocationProviderUpdateCallback callback =
       base::BindRepeating(&GeolocationProviderImpl::OnLocationUpdate,
@@ -393,7 +394,7 @@ void GeolocationProviderImpl::Init() {
 
   DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded())
       << "PositionCacheImpl needs a global NetworkChangeNotifier";
-  arbitrator_ = std::make_unique<LocationArbitrator>(
+  location_provider_manager_ = std::make_unique<LocationProviderManager>(
       g_custom_location_provider_callback.Get(),
       g_geolocation_system_permission_manager, std::move(url_loader_factory),
       g_api_key.Get(),
@@ -405,12 +406,12 @@ void GeolocationProviderImpl::Init() {
                           base::Unretained(this)),
       base::BindRepeating(&GeolocationProviderImpl::OnNetworkLocationReceived,
                           base::Unretained(this)));
-  arbitrator_->SetUpdateCallback(callback);
+  location_provider_manager_->SetUpdateCallback(callback);
 }
 
 void GeolocationProviderImpl::CleanUp() {
   DCHECK(OnGeolocationThread());
-  arbitrator_.reset();
+  location_provider_manager_.reset();
 }
 
 void GeolocationProviderImpl::AddInternalsObserver(
@@ -424,7 +425,7 @@ void GeolocationProviderImpl::AddInternalsObserver(
     return;
   }
   internals_observers_.Add(std::move(observer));
-  if (!arbitrator_) {
+  if (!location_provider_manager_) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -458,7 +459,7 @@ GeolocationProviderImpl::EnableAndGetDiagnosticsOnGeolocationThread() {
 
   mojom::GeolocationDiagnosticsPtr result =
       mojom::GeolocationDiagnostics::New();
-  arbitrator_->FillDiagnostics(*result);
+  location_provider_manager_->FillDiagnostics(*result);
   return result;
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_GEOLOCATION_LOCATION_ARBITRATOR_H_
-#define SERVICES_DEVICE_GEOLOCATION_LOCATION_ARBITRATOR_H_
+#ifndef SERVICES_DEVICE_GEOLOCATION_LOCATION_PROVIDER_MANAGER_H_
+#define SERVICES_DEVICE_GEOLOCATION_LOCATION_PROVIDER_MANAGER_H_
 
 #include <stdint.h>
 #include <memory>
@@ -34,7 +34,7 @@ class GeolocationSystemPermissionManager;
 // This class is responsible for handling updates from multiple underlying
 // providers and resolving them to a single 'best' location fix at any given
 // moment.
-class LocationArbitrator : public LocationProvider {
+class LocationProviderManager : public LocationProvider {
  public:
   // The TimeDelta newer a location provider has to be that it's worth
   // switching to this location provider on the basis of it being fresher
@@ -42,8 +42,8 @@ class LocationArbitrator : public LocationProvider {
   static const base::TimeDelta kFixStaleTimeoutTimeDelta;
 
   // If the |custom_location_provider_getter| callback returns nullptr, then
-  // LocationArbitrator uses the default system location provider.
-  LocationArbitrator(
+  // LocationProviderManager uses the default system location provider.
+  LocationProviderManager(
       CustomLocationProviderCallback custom_location_provider_getter,
       GeolocationSystemPermissionManager* geolocation_system_permission_manager,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -53,9 +53,9 @@ class LocationArbitrator : public LocationProvider {
       NetworkLocationProvider::NetworkRequestCallback network_request_callback,
       NetworkLocationProvider::NetworkResponseCallback
           network_response_callback);
-  LocationArbitrator(const LocationArbitrator&) = delete;
-  LocationArbitrator& operator=(const LocationArbitrator&) = delete;
-  ~LocationArbitrator() override;
+  LocationProviderManager(const LocationProviderManager&) = delete;
+  LocationProviderManager& operator=(const LocationProviderManager&) = delete;
+  ~LocationProviderManager() override;
 
   static GURL DefaultNetworkProviderURL();
   bool HasPermissionBeenGrantedForTest() const;
@@ -79,7 +79,7 @@ class LocationArbitrator : public LocationProvider {
   virtual base::Time GetTimeNow() const;
 
  private:
-  friend class TestingLocationArbitrator;
+  friend class TestingLocationProviderManager;
 
   // Provider will either be added to |providers_| or
   // deleted on error (e.g. it fails to start).
@@ -89,7 +89,7 @@ class LocationArbitrator : public LocationProvider {
   // Tells all registered providers to start.
   // If |providers_| is empty, immediately provides
   // GeopositionErrorCode::kPositionUnavailable to the client via
-  // |arbitrator_update_callback_|.
+  // |location_update_callback_|.
   void DoStartProviders();
 
   // Gets called when a provider has a new position.
@@ -112,7 +112,7 @@ class LocationArbitrator : public LocationProvider {
   bool enable_high_accuracy_;
   bool is_permission_granted_ = false;
   bool is_running_ = false;  // Tracks whether providers should be running.
-  LocationProvider::LocationProviderUpdateCallback arbitrator_update_callback_;
+  LocationProvider::LocationProviderUpdateCallback location_update_callback_;
   std::unique_ptr<PositionCache> position_cache_;  // must outlive `providers_`
   std::vector<std::unique_ptr<LocationProvider>> providers_;
   // The provider which supplied the current |result_|
@@ -139,4 +139,4 @@ std::unique_ptr<LocationProvider> NewSystemLocationProvider();
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_GEOLOCATION_LOCATION_ARBITRATOR_H_
+#endif  // SERVICES_DEVICE_GEOLOCATION_LOCATION_PROVIDER_MANAGER_H_

@@ -140,7 +140,9 @@ class GeolocationProviderTest : public testing::Test {
     return GeolocationProviderImpl::GetInstance();
   }
 
-  FakeLocationProvider* arbitrator() { return arbitrator_; }
+  FakeLocationProvider* location_provider_manager() {
+    return location_provider_manager_;
+  }
 
   void SetSystemPermission(LocationSystemPermissionStatus status) {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -151,7 +153,7 @@ class GeolocationProviderTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   // Called on test thread.
-  void SetFakeArbitrator();
+  void SetFakeLocationProviderManager();
   bool ProvidersStarted();
   void SendMockLocation(const mojom::GeopositionResult& result);
 
@@ -185,17 +187,18 @@ class GeolocationProviderTest : public testing::Test {
   base::ThreadChecker thread_checker_;
 
   // Owned by the GeolocationProviderImpl class.
-  raw_ptr<FakeLocationProvider> arbitrator_ = nullptr;
+  raw_ptr<FakeLocationProvider> location_provider_manager_ = nullptr;
 
-  // True if |arbitrator_| is started.
+  // True if |location_provider_manager_| is started.
   bool is_started_;
 };
 
-void GeolocationProviderTest::SetFakeArbitrator() {
-  ASSERT_FALSE(arbitrator_);
-  auto arbitrator = std::make_unique<FakeLocationProvider>();
-  arbitrator_ = arbitrator.get();
-  provider()->SetArbitratorForTesting(std::move(arbitrator));
+void GeolocationProviderTest::SetFakeLocationProviderManager() {
+  ASSERT_FALSE(location_provider_manager_);
+  auto location_provider_manager = std::make_unique<FakeLocationProvider>();
+  location_provider_manager_ = location_provider_manager.get();
+  provider()->SetLocationProviderManagerForTesting(
+      std::move(location_provider_manager));
 }
 
 bool GeolocationProviderTest::ProvidersStarted() {
@@ -214,7 +217,7 @@ bool GeolocationProviderTest::ProvidersStarted() {
 
 void GeolocationProviderTest::GetProvidersStarted() {
   DCHECK(provider()->task_runner()->BelongsToCurrentThread());
-  is_started_ = arbitrator()->state() !=
+  is_started_ = location_provider_manager()->state() !=
                 mojom::GeolocationDiagnostics::ProviderState::kStopped;
 }
 
@@ -224,8 +227,8 @@ void GeolocationProviderTest::SendMockLocation(
   DCHECK(thread_checker_.CalledOnValidThread());
   provider()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GeolocationProviderImpl::OnLocationUpdate,
-                                base::Unretained(provider()), arbitrator_,
-                                result.Clone()));
+                                base::Unretained(provider()),
+                                location_provider_manager_, result.Clone()));
 }
 
 // Regression test for http://crbug.com/59377
@@ -237,7 +240,7 @@ TEST_F(GeolocationProviderTest, OnPermissionGrantedWithoutObservers) {
 }
 
 TEST_F(GeolocationProviderTest, StartStop) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   EXPECT_FALSE(provider()->IsRunning());
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
   base::CallbackListSubscription subscription =
@@ -253,7 +256,7 @@ TEST_F(GeolocationProviderTest, StartStop) {
 }
 
 TEST_F(GeolocationProviderTest, StalePositionNotSent) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   {
@@ -299,7 +302,7 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
 }
 
 TEST_F(GeolocationProviderTest, OverrideLocationForTesting) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   provider()->OverrideLocationForTesting(error_result_->Clone());
@@ -362,7 +365,7 @@ TEST_F(GeolocationProviderTest, InitializeWhileObservingDiagnostics) {
   EXPECT_CALL(observer, OnDiagnosticsChanged).WillOnce([&](auto diagnostics) {
     provider_started_future.SetValue(std::move(diagnostics));
   });
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
   base::CallbackListSubscription subscription =
       provider()->AddLocationUpdateCallback(base::DoNothing(),
@@ -398,7 +401,7 @@ TEST_F(GeolocationProviderTest, InitializeWhileObservingDiagnostics) {
 
 TEST_F(GeolocationProviderTest, MultipleDiagnosticsObservers) {
   // Add a subscription so the provider will be started.
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
   base::CallbackListSubscription subscription =
       provider()->AddLocationUpdateCallback(base::DoNothing(),
@@ -477,7 +480,7 @@ TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
   base::RunLoop loop;
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   // Add a subscription so the provider will be started.
@@ -504,7 +507,7 @@ TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
 
   // The default system permission state is kUndetermined. Adding a location
   // observer should not start provider and observer's callback should not be
@@ -543,7 +546,7 @@ TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
 }
 
 TEST_F(GeolocationProviderTest, AddCallbackWhenSystemPermissionDenied) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
 
   // Set system permission state from kUndetermined to kDenied.
   SetSystemPermission(LocationSystemPermissionStatus::kDenied);
@@ -573,7 +576,7 @@ TEST_F(GeolocationProviderTest, AddCallbackWhenSystemPermissionDenied) {
 
 TEST_F(GeolocationProviderTest,
        ReportPermissionDeniedOnSystemPermissionDenied) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
 
   // Set system permission state from kUndetermined to kAllowed.
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
@@ -619,7 +622,7 @@ TEST_F(GeolocationProviderTest,
 
 TEST_F(GeolocationProviderTest,
        SystemPermissionAllowedAfterSystemPermissionDenied) {
-  SetFakeArbitrator();
+  SetFakeLocationProviderManager();
 
   // Set system permission state from kUndetermined to kDenied.
   SetSystemPermission(LocationSystemPermissionStatus::kDenied);

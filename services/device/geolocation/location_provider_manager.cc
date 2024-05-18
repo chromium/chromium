@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/geolocation/location_arbitrator.h"
+#include "services/device/geolocation/location_provider_manager.h"
 
 #include <map>
 #include <memory>
@@ -24,10 +24,10 @@ namespace device {
 
 // To avoid oscillations, set this to twice the expected update interval of a
 // a GPS-type location provider (in case it misses a beat) plus a little.
-const base::TimeDelta LocationArbitrator::kFixStaleTimeoutTimeDelta =
+const base::TimeDelta LocationProviderManager::kFixStaleTimeoutTimeDelta =
     base::Seconds(11);
 
-LocationArbitrator::LocationArbitrator(
+LocationProviderManager::LocationProviderManager(
     CustomLocationProviderCallback custom_location_provider_getter,
     GeolocationSystemPermissionManager* geolocation_system_permission_manager,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -47,22 +47,22 @@ LocationArbitrator::LocationArbitrator(
       network_request_callback_(std::move(network_request_callback)),
       network_response_callback_(std::move(network_response_callback)) {}
 
-LocationArbitrator::~LocationArbitrator() {
+LocationProviderManager::~LocationProviderManager() {
   // Release the global wifi polling policy state.
   WifiPollingPolicy::Shutdown();
 }
 
-bool LocationArbitrator::HasPermissionBeenGrantedForTest() const {
+bool LocationProviderManager::HasPermissionBeenGrantedForTest() const {
   return is_permission_granted_;
 }
 
-void LocationArbitrator::OnPermissionGranted() {
+void LocationProviderManager::OnPermissionGranted() {
   is_permission_granted_ = true;
   for (const auto& provider : providers_)
     provider->OnPermissionGranted();
 }
 
-void LocationArbitrator::StartProvider(bool enable_high_accuracy) {
+void LocationProviderManager::StartProvider(bool enable_high_accuracy) {
   is_running_ = true;
   enable_high_accuracy_ = enable_high_accuracy;
 
@@ -72,11 +72,11 @@ void LocationArbitrator::StartProvider(bool enable_high_accuracy) {
   DoStartProviders();
 }
 
-void LocationArbitrator::DoStartProviders() {
+void LocationProviderManager::DoStartProviders() {
   if (providers_.empty()) {
     // If no providers are available, we report an error to avoid
     // callers waiting indefinitely for a reply.
-    arbitrator_update_callback_.Run(
+    location_update_callback_.Run(
         this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
                   mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
     return;
@@ -86,7 +86,7 @@ void LocationArbitrator::DoStartProviders() {
   }
 }
 
-void LocationArbitrator::StopProvider() {
+void LocationProviderManager::StopProvider() {
   // Reset the reference location state (provider+result)
   // so that future starts use fresh locations from
   // the newly constructed providers.
@@ -97,18 +97,18 @@ void LocationArbitrator::StopProvider() {
   is_running_ = false;
 }
 
-void LocationArbitrator::RegisterProvider(
+void LocationProviderManager::RegisterProvider(
     std::unique_ptr<LocationProvider> provider) {
   if (!provider)
     return;
   provider->SetUpdateCallback(base::BindRepeating(
-      &LocationArbitrator::OnLocationUpdate, base::Unretained(this)));
+      &LocationProviderManager::OnLocationUpdate, base::Unretained(this)));
   if (is_permission_granted_)
     provider->OnPermissionGranted();
   providers_.push_back(std::move(provider));
 }
 
-void LocationArbitrator::RegisterProviders() {
+void LocationProviderManager::RegisterProviders() {
   if (custom_location_provider_getter_) {
     auto custom_provider = custom_location_provider_getter_.Run();
     if (custom_provider) {
@@ -127,7 +127,7 @@ void LocationArbitrator::RegisterProviders() {
     RegisterProvider(NewNetworkLocationProvider(url_loader_factory_, api_key_));
 }
 
-void LocationArbitrator::OnLocationUpdate(
+void LocationProviderManager::OnLocationUpdate(
     const LocationProvider* provider,
     mojom::GeopositionResultPtr new_result) {
   DCHECK(new_result);
@@ -140,14 +140,14 @@ void LocationArbitrator::OnLocationUpdate(
   }
   position_provider_ = provider;
   result_ = std::move(new_result);
-  arbitrator_update_callback_.Run(this, result_.Clone());
+  location_update_callback_.Run(this, result_.Clone());
 }
 
-const mojom::GeopositionResult* LocationArbitrator::GetPosition() {
+const mojom::GeopositionResult* LocationProviderManager::GetPosition() {
   return result_.get();
 }
 
-void LocationArbitrator::FillDiagnostics(
+void LocationProviderManager::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
   if (!is_running_ || providers_.empty()) {
     diagnostics.provider_state =
@@ -170,14 +170,14 @@ void LocationArbitrator::FillDiagnostics(
   }
 }
 
-void LocationArbitrator::SetUpdateCallback(
+void LocationProviderManager::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   DCHECK(!callback.is_null());
-  arbitrator_update_callback_ = callback;
+  location_update_callback_ = callback;
 }
 
 std::unique_ptr<LocationProvider>
-LocationArbitrator::NewNetworkLocationProvider(
+LocationProviderManager::NewNetworkLocationProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& api_key) {
   DCHECK(url_loader_factory);
@@ -193,7 +193,7 @@ LocationArbitrator::NewNetworkLocationProvider(
 }
 
 std::unique_ptr<LocationProvider>
-LocationArbitrator::NewSystemLocationProvider() {
+LocationProviderManager::NewSystemLocationProvider() {
 #if BUILDFLAG(IS_APPLE)
   CHECK(geolocation_system_permission_manager_);
   return device::NewSystemLocationProvider(
@@ -205,11 +205,11 @@ LocationArbitrator::NewSystemLocationProvider() {
 #endif
 }
 
-base::Time LocationArbitrator::GetTimeNow() const {
+base::Time LocationProviderManager::GetTimeNow() const {
   return base::Time::Now();
 }
 
-bool LocationArbitrator::IsNewPositionBetter(
+bool LocationProviderManager::IsNewPositionBetter(
     const mojom::GeopositionResult& old_result,
     const mojom::GeopositionResult& new_result,
     bool from_same_provider) const {

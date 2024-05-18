@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "services/device/geolocation/fake_position_cache.h"
-#include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/geolocation/mock_wifi_data_provider.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/public/cpp/device_features.h"

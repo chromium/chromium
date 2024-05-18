@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/geolocation/location_arbitrator.h"
+#include "services/device/geolocation/location_provider_manager.h"
 
 #include <memory>
 #include <utility>
@@ -78,21 +78,22 @@ void SetReferencePosition(FakeLocationProvider* provider) {
 
 }  // namespace
 
-class TestingLocationArbitrator : public LocationArbitrator {
+class TestingLocationProviderManager : public LocationProviderManager {
  public:
-  TestingLocationArbitrator(
+  TestingLocationProviderManager(
       LocationProviderUpdateCallback callback,
       const CustomLocationProviderCallback& provider_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool should_use_system_location_provider = false)
-      : LocationArbitrator(std::move(provider_getter),
-                           /*geolocation_system_permission_manager=*/nullptr,
-                           std::move(url_loader_factory),
-                           std::string() /* api_key */,
-                           std::make_unique<FakePositionCache>(),
-                           /*internals_updated_closure=*/base::DoNothing(),
-                           /*network_request_callback=*/base::DoNothing(),
-                           /*network_response_callback=*/base::DoNothing()),
+      : LocationProviderManager(
+            std::move(provider_getter),
+            /*geolocation_system_permission_manager=*/nullptr,
+            std::move(url_loader_factory),
+            std::string() /* api_key */,
+            std::make_unique<FakePositionCache>(),
+            /*internals_updated_closure=*/base::DoNothing(),
+            /*network_request_callback=*/base::DoNothing(),
+            /*network_response_callback=*/base::DoNothing()),
         should_use_system_location_provider_(
             should_use_system_location_provider) {
     SetUpdateCallback(callback);
@@ -128,24 +129,25 @@ class TestingLocationArbitrator : public LocationArbitrator {
   bool should_use_system_location_provider_;
 };
 
-class GeolocationLocationArbitratorTest : public testing::Test {
+class GeolocationLocationProviderManagerTest : public testing::Test {
  protected:
-  GeolocationLocationArbitratorTest()
+  GeolocationLocationProviderManagerTest()
       : observer_(new MockLocationObserver),
         url_loader_factory_(new network::TestSharedURLLoaderFactory()) {}
 
-  // Initializes |arbitrator_| with the specified |url_loader_factory|, which
-  // may be null.
-  void InitializeArbitrator(
+  // Initializes |location_provider_manager_| with the specified
+  // |url_loader_factory|, which may be null.
+  void InitializeLocationProviderManager(
       CustomLocationProviderCallback provider_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool should_use_system_location_provider = false) {
     const LocationProvider::LocationProviderUpdateCallback callback =
         base::BindRepeating(&MockLocationObserver::OnLocationUpdate,
                             base::Unretained(observer_.get()));
-    arbitrator_ = std::make_unique<TestingLocationArbitrator>(
-        callback, std::move(provider_getter), std::move(url_loader_factory),
-        should_use_system_location_provider);
+    location_provider_manager_ =
+        std::make_unique<TestingLocationProviderManager>(
+            callback, std::move(provider_getter), std::move(url_loader_factory),
+            should_use_system_location_provider);
   }
 
   // testing::Test
@@ -166,40 +168,42 @@ class GeolocationLocationArbitratorTest : public testing::Test {
 
   base::TimeDelta SwitchOnFreshnessCliff() {
     // Add 1, to ensure it meets any greater-than test.
-    return LocationArbitrator::kFixStaleTimeoutTimeDelta +
+    return LocationProviderManager::kFixStaleTimeoutTimeDelta +
            base::Milliseconds(1);
   }
 
   FakeLocationProvider* network_location_provider() {
-    return arbitrator_->network_location_provider_.get();
+    return location_provider_manager_->network_location_provider_.get();
   }
 
   FakeLocationProvider* system_location_provider() {
-    return arbitrator_->system_location_provider_;
+    return location_provider_manager_->system_location_provider_;
   }
 
   const std::unique_ptr<MockLocationObserver> observer_;
-  std::unique_ptr<TestingLocationArbitrator> arbitrator_;
+  std::unique_ptr<TestingLocationProviderManager> location_provider_manager_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 // Basic test of the text fixture.
-TEST_F(GeolocationLocationArbitratorTest, CreateDestroy) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider), nullptr);
-  EXPECT_TRUE(arbitrator_);
-  EXPECT_EQ(arbitrator_->state(),
+TEST_F(GeolocationLocationProviderManagerTest, CreateDestroy) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    nullptr);
+  EXPECT_TRUE(location_provider_manager_);
+  EXPECT_EQ(location_provider_manager_->state(),
             mojom::GeolocationDiagnostics::ProviderState::kStopped);
-  arbitrator_.reset();
+  location_provider_manager_.reset();
   SUCCEED();
 }
 
 // Tests OnPermissionGranted().
-TEST_F(GeolocationLocationArbitratorTest, OnPermissionGranted) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider), nullptr);
-  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
-  arbitrator_->OnPermissionGranted();
-  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
+TEST_F(GeolocationLocationProviderManagerTest, OnPermissionGranted) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    nullptr);
+  EXPECT_FALSE(location_provider_manager_->HasPermissionBeenGrantedForTest());
+  location_provider_manager_->OnPermissionGranted();
+  EXPECT_TRUE(location_provider_manager_->HasPermissionBeenGrantedForTest());
   // Can't check the provider has been notified without going through the
   // motions to create the provider (see next test).
   EXPECT_FALSE(network_location_provider());
@@ -207,14 +211,14 @@ TEST_F(GeolocationLocationArbitratorTest, OnPermissionGranted) {
 }
 
 // Tests basic operation (single position fix) network location provider.
-TEST_F(GeolocationLocationArbitratorTest, NormalUsageNetwork) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider),
-                       url_loader_factory_);
-  ASSERT_TRUE(arbitrator_);
+TEST_F(GeolocationLocationProviderManagerTest, NormalUsageNetwork) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_);
+  ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  arbitrator_->StartProvider(false);
+  location_provider_manager_->StartProvider(false);
 
   ASSERT_TRUE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
@@ -233,21 +237,21 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageNetwork) {
   }
 
   EXPECT_FALSE(network_location_provider()->is_permission_granted());
-  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
-  arbitrator_->OnPermissionGranted();
-  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
+  EXPECT_FALSE(location_provider_manager_->HasPermissionBeenGrantedForTest());
+  location_provider_manager_->OnPermissionGranted();
+  EXPECT_TRUE(location_provider_manager_->HasPermissionBeenGrantedForTest());
   EXPECT_TRUE(network_location_provider()->is_permission_granted());
 }
 
 // Tests basic operation (single position fix) system location provider.
-TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider),
-                       url_loader_factory_, true);
-  ASSERT_TRUE(arbitrator_);
+TEST_F(GeolocationLocationProviderManagerTest, NormalUsageSystem) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_, true);
+  ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  arbitrator_->StartProvider(false);
+  location_provider_manager_->StartProvider(false);
 
   EXPECT_FALSE(network_location_provider());
   ASSERT_TRUE(system_location_provider());
@@ -266,28 +270,28 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
   }
 
   EXPECT_FALSE(system_location_provider()->is_permission_granted());
-  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
-  arbitrator_->OnPermissionGranted();
-  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
+  EXPECT_FALSE(location_provider_manager_->HasPermissionBeenGrantedForTest());
+  location_provider_manager_->OnPermissionGranted();
+  EXPECT_TRUE(location_provider_manager_->HasPermissionBeenGrantedForTest());
   EXPECT_TRUE(system_location_provider()->is_permission_granted());
 }
 
 // Tests basic operation (single position fix) with no network location
 // provider, no system location provider and a custom system location provider.
-TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
+TEST_F(GeolocationLocationProviderManagerTest, CustomSystemProviderOnly) {
   FakeLocationProvider* fake_location_provider = nullptr;
-  InitializeArbitrator(
+  InitializeLocationProviderManager(
       base::BindLambdaForTesting([&]() -> std::unique_ptr<LocationProvider> {
         auto provider = std::make_unique<FakeLocationProvider>();
         fake_location_provider = provider.get();
         return provider;
       }),
       nullptr, true);
-  ASSERT_TRUE(arbitrator_);
+  ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
-  arbitrator_->StartProvider(false);
+  location_provider_manager_->StartProvider(false);
 
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
@@ -305,18 +309,18 @@ TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
   }
 
   EXPECT_FALSE(fake_location_provider->is_permission_granted());
-  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
-  arbitrator_->OnPermissionGranted();
-  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
+  EXPECT_FALSE(location_provider_manager_->HasPermissionBeenGrantedForTest());
+  location_provider_manager_->OnPermissionGranted();
+  EXPECT_TRUE(location_provider_manager_->HasPermissionBeenGrantedForTest());
   EXPECT_TRUE(fake_location_provider->is_permission_granted());
 }
 
 // Tests flipping from Low to High accuracy mode as requested by a location
 // observer.
-TEST_F(GeolocationLocationArbitratorTest, SetObserverOptions) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider),
-                       url_loader_factory_);
-  arbitrator_->StartProvider(false);
+TEST_F(GeolocationLocationProviderManagerTest, SetObserverOptions) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_);
+  location_provider_manager_->StartProvider(false);
   ASSERT_TRUE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
@@ -324,17 +328,17 @@ TEST_F(GeolocationLocationArbitratorTest, SetObserverOptions) {
   SetReferencePosition(network_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
             network_location_provider()->state());
-  arbitrator_->StartProvider(true);
+  location_provider_manager_->StartProvider(true);
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy,
             network_location_provider()->state());
 }
 
-// Verifies that the arbitrator doesn't retain pointers to old providers after
-// it has stopped and then restarted (crbug.com/240956).
-TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
-  InitializeArbitrator(base::BindRepeating(&NullLocationProvider),
-                       url_loader_factory_);
-  arbitrator_->StartProvider(false);
+// Verifies that the location_provider_manager_ doesn't retain pointers to old
+// providers after it has stopped and then restarted (crbug.com/240956).
+TEST_F(GeolocationLocationProviderManagerTest, TwoOneShotsIsNewPositionBetter) {
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_);
+  location_provider_manager_->StartProvider(false);
   ASSERT_TRUE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
 
@@ -343,14 +347,14 @@ TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
   CheckLastPositionInfo(3, 139, 100);
 
   // Restart providers to simulate a one-shot request.
-  arbitrator_->StopProvider();
+  location_provider_manager_->StopProvider();
 
   // To test 240956, perform a throwaway alloc.
   // This convinces the allocator to put the providers in a new memory location.
   std::unique_ptr<FakeLocationProvider> dummy_provider(
       new FakeLocationProvider);
 
-  arbitrator_->StartProvider(false);
+  location_provider_manager_->StartProvider(false);
 
   // Advance the time a short while to simulate successive calls.
   AdvanceTimeNow(base::Milliseconds(5));

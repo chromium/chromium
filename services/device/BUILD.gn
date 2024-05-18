@@ -153,7 +153,7 @@ source_set("tests") {
     "geolocation/geolocation_impl_unittest.cc",
     "geolocation/geolocation_provider_impl_unittest.cc",
     "geolocation/geolocation_service_unittest.cc",
-    "geolocation/location_arbitrator_unittest.cc",
+    "geolocation/location_provider_manager_unittest.cc",
     "geolocation/network_location_provider_unittest.cc",
     "geolocation/position_cache_impl_unittest.cc",
     "geolocation/public_ip_address_geolocator_unittest.cc",
