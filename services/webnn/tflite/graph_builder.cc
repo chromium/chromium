@@ -1072,8 +1072,10 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
     case mojom::ElementWiseUnary::Kind::kTan:
       CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeTan(op);
-    case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
+      CHECK(kFloatDataTypes.contains(input_data_type));
+      return SerializeReciprocal(op);
+    case mojom::ElementWiseUnary::Kind::kErf:
       CHECK(kFloatDataTypes.contains(input_data_type));
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
@@ -1516,6 +1518,29 @@ auto GraphBuilder::SerializePrelu(const mojom::Prelu& prelu)
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs));
+}
+
+auto GraphBuilder::SerializeReciprocal(
+    const mojom::ElementWiseUnary& reciprocal)
+    -> base::expected<OperatorOffset, std::string> {
+  // Emulate the reciprocal operation whose calculation follows the expression
+  // `1 / x`.
+  //
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  const mojom::Operand& input_operand = GetOperand(reciprocal.input_operand_id);
+  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type isn't supported.");
+  }
+  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{1.0},
+      /*dimensions=*/{});
+
+  return SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_DIV, constant_tensor_index,
+      operand_to_index_map_.at(reciprocal.input_operand_id),
+      operand_to_index_map_.at(reciprocal.output_operand_id));
 }
 
 auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)

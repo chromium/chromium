@@ -197,6 +197,8 @@ class GraphBuilder final {
       const mojom::Pool2d& pool2d);
   base::expected<OperatorOffset, std::string> SerializePrelu(
       const mojom::Prelu& prelu);
+  base::expected<OperatorOffset, std::string> SerializeReciprocal(
+      const mojom::ElementWiseUnary& reciprocal);
   base::expected<OperatorOffset, std::string> SerializeReduce(
       const mojom::Reduce& reduce);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
