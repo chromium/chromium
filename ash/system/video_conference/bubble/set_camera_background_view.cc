@@ -471,8 +471,11 @@ void SetCameraBackgroundView::SetBackgroundReplaceUiVisible(bool visible) {
   // We don't want to show the SetCameraBackgroundView if there is no recently
   // used background; instead, the webui is shown.
   if (visible && recently_used_background_view_->children().empty()) {
-    controller_->CreateBackgroundImage();
-    return;
+    // We need to double check that there is no background images.
+    GetCameraEffectsController()->GetRecentlyUsedBackgroundImages(
+        1, base::BindOnce(
+               &SetCameraBackgroundView::OnGetRecentlyUsedBackgroundImages,
+               weak_factory_.GetWeakPtr()));
   }
 
   SetVisible(visible);
@@ -485,10 +488,20 @@ void SetCameraBackgroundView::SetBackgroundReplaceUiVisible(bool visible) {
   }
 }
 
+SetCameraBackgroundView::~SetCameraBackgroundView() = default;
+
 bool SetCameraBackgroundView::
     IsAnimationPlayingForCreateWithAiButtonForTesting() {
   return views::AsViewClass<CreateImageButton>(create_with_image_button_)
       ->IsAnimationPlaying();
+}
+
+void SetCameraBackgroundView::OnGetRecentlyUsedBackgroundImages(
+    const std::vector<BackgroundImageInfo>& background_images) {
+  // Directly open the VcBackgroundApp if no background image exists.
+  if (background_images.empty()) {
+    controller_->CreateBackgroundImage();
+  }
 }
 
 BEGIN_METADATA(SetCameraBackgroundView)
