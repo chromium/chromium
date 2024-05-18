@@ -15,14 +15,14 @@ std::unique_ptr<InkSkiaRenderer> InkSkiaRenderer::Create() {
 
 bool InkSkiaRendererStub::Draw(GrDirectContext* context,
                                const InkInProgressStroke& stroke,
-                               const AffineTransform& object_to_canvas,
+                               const InkAffineTransform& object_to_canvas,
                                SkCanvas& canvas) {
   return false;
 }
 
 bool InkSkiaRendererStub::Draw(GrDirectContext* context,
                                const InkStroke& stroke,
-                               const AffineTransform& object_to_canvas,
+                               const InkAffineTransform& object_to_canvas,
                                SkCanvas& canvas) {
   return false;
 }

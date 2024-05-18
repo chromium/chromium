@@ -13,11 +13,11 @@ class InkSkiaRendererStub : public InkSkiaRenderer {
  public:
   bool Draw(GrDirectContext* context,
             const InkInProgressStroke& stroke,
-            const AffineTransform& object_to_canvas,
+            const InkAffineTransform& object_to_canvas,
             SkCanvas& canvas) override;
   bool Draw(GrDirectContext* context,
             const InkStroke& stroke,
-            const AffineTransform& object_to_canvas,
+            const InkAffineTransform& object_to_canvas,
             SkCanvas& canvas) override;
 };
 
