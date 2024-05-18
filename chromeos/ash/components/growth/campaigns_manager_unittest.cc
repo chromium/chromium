@@ -374,7 +374,7 @@ class CampaignsManagerTest : public testing::Test {
   void LoadComponentWithTriggerTargeting(const std::string& triggers) {
     auto session_targeting = base::StringPrintf(R"(
             "runtime": {
-              "triggers": %s
+              "triggerList": %s
             }
           )",
                                                 triggers.c_str());
@@ -1530,34 +1530,44 @@ TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggers) {
-  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager_->SetTrigger(std::move(trigger));
 
-  LoadComponentWithTriggerTargeting(R"([0])");
+  LoadComponentWithTriggerTargeting(
+      R"([{"triggerType": 0, "triggerEvents": []}])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersOrRelationship) {
-  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager_->SetTrigger(std::move(trigger));
 
-  LoadComponentWithTriggerTargeting(R"([0, 1])");
+  LoadComponentWithTriggerTargeting(R"([
+  {"triggerType": 0, "triggerEvents": []},
+  {"triggerType": 1, "triggerEvents": []}
+  ])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersMissmatch) {
-  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager_->SetTrigger(std::move(trigger));
 
-  LoadComponentWithTriggerTargeting(R"([1])");
+  LoadComponentWithTriggerTargeting(
+      R"([{"triggerType": 1, "triggerEvents": []}])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersNoTrigger) {
-  LoadComponentWithTriggerTargeting(R"([0, 1])");
-
+  LoadComponentWithTriggerTargeting(R"([
+  {"triggerType": 0, "triggerEvents": []},
+  {"triggerType": 1, "triggerEvents": []}
+  ])");
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 

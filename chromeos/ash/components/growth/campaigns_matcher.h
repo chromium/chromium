@@ -33,7 +33,7 @@ class CampaignsMatcher {
   void SetOpenedApp(const std::string& app_id);
   void SetOobeCompleteTime(base::Time time);
 
-  void SetTrigger(TriggeringType trigger);
+  void SetTrigger(const Trigger&& trigger);
 
   const GURL& active_url() const { return active_url_; }
   void SetActiveUrl(const GURL& url);
@@ -58,7 +58,8 @@ class CampaignsMatcher {
   bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
   bool MatchOpenedApp(const std::vector<std::unique_ptr<AppTargeting>>&
                           apps_opened_targeting) const;
-  bool MatchTriggeringType(const std::vector<TriggeringType>& triggers) const;
+  bool MatchTriggerTargeting(
+      const std::vector<std::unique_ptr<TriggerTargeting>>& triggers) const;
   bool MatchActiveUrlRegexes(
       const std::vector<std::string>& active_url_regrexes) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
@@ -86,7 +87,7 @@ class CampaignsMatcher {
   GURL active_url_;
   base::Time oobe_compelete_time_;
   bool is_user_owner_ = false;
-  std::optional<TriggeringType> trigger_;
+  Trigger trigger_{TriggerType::kUnSpecified};
 };
 
 }  // namespace growth

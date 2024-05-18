@@ -205,8 +205,8 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   }
 }
 
-void CampaignsManager::SetTrigger(TriggeringType trigger_type) {
-  matcher_.SetTrigger(trigger_type);
+void CampaignsManager::SetTrigger(const Trigger&& trigger_type) {
+  matcher_.SetTrigger(std::move(trigger_type));
 }
 
 void CampaignsManager::SetActiveUrl(const GURL& url) {

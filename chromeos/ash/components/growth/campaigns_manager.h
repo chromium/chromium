@@ -66,9 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // opened app targeting.
   void SetOpenedApp(const std::string& app_id);
 
-  // Set the current trigger type. Used in `CampaignsMatcher` for matching
-  // trigger targeting.
-  void SetTrigger(TriggeringType trigger_type);
+  // Set the current trigger type and event. Used in `CampaignsMatcher` for
+  // matching trigger targeting.
+  void SetTrigger(const Trigger&& trigger_type);
 
   // Set the current active URL. Used in `CampaignsMatcher` for matching
   // URL targeting

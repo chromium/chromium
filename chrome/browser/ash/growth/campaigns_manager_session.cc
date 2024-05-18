@@ -81,7 +81,9 @@ void MaybeTriggerCampaignsWhenAppOpened() {
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
-  campaigns_manager->SetTrigger(growth::TriggeringType::kAppOpened);
+
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);
   MaybeTriggerSlot(growth::Slot::kNotification);
@@ -94,7 +96,9 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
-  campaigns_manager->SetTrigger(growth::TriggeringType::kCampaignsLoaded);
+
+  growth::Trigger trigger(growth::TriggerType::kCampaignsLoaded);
+  campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);
   MaybeTriggerSlot(growth::Slot::kNotification);
