@@ -371695,6 +371695,10 @@
         ]
        }
       },
+      "setCustomValidity-normalize-newlines-expected.txt": [
+       "0749980ee6f0ab3e1a214752bffb8d5f948df369",
+       []
+      ],
       "textfieldselection": {
        "original-id.json": [
         "d9fe4358563fe333bcba5f943eaf151e32aba003",
@@ -581246,6 +581250,13 @@
         ]
        ]
       },
+      "setCustomValidity-normalize-newlines.html": [
+       "3eb8c17e8f5bed20bae6530879bb78b5deee4b8e",
+       [
+        null,
+        {}
+       ]
+      ],
       "textfieldselection": {
        "defaultSelection.html": [
         "be965bf5cf8eb5053a0650c96d28ed4571ac1495",
