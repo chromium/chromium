@@ -5650,6 +5650,7 @@ source_set("unit_tests") {
     "crostini/throttle/crostini_active_window_throttle_observer_unittest.cc",
     "crostini/throttle/crostini_throttle_unittest.cc",
     "customization/customization_document_unittest.cc",
+    "dbus/arc_tracing_service_provider_unittest.cc",
     "dbus/chrome_features_service_provider_unittest.cc",
     "dbus/dlp_files_policy_service_provider_unittest.cc",
     "dbus/encrypted_reporting_service_provider_unittest.cc",

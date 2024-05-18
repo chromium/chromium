@@ -71,6 +71,12 @@ void ArcTracingServiceProvider::OnTraceEnd(
       FROM_HERE, std::move(handler_));
 }
 
+std::unique_ptr<arc::OverviewTracingHandler>
+ArcTracingServiceProvider::NewHandler() {
+  return std::make_unique<arc::OverviewTracingHandler>(
+      arc::OverviewTracingHandler::ArcWindowFocusChangeCb());
+}
+
 void ArcTracingServiceProvider::StartTrace(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
@@ -91,8 +97,7 @@ void ArcTracingServiceProvider::StartTrace(
             "Expect max trace time as type double in seconds"));
     return;
   }
-  auto handler = std::make_unique<arc::OverviewTracingHandler>(
-      arc::OverviewTracingHandler::ArcWindowFocusChangeCb());
+  auto handler = NewHandler();
 
   auto max_trace_time = base::Seconds(max_trace_seconds);
   if (max_trace_time < base::Seconds(1)) {
@@ -116,7 +121,7 @@ void ArcTracingServiceProvider::StartTrace(
   handler_->set_start_build_model_cb(
       base::BindRepeating(&ArcTracingServiceProvider::AddStatusMessage,
                           weak_ptr_factory_.GetWeakPtr(), "Building model..."));
-  handler_->StartTracing(base::FilePath("/tmp"), max_trace_time);
+  handler_->StartTracing(trace_outdir_, max_trace_time);
 
   auto response = dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());

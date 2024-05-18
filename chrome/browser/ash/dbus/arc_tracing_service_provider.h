@@ -38,6 +38,10 @@ class ArcTracingServiceProvider
 
   ~ArcTracingServiceProvider() override;
 
+  void set_trace_outdir_for_testing(const base::FilePath& trace_outdir) {
+    trace_outdir_ = trace_outdir;
+  }
+
   // CrosDBusService::ServiceProviderInterface:
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
@@ -57,6 +61,10 @@ class ArcTracingServiceProvider
   void StartTrace(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender);
 
+  // Supplies a new tracing handler for a trace that is just about to begin.
+  // Virtual so that tests can supply a testable subclass.
+  virtual std::unique_ptr<arc::OverviewTracingHandler> NewHandler();
+
   // Responds with (Gets) the messages in the circular log buffer, oldest first.
   void GetStatus(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender response_sender);
@@ -66,6 +74,9 @@ class ArcTracingServiceProvider
 
   // The last few status messages.
   std::deque<std::string> msgs_;
+
+  // Where finished traces are saved.
+  base::FilePath trace_outdir_{"/tmp"};
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
