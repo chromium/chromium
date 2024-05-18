@@ -52,6 +52,8 @@ class FieldRef {
   explicit FieldRef(blink::WebFormControlElement form_control);
   explicit FieldRef(blink::WebElement content_editable);
 
+  friend bool operator<(const FieldRef& lhs, const FieldRef& rhs);
+
   blink::WebFormControlElement GetField() const;
   blink::WebElement GetContentEditable() const;
   FieldRendererId GetId() const;

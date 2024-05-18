@@ -83,6 +83,10 @@ FieldRef::FieldRef(blink::WebElement content_editable)
   }
 }
 
+bool operator<(const FieldRef& lhs, const FieldRef& rhs) {
+  return lhs.field_renderer_id_ < rhs.field_renderer_id_;
+}
+
 blink::WebFormControlElement FieldRef::GetField() const {
   return ShouldReplaceElementsByRendererIds()
              ? form_util::GetFormControlByRendererId(field_renderer_id_)

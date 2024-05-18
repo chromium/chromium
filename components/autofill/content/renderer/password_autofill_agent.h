@@ -284,7 +284,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   };
 
   struct PasswordInfo {
-    blink::WebInputElement password_field;
+    FieldRef password_field;
     PasswordFormFillData fill_data;
     // The user manually edited the password more recently than the username was
     // changed.
@@ -292,10 +292,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     // The user accepted a suggestion from a dropdown on a password field.
     bool password_field_suggestion_was_accepted = false;
   };
-  using WebInputToPasswordInfoMap =
-      std::map<blink::WebInputElement, PasswordInfo>;
-  using PasswordToLoginMap =
-      std::map<blink::WebInputElement, blink::WebInputElement>;
+  using WebInputToPasswordInfoMap = std::map<FieldRef, PasswordInfo>;
+  using PasswordToLoginMap = std::map<FieldRef, FieldRef>;
 
   // Stores information about form field structure.
   struct FormFieldInfo {
@@ -355,7 +353,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     void ShowValue(blink::WebInputElement* element);
 
     bool was_user_gesture_seen_;
-    std::vector<blink::WebInputElement> elements_;
+    std::vector<FieldRef> elements_;
   };
 
   // Annotate `forms` and all fields in the current frame with form and field
