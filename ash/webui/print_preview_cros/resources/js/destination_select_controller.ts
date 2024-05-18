@@ -14,8 +14,8 @@ import {createCustomEvent} from './utils/event_utils.js';
  * `destination-select` element to update.
  */
 
-export const DESTINATION_SELECT_SHOW_LOADING_CHANGED =
-    'destination-select.show-loading-changed';
+export const DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED =
+    'destination-select.show-loading-ui-changed';
 
 // DestinationSelectController defines functionality used to update the
 // `destination-select` element.
@@ -38,7 +38,7 @@ export class DestinationSelectController extends EventTarget {
 
   // Returns whether destination manager has fetched initial destinations and
   // is initialized.
-  shouldShowLoading(): boolean {
+  shouldShowLoadingUi(): boolean {
     return !this.destinationManager.isSessionInitialized() ||
         !this.destinationManager.hasLoadedAnInitialDestination();
   }
@@ -47,19 +47,19 @@ export class DestinationSelectController extends EventTarget {
   // state changes.
   private onDestinationManagerStateChanged(_event: Event): void {
     this.dispatchEvent(
-        createCustomEvent(DESTINATION_SELECT_SHOW_LOADING_CHANGED));
+        createCustomEvent(DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED));
   }
 
   // Handles notifying UI to update when destination manager
   // initialized state changes.
   private onDestinationManagerSessionInitialized(): void {
     this.dispatchEvent(
-        createCustomEvent(DESTINATION_SELECT_SHOW_LOADING_CHANGED));
+        createCustomEvent(DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED));
   }
 }
 
 declare global {
   interface HTMLElementEventMap {
-    [DESTINATION_SELECT_SHOW_LOADING_CHANGED]: CustomEvent<void>;
+    [DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED]: CustomEvent<void>;
   }
 }

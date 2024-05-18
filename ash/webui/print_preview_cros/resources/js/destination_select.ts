@@ -9,7 +9,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_select.html.js';
-import {DESTINATION_SELECT_SHOW_LOADING_CHANGED, DestinationSelectController} from './destination_select_controller.js';
+import {DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED, DestinationSelectController} from './destination_select_controller.js';
 
 /**
  * @fileoverview
@@ -28,13 +28,13 @@ export class DestinationSelectElement extends PolymerElement {
 
   static get properties() {
     return {
-      showLoading: Boolean,
+      showLoadingUi: Boolean,
     };
   }
 
   private controller: DestinationSelectController;
   private eventTracker = new EventTracker();
-  private showLoading: boolean;
+  private showLoadingUi: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -42,11 +42,11 @@ export class DestinationSelectElement extends PolymerElement {
     this.controller = new DestinationSelectController(this.eventTracker);
 
     this.eventTracker.add(
-        this.controller, DESTINATION_SELECT_SHOW_LOADING_CHANGED,
+        this.controller, DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED,
         (e: Event): void => this.onDestinationSelectShowDropdownChanged(e));
 
     // Initialize properties using the controller.
-    this.showLoading = this.controller.shouldShowLoading();
+    this.showLoadingUi = this.controller.shouldShowLoadingUi();
   }
 
   override disconnectedCallback(): void {
@@ -58,9 +58,9 @@ export class DestinationSelectElement extends PolymerElement {
     return this.controller;
   }
 
-  // Updates UI on controller DESTINATION_SELECT_SHOW_LOADING_CHANGED event.
+  // Updates UI on controller DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED event.
   private onDestinationSelectShowDropdownChanged(_event: Event): void {
-    this.showLoading = this.controller.shouldShowLoading();
+    this.showLoadingUi = this.controller.shouldShowLoadingUi();
   }
 }
 
