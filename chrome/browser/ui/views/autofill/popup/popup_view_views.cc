@@ -946,7 +946,8 @@ void PopupViewViews::CreateSuggestionViews() {
             .SetHorizontalScrollBarMode(
                 views::ScrollView::ScrollBarMode::kDisabled)
             .SetDrawOverflowIndicator(false)
-            .ClipHeightTo(0, body_container->GetPreferredSize().height())
+            .ClipHeightTo(
+                0, body_container->GetHeightForWidth(kAutofillPopupMaxWidth))
             .Build();
     body_container_ = scroll_view->SetContents(std::move(body_container));
     scroll_view_ = suggestions_container_->AddChildView(std::move(scroll_view));
@@ -1009,7 +1010,8 @@ void PopupViewViews::CreateSuggestionViews() {
   // Adjust the scrollable area height. Make sure this adjustment always goes
   // after changes that can affect `body_container_`'s size.
   if (scroll_view_ && body_container_ && IsFooterScrollable()) {
-    scroll_view_->ClipHeightTo(0, body_container_->GetPreferredSize().height());
+    scroll_view_->ClipHeightTo(
+        0, body_container_->GetHeightForWidth(kAutofillPopupMaxWidth));
   }
 }
 
@@ -1031,6 +1033,22 @@ int PopupViewViews::AdjustWidth(int width) const {
   }
 
   return width;
+}
+
+gfx::Size PopupViewViews::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
+  // Applies certain rounding rules to the given width, such as matching the
+  // element width when possible.
+  const int width = AdjustWidth(size.width());
+  if (size.width() > kAutofillPopupMaxWidth) {
+    // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
+    // BoxLayout will occupy the entire vertical axis size. Two calculations are
+    // needed to correct this.
+    return views::View::CalculatePreferredSize(views::SizeBounds(width, {}));
+  }
+
+  return size;
 }
 
 bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {

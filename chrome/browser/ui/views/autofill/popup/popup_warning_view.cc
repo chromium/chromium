@@ -15,12 +15,15 @@
 #include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace autofill {
 
 PopupWarningView::PopupWarningView(const Suggestion& suggestion)
     : text_value_(suggestion.main_text.value) {
-  SetUseDefaultFillLayout(true);
+  // TODO(crbug.com/327247047): SetUseDefaultFillLayout(true) ignore insets by
+  // default. But we need insets for broder.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(PopupBaseView::GetCornerRadius(),
                       PopupBaseView::ArrowHorizontalMargin())));

@@ -124,6 +124,8 @@ class PopupViewViews : public PopupBaseView,
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
   // PopupBaseView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   // PopupSearchBarView::Delegate:
