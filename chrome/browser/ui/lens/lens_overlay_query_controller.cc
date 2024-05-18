@@ -152,7 +152,8 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
-    lens::LensOverlayInvocationSource invocation_source)
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode)
     : full_image_callback_(std::move(full_image_callback)),
       interaction_data_callback_(std::move(interaction_data_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
@@ -161,7 +162,8 @@ LensOverlayQueryController::LensOverlayQueryController(
       url_callback_(std::move(url_callback)),
       variations_client_(variations_client),
       identity_manager_(identity_manager),
-      invocation_source_(invocation_source) {}
+      invocation_source_(invocation_source),
+      use_dark_mode_(use_dark_mode) {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -385,7 +387,7 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   lens_overlay_url_response.set_url(
       lens::BuildTextOnlySearchURL(query_text, page_url_, page_title_,
                                    additional_search_query_params,
-                                   invocation_source_)
+                                   invocation_source_, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
@@ -548,7 +550,7 @@ void LensOverlayQueryController::
   lens_overlay_url_response.set_url(
       lens::BuildLensSearchURL(
           query_text, request_id_generator_->GetNextRequestId(), cluster_info,
-          additional_search_query_params, invocation_source_)
+          additional_search_query_params, invocation_source_, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

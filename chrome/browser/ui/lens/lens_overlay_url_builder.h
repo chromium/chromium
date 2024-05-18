@@ -24,6 +24,8 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
                                    std::optional<GURL> page_url,
                                    std::optional<std::string> page_title);
 
+GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
+
 GURL AppendInvocationSourceParamToURL(
     const GURL& url_to_modify,
     lens::LensOverlayInvocationSource invocation_source);
@@ -33,14 +35,16 @@ GURL BuildTextOnlySearchURL(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source);
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode);
 
 GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source);
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode);
 
 // Returns the value of the text query parameter value from the provided search
 // URL if any. Empty string otherwise.

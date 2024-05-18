@@ -103,14 +103,16 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
           thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source)
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
-                                   invocation_source) {}
+                                   invocation_source,
+                                   use_dark_mode) {}
   ~LensOverlayQueryControllerMock() override = default;
 
   lens::LensOverlayObjectsResponse fake_objects_response_;
@@ -209,7 +211,8 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       base::NullCallback(), base::NullCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
@@ -265,7 +268,8 @@ TEST_F(LensOverlayQueryControllerTest,
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -365,7 +369,8 @@ TEST_F(LensOverlayQueryControllerTest,
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -469,7 +474,8 @@ TEST_F(LensOverlayQueryControllerTest,
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -554,7 +560,8 @@ TEST_F(LensOverlayQueryControllerTest,
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
@@ -601,7 +608,8 @@ TEST_F(LensOverlayQueryControllerTest,
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(

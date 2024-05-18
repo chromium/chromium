@@ -11,6 +11,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
@@ -82,7 +83,8 @@ class LensOverlayController : public LensSearchboxClient,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
                         PrefService* pref_service,
-                        syncer::SyncService* sync_service);
+                        syncer::SyncService* sync_service,
+                        ThemeService* theme_service);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -355,7 +357,8 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode);
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -704,6 +707,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // The sync service associated with the current profile.
   raw_ptr<syncer::SyncService> sync_service_;
+
+  // The theme service associated with the current profile.
+  raw_ptr<ThemeService> theme_service_;
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;

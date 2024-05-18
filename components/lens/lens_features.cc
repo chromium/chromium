@@ -94,6 +94,9 @@ const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
 const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
     &kLensOverlay, "find-in-page-entry-point", false};
 
+const base::FeatureParam<bool> kUseBrowserDarkModeSettingForLensOverlay{
+    &kLensOverlay, "use-browser-dark-mode-setting", true};
+
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/crupload"};
@@ -346,6 +349,10 @@ bool UseLensOverlayForImageSearch() {
 
 bool IsFindInPageEntryPointEnabled() {
   return kIsFindInPageEntryPointEnabled.Get();
+}
+
+bool UseBrowserDarkModeSettingForLensOverlay() {
+  return kUseBrowserDarkModeSettingForLensOverlay.Get();
 }
 
 }  // namespace lens::features

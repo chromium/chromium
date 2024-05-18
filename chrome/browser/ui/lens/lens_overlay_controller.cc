@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -49,6 +50,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -156,6 +158,18 @@ gfx::NativeView TopLevelNativeView(content::WebContents* contents) {
   return top_level_widget->GetNativeView();
 }
 
+// TODO(b/341360519): Move this to a separate file.
+bool SidePanelShouldUseDarkMode(ThemeService* theme_service) {
+  if (!lens::features::UseBrowserDarkModeSettingForLensOverlay()) {
+    return false;
+  }
+  ThemeService::BrowserColorScheme color_scheme =
+      theme_service->GetBrowserColorScheme();
+  return color_scheme == ThemeService::BrowserColorScheme::kSystem
+             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+             : color_scheme == ThemeService::BrowserColorScheme::kDark;
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -163,12 +177,14 @@ LensOverlayController::LensOverlayController(
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    ThemeService* theme_service)
     : tab_(tab),
       variations_client_(variations_client),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
-      sync_service_(sync_service) {
+      sync_service_(sync_service),
+      theme_service_(theme_service) {
   LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                        this);
 
@@ -314,7 +330,8 @@ void LensOverlayController::ShowUI(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
-      variations_client_, identity_manager_, invocation_source);
+      variations_client_, identity_manager_, invocation_source,
+      SidePanelShouldUseDarkMode(theme_service_));
 
   side_panel_coordinator_ =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);
@@ -649,12 +666,13 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
       std::move(interaction_data_callback),
       std::move(thumbnail_created_callback), variations_client,
-      identity_manager, invocation_source);
+      identity_manager, invocation_source, use_dark_mode);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(

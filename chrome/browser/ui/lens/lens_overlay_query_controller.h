@@ -56,7 +56,8 @@ class LensOverlayQueryController {
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -274,6 +275,11 @@ class LensOverlayQueryController {
 
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;
+
+  // Whether or not to use dark mode in search urls. This is only calculated
+  // once per session because the search box theme is also only set once
+  // per session.
+  bool use_dark_mode_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

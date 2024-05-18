@@ -71,6 +71,11 @@ inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
 
+// Query parameter for dark mode.
+inline constexpr char kDarkModeParameterKey[] = "cs";
+inline constexpr char kDarkModeParameterLightValue[] = "0";
+inline constexpr char kDarkModeParameterDarkValue[] = "1";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -164,14 +169,24 @@ GURL AppendInvocationSourceParamToURL(
       url_to_modify, kInvocationSourceParameterKey, param_value);
 }
 
+GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kDarkModeParameterKey,
+      use_dark_mode ? kDarkModeParameterDarkValue
+                    : kDarkModeParameterLightValue);
+}
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params =
+      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
@@ -193,9 +208,12 @@ GURL BuildLensSearchURL(
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params =
+      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(

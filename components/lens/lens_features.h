@@ -320,6 +320,11 @@ extern bool UseLensOverlayForImageSearch();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsFindInPageEntryPointEnabled();
 
+// Returns whether or not to read the browser dark mode setting
+// for Lens Overlay. If false, it will fall back to light mode.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseBrowserDarkModeSettingForLensOverlay();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

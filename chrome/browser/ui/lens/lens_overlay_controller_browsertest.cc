@@ -19,6 +19,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -242,14 +244,16 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      LensOverlayInvocationSource invocation_source)
+      LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
-                                   invocation_source) {}
+                                   invocation_source,
+                                   use_dark_mode) {}
 
   void StartQueryFlow(const SkBitmap& screenshot,
                       std::optional<GURL> page_url,
@@ -278,12 +282,14 @@ class LensOverlayControllerFake : public LensOverlayController {
                             variations::VariationsClient* variations_client,
                             signin::IdentityManager* identity_manager,
                             PrefService* pref_service,
-                            syncer::SyncService* sync_service)
+                            syncer::SyncService* sync_service,
+                            ThemeService* theme_service)
       : LensOverlayController(tab,
                               variations_client,
                               identity_manager,
                               pref_service,
-                              sync_service) {}
+                              sync_service,
+                              theme_service) {}
 
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
@@ -292,11 +298,12 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source) override {
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode) override {
     return std::make_unique<LensOverlayQueryControllerFake>(
         full_image_callback, url_callback, interaction_data_callback,
         thumbnail_created_callback, variations_client, identity_manager,
-        invocation_source);
+        invocation_source, use_dark_mode);
   }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
@@ -339,10 +346,14 @@ class TabFeaturesFake : public tabs::TabFeatures {
   std::unique_ptr<LensOverlayController> CreateLensController(
       tabs::TabInterface* tab,
       Profile* profile) override {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+    // Set browser color scheme to light mode for consistency.
+    theme_service->SetBrowserColorScheme(
+        ThemeService::BrowserColorScheme::kLight);
     return std::make_unique<LensOverlayControllerFake>(
         tab, profile->GetVariationsClient(),
         IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-        SyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile), theme_service);
   }
 };
 
@@ -1629,7 +1640,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
+      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
       "hl=en-US");
   controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -1651,7 +1662,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
+      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
       "en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
@@ -1719,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
+      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
       "hl=en-US");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -1743,7 +1754,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
+      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
       "en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
