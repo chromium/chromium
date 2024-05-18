@@ -6691,6 +6691,8 @@ data/interest_group/bidding_logic_use_wasm.js
 data/interest_group/bidding_logic_use_wasm.js.mock-http-headers
 data/interest_group/bidding_logic_with_debugging_report.js
 data/interest_group/bidding_logic_with_debugging_report.js.mock-http-headers
+data/interest_group/bidding_logic_with_real_time_reporting.js
+data/interest_group/bidding_logic_with_real_time_reporting.js.mock-http-headers
 data/interest_group/bidding_logic_with_size.js
 data/interest_group/bidding_logic_with_size.js.mock-http-headers
 data/interest_group/bidding_no_direct_from_seller_signals_validator.js
@@ -6719,6 +6721,8 @@ data/interest_group/decision_logic_throws.js
 data/interest_group/decision_logic_throws.js.mock-http-headers
 data/interest_group/decision_logic_with_debugging_report.js
 data/interest_group/decision_logic_with_debugging_report.js.mock-http-headers
+data/interest_group/decision_logic_with_real_time_reporting.js
+data/interest_group/decision_logic_with_real_time_reporting.js.mock-http-headers
 data/interest_group/decision_no_direct_from_seller_signals_validator.js
 data/interest_group/decision_no_direct_from_seller_signals_validator.js.mock-http-headers
 data/interest_group/decision_simple_direct_from_seller_signals_validator.js
