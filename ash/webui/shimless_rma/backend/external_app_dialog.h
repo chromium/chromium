@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -88,15 +87,6 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
-  void EnterFullscreenModeForTab(
-      content::RenderFrameHost* requesting_frame,
-      const blink::mojom::FullscreenOptions& options) override;
-  void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
-  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  bool IsFullscreenForTabOrPending(
-      const content::WebContents* web_contents) override;
 
   // content::WebContentsObserver overrides:
   void OnDidAddMessageToConsole(
