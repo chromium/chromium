@@ -168,10 +168,12 @@ bool DefaultBrowserPromoCompleted() {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
 
-    BOOL isUserSignedIn =
-        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    BOOL isContentNotificationEnabled = IsContentNotificationSetUpListEnabled(
-        isUserSignedIn, self.isDefaultSearchEngine, prefService);
+    BOOL isContentNotificationEnabled =
+        IsContentNotificationExperimentEnalbed() &&
+        IsContentNotificationSetUpListEnabled(
+            identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+            self.isDefaultSearchEngine, prefService);
+
     _setUpList = [SetUpList buildFromPrefs:prefService
                                 localState:_localState
                                syncService:syncService

@@ -1482,6 +1482,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "content-notification-experiment",
+    "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "content-push-notifications",
     "owners": [ "sczs@chromium.org", "guiperez@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 128

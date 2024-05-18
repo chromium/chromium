@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -484,6 +485,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 // `YES` if Content notification is enabled or registered. Called before
 // register device With APNS.
 - (BOOL)isContentNotificationAvailable {
+  if (!IsContentNotificationExperimentEnalbed()) {
+    return false;
+  }
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;
 

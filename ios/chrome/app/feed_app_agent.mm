@@ -82,24 +82,34 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
       }
     }
 
-    bool isUserSignedIn =
-        IdentityManagerFactory::GetForBrowserState(
-            self.appState.mainBrowserState)
-            ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    BOOL isContentNotificationProvisionalEnabled = NO;
+    if (IsContentNotificationExperimentEnalbed()) {
+      // Only start doing the content notificaiton user eligibiliey check when
+      // content notification experiment is enabled.
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState);
+      bool isUserSignedIn = authService && authService->HasPrimaryIdentity(
+                                               signin::ConsentLevel::kSignin);
 
-    const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.appState.mainBrowserState)
-            ->GetDefaultSearchProvider();
+      const TemplateURL* defaultSearchURLTemplate =
+          ios::TemplateURLServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState)
+              ->GetDefaultSearchProvider();
 
-    bool isDefaultSearchEngine = defaultSearchURLTemplate &&
-                                 defaultSearchURLTemplate->prepopulate_id() ==
-                                     TemplateURLPrepopulateData::google.id;
+      bool isDefaultSearchEngine = defaultSearchURLTemplate &&
+                                   defaultSearchURLTemplate->prepopulate_id() ==
+                                       TemplateURLPrepopulateData::google.id;
 
-    PrefService* pref_service = self.appState.mainBrowserState->GetPrefs();
+      PrefService* pref_service = self.appState.mainBrowserState->GetPrefs();
+
+      isContentNotificationProvisionalEnabled =
+          IsContentNotificationProvisionalEnabled(
+              isUserSignedIn, isDefaultSearchEngine, pref_service);
+    }
+
     if ((!IsFirstRunRecent(base::Days(30)) &&
-         IsContentNotificationProvisionalEnabled(
-             isUserSignedIn, isDefaultSearchEngine, pref_service)) ||
+         isContentNotificationProvisionalEnabled) ||
         IsContentPushNotificationsProvisionalBypass()) {
       // This method does not show a UI prompt to the user. Provisional
       // notifications are authorized without any user input if the user hasn't

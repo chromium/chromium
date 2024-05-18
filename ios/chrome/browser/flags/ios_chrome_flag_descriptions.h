@@ -191,6 +191,12 @@ extern const char kSpotlightDonateNewIntentsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag to enable the content notification
+// experiments. This is a kill switcher that guarded the
+// ContentPushNotifications feature.
+extern const char kContentNotificationExperimentName[];
+extern const char kContentNotificationExperimentDescription[];
+
 // Title and description for the flag to enable the content notifications
 // feature.
 extern const char kContentPushNotificationsName[];
