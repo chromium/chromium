@@ -1018,8 +1018,18 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   // Do not update the overview item if the window is to be snapped into split
   // view. It will be removed from overview soon and will update overview grid
   // at that moment.
-  if (SplitViewController::Get(window)->IsWindowInTransitionalState(window))
+  if (SplitViewController::Get(window)->IsWindowInTransitionalState(window)) {
     return;
+  }
+
+  // During the `OnWindowParentChanged()`, there's a possibility that the parent
+  // window might be null, leading to the OverviewItem not being correctly added
+  // to the intended display. Early return here so that The `OverviewItem` can
+  // be added to the correct display when `OnWindowParentChanged()` is called
+  // again and the parent window is not null.
+  if (root_window_ != window->GetRootWindow()) {
+    return;
+  }
 
   if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION)
     overview_item_view_->RefreshPreviewView();
