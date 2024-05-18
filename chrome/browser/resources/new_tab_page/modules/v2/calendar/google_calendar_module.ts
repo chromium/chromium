@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './calendar.js';
 import '../../module_header.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
+import type {CalendarEvent, GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixin} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
+import type {CalendarElement} from './calendar.js';
 import {getTemplate} from './google_calendar_module.html.js';
 import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 
 export interface GoogleCalendarModuleElement {
   $: {
+    calendar: CalendarElement,
     moduleHeaderElementV2: ModuleHeaderElementV2,
   };
 }
@@ -35,15 +38,21 @@ export class GoogleCalendarModuleElement extends I18nMixin
   }
 
   static get properties() {
-    return {};
+    return {
+      events_: Object,
+    };
   }
+
+private events_:
+  CalendarEvent[];
 
 private handler_:
   GoogleCalendarPageHandlerRemote;
 
-  constructor() {
+  constructor(events: CalendarEvent[]) {
     super();
     this.handler_ = GoogleCalendarProxyImpl.getInstance().handler;
+    this.events_ = events;
   }
 
   private getMenuItemGroups_(): MenuItem[][] {
@@ -102,8 +111,9 @@ customElements.define(
 
 async function createGoogleCalendarElement():
     Promise<GoogleCalendarModuleElement|null> {
-  return new Promise<GoogleCalendarModuleElement>(
-      (resolve) => resolve(new GoogleCalendarModuleElement()));
+  const {events} =
+      await GoogleCalendarProxyImpl.getInstance().handler.getEvents();
+  return events.length > 0 ? new GoogleCalendarModuleElement(events) : null;
 }
 
 export const googleCalendarDescriptor: ModuleDescriptor = new ModuleDescriptor(

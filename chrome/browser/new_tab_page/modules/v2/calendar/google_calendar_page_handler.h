@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_GOOGLE_CALENDAR_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,6 +27,7 @@ class GoogleCalendarPageHandler
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ntp::calendar::mojom::GoogleCalendarPageHandler:
+  void GetEvents(GetEventsCallback callback) override;
   void DismissModule() override;
   void RestoreModule() override;
 

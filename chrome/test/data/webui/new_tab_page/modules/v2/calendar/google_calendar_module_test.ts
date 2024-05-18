@@ -14,12 +14,23 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
+import {createEvents} from './test_support.js';
+
 suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
   let handler: TestMock<GoogleCalendarPageHandlerRemote>;
   let module: GoogleCalendarModuleElement;
 
   const title = `Today's Calendar`;
   const dismissToast = `Today's Calendar hidden`;
+
+  async function initializeModule(numEvents: number = 0) {
+    handler.setResultFor(
+        'getEvents', Promise.resolve({events: createEvents(numEvents)}));
+    module = await googleCalendarDescriptor.initialize(0) as
+        GoogleCalendarModuleElement;
+    document.body.append(module);
+    await waitAfterNextRender(module);
+  }
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -31,20 +42,28 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
         GoogleCalendarPageHandlerRemote,
         mock => GoogleCalendarProxyImpl.setInstance(
             new GoogleCalendarProxyImpl(mock)));
-    module = await googleCalendarDescriptor.initialize(0) as
-        GoogleCalendarModuleElement;
-    assertTrue(!!module);
-    document.body.append(module);
-    await waitAfterNextRender(module);
   });
 
   test('creates module', async () => {
+    await initializeModule(1);
+    assertTrue(!!module);
+
     // Assert.
     assertTrue(isVisible(module.$.moduleHeaderElementV2));
     assertEquals(module.$.moduleHeaderElementV2.headerText, title);
   });
 
+  test('does not creates module if no data', async () => {
+    await initializeModule(0);
+
+    // Assert.
+    assertEquals(module, null);
+  });
+
   test('dismisses and restores module', async () => {
+    await initializeModule(1);
+    assertTrue(!!module);
+
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', module);
     ($$(module, 'ntp-module-header-v2')!
@@ -61,5 +80,13 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
+  });
+
+  test('Calendar element created and passed event data', async () => {
+    await initializeModule(2);
+    assertTrue(!!module);
+
+    assertTrue(isVisible(module.$.calendar));
+    assertEquals(module.$.calendar.events.length, 2);
   });
 });

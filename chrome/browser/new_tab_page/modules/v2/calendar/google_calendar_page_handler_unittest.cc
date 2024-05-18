@@ -4,6 +4,10 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 
+#include <string>
+#include <vector>
+
+#include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -20,9 +24,7 @@ const char kGoogleCalendarLastDismissedTimePrefName[] =
 class GoogleCalendarPageHandlerTest : public testing::Test {
  public:
   GoogleCalendarPageHandlerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpCalendarModule},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(ntp_features::kNtpCalendarModule);
     profile_ = std::make_unique<TestingProfile>();
     pref_service_ = profile_->GetPrefs();
   }
@@ -42,6 +44,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
+  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -64,4 +67,27 @@ TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
 
   EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
             base::Time());
+}
+
+TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
+  base::FieldTrialParams params;
+  params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
+  feature_list().Reset();
+  feature_list().InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpCalendarModule, params);
+
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response = std::move(events);
+          }));
+
+  handler().GetEvents(callback.Get());
+  EXPECT_EQ(response.size(), 3u);
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(response[i]->title, "Calendar Event " + base::NumberToString(i));
+  }
 }

@@ -4,8 +4,16 @@
 
 module ntp.calendar.mojom;
 
+// An event from the user's Google Calendar.
+struct CalendarEvent {
+  // Title of event.
+  string title;
+};
+
 // Browser-side handler for requests from NTP Module UI.
 interface GoogleCalendarPageHandler {
+  // Returns a list of the events on the user's Google Calendar for today.
+  GetEvents() => (array<CalendarEvent> events);
   // Dismisses module for fixed amount of time.
   DismissModule();
   // Restores the module immediately.
