@@ -194,53 +194,6 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
   base::OnceClosure callback_;
 };
 
-bool IsLayerAnimated(ui::Layer* layer,
-                     SessionStateAnimator::AnimationType type) {
-  switch (type) {
-    case SessionStateAnimator::ANIMATION_FADE_IN:
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_FADE_OUT:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS:
-      if ((layer->GetTargetBrightness() < 0.9999) ||
-          (layer->GetTargetGrayscale() < 0.9999))
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS:
-      if ((layer->GetTargetBrightness() > 0.0001) ||
-          (layer->GetTargetGrayscale() > 0.0001))
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_DROP:
-    case SessionStateAnimator::ANIMATION_UNDO_LIFT:
-      // ToDo(antim) : check other effects
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    // ToDo(antim) : check other effects
-    case SessionStateAnimator::ANIMATION_LIFT:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_RAISE_TO_SCREEN:
-      // ToDo(antim) : check other effects
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_COPY_LAYER:
-      return true;
-  }
-  return true;
-}
-
 void GetContainersInRootWindow(int container_mask,
                                aura::Window* root_window,
                                aura::Window::Windows* containers) {
@@ -391,28 +344,6 @@ class SessionStateAnimatorImpl::AnimationSequence
   // Number of sequences either ended or aborted.
   int sequences_completed_;
 };
-
-bool SessionStateAnimatorImpl::TestApi::ContainersAreAnimated(
-    int container_mask,
-    AnimationType type) const {
-  aura::Window::Windows containers;
-  animator_->GetContainers(container_mask, &containers);
-  for (aura::Window::Windows::const_iterator it = containers.begin();
-       it != containers.end(); ++it) {
-    aura::Window* window = *it;
-    ui::Layer* layer = window->layer();
-    if (!IsLayerAnimated(layer, type))
-      return false;
-  }
-  return true;
-}
-
-bool SessionStateAnimatorImpl::TestApi::RootWindowIsAnimated(
-    AnimationType type) const {
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  ui::Layer* layer = root_window->layer();
-  return IsLayerAnimated(layer, type);
-}
 
 SessionStateAnimatorImpl::SessionStateAnimatorImpl() = default;
 
