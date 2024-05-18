@@ -112,6 +112,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   void OnNetworkServiceCreated(
       ::network::mojom::NetworkService* network_service) override;
 
+  void GetHyphenationDictionary(
+      base::OnceCallback<void(const base::FilePath&)> callback) override;
+
  private:
   class StubBadgeService;
 

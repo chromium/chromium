@@ -398,4 +398,13 @@ void HeadlessContentBrowserClient::OnNetworkServiceCreated(
   network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
 }
 
+void HeadlessContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  base::FilePath dir;
+  if (base::PathService::Get(base::DIR_EXE, &dir)) {
+    dir = dir.AppendASCII("hyphen-data");
+    std::move(callback).Run(dir);
+  }
+}
+
 }  // namespace headless
