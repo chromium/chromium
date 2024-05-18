@@ -36,10 +36,6 @@ enum UserAction {
   BACK = 'back',
 }
 
-interface RecommendAppsScreenData {
-  data: CategoriesAppsMap;
-}
-
 export const PersonalizedRecommedAppsElementBase =
     mixinBehaviors(
         [LoginScreenBehavior, OobeDialogHostBehavior, MultiStepBehavior],
@@ -102,11 +98,11 @@ export class PersonalizedRecommedAppsElement extends
     return OobeUiState.ONBOARDING;
   }
 
-  setCategoriesAppsMapData(categoriesData: RecommendAppsScreenData): void {
-    assert('data' in categoriesData);
+  setCategoriesAppsMapData(categoriesData: CategoriesAppsMap): void {
+    assert(categoriesData !== null);
     this.shadowRoot!
         .querySelector<OobePersonalizedAppsList>('#categoriesAppsList')!.init(
-            categoriesData['data']);
+            categoriesData);
   }
 
   /**
