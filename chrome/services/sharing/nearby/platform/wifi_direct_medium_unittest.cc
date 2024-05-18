@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_direct_medium.h"
 
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -29,7 +30,10 @@ class FakeWifiDirectManager
 
   void GetWifiP2PCapabilities(
       GetWifiP2PCapabilitiesCallback callback) override {
-    // Noop
+    // TODO(b/341325756): This is currently ignored, so no need to build a real
+    // response.
+    auto response = ash::wifi_direct::mojom::WifiP2PCapabilities::New();
+    std::move(callback).Run(std::move(response));
   }
 };
 
@@ -63,6 +67,13 @@ class WifiDirectMediumTest : public ::testing::Test {
 
   WifiDirectMedium* medium() { return medium_.get(); }
 
+  void RunOnTaskRunner(base::OnceClosure task) {
+    base::RunLoop run_loop;
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTaskAndReply(FROM_HERE, std::move(task), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 
@@ -75,8 +86,15 @@ class WifiDirectMediumTest : public ::testing::Test {
   std::unique_ptr<WifiDirectMedium> medium_;
 };
 
-TEST_F(WifiDirectMediumTest, ItBuilds) {
-  EXPECT_TRUE(medium());
+// TODO(b/341325756): This test needs to be replaced once a resolution is found
+// for the expected response.
+TEST_F(WifiDirectMediumTest, IsInterfaceValid_Temporary) {
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_TRUE(medium->IsInterfaceValid());
+      },
+      medium()));
 }
 
 }  // namespace nearby::chrome

@@ -38,7 +38,16 @@ class WifiDirectMedium : public api::WifiDirectMedium {
       override;
 
  private:
-  mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager> manager_;
+  void GetCapabilities(bool* is_capability_supported,
+                       base::WaitableEvent* waitable_event) const;
+  void OnCapabilities(
+      bool* is_capability_supported,
+      base::WaitableEvent* waitable_event,
+      ash::wifi_direct::mojom::WifiP2PCapabilitiesPtr capabilities) const;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
+      wifi_direct_manager_;
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
 };
