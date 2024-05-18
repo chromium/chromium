@@ -60,6 +60,7 @@
 #include <tchar.h>
 #include <windows.h>
 
+#include <fileapi.h>
 #include <shellapi.h>
 #include <shlobj.h>
 
@@ -201,6 +202,45 @@ class FileUtilTest : public PlatformTest {
     PlatformTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
+
+#if BUILDFLAG(IS_WIN)
+  bool AreShortFilePathsEnabled() {
+    static const bool enabled = [this] {
+      // AreShortNamesEnabled is only available from Windows 11 onwards.
+      using AreShortNamesEnabledFunction = decltype(&::AreShortNamesEnabled);
+      AreShortNamesEnabledFunction short_names_func =
+          reinterpret_cast<AreShortNamesEnabledFunction>(GetProcAddress(
+              ::GetModuleHandleW(L"kernel32.dll"), "AreShortNamesEnabled"));
+
+      if (!short_names_func) {
+        // For non-Windows 11, it's highly likely that short name support is
+        // present, but possible to be overridden by
+        // HKLM\System\CurrentControlSet\Control\FileSystem\NtfsDisable8dot3NameCreation.
+        // See
+        // https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/fsutil-8dot3name.
+        //
+        // However, this test never checked this before and this has never
+        // caused any issues in the past, so it's simpler to assume that short
+        // names are always present if AreShortNamesEnabled API is not
+        // available.
+        return true;
+      }
+      base::File temp_dir(temp_dir_.GetPath(),
+                          base::File::FLAG_OPEN_ALWAYS |
+                              base::File::FLAG_WIN_BACKUP_SEMANTICS |
+                              base::File::FLAG_READ);
+      BOOL enabled = false;
+      if (!short_names_func(temp_dir.GetPlatformFile(), &enabled)) {
+        DPLOG(ERROR) << "Call to AreShortNamesEnabled failed.";
+        // Assume short names are enabled (the default) if AreShortNamesEnabled
+        // fails to return a value.
+        return true;
+      }
+      return !!enabled;
+    }();
+    return enabled;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   ScopedTempDir temp_dir_;
 };
@@ -632,7 +672,23 @@ TEST_F(FileUtilTest, DevicePathToDriveLetter) {
       &win32_path));
 }
 
+TEST_F(FileUtilTest, AreShortFilePathsEnabled) {
+  constexpr FilePath::CharType kLongDirName[] = FPL("A long path");
+  FilePath long_test_dir = temp_dir_.GetPath().Append(kLongDirName);
+  ASSERT_TRUE(CreateDirectory(long_test_dir));
+
+  FilePath short_test_dir = MakeShortFilePath(long_test_dir);
+
+  // MakeShortFilePath returns the long file path if short paths are not
+  // supported. See
+  // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew.
+  ASSERT_EQ(AreShortFilePathsEnabled(), short_test_dir != long_test_dir);
+}
+
 TEST_F(FileUtilTest, CreateTemporaryFileInDirLongPathTest) {
+  if (!AreShortFilePathsEnabled()) {
+    GTEST_SKIP() << "Short filepaths are not supported on this system.";
+  }
   // Test that CreateTemporaryFileInDir() creates a path and returns a long path
   // if it is available. This test requires that:
   // - the filesystem at |temp_dir_| supports long filenames.
@@ -679,6 +735,9 @@ TEST_F(FileUtilTest, CreateTemporaryFileInDirLongPathTest) {
 }
 
 TEST_F(FileUtilTest, MakeLongFilePathTest) {
+  if (!AreShortFilePathsEnabled()) {
+    GTEST_SKIP() << "Short filepaths are not supported on this system.";
+  }
   // Tests helper function base::MakeLongFilePath
 
   // If a username isn't a valid 8.3 short file name (even just a
@@ -854,9 +913,6 @@ TEST_F(FileUtilTest, NoExecuteOnSafeFile) {
       &new_dir));
 
   FilePath short_dir = base::MakeShortFilePath(new_dir);
-
-  // Verify that the path really is 8.3 now.
-  ASSERT_NE(new_dir.value(), short_dir.value());
 
   LaunchOptions options;
   options.environment[L"TMP"] = short_dir.value();
