@@ -30,14 +30,6 @@
     },
   },
   data: [
-    {
-        name: "DiffNeedsPaintInvalidation",
-        methods_to_diff: [
-          {
-            method: "AccentColorResolved()",
-            field_dependencies: ["accent-color", "color"]
-          },
-        ],
-    },
+    // Please don't add anything here! This file will be removed soon!
   ],
 }

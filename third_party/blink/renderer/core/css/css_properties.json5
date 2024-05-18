@@ -313,8 +313,10 @@
       default: [],
       valid_type: "list",
       valid_values: [
+        "accent-color",
         "background",
         "background-color",
+        "background-current-color",
         "blend-mode",
         "border-image",
         "border-radius",
@@ -1170,7 +1172,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["color"],
+      invalidate: ["accent-color", "color", "background-current-color"],
     },
     {
       name: "direction",
@@ -1770,6 +1772,7 @@
       converter: "ConvertStyleAutoColor",
       default_value: "StyleAutoColor::AutoColor()",
       computable: true,
+      invalidate: ["accent-color"],
     },
     {
       name: "align-content",
@@ -8283,7 +8286,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
-      invalidate: ["color"],
+      invalidate: ["background-current-color", "color"],
     },
     {
       name: "-internal-visited-caret-color",

@@ -1145,6 +1145,11 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     return true;
   }
 
+  if ((field_diff & kAccentColor) &&
+      AccentColorResolved() != other.AccentColorResolved()) {
+    return true;
+  }
+
   if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
     return true;
   }
@@ -1154,27 +1159,25 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     return true;
   }
 
+  if (field_diff & kBackgroundCurrentColor) {
+    // If the background image depends on currentColor
+    // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
+    // color has changed, we need to recompute it even though VisuallyEqual()
+    // thinks the old and new background styles are identical.
+    if (BackgroundInternal().AnyLayerUsesCurrentColor() &&
+        (GetCurrentColor() != other.GetCurrentColor() ||
+         GetInternalVisitedCurrentColor() !=
+             other.GetInternalVisitedCurrentColor())) {
+      return true;
+    }
+  }
+
   if ((field_diff & kBorderOutlineVisitedColor) &&
       BorderOutlineVisitedColorChanged(other)) {
     return true;
   }
 
-  if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other)) {
-    return true;
-  }
-
   if (!BorderVisuallyEqual(other)) {
-    return true;
-  }
-
-  // If the background image depends on currentColor
-  // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
-  // color has changed, we need to recompute it even though VisuallyEqual()
-  // thinks the old and new background styles are identical.
-  if (BackgroundInternal().AnyLayerUsesCurrentColor() &&
-      (GetCurrentColor() != other.GetCurrentColor() ||
-       GetInternalVisitedCurrentColor() !=
-           other.GetInternalVisitedCurrentColor())) {
     return true;
   }
 
