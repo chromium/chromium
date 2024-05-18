@@ -529,7 +529,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager,
                         mSnackbarManagerSupplier,
                         mContextualSearchManagerSupplier,
-                        getBottomSheetController());
+                        getBottomSheetController(),
+                        mInsetObserverViewSupplier.get());
     }
 
     @Override

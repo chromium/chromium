@@ -13,6 +13,8 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
@@ -38,6 +41,19 @@ public class BottomAttachedUiObserverTest {
     private static final int OVERLAY_PANEL_COLOR = Color.BLUE;
     private static final int BOTTOM_SHEET_YELLOW = Color.YELLOW;
     private static final int BOTTOM_SHEET_CYAN = Color.CYAN;
+
+    private static final WindowInsetsCompat BOTTOM_NAV_BAR_INSETS =
+            new WindowInsetsCompat.Builder()
+                    .setInsets(
+                            WindowInsetsCompat.Type.navigationBars(),
+                            Insets.of(0, 0, 0, /* bottom= */ 100))
+                    .build();
+    private static final WindowInsetsCompat SIDE_NAV_BAR_INSETS =
+            new WindowInsetsCompat.Builder()
+                    .setInsets(
+                            WindowInsetsCompat.Type.navigationBars(),
+                            Insets.of(0, 0, /* right= */ 100, /* bottom= */ 0))
+                    .build();
 
     private BottomAttachedUiObserver mBottomAttachedUiObserver;
     private MockColorChangeObserver mColorChangeObserver;
@@ -58,16 +74,22 @@ public class BottomAttachedUiObserverTest {
     @Mock private BottomSheetContent mBottomSheetContentYellowBackground;
     @Mock private BottomSheetContent mBottomSheetContentCyanBackground;
 
+    @Mock private InsetObserver mInsetObserver;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
 
         mBottomAttachedUiObserver =
                 new BottomAttachedUiObserver(
                         mBrowserControlsStateProvider,
                         mSnackbarManager,
                         mContextualSearchManagerSupplier,
-                        mBottomSheetController);
+                        mBottomSheetController,
+                        mInsetObserver);
+        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
 
         when(mContextualSearchManager.getOverlayPanelStateProviderSupplier())
                 .thenReturn(mOverlayPanelStateProviderSupplier);
@@ -194,6 +216,34 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    public void testAdaptsToInsetChanges() {
+        verify(mInsetObserver).addObserver(eq(mBottomAttachedUiObserver));
+
+        // Navbar is present at the bottom.
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
+        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mColorChangeObserver.assertColor(null);
+
+        // Show a snackbar to set a color.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
+        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+
+        // Shift navbar to the side.
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SIDE_NAV_BAR_INSETS);
+        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mColorChangeObserver.assertColor(null);
+
+        // Return navbar to the bottom.
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
+        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+
+        // Hide the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
+        mColorChangeObserver.assertColor(null);
+    }
+
+    @Test
     public void testColorPrioritization() {
         mColorChangeObserver.assertColor(null);
 
@@ -235,9 +285,11 @@ public class BottomAttachedUiObserverTest {
         setOverlayPanelObserver();
 
         mBottomAttachedUiObserver.destroy();
+        verify(mBottomSheetController).removeObserver(eq(mBottomAttachedUiObserver));
+        verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mBrowserControlsStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mSnackbarManager).removeObserver(eq(mBottomAttachedUiObserver));
-        verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
+        verify(mInsetObserver).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
     private static class MockColorChangeObserver implements BottomAttachedUiObserver.Observer {
