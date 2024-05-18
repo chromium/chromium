@@ -1374,6 +1374,9 @@ extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 extern const char kOmniboxAnswerActionsName[];
 extern const char kOmniboxAnswerActionsDescription[];
 
+extern const char kOmniboxAsyncViewInflationName[];
+extern const char kOmniboxAsyncViewInflationDescription[];
+
 extern const char kOmniboxCalcProviderName[];
 extern const char kOmniboxCalcProviderDescription[];
 

@@ -6131,7 +6131,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimateSuggestionsListAppearanceDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kAnimateSuggestionsListAppearance)},
-
     {"omnibox-actions-in-suggest",
      flag_descriptions::kOmniboxActionsInSuggestName,
      flag_descriptions::kOmniboxActionsInSuggestDescription, kOsAndroid,
@@ -6144,6 +6143,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAnswerActions,
                                     kOmniboxAnswerActionsVariants,
                                     "OmniboxBundledExperimentV1")},
+
+    {"omnibox-asynchronous-view-inflation",
+     flag_descriptions::kOmniboxAsyncViewInflationName,
+     flag_descriptions::kOmniboxAsyncViewInflationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxAsyncViewInflation)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)

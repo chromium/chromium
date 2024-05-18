@@ -2363,6 +2363,10 @@ const char kOmniboxAnswerActionsName[] = "Answer Actions";
 const char kOmniboxAnswerActionsDescription[] =
     "Answer Actions attaches related Action Chips to Answer suggestions.";
 
+const char kOmniboxAsyncViewInflationName[] = "Async Omnibox view inflation";
+const char kOmniboxAsyncViewInflationDescription[] =
+    "Inflate Omnibox and Suggestions views off the UI thread.";
+
 const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 const char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
