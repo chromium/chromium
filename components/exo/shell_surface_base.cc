@@ -186,30 +186,12 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       corner_radius = radii.upper_left();
     }
 
-    // TODO(b/302034956): Use `ApplyRoundedCornersToSurfaceTree()` to round pip
-    // window as well.
-    // Round a pip window. Pip windows are rounded by applying rounded corner
-    // to host window using ui::Layer API.
-    // When un-pipped (window state changed from pip), we must undo the
-    // rounded corners of the host_window.
-    const int pip_corner_radius =
-        window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0;
-    const gfx::RoundedCornersF pip_radii(pip_corner_radius);
-
-    ui::Layer* layer = shell_surface_->host_window()->layer();
-    if (layer->rounded_corner_radii() != pip_radii) {
-      layer->SetRoundedCornerRadius(pip_radii);
-      layer->SetIsFastRoundedCorner(/*enable=*/!pip_radii.IsEmpty());
-    }
-
     // Various window decorations are rounded using `kWindowCornerRadiusKey`
     // property.
     window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
-    // If we have a pip window, ignore `window_radii`. If window_radii is null,
-    // skip rounding the window.
-    if (window_state->IsPip() ||
-        !chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
+    // If window_radii is null, skip rounding the window.
+    if (!window_radii) {
       return;
     }
 
