@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
+#include "components/global_media_controls/media_view_utils.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -50,18 +51,6 @@ constexpr gfx::Size kBackgroundSize = gfx::Size(400, 150);
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kMediaActionButtonSize = gfx::Size(24, 24);
-
-constexpr base::TimeDelta kSeekTime = base::Seconds(10);
-
-// If the image does not fit the square view, scale the image to fill the view
-// even if part of the image is cropped.
-gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
-                                  const gfx::Size& view_size) {
-  const float scale =
-      std::max(view_size.width() / static_cast<float>(image_size.width()),
-               view_size.height() / static_cast<float>(image_size.height()));
-  return gfx::ScaleToFlooredSize(image_size, scale);
-}
 
 }  // namespace
 

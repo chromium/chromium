@@ -27,7 +27,8 @@
 namespace global_media_controls {
 
 namespace {
-constexpr auto kItemCornerRadius = gfx::RoundedCornersF(kArtworkCornerRadius);
+constexpr auto kItemCornerRadius =
+    gfx::RoundedCornersF(kDefaultArtworkCornerRadius);
 constexpr gfx::Size kImageSize(64, 40);
 
 // A `HighlightPathGenerator` that uses caller-supplied rounded rect corners.
@@ -126,7 +127,7 @@ void ChapterItemView::UpdateArtwork(const gfx::ImageSkia& image) {
   // Draws the image with rounded corners.
   auto path = SkPath().addRoundRect(
       RectToSkRect(gfx::Rect(kImageSize.width(), kImageSize.height())),
-      kArtworkCornerRadius, kArtworkCornerRadius);
+      kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
   artwork_view_->SetClipPath(path);
 
   artwork_view_->SetVisible(true);

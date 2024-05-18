@@ -487,7 +487,7 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
     // Draw the image with rounded corners.
     auto path = SkPath().addRoundRect(
         RectToSkRect(gfx::Rect(kArtworkSize.width(), kArtworkSize.height())),
-        kArtworkCornerRadius, kArtworkCornerRadius);
+        kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
     artwork_view_->SetClipPath(path);
   }
   SchedulePaint();
@@ -618,6 +618,30 @@ void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
 
 void MediaItemUIDetailedView::MediaActionButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (action == MediaSessionAction::kSeekBackward) {
+    const auto backward_duration =
+        std::max(base::Seconds(0), position_.GetPosition() - kSeekTime);
+    if (item_) {
+      item_->SeekTo(backward_duration);
+    } else {
+      container_->SeekTo(backward_duration);
+    }
+    return;
+  }
+  if (action == MediaSessionAction::kSeekForward) {
+    const auto forward_duration =
+        std::min(position_.GetPosition() + kSeekTime, position_.duration());
+    if (item_) {
+      item_->SeekTo(forward_duration);
+    } else {
+      container_->SeekTo(forward_duration);
+    }
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);
   } else {

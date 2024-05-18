@@ -612,9 +612,17 @@ TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
   auto* view = widget->SetContentsView(
       CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
   view->UpdateWithMediaActions({MediaSessionAction::kSeekForward});
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
-                          MediaSessionAction::kSeekForward));
+                          MediaSessionAction::kSeekForward))
+      .Times(0);
+  EXPECT_CALL(item(),
+              SeekTo(::testing::AllOf(::testing::Ge(base::Seconds(15)),
+                                      ::testing::Le(base::Seconds(16)))));
   views::Button* button =
       view->GetActionButtonForTesting(MediaSessionAction::kSeekForward);
   EXPECT_TRUE(button && button->GetVisible());
@@ -630,15 +638,24 @@ TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
   auto* view = widget->SetContentsView(
       CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
   view->UpdateWithMediaActions({MediaSessionAction::kSeekBackward});
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(38), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
-                          MediaSessionAction::kSeekBackward));
+                          MediaSessionAction::kSeekBackward))
+      .Times(0);
+  EXPECT_CALL(item(),
+              SeekTo(::testing::AllOf(::testing::Ge(base::Seconds(28)),
+                                      ::testing::Le(base::Seconds(29)))));
   views::Button* button =
       view->GetActionButtonForTesting(MediaSessionAction::kSeekBackward);
   EXPECT_TRUE(button && button->GetVisible());
   views::test::ButtonTestApi(button).NotifyClick(
       ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
 }
 
 TEST_F(MediaItemUIDetailedViewTest, TimestampView) {

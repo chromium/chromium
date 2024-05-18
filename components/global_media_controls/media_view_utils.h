@@ -15,8 +15,11 @@
 
 namespace global_media_controls {
 
+// The time duration for seeking forward or backward.
+inline constexpr base::TimeDelta kSeekTime = base::Seconds(10);
+
 // The corner radius of the images in the media views.
-inline constexpr int kArtworkCornerRadius = 12;
+inline constexpr int kDefaultArtworkCornerRadius = 12;
 
 // View ID's.
 // Buttons are using the `MediaSessionAction` enum as their view IDs. To avoid
