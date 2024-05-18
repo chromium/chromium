@@ -8732,6 +8732,21 @@
             ]
         }
     ],
+    "GlobalVaapiLock": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "GlobalVaapiLock"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopContentMenuTranslate": [
         {
             "platforms": [
