@@ -357,10 +357,6 @@ void PredictionManager::FetchModels() {
       static_cast<int>(
           *base_model_info.supported_model_engine_versions().begin()));
 
-  if (switches::IsModelOverridePresent()) {
-    return;
-  }
-
   if (!ShouldFetchModels(off_the_record_,
                          component_updates_enabled_provider_.Run())) {
     return;
@@ -401,21 +397,16 @@ void PredictionManager::FetchModels() {
     prediction_model_download_manager_->CancelAllPendingDownloads();
   }
 
-  // NOTE: ALL PRECONDITIONS FOR THIS FUNCTION MUST BE CHECKED ABOVE THIS LINE.
-  // It is assumed that if we proceed past here, that a fetch will at least be
-  // attempted.
-
-  if (!prediction_model_fetcher_) {
-    prediction_model_fetcher_ = std::make_unique<PredictionModelFetcherImpl>(
-        url_loader_factory_,
-        features::GetOptimizationGuideServiceGetModelsURL());
-  }
-
   std::vector<proto::ModelInfo> models_info = std::vector<proto::ModelInfo>();
   models_info.reserve(model_registration_info_map_.size());
 
   // For now, we will fetch for all registered optimization targets.
   for (const auto& registration_info : model_registration_info_map_) {
+    if (GetModelOverrideForOptimizationTarget(registration_info.first)) {
+      // Do not download models that were overriden.
+      continue;
+    }
+
     proto::ModelInfo model_info(base_model_info);
     model_info.set_optimization_target(registration_info.first);
     if (registration_info.second.metadata) {
@@ -438,6 +429,19 @@ void PredictionManager::FetchModels() {
     }
     RecordLifecycleState(registration_info.first,
                          ModelDeliveryEvent::kGetModelsRequest);
+  }
+  if (models_info.empty()) {
+    return;
+  }
+
+  // NOTE: ALL PRECONDITIONS FOR THIS FUNCTION MUST BE CHECKED ABOVE THIS LINE.
+  // It is assumed that if we proceed past here, that a fetch will at least be
+  // attempted.
+
+  if (!prediction_model_fetcher_) {
+    prediction_model_fetcher_ = std::make_unique<PredictionModelFetcherImpl>(
+        url_loader_factory_,
+        features::GetOptimizationGuideServiceGetModelsURL());
   }
 
   bool fetch_initiated =
@@ -630,12 +634,14 @@ void PredictionManager::UpdatePredictionModels(
 void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
                                      const proto::PredictionModel& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (switches::IsModelOverridePresent()) {
-    return;
-  }
-
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
+
+  if (GetModelOverrideForOptimizationTarget(
+          model.model_info().optimization_target())) {
+    // Skip updating the model if override is present.
+    return;
+  }
 
   RecordModelUpdateVersion(model.model_info());
   RecordLifecycleState(model.model_info().optimization_target(),
