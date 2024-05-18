@@ -46,12 +46,6 @@ class SessionRestoreDelegate {
       return group_;
     }
 
-    // Starts or stops tracking the lifetime of the WebContents. Starting
-    // results in CHECKing if the WebContents is destroyed. Used for
-    // https://crbug.com/1482502 .
-    void StartTrackingWebContentsLifetime();
-    void StopTrackingWebContentsLifetime();
-
    private:
     // During restore it's possible for some WebContents to be deleted, which
     // is why this is a WeakPtr. Before SessionRestore calls to RestoreTabs()
