@@ -595,6 +595,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 
 Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás aplicacións. Podes controlar os permisos correspondentes ás aplicacións para Android en <ph name="APPS_LINK_BEGIN" />Configuración das aplicacións<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
+<translation id="1448963928642384376">As zonas wifi do teu dispositivo</translation>
 <translation id="1449191289887455076">Preme de novo <ph name="CURRENTKEY" /> para confirmar a asignación e <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Abrir perfil de convidado</translation>
 <translation id="1451375123200651445">Páxina web (nun só ficheiro)</translation>
@@ -4070,6 +4071,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3983586614702900908">dispositivos dun provedor descoñecido</translation>
 <translation id="3983764759749072418">As aplicacións de Play Store teñen acceso a este dispositivo.</translation>
 <translation id="3983769721878416534">Atraso antes de facer clic</translation>
+<translation id="3983793589497399077">Fai clic onde queiras ou arrastra o recadro para facer buscas con Lens</translation>
 <translation id="3984135167056005094">Non incluír enderezo de correo electrónico</translation>
 <translation id="3984159763196946143">Non se puido iniciar o modo de demostración</translation>
 <translation id="3984431586879874039">Queres permitir que este sitio vexa a túa chave de seguranza?</translation>

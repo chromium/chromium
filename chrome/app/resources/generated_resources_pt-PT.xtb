@@ -465,6 +465,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1343865611738742294">Conceda às aplicações Linux autorização de acesso a dispositivos USB. O Linux não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
 <translation id="1344141078024003905">Está a transmitir o ecrã. Pode pausar ou parar a transmissão do ecrã em qualquer altura.</translation>
+<translation id="1346403631707626730">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android da criança enviando automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK1" />Saiba mais sobre as métricas<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1347512539447549782">Armazenamento do Linux</translation>
@@ -595,6 +596,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 
 As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode controlar as autorizações das apps Android nas <ph name="APPS_LINK_BEGIN" />Definições de apps<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
+<translation id="1448963928642384376">As zonas Wi-Fi do seu dispositivo</translation>
 <translation id="1449191289887455076">Prima a tecla "<ph name="CURRENTKEY" />" novamente para confirmar a atribuição e <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Abrir perfil de convidado</translation>
 <translation id="1451375123200651445">Página Web, Ficheiro único</translation>
@@ -1923,6 +1925,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2405887402346713222">Números de série de dispositivo e componentes</translation>
 <translation id="2406153734066939945">Eliminar este perfil e os respetivos dados?</translation>
 <translation id="2407671304279211586">Selecionar fornecedor DNS</translation>
+<translation id="240789602312469910">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android da criança enviando automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnósticos e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">A guardar o cartão…</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2409268599591722235">Vamos lá</translation>
@@ -2083,6 +2086,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2497852260688568942">A sincronização foi desativada pelo gestor</translation>
 <translation id="2498539833203011245">Minimizar</translation>
 <translation id="2498765460639677199">Enorme</translation>
+<translation id="2499065671910214321">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização deste dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">Foi bloqueado para proteger a sua privacidade</translation>
 <translation id="2501173422421700905">Certificado em espera</translation>
 <translation id="2501278716633472235">Voltar</translation>
@@ -2346,6 +2350,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="270516211545221798">Velocidade do touchpad</translation>
 <translation id="2705736684557713153">Desloque-se até à parte inferior do ecrã e ative a Ligação via telemóvel instantânea, se for apresentada. Caso contrário, está pronto para começar.</translation>
+<translation id="2706304388244371417">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança. <ph name="BEGIN_LINK1" />Saiba mais sobre a cópia de segurança<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="2707024448553392710">A transferir o componente</translation>
 <translation id="270921614578699633">Média superior</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
@@ -2881,11 +2886,13 @@ Quer pará-lo?</translation>
 <translation id="3094521107841754472">O preço foi alterado de <ph name="PREVIOUS_PRICE" /> para <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Os marcadores, as palavras-passe e outros dados do navegador são sincronizados com a conta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Foi desativada 1 extensão potencialmente prejudicial. Também a pode remover.}other{Foram desativadas {NUM_EXTENSIONS} extensões potencialmente prejudiciais. Também as pode remover.}}</translation>
+<translation id="3100071818310370858">Use a localização. Permita que as apps e os serviços com a autorização de acesso à localização usem a localização deste dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Escurecer luz</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="310297983047869047">Diapositivo anterior</translation>
 <translation id="3103451787721578293">Introduza um motivo para o carregamento destes dados:</translation>
 <translation id="3103512663951238230">Alt + clique</translation>
+<translation id="3104948640446684649">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Última atualização sem êxito</translation>
 <translation id="3105796011181310544">Quer reverter para o Google?</translation>
 <translation id="3105820656234755131">Palavra-passe atualizada</translation>
@@ -2980,6 +2987,9 @@ Quer pará-lo?</translation>
 <translation id="3184536091884214176">Configure ou efetue a gestão de impressoras CUPS. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta app está bloqueada}other{Estas apps estão bloqueadas}}</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
+<translation id="3187556136478864255">Consegue ver o seu dispositivo de transmissão na
+    <ph name="BEGIN_LINK" />
+    app Google Home<ph name="END_LINK" />?</translation>
 <translation id="3188465121994729530">Média de movimentações</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
@@ -3234,6 +3244,7 @@ Quer pará-lo?</translation>
 <translation id="3391721320619127327">O leitor de ecrã no ChromeOS Flex, ChromeVox, é usado principalmente por pessoas cegas ou com visão reduzida para ler texto apresentado no ecrã com um sintetizador de voz ou um ecrã em braille. Prima sem soltar ambas as teclas de volume durante cinco segundos para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="3393554941209044235">Análise de documentos do Chrome</translation>
 <translation id="3393582007140394275">Não é possível transmitir o ecrã.</translation>
+<translation id="3394072120086516913">O PC está ligado com fios e o dispositivo de transmissão está ligado a uma rede Wi-Fi</translation>
 <translation id="3394850431319394743">Com autorização para utilizar identificadores para reproduzir conteúdo protegido</translation>
 <translation id="3396442984945202128">Validar a sua identidade</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e continuar", está a aceitar o processamento descrito acima para estes serviços Google.</translation>
@@ -4069,6 +4080,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3983586614702900908">dispositivos de um fornecedor desconhecido</translation>
 <translation id="3983764759749072418">As aplicações da Play Store têm acesso a este dispositivo.</translation>
 <translation id="3983769721878416534">Atraso antes de clicar</translation>
+<translation id="3983793589497399077">Clique ou arraste em qualquer lugar para pesquisar com o Lens</translation>
 <translation id="3984135167056005094">Não incluir endereço de email</translation>
 <translation id="3984159763196946143">Não foi possível iniciar o modo de demonstração</translation>
 <translation id="3984431586879874039">Permitir que este site veja a sua chave de segurança?</translation>
@@ -4491,6 +4503,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4314561087119792062">Adicione um novo Nome do Ponto de Acesso</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
 <translation id="4316850752623536204">Website para programadores</translation>
+<translation id="43176328751044557">{NUM_SITES,plural, =1{Autorizações removidas para 1 site}other{Autorizações removidas para {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">Compras na app</translation>
 <translation id="4317820549299924617">Não foi possível efetuar a validação</translation>
 <translation id="4319441675152393296">Clique no ícone desta extensão para ler e alterar <ph name="HOST" /></translation>
@@ -4807,6 +4820,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4559617833001311418">Este site está a aceder aos seus sensores de movimento ou de luz.</translation>
 <translation id="4560728518401799797">Mais opções para o marcador <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">Nenhuma autorização alterada recentemente.</translation>
+<translation id="4562091353415772246">Instale atualizações e apps. Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e apps a partir da Google, da sua operadora e do fabricante do dispositivo, possivelmente através de dados móveis. Algumas destas apps podem oferecer compras na app. <ph name="BEGIN_LINK1" />Saiba mais sobre a Instalação automática do Google Play<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Adicionar impressão digital</translation>
 <translation id="4562155266774382038">Ignorar sugestão</translation>
 <translation id="4563210852471260509">O idioma de introdução inicial é chinês</translation>
@@ -5742,6 +5756,8 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5288106344236929384">Mais ações, opções de token de acesso para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Voltar a Abrir o S&amp;eparador Fechado</translation>
 <translation id="52895863590846877">A página não está em <ph name="LANGUAGE" />.</translation>
+<translation id="5290020561438336792">PC e dispositivo de transmissão em redes Wi-Fi diferentes (por exemplo, 2,4 GHz
+    vs. 5 GHz)</translation>
 <translation id="52912272896845572">O ficheiro de chave privada é inválido.</translation>
 <translation id="5291739252352359682">Cria automaticamente legendas para conteúdos multimédia no navegador Chrome (atualmente, disponível em inglês). O áudio e as legendas são processados localmente e nunca saem do dispositivo.</translation>
 <translation id="529175790091471945">Formatar este dispositivo</translation>
@@ -6226,9 +6242,12 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5646558797914161501">Homem de negócios</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
+<translation id="5649182603113127372">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
+<translation id="5650537073531199882">Preencha o formulário</translation>
 <translation id="5651308944918885595">Deteção da funcionalidade Partilhar na proximidade</translation>
 <translation id="5653154844073528838">Tem <ph name="PRINTER_COUNT" /> impressoras guardadas.</translation>
 <translation id="5654669866168491665">Saiba mais sobre sites que podem não funcionar com o bloqueio de cookies de terceiros</translation>
+<translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger a sua privacidade, foram removidas as autorizações de um site}other{Para proteger a sua privacidade, foram removidas as autorizações de alguns sites}}</translation>
 <translation id="565515993087783098">Ao esquecer esta rede, também remove a subscrição do Passpoint e as respetivas redes associadas.</translation>
 <translation id="5655296450510165335">Inscrição de dispositivo</translation>
 <translation id="5655823808357523308">Ajuste a forma como as cores aparecem no ecrã</translation>
@@ -6341,6 +6360,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5747785204778348146">Programador – instável</translation>
 <translation id="5747809636523347288">Co&amp;lar e ir para <ph name="URL" /></translation>
+<translation id="5749214722697335450">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android enviando automaticamente dados de diagnósticos, de utilização do dispositivo e das apps para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK1" />Saiba mais sobre as métricas<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Rever prontidão da ligação (à Internet) via telemóvel</translation>
 <translation id="5753570386948603678">Eliminar do histórico</translation>
@@ -6376,6 +6396,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
     Se desativar esta funcionalidade, o dispositivo usa apenas o endereço IP para a localização, o que pode afetar a precisão da localização usada por apps como o Maps.</translation>
 <translation id="5778491106820461378">Pode gerir Contas Google com sessão iniciada nas <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" />. As autorizações que concedeu aos Websites e apps podem aplicar-se a todas as contas. Se não pretender que os sites ou as apps acedam às informações da sua conta, pode iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /> como convidado.</translation>
 <translation id="5780011244986845107">A pasta que selecionou contém ficheiros confidenciais. Tem a certeza de que quer conceder à aplicação "<ph name="APP_NAME" />" acesso de leitura permanente a esta pasta?</translation>
+<translation id="5780940414249100901">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Enviar comandos para <ph name="EXTENSION_NAME" /></translation>
@@ -7069,6 +7090,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6294759976468837022">Velocidade da análise automática</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
+<translation id="6297986260307280218">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android enviando automaticamente dados de diagnósticos, de utilização do dispositivo e das apps para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnósticos e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Afeta os sites indicados aqui. Inserir "[*.]" antes de um nome de domínio cria uma exceção para todo o domínio. Por exemplo, adicionar "[*.]google.com" significa que os cookies de terceiros também podem estar ativos em mail.google.com, uma vez que fazem parte de google.com.</translation>
 <translation id="6298962879096096191">Usar o Google Play para instalar aplicações para Android</translation>
 <translation id="6300177430812514606">Sem autorização para concluir o envio ou a receção de dados</translation>
@@ -8109,6 +8131,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="710047887584828070">O conteúdo deste separador está a ser partilhado</translation>
 <translation id="710224247908684995">Uma extensão desativou a Navegação Segura</translation>
 <translation id="7102832101143475489">O pedido excedeu o tempo limite.</translation>
+<translation id="7103944802169726298">PC e dispositivo de transmissão na mesma rede Wi-Fi</translation>
 <translation id="710640343305609397">Abrir definições de rede</translation>
 <translation id="7107609441453408294">Reproduzir o mesmo áudio através de todos os altifalantes</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -10262,10 +10285,12 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8695139659682234808">Adicione o controlo parental após a configuração</translation>
 <translation id="8695825812785969222">Abrir &amp;Localização...</translation>
 <translation id="8698269656364382265">Para voltar ao ecrã anterior, deslize rapidamente a partir do lado esquerdo.</translation>
+<translation id="8698432579173128320">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google. <ph name="BEGIN_LINK1" />Saiba mais sobre a cópia de segurança<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699188901396699995">PPD para <ph name="PRINTER_NAME" /></translation>
 <translation id="8700066369485012242">Indique-nos o motivo pelo qual permitiu os cookies de terceiros neste site</translation>
+<translation id="8700087567921985940">Use a localização. Permita que as apps e os serviços com a autorização de acesso à localização usem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">Launcher + retrocesso</translation>
 <translation id="8702278591052316269">Menu com grupos de separadores guardados ocultos</translation>
 <translation id="8702825062053163569">O seu <ph name="DEVICE_TYPE" /> foi bloqueado</translation>
@@ -10518,6 +10543,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8881020143150461183">Tente novamente. Para obter apoio técnico, contacte o operador <ph name="CARRIER_NAME" />.</translation>
 <translation id="888256071122006425">Definições do rato e touchpad</translation>
 <translation id="8883273463630735858">Ativar aceleração do touchpad</translation>
+<translation id="8883478023074930307">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="8884570509232205463">Agora, o seu dispositivo será bloqueado à(s) <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8885449336974696155">Ajude a melhorar o ChromeOS comunicando as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
@@ -10947,6 +10973,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="919686179725692564">Saiba mais acerca de como fazer uma cópia de segurança das suas apps</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
 <translation id="9199695835892108985">Repor todas as autorizações das portas de série?</translation>
+<translation id="9199853905755292769">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar os ficheiros em <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pesquisar no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Visto anteriormente</translation>

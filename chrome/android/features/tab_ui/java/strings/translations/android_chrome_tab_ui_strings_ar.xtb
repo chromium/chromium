@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">فتح مجموعات علامات التبويب من الأجهزة الأخرى تلقائيًا</translation>
 <translation id="1075622780330595106">لم يتم استخدام <ph name="NUMBER_OF_TABS" /> من علامات التبويب مؤخرًا. هل تريد إغلاقها؟</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل سنة واحدة (<ph name="NUM_YEARS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}two{تم إنشاء المجموعة قبل سنتَين (<ph name="NUM_YEARS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنوات}many{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}other{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}}</translation>
-<translation id="1155815720264022949">هل تريد إغلاق علامات التبويب السابقة؟</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1197088940767939838">برتقالي</translation>
-<translation id="1215127405478249895">مراجعة علامات التبويب</translation>
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
 <translation id="1322824555808364080">دعوة أشخاص</translation>
-<translation id="1326271443836399892">يمكنك الاطّلاع على الإعدادات الحالية لتنظيم علامات التبويب.</translation>
 <translation id="1419023007528516122">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{تم إنشاء المجموعة قبل دقيقة واحدة (<ph name="NUM_MINS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}two{تم إنشاء المجموعة قبل دقيقتَين (<ph name="NUM_MINS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقائق}many{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}other{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}}</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">رمز مجموعة علامات التبويب باللون <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) مؤرشفة.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}two{لديك علامتا تبويب (<ph name="TABS_COUNT_MANY" />) مؤرشفتان.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب مؤرشفة.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}}</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3322827343001922122">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">يُرجى مقارنة الصفحات بسرعة من خلال إنشاء مجموعة. للبدء، المس رابطًا مع الاستمرار.</translation>
 <translation id="5094423602314093681">هل تريد إزالة علامات التبويب وحذف المجموعة؟</translation>
 <translation id="5161254044473106830">العنوان مطلوب</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) لم تستخدمها مؤخرًا.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}two{لديك علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) لم تستخدمهما مؤخرًا.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب لم تستخدمها مؤخرًا.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{إغلاق المجموعة التي تحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{إغلاق المجموعة التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{إغلاق المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{إغلاق المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{إغلاق المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5400836586163650660">رمادي</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
-<translation id="5545379293264651575">إغلاق بدون مراجعة</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏رابط واحد (<ph name="TABS_COUNT_ONE" />) من Chrome}zero{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}two{‏رابطان (<ph name="TABS_COUNT_MANY" />) من Chrome}few{‏<ph name="TABS_COUNT_MANY" /> روابط من Chrome}many{‏<ph name="TABS_COUNT_MANY" /> رابطًا من Chrome}other{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
 <translation id="9216898458513705996">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" /> عليها</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
-<translation id="955558140275419384">يمكنك الاطّلاع على كل علامات التبويب المؤرشفة لتنظيمها من خلال الدخول إلى هذا المحرِّر.</translation>
 <translation id="959682366969460160">بدء التنظيم</translation>
 <translation id="992256792861109788">وردي</translation>
 </translationbundle>

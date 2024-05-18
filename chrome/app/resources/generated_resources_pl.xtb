@@ -597,6 +597,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 
 Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. Uprawnieniami aplikacji na Androida możesz zarządzać w <ph name="APPS_LINK_BEGIN" />Ustawieniach aplikacji<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Narzędzie Pędzel</translation>
+<translation id="1448963928642384376">Hotspoty Twojego urządzenia</translation>
 <translation id="1449191289887455076">Naciśnij jeszcze raz „<ph name="CURRENTKEY" />”, aby potwierdzić przypisanie i <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Otwórz profil gościa</translation>
 <translation id="1451375123200651445">Strona internetowa, pojedynczy plik</translation>
@@ -4050,6 +4051,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3983586614702900908">urządzenia od nieznanego dostawcy</translation>
 <translation id="3983764759749072418">Aplikacje ze Sklepu Play mają dostęp do tego urządzenia.</translation>
 <translation id="3983769721878416534">Opóźnienie przed kliknięciem</translation>
+<translation id="3983793589497399077">Kliknij lub przeciągnij w dowolne miejsce, aby wyszukać za pomocą Obiektywu</translation>
 <translation id="3984135167056005094">Nie uwzględniaj adresu e-mail</translation>
 <translation id="3984159763196946143">Nie udało się uruchomić trybu demonstracyjnego</translation>
 <translation id="3984431586879874039">Zezwolić tej stronie na odczytywanie danych klucza bezpieczeństwa?</translation>

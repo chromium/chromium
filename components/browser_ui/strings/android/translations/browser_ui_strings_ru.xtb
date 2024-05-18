@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Управляйте доступом сайта к данным на устройстве.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ваша последняя вкладка</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
 <translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
 <translation id="6120483543004435978">Когда этот параметр включен, сайтам разрешено запрашивать информацию о том, используете ли вы сейчас устройство. Когда параметр отключен, сайтам запрещен доступ к таким сведениям.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Выберите контакт</translation>
 <translation id="7990211076305263060">Когда этот параметр включен, сайты могут запрашивать разрешение на использование микрофона. Когда параметр отключен, им запрещено использовать ваш микрофон.</translation>
 <translation id="8007176423574883786">Отключено для этого устройства</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> С устройства "<ph name="FROM_DEVICE" />"</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8042586301629853791">Упорядочить:</translation>
 <translation id="8067883171444229417">Смотреть видео</translation>

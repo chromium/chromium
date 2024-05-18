@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Контролирайте достъпа на този сайт до устройството ви</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6042308850641462728">Още</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Последният ви раздел</translation>
 <translation id="6064125863973209585">Завършени изтегляния</translation>
 <translation id="6071501408666570960">Възможно е да излезете от профила си в този сайт</translation>
 <translation id="6120483543004435978">Когато настройката е включена, сайтовете могат да извеждат запитвания дали използвате активно устройството си. Когато е изключена, сайтовете няма да знаят дали използвате активно устройството си.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7990211076305263060">Когато настройката е включена, сайтовете могат да извеждат запитвания за достъп до микрофона ви. Когато е изключена, сайтовете не могат да използват микрофона ви.</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> От <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8042586301629853791">Сортиране по:</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>

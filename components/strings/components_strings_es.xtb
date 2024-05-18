@@ -570,6 +570,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2046951263634619614">Librerías</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
+<translation id="2055461225779831292">Usar y mover tus cámaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Bloquear el cursor del ratón</translation>
 <translation id="2056658168519009885">Los sitios pueden solicitar a Chrome información que les ayude a personalizar los anuncios que veas.</translation>
 <translation id="2059166748188874810">Municipio</translation>
@@ -717,6 +718,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2300306941146563769">No subido</translation>
 <translation id="2301098101308036335">Qué sitios web se visitan y cuándo.</translation>
 <translation id="230286397113210245">Botón Abrir ventana de Incógnito: actívalo para abrir una nueva ventana de Incógnito y navegar de forma privada</translation>
+<translation id="2306124309679506798">¿Permitir una experiencia inmersiva?</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
 <translation id="2316159751672436664">Personaliza las herramientas de accesibilidad desde la configuración de ChromeOS</translation>
@@ -1172,6 +1174,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para personalizar el diseño de tu navegador</translation>
 <translation id="3240791268468473923">Se ha abierto la hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="324180406144491771">Los enlaces de <ph name="HOST_NAME" /> se han bloqueado</translation>
+<translation id="3248329428895535435">No mostrar en este sitio</translation>
 <translation id="3252772880526154546">Arquitectura</translation>
 <translation id="3254301855501243548">18x22 pulgadas</translation>
 <translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar los métodos de pago.</translation>
@@ -1606,6 +1609,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4082333119419111506">Papel (preimpreso)</translation>
 <translation id="4082393374666368382">Configuración - Administración</translation>
 <translation id="4084219288110917128">Sobre C1</translation>
+<translation id="4085326869263783566">Ayúdame a escribir. Pulsa Tabulador y luego Intro para abrir esta función.</translation>
 <translation id="4088981014127559358">Cara 1 del desplazamiento de la imagen en el eje Y</translation>
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Rellenar dirección</translation>
@@ -3786,6 +3790,7 @@ Más información:
 <translation id="8263001937536038617">Servicios de fotografía y vídeo</translation>
 <translation id="8265992338205884890">Datos visibles</translation>
 <translation id="8267698848189296333">Iniciando sesión como <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Documentos separados/Copias intercaladas</translation>
 <translation id="8269703227894255363">{0,plural, =1{No se ha podido abrir el archivo}other{No se han podido abrir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="8270173610195068258">Crimen y justicia</translation>
@@ -4205,6 +4210,7 @@ Más información:
 <translation id="9094544726794842788">No me gusta abre un formulario para enviar comentarios detallados sobre por qué no te han gustado estos resultados</translation>
 <translation id="9095388113577226029">Más idiomas...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para establecer Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
+<translation id="9101450247048146228">Uso y movimiento de la cámara (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bandeja 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> utiliza normalmente el cifrado para proteger tu información. Cuando Chromium intentó establecer conexión con <ph name="SITE" />, el sitio web devolvió unas credenciales inusuales e incorrectas. Esto puede ocurrir si un atacante intenta suplantar la identidad de <ph name="SITE" /> o si una pantalla de inicio de sesión Wi-Fi interrumpe la conexión. Tu información sigue estando protegida, ya que Chromium detuvo la conexión antes de que se intercambiaran datos.</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> gestiona el navegador</translation>
@@ -4227,6 +4233,8 @@ Más información:
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9141013498910525015">Gestionar direcciones</translation>
 <translation id="9144951720726881238">Fecha de vencimiento:</translation>
+<translation id="9145910032514306808"><ph name="BEGIN_LINK" />Inicia sesión<ph name="END_LINK" />
+    de nuevo y vuelve a esta pestaña para obtener ayuda con la escritura</translation>
 <translation id="9148507642005240123">&amp;Deshacer edición</translation>
 <translation id="9148599396704355100">Precio bajo</translation>
 <translation id="9150025764986957246">Puedes introducir cosas como:</translation>

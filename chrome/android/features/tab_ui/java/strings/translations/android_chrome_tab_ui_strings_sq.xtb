@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Hap automatikisht grupet e skedave nga pajisjet e tjera</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Krijuar <ph name="NUM_YEARS_MANY" /> vite më parë}}</translation>
-<translation id="1155815720264022949">Dëshiron t'i mbyllësh skedat e vjetra?</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1197088940767939838">Portokalli</translation>
-<translation id="1215127405478249895">Rishiko skedat</translation>
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
 <translation id="1322824555808364080">Fto njerëz</translation>
-<translation id="1326271443836399892">Rishiko cilësimet aktuale për heqjen e të panevojshmeve.</translation>
 <translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Krijuar <ph name="NUM_MINS_ONE" /> minutë më parë}other{Krijuar <ph name="NUM_MINS_MANY" /> minuta më parë}}</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikona e ngjyrës së grupit të skedave: <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Ke <ph name="TABS_COUNT_ONE" /> skedë të arkivuar}other{Ke <ph name="TABS_COUNT_MANY" /> skeda të arkivuara}}</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
 <translation id="3322827343001922122">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />"</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Krahaso me shpejtësi faqet duke krijuar një grup. Për të filluar, prek dhe mbaj të shtypur një lidhje.</translation>
 <translation id="5094423602314093681">Të hiqen skedat dhe të fshihet grupi?</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Ke <ph name="TABS_COUNT_ONE" /> skedë që nuk i ke përdorur së fundi}other{Ke <ph name="TABS_COUNT_MANY" /> skeda që nuk i ke përdorur së fundi}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
-<translation id="5545379293264651575">Mbylli pa i rishikuar</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lidhje nga Chrome}other{<ph name="TABS_COUNT_MANY" /> lidhje nga Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Shto skedë të re te grupi</translation>
 <translation id="9216898458513705996">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Rishiko të gjitha skedat e arkivuara për të hequr të panevojshmet duke hyrë në këtë modifikues.</translation>
 <translation id="959682366969460160">Organizohu</translation>
 <translation id="992256792861109788">Rozë</translation>
 </translationbundle>

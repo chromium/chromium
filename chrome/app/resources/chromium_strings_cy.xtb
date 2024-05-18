@@ -126,6 +126,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3155163173539279776">Ail-lansio Chromium</translation>
 <translation id="3179665906251668410">Agor y Ddolen mewn Ffenestr Anhys&amp;bys Chromium</translation>
 <translation id="3185330573522821672">Personoleiddio eich proffil Chromium newydd</translation>
+<translation id="318879170965183683">Gallwch ddefnyddio'ch cyfrineiriau o'ch Cyfrif Google yn Chromium tra byddwch wedi mewngofnodi</translation>
 <translation id="3190315855212034486">Whoa! Mae Chromium wedi torri. Ail-lwytho nawr?</translation>
 <translation id="3224847870593914902">I dynnu'ch Cyfrif Google o Chromium, allgofnodwch o Chromium yn y dudalen Gosodiadau</translation>
 <translation id="3258596308407688501">Ni all Chromium ddarllen nac ysgrifennu i'w gyfeiriadur data:
@@ -207,6 +208,8 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4501471624619070934">Methodd y gosodiad oherwydd bod mynediad wedi'i gyfyngu yn y wlad hon.</translation>
 <translation id="4510853178268397146">Nid yw'r estyniad hwn wedi cyhoeddi arferion preifatrwydd, megis sut mae'n casglu a defnyddio data. Mae Chromium yn argymell eich bod yn ei dynnu.</translation>
 <translation id="452711251841752011">Croeso i Chromium; agorwyd ffenestr porwr newydd</translation>
+<translation id="4531137820806573936">Mae angen caniatâd ar Chromium i fapio'ch amgylchoedd ac olrhain eich dwylo</translation>
+<translation id="4536805923587466102">Rydych eisoes wedi mewngofnodi fel <ph name="USER_EMAIL_ADDRESS" /> mewn proffil Chromium arall</translation>
 <translation id="4544142686420020088">Ni ddiweddarwyd Chromium, aeth rhywbeth o'i le. <ph name="BEGIN_LINK" />Datrys problemau diweddaru Chromium a diweddariadau a fethwyd.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Parhau mewn proffil Chromium newydd?</translation>
 <translation id="4567424176335768812">Rydych wedi'ch mewngofnodi ar hyn o bryd fel <ph name="USER_EMAIL_ADDRESS" />. Gallwch bellach gael mynediad at eich nodau tudalen, eich hanes, a'ch gosodiadau eraill ar eich holl ddyfeisiau sydd wedi'u mewngofnodi.</translation>

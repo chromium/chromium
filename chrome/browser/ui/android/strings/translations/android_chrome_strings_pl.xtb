@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
+<translation id="1832459821645506983">Tak, zgadzam się</translation>
 <translation id="185383612275551373">Aby zobaczyć najtrafniejsze treści z Google, włącz synchronizację</translation>
 <translation id="1871098866036088250">Otwórz w przeglądarce Chrome</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
@@ -374,7 +375,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2951071800649516099">Dodaj strony do listy Do przeczytania, aby przeczytać je później</translation>
 <translation id="2956070106555335453">Podsumowanie</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nieprzeczytana strona}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytane strony}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanych stron}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanej strony}}</translation>
-<translation id="296370266220139811">Więcej czasu, mniej pisania</translation>
 <translation id="2977350910003566746">Sortowanie według ostatniego otwarcia</translation>
 <translation id="297771753501244313">Sortuj wg daty otwarcia</translation>
 <translation id="2979025552038692506">Wybrana karta incognito</translation>
@@ -484,6 +484,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
 <translation id="3521388823983121502">Nie można kontynuować na koncie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Dostępna jest aktualizacja. Więcej opcji</translation>
+<translation id="3523789730715594198">Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="3524138585025253783">Interfejs dewelopera</translation>
 <translation id="3524334353996115845">Pozwól stronie <ph name="ORIGIN" /> sprawdzać Twoją tożsamość</translation>
 <translation id="3527085408025491307">Folder</translation>

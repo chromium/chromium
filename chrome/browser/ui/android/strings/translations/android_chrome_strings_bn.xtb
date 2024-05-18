@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome-এর ব্রাউজিং ইতিহাস সিঙ্ক হবে না।
 এমন কোনও ব্যক্তি যার কাছে আপনার পাসফ্রেজ রয়েছে, শুধুমাত্র তিনিই আপনার এনক্রিপটেড ডেটা পড়তে পারবেন। পাসফ্রেজ, Google-এ পাঠানো বা তার মাধ্যমে সেভ করা হয় না। আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
+<translation id="1832459821645506983">হ্যাঁ, আমি রাজি</translation>
 <translation id="185383612275551373">Google থেকে সবচেয়ে প্রাসঙ্গিক কন্টেন্ট পেতে সিঙ্ক করুন</translation>
 <translation id="1871098866036088250">Chrome ব্রাউজারে খুলুন</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">পরে পড়ার জন্য পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
 <translation id="2956070106555335453">সারাংশ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
-<translation id="296370266220139811">সময় সাশ্রয় ও কম টাইপ করা</translation>
 <translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="297771753501244313">আগেরবার খোলার সময় অনুযায়ী সাজান</translation>
 <translation id="2979025552038692506">নির্বাচিত ছদ্মবেশী ট্যাবগুলি</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">স্বীকার করুন ও অবিরত রাখুন</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর মাধ্যমে চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="3522247891732774234">আপডেট উপলব্ধ। আরও বিকল্প</translation>
+<translation id="3523789730715594198">সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="3524138585025253783">ডেভেলপার UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" />-কে আপনার পরিচয় যাচাই করতে দিন</translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>

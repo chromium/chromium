@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1384704387250346179">Tafsiri picha ukitumia Lenzi ya Google <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ilitumika siku <ph name="LAST_UPDATED" /> zilizopita</translation>
+<translation id="1390418506739274310">Unaweza kuona historia kutoka kwenye programu zingine zinazofungua viungo kwenye Chrome. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK1" />sheria na masharti<ph name="END_LINK1" />ya tovuti hii.</translation>
 <translation id="1397811292916898096">Tafuta kwa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Njia za kulipa na anwani zilizo kwenye Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
 Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Tafuta katika ukurasa</translation>
+<translation id="1832459821645506983">Ndiyo, ninakubali</translation>
 <translation id="185383612275551373">Sawazisha ili upate maudhui yanayokufaa zaidi kutoka Google</translation>
 <translation id="1871098866036088250">Vifungue katika kivinjari cha Chrome</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
@@ -373,7 +375,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2951071800649516099">Weka kurasa kwenye orodha yako ya kusoma ili uzisome baadaye</translation>
 <translation id="2956070106555335453">Muhtasari</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Ukurasa <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ambao hujausoma}other{Kurasa <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ambazo hujazisoma}}</translation>
-<translation id="296370266220139811">Okoa muda na uandike kidogo</translation>
 <translation id="2977350910003566746">Inapanga kulingana na mara ya mwisho kufunguliwa</translation>
 <translation id="297771753501244313">Panga kulingana na zilizofunguliwa mwisho</translation>
 <translation id="2979025552038692506">Kichupo Fiche Kilichochaguliwa</translation>
@@ -389,6 +390,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3003253259757197230">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye na kukuonyesha maelezo ya ziada kuhusu ukurasa unaoutembelea</translation>
 <translation id="3026955690410463085">Jumuisha kiungo</translation>
 <translation id="3027644380269727216">Kulingana na shughuli zako kwenye tovuti. Mipangilio hii imewashwa.</translation>
+<translation id="3027950907978057636">Kutoka <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Hakuna kupakia mapema</translation>
 <translation id="3029704984691124060">Kaulisiri hazilingani</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Pata usaidizi<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3518985090088779359">Kubali na uendelee</translation>
 <translation id="3521388823983121502">Huwezi kuendelea ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kuna toleo jipya. Chaguo zaidi</translation>
+<translation id="3523789730715594198">Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="3524138585025253783">Kiolesura cha Msanidi Programu</translation>
 <translation id="3524334353996115845">Ruhusu <ph name="ORIGIN" /> ithibitishe kwamba ni wewe</translation>
 <translation id="3527085408025491307">Folda</translation>

@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Οι τρόποι πληρωμής και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.
 Μόνο κάποιος που γνωρίζει τη φράση πρόσβασης μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. H φράση πρόσβασης δεν αποστέλλεται στην Google, ούτε αποθηκεύεται από αυτή. Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
+<translation id="1832459821645506983">Ναι, συμφωνώ</translation>
 <translation id="185383612275551373">Χρησιμοποιήστε τον συγχρονισμό για να λάβετε το πιο σχετικό περιεχόμενο από το Google</translation>
 <translation id="1871098866036088250">Άνοιγμα στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="1877026089748256423">Το Chrome δεν είναι ενημερωμένο</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">Προσθέστε σελίστες στη λίστα ανάγνωσης για αργότερα.</translation>
 <translation id="2956070106555335453">Περίληψη</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
-<translation id="296370266220139811">Εξοικον. χρόνο και πληκτρ. λιγότερο</translation>
 <translation id="2977350910003566746">Ταξινόμηση κατά τελευταίο άνοιγμα</translation>
 <translation id="297771753501244313">Ταξιν. κατά τελ. άνοιγμα</translation>
 <translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">Αποδοχή και συνέχεια</translation>
 <translation id="3521388823983121502">Δεν μπορείτε να συνεχίσετε με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Διατίθεται μια ενημέρωση. Περισσότερες επιλογές</translation>
+<translation id="3523789730715594198">Μπορείτε να διακόψετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
 <translation id="3524138585025253783">Διεπαφή χρήση προγραμματιστή</translation>
 <translation id="3524334353996115845">Επιτρέψτε στο <ph name="ORIGIN" /> να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="3527085408025491307">Φάκελος</translation>

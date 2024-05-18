@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384704387250346179">Traduire avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
+<translation id="1390418506739274310">Vous verrez peut-être l'historique d'autres applis qui ouvrent des liens dans Chrome. Votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Conditions d'utilisation<ph name="END_LINK1" /> du site.</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Thème sombre</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
+<translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="185383612275551373">Synchronisez pour que Google vous présente les contenus les plus pertinents</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
@@ -373,7 +375,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2951071800649516099">Ajoutez des pages à votre liste de lecture pour plus tard</translation>
 <translation id="2956070106555335453">Résumé</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
-<translation id="296370266220139811">Saisissez vos recherches plus rapidement</translation>
 <translation id="2977350910003566746">Tri par les derniers ouverts</translation>
 <translation id="297771753501244313">Trier par dernier ouvert</translation>
 <translation id="2979025552038692506">Onglet de navigation privée sélectionné</translation>
@@ -389,6 +390,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3003253259757197230">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard et vous fournir des informations supplémentaires sur la page que vous consultez</translation>
 <translation id="3026955690410463085">Inclure le lien</translation>
 <translation id="3027644380269727216">D'après votre activité sur un site. Ce paramètre est activé.</translation>
+<translation id="3027950907978057636">À partir de <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Aucun préchargement</translation>
 <translation id="3029704984691124060">Les phrases secrètes ne correspondent pas.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3521388823983121502">Impossible de poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Mise à jour disponible. Plus d'options</translation>
+<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3524138585025253783">UI des développeurs</translation>
 <translation id="3524334353996115845">Autorisez <ph name="ORIGIN" /> à vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>

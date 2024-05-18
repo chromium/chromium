@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">‏Google Pay سے ادائیگی کے طریقے اور اس میں موجود پتے مرموز نہیں کیے جائیں گے۔ Chrome کی براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
 صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
+<translation id="1832459821645506983">ہاں، میں تیار ہوں</translation>
 <translation id="185383612275551373">‏Google سے انتہائی متعلقہ مواد حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="1871098866036088250">‏Chrome براؤزر میں کھولیں</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">بعد کیلئے اپنی پڑھنے کی فہرست میں صفحات شامل کریں</translation>
 <translation id="2956070106555335453">خلاصہ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> نہ پڑھا ہوا صفحہ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> نہ پڑھے ہوئے صفحات}}</translation>
-<translation id="296370266220139811">وقت کی بچت کریں اور کم ٹائپ کریں</translation>
 <translation id="2977350910003566746">آخری بار کھولا گیا کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="297771753501244313">بلحاظ آخری بار کھولا گیا سے ترتیب دیں</translation>
 <translation id="2979025552038692506">منتخب پوشیدگی ٹیب</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">قبول کرکے جاری رکھیں</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ جاری نہیں رکھ سکتے</translation>
 <translation id="3522247891732774234">اپ ڈیٹ دستیاب ہے۔ مزید اختیارات</translation>
+<translation id="3523789730715594198">‏آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="3524138585025253783">‏ڈویلپر UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> کو توثیق کرنے دیں کہ یہ آپ ہیں</translation>
 <translation id="3527085408025491307">فولڈر</translation>

@@ -49,6 +49,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1640672724030957280">Inapakua...</translation>
 <translation id="1662146548738125461">Kuhusu ChromeOS Flex</translation>
 <translation id="1674870198290878346">Fungua Kiungo katika Dirisha Fiche la Chrome</translation>
+<translation id="1679594062619799116">Unaweza kutumia manenosiri yako kwenye Chrome ukiwa umeingia katika Akaunti yako ya Google</translation>
 <translation id="1682634494516646069">Google Chrome haiwezi kusoma na kuandika kwenye saraka yake ya data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -184,6 +185,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3564543103555793392">Unapoingia katika akaunti kwenye Chrome, unaweza kuhifadhi alamisho, manenosiri na zaidi kisha uyatumie kwenye simu yako</translation>
 <translation id="3576528680708590453">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Google Chrome ifungue kivinjari mbadala ili kufikia <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sawazisha na uweke mapendeleo kwenye Chrome katika vifaa vyako vyote</translation>
+<translation id="3583751698304738917">Tayari umeingia katika akaunti ukitumia <ph name="USER_EMAIL_ADDRESS" /> katika wasifu mwingine wa Chrome</translation>
 <translation id="3595784445906693824">Ungependa kuingia katika akaunti kwenye Chrome katika wasifu mpya?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
@@ -358,6 +360,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6288788894729749483">Weka Chrome iwe kivinjari chako chaguomsingi ili ufanye, ubuni na ugundue mambo mtandaoni kwa usalama</translation>
 <translation id="6291089322031436445">Programu za Chrome Dev</translation>
 <translation id="6291549208091401781">Tayari Google Chrome imesakinishwa kwa watumiaji wote kwenye kompyuta yako.</translation>
+<translation id="6319856120645568262">Chrome inahitaji ruhusa ili kuweka ramani ya mazingira yako na kufuatilia mikono yako</translation>
 <translation id="6326175484149238433">Ondoa kwenye Chrome</translation>
 <translation id="6327105987658262776">Hakuna sasisho linalopatikana.</translation>
 <translation id="6360449101159168105">Kichupo hiki kilipokuwa hakitumiki, nafasi ya hifadhi ilirejeshwa ili Chrome iwe na kasi ya utendaji. Unaweza kuchagua tovuti hii iendelee kutumika kila wakati.</translation>

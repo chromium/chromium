@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384704387250346179">Cyfieithu â Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Yma <ph name="LAST_UPDATED" /> o ddiwrnodau yn ôl</translation>
+<translation id="1390418506739274310">Mae'n bosib y byddwch yn gweld yr hanes o apiau eraill sy'n agor dolenni yn Chrome. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="1397811292916898096">Chwilio gyda <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
+<translation id="1832459821645506983">Iawn, rwy'n cydsynio</translation>
 <translation id="185383612275551373">Cysonwch i gael y cynnwys mwyaf perthnasol o Google</translation>
 <translation id="1871098866036088250">Agor mewn porwr Chrome</translation>
 <translation id="1877026089748256423">Rydych yn defnyddio hen fersiwn o Chrome</translation>
@@ -373,7 +375,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2951071800649516099">Ychwanegu tudalennau at eich rhestr ddarllen ar gyfer nes ymlaen</translation>
 <translation id="2956070106555335453">Crynodeb</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> dudalen sydd heb ei darllen}zero{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}two{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> dudalen sydd heb eu darllen}few{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}many{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> thudalen sydd heb eu darllen}other{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}}</translation>
-<translation id="296370266220139811">Arbed amser a theipio llai</translation>
 <translation id="2977350910003566746">Wrthi'n trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="297771753501244313">Trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="2979025552038692506">Y Tab Anhysbys a Ddewisir</translation>
@@ -389,6 +390,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3003253259757197230">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragweld pa wefannau y gallech ymweld â hwy nesaf ac i ddangos gwybodaeth ychwanegol i chi am y dudalen rydych yn ymweld â hi</translation>
 <translation id="3026955690410463085">Cynnwys y ddolen</translation>
 <translation id="3027644380269727216">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
+<translation id="3027950907978057636">O <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Dim rhaglwytho</translation>
 <translation id="3029704984691124060">Nid yw'r cyfrinymadroddion yn cyfateb</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Cael help<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3518985090088779359">Derbyn a pharhau</translation>
 <translation id="3521388823983121502">Methu â pharhau gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Mae diweddariad ar gael. Rhagor o ddewisiadau</translation>
+<translation id="3523789730715594198">Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="3524138585025253783">UI Datblygwr</translation>
 <translation id="3524334353996115845">Gadael i <ph name="ORIGIN" /> wirio mai chi sydd yno</translation>
 <translation id="3527085408025491307">Ffolder</translation>

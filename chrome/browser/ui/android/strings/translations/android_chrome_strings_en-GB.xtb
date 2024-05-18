@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Find in page</translation>
+<translation id="1832459821645506983">Yes, I’m in</translation>
 <translation id="185383612275551373">Sync to get the most relevant content from Google</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
@@ -374,7 +375,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2951071800649516099">Add pages to your reading list for later</translation>
 <translation id="2956070106555335453">Summary</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
-<translation id="296370266220139811">Save time and type less</translation>
 <translation id="2977350910003566746">Sorting by last opened</translation>
 <translation id="297771753501244313">Sort by last opened</translation>
 <translation id="2979025552038692506">Selected Incognito Tab</translation>
@@ -484,6 +484,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
+<translation id="3523789730715594198">You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="3524138585025253783">Developer UI</translation>
 <translation id="3524334353996115845">Let <ph name="ORIGIN" /> verify that it's you</translation>
 <translation id="3527085408025491307">Folder</translation>

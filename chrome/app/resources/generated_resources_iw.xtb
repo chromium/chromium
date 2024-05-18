@@ -596,6 +596,7 @@
 
 יכול להיות שהרשאות שכבר ניתנו לאפליקציות יחולו על החשבון הזה. אפשר לקבוע את ההרשאות לאפליקציות ל-Android ב<ph name="APPS_LINK_BEGIN" />הגדרות האפליקציות<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">כלי המברשת</translation>
+<translation id="1448963928642384376">‏הנקודות לשיתוף אינטרנט (Hotspot) במכשיר שלך</translation>
 <translation id="1449191289887455076">צריך להקיש שוב על "<ph name="CURRENTKEY" />" כדי לאשר את ההקצאה ו<ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">פתיחת פרופיל אורח</translation>
 <translation id="1451375123200651445">דף אינטרנט, קובץ אחד</translation>
@@ -4070,6 +4071,7 @@
 <translation id="3983586614702900908">מכשירים מספק לא ידוע</translation>
 <translation id="3983764759749072418">‏לאפליקציות מחנות Play יש גישה למכשיר הזה.</translation>
 <translation id="3983769721878416534">השהייה לפני לחיצה</translation>
+<translation id="3983793589497399077">‏כדי לחפש באמצעות Lens, לוחצים או גוררים במקום כלשהו</translation>
 <translation id="3984135167056005094">אין לכלול כתובת אימייל</translation>
 <translation id="3984159763196946143">לא ניתן היה להתחיל מצב הדגמה</translation>
 <translation id="3984431586879874039">האם לאפשר לאתר לראות את מפתח האבטחה שלך?</translation>

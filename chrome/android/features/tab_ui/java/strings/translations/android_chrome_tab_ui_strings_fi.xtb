@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Avaa välilehtiryhmät automaattisesti muilta laitteilta</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_YEARS_ONE" /> vuosi sitten}other{Luotu <ph name="NUM_YEARS_MANY" /> vuotta sitten}}</translation>
-<translation id="1155815720264022949">Haluatko sulkea vanhat välilehdet?</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1197088940767939838">Oranssi</translation>
-<translation id="1215127405478249895">Tarkista välilehdet</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1322824555808364080">Kutsu muita</translation>
-<translation id="1326271443836399892">Tarkista nykyiset järjestelyasetukset.</translation>
 <translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Luotu <ph name="NUM_MINS_ONE" /> minuutti sitten}other{Luotu <ph name="NUM_MINS_MANY" /> minuuttia sitten}}</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Välilehtiryhmän (<ph name="COLOR_NAME" />) värikuvake</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> arkistoitu välilehti}other{Sinulla on <ph name="TABS_COUNT_MANY" /> arkistoitua välilehteä}}</translation>
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
 <translation id="3322827343001922122">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
 <translation id="5094423602314093681">Poistetaanko välilehdet ja ryhmä?</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> välilehti, jota et ole käyttänyt viime aikoina}other{Sinulla on <ph name="TABS_COUNT_MANY" /> välilehteä, joita et ole käyttänyt viime aikoina}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
-<translation id="5545379293264651575">Sulje tarkistamatta</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
 <translation id="9216898458513705996">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Avaa tämä muokkaaja, niin voit tarkistaa kaikki arkistoidut välilehdet ja järjestellä ne.</translation>
 <translation id="959682366969460160">Järjestä</translation>
 <translation id="992256792861109788">Vaaleanpunainen</translation>
 </translationbundle>

@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Створана <ph name="NUM_YEARS_ONE" /> год таму}one{Створана <ph name="NUM_YEARS_MANY" /> год таму}few{Створана <ph name="NUM_YEARS_MANY" /> гады таму}many{Створана <ph name="NUM_YEARS_MANY" /> гадоў таму}other{Створана <ph name="NUM_YEARS_MANY" /> года таму}}</translation>
-<translation id="1155815720264022949">Хочаце закрыць старыя ўкладкі?</translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1197088940767939838">Аранжавы</translation>
-<translation id="1215127405478249895">Прагляд укладак</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1322824555808364080">Запрасіць карыстальнікаў</translation>
-<translation id="1326271443836399892">Праглядзець бягучыя налады ўпарадкоўвання.</translation>
 <translation id="1419023007528516122">Гэта дзеянне незваротна выдаліць групу з вашай прылады</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створана <ph name="NUM_MINS_ONE" /> хвіліну таму}one{Створана <ph name="NUM_MINS_MANY" /> хвіліну таму}few{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}many{Створана <ph name="NUM_MINS_MANY" /> хвілін таму}other{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}}</translation>
 <translation id="1499635324672558517">Закрыць усе ўкладкі ў рэжыме інкогніта?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Перастаць адсочваць прадукт</translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Колер значка гэтай групы ўкладак: <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{У архіве <ph name="TABS_COUNT_ONE" /> укладка}one{У архіве <ph name="TABS_COUNT_MANY" /> укладка}few{У архіве <ph name="TABS_COUNT_MANY" /> укладкі}many{У архіве <ph name="TABS_COUNT_MANY" /> укладак}other{У архіве <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3291470810748040983">Вы атрымаеце абвестку, калі цана на прадукт на адкрытай укладцы знізіцца</translation>
 <translation id="3322827343001922122">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />"</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Каб хутка параўнаць старонкі, можна стварыць групу. Для гэтага дакраніцеся да спасылкі і ўтрымлівайце яе.</translation>
 <translation id="5094423602314093681">Прыбраць укладкі і выдаліць групу?</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_ONE" /> укладку}one{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладку}few{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}many{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладак}other{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак. У ёй <ph name="TABS_COUNT_ONE" /> укладка.}one{Закрыць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладка.}few{Закрыць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}many{Закрыць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладак.}other{Закрыць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
-<translation id="5545379293264651575">Закрыць без разгляду</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> спасылка з Chrome}one{<ph name="TABS_COUNT_MANY" /> спасылка з Chrome}few{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}many{<ph name="TABS_COUNT_MANY" /> спасылак з Chrome}other{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>
 <translation id="9216898458513705996">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">У гэтым рэдактары вы можаце праглядзець усе захаваныя ў архіве ўкладкі і закрыць непатрэбныя.</translation>
 <translation id="959682366969460160">Навядзіце парадак</translation>
 <translation id="992256792861109788">Ружовы</translation>
 </translationbundle>

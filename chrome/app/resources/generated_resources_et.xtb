@@ -595,6 +595,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 
 Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. Saate Androidi rakenduste lube hallata jaotises <ph name="APPS_LINK_BEGIN" />Rakenduste seaded<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Pintslitööriist</translation>
+<translation id="1448963928642384376">Teie seadme kuumkohad</translation>
 <translation id="1449191289887455076">Selleks, et määratud toiming kinnitada ja <ph name="RESPONSE" />, vajutage uuesti klahvi <ph name="CURRENTKEY" />.</translation>
 <translation id="1450484535522155181">Ava külalise profiil</translation>
 <translation id="1451375123200651445">Veebileht, üks fail</translation>
@@ -4072,6 +4073,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3983586614702900908">tundmatu müüja seadmed</translation>
 <translation id="3983764759749072418">Play poe rakendustel on juurdepääs sellele seadmele.</translation>
 <translation id="3983769721878416534">Viide enne klikki</translation>
+<translation id="3983793589497399077">Lensiga otsimiseks klõpsake või lohistage kus tahes</translation>
 <translation id="3984135167056005094">Ära lisa meiliaadressi</translation>
 <translation id="3984159763196946143">Demorežiimi ei saanud käivitada</translation>
 <translation id="3984431586879874039">Kas lubada saidil teie turvavõtit näha?</translation>

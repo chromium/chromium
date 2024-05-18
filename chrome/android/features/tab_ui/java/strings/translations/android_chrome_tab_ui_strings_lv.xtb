@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Automātiski atvērt ciļņu grupas no citām ierīcēm</translation>
 <translation id="1075622780330595106">Vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gada}other{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
-<translation id="1155815720264022949">Vai vēlaties aizvērt vecās cilnes?</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1197088940767939838">Oranža</translation>
-<translation id="1215127405478249895">Ciļņu pārskatīšana</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1322824555808364080">Uzaicināt personas</translation>
-<translation id="1326271443836399892">Pārskatiet pašreizējos kārtošanas iestatījumus.</translation>
 <translation id="1419023007528516122">Tādējādi šī grupa tiks neatgriezeniski dzēsta no jūsu ierīces</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izveidota pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Vairs neizsekot produktam</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
 <translation id="3078350928901129212">Ciļņu grupas ikonas krāsa ir <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> arhivēta cilne}zero{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}one{Jums ir <ph name="TABS_COUNT_MANY" /> arhivēta cilne}other{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}}</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>
 <translation id="3322827343001922122">Atvērt ciļņu grupas “<ph name="TITLE_OF_GROUP" />” darbību izvēlni</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
 <translation id="5094423602314093681">Vai noņemt cilni(-es) un dzēst grupu?</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> cilne, ko pēdējā laikā neesat izmantojis.}zero{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}one{Jums ir <ph name="TABS_COUNT_MANY" /> cilne, ko pēdējā laikā neesat izmantojis.}other{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
-<translation id="5545379293264651575">Aizvērt bez pārskatīšanas</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> saite no pārlūka Chrome}zero{<ph name="TABS_COUNT_MANY" /> saišu no pārlūka Chrome}one{<ph name="TABS_COUNT_MANY" /> saite no pārlūka Chrome}other{<ph name="TABS_COUNT_MANY" /> saites no pārlūka Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
 <translation id="9216898458513705996">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Atveriet šo redaktoru, lai pārskatītu un sakārtotu visas arhivētās cilnes.</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
 <translation id="992256792861109788">Rozā</translation>
 </translationbundle>

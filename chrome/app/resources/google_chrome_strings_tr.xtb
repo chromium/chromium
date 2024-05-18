@@ -46,6 +46,7 @@
 <translation id="1640672724030957280">İndiriliyor...</translation>
 <translation id="1662146548738125461">ChromeOS Flex hakkında</translation>
 <translation id="1674870198290878346">Bağlantıyı Chrome &amp;Gizli Penceresinde Aç</translation>
+<translation id="1679594062619799116">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi kullanabilirsiniz.</translation>
 <translation id="1682634494516646069">Google Chrome, veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome, web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir web tarayıcısıdır. Hızlı, dengeli ve kullanımı kolaydır. Kötü amaçlı yazılımlara ve e-dolandırıcılığa karşı Google Chrome'un içinde yerleşik olarak bulunan koruma özellikleriyle web'de daha güvenli bir şekilde gezinin.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome bir saat içinde yeniden başlatılacak}other{Chrome # saat içinde yeniden başlatılacak}}</translation>
@@ -179,6 +180,7 @@
 <translation id="3564543103555793392">Chrome'da oturum açtığınızda yer işaretleri, şifreler ve diğer öğeleri kaydedip telefonunuzda kullanabilirsiniz.</translation>
 <translation id="3576528680708590453">Sistem yöneticiniz Google Chrome'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için alternatif bir tarayıcıyı açacak şekilde yapılandırmış.</translation>
 <translation id="3582972582564653026">Chrome'u cihazlarınız arasında senkronize edin ve kişiselleştirin</translation>
+<translation id="3583751698304738917">Başka bir Chrome profilinde <ph name="USER_EMAIL_ADDRESS" /> olarak zaten oturum açmış durumdasınız.</translation>
 <translation id="3595784445906693824">Chrome'da yeni bir profilde oturum açılsın mı?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
@@ -351,6 +353,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6288788894729749483">İnternette güvenle bir şeyler yapmak, üretmek ve keşfetmek için Chrome'u varsayılan tarayıcınız olarak ayarlayın.</translation>
 <translation id="6291089322031436445">Chrome Dev Uygulamaları</translation>
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
+<translation id="6319856120645568262">Çevrenizin haritasını çıkarması ve ellerinizi takip etmesi için Chrome'a izin vermeniz gerekir.</translation>
 <translation id="6326175484149238433">Chrome'dan kaldır</translation>
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6360449101159168105">Bu sekme etkin değilken Chrome'un hızlı çalışmaya devam etmesi için bellekte yer açıldı. Bu siteyi, etkin olmayan sitelerden her zaman hariç tutabilirsiniz.</translation>

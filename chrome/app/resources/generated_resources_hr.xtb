@@ -597,6 +597,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 
 Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. Dopuštenjima za Android aplikacije možete upravljati u <ph name="APPS_LINK_BEGIN" />postavkama aplikacija<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Alat za kistove</translation>
+<translation id="1448963928642384376">Žarišne točke vašeg uređaja</translation>
 <translation id="1449191289887455076">Ponovno pritisnite tipku <ph name="CURRENTKEY" /> da biste potvrdili dodjelu i <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Otvori profil gosta</translation>
 <translation id="1451375123200651445">Web-stranica, jedna datoteka</translation>
@@ -4071,6 +4072,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3983586614702900908">uređaji nepoznatog dobavljača</translation>
 <translation id="3983764759749072418">Aplikacije Trgovine Play imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odgoda prije klika</translation>
+<translation id="3983793589497399077">Kliknite ili povucite na bilo koje mjesto za pretraživanje pomoću Objektiva</translation>
 <translation id="3984135167056005094">Nemojte uključiti e-adresu</translation>
 <translation id="3984159763196946143">Pokretanje demo-načina nije uspjelo</translation>
 <translation id="3984431586879874039">Želite li dopustiti web-lokaciji prikaz vašeg sigurnosnog ključa?</translation>

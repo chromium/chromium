@@ -595,6 +595,7 @@
 
 これまでにアプリに許可した権限がこのアカウントに適用される可能性があります。[<ph name="APPS_LINK_BEGIN" />アプリの設定<ph name="APPS_LINK_END" />] で Android アプリの権限を管理できます。</translation>
 <translation id="1448779317883494811">ブラシツール</translation>
+<translation id="1448963928642384376">デバイスのアクセス ポイント</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="1450484535522155181">ゲスト プロフィールを開く</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
@@ -4060,6 +4061,7 @@
 <translation id="3983586614702900908">不明なベンダーのデバイス</translation>
 <translation id="3983764759749072418">Play ストアのアプリはこのデバイスにアクセスできます。</translation>
 <translation id="3983769721878416534">クリックまでの時間</translation>
+<translation id="3983793589497399077">レンズで検索する場所をクリックまたはドラッグします</translation>
 <translation id="3984135167056005094">メールアドレスを含めない</translation>
 <translation id="3984159763196946143">デモモードを開始できませんでした</translation>
 <translation id="3984431586879874039">このサイトによるセキュリティ キーへのアクセスを許可しますか？</translation>

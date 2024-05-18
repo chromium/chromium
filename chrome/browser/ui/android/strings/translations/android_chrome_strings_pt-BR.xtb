@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384704387250346179">Traduzir imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ativado há <ph name="LAST_UPDATED" /> dias</translation>
+<translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> desse site.</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tema escuro</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Encontrar na página</translation>
+<translation id="1832459821645506983">Sim, vamos lá</translation>
 <translation id="185383612275551373">Sincronize para acessar no Google o que importa para você</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
@@ -373,7 +375,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2951071800649516099">Adicionar páginas à lista de leitura para mais tarde</translation>
 <translation id="2956070106555335453">Resumo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
-<translation id="296370266220139811">Ganhe tempo e digite menos</translation>
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
 <translation id="2979025552038692506">Guia anônima selecionada</translation>
@@ -389,6 +390,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3003253259757197230">Os URLs que você acessa são enviados ao Google para prever quais sites você pode visitar em seguida e para mostrar mais informações sobre a página atual</translation>
 <translation id="3026955690410463085">Incluir link</translation>
 <translation id="3027644380269727216">Com base na sua atividade em um site. Esta configuração está ativada.</translation>
+<translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Sem pré-carregamento</translation>
 <translation id="3029704984691124060">As senhas não correspondem</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3518985090088779359">Aceitar e continuar</translation>
 <translation id="3521388823983121502">Não é possível continuar com o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Atualização disponível. Mais opções</translation>
+<translation id="3523789730715594198">Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3524138585025253783">interface do desenvolvedor</translation>
 <translation id="3524334353996115845">Deixe o <ph name="ORIGIN" /> confirmar sua identidade</translation>
 <translation id="3527085408025491307">Pasta</translation>

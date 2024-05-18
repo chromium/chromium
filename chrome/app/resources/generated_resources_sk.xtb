@@ -597,6 +597,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 
 Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento účet. Povolenia pre aplikácie pre Android môžete ovládať v <ph name="APPS_LINK_BEGIN" />Nastaveniach aplikácií<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Štetec</translation>
+<translation id="1448963928642384376">Hotspoty vášho zariadenia</translation>
 <translation id="1449191289887455076">Ak chcete potvrdiť pridelenie a <ph name="RESPONSE" />, stlačte kláves <ph name="CURRENTKEY" />.</translation>
 <translation id="1450484535522155181">Otvoriť profil pre hostí</translation>
 <translation id="1451375123200651445">Webová stránka, jeden súbor</translation>
@@ -4070,6 +4071,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="3983586614702900908">zariadenia od neznámeho dodávateľa</translation>
 <translation id="3983764759749072418">Aplikácie Obchodu Play majú prístup k tomuto zariadeniu.</translation>
 <translation id="3983769721878416534">Oneskorenie pred kliknutím</translation>
+<translation id="3983793589497399077">Vyhľadávajte pomocou funkcie Lens kliknutím alebo presunutím na ľubovoľné miesto</translation>
 <translation id="3984135167056005094">Nezahŕňajte e‑mailovú adresu</translation>
 <translation id="3984159763196946143">Nepodarilo sa spustiť režim ukážky</translation>
 <translation id="3984431586879874039">Chcete tomuto webu povoliť zobrazenie vášho bezpečnostného kľúča?</translation>

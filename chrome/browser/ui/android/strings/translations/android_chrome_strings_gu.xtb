@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
 તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">આ પેજમાં શોધો</translation>
+<translation id="1832459821645506983">હા, સંમત છું</translation>
 <translation id="185383612275551373">Googleનું સૌથી વધુ સંબંધિત કન્ટેન્ટ મેળવવા માટે સિંક કરો</translation>
 <translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="2956070106555335453">સારાંશ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
-<translation id="296370266220139811">સમય બચાવો અને ઓછું ટાઇપ કરો</translation>
 <translation id="2977350910003566746">'છેલ્લે ખોલાયા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="297771753501244313">છેલ્લે ખોલાયા મુજબ સૉર્ટ કરો</translation>
 <translation id="2979025552038692506">પસંદ કરેલ છૂપું ટૅબ</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે ચાલુ રાખી શકાતું નથી</translation>
 <translation id="3522247891732774234">અપડેટ ઉપલબ્ધ છે. વધુ વિકલ્પો</translation>
+<translation id="3523789730715594198">તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ રોકી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="3524138585025253783">ડેવલપર UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" />ને ચકાસણી કરવા દો કે આ તમે જ છો</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>

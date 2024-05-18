@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_YEARS_ONE" /> taon ang nakalipas}one{Ginawa <ph name="NUM_YEARS_MANY" /> taon ang nakalipas}other{Ginawa <ph name="NUM_YEARS_MANY" /> na taon ang nakalipas}}</translation>
-<translation id="1155815720264022949">Gustong isara ang mga lumang tab?</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1197088940767939838">Orange</translation>
-<translation id="1215127405478249895">Suriin ang mga tab</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
 <translation id="1322824555808364080">Mag-imbita ng mga tao</translation>
-<translation id="1326271443836399892">Suriin ang mga kasalukuyang setting ng pag-declutter.</translation>
 <translation id="1419023007528516122">Permanente nitong ide-delete ang grupo sa iyong device</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ginawa <ph name="NUM_MINS_ONE" /> minuto ang nakalipas}one{Ginawa <ph name="NUM_MINS_MANY" /> minuto ang nakalipas}other{Ginawa <ph name="NUM_MINS_MANY" /> na minuto ang nakalipas}}</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Ihinto ang pagsubaybay sa produkto</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> na icon ng kulay ng grupo ng tab</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Mayroon kang <ph name="TABS_COUNT_ONE" /> naka-archive na tab}one{Mayroon kang <ph name="TABS_COUNT_MANY" /> naka-archive na tab}other{Mayroon kang <ph name="TABS_COUNT_MANY" /> na naka-archive na tab}}</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3322827343001922122">Buksan ang menu ng pagkilos ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Mabilis na paghambing-hambingin ang mga page sa pamamagitan ng paggawa ng pangkat. Para magsimula, pindutin nang matagal ang isang link.</translation>
 <translation id="5094423602314093681">Alisin ang (mga) tab at i-delete ang grupo?</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Mayroon kang <ph name="TABS_COUNT_ONE" /> tab na hindi mo ginamit kamakailan}one{Mayroon kang <ph name="TABS_COUNT_MANY" /> tab na hindi mo ginamit kamakailan}other{Mayroon kang <ph name="TABS_COUNT_MANY" /> na tab na hindi mo ginamit kamakailan}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
-<translation id="5545379293264651575">Isara nang hindi sinusuri</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link mula sa Chrome}one{<ph name="TABS_COUNT_MANY" /> link mula sa Chrome}other{<ph name="TABS_COUNT_MANY" /> na link mula sa Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="9216898458513705996">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Suriin ang lahat ng naka-archive na tab na ide-declutter sa pamamagitan ng pagpasok sa editor na ito.</translation>
 <translation id="959682366969460160">Maging organisado</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay-dən ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
 Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Səhifədə tapın</translation>
+<translation id="1832459821645506983">Bəli, varam</translation>
 <translation id="185383612275551373">Google-dan uyğun kontent əldə etmək üçün sinxronlaşdırın</translation>
 <translation id="1871098866036088250">Chrome brauzerində açın</translation>
 <translation id="1877026089748256423">Chrome'un vaxtı keçib</translation>
@@ -374,7 +375,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2951071800649516099">Sonra üçün oxu siyahınıza səhifələr əlavə edin</translation>
 <translation id="2956070106555335453">Xülasə</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oxunmamış səhifə}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> oxunmamış səhifə}}</translation>
-<translation id="296370266220139811">Vaxta qənaət edin və daha az yazın</translation>
 <translation id="2977350910003566746">Sonuncu açılan əsasında çeşidlənir</translation>
 <translation id="297771753501244313">Çeşidləyin: Son açılan</translation>
 <translation id="2979025552038692506">Seçilmiş Gizli Panel</translation>
@@ -484,6 +484,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3518985090088779359">Qəbul edin və davam edin</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə davam etmək olmur</translation>
 <translation id="3522247891732774234">Güncəlləmə əlçatandır. Daha çox seçim</translation>
+<translation id="3523789730715594198">Ayarlarda sinxronlaşdırmanı dayandıra bilərsiniz. Google tarixçəyə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="3524138585025253783">Developer UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> tərəfindən kimliyinizin doğrulanmasına icazə verin</translation>
 <translation id="3527085408025491307">Qovluq</translation>

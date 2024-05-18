@@ -570,6 +570,7 @@
 <translation id="2046951263634619614">पुस्तकांचे रिटेल विक्रेते</translation>
 <translation id="2048261947532620704">पेजचे भाषांतर करत आहे</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाहीत.</translation>
+<translation id="2055461225779831292">तुमचे कॅमेरा वापरा आणि हलवा (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">तुमचा माउस पॉइंटर लॉक करा</translation>
 <translation id="2056658168519009885">तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यात मदत करण्यासाठी साइट या Chrome कडे माहिती मागू शकतात.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
@@ -717,6 +718,7 @@
 <translation id="2300306941146563769">अपलोड केला नाही</translation>
 <translation id="2301098101308036335">कोणत्या वेबसाइटना भेट दिली आहे आणि कधी.</translation>
 <translation id="230286397113210245">गुप्त विंडो उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त विंडो उघडण्याकरिता ॲक्टिव्हेट करा</translation>
+<translation id="2306124309679506798">इमर्सिव्ह अनुभवाला अनुमती द्यायची आहे का?</translation>
 <translation id="2312234273148520048">मसाले आणि ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> पेक्षा कमी. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
 <translation id="2316159751672436664">ChromeOS सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करा</translation>
@@ -1172,6 +1174,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3240791268468473923">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट उघडली आहे</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” लिंक ब्लॉक केल्या आहेत</translation>
+<translation id="3248329428895535435">या साइटवर दाखवू नका</translation>
 <translation id="3252772880526154546">वास्तुकला</translation>
 <translation id="3254301855501243548">१८ x २२ इं</translation>
 <translation id="3255926992597692024">Chromium पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
@@ -1605,6 +1608,7 @@
 <translation id="4082333119419111506">पेपर (प्रिंटेट)</translation>
 <translation id="4082393374666368382">सेटिंग्ज - व्यवस्थापक</translation>
 <translation id="4084219288110917128">एन्व्हलप सी१</translation>
+<translation id="4085326869263783566">मला लिहिण्यात मदत करा. उघडण्यासाठी टॅब करून एंटर प्रेस करा</translation>
 <translation id="4088981014127559358">साइन १ इमेज Y शिफ्ट</translation>
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">पत्ता भरा</translation>
@@ -3786,6 +3790,7 @@
 <translation id="8263001937536038617">फोटो आणि व्‍हिडिओ सेवा</translation>
 <translation id="8265992338205884890">दृश्यमान डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> म्हणून साइन इन करीत आहे</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">वेगळे दस्तऐवज/संकलित केलेल्या प्रती</translation>
 <translation id="8269703227894255363">{0,plural, =1{फाइल उघडण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल उघडण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="8270173610195068258">गुन्हा आणि न्याय</translation>
@@ -4205,6 +4210,7 @@
 <translation id="9094544726794842788">थंब्स डाउन प्रेस केल्यावर एक फॉर्म उघडतो, ज्यामध्ये तुम्हाला हे परिणाम का आवडले नाहीत याबद्दल तपशीलवार फीडबॅक सबमिट करता येतो</translation>
 <translation id="9095388113577226029">आणखी भाषा...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर प्रेस करा</translation>
+<translation id="9101450247048146228">कॅमेराचा वापर आणि त्याची हालचाल (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे १</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> तुमची माहिती संरक्षित करण्यासाठी सामान्यतः एंक्रिप्शन वापरते. Chromium ने यावेळी <ph name="SITE" /> शी कनेक्‍ट करण्‍याचा प्रयत्न केला तेव्‍हा, वेबसाइटने असामान्य आणि अयोग्य क्रेडेंशियल परत पाठवले. एकतर आक्रमणकर्ता <ph name="SITE" /> असल्याची बतावणी करण्याचा प्रयत्न करतो तेव्‍हा किंवा वाय-फाय साइन इन स्क्रीनने कनेक्शनमध्ये व्यत्यय आणले तेव्‍हा हे घडू शकते. कोणत्याही डेटाची अदलाबदल करण्यापूर्वी Chromium ने कनेक्शन थांबविल्यामुळे तुमची माहिती अद्याप सुरक्षित आहे.</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> द्वारे तुमचा ब्राउझर व्यवस्थापित केला आहे</translation>
@@ -4227,6 +4233,8 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">पत्ते व्यवस्थापित करा</translation>
 <translation id="9144951720726881238">कालावधी समाप्ती तारीख:</translation>
+<translation id="9145910032514306808">पुन्हा <ph name="BEGIN_LINK" />साइन इन करा<ph name="END_LINK" />,
+    त्यानंतर लिहिण्याशी संबंधित मदत मिळवण्यासाठी या टॅबवर परत या</translation>
 <translation id="9148507642005240123">&amp;संपादित करा पूर्ववत करा</translation>
 <translation id="9148599396704355100">किंमत कमी आहे</translation>
 <translation id="9150025764986957246">तुम्ही यासारख्या गोष्टी एंटर करू शकता:</translation>

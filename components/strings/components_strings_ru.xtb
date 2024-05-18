@@ -570,6 +570,7 @@
 <translation id="2046951263634619614">Книжные магазины</translation>
 <translation id="2048261947532620704">Перевод страницы…</translation>
 <translation id="2053111141626950936">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически.</translation>
+<translation id="2055461225779831292">Использование и перемещение камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Заблокировать указатель мыши</translation>
 <translation id="2056658168519009885">Сайты могут запрашивать у Chrome информацию, чтобы персонализировать рекламу для вас.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
@@ -717,6 +718,7 @@
 <translation id="2300306941146563769">Не загружен</translation>
 <translation id="2301098101308036335">Какие сайты посещают пользователи и в какое время.</translation>
 <translation id="230286397113210245">Кнопка "Открыть окно в режиме инкогнито". Нажмите ее, чтобы открыть такое окно.</translation>
+<translation id="2306124309679506798">Разрешить сеанс с эффектом погружения?</translation>
 <translation id="2312234273148520048">Приправы и заправки</translation>
 <translation id="2316087952091171402">Менее <ph name="UPPER_ESTIMATE" />. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
 <translation id="2316159751672436664">Персонализировать инструменты специальных возможностей в настройках Chrome OS</translation>
@@ -1171,6 +1173,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
+<translation id="3248329428895535435">Не показывать на этом сайте</translation>
 <translation id="3252772880526154546">Архитектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйма</translation>
 <translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
@@ -1605,6 +1608,7 @@
 <translation id="4082333119419111506">Бумага (с изображением)</translation>
 <translation id="4082393374666368382">Настройки – Управление</translation>
 <translation id="4084219288110917128">Конверт C1</translation>
+<translation id="4085326869263783566">Генератор текстов. Чтобы открыть его, нажмите Tab и Ввод.</translation>
 <translation id="4088981014127559358">Смещение изображений на лицевой стороне по оси Y</translation>
 <translation id="4089152113577680600">Лоток 14</translation>
 <translation id="4092349052316400070">Указать этот адрес</translation>
@@ -3785,6 +3789,7 @@
 <translation id="8263001937536038617">Услуги в области фото и видео</translation>
 <translation id="8265992338205884890">Видимые данные</translation>
 <translation id="8267698848189296333">Вход в аккаунт <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Отдельные документы/печать по копиям</translation>
 <translation id="8269703227894255363">{0,plural, =1{Файл нельзя открыть}one{<ph name="FILE_COUNT" /> файл нельзя открыть}few{<ph name="FILE_COUNT" /> файла нельзя открыть}many{<ph name="FILE_COUNT" /> файлов нельзя открыть}other{<ph name="FILE_COUNT" /> файла нельзя открыть}}</translation>
 <translation id="8270173610195068258">Преступления и правосудие</translation>
@@ -4204,6 +4209,7 @@
 <translation id="9094544726794842788">Открыть форму для отправки подробного отзыва о том, почему вам не нравятся результаты.</translation>
 <translation id="9095388113577226029">Другие языки</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы сделать Chrome браузером по умолчанию в настройках iOS.</translation>
+<translation id="9101450247048146228">Использование и перемещение камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Лоток 1</translation>
 <translation id="9103872766612412690">На сайте <ph name="SITE" /> для защиты ваших данных обычно используется шифрование. Однако учетные данные, которые мы получили от сайта <ph name="SITE" /> сейчас, отличаются от тех, которые он отправляет обычно. Вероятно, вредоносный сайт пытается выдать себя за <ph name="SITE" />, либо страница подключения к сети Wi-Fi прервала соединение. Ваша информация по-прежнему в безопасности, так как браузер Chromium разорвал соединение до того, как произошел обмен данными.</translation>
 <translation id="9107467864910557787">Вашим браузером управляет <ph name="MANAGER" /></translation>
@@ -4226,6 +4232,8 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9141013498910525015">Управление адресами</translation>
 <translation id="9144951720726881238">Срок действия:</translation>
+<translation id="9145910032514306808"><ph name="BEGIN_LINK" />Войдите в аккаунт<ph name="END_LINK" />
+    ещё раз, а затем вернитесь на эту вкладку, чтобы сгенерировать текст.</translation>
 <translation id="9148507642005240123">&amp;Отменить изменения</translation>
 <translation id="9148599396704355100">Низкие цены</translation>
 <translation id="9150025764986957246">Что вы можете ввести</translation>

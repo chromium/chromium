@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">自动打开其他设备的标签页分组</translation>
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_YEARS_ONE" /> 年前}other{创建时间：<ph name="NUM_YEARS_MANY" /> 年前}}</translation>
-<translation id="1155815720264022949">想关闭旧标签页？</translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1197088940767939838">橙色</translation>
-<translation id="1215127405478249895">查看标签页</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1322824555808364080">邀请其他人</translation>
-<translation id="1326271443836399892">查看当前的整理设置。</translation>
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
 <translation id="1499635324672558517">要关闭所有无痕式标签页吗？</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">停止跟踪产品</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />标签页分组颜色图标</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{您有 <ph name="TABS_COUNT_ONE" /> 个已归档标签页}other{您有 <ph name="TABS_COUNT_MANY" /> 个已归档标签页}}</translation>
 <translation id="3194464645767632461">评分</translation>
 <translation id="3291470810748040983">当某个已打开的标签页中有商品降价时，您会收到提醒</translation>
 <translation id="3322827343001922122">打开标签页分组“<ph name="TITLE_OF_GROUP" />”的操作菜单</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
 <translation id="5094423602314093681">要移除标签页并删除分组吗？</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{您有 <ph name="TABS_COUNT_ONE" /> 个近期未使用的标签页}other{您有 <ph name="TABS_COUNT_MANY" /> 个近期未使用的标签页}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>
 <translation id="5494920125229734069">全选</translation>
-<translation id="5545379293264651575">直接关闭，不查看</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">查看商店信息，屏幕顶部附近有可用选项</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 中的 <ph name="TABS_COUNT_ONE" /> 个链接}other{Chrome 中的 <ph name="TABS_COUNT_MANY" /> 个链接}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">向组中添加新标签页</translation>
 <translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
-<translation id="955558140275419384">进入此编辑器即可查看要整理的所有已归档标签页。</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="992256792861109788">粉色</translation>
 </translationbundle>

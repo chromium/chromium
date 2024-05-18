@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384704387250346179">Преведете слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
+<translation id="1390418506739274310">Можеби ќе ја гледате историјата од други апликации што отвораат линкови во Chrome. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ги <ph name="BEGIN_LINK1" />Условите за користење<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Темна тема</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистувањето од Chrome нема да се синхронизира.
 Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
+<translation id="1832459821645506983">Да, може</translation>
 <translation id="185383612275551373">Синхронизирајте за да ги добиете најрелевантните содржини од Google</translation>
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
@@ -373,7 +375,6 @@
 <translation id="2951071800649516099">Додајте страници во списокот за читање за подоцна</translation>
 <translation id="2956070106555335453">Резиме</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
-<translation id="296370266220139811">Штедење време и пишување помалку</translation>
 <translation id="2977350910003566746">Се подредува според последно отворање</translation>
 <translation id="297771753501244313">Подреди по посл. отвор.</translation>
 <translation id="2979025552038692506">Избрана инкогнито-картичка</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">URL-адресите што ги отворате се испраќаат во Google за предвидување за тоа кои се следните сајтови што ќе ги отворите и прикажување дополнителни детали за страницата што сте ја отвориле.</translation>
 <translation id="3026955690410463085">Вклучи линк</translation>
 <translation id="3027644380269727216">Според вашата активност на сајт. Оваа поставка е вклучена.</translation>
+<translation id="3027950907978057636">Од <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без вчитување однапред</translation>
 <translation id="3029704984691124060">Лозинките-фрази не се совпаѓаат</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="3518985090088779359">Прифати и продолжи</translation>
 <translation id="3521388823983121502">Не може да продолжите со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Достапно е ажурирање. Повеќе опции</translation>
+<translation id="3523789730715594198">Може да ја сопрете синхронизацијата во секое време во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="3524138585025253783">Кориснички интерфејс за програмери</translation>
 <translation id="3524334353996115845">Дозволете <ph name="ORIGIN" /> да провери дека сте вие</translation>
 <translation id="3527085408025491307">Папка</translation>

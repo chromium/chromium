@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />दिन पहले सिंक किया गया</translation>
+<translation id="1390418506739274310">उन अन्य ऐप्लिकेशन का इतिहास देखा जा सकता है जो अपने लिंक Chrome में खोलते हैं. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अलग तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="13931502444227376">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK1" />सेवा की शर्तें<ph name="END_LINK1" /> देखें.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> के ज़रिए खोजें</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay पर जोड़े गए, पेमेंट के तरीके और पते एन्क्रिप्ट नहीं किए जाएंगे. Chrome के ब्राउज़िंग इतिहास को सिंक नहीं किया जाएगा.
 आपका एन्क्रिप्ट किया गया डेटा, सिर्फ़ वही व्यक्ति देख सकता है जिसके पास आपका लंबा पासवर्ड है. Google को लंबा पासवर्ड नहीं भेजा जाता और न ही Google इसे सेव करता है. अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो <ph name="BEGIN_LINK" />अपने खाते में मौजूद Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
+<translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
 <translation id="185383612275551373">Google से सबसे उपयोगी कॉन्टेंट पाने के लिए सिंक करें</translation>
 <translation id="1871098866036088250">Chrome ब्राउज़र में खोलें</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
@@ -373,7 +375,6 @@
 <translation id="2951071800649516099">बाद के लिए, अपनी रीडिंग लिस्ट में पेज जोड़ें</translation>
 <translation id="2956070106555335453">सारांश</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
-<translation id="296370266220139811">टाइप करने का समय बचाएं</translation>
 <translation id="2977350910003566746">पिछली बार खोले जाने के समय के हिसाब से, क्रम में लगाया जा रहा है</translation>
 <translation id="297771753501244313">पिछली बार खोलने की तारीख से क्रम में लगाएं</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं और आपने जिस पेज को विज़िट किया है उसके बारे में ज़्यादा जानकारी दिखाने के लिए, Google को आपके विज़िट किए गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="3026955690410463085">लिंक जोड़ें</translation>
 <translation id="3027644380269727216">किसी साइट पर आपकी गतिविधि के आधार पर, वह आपको विज्ञापन के सुझाव दिखा सकती है. यह सेटिंग चालू है.</translation>
+<translation id="3027950907978057636"><ph name="APP_LABEL" /> से</translation>
 <translation id="3029276696788198026">पेजों को पहले से लोड न करें</translation>
 <translation id="3029704984691124060">पासफ़्रेज़ मिलान नहीं करते</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> के साथ जारी नहीं रखा जा सकता</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध है. ज़्यादा विकल्प</translation>
+<translation id="3523789730715594198">सेटिंग में जाकर, सिंक करने की सुविधा को कभी भी बंद किया जा सकता है. Google आपके इतिहास के आधार पर, Search और अन्य सेवाओं को आपकी पसंद के मुताबिक बना सकता है.</translation>
 <translation id="3524138585025253783">डेवलपर यूज़र इंटरफ़ेस (यूआई)</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>

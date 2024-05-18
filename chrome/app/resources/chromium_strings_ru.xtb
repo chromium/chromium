@@ -124,6 +124,7 @@
 <translation id="3155163173539279776">Перезапустить Chromium</translation>
 <translation id="3179665906251668410">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
 <translation id="3185330573522821672">Настройте новый профиль Chromium</translation>
+<translation id="318879170965183683">Пока выполнен вход в браузер Chromium, вы можете использовать в нем пароли из аккаунта Google.</translation>
 <translation id="3190315855212034486">Произошел сбой Chromium. Перезапустить?</translation>
 <translation id="3224847870593914902">Чтобы удалить из браузера аккаунт Google, выйдите из Chromium на странице настроек</translation>
 <translation id="3258596308407688501">Chromium не может выполнять операции чтения и записи в своем каталоге: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -203,6 +204,8 @@
 <translation id="4501471624619070934">Не удалось выполнить установку из-за ограничения доступа в этой стране.</translation>
 <translation id="4510853178268397146">Для этого расширения не опубликованы меры по обеспечению конфиденциальности, например сведения о том, как оно собирает и использует данные. Chromium рекомендует удалить его.</translation>
 <translation id="452711251841752011">Добро пожаловать в Chromium! Открыто новое окно браузера.</translation>
+<translation id="4531137820806573936">Браузеру Chromium требуется разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание движений рук.</translation>
+<translation id="4536805923587466102">Вы уже вошли в аккаунт <ph name="USER_EMAIL_ADDRESS" /> в другом профиле Chromium.</translation>
 <translation id="4544142686420020088">Не удалось обновить Chromium. <ph name="BEGIN_LINK" />Выяснить причины неполадок и устранить их<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Продолжить в новом профиле Chromium?</translation>
 <translation id="4567424176335768812">Вы вошли с помощью аккаунта <ph name="USER_EMAIL_ADDRESS" />. Ваши закладки, история и другие настройки теперь доступны на всех устройствах, где вы используете этот аккаунт.</translation>

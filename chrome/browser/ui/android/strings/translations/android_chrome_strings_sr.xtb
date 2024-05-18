@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Начини плаћања и адресе из Google Pay-а се неће шифровати. Историја прегледања из Chrome-а се неће синхронизовати.
 Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити се чува на Google-у. Ако заборавите приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chrome податке на налогу<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Пронађи на страници</translation>
+<translation id="1832459821645506983">Да, омогући</translation>
 <translation id="185383612275551373">Синхронизујте податке да бисте добили најрелевантнији садржај од Google-а</translation>
 <translation id="1871098866036088250">Отвори у прегледачу Chrome</translation>
 <translation id="1877026089748256423">Chrome је застарео</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">Додајте странице на листу за читање за касније</translation>
 <translation id="2956070106555335453">Резиме</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитане странице}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаних страница}}</translation>
-<translation id="296370266220139811">Уштедите време и куцајте мање</translation>
 <translation id="2977350910003566746">Сортира се према последњем отварању</translation>
 <translation id="297771753501244313">По последњем отварању</translation>
 <translation id="2979025552038692506">Изабране картице без архивирањa</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">Прихвати и настави</translation>
 <translation id="3521388823983121502">Не можете да наставите са: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Ажурирање је доступно. Још опција</translation>
+<translation id="3523789730715594198">Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3524138585025253783">Кориснички интерфејс за програмере</translation>
 <translation id="3524334353996115845">Омогућите да <ph name="ORIGIN" /> потврди да сте то ви</translation>
 <translation id="3527085408025491307">Фолдер</translation>

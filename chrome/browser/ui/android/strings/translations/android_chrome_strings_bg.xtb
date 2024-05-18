@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384704387250346179">Превод с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
+<translation id="1390418506739274310">Възможно е да виждате историята от други приложения, които отварят връзки в Chrome. В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />общите условия<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="1397811292916898096">Търсене чрез <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.
 Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
+<translation id="1832459821645506983">Да, ще участвам</translation>
 <translation id="185383612275551373">Включете синхронизирането, за да получавате най-подходящото съдържание от Google</translation>
 <translation id="1871098866036088250">Отваряне в браузъра Chrome</translation>
 <translation id="1877026089748256423">Chrome не е актуален</translation>
@@ -373,7 +375,6 @@
 <translation id="2951071800649516099">Добавете страници към списъка за четене по-късно</translation>
 <translation id="2956070106555335453">Обобщена информация</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
-<translation id="296370266220139811">Пестете време и пишете по-малко</translation>
 <translation id="2977350910003566746">Сортиране по последно отваряне</translation>
 <translation id="297771753501244313">Сорт. по посл. отваряне</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите сайтове, които е възможно да посетите, и показване на допълнителна информация за посещаваната страница</translation>
 <translation id="3026955690410463085">Включване на връзката</translation>
 <translation id="3027644380269727216">Въз основа на активността ви в даден сайт. Тази настройка е включена.</translation>
+<translation id="3027950907978057636">От <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без предварително зареждане</translation>
 <translation id="3029704984691124060">Пропуските не са идентични</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="3518985090088779359">Приемам и напред</translation>
 <translation id="3521388823983121502">Не можете да продължите чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Налице е актуализация. Още опции</translation>
+<translation id="3523789730715594198">Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="3524138585025253783">ПИ за програмисти</translation>
 <translation id="3524334353996115845">Разрешете на <ph name="ORIGIN" /> да потвърди самоличността ви</translation>
 <translation id="3527085408025491307">Папка</translation>

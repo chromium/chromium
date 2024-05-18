@@ -570,6 +570,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2046951263634619614">Knižní maloobchod</translation>
 <translation id="2048261947532620704">Překlad stránky</translation>
 <translation id="2053111141626950936">Stránky v jazyce <ph name="LANGUAGE" /> se nebudou překládat.</translation>
+<translation id="2055461225779831292">Používat a natáčet vaše kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Zamykat ukazatel myši</translation>
 <translation id="2056658168519009885">Weby mohou prohlížeč Chrome žádat o informace k personalizaci reklam.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
@@ -717,6 +718,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2300306941146563769">Nenahráno</translation>
 <translation id="2301098101308036335">Které weby jsou navštěvovány a kdy.</translation>
 <translation id="230286397113210245">Tlačítko Otevřít anonymní okno, aktivací otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
+<translation id="2306124309679506798">Povolit pohlcující prostředí?</translation>
 <translation id="2312234273148520048">Dochucovadla a dresinky</translation>
 <translation id="2316087952091171402">Méně než <ph name="UPPER_ESTIMATE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2316159751672436664">Přizpůsobte si v nastavení ChromeOS nástroje pro usnadnění přístupu</translation>
@@ -1169,6 +1171,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si přizpůsobíte vzhled prohlížeče</translation>
 <translation id="3240791268468473923">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích je otevřený</translation>
 <translation id="324180406144491771">Odkazy „<ph name="HOST_NAME" />“ jsou blokovány</translation>
+<translation id="3248329428895535435">Na tomto webu nezobrazovat</translation>
 <translation id="3252772880526154546">Architektura</translation>
 <translation id="3254301855501243548">18 × 22″</translation>
 <translation id="3255926992597692024">Chromium se pokouší upravit nastavení vyplňování platebních metod.</translation>
@@ -1602,6 +1605,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4082333119419111506">Papír (předtištěný)</translation>
 <translation id="4082393374666368382">Nastavení – správa</translation>
 <translation id="4084219288110917128">Obálka C1</translation>
+<translation id="4085326869263783566">Pomoz mi psát. Procházejte položky tabulátorem a stisknutím klávesy Enter je otevřete</translation>
 <translation id="4088981014127559358">Posun obrázku strany 1 na ose Y</translation>
 <translation id="4089152113577680600">Přihrádka 14</translation>
 <translation id="4092349052316400070">Vyplnit adresu</translation>
@@ -3780,6 +3784,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8263001937536038617">Fotografické služby a videoslužby</translation>
 <translation id="8265992338205884890">Viditelná data</translation>
 <translation id="8267698848189296333">Přihlašování pomocí účtu <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Oddělené dokumenty / kompletované kopie</translation>
 <translation id="8269703227894255363">{0,plural, =1{Otevření souboru je blokováno}few{Otevření <ph name="FILE_COUNT" /> souborů je blokováno}many{Otevření <ph name="FILE_COUNT" /> souboru je blokováno}other{Otevření <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
 <translation id="8270173610195068258">Zločin a spravedlnost</translation>
@@ -4200,6 +4205,7 @@ Další podrobnosti:
 <translation id="9094544726794842788">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám tyto výsledky nelíbí</translation>
 <translation id="9095388113577226029">Další jazyky...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: stisknutím klávesy Tab a pak Enter nastavíte Chrome jako výchozí prohlížeč v nastavení iOS</translation>
+<translation id="9101450247048146228">Používání a natáčení kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Přihrádka 1</translation>
 <translation id="9103872766612412690">Web <ph name="SITE" /> vaše informace běžně chrání šifrováním. Když se prohlížeč Chromium k webu <ph name="SITE" /> pokusil připojit tentokrát, web vrátil neobvyklé a nesprávné identifikační údaje. K tomuto problému může dojít, pokud se za web <ph name="SITE" /> pokouší vydávat nějaký útočník nebo pokud bylo připojení přerušeno přihlašovací obrazovkou sítě Wi-Fi. Vaše informace jsou i nadále v bezpečí, protože prohlížeč Chromium připojení přerušil dříve, než došlo k odeslání jakýchkoliv dat.</translation>
 <translation id="9107467864910557787">Prohlížeč je spravován doménou <ph name="MANAGER" /></translation>
@@ -4222,6 +4228,7 @@ Další podrobnosti:
 <translation id="9139318394846604261">Nákupy</translation>
 <translation id="9141013498910525015">Spravovat adresy</translation>
 <translation id="9144951720726881238">Datum vypršení platnosti:</translation>
+<translation id="9145910032514306808">Pokud chcete získat pomoc s psaním, znovu se <ph name="BEGIN_LINK" />přihlaste<ph name="END_LINK" /> a pak se vraťte na tuto kartu</translation>
 <translation id="9148507642005240123">&amp;Vrátit úpravy zpět</translation>
 <translation id="9148599396704355100">Cena je nízká</translation>
 <translation id="9150025764986957246">Můžete zadat věci jako:</translation>

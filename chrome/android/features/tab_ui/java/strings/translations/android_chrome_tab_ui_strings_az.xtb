@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> il əvvəl yaradıldı}other{<ph name="NUM_YEARS_MANY" /> il əvvəl yaradıldı}}</translation>
-<translation id="1155815720264022949">Köhnə tabları bağlamaq istəyirsiniz?</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1197088940767939838">Narıncı</translation>
-<translation id="1215127405478249895">Tabları nəzərdən keçirin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1322824555808364080">İnsanlar dəvət edin</translation>
-<translation id="1326271443836399892">Cari silmə ayarlarına baxın.</translation>
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yaradıldı}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yaradıldı}}</translation>
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Məhsulu izləməyi dayandırın</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab qrupu rəngi ikonası</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Arxivə atılmış <ph name="TABS_COUNT_ONE" /> tab var}other{Arxivə atılmış <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> tab qrupu üçün tab qrupunun əməliyyat menyusunu açın</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
 <translation id="5094423602314093681">Tab(lar) və qrup silinsin?</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_ONE" /> tab var}other{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan tab qrupunu bağlayın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu bağlayın.}}</translation>
 <translation id="5339733443032484186">Son tab</translation>
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
-<translation id="5545379293264651575">Nəzərdən keçirmədən bağlayın</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="9216898458513705996">Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="USER_EMAIL" /> hesabına giriş edilmiş bütün cihazlardan silinəcək</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Bu redaktora daxil olmaqla silinməsi lazım olan arxivə atılmış tablara baxın.</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>
 <translation id="992256792861109788">Çəhrayı</translation>
 </translationbundle>

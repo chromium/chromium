@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
+<translation id="1832459821645506983">Ya, saya setuju</translation>
 <translation id="185383612275551373">Segerakkan untuk mendapatkan kandungan yang paling berkaitan daripada Google</translation>
 <translation id="1871098866036088250">Buka dalam penyemak imbas Chrome</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
@@ -374,7 +375,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2951071800649516099">Tambahkan halaman pada senarai bacaan anda untuk kemudian</translation>
 <translation id="2956070106555335453">Ringkasan</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> halaman belum dibaca}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> halaman belum dibaca}}</translation>
-<translation id="296370266220139811">Jimatkan masa dan kurangkan menaip</translation>
 <translation id="2977350910003566746">Mengisih mengikut terakhir dibuka</translation>
 <translation id="297771753501244313">Isih ikut terakhir dibuka</translation>
 <translation id="2979025552038692506">Tab Inkognito yang Dipilih</translation>
@@ -484,6 +484,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3518985090088779359">Terima &amp; teruskan</translation>
 <translation id="3521388823983121502">Tidak boleh meneruskan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kemas kini tersedia. Lagi pilihan</translation>
+<translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="3524138585025253783">UI Pembangun</translation>
 <translation id="3524334353996115845">Benarkan <ph name="ORIGIN" /> mengesahkan itu anda</translation>
 <translation id="3527085408025491307">Folder</translation>

@@ -69,6 +69,8 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="2185166961232948079">Chromium - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Errore controllo aggiornamenti: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2210682093923538346">Sito pericoloso. Chromium ha rimosso le notifiche.</translation>
+<translation id="2240214816234246077">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chromium in base alle proprie esigenze.</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="2329088755516916767">Quando questa impostazione è attiva, Chromium precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
@@ -267,6 +269,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
 <translation id="569897634095159764">Impossibile connettersi a internet. Il server proxy richiede l'autenticazione.</translation>
+<translation id="5761096224651992291">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
 <translation id="5800158606660203929">Personalizza e controlla Chromium. Imposta Chromium come browser predefinito.</translation>
 <translation id="5809516625706423866">Impossibile connettersi a internet. HTTP 401 Autorizzazione assente. Controlla la configurazione del proxy.</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
@@ -352,6 +355,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6729124504294600478">Per accedere alla personalizzazione e ad altre funzionalità, includi Chromium in Attività web e app e nei servizi Google collegati</translation>
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
 <translation id="673636774878526923">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
+<translation id="674245979920622322">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="COUNT" /> autorizzazioni</translation>
 <translation id="67706546131546258">Chromium consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
 <translation id="6779406956731413166">La realizzazione di Chromium OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
@@ -403,6 +407,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}other{Chromium verrà riavviato tra # minuti}}</translation>
 <translation id="7582945390259497898">Chromium può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chromium di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
+<translation id="7585391435984513350">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium sta utilizzando videocamera e microfono.</translation>
 <translation id="7617377681829253106">Da oggi Chromium è ancora meglio</translation>
 <translation id="7649070708921625228">Guida</translation>

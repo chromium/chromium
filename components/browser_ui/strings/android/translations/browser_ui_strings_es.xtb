@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Controla el acceso de este sitio web a tu dispositivo</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Tu última pestaña</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
 <translation id="6071501408666570960">Puede que se cierre tu sesión en este sitio</translation>
 <translation id="6120483543004435978">Cuando esta opción está activada, los sitios pueden solicitar permiso para saber cuándo usas activamente tu dispositivo. Si está desactivada, los sitios no pueden saber cuándo usas activamente tu dispositivo.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7990211076305263060">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar tu micrófono. Si está desactivada, los sitios no pueden usar tu micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>

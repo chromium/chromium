@@ -126,6 +126,7 @@
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
+<translation id="318879170965183683">登入帳戶後，你便可在 Chromium 中使用 Google 帳戶儲存的密碼</translation>
 <translation id="3190315855212034486">Chromium 當機了，要立即重新啟動嗎？</translation>
 <translation id="3224847870593914902">如要從 Chromium 中移除 Google 帳戶，請前往「設定」頁面登出 Chromium</translation>
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
@@ -207,6 +208,8 @@
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
 <translation id="4510853178268397146">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chromium 建議你移除此擴充程式。</translation>
 <translation id="452711251841752011">歡迎使用 Chromium；開咗新瀏覽器視窗</translation>
+<translation id="4531137820806573936">Chromium 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
+<translation id="4536805923587466102">你已在另一個 Chromium 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗問題。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">要透過新的 Chromium 設定檔繼續瀏覽嗎？</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>

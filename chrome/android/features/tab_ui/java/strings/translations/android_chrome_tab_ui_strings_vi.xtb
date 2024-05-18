@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Tự động mở nhóm thẻ từ các thiết bị khác</translation>
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Tạo <ph name="NUM_YEARS_ONE" /> năm trước}other{Tạo <ph name="NUM_YEARS_MANY" /> năm trước}}</translation>
-<translation id="1155815720264022949">Bạn muốn đóng các thẻ cũ?</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1197088940767939838">Màu cam</translation>
-<translation id="1215127405478249895">Xem lại thẻ</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1322824555808364080">Mời người khác</translation>
-<translation id="1326271443836399892">Xem lại chế độ cài đặt sắp xếp gọn gàng hiện tại.</translation>
 <translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Dừng theo dõi sản phẩm</translation>
 <translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Biểu tượng màu của nhóm thẻ: <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Bạn có <ph name="TABS_COUNT_ONE" /> thẻ được lưu trữ}other{Bạn có <ph name="TABS_COUNT_MANY" /> thẻ được lưu trữ}}</translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3322827343001922122">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Tạo một nhóm để so sánh nhanh các trang. Để bắt đầu, hãy chạm và giữ một đường liên kết.</translation>
 <translation id="5094423602314093681">Bạn muốn loại bỏ thẻ và xoá nhóm?</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Có <ph name="TABS_COUNT_ONE" /> thẻ mà gần đây bạn không dùng đến}other{Có <ph name="TABS_COUNT_MANY" /> thẻ mà gần đây bạn không dùng đến}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Đóng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ.}other{Đóng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="5400836586163650660">Màu xám</translation>
 <translation id="5490235265819901748">Đã mở rộng nhóm thẻ</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
-<translation id="5545379293264651575">Đóng mà không xem lại</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Đóng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Đóng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="9216898458513705996">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Vào trình chỉnh sửa này để xem lại tất cả thẻ đã lưu trữ nhằm sắp xếp gọn gàng.</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 <translation id="992256792861109788">Màu hồng</translation>
 </translationbundle>

@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ਤੁਹਾਡਾ ਪਿਛਲਾ ਟੈਬ</translation>
 <translation id="6064125863973209585">ਮੁਕੰਮਲ ਹੋਏ ਡਾਊਨਲੋਡ</translation>
 <translation id="6071501408666570960">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6120483543004435978">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਨਹੀਂ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7990211076305263060">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> ਤੋਂ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8042586301629853791">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ:</translation>
 <translation id="8067883171444229417">ਵੀਡੀਓ ਚਲਾਓ</translation>

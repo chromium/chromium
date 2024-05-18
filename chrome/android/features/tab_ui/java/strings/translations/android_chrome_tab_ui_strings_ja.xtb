@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">他のデバイスで作成されたタブグループを自動的に開く</translation>
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前に作成}other{<ph name="NUM_YEARS_MANY" /> 年前に作成}}</translation>
-<translation id="1155815720264022949">古いタブを閉じますか？</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1197088940767939838">オレンジ</translation>
-<translation id="1215127405478249895">タブを確認</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1322824555808364080">ユーザーを招待</translation>
-<translation id="1326271443836399892">現在の整理の設定を確認できます。</translation>
 <translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">商品のトラッキングを停止</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> のタブグループ カラーアイコン</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{アーカイブ済みのタブが <ph name="TABS_COUNT_ONE" /> 個あります}other{アーカイブ済みのタブが <ph name="TABS_COUNT_MANY" /> 個あります}}</translation>
 <translation id="3194464645767632461">評価</translation>
 <translation id="3291470810748040983">開いているタブの商品が値下げされた場合にアラートを受け取ることができます</translation>
 <translation id="3322827343001922122">タブグループ <ph name="TITLE_OF_GROUP" /> のタブグループ操作メニューを開く</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
 <translation id="5094423602314093681">タブとグループを削除しますか？</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{最近使用していないタブが <ph name="TABS_COUNT_ONE" /> 個あります}other{最近使用していないタブが <ph name="TABS_COUNT_MANY" /> 個あります}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます。}}</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
-<translation id="5545379293264651575">確認しないで閉じる</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を閉じます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を閉じます。}}</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome からの <ph name="TABS_COUNT_ONE" /> 件のリンク}other{Chrome からの <ph name="TABS_COUNT_MANY" /> 件のリンク}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="9216898458513705996">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
-<translation id="955558140275419384">このエディタを開くと、アーカイブ済みのすべてのタブを確認して整理できます。</translation>
 <translation id="959682366969460160">タブを整理</translation>
 <translation id="992256792861109788">ピンク</translation>
 </translationbundle>

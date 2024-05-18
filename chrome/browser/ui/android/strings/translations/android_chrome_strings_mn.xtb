@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay-н төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
 Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй бөгөөд мөн хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Хуудаснаас хайх</translation>
+<translation id="1832459821645506983">Тийм, би зөвшөөрч байна</translation>
 <translation id="185383612275551373">Google-с хамгийн хамааралтай контент авахын тулд синк хийнэ үү</translation>
 <translation id="1871098866036088250">Chrome хөтөч дээр нээх</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">Хуудаснуудыг дараа уншихаар унших жагсаалтдаа нэмээрэй</translation>
 <translation id="2956070106555335453">Товч дүгнэлт</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> хуудас}other{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> хуудас}}</translation>
-<translation id="296370266220139811">Цаг хэмнэж, бага бичээрэй</translation>
 <translation id="2977350910003566746">Сүүлд нээснээр нь эрэмбэлж байна</translation>
 <translation id="297771753501244313">Сүүлд нээснээр эрэмбэлэх</translation>
 <translation id="2979025552038692506">Сонгосон нууцлалын таб</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">Зөвшөөрөөд үргэлжлүүлэх</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх боломжгүй</translation>
 <translation id="3522247891732774234">Шинэчлэх боломжтой. Бусад сонголт</translation>
+<translation id="3523789730715594198">Та тохиргоонд хүссэн үедээ синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="3524138585025253783">Хөгжүүлэгчийн UI</translation>
 <translation id="3524334353996115845">Өөрийгөө мөн болохыг <ph name="ORIGIN" />-р баталгаажуулна уу</translation>
 <translation id="3527085408025491307">Хавтас</translation>

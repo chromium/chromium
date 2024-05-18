@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay ຈະບໍ່ໄດ້ຖືກເຂົ້າລະຫັດ. ປະຫວັດການທ່ອງເວັບຈາກ Chrome ຈະບໍ່ຊິ້ງຂໍ້ມູນ.
 ມີພຽງບຸກຄົນທີ່ມີລະຫັດຜ່ານຂອງທ່ານເທົ່ານັ້ນທີ່ສາມາດອ່ານຂໍ້ມູນທີ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້ຂອງທ່ານ. Google ຈະບໍ່ໄດ້ຮັບ ຫຼື ຈັດເກັບລະຫັດຜ່ານດັ່ງກ່າວໄວ້. ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="1829244130665387512">ຊອກ​ຫາ​ຢູ່​ໃນ​ຫນ້າ</translation>
+<translation id="1832459821645506983">ແມ່ນແລ້ວ, ຂ້ອຍເຂົ້າຮ່ວມ</translation>
 <translation id="185383612275551373">ຊິ້ງເພື່ອຮັບເນື້ອຫາທີ່ກ່ຽວຂ້ອງທີ່ສຸດຈາກ Google</translation>
 <translation id="1871098866036088250">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="1877026089748256423">Chrome ລ້າສະໄໝແລ້ວ</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">ເພີ່ມໜ້າໃສ່ລາຍຊື່ການອ່ານສຳລັບພາຍຫຼັງ</translation>
 <translation id="2956070106555335453">ສັງລວມ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ໜ້າທີ່ຍັງບໍ່ໄດ້ອ່ານ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ໜ້າທີ່ຍັງບໍ່ໄດ້ອ່ານ}}</translation>
-<translation id="296370266220139811">ປະຢັດເວລາ ແລະ ພິມໜ້ອຍລົງ</translation>
 <translation id="2977350910003566746">ການຈັດຮຽງຕາມເປີດຫຼ້າສຸດ</translation>
 <translation id="297771753501244313">ຈັດຮຽງຕາມເວລາເປີດຫຼ້າສຸດ</translation>
 <translation id="2979025552038692506">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນທີ່ເລືອກໄວ້</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
 <translation id="3521388823983121502">ບໍ່ສາມາດດຳເນີນການຕໍ່ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ໄດ້</translation>
 <translation id="3522247891732774234">ອັບເດດມີໃຫ້ແລ້ວ. ຕົວເລືອກເພີ່ມເຕີມ</translation>
+<translation id="3523789730715594198">ທ່ານສາມາດຢຸດຊິ້ງຂໍ້ມູນຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="3524138585025253783">ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ສຳລັບຜູ້ພັດທະນາ</translation>
 <translation id="3524334353996115845">ໃຫ້ <ph name="ORIGIN" /> ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>

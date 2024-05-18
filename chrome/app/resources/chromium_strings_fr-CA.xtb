@@ -126,6 +126,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3155163173539279776">Relancer Chromium</translation>
 <translation id="3179665906251668410">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="3185330573522821672">Personnaliser votre nouveau profil Chromium</translation>
+<translation id="318879170965183683">Vous pouvez utiliser les mots de passe de votre compte Google dans Chromium lorsque vous êtes connecté</translation>
 <translation id="3190315855212034486">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
 <translation id="3224847870593914902">Pour retirer votre compte Google de Chromium, déconnectez-vous de Chromium sur la page Paramètres</translation>
 <translation id="3258596308407688501">Chromium ne peut pas lire et écrire dans son répertoire de données :
@@ -207,6 +208,8 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4501471624619070934">L'installation a échoué, car l'accès est restreint dans ce pays.</translation>
 <translation id="4510853178268397146">Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données. Chromium vous recommande de la retirer.</translation>
 <translation id="452711251841752011">Bienvenue à Chromium, une nouvelle fenêtre de navigateur a été ouverte</translation>
+<translation id="4531137820806573936">Chromium a besoin d'une autorisation pour cartographier votre environnement et suivre vos mains</translation>
+<translation id="4536805923587466102">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chromium</translation>
 <translation id="4544142686420020088">La mise à jour de Chromium n'a pas été installée. Une erreur s'est produite. <ph name="BEGIN_LINK" />Découvrez comment résoudre les problèmes de mise à jour de Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Continuer avec un nouveau profil Chromium?</translation>
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>

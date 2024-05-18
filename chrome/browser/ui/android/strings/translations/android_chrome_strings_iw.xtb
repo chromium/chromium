@@ -158,6 +158,7 @@
 <translation id="1825772852827001597">‏אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
 רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
+<translation id="1832459821645506983">כן, אני רוצה</translation>
 <translation id="185383612275551373">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="1871098866036088250">‏פתיחה בדפדפן Chrome</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
@@ -373,7 +374,6 @@
 <translation id="2951071800649516099">מוסיפים דפים לרשימת הקריאה לשלב מאוחר יותר</translation>
 <translation id="2956070106555335453">סיכום</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
-<translation id="296370266220139811">חוסכים זמן ומקלידים פחות</translation>
 <translation id="2977350910003566746">בתהליך מיון לפי מועד הפתיחה האחרונה</translation>
 <translation id="297771753501244313">מיון לפי נפתחו לאחרונה</translation>
 <translation id="2979025552038692506">כרטיסיית המצב האנונימי שנבחרה</translation>
@@ -482,6 +482,7 @@
 <translation id="3518985090088779359">בסדר, מקובל עליי</translation>
 <translation id="3521388823983121502">לא ניתן להמשיך עם <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">יש עדכון זמין. עוד אפשרויות</translation>
+<translation id="3523789730715594198">‏אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3524138585025253783">ממשק משתמש למפתחים</translation>
 <translation id="3524334353996115845">ניתן יהיה לאמת את זהותך באמצעות <ph name="ORIGIN" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>

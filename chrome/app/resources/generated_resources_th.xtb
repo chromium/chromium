@@ -595,6 +595,7 @@
 
 สิทธิ์ที่คุณให้กับแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณควบคุมสิทธิ์สำหรับแอป Android ใน<ph name="APPS_LINK_BEGIN" />การตั้งค่าแอป<ph name="APPS_LINK_END" />ได้</translation>
 <translation id="1448779317883494811">เครื่องมือแปรง</translation>
+<translation id="1448963928642384376">ฮอตสปอตของอุปกรณ์</translation>
 <translation id="1449191289887455076">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อยืนยันการกำหนดและ<ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">เปิดโปรไฟล์ผู้ใช้ชั่วคราว</translation>
 <translation id="1451375123200651445">หน้าเว็บ ไฟล์เดียว</translation>
@@ -4068,6 +4069,7 @@
 <translation id="3983586614702900908">อุปกรณ์จากผู้ขายที่ไม่รู้จัก</translation>
 <translation id="3983764759749072418">แอปพลิเคชัน Play Store มีสิทธิ์เข้าถึงอุปกรณ์นี้</translation>
 <translation id="3983769721878416534">หน่วงเวลาก่อนคลิก</translation>
+<translation id="3983793589497399077">คลิกหรือลากตรงไหนก็ได้เพื่อค้นหาด้วย Lens</translation>
 <translation id="3984135167056005094">ไม่รวมอีเมล</translation>
 <translation id="3984159763196946143">เริ่มโหมดสาธิตไม่ได้</translation>
 <translation id="3984431586879874039">อนุญาตให้เว็บไซต์นี้ดูคีย์ความปลอดภัยของคุณไหม</translation>

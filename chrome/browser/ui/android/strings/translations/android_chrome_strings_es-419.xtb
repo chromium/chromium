@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
+<translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta las <ph name="BEGIN_LINK1" />condiciones del servicio<ph name="END_LINK1" /> del sitio.</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
+<translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="185383612275551373">Utiliza la función de sincronización para obtener el contenido más relevante de Google</translation>
 <translation id="1871098866036088250">Abrir en el navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
@@ -373,7 +375,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2951071800649516099">Agrega páginas a la lista de lectura para retomarlas más tarde</translation>
 <translation id="2956070106555335453">Resumen</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
-<translation id="296370266220139811">Ahorra tiempo y escribe menos</translation>
 <translation id="2977350910003566746">Ordenados por fecha de último acceso</translation>
 <translation id="297771753501244313">Últimos abiertos</translation>
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
@@ -389,6 +390,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3003253259757197230">Se enviarán a Google las URLs que visites para predecir los sitios que posiblemente vayas a visitar y mostrarte información adicional sobre la página que estés visitando</translation>
 <translation id="3026955690410463085">Incluir vínculo</translation>
 <translation id="3027644380269727216">Según tu actividad en un sitio. Este parámetro de configuración está activado.</translation>
+<translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Sin precarga</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3521388823983121502">No puedes continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Actualización disponible. Mas opciones</translation>
+<translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="3524138585025253783">IU para desarrolladores</translation>
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique tu identidad.</translation>
 <translation id="3527085408025491307">Carpeta</translation>

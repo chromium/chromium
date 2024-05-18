@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">เปิดกลุ่มแท็บจากอุปกรณ์อื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_YEARS_ONE" /> ปีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_YEARS_MANY" /> ปีที่ผ่านมา}}</translation>
-<translation id="1155815720264022949">ต้องการปิดแท็บเก่าใช่ไหม</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
-<translation id="1215127405478249895">ตรวจสอบแท็บ</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1322824555808364080">เชิญผู้อื่น</translation>
-<translation id="1326271443836399892">ตรวจสอบการตั้งค่าการจัดระเบียบปัจจุบัน</translation>
 <translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{สร้างเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">ไอคอนสี<ph name="COLOR_NAME" />ของกลุ่มแท็บ</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_ONE" /> แท็บ}other{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="3194464645767632461">การให้คะแนน</translation>
 <translation id="3291470810748040983">คุณจะได้รับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="3322827343001922122">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">เปรียบเทียบหน้าต่างๆ อย่างรวดเร็วด้วยการสร้างกลุ่ม แตะลิงก์ค้างไว้เพื่อเริ่มต้น</translation>
 <translation id="5094423602314093681">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{คุณมี <ph name="TABS_COUNT_ONE" /> แท็บที่ไม่ได้ใช้เมื่อเร็วๆ นี้}other{คุณมี <ph name="TABS_COUNT_MANY" /> แท็บที่ไม่ได้ใช้เมื่อเร็วๆ นี้}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปิดกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
-<translation id="5545379293264651575">ปิดโดยไม่ตรวจสอบ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ลิงก์จาก Chrome}other{<ph name="TABS_COUNT_MANY" /> ลิงก์จาก Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
-<translation id="955558140275419384">ตรวจสอบแท็บที่เก็บไว้ทั้งหมดเพื่อจัดระเบียบโดยเข้าเครื่องมือแก้ไขนี้</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
 <translation id="992256792861109788">สีชมพู</translation>
 </translationbundle>

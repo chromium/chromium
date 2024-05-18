@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
+<translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="185383612275551373">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
@@ -374,7 +375,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2951071800649516099">Magdagdag ng mga pahina sa iyong listahan ng babasahin para sa ibang pagkakataon</translation>
 <translation id="2956070106555335453">Buod</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
-<translation id="296370266220139811">Makatipid sa oras at pag-type</translation>
 <translation id="2977350910003566746">Ibinubukod-bukod ayon sa huling binuksan</translation>
 <translation id="297771753501244313">Ayon sa huling binuksan</translation>
 <translation id="2979025552038692506">Napiling Tab na Incognito</translation>
@@ -484,6 +484,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3518985090088779359">Tanggapin, magpatuloy</translation>
 <translation id="3521388823983121502">Hindi makapagpatuloy gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">May available na update. Higit pang mga opsyon</translation>
+<translation id="3523789730715594198">Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3524138585025253783">Developer UI</translation>
 <translation id="3524334353996115845">Hayaan ang <ph name="ORIGIN" /> na patunayang ikaw ito</translation>
 <translation id="3527085408025491307">Folder</translation>

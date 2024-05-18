@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Betaalmetodes en adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="1829244130665387512">Vind op bladsy</translation>
+<translation id="1832459821645506983">Ja, ek is in</translation>
 <translation id="185383612275551373">Sinkroniseer om die relevantste inhoud van Google af te kry</translation>
 <translation id="1871098866036088250">Maak in Chrome-blaaier oop</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
@@ -374,7 +375,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2951071800649516099">Voeg bladsye by jou leeslys vir later</translation>
 <translation id="2956070106555335453">Opsomming</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongeleesde bladsy}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongeleesde bladsye}}</translation>
-<translation id="296370266220139811">Bespaar tyd en tik minder</translation>
 <translation id="2977350910003566746">Sorteer volgens laas oopgemaak</translation>
 <translation id="297771753501244313">Sorteer: laas oopgemaak</translation>
 <translation id="2979025552038692506">Gekose incognito-oortjie</translation>
@@ -484,6 +484,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3518985090088779359">Aanvaar, gaan voort</translation>
 <translation id="3521388823983121502">Kan nie voortgaan met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie</translation>
 <translation id="3522247891732774234">Opdatering is beskikbaar. Meer opsies</translation>
+<translation id="3523789730715594198">Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3524138585025253783">Ontwikkelaar-UI</translation>
 <translation id="3524334353996115845">Laat <ph name="ORIGIN" /> verifieer dat dit jy is</translation>
 <translation id="3527085408025491307">Vouer</translation>

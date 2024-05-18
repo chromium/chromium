@@ -595,6 +595,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 
 Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für dieses Konto. Berechtigungen für Android-Apps lassen sich in den <ph name="APPS_LINK_BEGIN" />App-Einstellungen<ph name="APPS_LINK_END" /> verwalten.</translation>
 <translation id="1448779317883494811">Pinseltool</translation>
+<translation id="1448963928642384376">Deine Geräte-Hotspots</translation>
 <translation id="1449191289887455076">Drücke zum Bestätigen der Zuweisung und <ph name="RESPONSE" /> noch einmal „<ph name="CURRENTKEY" />“</translation>
 <translation id="1450484535522155181">Gastprofil öffnen</translation>
 <translation id="1451375123200651445">Webseite, Einzeldatei</translation>
@@ -4065,6 +4066,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3983586614702900908">Geräte von einem unbekannten Anbieter</translation>
 <translation id="3983764759749072418">Play Store-Apps haben Zugriff auf dieses Gerät.</translation>
 <translation id="3983769721878416534">Verzögerung vor Klick</translation>
+<translation id="3983793589497399077">Wähle durch Klicken oder Ziehen einen Bereich aus, um mit Lens zu suchen</translation>
 <translation id="3984135167056005094">E-Mail-Adresse nicht angeben</translation>
 <translation id="3984159763196946143">Demomodus konnte nicht gestartet werden</translation>
 <translation id="3984431586879874039">Zulassen, dass diese Website deinen Sicherheitsschlüssel ausliest?</translation>

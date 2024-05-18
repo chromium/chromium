@@ -181,6 +181,7 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 <translation id="1107538157073168076">Disattiva estensione Insights</translation>
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Non visualizzare la schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
+<translation id="1111824532252882775">Attivato: le barre di scorrimento sono attivabili per impostazione predefinita.</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -6904,6 +6905,7 @@ Se il criterio non viene configurato, gli utenti potranno attivare o disattivare
 <translation id="6452882999388592166">Se impostato su Attivato, l'estensione del componente CryptoToken integrata viene caricata all'avvio. Se impostato su Disattivato o se non viene configurato, CryptoToken non viene caricato all'avvio del browser. Questo criterio è inteso come soluzione alternativa temporanea per i siti non funzionanti perché "chrome.runtime" non è definito come effetto collaterale della rimozione di CryptoToken nella versione M106. I siti web non devono dipendere dalla definizione senza condizioni di "chrome.runtime".</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
+<translation id="6454450724849956537">Attiva le barre di scorrimento attivabili da tastiera</translation>
 <translation id="645467061280066516">Se il criterio viene attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab non venga impostato come URL della pagina iniziale dell'utente.
 
 Se il criterio viene configurato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene configurato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
@@ -8971,6 +8973,13 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
+<translation id="8033450879690820321">Questo criterio consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
+
+Se viene attivato o se non viene configurato, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita. Inoltre, le barre di scorrimento sono attivabili con un clic e tramite programmazione per impostazione predefinita.
+
+Se questo criterio viene disattivato, le barre di scorrimento non saranno attivabili per impostazione predefinita.
+
+Questo criterio è una soluzione alternativa temporanea e verrà rimosso nella versione M135.</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
 
@@ -9516,6 +9525,7 @@ La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la qua
           Se la norma non viene impostata, viene utilizzato per tutti i siti il renderer predefinito specificato dalla norma "ChromeFrameRendererSettings".
 
           Per avere pattern di esempio, visita il sito https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8489169564515126823">Disattivato: le barre di scorrimento non sono attivabili per impostazione predefinita.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Disabilita salvataggio della cronologia del browser</translation>
 <translation id="8499172469244085141">Impostazioni predefinite (gli utenti possono ignorarle)</translation>

@@ -4455,6 +4455,15 @@ Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kul
 <translation id="4483738129334574255">Kayıtlı <ph name="PRODUCT_OS_NAME" /> cihazlarda dinozor paskalya yumurtası oyununu devre dışı bırak, diğer durumlarda etkinleştir</translation>
 <translation id="4484515651939984695">Erişim kodu veya QR koduyla seçilen bir yayın cihazının, <ph name="PRODUCT_NAME" /> menüsündeki yayın cihazları listesinde kaç saniye duracağını belirtir.</translation>
 <translation id="4485425108474077672">Yeni Sekme sayfasının URL'sini yapılandır</translation>
+<translation id="4488959486611931919">Not: Chrome'un M118'den itibaren bu çerezleri varsayılan olarak engellemeye başlamasından bu yana site kesintisi bildirilmediğinden, M127 sürümünden itibaren bu işlev yapılandırılamaz (ve bu politikanın herhangi bir geçerliliği olmayacaktır).
+
+Bu politika, Chrome'un belirli kontrol karakterlerini (NULL, satır başı karakteri ve satır feed'i) içeren JavaScript aracılığıyla ayarlanmış çerezleri işleme şekliyle ilgili değişiklikler için geçici bir devre dışı bırakma seçeneği sunar.
+Önceden, bir çerez dizesinde bu karakterlerden herhangi birinin mevcut olması, dizenin kısaltılmasına ancak yine de ayarlanmasına neden oluyordu.
+Artık bu karakterlerin mevcut olması, tüm çerez dizesinin yoksayılmasına neden olur.
+
+Bu politika, Doğru değerine (varsayılan) ayarlandığında yeni davranış etkinleştirilir.
+
+Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirilir.</translation>
 <translation id="4490420545181481759">X.509 sertifikaları, sertifikadaki uzantılara Ad Kısıtlamaları gibi kısıtlamalar kodlayabilir. RFC 5280, güven bağlantısı sertifikalarına bu tür kısıtlamaların uygulanmasının isteğe bağlı olduğunu belirtir. <ph name="PRODUCT_NAME" /> 112 sürümünden itibaren, platform sertifika deposundan yüklenen sertifikalardaki bu tür kısıtlamalar uygulanacaktır.
 
 Bu politika, özel köklerine kodlanan kısıtlamalarla karşılaşan kuruluşların geçici olarak kapsam dışında kalmayı seçmesine neden olur. Bu durumda, kısıtlamaların uygulanmasını geçici olarak devre dışı bırakıp sertifika sorunları düzeltmek için bu politika kullanılabilir.

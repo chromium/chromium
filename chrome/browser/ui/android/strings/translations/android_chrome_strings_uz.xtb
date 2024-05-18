@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Sahifa ichidan qidirish</translation>
+<translation id="1832459821645506983">Ha, roziman</translation>
 <translation id="185383612275551373">Googledan eng kerakli kontentni olish uchun sinxronlang</translation>
 <translation id="1871098866036088250">Chrome brauzerida ochish</translation>
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
@@ -374,7 +375,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2951071800649516099">Sahifalarni roʻyxatga keyinroq kiritish</translation>
 <translation id="2956070106555335453">Xulosa</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ta sahifa oʻqilmagan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ta sahifa oʻqilmagan}}</translation>
-<translation id="296370266220139811">Kamroq yozib, vaqtni tejang</translation>
 <translation id="2977350910003566746">Oxirgi ochilgani asosida</translation>
 <translation id="297771753501244313">Oxirgi ochilgani asosida</translation>
 <translation id="2979025552038692506">Tanlangan inkognito sahifa</translation>
@@ -484,6 +484,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3518985090088779359">Davom etish</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan kirish imkonsiz</translation>
 <translation id="3522247891732774234">Yangilanish mavjud. Qo‘shimcha parametrlarni ko‘rish</translation>
+<translation id="3523789730715594198">Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="3524138585025253783">Dastur ishlab chiquvchi interfeysi</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> shaxsingizni tasdiqlasin</translation>
 <translation id="3527085408025491307">Jild</translation>

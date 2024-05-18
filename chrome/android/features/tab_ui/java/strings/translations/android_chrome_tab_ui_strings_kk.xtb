@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Қойындылар топтарын басқа құрылғылардан автоматты түрде ашу</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жыл бұрын жасалды.}other{<ph name="NUM_YEARS_MANY" /> жыл бұрын жасалды.}}</translation>
-<translation id="1155815720264022949">Ескі қойындыларды жабу қажет пе?</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1197088940767939838">Қызғылт сары</translation>
-<translation id="1215127405478249895">Қойындыларды қарап шығу</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1322824555808364080">Адамдар шақыру</translation>
-<translation id="1326271443836399892">Ағымдағы тазалау параметрлерін тексеру.</translation>
 <translation id="1419023007528516122">Бұл жағдайда топ құрылғыңыздан біржола жойылады.</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минут бұрын жасалды.}other{<ph name="NUM_MINS_MANY" /> минут бұрын жасалды.}}</translation>
 <translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Өнімді бақылауды тоқтату</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
 <translation id="3078350928901129212">Қойындылар тобының <ph name="COLOR_NAME" /> түсті белгішесі</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> мұрағатталған қойынды бар.}other{<ph name="TABS_COUNT_MANY" /> мұрағатталған қойынды бар.}}</translation>
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашу</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
 <translation id="5094423602314093681">Қойындыларды өшіріп, топты жою қажет пе?</translation>
 <translation id="5161254044473106830">Тақырып қою қажет</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_ONE" /> қойынды бар.}other{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_MANY" /> қойынды бар.}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар қойындылар тобын жабу}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жабу}}</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
-<translation id="5545379293264651575">Тексермей жабу</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}}</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>
 <translation id="9216898458513705996">Қойындылар осы құрылғыда ашық қалады, бірақ топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жаю.}}</translation>
-<translation id="955558140275419384">Тазалау қажет барлық мұрағатталған қойындыны осы редакторға өту арқылы тексеріңіз.</translation>
 <translation id="959682366969460160">Реттеп қоя аласыз.</translation>
 <translation id="992256792861109788">Қызғылт</translation>
 </translationbundle>

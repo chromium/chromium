@@ -595,6 +595,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 
 Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể kiểm soát các quyền đối với ứng dụng Android trong phần <ph name="APPS_LINK_BEGIN" />Cài đặt ứng dụng<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Công cụ vẽ</translation>
+<translation id="1448963928642384376">Điểm phát sóng trên thiết bị của bạn</translation>
 <translation id="1449191289887455076">Hãy nhấn phím “<ph name="CURRENTKEY" />” một lần nữa để xác nhận công tắc đã gán và <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Mở hồ sơ khách</translation>
 <translation id="1451375123200651445">Trang web, Tệp đơn</translation>
@@ -4081,6 +4082,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3983586614702900908">thiết bị từ nhà cung cấp không xác định</translation>
 <translation id="3983764759749072418">Các ứng dụng trên Cửa hàng Play có quyền truy cập vào thiết bị này.</translation>
 <translation id="3983769721878416534">Độ trễ trước khi nhấp chuột</translation>
+<translation id="3983793589497399077">Nhấp vào một đối tượng hoặc kéo để chọn khu vực bạn muốn tìm kiếm bằng Ống kính</translation>
 <translation id="3984135167056005094">Không gửi địa chỉ email</translation>
 <translation id="3984159763196946143">Không thể khởi động chế độ trình diễn</translation>
 <translation id="3984431586879874039">Cho phép trang web này xem khóa bảo mật của bạn?</translation>

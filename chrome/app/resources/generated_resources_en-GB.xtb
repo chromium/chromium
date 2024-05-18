@@ -595,6 +595,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 
 Permissions that you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN" />Apps settings<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Brush tool</translation>
+<translation id="1448963928642384376">Your device hotspots</translation>
 <translation id="1449191289887455076">Press '<ph name="CURRENTKEY" />' again to confirm assignment and <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Open guest profile</translation>
 <translation id="1451375123200651445">Web page, Single File</translation>
@@ -4081,6 +4082,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3983586614702900908">devices from an unknown vendor</translation>
 <translation id="3983764759749072418">Play Store applications have access to this device.</translation>
 <translation id="3983769721878416534">Delay before click</translation>
+<translation id="3983793589497399077">Click or drag anywhere to search with Lens</translation>
 <translation id="3984135167056005094">Do not include email address</translation>
 <translation id="3984159763196946143">Couldn't start demo mode</translation>
 <translation id="3984431586879874039">Allow this site to see your security key?</translation>

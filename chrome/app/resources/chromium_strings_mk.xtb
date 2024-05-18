@@ -126,6 +126,7 @@
 <translation id="3155163173539279776">Рестартирајте го Chromium</translation>
 <translation id="3179665906251668410">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="3185330573522821672">Приспособете го вашиот нов профил на Chromium</translation>
+<translation id="318879170965183683">Додека сте најавени, може да ги користите лозинките од вашата сметка на Google во Chromium</translation>
 <translation id="3190315855212034486">Уф! Chromium падна. Да се стартува повторно веднаш?</translation>
 <translation id="3224847870593914902">Одјавете се од Chromium на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chromium</translation>
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
@@ -207,6 +208,8 @@
 <translation id="4501471624619070934">Не можеше да се инсталира затоа што пристапот е ограничен во земјава.</translation>
 <translation id="4510853178268397146">Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци. Chromium препорачува да ја отстраните.</translation>
 <translation id="452711251841752011">Добре дојдовте на Chromium; отворен е нов прозорец во прелистувачот</translation>
+<translation id="4531137820806573936">Chromium бара дозвола да ја мапира вашата околина и да ги следи вашите раце</translation>
+<translation id="4536805923587466102">Веќе сте најавени како <ph name="USER_EMAIL_ADDRESS" /> во друг профил на Chromium</translation>
 <translation id="4544142686420020088">Chromium не се ажурираше, нешто тргна наопаку. <ph name="BEGIN_LINK" />Поправете ги проблемите со ажурирањето на Chromium и со неуспешните ажурирања.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Сакате да продолжите на нов профил на Chromium?</translation>
 <translation id="4567424176335768812">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />. Сега може да пристапувате кон вашите обележувачи, историја и други поставки на сите најавени уреди.</translation>

@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Автоматично відкривати групи вкладок з інших пристроїв</translation>
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_YEARS_ONE" /> рік тому}one{Створено <ph name="NUM_YEARS_MANY" /> рік тому}few{Створено <ph name="NUM_YEARS_MANY" /> роки тому}many{Створено <ph name="NUM_YEARS_MANY" /> років тому}other{Створено <ph name="NUM_YEARS_MANY" /> року тому}}</translation>
-<translation id="1155815720264022949">Закрити старі вкладки?</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1197088940767939838">Оранжевий</translation>
-<translation id="1215127405478249895">Переглянути вкладки</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
 <translation id="1322824555808364080">Запросити користувачів</translation>
-<translation id="1326271443836399892">Перегляньте поточні налаштування для впорядкування вкладок.</translation>
 <translation id="1419023007528516122">Групу буде назавжди видалено з вашого пристрою</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створено <ph name="NUM_MINS_ONE" /> хвилину тому}one{Створено <ph name="NUM_MINS_MANY" /> хвилину тому}few{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}many{Створено <ph name="NUM_MINS_MANY" /> хвилин тому}other{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}}</translation>
 <translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Вимкнути відстеження товару</translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Значок кольору "<ph name="COLOR_NAME" />" для групи вкладок</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{У вас <ph name="TABS_COUNT_ONE" /> заархівована вкладка}one{У вас <ph name="TABS_COUNT_MANY" /> заархівована вкладка}few{У вас <ph name="TABS_COUNT_MANY" /> заархівовані вкладки}many{У вас <ph name="TABS_COUNT_MANY" /> заархівованих вкладок}other{У вас <ph name="TABS_COUNT_MANY" /> заархівованої вкладки}}</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
 <translation id="3322827343001922122">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Швидко порівнюйте сторінки, створивши групу. Щоб почати, натисніть і втримуйте посилання.</translation>
 <translation id="5094423602314093681">Вилучити вкладки й видалити групу?</translation>
 <translation id="5161254044473106830">Введіть назву</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{У вас є <ph name="TABS_COUNT_ONE" /> вкладка, яку ви давно не відкривали}one{У вас є <ph name="TABS_COUNT_MANY" /> вкладка, яку ви давно не відкривали}few{У вас є <ph name="TABS_COUNT_MANY" /> вкладки, які ви давно не відкривали}many{У вас є <ph name="TABS_COUNT_MANY" /> вкладок, які ви давно не відкривали}other{У вас є <ph name="TABS_COUNT_MANY" /> вкладки, які ви давно не відкривали}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="5339733443032484186">Остання вкладка</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
-<translation id="5545379293264651575">Закрити без перевірки</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Додати нову вкладку в групу</translation>
 <translation id="9216898458513705996">Вкладки залишатимуться відкритими на цьому пристрої, однак групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Розгорнути групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Перейдіть у цей редактор, щоб перевірити всі заархівовані вкладки й вилучити зайві.</translation>
 <translation id="959682366969460160">Упорядковуйте свої дані</translation>
 <translation id="992256792861109788">Рожевий</translation>
 </translationbundle>

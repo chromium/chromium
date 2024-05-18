@@ -596,6 +596,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 
 Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga app. Puwede mong kontrolin ang mga pahintulot para sa mga Android app sa <ph name="APPS_LINK_BEGIN" />Mga Setting ng Mga App<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Brush Tool</translation>
+<translation id="1448963928642384376">Mga hotspot ng iyong device</translation>
 <translation id="1449191289887455076">Pindutin ulit ang “<ph name="CURRENTKEY" />” para kumpirmahin ang pagtatalaga at <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Buksan ang Profile ng Bisita</translation>
 <translation id="1451375123200651445">Webpage, Iisang File</translation>
@@ -4082,6 +4083,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3983586614702900908">mga device mula sa isang hindi kilalang vendor</translation>
 <translation id="3983764759749072418">May access sa device na ito ang mga application sa Play Store.</translation>
 <translation id="3983769721878416534">Pagkaantala bago ang pag-click</translation>
+<translation id="3983793589497399077">Mag-click o mag-drag sa kahit saan para maghanap gamit ang Lens</translation>
 <translation id="3984135167056005094">Huwag isama ang email address</translation>
 <translation id="3984159763196946143">Hindi masimulan ang demo mode</translation>
 <translation id="3984431586879874039">Payagan ang site na ito na makita ang iyong security key?</translation>

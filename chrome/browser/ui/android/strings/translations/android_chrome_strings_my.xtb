@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay ရှိ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို အသွင်ဝှက်မည်မဟုတ်ပါ။ Chrome ရှိ ကြည့်ရှုမှုမှတ်တမ်းကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။
 သင်၏ စကားဝှက်စာသိသူသာ အသွင်ဝှက်ထားသော ဒေတာကို ဖတ်နိုင်သည်။ စကားဝှက်စာကို Google ထံ ပို့ခြင်း (သို့) သိမ်းခြင်း မရှိပါ။ သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1829244130665387512">စာမျက်နှာတွင် ရှာရန်</translation>
+<translation id="1832459821645506983">သဘောတူပါသည်</translation>
 <translation id="185383612275551373">Google မှ သက်ဆိုင်မှုအရှိဆုံး အကြောင်းအရာများရယူရန် စင့်ခ်လုပ်နိုင်သည်</translation>
 <translation id="1871098866036088250">Chrome ဘရောင်ဇာတွင် ဖွင့်ရန်</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">နောင်အတွက် သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာများထည့်ပါ</translation>
 <translation id="2956070106555335453">စုစုပေါင်း</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
-<translation id="296370266220139811">အချိန်သက်သာပြီး စာအနည်းငယ်သာရိုက်ပါ</translation>
 <translation id="2977350910003566746">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီနေသည်</translation>
 <translation id="297771753501244313">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီရန်</translation>
 <translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">လက်ခံရန် &amp; ဆက်ရန်</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် ရှေ့ဆက်၍မရပါ</translation>
 <translation id="3522247891732774234">အပ်ဒိတ်ရပါပြီ။ နောက်ထပ်ရွေးစရာများ</translation>
+<translation id="3523789730715594198">စင့်ခ်လုပ်ခြင်းကို ဆက်တင်များတွင် အချိန်မရွေး ရပ်နိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="3524138585025253783">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ UI</translation>
 <translation id="3524334353996115845">သင်ဖြစ်ကြောင်းအတည်ပြုရန် <ph name="ORIGIN" /> ကို ခွင့်ပြုပါ</translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>

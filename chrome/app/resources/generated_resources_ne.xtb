@@ -593,6 +593,7 @@
 
 तपाईंले एपहरूलाई दिइसक्नुभएका अनुमति यो खाताका हकमा पनि लागू हुन सक्छ। तपाईं <ph name="APPS_LINK_BEGIN" />एपका सेटिङ<ph name="APPS_LINK_END" />मा गई Android एपहरूलाई दिइएको अनुमति नियन्त्रण गर्न सक्नुहुन्छ।</translation>
 <translation id="1448779317883494811">ब्रस टुल</translation>
+<translation id="1448963928642384376">तपाईंको डिभाइसका हटस्पट</translation>
 <translation id="1449191289887455076">की तोक्ने काम पुष्टि गरेर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
 <translation id="1450484535522155181">अतिथि प्रोफाइल खोल्नुहोस्</translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
@@ -4065,6 +4066,7 @@
 <translation id="3983586614702900908">एक अज्ञात विक्रेता देखि उपकरणहरू</translation>
 <translation id="3983764759749072418">Play स्टोरका एपहरूले यस यन्त्रमाथि पहुँच राख्न सक्छन्।</translation>
 <translation id="3983769721878416534">क्लिक गर्नुभन्दा अघिको ढिलाइ</translation>
+<translation id="3983793589497399077">Lens मार्फत खोज्न जुनसुकै क्षेत्रमा क्लिक गर्नुहोस् वा जुनसुकै क्षेत्र चयन गर्नुहोस्</translation>
 <translation id="3984135167056005094">इमेल ठेगाना नहाल्नुहोस्</translation>
 <translation id="3984159763196946143">डेमो मोड सुरु गर्न सकिएन</translation>
 <translation id="3984431586879874039">यस साइटलाई तपाईंको सुरक्षा साँचो हेर्न दिने हो?</translation>

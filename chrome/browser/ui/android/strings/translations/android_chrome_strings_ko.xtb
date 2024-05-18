@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay의 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
 암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
+<translation id="1832459821645506983">예</translation>
 <translation id="185383612275551373">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">나중에 읽을 수 있도록 읽기 목록에 페이지를 추가합니다.</translation>
 <translation id="2956070106555335453">요약</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
-<translation id="296370266220139811">적게 입력하고 시간 절약하기</translation>
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
 <translation id="2979025552038692506">선택된 시크릿 탭</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3521388823983121502">ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)로 계속할 수 없음</translation>
 <translation id="3522247891732774234">업데이트할 수 있습니다. 옵션 더보기</translation>
+<translation id="3523789730715594198">언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="3524138585025253783">개발자 UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="3527085408025491307">폴더</translation>

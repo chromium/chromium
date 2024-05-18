@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
 เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
+<translation id="1832459821645506983">เอาสิ ตกลง</translation>
 <translation id="185383612275551373">ซิงค์เพื่อรับเนื้อหาที่เกี่ยวข้องที่สุดจาก Google</translation>
 <translation id="1871098866036088250">เปิดในเบราว์เซอร์ Chrome</translation>
 <translation id="1877026089748256423">Chrome ล้าสมัย</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">เพิ่มหน้าเว็บลงในเรื่องรออ่านไว้อ่านภายหลัง</translation>
 <translation id="2956070106555335453">สรุป</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> หน้า}other{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> หน้า}}</translation>
-<translation id="296370266220139811">ประหยัดเวลาและพิมพ์น้อยลง</translation>
 <translation id="2977350910003566746">จัดเรียงตามที่เปิดล่าสุด</translation>
 <translation id="297771753501244313">จัดเรียงตามที่เปิดล่าสุด</translation>
 <translation id="2979025552038692506">แท็บที่ไม่ระบุตัวตนที่เลือก</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">ยอมรับและทำต่อ</translation>
 <translation id="3521388823983121502">ดำเนินการต่อด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="3522247891732774234">มีการอัปเดตให้บริการ ตัวเลือกเพิ่มเติม</translation>
+<translation id="3523789730715594198">คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="3524138585025253783">UI นักพัฒนาซอฟต์แวร์</translation>
 <translation id="3524334353996115845">ให้ <ph name="ORIGIN" /> ยืนยันตัวตนของคุณ</translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>

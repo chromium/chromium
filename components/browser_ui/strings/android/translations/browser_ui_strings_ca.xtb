@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> La teva darrera pestanya</translation>
 <translation id="6064125863973209585">Baixades completades</translation>
 <translation id="6071501408666570960">És possible que se't tanqui la sessió d'aquest lloc web</translation>
 <translation id="6120483543004435978">Quan aquesta opció està activada, els llocs web poden demanar permís per saber si estàs utilitzant el teu dispositiu de manera activa. Quan aquesta opció està desactivada, els llocs web no poden saber si estàs utilitzant el teu dispositiu de manera activa.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">Selecciona un contacte</translation>
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> De: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>

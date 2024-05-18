@@ -82,7 +82,7 @@
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384704387250346179">Prevedi sliku Google Objektivom <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivan prije <ph name="LAST_UPDATED" /> dana</translation>
-<translation id="1390418506739274310">Možete vidjeti povijest iz drugih aplikacija koje otvaraju veze u Chromeu. Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="1390418506739274310">Možete vidjeti historiju iz drugih aplikacija koje otvaraju linkove u Chromeu. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše ime i prezime, adresu e-pošte, adresu i sliku profila s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK1" />Uslove korištenja usluge<ph name="END_LINK1" /> ove web lokacije.</translation>
 <translation id="1397811292916898096">Pretražite pomoću proizvoda <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tamna tema</translation>
@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Načini plaćanja i adrese s Google Paya se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
+<translation id="1832459821645506983">Pristajem</translation>
 <translation id="185383612275551373">Sinhronizirajte da preuzmete najrelevantniji sadržaj s Googlea</translation>
 <translation id="1871098866036088250">Otvori u pregledniku Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastario</translation>
@@ -374,7 +375,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2951071800649516099">Dodajte stranice na listu za čitanje za kasnije</translation>
 <translation id="2956070106555335453">Sažetak</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
-<translation id="296370266220139811">Uštedite vrijeme i pišite manje</translation>
 <translation id="2977350910003566746">Sortiranje prema posljednjem otvorenom</translation>
 <translation id="297771753501244313">Poredaj po poslj. otvaranju</translation>
 <translation id="2979025552038692506">Odabrana je anonimna kartica</translation>
@@ -390,7 +390,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3003253259757197230">URL-ovi koje posjetite šalju se Googleu radi predviđanja koje web lokacije ćete možda posjetiti sljedeće i za prikaz dodatnih informacija o stranici koju posjećujete</translation>
 <translation id="3026955690410463085">Uvrsti link</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na web lokaciji. Postavka je uključena.</translation>
-<translation id="3027950907978057636">Izvor: <ph name="APP_LABEL" /></translation>
+<translation id="3027950907978057636">Iz aplikacije <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Nema predučitavanja</translation>
 <translation id="3029704984691124060">Pristupni izrazi se ne podudaraju</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
@@ -484,6 +484,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3521388823983121502">Nije moguće nastaviti s pružaocem usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Dostupno je ažuriranje. Više opcija</translation>
+<translation id="3523789730715594198">Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="3524138585025253783">Korisnički interfejs za programere</translation>
 <translation id="3524334353996115845">Dozvolite da <ph name="ORIGIN" /> potvrdi vaš identitet</translation>
 <translation id="3527085408025491307">Folder</translation>

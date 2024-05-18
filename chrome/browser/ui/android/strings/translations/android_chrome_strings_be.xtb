@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Спосабы аплаты і адрасы з Google Pay не будуць шыфравацца. Гісторыя прагляду сайтаў у Chrome не будзе сінхранізавацца.
 Прачытаць вашы зашыфраваныя даныя змогуць толькі карыстальнікі, якія ведаюць фразу-пароль. Google не атрымлівае і не захоўвае яе. Калі вы забудзеце фразу-пароль або захочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
+<translation id="1832459821645506983">Так, згаджаюся</translation>
 <translation id="185383612275551373">Каб атрымліваць найбольш адпаведнае змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="1871098866036088250">Адкрываць у браўзеры Chrome</translation>
 <translation id="1877026089748256423">Chrome састарэў</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">Захоўвайце старонкі, каб прачытаць іх пазней, – дадавайце іх у спіс на прагляд</translation>
 <translation id="2956070106555335453">Зводка</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
-<translation id="296370266220139811">Эканомце час, менш пішыце</translation>
 <translation id="2977350910003566746">Адсартавана па часе апошняга адкрыцця</translation>
 <translation id="297771753501244313">Па часе адкрыцця</translation>
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">Прыняць і працягнуць</translation>
 <translation id="3521388823983121502">Не ўдалося выканаць уваход з дапамогай сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="3522247891732774234">З'явілася абнаўленне. Дадатковыя параметры</translation>
+<translation id="3523789730715594198">Вы можаце ў любы час спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
 <translation id="3524138585025253783">Інтэрфейс для распрацоўшчыкаў</translation>
 <translation id="3524334353996115845">Дазвольце сайту <ph name="ORIGIN" /> спраўдзіць вашу асобу</translation>
 <translation id="3527085408025491307">Папка</translation>

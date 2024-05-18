@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384704387250346179">Перевести с помощью Google Объектива <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Последние действия: <ph name="LAST_UPDATED" /> дн. назад</translation>
+<translation id="1390418506739274310">Вы можете видеть историю из приложений, которые открывают ссылки в Chrome. В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />условиями предоставления услуг<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Поиск в <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Способы оплаты и адреса из Google Pay не будут шифроваться, а история браузера Chrome – синхронизироваться.
 Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
+<translation id="1832459821645506983">ОК</translation>
 <translation id="185383612275551373">Чтобы получать все самое актуальное от Google, включите синхронизацию.</translation>
 <translation id="1871098866036088250">Открывать в браузере Chrome</translation>
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
@@ -373,7 +375,6 @@
 <translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
 <translation id="2956070106555335453">Сводка</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
-<translation id="296370266220139811">Экономьте время на вводе</translation>
 <translation id="2977350910003566746">Сортировка по дате использования</translation>
 <translation id="297771753501244313">По дате использования</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">Чтобы предсказывать ваши дальнейшие запросы и показывать дополнительную информацию о просматриваемых страницах, URL посещенных вами сайтов отправляются в Google.</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3027644380269727216">Подбирается на основе ваших действий на сайте. Параметр включен.</translation>
+<translation id="3027950907978057636">Из приложения "<ph name="APP_LABEL" />"</translation>
 <translation id="3029276696788198026">Без предзагрузки</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="3518985090088779359">Продолжить</translation>
 <translation id="3521388823983121502">Не удалось войти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Доступно обновление. Другие параметры…</translation>
+<translation id="3523789730715594198">Синхронизацию можно в любой момент отключить в настройках. Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
 <translation id="3524138585025253783">Интерфейс разработчика</translation>
 <translation id="3524334353996115845">Сайт <ph name="ORIGIN" /> подтвердит вашу личность.</translation>
 <translation id="3527085408025491307">Папка</translation>

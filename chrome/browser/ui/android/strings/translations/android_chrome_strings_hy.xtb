@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384704387250346179">Թարգմանել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ակտիվ է եղել <ph name="LAST_UPDATED" /> օր առաջ</translation>
+<translation id="1390418506739274310">Դուք կարող եք տեսնել պատմությունը այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։ Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր, որոնք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="13931502444227376">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Վճարման եղանակները և Google Pay-ի հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
 Միայն ձեր անցաբառն ունեցող մարդիկ կարող են կարդալ ձեր գաղտնագրված տվյալները։ Անցաբառը չի ուղարկվում Google-ին կամ պահվում նրա կողմից։ Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
+<translation id="1832459821645506983">Այո, թույլատրել</translation>
 <translation id="185383612275551373">Կատարեք համաժամացում, որպեսզի առավել համապատասխան բովանդակություն ստանաք Google-ից</translation>
 <translation id="1871098866036088250">Բացել Chrome դիտարկիչում</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
@@ -373,7 +375,6 @@
 <translation id="2951071800649516099">Ավելացրեք էջեր ձեր ընթերցանության ցանկում</translation>
 <translation id="2956070106555335453">Ամփոփագիր</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> չկարդացված էջ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}}</translation>
-<translation id="296370266220139811">Քիչ մուտքագրելով՝ ժամանակ խնայեք</translation>
 <translation id="2977350910003566746">Տեսակավորում ըստ վերջին բացվածի</translation>
 <translation id="297771753501244313">Ըստ օգտագործման ամսաթվի</translation>
 <translation id="2979025552038692506">Ընտրված ինկոգնիտո ներդիր</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել, և ցուցադրելու լրացուցիչ տեղեկություններ ձեր այցելած էջի մասին</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
 <translation id="3027644380269727216">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումը միացված է։</translation>
+<translation id="3027950907978057636"><ph name="APP_LABEL" /> հավելվածից</translation>
 <translation id="3029276696788198026">Առանց նախաբեռնման</translation>
 <translation id="3029704984691124060">Անցաբառերը չեն համընկնում</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="3518985090088779359">Ընդունել և շարունակել</translation>
 <translation id="3521388823983121502">Չհաջողվեց շարունակել <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ի օգնությամբ</translation>
 <translation id="3522247891732774234">Առկա է թարմացում: Լրացուցիչ ընտրանքներ</translation>
+<translation id="3523789730715594198">Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="3524138585025253783">Մշակողի միջերես</translation>
 <translation id="3524334353996115845">Թույլ տվեք, որ <ph name="ORIGIN" /> կայքը ստուգի ձեր ինքնությունը</translation>
 <translation id="3527085408025491307">Պանակ</translation>

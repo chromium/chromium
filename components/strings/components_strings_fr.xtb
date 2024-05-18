@@ -570,6 +570,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2046951263634619614">Librairies</translation>
 <translation id="2048261947532620704">Traduction de la page</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
+<translation id="2055461225779831292">Utiliser et bouger vos caméras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Verrouiller le pointeur de la souris</translation>
 <translation id="2056658168519009885">Les sites peuvent demander des informations à Chrome pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
@@ -717,6 +718,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2300306941146563769">Non importé</translation>
 <translation id="2301098101308036335">Quels sites Web sont consultés et à quel moment.</translation>
 <translation id="230286397113210245">Bouton "Ouvrir une fenêtre de navigation privée" à activer pour ouvrir une nouvelle fenêtre de navigation privée</translation>
+<translation id="2306124309679506798">Autoriser une expérience immersive ?</translation>
 <translation id="2312234273148520048">Sauces et condiments</translation>
 <translation id="2316087952091171402">Moins de <ph name="UPPER_ESTIMATE" />. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
 <translation id="2316159751672436664">Personnaliser vos outils d'accessibilité dans les paramètres Chrome OS</translation>
@@ -1172,6 +1174,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3240791268468473923">La bottom sheet indiquant qu'aucun identifiant ne correspond pour le paiement sécurisé est ouverte</translation>
 <translation id="324180406144491771">Les liens de "<ph name="HOST_NAME" />" sont bloqués</translation>
+<translation id="3248329428895535435">Ne pas afficher sur ce site</translation>
 <translation id="3252772880526154546">Architecture</translation>
 <translation id="3254301855501243548">18 x 22 pouces</translation>
 <translation id="3255926992597692024">Chromium tente de modifier les paramètres de saisie des modes de paiement.</translation>
@@ -1606,6 +1609,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4082333119419111506">Papier (préimprimé)</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
 <translation id="4084219288110917128">Enveloppe C1</translation>
+<translation id="4085326869263783566">M'aider à écrire. Appuyer sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
 <translation id="4088981014127559358">Décalage Y de l'image côté 1</translation>
 <translation id="4089152113577680600">Bac 14</translation>
 <translation id="4092349052316400070">Remplir le champ de l'adresse</translation>
@@ -3787,6 +3791,7 @@ Informations supplémentaires :
 <translation id="8263001937536038617">Services photo et vidéo</translation>
 <translation id="8265992338205884890">Données visibles</translation>
 <translation id="8267698848189296333">Connexion en tant que <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Documents séparés/Copies assemblées</translation>
 <translation id="8269703227894255363">{0,plural, =1{Ouverture bloquée pour le fichier}one{Ouverture bloquée pour <ph name="FILE_COUNT" /> fichier}other{Ouverture bloquée pour <ph name="FILE_COUNT" /> fichiers}}</translation>
 <translation id="8270173610195068258">Justice et criminalité</translation>
@@ -4206,6 +4211,7 @@ Informations supplémentaires :
 <translation id="9094544726794842788">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas</translation>
 <translation id="9095388113577226029">Plus de langues…</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> ; appuyez sur Tabulation, puis sur Entrée pour définir Chrome comme navigateur par défaut dans les réglages iOS</translation>
+<translation id="9101450247048146228">Utiliser et bouger la/les caméra(s) (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bac 1</translation>
 <translation id="9103872766612412690">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos informations. Lors de la dernière tentative de connexion de Chromium au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Il est possible qu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi ait interrompu la connexion. Vos informations restent sécurisées, car nous avons arrêté la connexion avant l'échange des données.</translation>
 <translation id="9107467864910557787">Votre navigateur est géré par <ph name="MANAGER" /></translation>
@@ -4228,6 +4234,7 @@ Informations supplémentaires :
 <translation id="9139318394846604261">Achats</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
 <translation id="9144951720726881238">Date d'expiration :</translation>
+<translation id="9145910032514306808"><ph name="BEGIN_LINK" />Reconnectez-vous<ph name="END_LINK" />, puis revenez sur cet onglet pour obtenir de l'aide pour écrire</translation>
 <translation id="9148507642005240123">&amp;Annuler la modification</translation>
 <translation id="9148599396704355100">Prix bas</translation>
 <translation id="9150025764986957246">Exemples de ce que vous pouvez saisir :</translation>

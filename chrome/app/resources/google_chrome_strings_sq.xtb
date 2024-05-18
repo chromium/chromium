@@ -48,6 +48,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
+<translation id="1679594062619799116">Mund të përdorësh fjalëkalimet e tua nga "Llogaria jote e Google" në Chrome ndërkohë që je identifikuar</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -183,6 +184,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3564543103555793392">Kur identifikohesh në Chrome, mund të ruash faqeshënuesit, fjalëkalimet etj. dhe më pas mund t'i përdorësh ato në telefonin tënd</translation>
 <translation id="3576528680708590453">Administratori i sistemit ka konfiguruar Google Chrome që të hapë një shfletues alternativ për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinkronizo dhe personalizo Chrome nëpër pajisjet e tua</translation>
+<translation id="3583751698304738917">Je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chrome</translation>
 <translation id="3595784445906693824">Do të identifikohesh në Chrome në një profil të ri?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
@@ -357,6 +359,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6288788894729749483">Cakto Chrome si shfletuesin e parazgjedhur për të vepruar, krijuar dhe eksploruar me siguri online</translation>
 <translation id="6291089322031436445">Aplikacionet e Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
+<translation id="6319856120645568262">Chrome ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6360449101159168105">Kur kjo skedë ishte joaktive, memoria u lirua që Chrome të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>

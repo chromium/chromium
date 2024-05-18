@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Các địa chỉ và phương thức thanh toán trên Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
+<translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="185383612275551373">Đồng bộ hoá để xem nội dung phù hợp nhất trên Google</translation>
 <translation id="1871098866036088250">Mở trong trình duyệt Chrome</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
@@ -374,7 +375,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2951071800649516099">Thêm các trang vào danh sách đọc để đọc sau</translation>
 <translation id="2956070106555335453">Tổng hợp</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
-<translation id="296370266220139811">Tiết kiệm thời gian, công sức nhập</translation>
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
 <translation id="2979025552038692506">Thẻ ẩn danh được chọn</translation>
@@ -484,6 +484,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3521388823983121502">Không thể tiếp tục với <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Bản cập nhật có sẵn. Tùy chọn khác</translation>
+<translation id="3523789730715594198">Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="3524138585025253783">Giao diện người dùng dành cho nhà phát triển</translation>
 <translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>

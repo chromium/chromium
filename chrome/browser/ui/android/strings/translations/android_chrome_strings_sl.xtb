@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Poiščite na strani</translation>
+<translation id="1832459821645506983">Da, sem za</translation>
 <translation id="185383612275551373">S sinhronizacijo si zagotovite najustreznejšo vsebino iz Googla.</translation>
 <translation id="1871098866036088250">Odpri v brskalniku Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
@@ -374,7 +375,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2951071800649516099">Dodajte strani na bralni seznam za pozneje.</translation>
 <translation id="2956070106555335453">Povzetek</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neprebrana stran}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrana stran}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrani strani}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrane strani}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebranih strani}}</translation>
-<translation id="296370266220139811">Prihranite čas in tipkajte manj</translation>
 <translation id="2977350910003566746">Razvrščanje po nazadnje odprtih</translation>
 <translation id="297771753501244313">Razvrsti po naz. odprt.</translation>
 <translation id="2979025552038692506">Izbrani anonimni zavihek</translation>
@@ -484,6 +484,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3518985090088779359">Sprejmi in nadaljuj</translation>
 <translation id="3521388823983121502">Z računom ponudnika identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ni mogoče nadaljevati</translation>
 <translation id="3522247891732774234">Posodobitev je na voljo. Več možnosti.</translation>
+<translation id="3523789730715594198">Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="3524138585025253783">Uporabniški vmesnik za razvijalce</translation>
 <translation id="3524334353996115845">Naj <ph name="ORIGIN" /> preveri, da sta to vi.</translation>
 <translation id="3527085408025491307">Mapa</translation>

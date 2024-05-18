@@ -122,6 +122,7 @@
 <translation id="2770231113462710648">Cambia browser predefinito con:</translation>
 <translation id="2775140325783767197">Chrome non può controllare le tue password. Prova a controllare la connessione a Internet.</translation>
 <translation id="2799223571221894425">Riavvia</translation>
+<translation id="2825024317344269723">Sito pericoloso. Chrome ha rimosso le notifiche.</translation>
 <translation id="2846251086934905009">Errore di installazione: il programma di installazione non è stato completato. L'installazione è stata interrotta.</translation>
 <translation id="2847461019998147611">Visualizza Google Chrome in questa lingua</translation>
 <translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
@@ -183,6 +184,7 @@
 <translation id="3583751698304738917">Hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /> in un altro profilo Chrome</translation>
 <translation id="3595784445906693824">Accedere a Chrome in un nuovo profilo?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="3609788354808247807">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
@@ -328,6 +330,7 @@
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5941830788786076944">Imposta Google Chrome come browser predefinito</translation>
 <translation id="5947104538377036631">Scorciatoia Chrome</translation>
+<translation id="5953954252731207958">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">Con gli <ph name="BEGIN_LINK" />strumenti di Chrome<ph name="END_LINK" /> puoi navigare in sicurezza e tenere tutto sotto controllo</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
@@ -342,6 +345,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
+<translation id="6200139057479872438">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
 <translation id="624230925347970731">Chrome verrà chiuso a breve</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
@@ -439,6 +443,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7651907282515937834">Logo di Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
 <translation id="7655455401911432608">La cronologia di navigazione, ossia un record dei siti visitati da Chrome sul dispositivo in uso.</translation>
+<translation id="7661924425853052955">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="COUNT" /> autorizzazioni</translation>
 <translation id="7668816516367091728">Esegui attività come tradurre, calcolare e altro ancora direttamente dalla barra degli indirizzi</translation>
 <translation id="769538538642757151">Chrome ti avviserà qualora fosse necessario un controllo da parte tua</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>

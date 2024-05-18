@@ -123,6 +123,7 @@
 <translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
 <translation id="2775140325783767197">A Chrome nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
+<translation id="2825024317344269723">Veszélyes webhely. A Chrome eltávolította az értesítéseket.</translation>
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>
 <translation id="2847461019998147611">A Google Chrome megjelenítése ezen a nyelven</translation>
 <translation id="2853415089995957805">A Chrome előtölt olyan oldalakat, amelyeket Ön valószínűleg felkeres, így ha Ön valóban felkeresi őket, gyorsabban töltődnek be</translation>
@@ -184,6 +185,7 @@
 <translation id="3583751698304738917">Már be van jelentkezve a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókkal egy másik Chrome-profilban.</translation>
 <translation id="3595784445906693824">Új profillal jelentkezik be a Chrome-ba?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
+<translation id="3609788354808247807">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Google-fiókjával most még egyszerűbben használhatja a Chrome-ot közösen használt számítógépeken.</translation>
 <translation id="3635073343384702370">A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
@@ -329,6 +331,7 @@
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5941830788786076944">A Google Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="5947104538377036631">Chrome-parancsikon</translation>
+<translation id="5953954252731207958">Nem látogatta meg mostanában. A Chrome eltávolította a következőt: <ph name="PERMISSION" />.</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
 <translation id="6014316319780893079">A <ph name="BEGIN_LINK" />Chrome eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
@@ -343,6 +346,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
+<translation id="6200139057479872438">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" />.</translation>
 <translation id="6235018212288296708">Bejövő szabály a Google Chrome-hoz az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="624230925347970731">A Chrome hamarosan bezáródik</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
@@ -440,6 +444,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7651907282515937834">Chrome Enterprise-embléma</translation>
 <translation id="76531479118467370">A Chrome letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>
 <translation id="7655455401911432608">Böngészési előzményei és az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
+<translation id="7661924425853052955">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Közvetlenül a címsávból hajthat végre feladatokat, például fordításokat, számításokat és egyebeket</translation>
 <translation id="769538538642757151">A Chrome értesíti Önt, ha bármit érdemes áttekintenie</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>

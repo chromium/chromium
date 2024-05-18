@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Buka otomatis grup tab dari perangkat lain</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_YEARS_ONE" /> tahun lalu}other{Dibuat <ph name="NUM_YEARS_MANY" /> tahun lalu}}</translation>
-<translation id="1155815720264022949">Ingin menutup tab lama?</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1197088940767939838">Oranye</translation>
-<translation id="1215127405478249895">Tinjau tab</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1322824555808364080">Undang orang</translation>
-<translation id="1326271443836399892">Tinjau setelan merapikan saat ini.</translation>
 <translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Dibuat <ph name="NUM_MINS_ONE" /> menit lalu}other{Dibuat <ph name="NUM_MINS_MANY" /> menit lalu}}</translation>
 <translation id="1499635324672558517">Tutup semua tab Samaran?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Hentikan pemantauan produk</translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikon warna grup tab <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Anda memiliki <ph name="TABS_COUNT_ONE" /> tab yang diarsipkan}other{Anda memiliki <ph name="TABS_COUNT_MANY" /> tab yang diarsipkan}}</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>
 <translation id="3322827343001922122">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
 <translation id="5094423602314093681">Hapus tab dan grup?</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Anda memiliki <ph name="TABS_COUNT_ONE" /> tab yang belum digunakan baru-baru ini}other{Anda memiliki <ph name="TABS_COUNT_MANY" /> tab yang belum digunakan baru-baru ini}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="5339733443032484186">Tab terakhir Anda</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
-<translation id="5545379293264651575">Tutup tanpa meninjau</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>
 <translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Masuk ke editor ini untuk meninjau dan merapikan semua tab yang diarsipkan.</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

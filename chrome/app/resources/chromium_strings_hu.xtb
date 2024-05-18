@@ -69,6 +69,8 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="2185166961232948079">Chromium – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Frissítés-ellenőrzési hiba: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2210682093923538346">Veszélyes webhely. A Chromium eltávolította az értesítéseket.</translation>
+<translation id="2240214816234246077">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Ha megoszt egy számítógépet, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chromiumot.</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="2329088755516916767">Ha be van kapcsolva ez a beállítás, a Chromium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést.</translation>
@@ -267,6 +269,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
+<translation id="5761096224651992291">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="5800158606660203929">Személyre szabhatja a Chromium működését. Beállíthatja a Chromiumot alapértelmezettként.</translation>
 <translation id="5809516625706423866">Nem lehet csatlakozni az internethez. „HTTP 401 Unauthorized” hiba. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
@@ -350,6 +353,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6729124504294600478">A személyre szabás és az egyéb funkciók használatához vegye fel a Chromiumot az Internetes és alkalmazástevékenységek közé, valamint az összekapcsolt Google-szolgáltatásokba</translation>
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
+<translation id="674245979920622322">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">A Chromium a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="6779406956731413166">A ChromiumOS létrejöttéhez további <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
@@ -402,6 +406,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="753534427205733210">{0,plural, =1{A Chromium 1 percen belül újraindul}other{A Chromium # percen belül újraindul}}</translation>
 <translation id="7582945390259497898">A Chromium meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chromiumtól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-telepítő</translation>
+<translation id="7585391435984513350">Nem látogatta meg mostanában. A Chromium eltávolította a következőt: <ph name="PERMISSION" />.</translation>
 <translation id="761356813943268536">A Chromium használja a kamerát és a mikrofont.</translation>
 <translation id="7617377681829253106">A Chromium még jobb lett</translation>
 <translation id="7649070708921625228">Súgó</translation>

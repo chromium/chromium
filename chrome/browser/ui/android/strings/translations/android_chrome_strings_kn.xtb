@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.
 ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಹೊಂದಿರುವವರು ಮಾತ್ರ ನಿಮ್ಮ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ಓದಬಹುದು. ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಅದನ್ನು Google ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ. ನೀವು ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಮರೆತರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
+<translation id="1832459821645506983">ಹೌದು, ನಾನು ಸಮ್ಮತಿಸುತ್ತೇನೆ</translation>
 <translation id="185383612275551373">Google ನಿಂದ ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಕಂಟೆಂಟ್ ಅನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1871098866036088250">Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1877026089748256423">Chrome ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">ನಂತರದಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2956070106555335453">ಸಾರಾಂಶ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ಓದದಿರುವ ಪುಟ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}}</translation>
-<translation id="296370266220139811">ಸಮಯ ಉಳಿಸಿ ಮತ್ತು ಟೈಪಿಂಗ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="2977350910003566746">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಎಂಬ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="297771753501244313">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="2979025552038692506">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">ಸಮ್ಮತಿಸು &amp; ಮುಂದುವರಿಸು</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗೆ ಮುಂದುವರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3522247891732774234">ಅಪ್‌ಡೇಟ್‌ ಲಭ್ಯವಿದೆ. ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
+<translation id="3523789730715594198">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
 <translation id="3524138585025253783">ಡೆವಲಪರ್ UI</translation>
 <translation id="3524334353996115845">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಲು <ph name="ORIGIN" /> ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="3527085408025491307">ಫೋಲ್ಡರ್</translation>

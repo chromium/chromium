@@ -596,6 +596,7 @@
 
 አስቀድመው ለመተግበሪያዎች የሰጧቸው ፈቃዶች በዚህ መለያ ላይ ተፈጻሚ ሊሆኑ ይችላሉ። ለAndroid መተግበሪያዎች ፈቃዶችን በ<ph name="APPS_LINK_BEGIN" />መተግበሪያዎች ቅንብሮች<ph name="APPS_LINK_END" /> ውስጥ መቆጣጠር ይችላሉ።</translation>
 <translation id="1448779317883494811">የብሩሽ መሣሪያ</translation>
+<translation id="1448963928642384376">የመሣሪያዎ መገናኛ ነጥቦች</translation>
 <translation id="1449191289887455076">ምደባን እና <ph name="RESPONSE" />ን ለማረጋገጥ «<ph name="CURRENTKEY" />»ን በድጋሜ ይጫኑ።</translation>
 <translation id="1450484535522155181">የእንግዳ መገለጫን ይይክፈቱ</translation>
 <translation id="1451375123200651445">ድረ-ገፅ፣ ነጠላ ፋይል</translation>
@@ -4076,6 +4077,7 @@
 <translation id="3983586614702900908">ያልታወቀ አቅራቢ መሣሪያዎች</translation>
 <translation id="3983764759749072418">የPlay መደብር መተግበሪያዎች የዚህ መሣሪያ መዳረሻ አላቸው።</translation>
 <translation id="3983769721878416534">ጠቅ ከማድረግ በፊት መዘግየት</translation>
+<translation id="3983793589497399077">በሌንስ ለመፈለግ ጠቅ ያድርጉ ወይም ወደ የትኛውም ቦታ ይጎትቱ</translation>
 <translation id="3984135167056005094">የኢሜይል አድራሻን አያካትቱ</translation>
 <translation id="3984159763196946143">የማሳያ ሁነታውን መጀመር አልተቻለም</translation>
 <translation id="3984431586879874039">ይህ ጣቢያ የደህንነት ቁልፍዎ እንዲመለከት ይፈቀድለት?</translation>

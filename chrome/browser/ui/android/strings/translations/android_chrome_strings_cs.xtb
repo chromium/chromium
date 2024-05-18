@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
+<translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="13931502444227376">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek. Přečtěte si <ph name="BEGIN_LINK1" />smluvní podmínky<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Platební metody a adresy z Google Pay nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
 Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Najít na stránce</translation>
+<translation id="1832459821645506983">Ano, souhlasím</translation>
 <translation id="185383612275551373">Pokud chcete získat nejrelevantnější obsah z Googlu, zapněte synchronizaci</translation>
 <translation id="1871098866036088250">Otevřít v prohlížeči Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
@@ -373,7 +375,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2951071800649516099">Přidejte si stránky na seznam četby na později</translation>
 <translation id="2956070106555335453">Přehled</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepřečtená stránka}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtené stránky}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtené stránky}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtených stránek}}</translation>
-<translation id="296370266220139811">Šetřete čas a méně pište</translation>
 <translation id="2977350910003566746">Řazení podle posledního otevření</translation>
 <translation id="297771753501244313">Seřadit podle posledního otevření</translation>
 <translation id="2979025552038692506">Vybraná anonymní karta</translation>
@@ -389,6 +390,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3003253259757197230">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další, a mohl vám také zobrazit další informace o stránce, kterou si právě prohlížíte</translation>
 <translation id="3026955690410463085">Zahrnout odkaz</translation>
 <translation id="3027644380269727216">Na základě vaší aktivity na webu. Toto nastavení je zapnuté.</translation>
+<translation id="3027950907978057636">Zdroj: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Žádné předběžné načítání</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3518985090088779359">PŘIJMOUT A POKRAČOVAT</translation>
 <translation id="3521388823983121502">S <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nelze pokračovat</translation>
 <translation id="3522247891732774234">K dispozici je aktualizace. Další možnosti</translation>
+<translation id="3523789730715594198">Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="3524138585025253783">Uživatelské rozhraní pro vývojáře</translation>
 <translation id="3524334353996115845">Umožnit webu <ph name="ORIGIN" /> ověřit vaši totožnost</translation>
 <translation id="3527085408025491307">Složka</translation>

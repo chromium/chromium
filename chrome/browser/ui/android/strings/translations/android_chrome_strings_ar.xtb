@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
+<translation id="1832459821645506983">نعم، أوافق</translation>
 <translation id="185383612275551373">‏يمكنك تفعيل المزامنة للحصول على المحتوى الأكثر صلة من Google.</translation>
 <translation id="1871098866036088250">‏فتح في متصفّح Chrome</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
@@ -375,7 +376,6 @@
 <translation id="2951071800649516099">يمكنك إضافة صفحات إلى قائمة القراءة للاطّلاع عليها لاحقًا</translation>
 <translation id="2956070106555335453">ملخّص</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
-<translation id="296370266220139811">توفير الوقت والانتقال سريعًا</translation>
 <translation id="2977350910003566746">جارٍ الترتيب حسب آخِر استخدام</translation>
 <translation id="297771753501244313">الترتيب حسب آخِر استخدام</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
@@ -486,6 +486,7 @@
 <translation id="3518985090088779359">القبول والمتابعة</translation>
 <translation id="3521388823983121502">تتعذّر المتابعة باستخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3522247891732774234">التحديث متاح. مزيد من الخيارات</translation>
+<translation id="3523789730715594198">‏يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="3524138585025253783">واجهة مستخدم مطوّر البرامج</translation>
 <translation id="3524334353996115845">السماح للموقع الإلكتروني <ph name="ORIGIN" /> بإثبات هويّتك</translation>
 <translation id="3527085408025491307">المجلد</translation>

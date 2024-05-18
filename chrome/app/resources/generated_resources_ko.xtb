@@ -595,6 +595,7 @@
 
 이 계정에는 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="APPS_LINK_BEGIN" />앱 설정<ph name="APPS_LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
 <translation id="1448779317883494811">브러시 도구</translation>
+<translation id="1448963928642384376">기기 핫스팟</translation>
 <translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="1450484535522155181">게스트 프로필 열기</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
@@ -4083,6 +4084,7 @@
 <translation id="3983586614702900908">알 수 없는 공급업체의 기기</translation>
 <translation id="3983764759749072418">Play 스토어 애플리케이션이 이 기기에 액세스할 수 있습니다.</translation>
 <translation id="3983769721878416534">지연 후 클릭</translation>
+<translation id="3983793589497399077">아무 곳이나 클릭하거나 드래그하여 렌즈로 검색</translation>
 <translation id="3984135167056005094">이메일 주소를 포함하지 않음</translation>
 <translation id="3984159763196946143">데모 모드를 시작할 수 없음</translation>
 <translation id="3984431586879874039">이 사이트에서 보안 키를 보도록 허용할까요?</translation>

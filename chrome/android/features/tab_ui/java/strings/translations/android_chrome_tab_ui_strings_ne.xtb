@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षअघि बनाइएको}other{<ph name="NUM_YEARS_MANY" /> वर्षअघि बनाइएको}}</translation>
-<translation id="1155815720264022949">पुराना ट्याबहरू बन्द गर्न चाहनुहुन्छ?</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
-<translation id="1215127405478249895">ट्याबहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="125153950246128346">अर्को ट्याब हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="1322824555808364080">मान्छेहरूलाई निम्तो गर्नुहोस्</translation>
-<translation id="1326271443836399892">अनावश्यक वस्तुहरू हटाउनेसम्बन्धी हालका सेटिङको समीक्षा गर्नुहोस्।</translation>
 <translation id="1419023007528516122">तपाईंले यसो गर्नुभयो भने तपाईंको डिभाइसबाट यो समूह सदाका लागि मेटाइने छ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि बनाइएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि बनाइएको}}</translation>
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">उत्पादनको मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3078350928901129212">ट्याब समूहको आइकनको रङ <ph name="COLOR_NAME" /> छ</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{तपाईंसँग अभिलेखमा राखिएको <ph name="TABS_COUNT_ONE" /> ट्याब छ}other{तपाईंसँग अभिलेखमा राखिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याबहरू छन्}}</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3291470810748040983">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य कम हुँदा तपाईंलाई अलर्ट पठाइने छ</translation>
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्</translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">कुनै समूह बनाएर द्रुत रूपमा पृष्ठहरूको तुलना गर्नुहोस्। सुरु गर्न कुनै लिंकमा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="5094423602314093681">ट्याब(हरू) हटाउने र समूह मेटाउने हो?</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{तपाईंले हालसालै <ph name="TABS_COUNT_ONE" /> ट्याब प्रयोग गर्नुभएको छैन}other{तपाईंले हालसालै <ph name="TABS_COUNT_MANY" /> वटा ट्याब प्रयोग गर्नुभएको छैन}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5339733443032484186">तपाईंको अन्तिम ट्याब</translation>
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
-<translation id="5545379293264651575">समीक्षा नगरिकनै बन्द गर्नुहोस्</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome को <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome का <ph name="TABS_COUNT_MANY" /> वटा लिंक}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="9216898458513705996">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
-<translation id="955558140275419384">यो एडिटरमा गएर अनावश्यक वस्तुहरू हटाउन आफ्ना अभिलेखमा राखिएका सबै ट्याबहरूको समीक्षा गर्नुहोस्।</translation>
 <translation id="959682366969460160">व्यवस्थित गर्नुहोस्</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

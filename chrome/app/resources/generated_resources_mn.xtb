@@ -595,6 +595,7 @@
 
 Таны аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Android аппуудын зөвшөөрлийг <ph name="APPS_LINK_BEGIN" />Аппуудын тохиргоо<ph name="APPS_LINK_END" /> хэсэгт хянах боломжтой.</translation>
 <translation id="1448779317883494811">Багсны хэрэгсэл</translation>
+<translation id="1448963928642384376">Таны төхөөрөмжийн сүлжээний цэгүүд</translation>
 <translation id="1449191289887455076">Оноолтыг баталгаажуулахын тулд “<ph name="CURRENTKEY" />” дээр дахин дарж, <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Зочны профайлыг нээх</translation>
 <translation id="1451375123200651445">Веб хуудас, Нэг файл</translation>
@@ -4076,6 +4077,7 @@
 <translation id="3983586614702900908">Үл таних vendor-н төхөөрөмж</translation>
 <translation id="3983764759749072418">Play Store аппууд нь энэ төхөөрөмжид хандалт хийх эрхтэй байна.</translation>
 <translation id="3983769721878416534">Товшихоос өмнөх сааталт</translation>
+<translation id="3983793589497399077">Lens-р хайхын тулд дурын газар товших эсвэл чирнэ үү</translation>
 <translation id="3984135167056005094">Имэйл хаяг оруулахгүй байх</translation>
 <translation id="3984159763196946143">Туршилтын горимыг эхлүүлж чадсангүй</translation>
 <translation id="3984431586879874039">Энэ сайтад аюулгүй байдлын түлхүүрээ харуулахыг зөвшөөрөх үү?</translation>

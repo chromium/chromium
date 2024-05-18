@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Abra automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_YEARS_ONE" /> ano}other{Criado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
-<translation id="1155815720264022949">Quer fechar os separadores antigos?</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1197088940767939838">Laranja</translation>
-<translation id="1215127405478249895">Reveja os separadores</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
 <translation id="1322824555808364080">Convidar pessoas</translation>
-<translation id="1326271443836399892">Reveja as definições de organização atuais.</translation>
 <translation id="1419023007528516122">Esta ação elimina permanentemente o grupo do seu dispositivo</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Criado há <ph name="NUM_MINS_ONE" /> minuto}other{Criado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
@@ -42,9 +39,9 @@
 <translation id="2928243913527329289">Google | Acerca desta loja</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="3008554597174452548">Deixar de monitorizar produto</translation>
+<translation id="3026391124054406831">Crie grupos para organizar os seus separadores.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Ícone da cor do grupo de separadores <ph name="COLOR_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador arquivado}other{Tem <ph name="TABS_COUNT_MANY" /> separadores arquivados}}</translation>
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3322827343001922122">Abra o menu de ação do grupo de separadores para o grupo de separadores <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +79,11 @@
 <translation id="5082793167783849073">Compare páginas rapidamente através da criação de um grupo. Para começar, toque sem soltar num link.</translation>
 <translation id="5094423602314093681">Remover o(s) separador(es) e eliminar o grupo?</translation>
 <translation id="5161254044473106830">Título obrigatório</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador que não usou recentemente}other{Tem <ph name="TABS_COUNT_MANY" /> separadores que não usou recentemente}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Fechar o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador.}other{Fechar o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
-<translation id="5545379293264651575">Fechar sem rever</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
@@ -159,7 +154,6 @@
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>
 <translation id="9216898458513705996">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Expanda o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Reveja todos os separadores arquivados para maior organização acedendo a este editor.</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

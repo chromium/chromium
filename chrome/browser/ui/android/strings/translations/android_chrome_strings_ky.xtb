@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Pay'деги даректер жана төлөм ыкмалары шифрленбейт. Chrome'до көрүлгөн вебсайттар шайкештирилбейт.
 Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Ушул беттен табыңыз</translation>
+<translation id="1832459821645506983">Макул</translation>
 <translation id="185383612275551373">Google'дан эң ылайыктуу контентти көрүү үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="1871098866036088250">Chrome серепчисинде ачуу</translation>
 <translation id="1877026089748256423">Chrome эскирип калган.</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">Кийинкиге окуу тизмеңизге барактарды кошуңуз</translation>
 <translation id="2956070106555335453">Корутунду</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> окула элек барак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> окула элек барак}}</translation>
-<translation id="296370266220139811">Азыраак терип, убакыт үнөмдөңүз</translation>
 <translation id="2977350910003566746">Акыркы ачылгандар боюнча иреттелүүдө</translation>
 <translation id="297771753501244313">Акыркы ачылган убакыты боюнча иргөө</translation>
 <translation id="2979025552038692506">Жашыруун режимде тандалган өтмөк</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">Кабыл алып, улантуу</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> менен улантууга болбойт</translation>
 <translation id="3522247891732774234">Жаңыртуу бар. Дагы опциялар</translation>
+<translation id="3523789730715594198">Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
 <translation id="3524138585025253783">Иштеп чыгуучунун интерфейси</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> кызматына өзүңүздү ырастоого уруксат бериңиз</translation>
 <translation id="3527085408025491307">Куржун</translation>

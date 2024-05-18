@@ -123,6 +123,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2770231113462710648">Alterar o navegador predefinido para:</translation>
 <translation id="2775140325783767197">O Chrome não consegue verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2825024317344269723">Site perigoso. O Chrome removeu as autorizações de notificações.</translation>
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
 <translation id="2847461019998147611">Apresentar o Google Chrome neste idioma</translation>
 <translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
@@ -184,6 +185,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3583751698304738917">Já tem sessão iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil do Chrome</translation>
 <translation id="3595784445906693824">Iniciar sessão no Chrome num novo perfil?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
+<translation id="3609788354808247807">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Agora é mais fácil utilizar o Chrome com a sua Conta Google e em computadores partilhados.</translation>
 <translation id="3635073343384702370">O Chrome consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="3667616615096815454">Não é possível instalar. O servidor não reconhece a aplicação.</translation>
@@ -329,6 +331,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Tornar o Google Chrome no browser padrão.</translation>
 <translation id="5947104538377036631">Atalho do Chrome</translation>
+<translation id="5953954252731207958">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">A transferir… Falta(m) <ph name="HOURS" /> hora(s)</translation>
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
 <translation id="6022659036123304283">Personalize o Google Chrome</translation>
@@ -343,6 +346,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
+<translation id="6200139057479872438">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Regra de importação para o Google Chrome permitir o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome vai ser fechado em breve</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
@@ -440,6 +444,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7651907282515937834">Logótipo do Chrome Enterprise</translation>
 <translation id="76531479118467370">O Chrome bloqueou esta transferência porque desativou a Navegação Segura e não é possível validar o ficheiro</translation>
 <translation id="7655455401911432608">O seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
+<translation id="7661924425853052955">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Execute tarefas como traduzir, calcular e muito mais diretamente a partir da barra de endereço</translation>
 <translation id="769538538642757151">O Chrome indica-lhe se algo precisar da sua revisão</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>

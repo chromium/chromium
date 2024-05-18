@@ -595,6 +595,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 
 Behörigheter som du redan har gett appar kan gälla för det här kontot. Du kan styra behörigheter för Android-appar i <ph name="APPS_LINK_BEGIN" />appinställningarna<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Penselverktyg</translation>
+<translation id="1448963928642384376">Enhetens surfzoner</translation>
 <translation id="1449191289887455076">Tryck på <ph name="CURRENTKEY" /> igen för att bekräfta tilldelningen och <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Öppna gästprofil</translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
@@ -4081,6 +4082,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3983586614702900908">enheter från en okänd leverantör</translation>
 <translation id="3983764759749072418">Appar i Play Butik har åtkomst till enheten.</translation>
 <translation id="3983769721878416534">Fördröjning före klick</translation>
+<translation id="3983793589497399077">Klicka eller dra var som helst för att söka med Lens</translation>
 <translation id="3984135167056005094">Ange inga e-postadresser</translation>
 <translation id="3984159763196946143">Det gick inte att starta demoläget</translation>
 <translation id="3984431586879874039">Vill du tillåta att webbplatsen ser din säkerhetsnyckel?</translation>

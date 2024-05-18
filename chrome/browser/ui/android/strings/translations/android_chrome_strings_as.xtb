@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনাসমূহ এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
 আপোনাৰ পাছফ্ৰে’জ থকা লোকেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰে। পাছফ্ৰে’জটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="1829244130665387512">পৃষ্ঠাত বিচাৰক</translation>
+<translation id="1832459821645506983">হয়, মই সন্মত</translation>
 <translation id="185383612275551373">Googleৰ পৰা আটাইতকৈ প্ৰাসংগিক সমল পাবলৈ ছিংক কৰক</translation>
 <translation id="1871098866036088250">Chrome ব্ৰাউজাৰত খোলক</translation>
 <translation id="1877026089748256423">Chromeৰ ম্যাদ উকলিছে</translation>
@@ -374,7 +375,6 @@
 <translation id="2951071800649516099">পৰৱৰ্তী সময়ৰ বাবে আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ দিয়ক</translation>
 <translation id="2956070106555335453">সাৰাংশ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> খন নপঢ়া পৃষ্ঠা}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}}</translation>
-<translation id="296370266220139811">সময় ৰাহি কৰক আৰু কমকৈ টাইপ কৰক</translation>
 <translation id="2977350910003566746">শেহতীয়াকৈ খোলা অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="297771753501244313">শেহতীয়াকৈ খোলা অনুসৰি সজাওক</translation>
 <translation id="2979025552038692506">বাছনি কৰা ইনকগনিট’ টেব</translation>
@@ -484,6 +484,7 @@
 <translation id="3518985090088779359">গ্ৰহণ কৰি আগুৱাওক</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে অব্যাহত ৰাখিব নোৱাৰি</translation>
 <translation id="3522247891732774234">আপডে’ট উপলব্ধ। অধিক বিকল্প</translation>
+<translation id="3523789730715594198">আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="3524138585025253783">বিকাশকৰ্তাৰ UI</translation>
 <translation id="3524334353996115845">এগৰাকী আপুনিয়েই বুলি <ph name="ORIGIN" />ক সত্যাপন কৰিবলৈ দিয়ক</translation>
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>

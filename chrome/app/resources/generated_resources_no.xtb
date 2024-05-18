@@ -595,6 +595,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 
 Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan styre tillatelser for Android-apper i <ph name="APPS_LINK_BEGIN" />innstillingene for appene<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Penselverktøy</translation>
+<translation id="1448963928642384376">Enhetens wifi-soner</translation>
 <translation id="1449191289887455076">Trykk på «<ph name="CURRENTKEY" />» på nytt for å bekrefte tilordningen og <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Åpne en gjesteprofil</translation>
 <translation id="1451375123200651445">Nettside – enkeltfil</translation>
@@ -4074,6 +4075,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3983586614702900908">enheter fra en ukjent leverandør</translation>
 <translation id="3983764759749072418">Play Butikk-apper har tilgang til denne enheten.</translation>
 <translation id="3983769721878416534">Forsinkelse før klikk</translation>
+<translation id="3983793589497399077">Klikk eller dra hvor som helst for å søke med Lens</translation>
 <translation id="3984135167056005094">Ikke inkluder e-postadressen</translation>
 <translation id="3984159763196946143">Kan ikke starte demomodus</translation>
 <translation id="3984431586879874039">Vil du la dette nettstedet se sikkerhetsnøkkelen din?</translation>

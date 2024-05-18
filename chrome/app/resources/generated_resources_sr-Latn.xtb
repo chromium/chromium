@@ -597,6 +597,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 
 Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da kontrolišete dozvole za Android aplikacije u <ph name="APPS_LINK_BEGIN" />podešavanjima aplikacija<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Alatka za četkice</translation>
+<translation id="1448963928642384376">Hotspotovi uređaja</translation>
 <translation id="1449191289887455076">Ponovo pritisnite <ph name="CURRENTKEY" /> da biste potvrdili dodelu i <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Otvori profil gosta</translation>
 <translation id="1451375123200651445">Veb-stranica, jedna datoteka</translation>
@@ -4066,6 +4067,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3983586614702900908">uređaji nepoznatog prodavca</translation>
 <translation id="3983764759749072418">Aplikacije iz Play prodavnice imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odlaganje pre klika</translation>
+<translation id="3983793589497399077">Kliknite bilo gde ili prevucite da biste pretraživali pomoću Objektiva</translation>
 <translation id="3984135167056005094">Ne uključuj imejl adresu</translation>
 <translation id="3984159763196946143">Pokretanje režima demonstracije nije uspelo</translation>
 <translation id="3984431586879874039">Želite li da dozvolite ovom sajtu da vidi bezbednosni ključ?</translation>

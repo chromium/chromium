@@ -5,13 +5,10 @@
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_YEARS_ONE" /> año}other{Creado hace <ph name="NUM_YEARS_MANY" /> años}}</translation>
-<translation id="1155815720264022949">¿Quieres cerrar las pestañas antiguas?</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1197088940767939838">Naranja</translation>
-<translation id="1215127405478249895">Revisar pestañas</translation>
 <translation id="125153950246128346">Pulsa para ver otra pestaña</translation>
 <translation id="1322824555808364080">Invitar a personas</translation>
-<translation id="1326271443836399892">Revisa los ajustes de eliminación de pestañas innecesarias.</translation>
 <translation id="1419023007528516122">Se eliminará permanentemente el grupo de tu dispositivo</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creado hace <ph name="NUM_MINS_ONE" /> minuto}other{Creado hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="1499635324672558517">¿Cerrar todas las pestañas de Incógnito?</translation>
@@ -44,7 +41,6 @@
 <translation id="3008554597174452548">Dejar de seguir el producto</translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icono de color <ph name="COLOR_NAME" /> del grupo de pestañas</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña archivada}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas archivadas}}</translation>
 <translation id="3194464645767632461">puntuación</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando haya un precio más bajo en una pestaña abierta.</translation>
 <translation id="3322827343001922122">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
@@ -82,13 +78,11 @@
 <translation id="5082793167783849073">Crea un grupo para comparar páginas rápidamente. Para comenzar, mantén pulsado un enlace.</translation>
 <translation id="5094423602314093681">¿Quitar pestañas y eliminar grupo?</translation>
 <translation id="5161254044473106830">Título obligatorio</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña que no has usado recientemente}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas que no has usado recientemente}}</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Cerrar grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Cerrar grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="5339733443032484186">Tu última pestaña</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Grupo de pestañas desplegado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
-<translation id="5545379293264651575">Cerrar sin revisar</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> enlace de Chrome}other{<ph name="TABS_COUNT_MANY" /> enlaces de Chrome}}</translation>
@@ -159,7 +153,6 @@
 <translation id="9169594135889675189">Añadir una pestaña al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>
-<translation id="955558140275419384">Abre este editor para revisar todas las pestañas archivadas y eliminar las que no sean necesarias.</translation>
 <translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

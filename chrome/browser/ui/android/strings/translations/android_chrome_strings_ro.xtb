@@ -159,6 +159,7 @@
 <translation id="1825772852827001597">Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Găsește în pagină</translation>
+<translation id="1832459821645506983">Da, accept</translation>
 <translation id="185383612275551373">Sincronizează pentru a primi cel mai relevant conținut de la Google</translation>
 <translation id="1871098866036088250">Deschide în browserul Chrome</translation>
 <translation id="1877026089748256423">Chrome nu este actualizat</translation>
@@ -374,7 +375,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2951071800649516099">Adaugă pagini la lista de lecturi pentru mai târziu</translation>
 <translation id="2956070106555335453">Rezumat</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagină necitită}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagini necitite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> de pagini necitite}}</translation>
-<translation id="296370266220139811">Economisește timp și tastează mai puțin</translation>
 <translation id="2977350910003566746">Se sortează după data ultimei deschideri</translation>
 <translation id="297771753501244313">Sortează după data ultimei deschideri</translation>
 <translation id="2979025552038692506">Fila incognito selectată</translation>
@@ -484,6 +484,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3518985090088779359">Acceptă și continuă</translation>
 <translation id="3521388823983121502">Nu poți folosi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Actualizare disponibilă. Mai multe opțiuni</translation>
+<translation id="3523789730715594198">Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3524138585025253783">IU pentru dezvoltatori</translation>
 <translation id="3524334353996115845">Permite ca <ph name="ORIGIN" /> să-ți verifice identitatea</translation>
 <translation id="3527085408025491307">Dosar</translation>

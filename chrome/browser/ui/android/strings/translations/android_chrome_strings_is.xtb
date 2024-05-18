@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384704387250346179">Þýða mynd með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Virkt fyrir <ph name="LAST_UPDATED" /> dögum</translation>
+<translation id="1390418506739274310">Þú gætir séð feril annarra forrita sem opna tengla í Chrome. Google-reikningurinn þinn kann að vera með annars konar vafraferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />þjónustuskilmála<ph name="END_LINK1" /> þessa vefsvæðis.</translation>
 <translation id="1397811292916898096">Leita með <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Finna á síðu</translation>
+<translation id="1832459821645506983">Já, ég vil vera með</translation>
 <translation id="185383612275551373">Samstilltu til að fá meira viðeigandi efni frá Google</translation>
 <translation id="1871098866036088250">Opna í Chrome vafra</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
@@ -373,7 +375,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2951071800649516099">Bæta síðum á leslistann þinn til síðari nota</translation>
 <translation id="2956070106555335453">Samantekt</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ólesin síða}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ólesin síða}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ólesnar síður}}</translation>
-<translation id="296370266220139811">Sparaðu tíma með minni innslætti</translation>
 <translation id="2977350910003566746">Raðað eftir „Síðast opnað“</translation>
 <translation id="297771753501244313">Raða eftir „Síðast opnað“</translation>
 <translation id="2979025552038692506">Valinn huliðsflipi</translation>
@@ -389,6 +390,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3003253259757197230">Vefslóðir sem þú opnar eru sendar til Google til að spá fyrir um hvaða vefsvæði þú kannt að opna næst og sýna þér viðbótarupplýsingar um síðuna sem þú ert að skoða</translation>
 <translation id="3026955690410463085">Deila tengli</translation>
 <translation id="3027644380269727216">Byggt á virkni þinni á vefsvæði. Kveikt er á þessari stillingu.</translation>
+<translation id="3027950907978057636">Af <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Engin forhleðsla</translation>
 <translation id="3029704984691124060">Aðgangsorð stemma ekki</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Fá aðstoð<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3518985090088779359">Samþykkja og áfram</translation>
 <translation id="3521388823983121502">Ekki er hægt að halda áfram með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Uppfærsla í boði. Fleiri valkostir</translation>
+<translation id="3523789730715594198">Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="3524138585025253783">Notendaviðmót forritara</translation>
 <translation id="3524334353996115845">Leyfa <ph name="ORIGIN" /> að staðfesta að þetta sért þú</translation>
 <translation id="3527085408025491307">Mappa</translation>

@@ -598,6 +598,7 @@
 <translation id="1447895950459090752">بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
 <translation id="1448264954024227422">‏بإمكانك استخدام هذا الحساب مع تطبيقات Android. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى التطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك التحكّم في أذونات تطبيقات Android من خلال <ph name="APPS_LINK_BEGIN" />إعدادات التطبيقات<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">أداة الفرشاة</translation>
+<translation id="1448963928642384376">نقاط الاتصال في جهازك</translation>
 <translation id="1449191289887455076">يمكنك الضغط على مفتاح "<ph name="CURRENTKEY" />" مرة أخرى لتأكيد التخصيص، واختيار <ph name="RESPONSE" /> بعد ذلك.</translation>
 <translation id="1450484535522155181">فتح الملف الشخصي للضيف</translation>
 <translation id="1451375123200651445">صفحة ويب، ملف واحد</translation>
@@ -4071,6 +4072,7 @@
 <translation id="3983586614702900908">أجهزة من مورد غير معروف</translation>
 <translation id="3983764759749072418">‏يمكن لتطبيقات "متجر Play" الوصول إلى هذا الجهاز.</translation>
 <translation id="3983769721878416534">مهلة قبل النقر</translation>
+<translation id="3983793589497399077">‏انقر على أي عنصر أو اسحبه للبحث عنه باستخدام "عدسة Google"</translation>
 <translation id="3984135167056005094">عدم تضمين عنوان البريد الإلكتروني</translation>
 <translation id="3984159763196946143">تعذَّر بدء الوضع التجريبي</translation>
 <translation id="3984431586879874039">هل تريد السماح لهذا الموقع الإلكتروني بالاطّلاع على مفتاح الأمان؟</translation>

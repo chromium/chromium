@@ -160,6 +160,7 @@
 <translation id="1825772852827001597">Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
 パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
 <translation id="1829244130665387512">ページ内検索</translation>
+<translation id="1832459821645506983">同意する</translation>
 <translation id="185383612275551373">同期すると、最も関連性の高いコンテンツを表示できます</translation>
 <translation id="1871098866036088250">Chrome ブラウザで開く</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
@@ -375,7 +376,6 @@
 <translation id="2951071800649516099">後で読めるようにページをリーディング リストに追加します</translation>
 <translation id="2956070106555335453">概要</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 件の未読ページ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 件の未読ページ}}</translation>
-<translation id="296370266220139811">時間と入力の手間を省く</translation>
 <translation id="2977350910003566746">最終閲覧日で並べ替え</translation>
 <translation id="297771753501244313">最後に開いた日付で並べ替え</translation>
 <translation id="2979025552038692506">選択したシークレット タブ</translation>
@@ -485,6 +485,7 @@
 <translation id="3518985090088779359">同意して続行</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="3522247891732774234">アップデートが見つかりました。その他のオプション</translation>
+<translation id="3523789730715594198">同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="3524138585025253783">デベロッパー管理画面</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> で本人確認を行います</translation>
 <translation id="3527085408025491307">フォルダ</translation>

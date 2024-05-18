@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384704387250346179">Oversæt billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
+<translation id="1390418506739274310">Du kan muligvis se historikken fra andre apps, der åbner links i Chrome. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />servicevilkår<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
@@ -158,6 +159,7 @@
 <translation id="1825772852827001597">Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Find på siden</translation>
+<translation id="1832459821645506983">Ja tak</translation>
 <translation id="185383612275551373">Synkroniser for at få det mest relevante indhold fra Google</translation>
 <translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
@@ -373,7 +375,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2951071800649516099">Føj sider til din læseliste, så du kan læse dem senere</translation>
 <translation id="2956070106555335453">Oversigt</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
-<translation id="296370266220139811">Spar tid, og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
@@ -389,6 +390,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3003253259757197230">De webadresser, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste, og for at vise dig oplysninger om den side, du besøger</translation>
 <translation id="3026955690410463085">Medtag link</translation>
 <translation id="3027644380269727216">Baseret på din aktivitet på et website. Denne indstilling er aktiveret.</translation>
+<translation id="3027950907978057636">Fra <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Ingen forudindlæsning</translation>
 <translation id="3029704984691124060">Adgangssætningerne stemmer ikke overens</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjælp<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3521388823983121502">Det er ikke muligt at fortsætte med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Tilgængelig opdatering. Flere valgmuligheder</translation>
+<translation id="3523789730715594198">Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="3524138585025253783">Brugerflade for udviklere</translation>
 <translation id="3524334353996115845">Tillad, at <ph name="ORIGIN" /> verificerer din identitet</translation>
 <translation id="3527085408025491307">Mappe</translation>

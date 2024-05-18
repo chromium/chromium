@@ -595,6 +595,7 @@
 
 Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättää Android-sovellusten luvista <ph name="APPS_LINK_BEGIN" />sovellusten asetuksissa<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Sivellintyökalu</translation>
+<translation id="1448963928642384376">Laitehotspotit</translation>
 <translation id="1449191289887455076">Paina <ph name="CURRENTKEY" /> uudelleen, niin voit vahvistaa näppäimen määrityksen ja <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Avaa vierasprofiili</translation>
 <translation id="1451375123200651445">Verkkosivu, yksi tiedosto</translation>
@@ -4077,6 +4078,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3983586614702900908">tuntemattoman myyjän laitteet</translation>
 <translation id="3983764759749072418">Play Kaupan sovellukset voivat käyttää tätä laitetta.</translation>
 <translation id="3983769721878416534">Viive ennen klikkausta</translation>
+<translation id="3983793589497399077">Hae Lensillä klikkaamalla tai vetämällä</translation>
 <translation id="3984135167056005094">Älä lisää sähköpostiosoitteita</translation>
 <translation id="3984159763196946143">Demotilan käynnistys epäonnistui</translation>
 <translation id="3984431586879874039">Saako tämä sivusto nähdä suojausavaimesi?</translation>

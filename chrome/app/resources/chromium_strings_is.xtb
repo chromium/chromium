@@ -126,6 +126,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="3155163173539279776">Endurræsa Chromium</translation>
 <translation id="3179665906251668410">Opna ten&amp;gil í huliðsglugga í Chromium</translation>
 <translation id="3185330573522821672">Sérsníddu nýja Chromium prófílinn þinn</translation>
+<translation id="318879170965183683">Þú getur notað aðgangsorðin á Google-reikningnum þínum í Chromium þegar þú ert skráð(ur) inn</translation>
 <translation id="3190315855212034486">Vóts! Chromium hrundi. Endurræsa núna?</translation>
 <translation id="3224847870593914902">Skráðu þig út af Chromium á stillingarsíðunni til að fjarlægja Google-reikninginn þinn af Chromium</translation>
 <translation id="3258596308407688501">Chromium getur ekki lesið og skrifað í gagnamöppuna sína:
@@ -207,6 +208,8 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="4501471624619070934">Uppsetning mistókst vegna þess að aðgangur er takmarkaður í landinu.</translation>
 <translation id="4510853178268397146">Þessi viðbót hefur ekki gefið út vinnureglur um persónuvernd, svo sem hvernig hún safnar og notar gögn. Chromium mælir með að þú fjarlægir hana.</translation>
 <translation id="452711251841752011">Velkomin(n) í Chromium; nýr vafragluggi opnaður</translation>
+<translation id="4531137820806573936">Chromium þarfnast heimildar til að kortleggja umhverfið þitt og rekja handahreyfingarnar þínar</translation>
+<translation id="4536805923587466102">Þú ert þegar skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" /> á öðrum Chromium-prófíl</translation>
 <translation id="4544142686420020088">Chromium uppfærðist ekki þar sem eitthvað fór úrskeiðis. <ph name="BEGIN_LINK" />Lagaðu uppfærsluvandamál Chromium og uppfærslur sem mistókust.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Halda áfram á nýjum Chromium prófíl?</translation>
 <translation id="4567424176335768812">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />. Nú hefur þú aðgang að bókamerkjunum þínum, vefferlinum þínum og öðrum stillingum í öllum tækjum sem þú ert skráð(ur) inn á.</translation>
