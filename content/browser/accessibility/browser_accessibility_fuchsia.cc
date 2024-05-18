@@ -83,6 +83,10 @@ void BrowserAccessibilityFuchsia::OnLocationChanged() {
   UpdateNode();
 }
 
+ui::AXPlatformNode* BrowserAccessibilityFuchsia::GetAXPlatformNode() const {
+  return platform_node_;
+}
+
 BrowserAccessibilityFuchsia* ToBrowserAccessibilityFuchsia(
     BrowserAccessibility* obj) {
   return static_cast<BrowserAccessibilityFuchsia*>(obj);

@@ -45,6 +45,7 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
+  ui::AXPlatformNode* GetAXPlatformNode() const override;
   bool AccessibilityPerformAction(const ui::AXActionData& action_data) override;
 
   // Returns this object's AXUniqueID as a uint32_t.
