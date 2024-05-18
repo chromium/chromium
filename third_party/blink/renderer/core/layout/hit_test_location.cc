@@ -119,6 +119,17 @@ bool QuadIntersectsCircleStroke(const gfx::QuadF& quad,
   return true;
 }
 
+constexpr int kMaxRectHitTestVerbs = 500;
+
+// The Path::Intersects(const gfx::QuadF&, ...) functions have O(N^2) behavior,
+// so to avoid performance issues we only call these functions for "shorter"
+// Paths and fallback to using the single-point (approximately the centroid of
+// the quad/rect) code-path - this matches behavior prior to
+// crrev.com/c/5307520. See crbug.com/337338049 and crbug.com/341136034.
+bool CanUseRectHitTestForPath(const Path& path) {
+  return path.GetSkPath().countVerbs() <= kMaxRectHitTestVerbs;
+}
+
 }  // namespace
 
 HitTestLocation::HitTestLocation()
@@ -253,7 +264,7 @@ bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
 }
 
 bool HitTestLocation::Intersects(const Path& path) const {
-  if (is_rect_based_) {
+  if (is_rect_based_ && CanUseRectHitTestForPath(path)) {
     return path.Intersects(transformed_rect_);
   }
   return path.Contains(transformed_point_);
@@ -261,7 +272,7 @@ bool HitTestLocation::Intersects(const Path& path) const {
 
 bool HitTestLocation::Intersects(const Path& path,
                                  WindRule winding_rule) const {
-  if (is_rect_based_) {
+  if (is_rect_based_ && CanUseRectHitTestForPath(path)) {
     return path.Intersects(transformed_rect_, winding_rule);
   }
   return path.Contains(transformed_point_, winding_rule);
