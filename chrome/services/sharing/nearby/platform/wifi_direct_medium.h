@@ -45,11 +45,23 @@ class WifiDirectMedium : public api::WifiDirectMedium {
       base::WaitableEvent* waitable_event,
       ash::wifi_direct::mojom::WifiP2PCapabilitiesPtr capabilities) const;
 
+  void CreateGroup(WifiDirectCredentials* credentials,
+                   base::WaitableEvent* waitable_event);
+  void OnGroupCreated(
+      WifiDirectCredentials* credentials,
+      base::WaitableEvent* waitable_event,
+      ash::wifi_direct::mojom::WifiDirectOperationResult result,
+      mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
+          connection);
+
+  void OnDisconnect();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
       wifi_direct_manager_;
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
+  mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectConnection> connection_;
 };
 
 }  // namespace nearby::chrome

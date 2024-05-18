@@ -10,12 +10,12 @@ namespace nearby::chrome {
 
 WifiDirectMedium::WifiDirectMedium(
     const mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>&
-        manager,
+        wifi_direct_manager,
     const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
         firewall_hole_factory)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      wifi_direct_manager_(std::move(manager)),
+      wifi_direct_manager_(std::move(wifi_direct_manager)),
       firewall_hole_factory_(std::move(firewall_hole_factory)) {}
 
 WifiDirectMedium::~WifiDirectMedium() = default;
@@ -32,8 +32,16 @@ bool WifiDirectMedium::IsInterfaceValid() const {
 }
 
 bool WifiDirectMedium::StartWifiDirect(WifiDirectCredentials* credentials) {
-  NOTIMPLEMENTED();
-  return false;
+  // Wrap the async mojo call to make it sync.
+  base::WaitableEvent waitable_event;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WifiDirectMedium::CreateGroup, base::Unretained(this),
+                     credentials, &waitable_event));
+  waitable_event.Wait();
+
+  // An active remote means the group has been created.
+  return !!connection_;
 }
 
 bool WifiDirectMedium::StopWifiDirect() {
@@ -92,6 +100,51 @@ void WifiDirectMedium::OnCapabilities(
   //       mojo responses.
   *is_capability_supported = true;
   waitable_event->Signal();
+}
+
+void WifiDirectMedium::CreateGroup(WifiDirectCredentials* credentials,
+                                   base::WaitableEvent* waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // This is currently validated in the Chrome connectivity layer, but totally
+  // ignored at the platform level. Both SSID and password need to be valid for
+  // this call to succeed.
+  credentials->SetSSID("DIRECT-00");
+  credentials->SetPassword("SecretPassword");
+
+  auto credentials_ptr = ash::wifi_direct::mojom::WifiCredentials::New();
+  credentials_ptr->ssid = credentials->GetSSID();
+  credentials_ptr->passphrase = credentials->GetPassword();
+  wifi_direct_manager_->CreateWifiDirectGroup(
+      std::move(credentials_ptr),
+      base::BindOnce(&WifiDirectMedium::OnGroupCreated, base::Unretained(this),
+                     credentials, waitable_event));
+}
+
+void WifiDirectMedium::OnGroupCreated(
+    WifiDirectCredentials* credentials,
+    base::WaitableEvent* waitable_event,
+    ash::wifi_direct::mojom::WifiDirectOperationResult result,
+    mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
+        connection) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (result == ash::wifi_direct::mojom::WifiDirectOperationResult::kSuccess) {
+    // Store the connection so that the group can be destroyed when the remote
+    // is reset.
+    connection_.Bind(std::move(connection), task_runner_);
+    connection_.set_disconnect_handler(
+        base::BindOnce(&WifiDirectMedium::OnDisconnect, base::Unretained(this)),
+        task_runner_);
+  }
+
+  // Trigger sync signal.
+  waitable_event->Signal();
+}
+
+void WifiDirectMedium::OnDisconnect() {
+  // Reset the connection, since it has been disconnected at this point.
+  connection_.reset();
 }
 
 }  // namespace nearby::chrome

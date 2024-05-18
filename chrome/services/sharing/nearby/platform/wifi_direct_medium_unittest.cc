@@ -13,19 +13,51 @@
 
 namespace {
 
+class FakeWifiDirectConnection
+    : public ash::wifi_direct::mojom::WifiDirectConnection {
+  void GetProperties(GetPropertiesCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void AssociateSocket(::mojo::PlatformHandle socket,
+                       AssociateSocketCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+};
+
 class FakeWifiDirectManager
     : public ash::wifi_direct::mojom::WifiDirectManager {
  public:
+  FakeWifiDirectManager() {}
+
+  ~FakeWifiDirectManager() override {}
+
   void CreateWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
       CreateWifiDirectGroupCallback callback) override {
-    // Noop
+    if (!connection_) {
+      std::move(callback).Run(
+          ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported,
+          mojo::NullRemote());
+    } else {
+      mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
+          connection_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::move(connection_),
+          connection_remote.InitWithNewPipeAndPassReceiver());
+      std::move(callback).Run(
+          ash::wifi_direct::mojom::WifiDirectOperationResult::kSuccess,
+          std::move(connection_remote));
+    }
   }
+
   void ConnectToWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
       std::optional<uint32_t> frequency,
       ConnectToWifiDirectGroupCallback callback) override {
-    // Noop
+    std::move(callback).Run(
+        ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported,
+        mojo::NullRemote());
   }
 
   void GetWifiP2PCapabilities(
@@ -35,6 +67,14 @@ class FakeWifiDirectManager
     auto response = ash::wifi_direct::mojom::WifiP2PCapabilities::New();
     std::move(callback).Run(std::move(response));
   }
+
+  void SetWifiDirectConnection(
+      std::unique_ptr<FakeWifiDirectConnection> connection) {
+    connection_ = std::move(connection);
+  }
+
+ private:
+  std::unique_ptr<FakeWifiDirectConnection> connection_;
 };
 
 }  // namespace
@@ -66,6 +106,7 @@ class WifiDirectMediumTest : public ::testing::Test {
   }
 
   WifiDirectMedium* medium() { return medium_.get(); }
+  FakeWifiDirectManager* manager() { return wifi_direct_manager_; }
 
   void RunOnTaskRunner(base::OnceClosure task) {
     base::RunLoop run_loop;
@@ -76,7 +117,6 @@ class WifiDirectMediumTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
   raw_ptr<FakeWifiDirectManager> wifi_direct_manager_;
   mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
       wifi_direct_manager_remote_;
@@ -93,6 +133,29 @@ TEST_F(WifiDirectMediumTest, IsInterfaceValid_Temporary) {
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_TRUE(medium->IsInterfaceValid());
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, StartWifiDirect_MissingConnection) {
+  manager()->SetWifiDirectConnection(nullptr);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_FALSE(medium->StartWifiDirect(&credentials));
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
+  manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_TRUE(medium->StartWifiDirect(&credentials));
       },
       medium()));
 }
