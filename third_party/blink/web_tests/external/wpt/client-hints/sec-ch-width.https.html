@@ -12,8 +12,10 @@
   function run() {
     test(() => {
       const testImage = document.getElementsByTagName('img')[0];
-      assert_equals(testImage.naturalWidth, 2 * (0.10 * window.innerWidth) * window.devicePixelRatio);
-      assert_equals(testImage.naturalHeight, 3 * (0.10 * window.innerWidth) * window.devicePixelRatio);
+      // Spec: sec-ch-width MUST be an integer greater than or equal to 0.
+      const width = Math.ceil(0.10 * innerWidth * devicePixelRatio);
+      assert_equals(testImage.naturalWidth, 2 * width);
+      assert_equals(testImage.naturalHeight, 3 * width);
     }, 'Sec-CH-Width should be set');
     done();
   }

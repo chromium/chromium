@@ -13,8 +13,10 @@
   function run() {
     test(() => {
       const testImage = document.getElementsByTagName('img')[0];
-      assert_equals(testImage.naturalWidth, 2 * 50 * window.devicePixelRatio);
-      assert_equals(testImage.naturalHeight, 3 * 50 * window.devicePixelRatio);
+      // Spec: sec-ch-width MUST be an integer greater than or equal to 0.
+      const width = Math.ceil(50 * devicePixelRatio);
+      assert_equals(testImage.naturalWidth, 2 * width);
+      assert_equals(testImage.naturalHeight, 3 * width);
     }, 'Sec-CH-Width is set for lazy auto sizes');
     done();
   }
