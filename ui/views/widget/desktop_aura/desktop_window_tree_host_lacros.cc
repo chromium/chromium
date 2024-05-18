@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -89,6 +91,23 @@ class ScopedTouchEventDisabler : public ui::EventHandler {
 
 bool IsImmersive(ui::PlatformFullscreenType type) {
   return type == ui::PlatformFullscreenType::kImmersive;
+}
+
+gfx::RoundedCornersF GetWindowCornerRadii(
+    aura::Window* window,
+    ui::WaylandExtension* wayland_extension) {
+  if (!wayland_extension) {
+    return gfx::RoundedCornersF();
+  }
+
+  // If window is a pip, ignore the window radii specified by the server. Window
+  // radii specified by the server is for a window in normal window state.
+  const auto window_state = window->GetProperty(chromeos::kWindowStateTypeKey);
+  if (window_state == chromeos::WindowStateType::kPip) {
+    return gfx::RoundedCornersF(chromeos::kPipRoundedCornerRadius);
+  }
+
+  return wayland_extension->GetWindowCornersRadii();
 }
 
 }  // namespace
@@ -260,17 +279,17 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
   const gfx::Rect hit_test_rect_px =
       ConvertRectToPixels(hit_test_rect_mouse_dp);
 
+  aura::Window* native_window = GetWidget()->GetNativeWindow();
+
   auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
-
   const gfx::RoundedCornersF window_radii =
-      wayland_extension ? wayland_extension->GetWindowCornersRadii()
-                        : gfx::RoundedCornersF();
-
-  std::vector<gfx::Rect> input_region;
+      GetWindowCornerRadii(native_window, wayland_extension);
 
   const bool should_have_rounded_window =
       views::ViewsDelegate::GetInstance()->ShouldWindowHaveRoundedCorners(
-          GetWidget()->GetNativeWindow());
+          native_window);
+
+  std::vector<gfx::Rect> input_region;
 
   if (should_have_rounded_window) {
     GetContentWindow()->layer()->SetRoundedCornerRadius(window_radii);
