@@ -574,6 +574,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     window_state = PlatformWindowState::kSnappedSecondary;
   } else if (window_states.is_floated) {
     window_state = PlatformWindowState::kFloated;
+  } else if (window_states.is_pip) {
+    window_state = PlatformWindowState::kPip;
   } else {
     window_state = PlatformWindowState::kNormal;
   }

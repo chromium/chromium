@@ -39,6 +39,7 @@ enum class PlatformWindowState {
   kSnappedPrimary,
   kSnappedSecondary,
   kFloated,
+  kPip,
   kPinnedFullscreen,
   kTrustedPinnedFullscreen,
 };

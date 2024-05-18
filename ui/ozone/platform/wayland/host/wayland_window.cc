@@ -758,6 +758,9 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_floated) {
     states += "floated ";
   }
+  if (is_pip) {
+    states += "pip ";
+  }
   if (states.empty()) {
     states = "<default>";
   } else {

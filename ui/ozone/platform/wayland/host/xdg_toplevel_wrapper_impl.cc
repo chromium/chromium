@@ -401,6 +401,8 @@ void XDGToplevelWrapperImpl::OnAuraToplevelConfigure(
       CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY);
   window_states.is_floated =
       CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED);
+  window_states.is_pip =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_PIP);
 
   self->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height,
                                                      window_states);

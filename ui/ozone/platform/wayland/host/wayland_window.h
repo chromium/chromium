@@ -259,6 +259,7 @@ class WaylandWindow : public PlatformWindow,
     bool is_snapped_primary = false;
     bool is_snapped_secondary = false;
     bool is_floated = false;
+    bool is_pip = false;
 #if BUILDFLAG(IS_LINUX)
     WindowTiledEdges tiled_edges;
 #endif
