@@ -252,13 +252,13 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     {% endfor %}
   };
 
-  enum FieldDifference : uint32_t {
+  enum FieldDifference : uint64_t {
   {% for value in diff_enum %}
-    {{value}} = 1u << {{loop.index0}},
+    {{value}} = static_cast<uint64_t>(1) << {{loop.index0}},
   {% endfor %}
   };
 
-  static uint32_t FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b);
+  static uint64_t FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b);
 
  private:
   friend class ComputedStyleBuilder;

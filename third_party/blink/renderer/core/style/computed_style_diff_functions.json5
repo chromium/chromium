@@ -39,23 +39,5 @@
           },
         ],
     },
-    {
-        // Diff of transform-related properties other than the transform itself.
-        // Because HasTransform() is checked below, this will also check for
-        // changes to the existence of the transform property.
-        name: "UpdatePropertySpecificDifferencesOtherTransform",
-        methods_to_diff: [
-          {
-            // It's possible for the old and new style transform data to be equivalent
-            // while HasTransform() differs, as it checks a number of conditions aside
-            // from just the matrix, including but not limited to animation state.
-            method: "HasTransform()",
-            field_dependencies: ["transform", "offset-position",
-                    "HasCurrentTranslateAnimation", "HasCurrentRotateAnimation",
-                    "HasCurrentScaleAnimation", "HasCurrentTransformAnimation",
-                    "translate", "rotate", "scale"]
-          },
-        ]
-    },
   ],
 }

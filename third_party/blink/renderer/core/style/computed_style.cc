@@ -865,7 +865,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     const Document& document,
     const ComputedStyle& other) const {
   StyleDifference diff;
-  uint32_t field_diff = FieldInvalidationDiff(*this, other);
+  uint64_t field_diff = FieldInvalidationDiff(*this, other);
 
   if ((field_diff & kReshape) || ShouldWrapLine() != other.ShouldWrapLine()) {
     diff.SetNeedsReshape();
@@ -904,11 +904,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesOtherTransform(
-          *this, other)) {
-    diff.SetOtherTransformPropertyChanged();
-  }
-
   if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
     diff.SetNeedsRecomputeVisualOverflow();
   }
@@ -944,6 +939,11 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   }
   if (field_diff & kFilterData) {
     diff.SetFilterChanged();
+  }
+  if (field_diff & kHasTransform) {
+    if (HasTransform() != other.HasTransform()) {
+      diff.SetOtherTransformPropertyChanged();
+    }
   }
   if (field_diff & kMask) {
     diff.SetMaskChanged();
@@ -1005,7 +1005,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
     const ComputedStyle& other,
-    uint32_t field_diff) const {
+    uint64_t field_diff) const {
   if (IsDisplayTableType(Display())) {
     // In the collapsing border model, 'hidden' suppresses other borders, while
     // 'none' does not, so these style differences can be width differences.
@@ -1038,7 +1038,7 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
 
 bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
                                         const ComputedStyle& other,
-                                        uint32_t field_diff) const {
+                                        uint64_t field_diff) const {
   if (field_diff & kLayout) {
     return true;
   }
@@ -1140,7 +1140,7 @@ bool ComputedStyle::DiffNeedsFullLayoutForLayoutCustomChild(
 bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     const Document& document,
     const ComputedStyle& other,
-    uint32_t field_diff) const {
+    uint64_t field_diff) const {
   if (field_diff & kPaint) {
     return true;
   }
@@ -1273,7 +1273,7 @@ bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(
 
 bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
     const ComputedStyle& other,
-    uint32_t field_diff) const {
+    uint64_t field_diff) const {
   if (field_diff & kVisualOverflow) {
     return true;
   }
@@ -1295,7 +1295,7 @@ bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
 }
 
 bool ComputedStyle::DiffCompositingReasonsChanged(const ComputedStyle& other,
-                                                  uint32_t field_diff) const {
+                                                  uint64_t field_diff) const {
   if (field_diff & kCompositing) {
     return true;
   }

@@ -653,7 +653,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["compositing"],
+      invalidate: ["compositing", "has-transform"],
     },
     {
       name: "HasCurrentRotateAnimation",
@@ -661,7 +661,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["compositing"],
+      invalidate: ["compositing", "has-transform"],
     },
     {
       name: "HasCurrentScaleAnimation",
@@ -669,7 +669,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["compositing"],
+      invalidate: ["compositing", "has-transform"],
     },
     {
       name: "HasCurrentTransformAnimation",
@@ -677,7 +677,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["compositing"],
+      invalidate: ["compositing", "has-transform"],
     },
     {
       name: "HasCurrentFilterAnimation",

@@ -76,8 +76,8 @@ void ComputedStyleBase::Trace(Visitor* visitor) const {
 }
 
 
-uint32_t ComputedStyleBase::FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b) {
-  uint32_t diff = 0u;
+uint64_t ComputedStyleBase::FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b) {
+  uint64_t diff = 0u;
   {{field_invalidation_diff(computed_style)|indent(2)}}
   return diff;
 }
