@@ -15,6 +15,21 @@
             ]
         }
     ],
+    "AVFoundationCaptureForwardSampleTimestamps": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "AVFoundationCaptureForwardSampleTimestamps"
+                    ]
+                }
+            ]
+        }
+    ],
     "AblateSearchProviderWarmupRequests": [
         {
             "platforms": [
