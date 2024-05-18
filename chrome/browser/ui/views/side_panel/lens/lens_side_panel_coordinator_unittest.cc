@@ -67,8 +67,8 @@ class LensSidePanelCoordinatorTest
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
     SidePanelUtil::PopulateGlobalEntries(browser, global_registry);
 
-    // Reading list, bookmarks, reading mode.
-    EXPECT_EQ(global_registry->entries().size(), 3u);
+    // Reading list, bookmarks.
+    EXPECT_EQ(global_registry->entries().size(), 2u);
 
     // Create the lens coordinator in Browser.
     lens_side_panel_coordinator_ =
