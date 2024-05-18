@@ -9,3 +9,8 @@
 export function toPercent(value: number): string {
   return `${value * 100}%`;
 }
+
+// Takes the value and returns a string in the form '__px';
+export function toPixels(value: number): string {
+  return `${value}px`;
+}

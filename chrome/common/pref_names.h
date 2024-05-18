@@ -3938,6 +3938,10 @@ inline constexpr char kLensDesktopNTPSearchEnabled[] =
     "policy.lens_desktop_ntp_search_enabled";
 #endif
 
+// An integer indicating the number of times the Lens Overlay was started.
+inline constexpr char kLensOverlayStartCount[] =
+    "lens.lens_overlay_start_count";
+
 // A boolean indicating whether the Privacy guide feature has been viewed. This
 // is set to true if the user has done any of the following: (1) opened the
 // privacy guide, (2) dismissed the privacy guide promo, (3) seen the privacy

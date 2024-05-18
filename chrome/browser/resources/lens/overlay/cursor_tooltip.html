@@ -1,0 +1,33 @@
+<style>
+
+    #cursorTooltip {
+      background-color: #131D1ECC;
+      border-radius: 8px;
+      left: var(--offset-left);
+      padding: 6px 16px 6px 12px;
+      pointer-events: none;
+      position: absolute;
+      transform: translateX(-50%);
+      transition: opacity 200ms ease-out;
+      top: var(--offset-top);
+    }
+
+    #cursorTooltipContainer.hidden {
+      visibility: hidden;
+    }
+
+    .tooltip-text {
+      color: white;
+      font-size: 12px;
+      line-height: 20px;
+      vertical-align: middle;
+    }
+
+  </style>
+  <div id="cursorTooltipContainer"
+  class$="[[getHiddenCursorClass(isPointerInside,
+      canShowTooltipFromPrefs, disableRendering)]]">
+    <div id="cursorTooltip">
+      <span class="tooltip-text">[[tooltipMessage]]</span>
+    </div>
+  </div>

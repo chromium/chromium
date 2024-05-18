@@ -54,13 +54,25 @@
     opacity: 0;
   }
 
+  cursor-tooltip {
+    left: 0;
+    position: fixed;
+    top: 0;
+    /* Don't display the tooltip until the cursor location is determined. */
+    transform: scale(0);
+    width: 100%;
+  }
+
   initial-toast {
     pointer-events: none;
   }
 </style>
-<div class="app-container" on-selection-overlay-clicked="closeInitialToast"
-    on-pointer-released="hideInitialToastGradient"
-    on-screenshot-rendered="onScreenshotRendered">
+<div class="app-container"
+    on-selection-overlay-clicked="handleSelectionOverlayClicked"
+    on-pointer-released="handlePointerReleased"
+    on-screenshot-rendered="onScreenshotRendered"
+    on-pointerenter="handlePointerEnter"
+    on-pointerleave="handlePointerLeave">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>
   <lens-selection-overlay screenshot-data-uri="[[screenshotDataUri]]"
@@ -70,13 +82,20 @@
   <div id="buttonContainer">
     <cr-icon-button id="feedbackButton" class="action-button"
         on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
+        on-pointerenter="handlePointerEnterActionButton"
+        on-pointerleave="handlePointerLeaveActionButton"
         title="$i18n{sendFeedback}"></cr-icon-button>
     <cr-icon-button id="infoButton" class="action-button"
         on-click="onInfoButtonClick" aria-label="$i18n{info}"
+        on-pointerenter="handlePointerEnterActionButton"
+        on-pointerleave="handlePointerLeaveActionButton"
         title="$i18n{info}">
     </cr-icon-button>
     <cr-icon-button id="closeButton" class="action-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
+        on-pointerenter="handlePointerEnterActionButton"
+        on-pointerleave="handlePointerLeaveActionButton"
         title="$i18n{close}"></cr-icon-button>
   </div>
+  <cursor-tooltip id="cursorTooltip"></cursor-tooltip>
 </div>
