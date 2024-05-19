@@ -348,6 +348,21 @@ class AutofillAgent : public content::RenderFrameObserver,
   void PasswordFieldReset(const blink::WebInputElement& element) override;
   void EmitFormIssuesToDevtools() override;
 
+  // Starts observing the caret in the given element. Previous observers are
+  // implicitly deleted. The event handler is HandleCaretMovedInFormField().
+  void ObserveCaret(blink::WebElement element);
+
+  // Calls CaretMovedInFormField() in a throttled manner.
+  //
+  // If HandleCaretMovedInFormField() has been called in the past 100 ms,
+  // CaretMovedInFormField() is (re-)scheduled to be fired in 100 ms. Otherwise,
+  // it is fired synchronously.
+  //
+  // Thus, the first event is fired immediately, but fast successive events are
+  // throttled until no event has been fired for 200 ms.
+  void HandleCaretMovedInFormField(blink::WebElement element,
+                                   blink::WebDOMEvent event);
+
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
   void SendFocusedInputChangedNotificationToBrowser(
       const blink::WebElement& node);
@@ -537,6 +552,22 @@ class AutofillAgent : public content::RenderFrameObserver,
   // This notifier is used to avoid sending redundant messages to the password
   // manager driver mojo interface.
   FocusStateNotifier focus_state_notifier_{this};
+
+  // State for, and only for, HandleFocusChangeComplete().
+  struct Caret {
+   private:
+    friend void AutofillAgent::ObserveCaret(blink::WebElement element);
+    friend void AutofillAgent::HandleCaretMovedInFormField(
+        blink::WebElement element,
+        blink::WebDOMEvent event);
+    // Removes the caret listener from the currently observed WebElement (if
+    // any).
+    base::ScopedClosureRunner remove_listener;
+    // The last time a CaretMovedInFormField().
+    base::Time time_of_last_event;
+    // The timer for the next CaretMovedInFormField().
+    base::OneShotTimer timer;
+  } caret_state_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

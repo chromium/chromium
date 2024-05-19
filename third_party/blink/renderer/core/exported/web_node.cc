@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -269,6 +271,55 @@ int WebNode::GetDomNodeId() const {
 // static
 WebNode WebNode::FromDomNodeId(int dom_node_id) {
   return WebNode(Node::FromDomNodeId(dom_node_id));
+}
+
+base::ScopedClosureRunner WebNode::AddEventListener(
+    EventType event_type,
+    base::RepeatingCallback<void(WebDOMEvent)> handler) {
+  class EventListener : public NativeEventListener {
+   public:
+    EventListener(Node* node,
+                  base::RepeatingCallback<void(WebDOMEvent)> handler)
+        : node_(node), handler_(std::move(handler)) {}
+
+    void Invoke(ExecutionContext*, Event* event) override {
+      handler_.Run(WebDOMEvent(event));
+    }
+
+    void AddListener() {
+      node_->addEventListener(event_type_name(), this,
+                              /*use_capture=*/false);
+    }
+
+    void RemoveListener() {
+      node_->removeEventListener(event_type_name(), this,
+                                 /*use_capture=*/false);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      NativeEventListener::Trace(visitor);
+      visitor->Trace(node_);
+    }
+
+   private:
+    const AtomicString& event_type_name() {
+      switch (event_type_) {
+        case EventType::kSelectionchange:
+          return event_type_names::kSelectionchange;
+      }
+      NOTREACHED_NORETURN();
+    }
+
+    Member<Node> node_;
+    EventType event_type_;
+    base::RepeatingCallback<void(WebDOMEvent)> handler_;
+  };
+
+  WebPrivatePtrForGC<EventListener> listener =
+      MakeGarbageCollected<EventListener>(Unwrap<Node>(), std::move(handler));
+  listener->AddListener();
+  return base::ScopedClosureRunner(WTF::BindOnce(
+      &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
 }
 
 }  // namespace blink

@@ -5,7 +5,10 @@
 #include "third_party/blink/public/web/web_node.h"
 
 #include <memory>
+
+#include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -22,6 +25,14 @@ class WebNodeTest : public PageTestBase {
  protected:
   void SetInnerHTML(const String& html) {
     GetDocument().documentElement()->setInnerHTML(html);
+  }
+
+  void AddScript(String js) {
+    GetDocument().GetSettings()->SetScriptEnabled(true);
+    Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+    script->setInnerHTML(js);
+    GetDocument().body()->AppendChild(script);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   }
 
   WebNode Root() { return WebNode(GetDocument().documentElement()); }
@@ -179,6 +190,49 @@ TEST_F(WebNodeTest, CannotFindTextInNonReadonlyTextInputElement) {
                   .FindTextInElementWith("hello world",
                                          [](const WebString&) { return true; })
                   .IsEmpty());
+}
+
+// Tests that AddEventListener() registers and deregisters a listener.
+TEST_F(WebNodeTest, AddEventListener) {
+  testing::MockFunction<void(std::string_view)> checkpoint;
+  base::MockRepeatingCallback<void(blink::WebDOMEvent)> handler;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(checkpoint, Call("focus"));
+    EXPECT_CALL(checkpoint, Call("set_caret 1"));
+    EXPECT_CALL(handler, Run);
+    EXPECT_CALL(checkpoint, Call("set_caret 2"));
+    EXPECT_CALL(handler, Run);
+    EXPECT_CALL(checkpoint, Call("set_caret 3"));
+  }
+
+  SetInnerHTML("<textarea id=field>0123456789</textarea>");
+
+  // Focuses the textarea.
+  auto focus = [&]() {
+    checkpoint.Call("focus");
+    AddScript(String("document.getElementById('field').focus()"));
+    task_environment().RunUntilIdle();
+  };
+
+  // Moves the caret in the field and fires a selectionchange event.
+  auto set_caret = [&](int caret_position) {
+    checkpoint.Call(base::StringPrintf("set_caret %d", caret_position));
+    AddScript(String(base::StringPrintf(
+        "document.getElementById('field').setSelectionRange(%d, %d)",
+        caret_position, caret_position)));
+    task_environment().RunUntilIdle();
+  };
+
+  focus();
+  {
+    auto remove_listener = Root().AddEventListener(
+        WebNode::EventType::kSelectionchange, handler.Get());
+    set_caret(1);
+    set_caret(2);
+    // The listener is removed by `remove_listener`'s destructor.
+  }
+  set_caret(3);
 }
 
 }  // namespace blink

@@ -177,6 +177,21 @@ void AutofillDriverRouter::FormSubmitted(
   callback(CHECK_DEREF(target), browser_form, known_success, submission_source);
 }
 
+void AutofillDriverRouter::CaretMovedInFormField(
+    AutofillDriver& source,
+    FormData form,
+    const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
+    RoutedCallback<const FormData&, const FormFieldData&, const gfx::Rect&>
+        callback) {
+  FormGlobalId form_id = form.global_id();
+  form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
+
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  callback(CHECK_DEREF(target), browser_form, field, caret_bounds);
+}
+
 void AutofillDriverRouter::TextFieldDidChange(
     AutofillDriver& source,
     FormData form,
