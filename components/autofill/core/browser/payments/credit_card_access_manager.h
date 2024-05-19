@@ -183,7 +183,16 @@ class CreditCardAccessManager
  private:
   friend class CreditCardAccessManagerTestApi;
 
-  // Returns whether or not unmasked card cache is empty. Exposed for testing.
+  payments::PaymentsAutofillClient* payments_autofill_client() {
+    return client_->GetPaymentsAutofillClient();
+  }
+
+  base::WeakPtr<CreditCardAccessManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // Returns whether or not unmasked card cache is empty. Exposed for
+  // testing.
   bool UnmaskedCardCacheIsEmpty();
 
   // Invoked from CreditCardFidoAuthenticator::IsUserVerifiable().
@@ -374,15 +383,14 @@ class CreditCardAccessManager
   // OnCvcAuthenticationComplete() to be executed.
   bool is_authentication_in_progress_ = false;
 
-  // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver> driver_;
+  // The associated autofill driver.
+  const raw_ref<AutofillDriver> driver_;
 
-  // The associated autofill client. Weak reference.
-  const raw_ptr<AutofillClient> client_;
+  // The associated autofill client.
+  const raw_ref<AutofillClient> client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
-  // Weak reference.
   const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.
