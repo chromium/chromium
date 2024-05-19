@@ -53,13 +53,14 @@
 namespace autofill {
 
 namespace {
-// Timeout to wait for unmask details from Google Payments in milliseconds.
-constexpr int64_t kUnmaskDetailsResponseTimeoutMs = 3 * 1000;  // 3 sec
+
+// Timeout to wait for unmask details from Google Payments.
+constexpr auto kUnmaskDetailsResponseTimeout = base::Seconds(3);
 // Time to wait between multiple calls to GetUnmaskDetails().
-constexpr int64_t kDelayForGetUnmaskDetails = 3 * 60 * 1000;  // 3 min
+constexpr auto kDelayForGetUnmaskDetails = base::Minutes(3);
 
 // Suffix for server IDs in the cache indicating that a card is a virtual card.
-const char kVirtualCardIdentifier[] = "_vcn";
+constexpr char kVirtualCardIdentifier[] = "_vcn";
 
 }  // namespace
 
@@ -257,12 +258,11 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
       unmask_details_.offer_fido_opt_in && !client_->IsOffTheRecord();
 
   // Set delay as fido request timeout if available, otherwise set to default.
-  int delay_ms = kDelayForGetUnmaskDetails;
+  base::TimeDelta delay = kDelayForGetUnmaskDetails;
   if (unmask_details_.fido_request_options.has_value()) {
-    const std::optional<int> request_timeout =
-        unmask_details_.fido_request_options->FindInt("timeout_millis");
-    if (request_timeout.has_value()) {
-      delay_ms = *request_timeout;
+    if (std::optional<int> request_timeout =
+            unmask_details_.fido_request_options->FindInt("timeout_millis")) {
+      delay = base::Milliseconds(*request_timeout);
     }
   }
 
@@ -278,7 +278,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
       FROM_HERE,
       base::BindOnce(&CreditCardAccessManager::SignalCanFetchUnmaskDetails,
                      GetWeakPtr()),
-      base::Milliseconds(delay_ms));
+      delay);
 }
 
 void CreditCardAccessManager::FetchCreditCard(
@@ -1188,7 +1188,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     ready_to_start_authentication_.OnEventOrTimeOut(
         base::BindOnce(&CreditCardAccessManager::OnStopWaitingForUnmaskDetails,
                        GetWeakPtr()),
-        base::Milliseconds(kUnmaskDetailsResponseTimeoutMs));
+        kUnmaskDetailsResponseTimeout);
   } else {
     StartAuthenticationFlow(
         IsFidoAuthEnabled(get_unmask_details_returned &&
