@@ -15,11 +15,15 @@
 #include <functional>
 #include <utility>
 
-#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_tree.h"
 
 namespace base {
+
+namespace internal {
+// Not constexpr to trigger a compile error.
+void FixedFlatMapInputNotSortedOrNotUnique();
+}  // namespace internal
 
 // fixed_flat_map is a immutable container with a std::map-like interface that
 // stores its contents in a sorted std::array.
@@ -111,10 +115,9 @@ consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
   typename FixedFlatMap::value_compare value_comp{comp};
   if (!internal::is_sorted_and_unique(data, value_comp)) {
     std::sort(data, data + N, value_comp);
-    // If this CHECK fails, a compiler error will occur because CHECK failure
-    // is not consteval. Either the provided data wasn't unique, or the
-    // provided comparison can't establish a strict ordering on it.
-    CHECK(internal::is_sorted_and_unique(data, value_comp));
+    if (!internal::is_sorted_and_unique(data, value_comp)) {
+      internal::FixedFlatMapInputNotSortedOrNotUnique();
+    }
   }
   return FixedFlatMap(
       sorted_unique, internal::ToArray<typename FixedFlatMap::value_type>(data),
