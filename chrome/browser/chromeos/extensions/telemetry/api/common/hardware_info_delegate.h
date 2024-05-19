@@ -45,9 +45,6 @@ class HardwareInfoDelegate {
   HardwareInfoDelegate();
 
  private:
-  void FallbackHandler(ManufacturerCallback done_cb,
-                       std::string probe_service_result);
-
   std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
 };
 
