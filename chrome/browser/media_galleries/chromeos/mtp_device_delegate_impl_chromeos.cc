@@ -1082,13 +1082,8 @@ void MTPDeviceDelegateImplLinux::MoveFileLocalInternal(
     const base::File::Info& source_file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (source_file_info.is_directory) {
-    std::move(error_callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
-    return;
-  }
-
   if (source_file_path.DirName() == device_file_path.DirName()) {
-    // If a file is moved in a same directory, rename the file.
+    // If a file or directory is moved in a same directory, rename it.
     std::optional<uint32_t> file_id = CachedPathToId(source_file_path);
     if (file_id) {
       MTPDeviceTaskHelper::RenameObjectSuccessCallback
@@ -1109,8 +1104,16 @@ void MTPDeviceDelegateImplLinux::MoveFileLocalInternal(
                                            content::BrowserThread::UI,
                                            FROM_HERE, std::move(closure)));
     } else {
-      std::move(error_callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+      std::move(error_callback)
+          .Run(source_file_info.is_directory
+                   ? base::File::FILE_ERROR_NOT_A_FILE
+                   : base::File::FILE_ERROR_NOT_FOUND);
     }
+    return;
+  }
+
+  if (source_file_info.is_directory) {
+    std::move(error_callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
     return;
   }
 
