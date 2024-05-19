@@ -78,7 +78,7 @@ ScriptPromise<IDLUndefined> FileSystemObserver::observe(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1489033): Add AllowStorageAccess checks.
+  // TODO(https://crbug.com/321980226): Add AllowStorageAccess checks.
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
@@ -116,7 +116,7 @@ void FileSystemObserver::unobserve(FileSystemHandle* handle) {
     return;
   }
 
-  // TODO(https://crbug.com/1489029): Unqueue and pause records for this
+  // TODO(https://crbug.com/321980469): Unqueue and pause records for this
   // observation, or consider making observe() return a token which can be
   // passed to this method.
 

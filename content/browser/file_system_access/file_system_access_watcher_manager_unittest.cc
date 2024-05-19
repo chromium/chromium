@@ -62,7 +62,8 @@ void SpinEventLoopForABit() {
   loop.Run();
 }
 
-// TODO(crbug.com/40260973): Report the modified path on more platforms.
+// TODO(crbug.com/321980270, crbug.com/321980447): Report the modified path on
+// more platforms.
 bool ReportsModifiedPathForLocalObservations() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -71,7 +72,8 @@ bool ReportsModifiedPathForLocalObservations() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
-// TODO(crbug.com/40260973): Report change info on more platforms.
+// TODO(crbug.com/321980270, crbug.com/321980447): Report change info on more
+// platforms.
 bool ReportsChangeInfoForLocalObservations() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -428,7 +430,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kOperationFailed);
 
-  // TODO(crbug.com/40105284): Determine what should happen on failure to
+  // TODO(crbug.com/341095544): Determine what should happen on failure to
   // initialize a source, then add better test coverage.
 }
 
@@ -512,7 +514,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
-  // TODO(crbug.com/40283896): External backends are not yet supported.
+  // TODO(crbug.com/321980129): External backends are not yet supported.
   base::FilePath test_external_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
@@ -529,7 +531,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 }
 
-// TODO(crbug.com/40283894): Add tests covering more edge cases regarding
+// TODO(crbug.com/321980367): Add tests covering more edge cases regarding
 // overlapping scopes.
 TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
@@ -567,7 +569,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   source_for_file.Signal();
   source_for_dir.Signal(/*relative_path=*/file_path.BaseName());
 
-  // TODO(crbug.com/40268906): It would be nice if the watcher manager
+  // TODO(crbug.com/321980367): It would be nice if the watcher manager
   // could consolidate these changes....
 
   Change expected_change{
@@ -784,7 +786,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErrorTakesPrecedenceOverChangeType) {
   }));
 }
 
-// TODO(crbug.com/40105284): Consider parameterizing these tests once
+// TODO(crbug.com/321980129): Consider parameterizing these tests once
 // observing changes to other backends is supported.
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {

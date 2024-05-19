@@ -21,9 +21,6 @@ class FileSystemAccessWatcherManager;
 // Watches changes to all bucket file system paths and reports changes to its
 // observers. This class must be created, used, and destroyed on the same
 // sequence as the `FileSystemContext` it holds a reference to.
-//
-// TODO(crbug.com/40105284): Account for changes made by
-// SyncAccessHandles.
 class FileSystemAccessBucketPathWatcher : public FileSystemAccessChangeSource,
                                           public storage::FileChangeObserver {
  public:

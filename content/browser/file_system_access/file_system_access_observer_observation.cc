@@ -166,10 +166,10 @@ void FileSystemAccessObserverObservation::OnChanges(
   const storage::FileSystemURL& handle_url = AsHandleBase(handle_).url();
 
   // Do not relay changes if the site has lost read permission to the handle.
-  // TODO(crbug.com/40283887): Add tests for this.
+  // TODO(crbug.com/321980366): Add tests for this.
   if (handle_state.read_grant->GetStatus() !=
       blink::mojom::PermissionStatus::GRANTED) {
-    // TODO(crbug.com/40283887): Proactively listen for permission
+    // TODO(crbug.com/321980366): Proactively listen for permission
     // changes, rather than (or perhaps in addition to) checking on each change.
     return;
   }
@@ -177,9 +177,8 @@ void FileSystemAccessObserverObservation::OnChanges(
   std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
   for (const auto& change : changes) {
     if (change.type->is_errored()) {
-      // TODO(crbug.com/40105284): Consider destroying `observation_`...
-      // Or don't bother passing along errored changes from the WatcherManager
-      // to its Observations in the first place.
+      // TODO(crbug.com/341123799): Invoke the callback with error type, and
+      // mark this observation as errored so that no further events are sent.
       continue;
     }
 

@@ -16,7 +16,7 @@ namespace content {
 // subdirectories.
 class CONTENT_EXPORT FileSystemAccessWatchScope {
  public:
-  // TODO(crbug.com/40105284): Consider using something like a PassKey
+  // TODO(crbug.com/341239594): Consider using something like a PassKey
   // to restrict access to these initializers.
   static FileSystemAccessWatchScope GetScopeForFileWatch(
       const storage::FileSystemURL& file_url);

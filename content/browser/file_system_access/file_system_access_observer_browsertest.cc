@@ -110,14 +110,14 @@ enum class TestFileSystemType {
        return await promise;", \
       base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds())) +
 
-// TODO(crbug.com/40105284): Consider making these WPTs, and adding a
+// TODO(crbug.com/341136316): Consider making these WPTs, and adding a
 // lot more of them. For example:
 //   - change types
 //   - observing a handle without permission should fail
 //   - changes should not be reported to swap files
-//     (see https://crbug.com/1488874)
+//     (see https://crbug.com/321980149)
 //   - changes should not be reported if permission to the handle is lost
-//     (see https://crbug.com/1489035)
+//     (see https://crbug.com/321980366)
 //   - moving an observed handle
 
 class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
@@ -389,8 +389,8 @@ class FileSystemAccessObserverBrowserTest
       return true;
     }
 
-    // TODO(crbug.com/40260973): Some platforms do not support reporting
-    // the modified path.
+    // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
+    // support reporting the modified path.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     return true;
 #else
@@ -399,8 +399,8 @@ class FileSystemAccessObserverBrowserTest
   }
 
   bool SupportsChangeInfo() const {
-    // TODO(crbug.com/40260973): Reporting change info and the modified
-    // path are both only supported on inotify, for now.
+    // TODO(crbug.com/321980270, crbug.com/321980447): Reporting change info and
+    // the modified path are both only supported on inotify, for now.
     return SupportsReportingModifiedPath();
   }
 };
@@ -485,7 +485,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 
-/// TODO(crbug.com/40939929): Re-enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryRecursively) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -605,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
-// TODO(crbug.com/40283884): Add a ReObserveAfterUnobserve test once the
+// TODO(crbug.com/321980469): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
@@ -642,10 +641,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(crbug.com/40260973): Support change types for the local file
-  // system on more platforms.
+  // TODO(crbug.com/321980270, crbug.com/321980447): Support change types for
+  // the local file system on more platforms.
   //
-  // TODO(crbug.com/40105284): Consider reporting a consistent change
+  // TODO(crbug.com/340584120): Consider reporting a consistent change
   // type when writing to a file via a WritableFileStream. On the local file
   // system, changes are naively considered "moved" events because the swap file
   // is moved over the target file. Meanwhile, the BucketFS intentionally
@@ -708,9 +707,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-  // TODO(crbug.com/40260973): Some platforms do not report the modified
-  // path. In these cases, `changedHandle` will always be the handle passed to
-  // observe().
+  // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
+  // report the modified path. In these cases, `changedHandle` will always be
+  // the handle passed to observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "subDir" : "dir";
 
@@ -743,9 +742,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // The modified handle is a file, so the change record should contain a
   // FileSystemFileHandle.
   //
-  // TODO(crbug.com/40260973): Some platforms do not report the modified
-  // path. In these cases, `changedHandle` will always be the handle passed to
-  // observe().
+  // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
+  // report the modified path. In these cases, `changedHandle` will always be
+  // the handle passed to observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "fileInDir" : "dir";
 
