@@ -14,10 +14,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,10 +32,6 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
-
-// TODO(https://crbug.com/1403174): Remove when namespace of mojoms for CfM are
-// migarted to ash.
-namespace mojom = ::chromeos::cfm::mojom;
 
 class FakeDelegate : public ServiceAdaptor::Delegate {
  public:
@@ -70,43 +66,49 @@ class CfmServiceAdaptorTest : public testing::Test {
 
   void SetUp() override {
     CfmHotlineClient::InitializeFake();
-    ServiceConnection::UseFakeServiceConnectionForTesting(
+    chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection);
   }
 
   void TearDown() override { CfmHotlineClient::Shutdown(); }
 
-  void SetCallback(FakeServiceConnectionImpl::FakeBootstrapCallback callback) {
+  void SetCallback(
+      chromeos::cfm::FakeServiceConnectionImpl::FakeBootstrapCallback
+          callback) {
     fake_service_connection.SetCallback(std::move(callback));
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FakeServiceConnectionImpl fake_service_connection;
+  chromeos::cfm::FakeServiceConnectionImpl fake_service_connection;
 };
 
 TEST_F(CfmServiceAdaptorTest, BindServiceAdaptor) {
   base::RunLoop run_loop;
 
   // Intercept Connection to |CfmServiceContext|
-  FakeCfmServiceContext fake_context;
-  mojo::Receiver<mojom::CfmServiceContext> context_receiver(&fake_context);
+  chromeos::cfm::FakeCfmServiceContext fake_context;
+  mojo::Receiver<chromeos::cfm::mojom::CfmServiceContext> context_receiver(
+      &fake_context);
 
   SetCallback(base::BindLambdaForTesting(
       [&context_receiver](
-          mojo::PendingReceiver<mojom::CfmServiceContext> pending_receiver,
+          mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+              pending_receiver,
           bool success) {
         // Bind the Context Receiver to the mock
         context_receiver.Bind(std::move(pending_receiver));
       }));
 
   // Fake out the next call to provide adaptor
-  mojo::Remote<mojom::CfmServiceAdaptor> remote;
+  mojo::Remote<chromeos::cfm::mojom::CfmServiceAdaptor> remote;
   fake_context.SetFakeProvideAdaptorCallback(base::BindLambdaForTesting(
       [&](const std::string& interface_name,
-          mojo::PendingRemote<mojom::CfmServiceAdaptor> pending_adaptor,
-          FakeCfmServiceContext::ProvideAdaptorCallback callback) {
-        // Bind the |mojom::CfmServiceAdaptor| to a Remote
+          mojo::PendingRemote<chromeos::cfm::mojom::CfmServiceAdaptor>
+              pending_adaptor,
+          chromeos::cfm::FakeCfmServiceContext::ProvideAdaptorCallback
+              callback) {
+        // Bind the |chromeos::cfm::mojom::CfmServiceAdaptor| to a Remote
         remote.Bind(std::move(pending_adaptor));
         std::move(callback).Run(true);
       }));

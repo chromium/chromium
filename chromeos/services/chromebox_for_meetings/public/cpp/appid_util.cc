@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
 
 #include "base/containers/contains.h"
 
-namespace ash {
+namespace chromeos {
 namespace cfm {
 
 namespace {
@@ -47,4 +47,4 @@ bool IsChromeboxForMeetingsHashedAppId(const std::string& app_id) {
 }
 
 }  // namespace cfm
-}  // namespace ash
+}  // namespace chromeos

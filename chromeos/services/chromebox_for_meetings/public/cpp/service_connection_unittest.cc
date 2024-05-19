@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
 #include <optional>
 #include <utility>
@@ -13,9 +13,8 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,13 +25,9 @@ using ::testing::Invoke;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
-namespace ash {
+namespace chromeos {
 namespace cfm {
 namespace {
-
-// TODO(https://crbug.com/1403174): Remove when namespace of mojoms for CfM are
-// migarted to ash.
-namespace mojom = ::chromeos::cfm::mojom;
 
 class CfmServiceConnectionTest : public testing::Test {
  public:
@@ -41,12 +36,9 @@ class CfmServiceConnectionTest : public testing::Test {
   CfmServiceConnectionTest& operator=(const CfmServiceConnectionTest&) = delete;
 
   void SetUp() override {
-    CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
   }
-
-  void TearDown() override { CfmHotlineClient::Shutdown(); }
 
   void SetBootstrapCallback(
       FakeServiceConnectionImpl::FakeBootstrapCallback callback) {
@@ -80,4 +72,4 @@ TEST_F(CfmServiceConnectionTest, FakeBindServiceContext) {
 
 }  // namespace
 }  // namespace cfm
-}  // namespace ash
+}  // namespace chromeos

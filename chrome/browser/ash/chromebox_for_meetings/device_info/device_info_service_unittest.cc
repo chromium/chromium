@@ -23,11 +23,11 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,7 +60,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
                                                     owner_key_util_);
 
     CfmHotlineClient::InitializeFake();
-    ServiceConnection::UseFakeServiceConnectionForTesting(
+    chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     DeviceInfoService::Initialize();
     system::StatisticsProvider::SetTestProvider(&fake_statistics_provider_);
@@ -136,8 +136,8 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   }
 
  protected:
-  FakeCfmServiceContext context_;
-  FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::cfm::FakeCfmServiceContext context_;
+  chromeos::cfm::FakeServiceConnectionImpl fake_service_connection_;
   ScopedTestDeviceSettingsService scoped_device_settings_service_;
   FakeSessionManagerClient session_manager_client_;
   system::FakeStatisticsProvider fake_statistics_provider_;
@@ -157,23 +157,31 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
 
 // This test ensures that the DiagnosticsInfoService is discoverable by its
 // mojom name by sending a signal received by CfmHotlineClient.
-TEST_F(CfmDeviceInfoServiceTest, InfoServiceAvailable) {
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_InfoServiceAvailable) {
   ASSERT_TRUE(GetClient()->FakeEmitSignal(mojom::MeetDevicesInfo::Name_));
 }
 
 // This test ensures that the CfmDeviceInfoService correctly registers itself
 // for discovery by the cfm mojom binder daemon and correctly returns a
 // working mojom remote.
-TEST_F(CfmDeviceInfoServiceTest, GetDeviceInfoRemote) {
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_GetDeviceInfoRemote) {
   ASSERT_TRUE(GetDeviceInfoRemote().is_connected());
 }
 
-TEST_F(CfmDeviceInfoServiceTest, GetDeviceInfoService) {
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_GetDeviceInfoService) {
   const auto& details_remote = GetDeviceInfoRemote();
   ASSERT_TRUE(details_remote.is_connected());
 }
 
-TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestPolicyInfo) {
   base::RunLoop run_loop;
   const auto& details_remote = GetDeviceInfoRemote();
   run_loop.RunUntilIdle();
@@ -200,7 +208,9 @@ TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
   mojo_loop.Run();
 }
 
-TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestSysInfo) {
   base::RunLoop run_loop;
 
   base::test::ScopedChromeOSVersionInfo version(
@@ -220,6 +230,7 @@ TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
   mojo_loop.Run();
 }
 
+// TODO(b/40766737): Fix tests broken due to use of Machine Statistics
 // Crashes on linux-cfm-rel. crbug.com/1209841
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestMachineStatisticsInfo) {
   const std::string kExpectedHwid = "kExpectedHwid";

@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 

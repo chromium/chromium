@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
 namespace ash::cfm {
 
@@ -21,7 +21,7 @@ ServiceAdaptor::~ServiceAdaptor() = default;
 
 chromeos::cfm::mojom::CfmServiceContext* ServiceAdaptor::GetContext() {
   if (!context_.is_bound()) {
-    ServiceConnection::GetInstance()->BindServiceContext(
+    chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
         context_.BindNewPipeAndPassReceiver());
     context_.reset_on_disconnect();
   }

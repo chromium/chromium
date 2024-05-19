@@ -28,7 +28,7 @@ Components
   Reporting Pipeline protocol (see go/chromereportingdocs). This endpoint
   is managed by the Fleet team and will not be discussed here.
 
-See mojom file for more detailed info: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom
+See mojom file for more detailed info: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom
 
 Internal Notes
 --------------

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 
-namespace ash {
+namespace chromeos {
 namespace cfm {
-
-// TODO(https://crbug.com/1403174): Remove when namespace of mojoms for CfM are
-// migarted to ash.
-namespace mojom = ::chromeos::cfm::mojom;
 
 FakeCfmServiceContext::FakeCfmServiceContext() = default;
 FakeCfmServiceContext::~FakeCfmServiceContext() = default;
@@ -43,4 +39,4 @@ void FakeCfmServiceContext::SetFakeRequestBindServiceCallback(
 }
 
 }  // namespace cfm
-}  // namespace ash
+}  // namespace chromeos

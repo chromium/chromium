@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

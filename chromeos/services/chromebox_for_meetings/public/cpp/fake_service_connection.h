@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
-#define CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 
 #include "base/functional/bind.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace ash {
+namespace chromeos {
 namespace cfm {
 
 // Fake implementation of cfm::ServiceConnection.
 // For use with ServiceConnection::UseFakeServiceConnectionForTesting().
-class FakeServiceConnectionImpl : public ServiceConnection {
+class FakeServiceConnectionImpl
+    : public ServiceConnection {
  public:
   using FakeBootstrapCallback = base::OnceCallback<void(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>,
@@ -44,6 +45,6 @@ class FakeServiceConnectionImpl : public ServiceConnection {
 };
 
 }  // namespace cfm
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_

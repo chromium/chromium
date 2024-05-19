@@ -613,7 +613,7 @@ try_.builder(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
             "chromeos/ash/components/dbus/chromebox_for_meetings/.+",
-            "chromeos/ash/services/chromebox_for_meetings/.+",
+            "chromeos/services/chromebox_for_meetings/.+",
             "chrome/browser/ash/chromebox_for_meetings/.+",
         ],
     ),
