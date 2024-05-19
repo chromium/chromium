@@ -39,6 +39,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_background_resource_fetch_assets.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_url_loader_factory_for_background_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -86,10 +88,6 @@ constexpr char kTestURL[] = "http://example.com/";
 constexpr char kRedirectedURL[] = "http://example.com/redirected";
 constexpr int kMaxBufferedBytesPerProcess = 1000;
 constexpr std::string kTestBodyString = "test data.";
-
-using LoadStartCallback = base::OnceCallback<void(
-    mojo::PendingReceiver<network::mojom::URLLoader>,
-    mojo::PendingRemote<network::mojom::URLLoaderClient>)>;
 
 using MaybeStartFunction =
     CrossThreadOnceFunction<bool(network::mojom::URLResponseHeadPtr&,
@@ -295,113 +293,6 @@ class FakeBackForwardCacheLoaderHelper final
   std::optional<mojom::blink::RendererEvictionReason> evicted_reason_;
   size_t total_bytes_buffered_ = 0;
   bool process_wide_count_updated_ = false;
-};
-
-class FakeURLLoaderFactory : public network::SharedURLLoaderFactory {
- public:
-  // This SharedURLLoaderFactory is cloned and passed to the background thread
-  // via PendingFactory. `load_start_callback` will be called in the background
-  // thread.
-  explicit FakeURLLoaderFactory(LoadStartCallback load_start_callback)
-      : load_start_callback_(std::move(load_start_callback)) {}
-  FakeURLLoaderFactory(const FakeURLLoaderFactory&) = delete;
-  FakeURLLoaderFactory& operator=(const FakeURLLoaderFactory&) = delete;
-  ~FakeURLLoaderFactory() override = default;
-
-  // network::SharedURLLoaderFactory:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    CHECK(load_start_callback_);
-    std::move(load_start_callback_).Run(std::move(loader), std::move(client));
-  }
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    // Pass |this| as the receiver context to make sure this object stays alive
-    // while it still has receivers.
-    receivers_.Add(this, std::move(receiver), this);
-  }
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    CHECK(load_start_callback_);
-    return std::make_unique<PendingFactory>(std::move(load_start_callback_));
-  }
-
- private:
-  class PendingFactory : public network::PendingSharedURLLoaderFactory {
-   public:
-    explicit PendingFactory(LoadStartCallback load_start_callback)
-        : load_start_callback_(std::move(load_start_callback)) {}
-    PendingFactory(const PendingFactory&) = delete;
-    PendingFactory& operator=(const PendingFactory&) = delete;
-    ~PendingFactory() override = default;
-
-   protected:
-    scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
-      CHECK(load_start_callback_);
-      return base::MakeRefCounted<FakeURLLoaderFactory>(
-          std::move(load_start_callback_));
-    }
-
-   private:
-    LoadStartCallback load_start_callback_;
-  };
-
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                    scoped_refptr<FakeURLLoaderFactory>>
-      receivers_;
-  LoadStartCallback load_start_callback_;
-};
-
-class FakeBackgroundResourceFetchAssets
-    : public WebBackgroundResourceFetchAssets {
- public:
-  explicit FakeBackgroundResourceFetchAssets(
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      LoadStartCallback load_start_callback)
-      : background_task_runner_(std::move(background_task_runner)),
-        pending_loader_factory_(base::MakeRefCounted<FakeURLLoaderFactory>(
-                                    std::move(load_start_callback))
-                                    ->Clone()) {}
-  FakeBackgroundResourceFetchAssets(const FakeBackgroundResourceFetchAssets&) =
-      delete;
-  FakeBackgroundResourceFetchAssets& operator=(
-      const FakeBackgroundResourceFetchAssets&) = delete;
-  ~FakeBackgroundResourceFetchAssets() override {
-    if (url_loader_factory_) {
-      // `url_loader_factory_` must be released in the background thread.
-      background_task_runner_->ReleaseSoon(FROM_HERE,
-                                           std::move(url_loader_factory_));
-    }
-  }
-
-  const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() override {
-    return background_task_runner_;
-  }
-
-  scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactory() override {
-    if (!url_loader_factory_) {
-      url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-          std::move(pending_loader_factory_));
-    }
-    return url_loader_factory_;
-  }
-
-  URLLoaderThrottleProvider* GetThrottleProvider() override { return nullptr; }
-  const blink::LocalFrameToken& GetLocalFrameToken() override {
-    return local_frame_token_;
-  }
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  std::unique_ptr<network::PendingSharedURLLoaderFactory>
-      pending_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const blink::LocalFrameToken local_frame_token_;
 };
 
 class FakeURLLoaderClient : public URLLoaderClient {
