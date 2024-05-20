@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
@@ -394,7 +395,15 @@ public class FullscreenVideoPictureInPictureController {
         }
     }
 
-    /** Notify Android if it's okay to auto-enter Picture in Picture mode. */
+    /**
+     * Notify Android if it's okay to auto-enter Picture in Picture mode.
+     *
+     * <p>Suppress `PictureInPictureIssue` since it doesn't like that the call to
+     * `SetSourceRectHint()` is conditional even when we call `setAutoEnterEnabled()`. It's correct
+     * as-is, since we don't want the source rect transition when we don't have a proper source
+     * rect. It would end up animating the wrong part of the viewport.
+     */
+    @SuppressLint("PictureInPictureIssue")
     private void updateAutoPictureInPictureStatus() {
         // Do nothing if Android doesn't support auto-enter.
         if (!mListenForAutoEnterability) return;
