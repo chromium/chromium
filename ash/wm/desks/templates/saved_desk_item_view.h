@@ -120,6 +120,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void OnFocus() override;
   void OnBlur() override;
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -29,12 +30,14 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
       button_type_(button_type) {
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
-        CHECK(v);
-        return v->is_focused();
-      }));
+  if (!features::IsOverviewNewFocusEnabled()) {
+    focus_ring->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
+          CHECK(v);
+          return v->is_focused();
+        }));
+  }
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kSaveDeskCornerRadius,

@@ -1969,11 +1969,14 @@ TEST_F(SavedDeskTest, TabletModeActivationIssues) {
 }
 
 TEST_F(SavedDeskTest, OverviewTabbing) {
+  const base::Time saved_desk_creation_time =
+      base::Time::FromSecondsSinceUnixEpoch(10);
+
   auto test_window = CreateAppWindow();
-  AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
-           DeskTemplateType::kTemplate);
-  AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
-           DeskTemplateType::kTemplate);
+  AddEntry(base::Uuid::GenerateRandomV4(), "template1",
+           saved_desk_creation_time, DeskTemplateType::kTemplate);
+  AddEntry(base::Uuid::GenerateRandomV4(), "template2",
+           saved_desk_creation_time, DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
   SavedDeskItemView* first_item = GetItemViewFromSavedDeskGrid(0);
@@ -1993,6 +1996,14 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
   // Testing that we traverse to the `name_view` of the second item.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(second_item->name_view(), GetFocusedView());
+
+  // Traversing name views should not update the template if there was no
+  // editing.
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+      GetAllEntries();
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_EQ(saved_desk_creation_time, entries[0]->GetLastUpdatedTime());
+  EXPECT_EQ(saved_desk_creation_time, entries[1]->GetLastUpdatedTime());
 }
 
 // Tests that if the templates button is invisible, it is not part of the

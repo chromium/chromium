@@ -111,7 +111,8 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
     }
 
     // Skip this widget if it has no focusable views. (i.e. Saved desks library
-    // with all saved desks deleted.)
+    // with all saved desks deleted or saved desk button container with all
+    // buttons disabled.)
     if (!widget->GetFocusManager()->GetNextFocusableView(
             /*starting_view=*/nullptr, widget, /*reverse=*/false,
             /*dont_loop=*/false)) {
@@ -125,6 +126,7 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
   OverviewGrid* primary_grid =
       overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
   maybe_add_widget(primary_grid->pine_widget());
+  maybe_add_widget(primary_grid->save_desk_button_container_widget());
   maybe_add_widget(primary_grid->feedback_widget());
   maybe_add_widget(primary_grid->birch_bar_widget());
   maybe_add_widget(primary_grid->saved_desk_library_widget());

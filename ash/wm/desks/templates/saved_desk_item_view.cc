@@ -303,6 +303,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   hover_container_->layer()->SetOpacity(0.0f);
   icon_container_view_->layer()->SetOpacity(1.0f);
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -562,6 +564,18 @@ views::Button::KeyClickAction SavedDeskItemView::GetKeyClickActionForEvent(
   }
 
   return Button::GetKeyClickActionForEvent(event);
+}
+
+bool SavedDeskItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator.IsCtrlDown() && accelerator.key_code() == ui::VKEY_W) {
+    OnDeleteButtonPressed();
+    return true;
+  }
+  return views::Button::AcceleratorPressed(accelerator);
+}
+
+bool SavedDeskItemView::CanHandleAccelerators() const {
+  return HasFocus() && views::Button::CanHandleAccelerators();
 }
 
 void SavedDeskItemView::UpdateSavedDeskName() {

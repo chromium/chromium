@@ -1527,6 +1527,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     }
     case ui::VKEY_RETURN: {
+      if (!focus_cycler_old_) {
+        return;
+      }
+
       if (focus_cycler_old_ && !focus_cycler_old_->MaybeActivateFocusedView()) {
         return;
       }

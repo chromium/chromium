@@ -325,7 +325,7 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
   params.activatable =
       (spoken_feedback_enabled || features::IsOverviewNewFocusEnabled())
-          ? views::Widget::InitParams::Activatable::kDefault
+          ? views::Widget::InitParams::Activatable::kYes
           : views::Widget::InitParams::Activatable::kNo;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
