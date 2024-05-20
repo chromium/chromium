@@ -465,6 +465,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1343865611738742294">Beri Linux kebenaran apl untuk mengakses peranti USB. Linux tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1343920184519992513">Teruskan dari tempat anda berhenti dan buka set halaman tertentu</translation>
 <translation id="1344141078024003905">Anda menghantar skrin. Anda boleh menjeda atau menghentikan penghantaran skrin anda pada bila-bila masa.</translation>
+<translation id="1346403631707626730">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anak anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Sahkan dan mulakan semula</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1347512539447549782">Storan Linux</translation>
@@ -1937,6 +1938,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2405887402346713222">Nombor Siri Peranti dan Komponen</translation>
 <translation id="2406153734066939945">Padamkan profil dan data profil ini?</translation>
 <translation id="2407671304279211586">Pilih penyedia DNS</translation>
+<translation id="240789602312469910">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anak anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan bagi peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Menyimpan kad</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2409268599591722235">Jom</translation>
@@ -2097,6 +2099,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2497852260688568942">Penyegerakan dilumpuhkan oleh pentadbir anda</translation>
 <translation id="2498539833203011245">Minimize</translation>
 <translation id="2498765460639677199">Besar</translation>
+<translation id="2499065671910214321">Gunakan lokasi. Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti ini. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang lokasi<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">Disekat untuk melindungi privasi anda</translation>
 <translation id="2501173422421700905">Sijil Ditahan</translation>
 <translation id="2501278716633472235">Kembali</translation>
@@ -2360,6 +2363,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="270516211545221798">Kelajuan pad sentuh</translation>
 <translation id="2705736684557713153">Tatal ke bahagian bawah skrin dan hidupkan Penambatan Segera jika dipaparkan. Jika tidak dipaparkan, itu menunjukkan anda sudah menghidupkannya.</translation>
+<translation id="2706304388244371417">Buat sandaran kepada Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran ini merangkumi data apl. Sandaran dimuat naik kepada Google dan disulitkan dengan menggunakan kata laluan Google Account anak anda. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang sandaran<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="2707024448553392710">Memuat turun komponen</translation>
 <translation id="270921614578699633">Purata</translation>
 <translation id="2709516037105925701">Autoisi</translation>
@@ -2894,11 +2898,13 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3094521107841754472">Harga telah berubah daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Penanda halaman, kata laluan dan data semakan imbas lain disegerakkan dengan akaun utama.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 sambungan yang mungkin berbahaya dimatikan. Anda juga boleh mengalih keluar sambungan tersebut.}other{{NUM_EXTENSIONS} sambungan yang mungkin berbahaya dimatikan. Anda juga boleh mengalih keluar sambungan tersebut.}}</translation>
+<translation id="3100071818310370858">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti ini. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang lokasi<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Malapkan cahaya</translation>
 <translation id="3101709781009526431">Tarikh dan masa</translation>
 <translation id="310297983047869047">Slaid sebelumnya</translation>
 <translation id="3103451787721578293">Sila masukkan sebab untuk memuat naik data ini:</translation>
 <translation id="3103512663951238230">Alt+Klik</translation>
+<translation id="3104948640446684649">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Kemaskinian Terakhir Tidak Berjaya</translation>
 <translation id="3105796011181310544">Tukar kembali kepada Google?</translation>
 <translation id="3105820656234755131">Kata Laluan Dikemaskinikan</translation>
@@ -2993,6 +2999,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3184536091884214176">Sediakan atau urus pencetak CUPS. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Apl ini disekat}other{Sesetengah apl disekat}}</translation>
 <translation id="3187472288455401631">Pengukuran iklan</translation>
+<translation id="3187556136478864255">Adakah anda dapat melihat peranti penghantaran anda dalam
+    <ph name="BEGIN_LINK" />
+    Apl Google Home<ph name="END_LINK" />?</translation>
 <translation id="3188465121994729530">Purata Pergerakan</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Kata laluan yang disimpan</translation>
@@ -3247,6 +3256,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3391721320619127327">Pembaca skrin pada ChromeOS Flex, ChromeVox biasanya digunakan oleh orang buta atau rabun untuk membaca teks yang dipaparkan pada skrin dengan pensintesis ucapan atau paparan braille. Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk menghidupkan ChromeVox. Apabila ChromeVox diaktifkan, anda akan melalui lawatan pantas.</translation>
 <translation id="3393554941209044235">Analisis Dokumen Chrome</translation>
 <translation id="3393582007140394275">Tidak dapat menghantar skrin.</translation>
+<translation id="3394072120086516913">PC berwayar manakala peranti cast menggunakan Wi-Fi</translation>
 <translation id="3394850431319394743">Dibenarkan menggunakan pengecam untuk memainkan kandungan yang dilindungi</translation>
 <translation id="3396442984945202128">Sahkan Identiti Anda</translation>
 <translation id="3396800784455899911">Dengan mengklik butang "Terima dan teruskan", anda bersetuju membenarkan pemprosesan yang dihuraikan di atas untuk perkhidmatan Google ini.</translation>
@@ -4082,7 +4092,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3983586614702900908">peranti daripada vendor yang tidak diketahui</translation>
 <translation id="3983764759749072418">Aplikasi Gedung Play mempunyai akses kepada peranti ini.</translation>
 <translation id="3983769721878416534">Lengah sebelum klik</translation>
-<translation id="3983793589497399077">Klik atau seret pada mana-mana bahagian untuk mencari dengan Lens</translation>
 <translation id="3984135167056005094">Jangan sertakan alamat e-mel</translation>
 <translation id="3984159763196946143">Tidak dapat memulakan mod tunjuk cara</translation>
 <translation id="3984431586879874039">Benarkan tapak ini melihat kunci keselamatan anda?</translation>
@@ -4505,6 +4514,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4314561087119792062">Tambahkan Nama titik capaian baharu</translation>
 <translation id="4314815835985389558">Urus penyegerakan</translation>
 <translation id="4316850752623536204">Tapak Web Pembangun</translation>
+<translation id="43176328751044557">{NUM_SITES,plural, =1{Mengalih keluar kebenaran untuk 1 laman}other{Mengalih keluar kebenaran untuk {NUM_SITES} laman}}</translation>
 <translation id="4317733381297736564">Pembelian dalam apl</translation>
 <translation id="4317820549299924617">Pengesahan tidak berjaya</translation>
 <translation id="4319441675152393296">Klik ikon sambungan ini untuk membaca dan menukar <ph name="HOST" /></translation>
@@ -4821,6 +4831,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4559617833001311418">Tapak ini mengakses penderia gerakan atau cahaya anda.</translation>
 <translation id="4560728518401799797">Lagi pilihan untuk penanda halaman <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">Tiada kebenaran yang diubah baru-baru ini</translation>
+<translation id="4562091353415772246">Pasang kemaskinian &amp; apl. Dengan meneruskan proses, anda bersetuju bahawa peranti ini mungkin memuat turun dan memasang kemaskinian serta apl secara automatik daripada Google, pembawa anda dan pengeluar peranti anda juga, mungkin dengan menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang Autopasang Play<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Tambahkan Cap Jari</translation>
 <translation id="4562155266774382038">Ketepikan cadangan</translation>
 <translation id="4563210852471260509">Bahasa input permulaan adalah bahasa Cina</translation>
@@ -5756,6 +5767,8 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5288106344236929384">Lebih banyak tindakan, pilihan kunci laluan untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">B&amp;uka Semula Tab Yang Ditutup</translation>
 <translation id="52895863590846877">Halaman bukan dalam <ph name="LANGUAGE" /></translation>
+<translation id="5290020561438336792">PC dan peranti cast menggunakan rangkaian Wi-Fi yang berlainan (mis. 2.4GHz
+    vs. 5GHz)</translation>
 <translation id="52912272896845572">Fail penting persendirian adalah tidak sah.</translation>
 <translation id="5291739252352359682">Membuat sari kata untuk media dalam penyemak imbas Chrome secara automatik (tersedia dalam bahasa Inggeris pada masa ini). Audio dan sari kata diproses secara setempat dan tidak sekali-kali dihantar keluar daripada peranti.</translation>
 <translation id="529175790091471945">Formatkan peranti ini</translation>
@@ -6239,9 +6252,12 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5646558797914161501">Ahli perniagaan</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5648166631817621825">7 hari lalu</translation>
+<translation id="5649182603113127372">Gunakan lokasi. Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang lokasi<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
+<translation id="5650537073531199882">Isi Borang</translation>
 <translation id="5651308944918885595">Kebolehtemuan Kongsi Berdekatan</translation>
 <translation id="5653154844073528838">Anda mempunyai <ph name="PRINTER_COUNT" /> pencetak yang disimpan.</translation>
 <translation id="5654669866168491665">Ketahui lebih lanjut tentang laman yang mungkin tidak berfungsi apabila kuki pihak ketiga disekat</translation>
+<translation id="5654848283274615843">{NUM_SITES,plural, =1{Untuk melindungi privasi anda, kebenaran telah dialih keluar daripada laman}other{Untuk melindungi privasi anda, kebenaran telah dialih keluar daripada beberapa laman}}</translation>
 <translation id="565515993087783098">Tindakan melupakan rangkaian ini juga akan mengalih keluar langganan Passpoint dan rangkaian yang berkaitan.</translation>
 <translation id="5655296450510165335">Pendaftaran peranti</translation>
 <translation id="5655823808357523308">Laraskan cara warna dipaparkan pada skrin anda</translation>
@@ -6354,6 +6370,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
 <translation id="5747785204778348146">Pembangun - tidak stabil</translation>
 <translation id="5747809636523347288">Ta&amp;mpal dan pergi ke <ph name="URL" /></translation>
+<translation id="5749214722697335450">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Semak Kesediaan Penambatan</translation>
 <translation id="5753570386948603678">Padam daripada sejarah</translation>
@@ -6389,6 +6406,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
     Tindakan mematikan tetapan ini akan menyebabkan Android menggunakan alamat IP sahaja untuk lokasi. Hal ini mungkin menjejaskan ketepatan lokasi yang digunakan oleh apl seperti Maps.</translation>
 <translation id="5778491106820461378">Anda boleh mengurus Google Account yang dilog masuk daripada <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" />. Kebenaran yang telah anda berikan kepada laman web dan apl boleh digunakan pada semua akaun. Jika anda tidak mahu maklumat akaun anda diakses oleh laman atau apl, anda boleh log masuk ke <ph name="DEVICE_TYPE" /> anda sebagai tetamu.</translation>
 <translation id="5780011244986845107">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses baca kekal kepada folder ini?</translation>
+<translation id="5780940414249100901">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Keutamaan proses</translation>
 <translation id="5781092003150880845">Segerakkan sebagai <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Hantar perintah kepada <ph name="EXTENSION_NAME" /></translation>
@@ -7082,6 +7100,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6294759976468837022">Kelajuan autoimbas</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
+<translation id="6297986260307280218">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan bagi peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Menjejaskan laman yang disenaraikan di sini. Tindakan memasukkan “[*.]” sebelum nama domain akan menghasilkan pengecualian untuk keseluruhan domain. Sebagai contoh, tindakan menambahkan “[*.]google.com” bermakna kuki pihak ketiga juga boleh menjadi aktif untuk mail.google.com kerana mail.google.com merupakan sebahagian daripada google.com.</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
 <translation id="6300177430812514606">Tidak dibenarkan untuk menyelesaikan penghantaran atau penerimaan data</translation>
@@ -8122,6 +8141,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="710047887584828070">Kandungan tab ini sedang dikongsi</translation>
 <translation id="710224247908684995">Sambungan mematikan Penyemakan Imbas Selamat</translation>
 <translation id="7102832101143475489">Permintaan telah tamat masa</translation>
+<translation id="7103944802169726298">PC dan peranti cast pada rangkaian Wi-Fi yang sama</translation>
 <translation id="710640343305609397">Buka tetapan rangkaian</translation>
 <translation id="7107609441453408294">Mainkan audio yang sama melalui semua pembesar suara</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
@@ -10276,10 +10296,12 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8695139659682234808">Tambah kawalan ibu bapa selepas persediaan</translation>
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
 <translation id="8698269656364382265">Untuk kembali ke skrin sebelumnya, leret dari sebelah kiri.</translation>
+<translation id="8698432579173128320">Buat sandaran kepada Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl. Sandaran anda dimuat naik kepada Google dan disulitkan dengan menggunakan kata laluan Google Account anda. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang sandaran<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699188901396699995">PPD untuk <ph name="PRINTER_NAME" /></translation>
 <translation id="8700066369485012242">Beritahu kami sebab anda membenarkan kuki pihak ketiga pada laman ini</translation>
+<translation id="8700087567921985940">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang lokasi<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">pelancar + undur ruang</translation>
 <translation id="8702278591052316269">Menu mengandungi kumpulan tab disimpan yang tersembunyi</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> anda telah dikunci.</translation>
@@ -10532,6 +10554,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8881020143150461183">Sila cuba lagi. Hubungi <ph name="CARRIER_NAME" /> untuk mendapatkan sokongan teknikal.</translation>
 <translation id="888256071122006425">Tetapan tetikus dan pad sentuh</translation>
 <translation id="8883273463630735858">Dayakan pemecutan pad sentuh</translation>
+<translation id="8883478023074930307">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Untuk melindungi privasi anda, kami memadamkan laman yang disimpan melebihi 4 minggu daripada senarai secara automatik. Laman yang anda lawati sekali lagi mungkin dipaparkan semula dalam senarai. Anda juga boleh mengalih keluar laman jika anda tidak mahu laman itu mentakrifkan minat untuk anda.</translation>
 <translation id="8884570509232205463">Peranti anda kini dikunci pada <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8885449336974696155">Bantu jadikan ChromeOS lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
@@ -10961,6 +10984,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="919686179725692564">Ketahui lebih lanjut tentang membuat sandaran apl anda</translation>
 <translation id="9199503643457729322">Klik untuk menavigasi keluar daripada Panduan Privasi.</translation>
 <translation id="9199695835892108985">Tetapkan semula semua kebenaran Port siri?</translation>
+<translation id="9199853905755292769">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> akan dapat mengedit fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Cari <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Dilihat sebelum ini</translation>

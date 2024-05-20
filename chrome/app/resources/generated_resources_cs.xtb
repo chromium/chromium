@@ -2504,6 +2504,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
+<translation id="2809946454624727734">Můžete k ní mít přístup ve svých uložených adresách.</translation>
 <translation id="2811205483104563968">Účty</translation>
 <translation id="2812049959647166806">Rozhraní Thunderbolt není podporováno</translation>
 <translation id="2812171980080389735">Uložené sítě a hesla k okamžitému připojení</translation>
@@ -2718,6 +2719,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2976557544729462544">Některá zařízení vyžadují deaktivaci ochrany přístupu k datům, aby mohla fungovat správně nebo s plným výkonem.</translation>
 <translation id="2976639738101799892">Mějte při procházení internetu vždy k dispozici Vyhledávání Google a chytré funkce Google</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
+<translation id="2979493931538961252">Když je Chromebook offline a jsou dostupné hotspoty</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2979893796619951531">Vyloučit web</translation>
 <translation id="2981033191524548279">Litujeme, něco se pokazilo. Pošlete nám zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />. Možná se to podaří vyřešit restartováním a opakováním pokusu.</translation>
@@ -3152,6 +3154,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3317521105713541270">Vytvořit skupiny</translation>
 <translation id="3317678681329786349">Kamera a mikrofon jsou blokovány</translation>
 <translation id="3319306431415395200">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="3319863571062685443">Vaše adresa je uložena</translation>
 <translation id="3320271870899888245">K OneDrive se nelze připojit. Zkuste to znovu.</translation>
 <translation id="3320630259304269485">Bezpečné prohlížení (ochrana před nebezpečnými weby) a další nastavení zabezpečení</translation>
 <translation id="3321460131042519426">Povolit zalamování slov</translation>
@@ -3394,6 +3397,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3508492320654304609">Vaše přihlašovací údaje nebylo možné vymazat</translation>
 <translation id="3508920295779105875">Zvolit jinou složku...</translation>
 <translation id="3509379002674019679">Vytváření, ukládání a správa hesel pro snadné přihlašování na weby a do aplikací.</translation>
+<translation id="3510471875518562537">Používejte tuto adresu na svém iPhonu</translation>
 <translation id="3511200754045804813">Vyhledat znovu</translation>
 <translation id="3511307672085573050">Kopírovat adr&amp;esu odkazu</translation>
 <translation id="351152300840026870">Písmo s pevnou šířkou</translation>
@@ -4070,7 +4074,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3983586614702900908">zařízení od neznámého dodavatele</translation>
 <translation id="3983764759749072418">K tomuto zařízení mají přístup aplikace z Obchodu Play.</translation>
 <translation id="3983769721878416534">Prodleva před kliknutím</translation>
-<translation id="3983793589497399077">Pokud chcete hledat pomocí Lens, někam klikněte nebo něco vyberte tažením</translation>
 <translation id="3984135167056005094">E-mailovou adresu neuvádět</translation>
 <translation id="3984159763196946143">Ukázkový režim nelze spustit</translation>
 <translation id="3984431586879874039">Povolit tomuto webu přístup k vašemu bezpečnostnímu klíči?</translation>
@@ -4165,6 +4168,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt není dostupný. Chcete-li u něj používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jeho účtu Google.}few{# kontakty nejsou dostupné. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}many{# kontaktu není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}other{# kontaktů není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}}</translation>
 <translation id="4050225813016893843">Metoda ověření</translation>
 <translation id="4050534976465737778">Obě zařízení musí být odemknutá, blízko u sebe a musí v nich být zapnutý Bluetooth. Jestliže obsah sdílíte s Chromebookem, který nemáte v kontaktech, musí na něm být zapnutá viditelnost nablízko. (Otevřete stavovou oblast a poté vyberte možnost Viditelnost nablízko.) <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">Pokud chcete přepnout na naposledy použitou metodu zadávání, stiskněte <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">hledat + šipka vpravo</translation>
 <translation id="4052120076834320548">Drobné</translation>
 <translation id="4052913941260326985">Vytvořit QR kód</translation>
@@ -5997,6 +6001,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5486261815000869482">Potvrďte heslo</translation>
 <translation id="5486561344817861625">Simulovat restart prohlížeče</translation>
 <translation id="5486748931874756433">Tato změna se projeví, až obdržíte další aktualizaci a restartujete zařízení <ph name="DEVICE_TYPE" />. Tuto změnu nelze vrátit zpět a vztahuje se na všechny uživatele tohoto zařízení.</translation>
+<translation id="5487214759202665349">Používejte tuto adresu na svém iPhonu</translation>
 <translation id="5487460042548760727">Přejmenovat profil na <ph name="PROFILE_NAME" /></translation>
 <translation id="5488093641312826914">Položka „<ph name="COPIED_ITEM_NAME" />“ byla zkopírována</translation>
 <translation id="5488508217173274228">Možnosti šifrování synchronizovaných dat</translation>
@@ -6560,6 +6565,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5910363049092958439">Uložit o&amp;brázek jako...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> je offline</translation>
 <translation id="5911030830365207728">Překladač Google</translation>
+<translation id="5911497236110691522">Pokud chcete přepnout na další metodu zadávání, stiskněte <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">Prohlížeč klávesových zkratek</translation>
 <translation id="5911545422157959623">V režimu hosta nejsou záložky k dispozici</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bitů):
@@ -8526,6 +8532,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7427348830195639090">Stránka na pozadí: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Zavolat ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simuluje výstup obnovitelného hmatového displeje na panelu ChromeVox v horní části obrazovky</translation>
+<translation id="7429568074268678162">Soubor <ph name="FILENAME" /> může být nebezpečný. Pokud chcete, aby ho Chrome ověřil, zadejte heslo. Případně ho můžete stáhnou přímo.</translation>
 <translation id="7431719494109538750">Nebyla nalezena žádná zařízení HID</translation>
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>
 <translation id="7432200167665670017">Administrátor rozšíření <ph name="EXTENSION_NAME" /> zablokoval – ID aplikace <ph name="EXTENSION_ID" /></translation>
@@ -8942,6 +8949,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7730683939467795481">Tato stránka byla změněna rozšířením <ph name="EXTENSION_NAME" /></translation>
 <translation id="7732702411411810416">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="773511996612364297">Přízvuk</translation>
+<translation id="7736119438443237821">Chystáte se odebrat přístup ke svým přístupovým klíčům na tomto zařízení</translation>
 <translation id="7737115349420013392">Párování se zařízením <ph name="DEVICE_NAME" />…</translation>
 <translation id="7737203573077018777">Byl přijat pokyn <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Toto chování můžete kdykoliv změnit v sekci Nastavení &gt; Asistent Google &gt; Kontext obrazovky.</translation>
@@ -9541,6 +9549,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8151748163667572916">Vypnout okamžitý hotspot</translation>
 <translation id="8154790740888707867">Žádný soubor</translation>
 <translation id="815491593104042026">Jejda, ověření se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>
+<translation id="8155214519979960765">Pokud se na tomto zařízení budete chtít znovu přihlásit pomocí přístupového klíče, budete muset ověřit svou totožnost. Pokud máte jinou možnost přihlášení, například heslo, můžete se přihlásit pomocí ní.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nebylo nalezeno žádné prolomené heslo}=1{Bylo nalezeno {COUNT} prolomené heslo}few{Byla nalezena {COUNT} prolomená hesla}many{Bylo nalezeno {COUNT} prolomeného hesla}other{Bylo nalezeno {COUNT} prolomených hesel}}</translation>
 <translation id="8157248655669507702">Pokud chcete nainstalovat profil eSIM, povolte mobilní data</translation>
 <translation id="8157704005178149728">Nastavování dohledu</translation>
@@ -9829,6 +9838,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8371695176452482769">Mluvte</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnout zvuk webu}few{Vypnout zvuk webů}many{Vypnout zvuk webů}other{Vypnout zvuk webů}}</translation>
 <translation id="8372441176515901959">Zavřít žádost</translation>
+<translation id="8372678064309688510">Vaše adresa je uložena</translation>
 <translation id="8373652277231415614">Sdílené adresáře Crostini</translation>
 <translation id="8374243500935816406">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
 <translation id="8376137163494131156">Řekněte nám, co se děje s fungováním technologie Google Cast.</translation>

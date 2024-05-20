@@ -63,6 +63,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1873233029667955273">Google Chrome nije podrazumevani pregledač</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastareo</translation>
+<translation id="1907925560334657849">Da biste delili prozor, dozvolite snimanje ekrana za Chrome u podešavanjima sistema</translation>
 <translation id="1919130412786645364">Dozvoli prijavljivanje u Chrome</translation>
 <translation id="1953553007165777902">Preuzima se... Još <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome radi na svim platformama da bi vam pružio poznat doživljaj bez obzira na uređaj</translation>
@@ -127,6 +128,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
 <translation id="2775140325783767197">Chrome ne može da vam proverava lozinke. Proverite internet vezu.</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
+<translation id="2825024317344269723">Opasan sajt. Chrome je uklonio obaveštenja.</translation>
 <translation id="2846251086934905009">Greška pri instalaciji: Program za instalaciju nije završio instalaciju. Instalacija je otkazana.</translation>
 <translation id="2847461019998147611">Prikazuj Google Chrome na ovom jeziku</translation>
 <translation id="2853415089995957805">Chrome predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
@@ -188,6 +190,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chrome profilu</translation>
 <translation id="3595784445906693824">Želite li da se prijavite u Chrome na novom profilu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje}=1{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
+<translation id="3609788354808247807">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Sada možete lakše da koristite Chrome sa Google nalogom i na deljenim računarima.</translation>
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Instaliranje nije uspelo, aplikacije je nepoznata serveru.</translation>
@@ -337,6 +340,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5941711191222866238">Umanji</translation>
 <translation id="5941830788786076944">Podesite Google Chrome kao podrazumevani pregledač</translation>
 <translation id="5947104538377036631">Chrome prečica</translation>
+<translation id="5953954252731207958">Niste skoro posećivali sajt. Chrome je uklonio dozvolu <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Preuzima se... Još <ph name="HOURS" /> č</translation>
 <translation id="6014316319780893079">Pomoću <ph name="BEGIN_LINK" />Chrome alatki<ph name="END_LINK" /> možete bezbedno da pregledate i zadržite kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
@@ -351,6 +355,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6182736845697986886">Instalacija nije uspela zbog interne greške servera za ažuriranje.</translation>
+<translation id="6200139057479872438">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Pravilo za dolazni saobraćaj za Google Chrome da biste omogućili mDNS saobraćaj.</translation>
 <translation id="624230925347970731">Chrome će se uskoro zatvoriti</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
@@ -414,6 +419,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7098166902387133879">Google Chrome koristi mikrofon.</translation>
 <translation id="7099479769133613710">Ponovo pokreni da bi se &amp;Chrome OS ažurirao</translation>
+<translation id="7100085796996987445">Da biste delili ekran, dozvolite snimanje ekrana za Chrome u podešavanjima sistema</translation>
 <translation id="7106741999175697885">Menadžer zadataka – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete.}=1{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="7155997830309522122">Ako je tako, izmenite sačuvanu lozinku u Chrome-u tako da se podudara sa novom lozinkom.</translation>
@@ -448,6 +454,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7651907282515937834">Chrome Enterprise logotip</translation>
 <translation id="76531479118467370">Chrome je blokirao ovo preuzimanje jer ste isključili Bezbedno pregledanje, pa fajl ne može da se verifikuje</translation>
 <translation id="7655455401911432608">Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chrome-a na ovom uređaju.</translation>
+<translation id="7661924425853052955">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> i još <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Obavljajte zadatke poput prevođenja, računanja i drugih zadataka direktno iz trake za adresu</translation>
 <translation id="769538538642757151">Chrome će vas obavestiti ako treba da pregledate nešto</translation>
 <translation id="7747138024166251722">Program za instalaciju nije mogao da napravi privremeni direktorijum. Proverite da li imate slobodnog prostora na disku, kao i dozvolu da instalirate softver.</translation>

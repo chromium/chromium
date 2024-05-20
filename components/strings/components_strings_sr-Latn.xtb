@@ -1335,6 +1335,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="353816159217417898">Ekran (stranica)</translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
+<translation id="3547442767634383572">Pregled poslovnog profila</translation>
 <translation id="3547746132308051926">20×24 in</translation>
 <translation id="3552155506104542239">Upozorenje: Ove smernice su neusaglašene sa dokumentom <ph name="POLICY_NAME" /> i neće imati uticaja na Android aplikacije. U suprotnom, ove smernice rade kao što je predviđeno.</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
@@ -2199,6 +2200,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5230733896359313003">Adresa za isporuku</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Administrator može da pristupi profilu, pregledaču i nekim informacijama o uređaju kojim se upravlja. On može da vide sledeće informacije:</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5238301240406177137">Sačuvaj na nalogu</translation>
 <translation id="5239119062986868403">Uobičajena cena</translation>
@@ -2212,6 +2214,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="52517543715119994">Saznajte više o Chrome funkcijama</translation>
 <translation id="5251803541071282808">Klaud</translation>
 <translation id="5254043433801397071">Optimizujte sadržaj za štampanje</translation>
+<translation id="5255583962255635076">Primenjene smernice za pregledač na poslovnom profilu</translation>
 <translation id="5255690596502591079">Ipak snimi</translation>
 <translation id="5255833070095767006">350×460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Smernice administratora ne preporučuju kopiranje ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
@@ -3331,6 +3334,7 @@ Dodatni detalji:
 <translation id="7421067045979951561">obrađivači protokola</translation>
 <translation id="7422347648202898039">Nalepnice (bezbednost)</translation>
 <translation id="7423283032694727565">Dugme Upravljaj kolačićima, aktivirajte ga da biste upravljali podešavanjima kolačića u podešavanjima Chrome-a</translation>
+<translation id="742435751935045381">Instalirane aplikacije i dodaci na poslovnom profilu</translation>
 <translation id="7424421098814895617">Opcija za brisanje adrese je izabrana</translation>
 <translation id="7425037327577270384">Pomoć pri pisanju</translation>
 <translation id="7425878584435172632">Vizuelna umetnost i dizajn</translation>
@@ -3877,6 +3881,7 @@ Dodatni detalji:
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
+<translation id="8421158157346464398">Informacije o poslovnom profilu (poput korisničkog imena za poslovni profil)</translation>
 <translation id="8422228580902424274">Napadači na sajtu koji pokušavate da posetite mogu da vas prevare da instalirate softver ili otkrijete stvari poput lozinke, telefona ili broja kreditne kartice.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Promeni</translation>
@@ -4246,6 +4251,7 @@ Dodatni detalji:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sajtovi koje posećujete takođe mogu da odrede šta vam se dopada na osnovu vaših aktivnosti na sajtu. Na primer, ako posetite sajt koji prodaje patike za trčanje na duge staze, taj sajt može da da zaključi da ste zainteresovani za trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu sajtovi i merenju oglasa</translation>
+<translation id="9167054383925257837">Informacije o pregledaču i OS-u uređaja (poput verzija pregledača i OS-a)</translation>
 <translation id="9167594211215946097">Obezbedite direktan pristup štampačima</translation>
 <translation id="9168814207360376865">Dozvoli sajtovima da proveravaju da li imam sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvek blokiraj na ovom sajtu</translation>

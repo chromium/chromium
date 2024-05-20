@@ -1332,6 +1332,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="353816159217417898">Obrazovka (stránkovaná)</translation>
 <translation id="3542628208405253498">Obrázek karty</translation>
 <translation id="3542768452570884558">Otevřít odkaz v novém okně</translation>
+<translation id="3547442767634383572">Přehled pracovního profilu</translation>
 <translation id="3547746132308051926">20 × 24″</translation>
 <translation id="3552155506104542239">Upozornění: Tato zásada je v rozporu se zásadou <ph name="POLICY_NAME" /> a nebude mít vliv na aplikace pro Android. Jinak tato zásada funguje, jak má.</translation>
 <translation id="3552297013052089404">Bezpatkové písmo</translation>
@@ -2195,6 +2196,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5230733896359313003">Dodací adresa</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Spravovaný profil, prohlížeč a některé informace o zařízení jsou přístupné vašemu administrátorovi. Má přístup například k následujícím informacím:</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5238301240406177137">Uložit do účtu</translation>
 <translation id="5239119062986868403">Obvyklá cena</translation>
@@ -2208,6 +2210,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="52517543715119994">Informace o funkcích Chromu</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">Optimalizovat obsah tisku</translation>
+<translation id="5255583962255635076">Použité zásady prohlížeče ve vašem pracovním profilu</translation>
 <translation id="5255690596502591079">Přesto pořídit</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zásady administrátora nedoporučují kopírovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3326,6 +3329,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7421067045979951561">obslužné nástroje protokolů</translation>
 <translation id="7422347648202898039">Štítky (zabezpečení)</translation>
 <translation id="7423283032694727565">Tlačítko Spravovat soubory cookie, aktivací můžete spravovat nastavení souborů cookie v nastavení Chromu</translation>
+<translation id="742435751935045381">Nainstalované aplikace a rozšíření ve vašem pracovním profilu</translation>
 <translation id="7424421098814895617">Byla vybrána možnost Smazat adresu</translation>
 <translation id="7425037327577270384">Pomozte mi s psaním</translation>
 <translation id="7425878584435172632">Vizuální umění a design</translation>
@@ -3872,6 +3876,7 @@ Kontaktujte administrátora systému.</translation>
 Další podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Použití mikrofonu bylo pro tentokrát povoleno</translation>
+<translation id="8421158157346464398">Informace o pracovním profilu (jako je uživatelské jméno vašeho pracovního profilu)</translation>
 <translation id="8422228580902424274">Útočníci na webu, který se pokoušíte navštívit, vás mohou přimět k instalaci softwaru nebo prozrazení věcí, jako je heslo, telefon nebo číslo kreditní karty.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Změnit</translation>
@@ -4240,6 +4245,7 @@ Další podrobnosti:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Navštívené weby mohou na základě vaší aktivity také určit, co se vám líbí. Pokud například navštívíte web, který prodává běžecké boty, může odhadnout, že máte zájem o běhání maratonů.</translation>
 <translation id="9166851138617700776">Další informace o reklamách navrhovaných weby a o měření reklam</translation>
+<translation id="9167054383925257837">Informace o operačním systému prohlížeče a zařízení (jako je prohlížeč a verze OS)</translation>
 <translation id="9167594211215946097">Získat přímý přístup k vašim tiskárnám</translation>
 <translation id="9168814207360376865">Povolit webům zjišťovat, zda máte uložené platební metody</translation>
 <translation id="9169664750068251925">Blokovat vždy na tomto webu</translation>

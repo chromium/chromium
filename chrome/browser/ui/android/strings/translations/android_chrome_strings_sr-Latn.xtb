@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Uklonjeno</translation>
 <translation id="1437543266176261764">Koristi <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
+<translation id="1460751212339734034">Uštedite vreme, kucajte manje</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
 <translation id="1480287803138246127">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a.</translation>
@@ -244,7 +245,9 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
+<translation id="2328739396024849021">Onemogućeno dugme Sačuvaj</translation>
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
+<translation id="233375395665273385">Izbriši i odjavi me</translation>
 <translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspelo.</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
 <translation id="235789365079050412">Google politika privatnosti</translation>
@@ -291,12 +294,14 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2571834852878229351">Napraviću svoju</translation>
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2578337197553672982">Google sadržaj za mlade umove</translation>
+<translation id="2579297619530305344">Lozinke na svim uređajima otvorene su u punoj visini</translation>
 <translation id="2581165646603367611">Ovim ćete obrisati kolačiće, keš i druge podatke sajtova koje Chrome ne smatra važnim.</translation>
 <translation id="2587052924345400782">Dostupna je novija verzija</translation>
 <translation id="2593272815202181319">Fiksne širine</translation>
 <translation id="2603212228005142861">Prijavite se da biste upravljali podešavanjima</translation>
 <translation id="260403163289591229">Pratite</translation>
 <translation id="2604446170045642109">Možete da isključite tamnu temu za sajtove u podešavanjima.</translation>
+<translation id="2607441479295509868">Odjavljeni ste. Ponovo se prijavite da biste koristili obeleživače, lozinke i drugi sadržaj na nalogu.</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vas poziva da pristupite deljenoj stavci.</translation>
 <translation id="2625189173221582860">Lozinka je kopirana</translation>
@@ -350,6 +355,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2869430948265924908">Da biste zaštitili osetljiv sadržaj u automobilu, morate da primenite zaključavanje profila automobila.  To možete da uradite pomoću PIN-a, koda ili lozinke.</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2871733351037274014">Predučitavajte stranice</translation>
+<translation id="2871941920508945325">Dugme Uvid u stranicu</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> želi da odobrite ovaj veb-sajt:</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost podataka<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">O Chrome pregledaču</translation>
@@ -375,6 +381,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2951071800649516099">Dodajte stranice na listu za čitanje za kasnije</translation>
 <translation id="2956070106555335453">Rezime</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
+<translation id="2976550651269220761">Neki Chrome podaci još nisu sačuvani na Google nalogu.\nProbajte da sačekate nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="2977350910003566746">Sortira se prema poslednjem otvaranju</translation>
 <translation id="297771753501244313">Po poslednjem otvaranju</translation>
 <translation id="2979025552038692506">Izabrane kartice bez arhiviranja</translation>
@@ -512,10 +519,13 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3692944402865947621">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zato što lokacija memorijskog prostora nije dostupna.</translation>
 <translation id="3697705478071004188">Sortirajte prema sajtu</translation>
 <translation id="3699022356773522638">Želite da preuzmete fajl?</translation>
+<translation id="3700759344784597882">Kada je uključeno, lozinke se čuvaju na nalogu. Kada je isključeno, lozinke se čuvaju samo na ovom uređaju.</translation>
 <translation id="3701515417135397388">Upozori me ako je lozinka ugrožena pri povredi podataka</translation>
+<translation id="3711001040440486668">Dugme za deljenje</translation>
 <translation id="371230970611282515">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih.</translation>
 <translation id="3714981814255182093">Otvaranje trake za traženje</translation>
 <translation id="3716182511346448902">Ova stranica koristi previše memorije, pa ju je Chrome pauzirao.</translation>
+<translation id="3718765429352682176">Možete da vidite istoriju iz drugih aplikacija koje otvaraju linkove u Chrome-u.</translation>
 <translation id="3720422586473670527">Ne, hvala</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
 <translation id="3737319253362202215">Podešavanja prevoda</translation>
@@ -523,6 +533,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3738139272394829648">Dodirni za pretragu</translation>
 <translation id="3739899004075612870">Obeleženo u <ph name="PRODUCT_NAME" />-u</translation>
 <translation id="3740525748616366977">Glasovna pretraga nije dostupna na ovom uređaju</translation>
+<translation id="376561056759077985">Neki podaci još nisu sačuvani</translation>
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
 <translation id="3771290962915251154">Ovo podešavanje je onemogućeno zato što je uključen roditeljski nadzor</translation>
 <translation id="3771694256347217732">Google uslovi korišćenja usluge</translation>
@@ -703,6 +714,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4684427112815847243">Sinhronizuj sve</translation>
 <translation id="4685741273709472646">Izaberite sa padajuće liste</translation>
 <translation id="4687718960473379118">Oglasi koje predlažu sajtovi</translation>
+<translation id="469286762610133730">Dobijajte bolji sadržaj</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Keširane slike i fajlovi</translation>
 <translation id="4710167854527459075">Sortiraj po najnovijem</translation>
@@ -830,6 +842,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5264813352784073502">poslednja 24 sata</translation>
 <translation id="5271967389191913893">Uređaj ne može da otvori sadržaj za preuzimanje.</translation>
 <translation id="5292796745632149097">Pošaljite na</translation>
+<translation id="5301876394151419436">Prijavljeni ste kao <ph name="EMAIL" />. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="5304593522240415983">Ovo polje ne sme da bude prazno</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5316947901395241499">Administrator je isključio čuvanje lozinki</translation>
@@ -864,6 +877,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="548278423535722844">Otvorite u aplikaciji za mape</translation>
 <translation id="5486841595534124508">Logotip obaveštenja o privatnosti za stranicu centra za uvide koji preusmerava na stranicu mojih aktivnosti.</translation>
 <translation id="5492637351392383067">Šifrovanje na uređaju</translation>
+<translation id="5503125329065007089">Lozinke na svim uređajima su otvorene do pola</translation>
 <translation id="5514904542973294328">Onemogućio je administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte da biste pregledali lozinku</translation>
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
@@ -1018,6 +1032,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje praćenja cena nije uspelo</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6284472661216707937">Lozinke na svim uređajima su zatvorene</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6303969859164067831">Odjavi me i isključi sinhronizaciju</translation>
 <translation id="6312687380483398334">Veb-aplikacije (tihe)</translation>
@@ -1093,6 +1108,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6593061639179217415">Verzija sajta za računar</translation>
 <translation id="6594347733515723558">Razna sortiranja, prikazi</translation>
 <translation id="6595046016124923392">Slike se šalju Google-u radi poboljšanja opisa.</translation>
+<translation id="6604931690954120417">Kada ste prijavljeni u Chrome, lozinke koje sačuvate idu na Google nalog. Da biste to isključili, <ph name="BEGIN_LINK" />idite u podešavanja<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na oba uređaja</translation>
 <translation id="6625890511281718257">Delite pomoću tabele sa rezimeom povratnih informacija</translation>
@@ -1130,6 +1146,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="6756507620369789050">Delite povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
+<translation id="676305334223455055">Prijavite se da biste dobijali sadržaj na osnovu interesovanja</translation>
 <translation id="6767294960381293877">Lista uređaja sa kojima se deli kartica je otvorena na pola visine.</translation>
 <translation id="6770602306803890733">Poboljšava bezbednost za vas i druge na vebu</translation>
 <translation id="6775840696761158817">Kada dodirnete traku za adresu ili okvir za pretragu ili unesete tekst u njih, videćete predloge iz podrazumevanog pretraživača. Ovo je isključeno u režimu bez arhiviranja.</translation>
@@ -1313,6 +1330,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="757855969265046257">{FILES,plural, =1{Preuzeli ste <ph name="FILES_DOWNLOADED_ONE" /> datoteku}one{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteku}few{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteke}other{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteka}}</translation>
 <translation id="7581273696622423628">Prikaži anketu</translation>
 <translation id="7583262514280211622">Ovde ćete pronaći listu za čitanje</translation>
+<translation id="758603037873046260">Prijavite se da biste sačuvali ovu stranicu</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je Ušteda baterije na uređaju uključena</translation>
 <translation id="7594687499944811403">Omogućite da <ph name="EMBEDDED_ORIGIN" /> potvrdi da ste to vi za <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativni sistem</translation>
@@ -1353,6 +1371,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="777637629667389858">Kad ste prijavljeni, štiti vas u svim Google uslugama.</translation>
 <translation id="7778840695157240389">Vratite se kasnije za još novih vesti</translation>
 <translation id="7780645209293383778">Privremeno povezuje te podatke sa Google nalogom kada ste prijavljeni da biste bili zaštićeni u svim Google aplikacijama.</translation>
+<translation id="7786562169000598736">Preuzmite sve obeleživače</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćene kartice: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Pristupajte obeleživačima, lozinkama i drugom sadržaju na svim uređajima</translation>
@@ -1423,6 +1442,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8078096376109663956">Delite samo tekst</translation>
 <translation id="8084114998886531721">Sačuvana lozinka</translation>
 <translation id="8084285576995584326">Kontrolišite podatke Google naloga</translation>
+<translation id="8084864785646838999">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a. Google nalog može da ima i druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="808747664143081553">Povezani ste sa uređajem</translation>
 <translation id="8088176524274673045">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd</translation>
 <translation id="8090732854597034573">Ako ti treba pomoć, pitaj roditelja</translation>
@@ -1523,6 +1543,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8526855376374973824">Tok dozvole za obaveštenja</translation>
 <translation id="8540136935098276800">Unesite ispravno formatiran URL</translation>
 <translation id="854522910157234410">Otvori ovu stranicu</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Neaktivna kartica (1)}one{Neaktivne kartice (#)}few{Neaktivne kartice (#)}other{Neaktivne kartice (#)}}</translation>
 <translation id="8551513938758868521">Zaključaj kartice bez arhiviranja posle zatvaranja Chrome-a</translation>
 <translation id="8551524210492420949">Uvredljivo ili nebezbedno</translation>
 <translation id="8559961053328923750">Chrome ograničava ukupnu količinu podataka koju sajtovi mogu da dele preko pregledača da bi merili učinak oglasa</translation>
@@ -1626,6 +1647,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9102803872260866941">Kartica za pregled je otvorena</translation>
 <translation id="9102864637938129124">Sajtovi i oglašavači mogu da razumeju učinak oglasa. Ovo podešavanje je uključeno.</translation>
 <translation id="9104217018994036254">Lista uređaja sa kojima se deli kartica.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Ne koristi se 1 dan ili duže}one{Ne koristi se # dan ili duže}few{Ne koristi se # dana ili duže}other{Ne koristi se # dana ili duže}}</translation>
 <translation id="9106148373857059373">Tok čuvanja obeleživača je zatvoren</translation>
 <translation id="9108312223223904744">Podrška za telefon kao bezbednosni ključ</translation>
 <translation id="9108808586816295166">Bezbedni DNS možda neće uvek biti dostupan</translation>
