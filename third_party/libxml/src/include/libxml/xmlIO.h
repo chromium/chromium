@@ -418,9 +418,11 @@ XMLPUBFUN xmlParserInputBufferCreateFilenameFunc
 XMLPUBFUN xmlOutputBufferCreateFilenameFunc
 	xmlOutputBufferCreateFilenameDefault(
 		xmlOutputBufferCreateFilenameFunc func);
+XML_DEPRECATED
 XMLPUBFUN xmlOutputBufferCreateFilenameFunc
 	xmlThrDefOutputBufferCreateFilenameDefault(
 		xmlOutputBufferCreateFilenameFunc func);
+XML_DEPRECATED
 XMLPUBFUN xmlParserInputBufferCreateFilenameFunc
 	xmlThrDefParserInputBufferCreateFilenameDefault(
 		xmlParserInputBufferCreateFilenameFunc func);

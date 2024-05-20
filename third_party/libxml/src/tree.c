@@ -55,6 +55,9 @@ int __xmlRegisterCallbacks = 0;
  *									*
  ************************************************************************/
 
+static xmlNodePtr
+xmlNewEntityRef(xmlDocPtr doc, xmlChar *name);
+
 static xmlNsPtr
 xmlNewReconciledNs(xmlNodePtr tree, xmlNsPtr ns);
 
@@ -226,7 +229,7 @@ xmlSplitQName2(const xmlChar *name, xmlChar **prefix) {
     while ((name[len] != 0) && (name[len] != ':'))
 	len++;
 
-    if (name[len] == 0)
+    if ((name[len] == 0) || (name[len+1] == 0))
 	return(NULL);
 
     *prefix = xmlStrndup(name, len);
@@ -274,7 +277,7 @@ xmlSplitQName3(const xmlChar *name, int *len) {
     while ((name[l] != 0) && (name[l] != ':'))
 	l++;
 
-    if (name[l] == 0)
+    if ((name[l] == 0) || (name[l+1] == 0))
 	return(NULL);
 
     *len = l;
@@ -1133,7 +1136,7 @@ xmlFreeDoc(xmlDocPtr cur) {
 	return;
     }
 
-    if (cur != NULL) dict = cur->dict;
+    dict = cur->dict;
 
     if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 	xmlDeregisterNodeDefaultValue((xmlNodePtr)cur);
@@ -1339,7 +1342,8 @@ xmlNodeParseContentInternal(const xmlDoc *doc, xmlNodePtr parent,
 			/*
 			 * Create a new REFERENCE_REF node
 			 */
-			node = xmlNewCharRef((xmlDocPtr) doc, val);
+			node = xmlNewEntityRef((xmlDocPtr) doc, val);
+                        val = NULL;
 			if (node == NULL)
 			    goto out;
                         node->parent = parent;
@@ -2364,6 +2368,42 @@ xmlNewTextChild(xmlNodePtr parent, xmlNsPtr ns,
 #endif /* LIBXML_TREE_ENABLED */
 
 /**
+ * xmlNewEntityRef:
+ * @doc: the target document (optional)
+ * @name:  the entity name
+ *
+ * Create an empty entity reference node. This function doesn't attempt
+ * to look up the entity in @doc.
+ *
+ * @name is consumed.
+ *
+ * Returns a pointer to the new node object or NULL if arguments are
+ * invalid or a memory allocation failed.
+ */
+static xmlNodePtr
+xmlNewEntityRef(xmlDocPtr doc, xmlChar *name) {
+    xmlNodePtr cur;
+
+    /*
+     * Allocate a new node and fill the fields.
+     */
+    cur = (xmlNodePtr) xmlMalloc(sizeof(xmlNode));
+    if (cur == NULL) {
+        xmlFree(name);
+	return(NULL);
+    }
+    memset(cur, 0, sizeof(xmlNode));
+    cur->type = XML_ENTITY_REF_NODE;
+    cur->doc = doc;
+    cur->name = name;
+
+    if ((__xmlRegisterCallbacks) && (xmlRegisterNodeDefaultValue))
+	xmlRegisterNodeDefaultValue(cur);
+
+    return(cur);
+}
+
+/**
  * xmlNewCharRef:
  * @doc: the target document (optional)
  * @name:  the entity name
@@ -2381,41 +2421,25 @@ xmlNewTextChild(xmlNodePtr parent, xmlNsPtr ns,
  */
 xmlNodePtr
 xmlNewCharRef(xmlDocPtr doc, const xmlChar *name) {
-    xmlNodePtr cur;
+    xmlChar *copy;
 
     if (name == NULL)
         return(NULL);
 
-    /*
-     * Allocate a new node and fill the fields.
-     */
-    cur = (xmlNodePtr) xmlMalloc(sizeof(xmlNode));
-    if (cur == NULL)
-	return(NULL);
-    memset(cur, 0, sizeof(xmlNode));
-    cur->type = XML_ENTITY_REF_NODE;
-
-    cur->doc = doc;
     if (name[0] == '&') {
         int len;
         name++;
 	len = xmlStrlen(name);
 	if (name[len - 1] == ';')
-	    cur->name = xmlStrndup(name, len - 1);
+	    copy = xmlStrndup(name, len - 1);
 	else
-	    cur->name = xmlStrndup(name, len);
+	    copy = xmlStrndup(name, len);
     } else
-	cur->name = xmlStrdup(name);
-    if (cur->name == NULL)
-        goto error;
+	copy = xmlStrdup(name);
+    if (copy == NULL)
+        return(NULL);
 
-    if ((__xmlRegisterCallbacks) && (xmlRegisterNodeDefaultValue))
-	xmlRegisterNodeDefaultValue(cur);
-    return(cur);
-
-error:
-    xmlFreeNode(cur);
-    return(NULL);
+    return(xmlNewEntityRef(doc, copy));
 }
 
 /**
@@ -3840,9 +3864,6 @@ xmlReplaceNode(xmlNodePtr old, xmlNodePtr cur) {
     if ((cur == NULL) || (cur->type == XML_NAMESPACE_DECL)) {
         /* Don't call xmlUnlinkNodeInternal to handle DTDs. */
 	xmlUnlinkNode(old);
-	return(old);
-    }
-    if (cur == old) {
 	return(old);
     }
     if ((old->type==XML_ATTRIBUTE_NODE) && (cur->type!=XML_ATTRIBUTE_NODE)) {
@@ -5481,6 +5502,16 @@ xmlBufGetEntityRefContent(xmlBufPtr buf, const xmlNode *ref) {
         ent = xmlGetDocEntity(ref->doc, ref->name);
         if (ent == NULL)
             return;
+    }
+
+    /*
+     * The parser should always expand predefined entities but it's
+     * possible to create references to predefined entities using
+     * the tree API.
+     */
+    if (ent->etype == XML_INTERNAL_PREDEFINED_ENTITY) {
+        xmlBufCat(buf, ent->content);
+        return;
     }
 
     if (ent->flags & XML_ENT_EXPANDING)
@@ -7351,7 +7382,7 @@ xmlBufferResize(xmlBufferPtr buf, unsigned int size)
 	case XML_BUFFER_ALLOC_DOUBLEIT:
 	    /*take care of empty case*/
             if (buf->size == 0)
-                newSize = (size > UINT_MAX - 10 ? UINT_MAX : size + 10);
+                newSize = size + 10;
             else
                 newSize = buf->size;
 	    while (size > newSize) {
@@ -7361,7 +7392,7 @@ xmlBufferResize(xmlBufferPtr buf, unsigned int size)
 	    }
 	    break;
 	case XML_BUFFER_ALLOC_EXACT:
-	    newSize = (size > UINT_MAX - 10 ? UINT_MAX : size + 10);
+	    newSize = size + 10;
 	    break;
         case XML_BUFFER_ALLOC_HYBRID:
             if (buf->use < BASE_BUFFER_SIZE)
@@ -7377,7 +7408,7 @@ xmlBufferResize(xmlBufferPtr buf, unsigned int size)
             break;
 
 	default:
-	    newSize = (size > UINT_MAX - 10 ? UINT_MAX : size + 10);
+	    newSize = size + 10;
 	    break;
     }
 
@@ -7676,6 +7707,8 @@ xmlSetDocCompressMode (xmlDocPtr doc, int mode) {
 /**
  * xmlGetCompressMode:
  *
+ * DEPRECATED: Use xmlGetDocCompressMode
+ *
  * get the default compression mode used, ZLIB based.
  * Returns 0 (uncompressed) to 9 (max compression)
  */
@@ -7688,6 +7721,8 @@ xmlGetCompressMode(void)
 /**
  * xmlSetCompressMode:
  * @mode:  the compression ratio
+ *
+ * DEPRECATED: Use xmlSetDocCompressMode
  *
  * set the default compression mode used, ZLIB based
  * Correct values: 0 (uncompressed) to 9 (max compression)
@@ -9201,9 +9236,6 @@ xmlDOMWrapCloneNode(xmlDOMWrapCtxtPtr ctxt,
     *resNode = NULL;
 
     cur = node;
-    if ((cur != NULL) && (cur->type == XML_NAMESPACE_DECL))
-        return(-1);
-
     while (cur != NULL) {
 	if (cur->doc != sourceDoc) {
 	    /*
@@ -9870,6 +9902,8 @@ xmlIsXHTML(const xmlChar *systemID, const xmlChar *publicID) {
  * xmlRegisterNodeDefault:
  * @func: function pointer to the new RegisterNodeFunc
  *
+ * DEPRECATED: don't use
+ *
  * Registers a callback for node creation
  *
  * Returns the old value of the registration function
@@ -9887,6 +9921,8 @@ xmlRegisterNodeDefault(xmlRegisterNodeFunc func)
 /**
  * xmlDeregisterNodeDefault:
  * @func: function pointer to the new DeregisterNodeFunc
+ *
+ * DEPRECATED: don't use
  *
  * Registers a callback for node destruction
  *

@@ -1242,6 +1242,8 @@ xmlCompilePathPattern(xmlPatParserContextPtr ctxt) {
     if (CUR == '@') {
 	NEXT;
 	xmlCompileAttributeTest(ctxt);
+        if (ctxt->error != 0)
+            goto error;
 	SKIP_BLANKS;
 	/* TODO: check for incompleteness */
 	if (CUR != 0) {

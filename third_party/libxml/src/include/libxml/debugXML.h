@@ -203,7 +203,7 @@ XMLPUBFUN int
  */
 XMLPUBFUN void
 	xmlShell		(xmlDocPtr doc,
-				 char *filename,
+				 const char *filename,
 				 xmlShellReadlineFunc input,
 				 FILE *output);
 

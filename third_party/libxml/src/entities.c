@@ -33,35 +33,35 @@
  * The XML predefined entities.
  */
 
-static xmlEntity xmlEntityLt = {
+static const xmlEntity xmlEntityLt = {
     NULL, XML_ENTITY_DECL, BAD_CAST "lt",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "<", BAD_CAST "<", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
     NULL, NULL, NULL, NULL, 0, 0, 0
 };
-static xmlEntity xmlEntityGt = {
+static const xmlEntity xmlEntityGt = {
     NULL, XML_ENTITY_DECL, BAD_CAST "gt",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST ">", BAD_CAST ">", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
     NULL, NULL, NULL, NULL, 0, 0, 0
 };
-static xmlEntity xmlEntityAmp = {
+static const xmlEntity xmlEntityAmp = {
     NULL, XML_ENTITY_DECL, BAD_CAST "amp",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "&", BAD_CAST "&", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
     NULL, NULL, NULL, NULL, 0, 0, 0
 };
-static xmlEntity xmlEntityQuot = {
+static const xmlEntity xmlEntityQuot = {
     NULL, XML_ENTITY_DECL, BAD_CAST "quot",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "\"", BAD_CAST "\"", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
     NULL, NULL, NULL, NULL, 0, 0, 0
 };
-static xmlEntity xmlEntityApos = {
+static const xmlEntity xmlEntityApos = {
     NULL, XML_ENTITY_DECL, BAD_CAST "apos",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "'", BAD_CAST "'", 1,
@@ -303,21 +303,21 @@ xmlGetPredefinedEntity(const xmlChar *name) {
     switch (name[0]) {
         case 'l':
 	    if (xmlStrEqual(name, BAD_CAST "lt"))
-	        return(&xmlEntityLt);
+	        return((xmlEntityPtr) &xmlEntityLt);
 	    break;
         case 'g':
 	    if (xmlStrEqual(name, BAD_CAST "gt"))
-	        return(&xmlEntityGt);
+	        return((xmlEntityPtr) &xmlEntityGt);
 	    break;
         case 'a':
 	    if (xmlStrEqual(name, BAD_CAST "amp"))
-	        return(&xmlEntityAmp);
+	        return((xmlEntityPtr) &xmlEntityAmp);
 	    if (xmlStrEqual(name, BAD_CAST "apos"))
-	        return(&xmlEntityApos);
+	        return((xmlEntityPtr) &xmlEntityApos);
 	    break;
         case 'q':
 	    if (xmlStrEqual(name, BAD_CAST "quot"))
-	        return(&xmlEntityQuot);
+	        return((xmlEntityPtr) &xmlEntityQuot);
 	    break;
 	default:
 	    break;

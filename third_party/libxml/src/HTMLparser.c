@@ -5996,6 +5996,8 @@ htmlParseFile(const char *filename, const char *encoding) {
  * htmlHandleOmittedElem:
  * @val:  int 0 or 1
  *
+ * DEPRECATED: Use HTML_PARSE_NOIMPLIED
+ *
  * Set and return the previous value for handling HTML omitted tags.
  *
  * Returns the last value for 0 for no handling, 1 for auto insertion.
@@ -6486,7 +6488,6 @@ htmlReadFd(int fd, const char *url, const char *encoding, int options)
     htmlCtxtUseOptions(ctxt, options);
 
     input = xmlNewInputFd(ctxt, url, fd, encoding, 0);
-    input->buf->closecallback = NULL;
 
     doc = htmlCtxtParseDocument(ctxt, input);
 
@@ -6658,7 +6659,6 @@ htmlCtxtReadFd(htmlParserCtxtPtr ctxt, int fd,
     htmlCtxtUseOptions(ctxt, options);
 
     input = xmlNewInputFd(ctxt, URL, fd, encoding, 0);
-    input->buf->closecallback = NULL;
 
     return(htmlCtxtParseDocument(ctxt, input));
 }

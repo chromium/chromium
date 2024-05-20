@@ -168,6 +168,7 @@ XMLPUBFUN int
 					 int *inlen, int quoteChar);
 XMLPUBFUN int
 			htmlIsScriptAttribute(const xmlChar *name);
+XML_DEPRECATED
 XMLPUBFUN int
 			htmlHandleOmittedElem(int val);
 

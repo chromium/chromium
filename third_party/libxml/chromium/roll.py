@@ -108,7 +108,6 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-iso8859x', 'iso8859x=no'),
     ('--without-legacy', 'legacy=no'),
     ('--without-lzma', 'lzma=no'),
-    ('--without-mem-debug', 'mem_debug=no'),
     ('--without-modules', 'modules=no'),
     ('--without-pattern', 'pattern=no'),
     ('--without-regexps', 'regexps=no'),

@@ -34,17 +34,11 @@ UTILS_INTDIR = int.utils.mingw
 # The preprocessor and its options.
 CPP = gcc.exe -E
 CPPFLAGS += -I$(XML_SRCDIR)/include -DNOLIBTOOL 
-ifeq ($(WITH_THREADS),1)
-CPPFLAGS += -D_REENTRANT
-endif
 
 # The compiler and its options.
 CC = gcc.exe
 CFLAGS += -D_WINDOWS -D_MBCS -DNOLIBTOOL
 CFLAGS += -I$(XML_SRCDIR) -I$(XML_SRCDIR)/include -I$(INCPREFIX) $(INCLUDE)
-ifneq ($(WITH_THREADS),no)
-CFLAGS += -D_REENTRANT
-endif
 ifeq ($(WITH_THREADS),ctls)
 CFLAGS += "-DXML_THREAD_LOCAL=__declspec(thread)"
 endif

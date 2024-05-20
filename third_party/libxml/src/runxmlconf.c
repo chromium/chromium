@@ -415,7 +415,6 @@ xmlconfTestItem(xmlDocPtr doc, xmlNodePtr cur) {
         test_log("test %s : %s leaked %d bytes\n",
 	         id, filename, final - mem);
         nb_leaks++;
-	xmlMemDisplayLast(logfile, final - mem);
     }
     nb_tests++;
 

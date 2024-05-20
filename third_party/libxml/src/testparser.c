@@ -59,6 +59,25 @@ testUnsupportedEncoding(void) {
     return err;
 }
 
+static int
+testNodeGetContent(void) {
+    xmlDocPtr doc;
+    xmlChar *content;
+    int err = 0;
+
+    doc = xmlReadDoc(BAD_CAST "<doc/>", NULL, NULL, 0);
+    xmlAddChild(doc->children, xmlNewReference(doc, BAD_CAST "lt"));
+    content = xmlNodeGetContent((xmlNodePtr) doc);
+    if (strcmp((char *) content, "<") != 0) {
+        fprintf(stderr, "xmlNodeGetContent failed\n");
+        err = 1;
+    }
+    xmlFree(content);
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
 #ifdef LIBXML_SAX1_ENABLED
 static int
 testBalancedChunk(void) {
@@ -209,6 +228,41 @@ testReaderEncoding(void) {
     return err;
 }
 
+static int
+testReaderContent(void) {
+    xmlTextReader *reader;
+    const xmlChar *xml = BAD_CAST "<d>x<e>y</e><f>z</f></d>";
+    xmlChar *string;
+    int err = 0;
+
+    reader = xmlReaderForDoc(xml, NULL, NULL, 0);
+    xmlTextReaderRead(reader);
+
+    string = xmlTextReaderReadOuterXml(reader);
+    if (!xmlStrEqual(string, xml)) {
+        fprintf(stderr, "xmlTextReaderReadOuterXml failed\n");
+        err = 1;
+    }
+    xmlFree(string);
+
+    string = xmlTextReaderReadInnerXml(reader);
+    if (!xmlStrEqual(string, BAD_CAST "x<e>y</e><f>z</f>")) {
+        fprintf(stderr, "xmlTextReaderReadInnerXml failed\n");
+        err = 1;
+    }
+    xmlFree(string);
+
+    string = xmlTextReaderReadString(reader);
+    if (!xmlStrEqual(string, BAD_CAST "xyz")) {
+        fprintf(stderr, "xmlTextReaderReadString failed\n");
+        err = 1;
+    }
+    xmlFree(string);
+
+    xmlFreeTextReader(reader);
+    return err;
+}
+
 #ifdef LIBXML_XINCLUDE_ENABLED
 typedef struct {
     char *message;
@@ -338,6 +392,7 @@ main(void) {
 
     err |= testStandaloneWithEncoding();
     err |= testUnsupportedEncoding();
+    err |= testNodeGetContent();
 #ifdef LIBXML_SAX1_ENABLED
     err |= testBalancedChunk();
 #endif
@@ -350,6 +405,7 @@ main(void) {
 #endif
 #ifdef LIBXML_READER_ENABLED
     err |= testReaderEncoding();
+    err |= testReaderContent();
 #ifdef LIBXML_XINCLUDE_ENABLED
     err |= testReaderXIncludeError();
 #endif

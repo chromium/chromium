@@ -5171,6 +5171,8 @@ xmlValidateElementContent(xmlValidCtxtPtr ctxt, xmlNodePtr child,
             }
         }
         ret = xmlRegExecPushString(exec, NULL, NULL);
+        if (ret == XML_REGEXP_OUT_OF_MEMORY)
+            xmlVErrMemory(ctxt);
 fail:
         xmlRegFreeExecCtxt(exec);
     }
@@ -5768,8 +5770,11 @@ xmlValidatePopElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc ATTRIBUTE_UNUSED,
 		if (state->exec != NULL) {
 		    ret = xmlRegExecPushString(state->exec, NULL, NULL);
 		    if (ret <= 0) {
-			xmlErrValidNode(ctxt, state->node,
-			                XML_DTD_CONTENT_MODEL,
+                        if (ret == XML_REGEXP_OUT_OF_MEMORY)
+                            xmlVErrMemory(ctxt);
+                        else
+			    xmlErrValidNode(ctxt, state->node,
+			                    XML_DTD_CONTENT_MODEL,
 	   "Element %s content does not follow the DTD, Expecting more children\n",
 			       state->node->name, NULL,NULL);
 			ret = 0;

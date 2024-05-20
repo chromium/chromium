@@ -1026,7 +1026,7 @@ done:
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     int ret = 0;
-    int old_errors, old_tests, old_leaks;
+    int old_errors, old_tests, old_leaks, expected_errors;
 
     logfile = fopen(LOGFILE, "w");
     if (logfile == NULL) {
@@ -1044,16 +1044,17 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     old_tests = nb_tests;
     old_leaks = nb_leaks;
     xsdTest();
+    expected_errors = 3;
     printf("Ran %d tests, %d errors, %d leaks\n",
            nb_tests - old_tests,
            nb_errors - old_errors,
            nb_leaks - old_leaks);
-    if (nb_errors - old_errors == 10) {
-        printf("10 errors were expected\n");
+    if (nb_errors - old_errors == expected_errors) {
+        printf("%d errors were expected\n", expected_errors);
         nb_errors = old_errors;
     } else {
-        printf("10 errors were expected, got %d errors\n",
-               nb_errors - old_errors);
+        printf("%d errors were expected, got %d errors\n",
+               expected_errors, nb_errors - old_errors);
         nb_errors = old_errors + 1;
     }
 

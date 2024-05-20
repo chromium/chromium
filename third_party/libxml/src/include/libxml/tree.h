@@ -1288,8 +1288,10 @@ XMLPUBFUN int
 XMLPUBFUN void
 		xmlSetDocCompressMode	(xmlDocPtr doc,
 					 int mode);
+XML_DEPRECATED
 XMLPUBFUN int
 		xmlGetCompressMode	(void);
+XML_DEPRECATED
 XMLPUBFUN void
 		xmlSetCompressMode	(int mode);
 
@@ -1343,12 +1345,16 @@ XMLPUBFUN xmlNodePtr
             xmlPreviousElementSibling   (xmlNodePtr node);
 #endif
 
+XML_DEPRECATED
 XMLPUBFUN xmlRegisterNodeFunc
 	    xmlRegisterNodeDefault	(xmlRegisterNodeFunc func);
+XML_DEPRECATED
 XMLPUBFUN xmlDeregisterNodeFunc
 	    xmlDeregisterNodeDefault	(xmlDeregisterNodeFunc func);
+XML_DEPRECATED
 XMLPUBFUN xmlRegisterNodeFunc
             xmlThrDefRegisterNodeDefault(xmlRegisterNodeFunc func);
+XML_DEPRECATED
 XMLPUBFUN xmlDeregisterNodeFunc
             xmlThrDefDeregisterNodeDefault(xmlDeregisterNodeFunc func);
 

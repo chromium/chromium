@@ -37,17 +37,11 @@ UTILS_INTDIR = int.utils.msvc
 # The preprocessor and its options.
 CPP = cl.exe /EP
 CPPFLAGS = /nologo /I$(XML_SRCDIR)\include /D "NOLIBTOOL" 
-!if "$(WITH_THREADS)" != "no"
-CPPFLAGS = $(CPPFLAGS) /D "_REENTRANT"
-!endif
 
 # The compiler and its options.
 CC = cl.exe
 CFLAGS = /nologo /D "_WINDOWS" /D "_MBCS" /D "NOLIBTOOL" /W3 /wd4244 /wd4267 $(CRUNTIME)
 CFLAGS = $(CFLAGS) /I$(XML_SRCDIR) /I$(XML_SRCDIR)\include /I$(INCPREFIX)
-!if "$(WITH_THREADS)" != "no"
-CFLAGS = $(CFLAGS) /D "_REENTRANT"
-!endif
 !if "$(WITH_THREADS)" == "ctls"
 CFLAGS = $(CFLAGS) /D "XML_THREAD_LOCAL=__declspec(thread)"
 !else if "$(WITH_THREADS)" == "posix"
