@@ -580,10 +580,12 @@
   // Docking promo handler.
   _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
       [[DockingPromoDisplayHandler alloc]
-          initWithHandler:_dockingPromoCommandHandler];
+                   initWithHandler:_dockingPromoCommandHandler
+          showRemindMeLaterVersion:NO];
   _displayHandlerPromos[promos_manager::Promo::DockingPromoRemindMeLater] =
       [[DockingPromoDisplayHandler alloc]
-          initWithHandler:_dockingPromoCommandHandler];
+                   initWithHandler:_dockingPromoCommandHandler
+          showRemindMeLaterVersion:YES];
 
   // Default browser promo handler.
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

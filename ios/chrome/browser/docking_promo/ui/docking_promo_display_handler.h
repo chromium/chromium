@@ -16,7 +16,10 @@
 // to eligible users.
 @interface DockingPromoDisplayHandler : NSObject <StandardPromoDisplayHandler>
 
-- (instancetype)initWithHandler:(id<DockingPromoCommands>)handler;
+// Initializes a promo display handler for the Docking Promo, with the option to
+// display the "Remind Me Later" promo version.
+- (instancetype)initWithHandler:(id<DockingPromoCommands>)handler
+       showRemindMeLaterVersion:(BOOL)showRemindMeLaterVersion;
 
 @end
 

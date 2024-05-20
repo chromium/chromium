@@ -11,12 +11,17 @@
 
 @implementation DockingPromoDisplayHandler {
   id<DockingPromoCommands> _handler;
+  // Indicates whether the Docking Promo should display the "Remind Me Later"
+  // version of the promo.
+  BOOL _showRemindMeLaterVersion;
 }
 
-- (instancetype)initWithHandler:(id<DockingPromoCommands>)handler {
+- (instancetype)initWithHandler:(id<DockingPromoCommands>)handler
+       showRemindMeLaterVersion:(BOOL)showRemindMeLaterVersion {
   if (self = [super init]) {
     CHECK(handler);
     _handler = handler;
+    _showRemindMeLaterVersion = showRemindMeLaterVersion;
   }
 
   return self;
@@ -33,6 +38,12 @@
 // Provide the Docking Promo parameters for the Promos Manager and Feature
 // Engagement Tracker.
 - (PromoConfig)config {
+  if (_showRemindMeLaterVersion) {
+    return PromoConfig(
+        promos_manager::Promo::DockingPromoRemindMeLater,
+        &feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
+  }
+
   return PromoConfig(promos_manager::Promo::DockingPromo,
                      &feature_engagement::kIPHiOSDockingPromoFeature);
 }
