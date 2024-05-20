@@ -61,6 +61,7 @@ class PrefsPinEngine : public AuthFactorEngine, public CryptohomeCore::Client {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<FactorEngineObserver> observer_;
   UsageAllowed usage_allowed_ = UsageAllowed::kDisabled;
+  bool is_supported_ = false;
   int unlock_attempt_count_ = 0;
 
   base::WeakPtrFactory<PrefsPinEngine> weak_factory_{this};

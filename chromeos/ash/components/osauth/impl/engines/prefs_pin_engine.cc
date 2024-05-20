@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -24,12 +26,14 @@ PrefsPinEngine::PrefsPinEngine(CryptohomeCore& core, PrefService& pref_service)
 PrefsPinEngine::~PrefsPinEngine() = default;
 
 void PrefsPinEngine::PerformPinAttempt(const std::string& raw_pin) {
-  // TODO(b/271263584): Do not allow the use of PIN if the system supports
-  // proper hardware-backed PINs.
-
   // Ignore the attempt if use is not currently enabled.
   if (usage_allowed_ != UsageAllowed::kEnabled) {
     LOG(ERROR) << "Ignoring legacy PIN attempt as factor is disabled";
+    return;
+  }
+  // Ignore the attempt if this engine is not supported.
+  if (!is_supported_) {
+    LOG(ERROR) << "Ignoring legacy PIN attempt as factor is not supported";
     return;
   }
   // Ignore the attempt if the PIN is locked out.
@@ -125,7 +129,14 @@ void PrefsPinEngine::OnSuccessfulAuthentiation() {
   unlock_attempt_count_ = 0;
 }
 
-void PrefsPinEngine::OnCryptohomeAuthSessionStarted() {}
+void PrefsPinEngine::OnCryptohomeAuthSessionStarted() {
+  // If cryptohome does not support PINs, then this engine is supported.
+  const AuthFactorsConfiguration& config =
+      core_->GetCurrentContext()->GetAuthFactorsConfiguration();
+  if (!config.get_supported_factors().Has(cryptohome::AuthFactorType::kPin)) {
+    is_supported_ = true;
+  }
+}
 
 void PrefsPinEngine::OnAuthSessionStartFailure() {}
 
@@ -140,7 +151,6 @@ void PrefsPinEngine::OnCryptohomeReady(CommonInitCallback callback,
                << static_cast<int>(GetFactor()) << " is not available";
     return;
   }
-  // TODO(b/271263584): check if legacy PIN is allowed on this system.
   std::move(callback).Run(GetFactor());
 }
 

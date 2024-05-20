@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -41,7 +42,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomeCoreImpl
   enum class Stage {
     kIdle,
     kAuthSessionRequested,
-    kAuthSessionRequestFinished,
+    kAuthFactorConfigurationRequested,
+    kFinished,
   };
 
   void OnServiceStatus(ServiceAvailabilityCallback callback,
@@ -49,6 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomeCoreImpl
   void OnAuthSessionStarted(bool user_exists,
                             std::unique_ptr<UserContext> context,
                             std::optional<AuthenticationError> error);
+  void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> context,
+                                     std::optional<AuthenticationError> error);
   void OnInvalidateAuthSession(std::unique_ptr<UserContext> context,
                                std::optional<AuthenticationError> error);
   void EndAuthSessionImpl();
@@ -65,6 +69,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomeCoreImpl
   std::unique_ptr<UserContext> context_;
   raw_ptr<UserDataAuthClient> dbus_client_;
   std::unique_ptr<AuthPerformer> performer_;
+  std::unique_ptr<AuthFactorEditor> editor_;
 
   base::WeakPtrFactory<CryptohomeCoreImpl> weak_factory_{this};
 };
