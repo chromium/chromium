@@ -37,10 +37,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD3(AccessibilityEventReceived,
+  MOCK_METHOD2(ProcessAccessibilityUpdatesAndEvents,
                void(const ui::AXTreeID& tree_id,
-                    const std::vector<ui::AXTreeUpdate>& updates,
-                    const std::vector<ui::AXEvent>& events));
+                    ui::AXUpdatesAndEvents& events));
   MOCK_METHOD10(OnSettingsRestoredFromPrefs,
                 void(read_anything::mojom::LineSpacing line_spacing,
                      read_anything::mojom::LetterSpacing letter_spacing,

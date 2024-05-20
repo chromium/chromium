@@ -299,8 +299,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called when accessibility events or location changes are received
   // from a render frame, when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
-  virtual void AccessibilityEventReceived(
-      const ui::AXUpdatesAndEvents& details) {}
+  virtual void ProcessAccessibilityUpdatesAndEvents(
+      ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
       const std::vector<ui::AXLocationChanges>& details) {}
 

@@ -55,10 +55,11 @@ class MockAutomationEventRouter
   ui::AXTree* tree() { return &tree_; }
 
   // extensions::AutomationEventRouterInterface:
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   std::vector<ui::AXTreeUpdate> updates,
-                                   const gfx::Point& mouse_location,
-                                   std::vector<ui::AXEvent> events) override {
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override {
     for (auto&& event : events) {
       ASSERT_NE(event.event_type, ax::mojom::Event::kNone);
       event_count_[event.event_type]++;

@@ -55,10 +55,11 @@ class MockAutomationEventRouter
   virtual ~MockAutomationEventRouter() = default;
 
   // extensions::AutomationEventRouterInterface:
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   std::vector<ui::AXTreeUpdate> updates,
-                                   const gfx::Point& mouse_location,
-                                   std::vector<ui::AXEvent> events) override {}
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override {}
 
   void DispatchAccessibilityLocationChange(
       const ui::AXLocationChanges& details) override {}

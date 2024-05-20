@@ -42,9 +42,9 @@ void AutomationClientImpl::BindAutomationClient(
 
 void AutomationClientImpl::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate> updates,
+    const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
-    std::vector<ui::AXEvent> events) {
+    const std::vector<ui::AXEvent>& events) {
   DCHECK(tree_id != ui::AXTreeIDUnknown());
   if (tree_id == ui::AXTreeIDUnknown())
     return;

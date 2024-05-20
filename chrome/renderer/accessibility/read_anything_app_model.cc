@@ -16,6 +16,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -474,7 +475,7 @@ bool ReadAnythingAppModel::IsDocs() const {
 
 void ReadAnythingAppModel::AddPendingUpdates(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate>& updates) {
+    std::vector<ui::AXTreeUpdate> updates) {
   std::vector<ui::AXTreeUpdate>& update = pending_updates_map_[tree_id];
   for (auto& item : updates) {
     update.emplace_back(std::move(item));
@@ -493,14 +494,13 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   // TODO(b/1266555): Ensure there are no crashes / unexpected behavior if
   //  an accessibility event is received on the same tree after unserialization
   //  has begun.
-  std::vector<ui::AXTreeUpdate> update =
-      pending_updates_map_.extract(tree_id).mapped();
-  DCHECK(update.empty() || tree_id == active_tree_id_);
-  UnserializeUpdates(update, tree_id);
+  auto node_handle = pending_updates_map_.extract(tree_id);
+  DCHECK(node_handle.empty() || tree_id == active_tree_id_);
+  UnserializeUpdates(std::move(node_handle.mapped()), tree_id);
 }
 
 void ReadAnythingAppModel::UnserializeUpdates(
-    std::vector<ui::AXTreeUpdate>& updates,
+    std::vector<ui::AXTreeUpdate> updates,
     const ui::AXTreeID& tree_id) {
   if (updates.empty()) {
     return;
@@ -531,10 +531,9 @@ void ReadAnythingAppModel::UnserializeUpdates(
   ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
-void ReadAnythingAppModel::AccessibilityEventReceived(
+void ReadAnythingAppModel::ProcessAccessibilityUpdatesAndEvents(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate>& updates,
-    std::vector<ui::AXEvent>& events) {
+    ui::AXUpdatesAndEvents updates_and_events) {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
@@ -550,18 +549,18 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // complete.
   if (tree_id == active_tree_id_) {
     if (distillation_in_progress_ || speech_playing_) {
-      AddPendingUpdates(tree_id, updates);
-      ProcessNonGeneratedEvents(events);
+      AddPendingUpdates(tree_id, std::move(updates_and_events.updates));
+      ProcessNonGeneratedEvents(std::move(updates_and_events.events));
       return;
     } else {
       // We need to unserialize old updates before we can unserialize the new
       // ones.
       UnserializePendingUpdates(tree_id);
     }
-    UnserializeUpdates(updates, tree_id);
-    ProcessNonGeneratedEvents(events);
+    UnserializeUpdates(std::move(updates_and_events.updates), tree_id);
+    ProcessNonGeneratedEvents(std::move(updates_and_events.events));
   } else {
-    UnserializeUpdates(updates, tree_id);
+    UnserializeUpdates(std::move(updates_and_events.updates), tree_id);
   }
 }
 

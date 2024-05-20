@@ -47,6 +47,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
+#include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
@@ -395,19 +396,16 @@ ReadAnythingAppController::~ReadAnythingAppController() {
   LogSpeechEventCounts();
 }
 
-void ReadAnythingAppController::AccessibilityEventReceived(
+void ReadAnythingAppController::ProcessAccessibilityUpdatesAndEvents(
     const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
-    const std::vector<ui::AXEvent>& events) {
+    ui::AXUpdatesAndEvents& updates_and_events) {
   // This updates the model, which may require us to start distillation based on
   // the `requires_distillation()` state below.
   //
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
-  model_.AccessibilityEventReceived(
-      tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
-      const_cast<std::vector<ui::AXEvent>&>(events));
-  // From this point onward, `updates` and `events` should not be accessed.
+  model_.ProcessAccessibilityUpdatesAndEvents(tree_id,
+                                              std::move(updates_and_events));
 
   if (tree_id != model_.active_tree_id()) {
     return;
@@ -464,8 +462,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
   // When the UI first constructs, this function may be called before tree_id
-  // has been added to the tree list in AccessibilityEventReceived. In that
-  // case, do not distill.
+  // has been added to the tree list in ProcessAccessibilityUpdatesAndEvents. In
+  // that case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
       model_.ContainsTree(model_.active_tree_id())) {
     Distill();
@@ -1586,14 +1584,18 @@ void ReadAnythingAppController::SetContentForTesting(
   ui::AXEvent selection_event;
   selection_event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
   selection_event.event_from = ax::mojom::EventFrom::kUser;
-  AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
+  const auto tree_id = snapshot.tree_data.tree_id;
+  ui::AXUpdatesAndEvents updates;
+  updates.updates.emplace_back(snapshot);
+  ProcessAccessibilityUpdatesAndEvents(tree_id, updates);
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
                           false);
-  OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
+  OnAXTreeDistilled(tree_id, content_node_ids);
 
   // Trigger a selection event (for testing selections).
-  AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
-                             {selection_event});
+  ui::AXUpdatesAndEvents updates_and_events;
+  updates_and_events.events.emplace_back(selection_event);
+  ProcessAccessibilityUpdatesAndEvents(tree_id, updates_and_events);
 }
 
 content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {

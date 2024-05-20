@@ -24,6 +24,9 @@ struct AX_BASE_EXPORT AXUpdatesAndEvents {
   AXUpdatesAndEvents& operator=(
       const AXUpdatesAndEvents& other) = delete;
 
+  AXUpdatesAndEvents(AXUpdatesAndEvents&& other);
+  AXUpdatesAndEvents& operator=(AXUpdatesAndEvents&& other);
+
   ~AXUpdatesAndEvents();
 
   // The unique ID of the accessibility tree this event bundle applies to.

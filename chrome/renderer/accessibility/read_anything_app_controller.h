@@ -89,10 +89,9 @@ class ReadAnythingAppController
       v8::Isolate* isolate) override;
 
   // read_anything::mojom::UntrustedPage:
-  void AccessibilityEventReceived(
+  void ProcessAccessibilityUpdatesAndEvents(
       const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const std::vector<ui::AXEvent>& events) override;
+      ui::AXUpdatesAndEvents& updates_and_events) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;

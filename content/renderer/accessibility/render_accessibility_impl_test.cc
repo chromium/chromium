@@ -55,12 +55,12 @@ class RenderAccessibilityHostInterceptor
         base::Unretained(&receiver_)));
   }
 
-  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
+  void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
                       uint32_t reset_token,
                       HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
-                            updates_and_events->updates.begin(),
-                            updates_and_events->updates.end());
+                            updates_and_events.updates.begin(),
+                            updates_and_events.updates.end());
     std::move(callback).Run();
   }
 
