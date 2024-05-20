@@ -371,6 +371,7 @@ defaults = args.defaults(
     shadow_pool = None,
     shadow_service_account = None,
     shadow_siso_project = None,
+    shadow_properties = {},
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -446,6 +447,7 @@ def builder(
         shadow_pool = args.DEFAULT,
         shadow_service_account = args.DEFAULT,
         shadow_siso_project = args.DEFAULT,
+        shadow_properties = args.DEFAULT,
         gn_args = None,
         targets = None,
         targets_settings = None,
@@ -663,6 +665,8 @@ def builder(
             use the RBE and other cloud instances of this project instead of the
             ones of siso_project. The other reclient, siso values will continue
             to be used for the shadow build.
+        shadow_properties: If set, the led builds created for this Builder will
+            override the top-level input properties with the same keys.
         gn_args: If set, the GN args config to use for the builder. It can be
             set to the name of a predeclared config or an unnamed
             gn_args.config declaration for an unphased config. A builder can use
@@ -711,7 +715,7 @@ def builder(
              "use use_pgo and skip_profile_upload instead")
     properties = dict(properties)
 
-    shadow_properties = {}
+    shadow_properties = dict(defaults.get_value("shadow_properties", shadow_properties))
 
     # bucket might be the args.COMPUTE sentinel value if the caller didn't set
     # bucket in some way, which will result in a weird fully-qualified builder
