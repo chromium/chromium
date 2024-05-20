@@ -51,7 +51,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     kBfcBlockOffsetResolved = 1,
     kNeedsEarlierBreak = 2,
     kOutOfFragmentainerSpace = 3,
-    kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
+    kNeedsLineClampRelayout = 4,
     kDisableFragmentation = 5,
     kNeedsRelayoutWithNoChildScrollbarChanges = 6,
     kTextBoxTrimEndDidNotApply = 7,

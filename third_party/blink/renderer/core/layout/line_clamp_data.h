@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -14,49 +15,81 @@ namespace blink {
 struct LineClampData {
   DISALLOW_NEW();
 
+  LineClampData() {}
+
   enum State {
     kDisabled,
-    kEnabled,
-    // The line-clamp context is enabled, but no forced truncation will happen.
-    // This is different from kDisabled in that `text-overflow: ellipsis` will
-    // not take effect inside it.
+    kClampByLines,
+    kClampByBfcOffset,
+    // The line-clamp context is enabled, but no forced truncation
+    // will happen. This is different from kDisabled in that
+    // `text-overflow: ellipsis` will not take effect inside it.
     kDontTruncate,
   };
 
   bool IsLineClampContext() const { return state != kDisabled; }
 
   std::optional<int> LinesUntilClamp() const {
-    if (state == kEnabled) {
+    if (state == kClampByLines) {
       return lines_until_clamp;
     }
     return std::optional<int>();
   }
 
-  bool IsAtClampPoint() const {
-    return state == kEnabled && lines_until_clamp == 1;
+  bool IsAtClampPoint(LayoutUnit bfc_offset) const {
+    switch (state) {
+      case kClampByLines:
+        return lines_until_clamp == 1;
+      case kClampByBfcOffset:
+        return clamp_bfc_offset == bfc_offset;
+      default:
+        return false;
+    }
   }
 
-  bool IsPastClampPoint() const {
-    return state == kEnabled && lines_until_clamp <= 0;
+  bool IsPastClampPoint(LayoutUnit bfc_offset, bool is_float = false) const {
+    switch (state) {
+      case kClampByLines:
+        return lines_until_clamp <= 0;
+      case kClampByBfcOffset:
+        if (is_float) {
+          return clamp_bfc_offset <= bfc_offset;
+        }
+        return clamp_bfc_offset < bfc_offset;
+      default:
+        return false;
+    }
   }
 
-  bool ShouldHideForPaint() const {
-    return RuntimeEnabledFeatures::CSSLineClampEnabled() && IsPastClampPoint();
+  bool ShouldHideForPaint(LayoutUnit bfc_offset, bool is_float = false) const {
+    return RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+           IsPastClampPoint(bfc_offset, is_float);
   }
 
   bool operator==(const LineClampData& other) const {
     if (state != other.state) {
       return false;
     }
-    if (state == kEnabled) {
-      return lines_until_clamp == other.lines_until_clamp;
+    switch (state) {
+      case kClampByLines:
+        return lines_until_clamp == other.lines_until_clamp;
+      case kClampByBfcOffset:
+        return clamp_bfc_offset == other.clamp_bfc_offset;
+      default:
+        return true;
     }
-    return true;
   }
 
-  // If state == kEnabled, the number of lines until a clamp. A value of 1
-  // indicates the current line should be clamped. This may go negative.
-  int lines_until_clamp;
+  union {
+    // The number of lines until the clamp point. A value of 1 indicates the
+    // current line should be clamped. This may go negative.
+    // Only valid if state == kClampByLines
+    int lines_until_clamp;
+
+    // The BFC offset where the current block container should clamp.
+    // Only valid if state == kClampByBfcOffset
+    LayoutUnit clamp_bfc_offset;
+  };
 
   State state = kDisabled;
 };

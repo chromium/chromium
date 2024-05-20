@@ -103,7 +103,8 @@ class CORE_EXPORT InlineLayoutAlgorithm final
       const FontHeight& line_box_metrics,
       std::optional<FontHeight> annotation_font_height);
 
-  bool ShouldLineClamp(const LineInfo*) const;
+  bool ShouldLineClamp(const LineInfo*, LayoutUnit line_height) const;
+  bool ShouldHideLine(LayoutUnit line_height) const;
 
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;

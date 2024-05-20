@@ -67,13 +67,64 @@ struct BlockLineClampData {
 
   std::optional<int> LinesUntilClamp() const { return data.LinesUntilClamp(); }
 
-  bool IsPastClampPoint() const { return data.IsPastClampPoint(); }
+  bool IsPastClampPoint() const {
+    if (data.state == LineClampData::kClampByBfcOffset) {
+      return intrinsic_block_size_when_clamped.has_value();
+    }
+    return data.IsPastClampPoint(LayoutUnit());
+  }
 
-  bool ShouldHideForPaint() const { return data.ShouldHideForPaint(); }
+  bool ShouldHideForPaint() const {
+    if (data.state == LineClampData::kClampByBfcOffset) {
+      return intrinsic_block_size_when_clamped.has_value();
+    }
+    return data.ShouldHideForPaint(LayoutUnit());
+  }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
-    return LinesUntilClamp() == 0 &&
-           intrinsic_block_size_when_clamped.has_value();
+    if (!intrinsic_block_size_when_clamped.has_value()) {
+      return false;
+    }
+    switch (data.state) {
+      case LineClampData::kClampByLines:
+        return data.lines_until_clamp == 0;
+      case LineClampData::kClampByBfcOffset:
+        return !has_content_after_clamp;
+      default:
+        // intrinsic_block_size_when_clamped shouldn't be set.
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  void UpdateClampOffsetFromStyle(LayoutUnit clamp_bfc_offset,
+                                  LayoutUnit content_edge) {
+    if (data.state == LineClampData::kDontTruncate) {
+      return;
+    }
+
+    if (data.state == LineClampData::kClampByBfcOffset) {
+      // We're doing relayout with a different BFC offset which we obtained from
+      // the previous layout. This offset must be less than the one we get from
+      // style.
+      DCHECK_LT(data.clamp_bfc_offset, clamp_bfc_offset);
+      return;
+    }
+
+    DCHECK_EQ(data.state, LineClampData::kDisabled);
+    if (clamp_bfc_offset == kIndefiniteSize) {
+      data.state = LineClampData::kDontTruncate;
+    } else {
+      data.state = LineClampData::kClampByBfcOffset;
+      data.clamp_bfc_offset = clamp_bfc_offset;
+
+      // If there isn't enough space for the first line, the clamp point will be
+      // at the start of the line-clamp container.
+      if (clamp_bfc_offset <= content_edge) {
+        intrinsic_block_size_when_clamped = content_edge;
+      } else {
+        latest_clampable_offset = content_edge;
+      }
+    }
   }
 
   void UpdateLinesFromStyle(int lines_until_clamp) {
@@ -81,24 +132,42 @@ struct BlockLineClampData {
       return;
     }
 
-    data.state = LineClampData::kEnabled;
+    DCHECK_EQ(data.state, LineClampData::kDisabled);
+    data.state = LineClampData::kClampByLines;
     data.lines_until_clamp = lines_until_clamp;
   }
 
-  void UpdateAfterLayout(int lines_until_clamp,
+  // Returns false if we need to relayout with a different clamp BFC offset.
+  bool UpdateAfterLayout(int lines_until_clamp,
                          LayoutUnit logical_block_offset) {
-    if (data.state != LineClampData::kEnabled) {
-      return;
+    if (data.state == LineClampData::kClampByLines) {
+      data.lines_until_clamp = lines_until_clamp;
+      if (data.lines_until_clamp <= 0 &&
+          !intrinsic_block_size_when_clamped.has_value()) {
+        intrinsic_block_size_when_clamped = logical_block_offset;
+      }
     }
 
-    data.lines_until_clamp = lines_until_clamp;
-    if (data.lines_until_clamp <= 0 &&
-        !intrinsic_block_size_when_clamped.has_value()) {
-      intrinsic_block_size_when_clamped = logical_block_offset;
+    if (data.state == LineClampData::kClampByBfcOffset) {
+      if (logical_block_offset < data.clamp_bfc_offset) {
+        latest_clampable_offset = logical_block_offset;
+      } else if (logical_block_offset == data.clamp_bfc_offset) {
+        intrinsic_block_size_when_clamped = logical_block_offset;
+      } else if (!intrinsic_block_size_when_clamped.has_value()) {
+        return false;
+      } else {
+        has_content_after_clamp = true;
+      }
     }
+
+    return true;
   }
 
   LineClampData data;
+
+  LayoutUnit latest_clampable_offset;
+
+  bool has_content_after_clamp = false;
 
   // If set, one of the lines was clamped and this is the intrinsic size of the
   // block element at the time of the clamp. Can only be set if
@@ -133,6 +202,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const InlineNode& child);
 
   NOINLINE const LayoutResult* RelayoutIgnoringLineClamp();
+  NOINLINE const LayoutResult* RelayoutWithLineClampBlockSize();
   NOINLINE const LayoutResult* RelayoutForTextBoxTrimEnd();
 
   inline const LayoutResult* Layout(

@@ -341,18 +341,31 @@ void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
 #endif
 
 ALWAYS_INLINE bool InlineLayoutAlgorithm::ShouldLineClamp(
-    const LineInfo* line_info) const {
+    const LineInfo* line_info,
+    LayoutUnit line_height) const {
   if (line_info->IsBlockInInline()) {
     return false;
   }
 
   LineClampData line_clamp_data = GetConstraintSpace().GetLineClampData();
   if (line_clamp_data.IsLineClampContext()) {
-    return line_clamp_data.IsAtClampPoint();
+    LayoutUnit line_start_offset =
+        container_builder_.LineBoxBfcBlockOffset().value_or(
+            GetConstraintSpace().GetBfcOffset().block_offset);
+    return line_clamp_data.IsAtClampPoint(line_start_offset + line_height);
   } else {
     return line_info->HasOverflow() &&
            node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText();
   }
+}
+
+ALWAYS_INLINE bool InlineLayoutAlgorithm::ShouldHideLine(
+    LayoutUnit line_height) const {
+  LayoutUnit line_start_offset =
+      container_builder_.LineBoxBfcBlockOffset().value_or(
+          GetConstraintSpace().GetBfcOffset().block_offset);
+  return GetConstraintSpace().GetLineClampData().ShouldHideForPaint(
+      line_start_offset + line_height);
 }
 
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
@@ -382,10 +395,24 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     container_builder_.SetHangInlineSize(hang_width);
   }
 
+  // Force an editable empty line or a line with ruby annotations to have
+  // metrics, so that is has a height.
+  if (UNLIKELY(line_info->HasLineEvenIfEmpty() ||
+               !box_states_->RubyColumnList().empty())) {
+    box_states_->LineBoxState().EnsureTextMetrics(
+        line_info->LineStyle(), *box_states_->LineBoxState().font,
+        baseline_type_);
+  } else if (UNLIKELY(line_builder.InitialLetterItemResult()) &&
+             box_states_->LineBoxState().metrics.IsEmpty()) {
+    box_states_->LineBoxState().metrics = FontHeight();
+  }
+
+  const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
+
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
   //  - If we've reached the line-clamp limit.
-  if (UNLIKELY(ShouldLineClamp(line_info))) {
+  if (UNLIKELY(ShouldLineClamp(line_info, line_box_metrics.LineHeight()))) {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(*line_info);
     auto* input =
@@ -400,7 +427,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
   // With the CSSLineClamp feature, if we're past the clamp point, we mark every
   // inline item in the line as hidden for paint.
-  if (UNLIKELY(GetConstraintSpace().GetLineClampData().ShouldHideForPaint())) {
+  if (UNLIKELY(ShouldHideLine(line_box_metrics.LineHeight()))) {
     container_builder_.SetIsHiddenForPaint(true);
     for (auto& child : *line_box) {
       child.is_hidden_for_paint = true;
@@ -425,20 +452,6 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
     container_builder_.SetBfcLineOffset(bfc_line_offset);
   }
-
-  // Force an editable empty line or a line with ruby annotations to have
-  // metrics, so that is has a height.
-  if (UNLIKELY(line_info->HasLineEvenIfEmpty() ||
-               !box_states_->RubyColumnList().empty())) {
-    box_states_->LineBoxState().EnsureTextMetrics(
-        line_info->LineStyle(), *box_states_->LineBoxState().font,
-        baseline_type_);
-  } else if (UNLIKELY(line_builder.InitialLetterItemResult()) &&
-             box_states_->LineBoxState().metrics.IsEmpty()) {
-    box_states_->LineBoxState().metrics = FontHeight();
-  }
-
-  const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
   if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
     std::optional<FontHeight> annotation_metrics;
@@ -1411,8 +1424,14 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
   BfcOffset origin_bfc_offset = {space.GetBfcOffset().line_offset,
                                  origin_bfc_block_offset};
 
+  // The BFC offset passed to `ShouldHideForPaint` should be the bottom offset
+  // of the line, which we don't know at this point. However, since block layout
+  // will relayout to fix the clamp BFC offset to the bottom of the last line
+  // before clamp, we now that if the line's BFC offset is equal or greater than
+  // the clamp BFC offset in the final relayout, the line will be hidden.
   bool is_hidden_for_paint =
-      GetConstraintSpace().GetLineClampData().ShouldHideForPaint();
+      GetConstraintSpace().GetLineClampData().ShouldHideForPaint(
+          origin_bfc_block_offset, /*is_float*/ true);
   UnpositionedFloat unpositioned_float(
       BlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, space.AvailableSize(),
