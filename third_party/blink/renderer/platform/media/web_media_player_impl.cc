@@ -1019,7 +1019,6 @@ void WebMediaPlayerImpl::OnFrozen() {
 void WebMediaPlayerImpl::Seek(double seconds) {
   DVLOG(1) << __func__ << "(" << seconds << "s)";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  media_log_->AddEvent<MediaLogEvent::kSeek>(seconds);
   DoSeek(base::Seconds(seconds), true);
 }
 
@@ -1031,6 +1030,26 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   ReadyState old_state = ready_state_;
   if (ready_state_ > WebMediaPlayer::kReadyStateHaveMetadata)
     SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
+
+  // For zero duration video-only media, if we can elide the seek, use a large
+  // delay to avoid an expensive spin loop. Per spec we must still deliver all
+  // the requisite events, but we're not required to be timely about it.
+  //
+  // 250ms matches the max timeupdate interval used by the media element.
+  auto delay = base::TimeDelta();
+  bool is_at_eos = false;
+  if (ended_) {
+    if (time == base::Seconds(Duration())) {
+      is_at_eos = true;
+    } else if (!HasAudio()) {
+      if (auto frame = compositor_->GetCurrentFrameOnAnyThread()) {
+        if (frame->timestamp() == GetCurrentTimeInternal()) {
+          is_at_eos = true;
+          delay = base::Milliseconds(250);
+        }
+      }
+    }
+  }
 
   // When paused or ended, we know exactly what the current time is and can
   // elide seeks to it. However, there are three cases that are not elided:
@@ -1044,20 +1063,33 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   //   3) For MSE.
   //      Because the buffers may have changed between seeks, MSE seeks are
   //      never elided.
-  if (paused_ && pipeline_controller_->IsStable() &&
-      (paused_time_ == time || (ended_ && time == base::Seconds(Duration()))) &&
+  if (((paused_ && paused_time_ == time) || (ended_ && is_at_eos)) &&
+      pipeline_controller_->IsStable() &&
       GetDemuxerType() != media::DemuxerType::kChunkDemuxer) {
     if (old_state == kReadyStateHaveEnoughData) {
       // This will in turn SetReadyState() to signal the demuxer seek, followed
       // by timeChanged() to signal the renderer seek.
       should_notify_time_changed_ = true;
-      main_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&WebMediaPlayerImpl::OnBufferingStateChange,
-                                    weak_this_, media::BUFFERING_HAVE_ENOUGH,
-                                    media::BUFFERING_CHANGE_REASON_UNKNOWN));
+
+      // Seek will always emit a new frame -- even if the it's the same frame it
+      // will be decoded again with a new frame id, so simulate that here.
+      main_task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebMediaPlayerImpl::OnNewFramePresentedCallback,
+                         weak_this_),
+          delay);
+
+      main_task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebMediaPlayerImpl::OnBufferingStateChange,
+                         weak_this_, media::BUFFERING_HAVE_ENOUGH,
+                         media::BUFFERING_CHANGE_REASON_UNKNOWN),
+          delay);
       return;
     }
   }
+
+  media_log_->AddEvent<MediaLogEvent::kSeek>(time.InSecondsF());
 
   if (playback_events_recorder_)
     playback_events_recorder_->OnSeeking();
@@ -1933,7 +1965,9 @@ void WebMediaPlayerImpl::OnEnded() {
     return;
 
   ended_ = true;
-  client_->TimeChanged();
+  if (!paused_) {
+    client_->TimeChanged();
+  }
 
   if (playback_events_recorder_)
     playback_events_recorder_->OnEnded();
@@ -2893,7 +2927,7 @@ void WebMediaPlayerImpl::StartPipeline() {
   auto create_demuxer_error = demuxer_manager_->CreateDemuxer(
       load_type_ == kLoadTypeMediaSource, preload_, needs_first_frame_,
       base::BindOnce(&WebMediaPlayerImpl::OnDemuxerCreated,
-                     base::Unretained(this)), 
+                     base::Unretained(this)),
       headers);
 
   if (!create_demuxer_error.is_ok()) {

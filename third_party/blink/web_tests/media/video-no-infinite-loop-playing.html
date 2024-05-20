@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Test a single frame video doesn't loop too quickly</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video loop autoplay muted></video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    var start = 0;
+    var count = 0;
+    video.onseeked = t.step_func(_ => {
+        if (++count == 1) {
+            start = performance.now();
+        } else if (count == 3) {
+            let dur = performance.now() - start;
+            assert_greater_than_equal(dur / (count - 1), 250);
+            t.done();
+        }
+    });
+    video.src = "resources/one_frame.webm";
+});
+</script>

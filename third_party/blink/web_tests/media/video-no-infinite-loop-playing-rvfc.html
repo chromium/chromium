@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>Test a single frame looping video generates rVFCs properly</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video loop autoplay muted></video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    var start = 0;
+    var count = 0;
+    var rvfc = 0;
+
+    video.onseeking = t.step_func(_ => {
+      video.requestVideoFrameCallback(_ => {
+        ++rvfc;
+      });
+    });
+    video.onseeked = t.step_func(_ => {
+      if (++count == 3) {
+            // Approximate since ordering is not guaranteed.
+            assert_approx_equals(rvfc, count, 1);
+            t.done();
+      }
+    });
+    video.src = "resources/one_frame.webm";
+});
+</script>

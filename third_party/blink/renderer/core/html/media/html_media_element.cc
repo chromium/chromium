@@ -3657,7 +3657,7 @@ void HTMLMediaElement::TimeChanged() {
   // these steps:
   if (EndedPlayback(LoopCondition::kIgnored)) {
     // If the media element has a loop attribute specified
-    if (Loop() && EarliestPossiblePosition() != CurrentPlaybackPosition()) {
+    if (Loop()) {
       //  then seek to the earliest possible position of the media resource and
       //  abort these steps.
       Seek(EarliestPossiblePosition());

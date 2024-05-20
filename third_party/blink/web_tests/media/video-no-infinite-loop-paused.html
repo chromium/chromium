@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Test a single frame video doesn't loop too quickly</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video loop paused muted></video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    var count = 0;
+    video.onseeked = t.unreached_func("Paused video shouldn't loop");
+    video.onended = t.unreached_func("Paused video shouldn't end");
+    video.oncanplaythrough = t.step_func(_ => {
+        // 275ms chosen since 250ms is the max timeupdate frequency.
+        t.step_timeout(t.step_func_done(), 275);
+    });
+    video.src = "resources/one_frame.webm";
+});
+</script>
