@@ -84,8 +84,8 @@ void VcBackgroundUISeaPenProviderImpl::SelectRecentSeaPenImageInternal(
       CameraEffectsController::SeaPenIdToRelativePath(id), std::move(callback));
 }
 
-void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImagesInternal(
-    GetRecentSeaPenImagesCallback callback) {
+void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImageIdsInternal(
+    GetRecentSeaPenImageIdsCallback callback) {
   GetCameraEffectsController()->GetBackgroundImageFileNames(
       base::BindOnce(&GetIdsFromFilePaths).Then(std::move(callback)));
 }

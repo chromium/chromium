@@ -32,7 +32,7 @@ struct SeaPenUserVisibleQuery {
   string template_title;
 };
 
-// The information needed to query template wallpapers. The possible `id` and
+// The information needed to send a template query. The possible `id` and
 // `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
 // are not controlled by the renderer. The browser is responsible for validating
 // the values.
@@ -88,10 +88,10 @@ struct RecentSeaPenThumbnailData {
   RecentSeaPenImageInfo? image_info;
 };
 
-// Maximum allowable search text length, in bytes.
+// Maximum allowable query text length, in bytes.
 // When validating length in Javascript, be careful of the difference between
 // UTF-16 (Javascript) length and UTF-8 length.
-const uint32 kMaximumSearchWallpaperTextBytes = 3000;
+const uint32 kMaximumGetSeaPenThumbnailsTextBytes = 3000;
 
 // Should match the associated enum in components/manta/manta_status.h
 enum MantaStatusCode {
@@ -110,43 +110,45 @@ enum MantaStatusCode {
   kMax = kPerUserQuotaExceeded,
 };
 
-// Provides APIs to perform wallpaper searches. Uses APIs in
-// `manta.proto` to send search requests to a server.
+// Provides APIs to get thumbnails and full size images. Uses APIs in
+// `manta.proto` to send requests to a google owned server.
 // Implemented in the browser process, and called by the ChromeOS
 // Personalization App (chrome://personalization) in a renderer process.
 interface SeaPenProvider {
 
-    // Given a user text input, return a set of matching images.
-    // `images` will be null in case of an unrecoverable error, such as network
-    // failure.
-    // `images` will be empty array when the request succeeded, but no matching
-    // images were returned.
-    // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
-    SearchWallpaper(SeaPenQuery query) =>
-        (array<SeaPenThumbnail>? images, MantaStatusCode statusCode);
+    // Given a user text input, return a set of matching thumbnails.
+    // `thumbnails` will be null in case of an unrecoverable error, such as
+    // network failure.
+    // `thumbnails` will be empty array when the request succeeded, but no
+    // matching thumbnails were returned.
+    // If `query` is of type string, it must be smaller than
+    // `kMaximumGetSeaPenThumbnailsTextBytes` bytes.
+    GetSeaPenThumbnails(SeaPenQuery query) =>
+        (array<SeaPenThumbnail>? thumbnails, MantaStatusCode statusCode);
 
-    // Select a thumbnail and set as the system wallpaper for the current user.
-    // `id` must be a valid id from a previous call to `SearchWallpaper`.
+    // Select a thumbnail for the current user.
+    // `id` must be a valid id from a previous call to `GetSeaPenThumbnails`.
     SelectSeaPenThumbnail(uint32 id) => (bool success);
 
-    // Gets the available previously selected SeaPen wallpapers. `ids` will be
+    // Gets the available previously selected SeaPen images. `ids` will be
     // empty if no thumbnails have been previously selected, or in case of disk
     // or other failure.
-    GetRecentSeaPenImages() => (array<uint32> ids);
+    GetRecentSeaPenImageIds() => (array<uint32> ids);
 
     // Sets the given SeaPen image id as the user's background. Must be a valid
-    // id from a previous call to `GetRecentSeaPenImages`.
+    // id from a previous call to `GetRecentSeaPenImageIds`.
     SelectRecentSeaPenImage(uint32 id) => (bool success);
 
     // Fetches the thumbnail data for the given recent Sea Pen image `id`.
-    // `id` must be a valid id from a previous call to `GetRecentSeaPenImages`.
+    // `id` must be a valid id from a previous call to
+    // `GetRecentSeaPenImageIds`.
     // `thumbnail_data` is null if the `id` is invalid or the image fails to
     // decode.
     GetRecentSeaPenImageThumbnail(uint32 id) =>
         (RecentSeaPenThumbnailData? thumbnail_data);
 
     // Deletes the selected SeaPen image from SeaPen directory. `id` must be a
-    // valid id from a previous call to `GetRecentSeaPenImages`.
+    // valid id from a previous call to `GetRecentSeaPenImageIds`.
     DeleteRecentSeaPenImage(uint32 id) => (bool success);
 
     // Pops up a feedback dialog when user clicks feedback buttons.

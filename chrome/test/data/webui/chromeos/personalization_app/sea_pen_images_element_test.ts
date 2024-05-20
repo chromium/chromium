@@ -75,7 +75,7 @@ suite('SeaPenImagesElementTest', function() {
   test('displays loading thumbnail placeholders', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);
@@ -95,7 +95,7 @@ suite('SeaPenImagesElementTest', function() {
   test('thumbnail placeholders not active when hidden', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);
@@ -112,7 +112,7 @@ suite('SeaPenImagesElementTest', function() {
   test('displays image thumbnails', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);
@@ -127,10 +127,10 @@ suite('SeaPenImagesElementTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
     // Index 1 is currently set as wallpaper.
     personalizationStore.data.wallpaper.seaPen.currentSelected =
-        seaPenProvider.images[1]!.id;
+        seaPenProvider.thumbnails[1]!.id;
 
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
@@ -205,7 +205,7 @@ suite('SeaPenImagesElementTest', function() {
     await waitAfterNextRender(seaPenImagesElement);
     // Simulate receiving a confirmation that the sea pen image was selected.
     personalizationStore.dispatch(
-        setSelectedRecentSeaPenImageAction(seaPenProvider.images[0]!.id));
+        setSelectedRecentSeaPenImageAction(seaPenProvider.thumbnails[0]!.id));
     await waitAfterNextRender(seaPenImagesElement);
 
     thumbnails = getWallpaperGridItems();
@@ -227,7 +227,7 @@ suite('SeaPenImagesElementTest', function() {
   test('display feedback buttons', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
 
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
@@ -348,7 +348,7 @@ suite('SeaPenImagesElementTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);

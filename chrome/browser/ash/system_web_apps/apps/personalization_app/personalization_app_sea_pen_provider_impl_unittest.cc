@@ -327,7 +327,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTextQuery("search_query");
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       std::move(search_query), search_wallpaper_future.GetCallback());
 
   EXPECT_THAT(
@@ -358,7 +358,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
           mojom::SeaPenUserVisibleQuery::New("test template query",
                                              "test template title")));
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       std::move(search_query), search_wallpaper_future.GetCallback());
 
   EXPECT_THAT(
@@ -376,11 +376,11 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
   // "\uFFFF" is picked because `.size()` differs by a factor of three
   // between UTF-8 (C++ std::string) and UTF-16 (javascript string).
   std::string long_unicode_string =
-      RepeatToSize("\uFFFF", mojom::kMaximumSearchWallpaperTextBytes);
-  ASSERT_EQ(mojom::kMaximumSearchWallpaperTextBytes,
+      RepeatToSize("\uFFFF", mojom::kMaximumGetSeaPenThumbnailsTextBytes);
+  ASSERT_EQ(mojom::kMaximumGetSeaPenThumbnailsTextBytes,
             long_unicode_string.size());
   // In javascript UTF-16, `long_unicode_string.length` is 1/3.
-  ASSERT_EQ(mojom::kMaximumSearchWallpaperTextBytes / 3,
+  ASSERT_EQ(mojom::kMaximumGetSeaPenThumbnailsTextBytes / 3,
             base::UTF8ToUTF16(long_unicode_string).size());
 
   base::test::TestFuture<
@@ -391,31 +391,31 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
   mojom::SeaPenQueryPtr long_query =
       mojom::SeaPenQuery::NewTextQuery(long_unicode_string);
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       std::move(long_query), search_wallpaper_future.GetCallback());
 
   EXPECT_EQ(4u, search_wallpaper_future.Get<0>().value().size())
-      << "SearchWallpaper succeeds if text is exactly max length";
+      << "GetSeaPenThumbnails succeeds if text is exactly max length";
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   std::string max_length_unicode_string =
-      RepeatToSize("\uFFFF", mojom::kMaximumSearchWallpaperTextBytes);
+      RepeatToSize("\uFFFF", mojom::kMaximumGetSeaPenThumbnailsTextBytes);
   mojom::SeaPenQueryPtr bad_long_query =
       mojom::SeaPenQuery::NewTextQuery(max_length_unicode_string + 'a');
   mojo::test::BadMessageObserver bad_message_observer;
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       std::move(bad_long_query),
       base::BindLambdaForTesting(
           [](std::optional<std::vector<
                  ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
              manta::MantaStatusCode) { NOTREACHED_IN_MIGRATION(); }));
 
-  EXPECT_EQ("SearchWallpaper exceeded maximum text length",
+  EXPECT_EQ("GetSeaPenThumbnails exceeded maximum text length",
             bad_message_observer.WaitForBadMessage())
-      << "SearchWallpaper fails if text is longer than max length";
+      << "GetSeaPenThumbnails fails if text is longer than max length";
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
@@ -434,7 +434,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       manta::MantaStatusCode>
       search_wallpaper_future;
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       query->Clone(), search_wallpaper_future.GetCallback());
 
   ASSERT_EQ(963u, search_wallpaper_future.Get<0>().value().front()->id);
@@ -456,7 +456,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
             test_wallpaper_controller()->wallpaper_info()->type);
 }
 
-TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
+TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImageIds) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
   // Create two images in the Sea Pen directory for the 1st user, then get the
@@ -464,7 +464,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1, kSeaPenId2});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
 
   std::vector<uint32_t> recent_images = recent_images_future.Take();
@@ -474,7 +474,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
   // Log in the second user, get the list of recent images.
   SetUpProfileForTesting(kFakeTestEmail2, GetTestAccountId2());
 
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
   ASSERT_EQ(0u, recent_images_future.Take().size());
 
@@ -482,7 +482,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
   // of recent images again.
   CreateSeaPenFilesForTesting(GetTestAccountId2(), {kSeaPenId1});
 
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
   recent_images = recent_images_future.Take();
   EXPECT_THAT(recent_images,
@@ -508,7 +508,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
           std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
       manta::MantaStatusCode>
       search_wallpaper_future;
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       search_query.Clone(), search_wallpaper_future.GetCallback());
   // Select the first returned thumbnail.
   base::test::TestFuture<bool> select_wallpaper_future;
@@ -562,7 +562,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       manta::MantaStatusCode>
       search_wallpaper_future;
 
-  sea_pen_provider_remote()->SearchWallpaper(
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
       search_query->Clone(), search_wallpaper_future.GetCallback());
 
   // Select the first returned thumbnail.
@@ -594,7 +594,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
 
   std::vector<uint32_t> recent_images = recent_images_future.Take();
@@ -621,7 +621,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
 
   std::vector<uint32_t> recent_images = recent_images_future.Take();
@@ -657,7 +657,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   }
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
 
   std::vector<uint32_t> recent_images = recent_images_future.Take();
@@ -677,7 +677,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1, kSeaPenId2});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
   EXPECT_THAT(recent_images_future.Take(),
               testing::UnorderedElementsAre(kSeaPenId1, kSeaPenId2));
@@ -695,7 +695,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
       kSeaPenId2, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Take());
 
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
   EXPECT_THAT(recent_images_future.Take(),
               testing::UnorderedElementsAre(kSeaPenId1));
@@ -709,7 +709,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
       kSeaPenId1, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Take());
 
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
+  sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
   EXPECT_THAT(recent_images_future.Take(),
               testing::ContainerEq(std::vector<uint32_t>({})));

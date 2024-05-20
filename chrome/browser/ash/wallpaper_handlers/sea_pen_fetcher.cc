@@ -209,7 +209,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     if (query->is_text_query() &&
         query->get_text_query().size() >
-            ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes) {
+            ash::personalization_app::mojom::
+                kMaximumGetSeaPenThumbnailsTextBytes) {
       LOG(WARNING) << "Query too long. Size received: "
                    << query->get_text_query().size();
       std::move(callback).Run(std::nullopt,
@@ -254,9 +255,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     }
 
     if (query->is_text_query()) {
-      CHECK_LE(
-          query->get_text_query().size(),
-          ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes);
+      CHECK_LE(query->get_text_query().size(),
+               ash::personalization_app::mojom::
+                   kMaximumGetSeaPenThumbnailsTextBytes);
     }
 
     fetch_wallpaper_timer_.Stop();

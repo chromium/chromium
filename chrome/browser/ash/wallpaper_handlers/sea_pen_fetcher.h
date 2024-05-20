@@ -42,7 +42,7 @@ class SeaPenFetcher {
   virtual ~SeaPenFetcher();
 
   // Run `query` against the Manta API. `query` is required to be a valid UTF-8
-  // string no longer than `kMaximumSearchWallpaperTextBytes`.
+  // string no longer than `kMaximumGetSeaPenThumbnailsTextBytes`.
   virtual void FetchThumbnails(
       manta::proto::FeatureName feature_name,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,

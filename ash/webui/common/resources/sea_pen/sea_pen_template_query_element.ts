@@ -22,7 +22,7 @@ import {afterNextRender, beforeNextRender} from 'chrome://resources/polymer/v3_0
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
-import {searchSeaPenThumbnails} from './sea_pen_controller.js';
+import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
@@ -364,7 +364,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   private onClickSearchButton_(event: Event) {
     this.clearSelectedChipState_();
-    searchSeaPenThumbnails(
+    getSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());
 

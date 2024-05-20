@@ -80,7 +80,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
   test('displays recreate button if thumbnails exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
@@ -117,7 +117,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
   test('displays create button when selected option changes', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
@@ -442,7 +442,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const query: SeaPenQuery =
-        await seaPenProvider.whenCalled('searchWallpaper');
+        await seaPenProvider.whenCalled('getSeaPenThumbnails');
     assertEquals(
         query.templateQuery!.id, SeaPenTemplateId.kFlower,
         'Query template id should match');

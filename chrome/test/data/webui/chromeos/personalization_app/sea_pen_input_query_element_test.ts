@@ -33,7 +33,7 @@ suite('SeaPenInputQueryElementTest', function() {
 
   test('displays recreate button if thumbnails exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
 

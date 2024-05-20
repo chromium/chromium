@@ -157,7 +157,7 @@ suite('SeaPenRouterElementTest', function() {
     await waitAfterNextRender(routerElement);
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.images;
+        seaPenProvider.thumbnails;
     personalizationStore.notifyObservers();
 
     assertEquals(
@@ -202,7 +202,7 @@ suite('SeaPenRouterElementTest', function() {
 
     // Clicking the inspire button should match the rendered template.
     const initialQuery: SeaPenQuery =
-        await seaPenProvider.whenCalled('searchWallpaper');
+        await seaPenProvider.whenCalled('getSeaPenThumbnails');
     assertEquals(
         initialQuery.templateQuery!.id, initialTemplate,
         'Initial query template id should match');
@@ -219,7 +219,7 @@ suite('SeaPenRouterElementTest', function() {
 
     // After switching templates, we should match the new template.
     const finalQuery: SeaPenQuery =
-        await seaPenProvider.whenCalled('searchWallpaper');
+        await seaPenProvider.whenCalled('getSeaPenThumbnails');
     assertEquals(
         finalQuery.templateQuery!.id, finalTemplate,
         'Final query template id should match');

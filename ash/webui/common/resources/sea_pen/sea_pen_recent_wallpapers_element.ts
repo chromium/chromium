@@ -24,7 +24,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 import {SeaPenImageId} from './constants.js';
 import {isSeaPenUINextEnabled} from './load_time_booleans.js';
 import {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {deleteRecentSeaPenImage, fetchRecentSeaPenData, searchSeaPenThumbnails, selectRecentSeaPenImage} from './sea_pen_controller.js';
+import {deleteRecentSeaPenImage, fetchRecentSeaPenData, getSeaPenThumbnails, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
@@ -333,7 +333,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         seaPenQuery.textQuery ? 'Query' : seaPenQuery.templateQuery?.id;
     // Route to the results page and search thumbnails for the Sea Pen query.
     SeaPenRouterElement.instance().selectSeaPenTemplate(templateId);
-    searchSeaPenThumbnails(seaPenQuery, getSeaPenProvider(), this.getStore());
+    getSeaPenThumbnails(seaPenQuery, getSeaPenProvider(), this.getStore());
   }
 
   private async onClickDeleteWallpaper_(event: Event&{

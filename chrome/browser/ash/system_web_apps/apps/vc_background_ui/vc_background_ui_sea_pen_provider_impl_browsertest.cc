@@ -119,7 +119,7 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Get all background images.
   base::RunLoop run_loop;
-  sea_pen_provider_->GetRecentSeaPenImages(
+  sea_pen_provider_->GetRecentSeaPenImageIds(
       base::BindLambdaForTesting([&](const std::vector<uint32_t>& ids) {
         EXPECT_EQ(existing_image_ids_, ids);
         run_loop.Quit();

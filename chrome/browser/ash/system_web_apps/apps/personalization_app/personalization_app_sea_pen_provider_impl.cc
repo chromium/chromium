@@ -93,8 +93,8 @@ void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
                                            std::move(callback));
 }
 
-void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
-    GetRecentSeaPenImagesCallback callback) {
+void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageIdsInternal(
+    GetRecentSeaPenImageIdsCallback callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
   DCHECK(sea_pen_wallpaper_manager);
   sea_pen_wallpaper_manager->GetImageIds(GetAccountId(profile_),

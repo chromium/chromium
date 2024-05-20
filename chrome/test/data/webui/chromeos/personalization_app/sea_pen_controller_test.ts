@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, selectRecentSeaPenImage, selectSeaPenWallpaper, setCurrentSeaPenQueryAction, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImageIds, getSeaPenStore, getSeaPenThumbnails, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, selectRecentSeaPenImage, selectSeaPenThumbnail, setCurrentSeaPenQueryAction, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -27,7 +27,7 @@ suite('SeaPen reducers', () => {
   });
 
   test('sets recent sea pen images in store', async () => {
-    await getRecentSeaPenImages(seaPenProvider, seaPenStore);
+    await getRecentSeaPenImageIds(seaPenProvider, seaPenStore);
 
     assertDeepEquals(
         [
@@ -44,13 +44,13 @@ suite('SeaPen reducers', () => {
 
   test('sets sea pen thumbnails in store', async () => {
     const query = {textQuery: 'test_query'};
-    await searchSeaPenThumbnails(query, seaPenProvider, seaPenStore);
+    await getSeaPenThumbnails(query, seaPenProvider, seaPenStore);
     assertDeepEquals(
         [
           beginSearchSeaPenThumbnailsAction(query),
           setCurrentSeaPenQueryAction(query),
           setThumbnailResponseStatusCodeAction(MantaStatusCode.kOk),
-          setSeaPenThumbnailsAction(query, seaPenProvider.images),
+          setSeaPenThumbnailsAction(query, seaPenProvider.thumbnails),
         ],
         personalizationStore.actions, 'expected actions match');
 
@@ -128,7 +128,7 @@ suite('SeaPen reducers', () => {
               recentImageData: {},
               recentImages: null,
               thumbnailResponseStatusCode: MantaStatusCode.kOk,
-              thumbnails: seaPenProvider.images,
+              thumbnails: seaPenProvider.thumbnails,
               currentSeaPenQuery: query,
               pendingSelected: null,
               currentSelected: null,
@@ -154,7 +154,7 @@ suite('SeaPen reducers', () => {
     };
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 
-    const promise = selectSeaPenWallpaper(
+    const promise = selectSeaPenThumbnail(
         {image: {url: ''}, id: 456}, seaPenProvider, seaPenStore);
 
     assertDeepEquals(
@@ -235,7 +235,7 @@ suite('SeaPen reducers', () => {
         Promise.resolve({success: false});
 
     const thumbnail = {image: {url: ''}, id: 456};
-    await selectSeaPenWallpaper(thumbnail, seaPenProvider, seaPenStore);
+    await selectSeaPenThumbnail(thumbnail, seaPenProvider, seaPenStore);
 
     assertDeepEquals(
         [
@@ -258,7 +258,7 @@ suite('SeaPen reducers', () => {
 
     // Try and fail again.
     const promise =
-        selectSeaPenWallpaper(thumbnail, seaPenProvider, seaPenStore);
+        selectSeaPenThumbnail(thumbnail, seaPenProvider, seaPenStore);
 
     // Error reset to null while attempting to select again.
     assertEquals(null, personalizationStore.data.wallpaper.seaPen.error);

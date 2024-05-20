@@ -76,7 +76,7 @@ export function setCurrentSeaPenQueryAction(query: SeaPenQuery):
 export interface SetSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS;
   query: SeaPenQuery;
-  images: SeaPenThumbnail[]|null;
+  thumbnails: SeaPenThumbnail[]|null;
 }
 
 /**
@@ -84,8 +84,8 @@ export interface SetSeaPenThumbnailsAction extends Action {
  */
 export function setSeaPenThumbnailsAction(
     query: SeaPenQuery,
-    images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
-  return {name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS, query, images};
+    thumbnails: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
+  return {name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS, query, thumbnails};
 }
 
 export interface BeginLoadRecentSeaPenImagesAction extends Action {

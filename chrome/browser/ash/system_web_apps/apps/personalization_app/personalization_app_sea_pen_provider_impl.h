@@ -49,8 +49,8 @@ class PersonalizationAppSeaPenProviderImpl
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) override;
 
-  void GetRecentSeaPenImagesInternal(
-      GetRecentSeaPenImagesCallback callback) override;
+  void GetRecentSeaPenImageIdsInternal(
+      GetRecentSeaPenImageIdsCallback callback) override;
 
   void GetRecentSeaPenImageThumbnailInternal(
       uint32_t id,

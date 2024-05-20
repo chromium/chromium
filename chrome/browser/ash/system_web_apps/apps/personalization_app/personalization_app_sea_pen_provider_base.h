@@ -58,8 +58,8 @@ class PersonalizationAppSeaPenProviderBase
   bool IsEligibleForSeaPen() override;
 
   // ::ash::personalization_app::mojom::SeaPenProvider:
-  void SearchWallpaper(mojom::SeaPenQueryPtr query,
-                       SearchWallpaperCallback callback) override;
+  void GetSeaPenThumbnails(mojom::SeaPenQueryPtr query,
+                           GetSeaPenThumbnailsCallback callback) override;
 
   void SelectSeaPenThumbnail(uint32_t id,
                              SelectSeaPenThumbnailCallback callback) override;
@@ -68,7 +68,8 @@ class PersonalizationAppSeaPenProviderBase
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) override;
 
-  void GetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback) override;
+  void GetRecentSeaPenImageIds(
+      GetRecentSeaPenImageIdsCallback callback) override;
 
   void GetRecentSeaPenImageThumbnail(
       uint32_t id,
@@ -88,8 +89,8 @@ class PersonalizationAppSeaPenProviderBase
       uint32_t id,
       SelectRecentSeaPenImageCallback callback) = 0;
 
-  virtual void GetRecentSeaPenImagesInternal(
-      GetRecentSeaPenImagesCallback callback) = 0;
+  virtual void GetRecentSeaPenImageIdsInternal(
+      GetRecentSeaPenImageIdsCallback callback) = 0;
 
   virtual void GetRecentSeaPenImageThumbnailInternal(
       uint32_t id,
@@ -119,8 +120,7 @@ class PersonalizationAppSeaPenProviderBase
   mojo::Receiver<mojom::SeaPenProvider> sea_pen_receiver_{this};
 
  private:
-
-  void OnFetchThumbnailsDone(SearchWallpaperCallback callback,
+  void OnFetchThumbnailsDone(GetSeaPenThumbnailsCallback callback,
                              std::optional<std::vector<SeaPenImage>> images,
                              manta::MantaStatusCode status_code);
 
@@ -129,8 +129,8 @@ class PersonalizationAppSeaPenProviderBase
 
   void OnRecentSeaPenImageSelected(bool success);
 
-  void OnGetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback,
-                               const std::vector<uint32_t>& ids);
+  void OnGetRecentSeaPenImageIds(GetRecentSeaPenImageIdsCallback callback,
+                                 const std::vector<uint32_t>& ids);
 
   void OnGetRecentSeaPenImageThumbnail(
       uint32_t id,
@@ -148,7 +148,7 @@ class PersonalizationAppSeaPenProviderBase
   std::map<uint32_t, const SeaPenImage> sea_pen_images_;
 
   // The last query made to the sea pen provider. This can be null when
-  // SearchWallpaper() is never called.
+  // GetSeaPenThumbnails() is never called.
   mojom::SeaPenQueryPtr last_query_;
 
   // Perform a network request to search/upscale available wallpapers.

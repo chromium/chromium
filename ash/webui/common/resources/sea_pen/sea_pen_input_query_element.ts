@@ -22,8 +22,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {searchSeaPenThumbnails} from './sea_pen_controller.js';
+import {MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -67,7 +67,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
       maxTextLength_: {
         type: Number,
-        value: Math.floor(MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES / 3),
+        value: Math.floor(MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES / 3),
       },
     };
   }
@@ -95,7 +95,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     const query: SeaPenQuery = {
       textQuery: this.textValue_,
     };
-    searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
+    getSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     // Stop the event propagation, otherwise, the event will be passed to parent
     // element, this.onClick_ will be triggered improperly.
     event.preventDefault();

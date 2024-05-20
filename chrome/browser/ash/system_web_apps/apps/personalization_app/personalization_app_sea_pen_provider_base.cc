@@ -70,14 +70,15 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
   return ::ash::personalization_app::IsEligibleForSeaPen(profile_);
 }
 
-void PersonalizationAppSeaPenProviderBase::SearchWallpaper(
+void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(
     const mojom::SeaPenQueryPtr query,
-    SearchWallpaperCallback callback) {
+    GetSeaPenThumbnailsCallback callback) {
   // Search for wallpaper.
-  if (query->is_text_query() && query->get_text_query().length() >
-                                    mojom::kMaximumSearchWallpaperTextBytes) {
+  if (query->is_text_query() &&
+      query->get_text_query().length() >
+          mojom::kMaximumGetSeaPenThumbnailsTextBytes) {
     sea_pen_receiver_.ReportBadMessage(
-        "SearchWallpaper exceeded maximum text length");
+        "GetSeaPenThumbnails exceeded maximum text length");
     return;
   }
   last_query_ = query.Clone();
@@ -104,8 +105,8 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   if (feature_name_ == manta::proto::FeatureName::CHROMEOS_WALLPAPER) {
     auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
     CHECK(sea_pen_fetcher);
-    // |last_query_| is set when calling SearchWallpaper() to fetch thumbnails.
-    // It should not be null when a thumbnail is selected.
+    // |last_query_| is set when calling GetSeaPenThumbnails() to fetch
+    // thumbnails. It should not be null when a thumbnail is selected.
     CHECK(last_query_);
     sea_pen_fetcher->FetchWallpaper(
         feature_name_, it->second, last_query_,
@@ -141,10 +142,10 @@ void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImages(
-    GetRecentSeaPenImagesCallback callback) {
-  GetRecentSeaPenImagesInternal(base::BindOnce(
-      &PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImages,
+void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImageIds(
+    GetRecentSeaPenImageIdsCallback callback) {
+  GetRecentSeaPenImageIdsInternal(base::BindOnce(
+      &PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageIds,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -174,7 +175,7 @@ PersonalizationAppSeaPenProviderBase::GetOrCreateSeaPenFetcher() {
 }
 
 void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
-    SearchWallpaperCallback callback,
+    GetSeaPenThumbnailsCallback callback,
     std::optional<std::vector<SeaPenImage>> images,
     manta::MantaStatusCode status_code) {
   if (!images) {
@@ -211,8 +212,8 @@ void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(
   std::move(pending_select_recent_sea_pen_image_callback_).Run(success);
 }
 
-void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImages(
-    GetRecentSeaPenImagesCallback callback,
+void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageIds(
+    GetRecentSeaPenImageIdsCallback callback,
     const std::vector<uint32_t>& ids) {
   recent_sea_pen_image_ids_ = std::set<uint32_t>(ids.begin(), ids.end());
   std::move(callback).Run(ids);
