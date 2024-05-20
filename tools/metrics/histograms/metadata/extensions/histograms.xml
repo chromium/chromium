@@ -1651,17 +1651,20 @@ of interesting buckets, such as "internal + external".
     include any requests that utilize the EventRouter::DispatchEventToSender()
     event routing flow (some web request API, and web view API events).
 
-    Note: this histogram was incremented March, 2024 since it was emitting for
-    an incorrect definition of &quot;started&quot;.&quot;
+    If the extension was unloaded when the event was dispatched, the worker is
+    considered inactive.
+
+    Note: this histogram was incremented May, 2024 since it additionally started
+    emmitting when the extension is unloaded.
   </summary>
   <token key="ContextActive">
     <variant name="" summary=""/>
-    <variant name=".Active2"
+    <variant name=".Active3"
         summary="and in status active. Active means that the background
                  script was started and ready to receive and run events (both
                  //content browser notification and extension renderer JS
                  global evaluation completed) when the event was dispatched"/>
-    <variant name=".Inactive2"
+    <variant name=".Inactive3"
         summary="and in status inactive. Inactive means that the background
                  script was not started and not ready to receive and run
                  events (either the //content browser notification or
@@ -4388,7 +4391,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker2"
+    name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker3"
     enum="Boolean" expires_after="2024-09-15">
 <!-- expires-never: Monitors core extension system health. -->
 
@@ -4398,10 +4401,11 @@ of interesting buckets, such as "internal + external".
     It is emitted every time we add a pending task for a worker. Records true if
     the worker was ready to run tasks when pendings tasks are added (this is not
     optimal). Records false if the worker was not ready to run tasks when the
-    pending task was added (this is the optimal expected state).
+    pending task was added (this is the optimal expected state). `false` is
+    recorded if the task is added when the extension is unloaded.
 
-    Note: this histogram was incremented March, 2024 since it was emitting for
-    an incorrect definition of &quot;started&quot;.
+    Note: this histogram was incremented May, 2024 since it additionally started
+    emmitting when the extension is unloaded.
   </summary>
 </histogram>
 
@@ -4583,7 +4587,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RequestedWorkerStartForStartedWorker2"
+    name="Extensions.ServiceWorkerBackground.RequestedWorkerStartForStartedWorker3"
     enum="Boolean" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
@@ -4596,10 +4600,11 @@ of interesting buckets, such as "internal + external".
     that we will redundantly reqeust to start a worker when it was already
     running and could've processed the event without the request to start. A
     `false` value means that we correctly started the worker because it was not
-    ready to run events.
+    ready to run events. `false` is recorded if the worker start is requested
+    when the extension is unloaded.
 
-    Note: this histogram was incremented March, 2024 since it was emitting for
-    an incorrect definition of &quot;started&quot;.
+    Note: this histogram was incremented May, 2024 since it additionally started
+    emmitting when the extension is unloaded.
   </summary>
 </histogram>
 

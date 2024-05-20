@@ -369,15 +369,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*expected_count=*/1);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*expected_count=*/0);
 }
 
@@ -421,15 +421,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*expected_count=*/0);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*sample=*/base::Minutes(5).InMicroseconds(),
       /*expected_count=*/0);
 }
@@ -575,13 +575,13 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   // event we will attempt to start the worker.
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground."
-      "RequestedWorkerStartForStartedWorker2",
+      "RequestedWorkerStartForStartedWorker3",
       /*expected_count=*/1);
   // Verify that the value is `true` since the worker
   // will be unnecessarily started.
   histogram_tester.ExpectBucketCount(
       "Extensions.ServiceWorkerBackground."
-      "RequestedWorkerStartForStartedWorker2",
+      "RequestedWorkerStartForStartedWorker3",
       /*sample=*/true, /*expected_count=*/1);
 }
 
