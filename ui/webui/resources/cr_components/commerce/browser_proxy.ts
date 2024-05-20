@@ -43,6 +43,8 @@ export interface BrowserProxy {
   addProductSpecificationsSet(name: string, urls: Url[]):
       Promise<{createdSet: ProductSpecificationsSet | null}>;
   deleteProductSpecificationsSet(uuid: Uuid): void;
+  setNameForProductSpecificationsSet(uuid: Uuid, name: string):
+      Promise<{updatedSet: ProductSpecificationsSet | null}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -150,6 +152,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   deleteProductSpecificationsSet(uuid: Uuid) {
     this.handler.deleteProductSpecificationsSet(uuid);
+  }
+
+  setNameForProductSpecificationsSet(uuid: Uuid, name: string) {
+    return this.handler.setNameForProductSpecificationsSet(uuid, name);
   }
 
   getCallbackRouter() {

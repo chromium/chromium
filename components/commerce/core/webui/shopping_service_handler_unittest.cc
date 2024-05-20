@@ -128,6 +128,10 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               DeleteProductSpecificationsSet,
               (const std::string& uuid),
               (override));
+  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
+              SetName,
+              (const base::Uuid& uuid, const std::string& name),
+              (override));
 };
 
 void GetEvaluationProductInfos(
@@ -907,6 +911,30 @@ TEST_F(ShoppingServiceHandlerTest, TestDeleteProductSpecificationsSet) {
   EXPECT_CALL(*product_spec_service_, DeleteProductSpecificationsSet).Times(1);
 
   handler_->DeleteProductSpecificationsSet(base::Uuid::GenerateRandomV4());
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestSetNameForProductSpecificationsSet) {
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet updated_set = ProductSpecificationsSet(
+      uuid.AsLowercaseString(), 0, 0, {GURL("https://example.com/")}, "set1");
+  ON_CALL(*product_spec_service_, SetName)
+      .WillByDefault(testing::Return(std::move(updated_set)));
+
+  base::RunLoop run_loop;
+  handler_->SetNameForProductSpecificationsSet(
+      uuid, "set1",
+      base::BindOnce(
+          [](const base::Uuid* uuid,
+             shopping_service::mojom::ProductSpecificationsSetPtr set_ptr) {
+            ASSERT_EQ(*uuid, set_ptr->uuid);
+            ASSERT_EQ("set1", set_ptr->name);
+            ASSERT_EQ(1u, set_ptr->urls.size());
+            ASSERT_EQ("https://example.com/", set_ptr->urls[0]);
+          },
+          &uuid)
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
 }
 
 class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {

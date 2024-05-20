@@ -48,8 +48,9 @@ class ProductSpecificationsService : public KeyedService {
   // Set the name for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated
   // ProductSpecificationsSet will be returned, otherwise nullopt.
-  std::optional<ProductSpecificationsSet> SetName(const base::Uuid& uuid,
-                                                  const std::string& name);
+  virtual const std::optional<ProductSpecificationsSet> SetName(
+      const base::Uuid& uuid,
+      const std::string& name);
 
   // Deletes product specification set corresponding to identifier |uuid|.
   virtual void DeleteProductSpecificationsSet(const std::string& uuid);

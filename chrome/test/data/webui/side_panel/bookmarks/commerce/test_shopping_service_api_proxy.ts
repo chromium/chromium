@@ -67,6 +67,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getProductSpecificationsSetByUuid',
       'addProductSpecificationsSet',
       'deleteProductSpecificationsSet',
+      'setNameForProductSpecificationsSet',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -188,6 +189,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   deleteProductSpecificationsSet(uuid: Uuid) {
     this.methodCalled('deleteProductSpecificationsSet', uuid);
+  }
+
+  setNameForProductSpecificationsSet(uuid: Uuid, name: string) {
+    this.methodCalled('setNameForProductSpecificationsSet', uuid, name);
+    return Promise.resolve({updatedSet: null});
   }
 
   getCallbackRouter() {

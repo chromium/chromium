@@ -87,9 +87,9 @@ std::optional<ProductSpecificationsSet> ProductSpecificationsService::SetUrls(
   return ProductSpecificationsSet::FromProto(updated_specifics.value());
 }
 
-std::optional<ProductSpecificationsSet> ProductSpecificationsService::SetName(
-    const base::Uuid& uuid,
-    const std::string& name) {
+const std::optional<ProductSpecificationsSet>
+ProductSpecificationsService::SetName(const base::Uuid& uuid,
+                                      const std::string& name) {
   std::optional<ProductSpecificationsSet> product_specs_set =
       GetSetByUuid(uuid);
   if (!product_specs_set.has_value()) {

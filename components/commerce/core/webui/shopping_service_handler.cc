@@ -757,6 +757,20 @@ void ShoppingServiceHandler::DeleteProductSpecificationsSet(
       ->DeleteProductSpecificationsSet(uuid.AsLowercaseString());
 }
 
+void ShoppingServiceHandler::SetNameForProductSpecificationsSet(
+    const base::Uuid& uuid,
+    const std::string& name,
+    SetNameForProductSpecificationsSetCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  const auto& set =
+      shopping_service_->GetProductSpecificationsService()->SetName(uuid, name);
+  std::move(callback).Run(ProductSpecsSetToMojo(set.value()));
+}
+
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));
