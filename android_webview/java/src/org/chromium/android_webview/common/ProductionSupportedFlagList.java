@@ -759,6 +759,9 @@ public final class ProductionSupportedFlagList {
                 "PartitionAllocUsePoolOffsetFreelists",
                 "Activates an alternative freelist implementation in PartitionAlloc."),
         Flag.baseFeature(
+                "PartitionAllocUseSmallSingleSlotSpans",
+                "Uses a more nuanced heuristic to classify small single-slot spans."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_CHECK_PAK_FILE_DESCRIPTORS,
                 "Crash on failing to load pak file fds."),
         Flag.baseFeature(
