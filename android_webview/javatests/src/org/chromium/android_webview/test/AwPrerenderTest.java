@@ -28,7 +28,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.settings.PreloadingAllowedFlags;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -494,7 +493,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/341652227")
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testAwContentsIoThreadClientHandleFrameTreeSwapBack() throws Throwable {
         setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
@@ -503,6 +501,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
         String url2 = mTestServer.getURL(PRERENDER_URL);
         String url4 = mTestServer.getURL(INITIAL_URL.concat("?q=4"));
+        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -519,6 +518,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRules(url2);
         helper.waitForCallback(callCount);
         Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
 
         callCount = helper.getCallCount();
         // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
