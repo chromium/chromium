@@ -6634,12 +6634,6 @@ const char kFileTransferEnterpriseConnectorUIName[] =
 const char kFileTransferEnterpriseConnectorUIDescription[] =
     "Enable the UI for the File Transfer Enterprise Connector.";
 
-const char kFilesAppExperimentalName[] =
-    "Experimental UI features for Files app";
-const char kFilesAppExperimentalDescription[] =
-    "Enable experimental UI features for Files app. Experimental features are "
-    "expected to be non functional to end users.";
-
 const char kFilesConflictDialogName[] = "Files app conflict dialog";
 const char kFilesConflictDialogDescription[] =
     "When enabled, the conflict dialog will be shown during file transfers "

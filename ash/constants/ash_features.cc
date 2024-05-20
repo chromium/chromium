@@ -1138,11 +1138,6 @@ BASE_FEATURE(kFileNotificationRevamp,
              "kFileNotificationRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables experimental UI features in Files app.
-BASE_FEATURE(kFilesAppExperimental,
-             "FilesAppExperimental",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the files transfer conflict dialog in Files app.
 BASE_FEATURE(kFilesConflictDialog,
              "FilesConflictDialog",

@@ -141,9 +141,6 @@ class FileManagerBrowserTestBase
     // Whether Drive should act as if offline.
     bool offline = false;
 
-    // Whether test needs the files-app-experimental feature.
-    bool files_experimental = false;
-
     // Whether test should enable the conflict dialog.
     bool enable_conflict_dialog = false;
 

@@ -48,8 +48,6 @@ struct TestCase {
 
   TestCase& Offline();
 
-  TestCase& FilesExperimental();
-
   TestCase& EnableConflictDialog();
 
   TestCase& DisableNativeSmb();

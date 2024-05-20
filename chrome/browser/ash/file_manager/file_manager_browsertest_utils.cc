@@ -68,11 +68,6 @@ TestCase& TestCase::Offline() {
   return *this;
 }
 
-TestCase& TestCase::FilesExperimental() {
-  options.files_experimental = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableConflictDialog() {
   options.enable_conflict_dialog = true;
   return *this;
@@ -252,10 +247,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.offline) {
     full_name += "_Offline";
-  }
-
-  if (options.files_experimental) {
-    full_name += "_FilesExperimental";
   }
 
   if (options.enable_conflict_dialog) {
