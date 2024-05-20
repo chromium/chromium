@@ -3050,6 +3050,14 @@ if (!is_android) {
         "../browser/screen_ai/optical_character_recognizer_browsertest.cc",
         "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
       ]
+
+      if (enable_screen_ai_browsertests && !use_fake_screen_ai) {
+        # TODO(crbug.com/41489544): Update when fake ScreenAI library supports
+        # `ExtractMainContent` requests.
+        sources +=
+            [ "../browser/screen_ai/main_content_extraction_browsertest.cc" ]
+      }
+
       deps += [
         "//chrome/browser/screen_ai:screen_ai_install_state",
         "//chrome/browser/screen_ai:screen_ai_service_router_factory",
