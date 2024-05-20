@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "components/history/core/browser/android/android_time.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
