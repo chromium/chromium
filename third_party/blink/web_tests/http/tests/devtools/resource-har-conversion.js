@@ -46,7 +46,15 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     }];
   }
 
-  addCookieHeadersToRequest(findRequestByURL(/inspected-page\.html$/));
+  function addServiceWorkerInfoToRequest(request) {
+    request.fetchedViaServiceWorker = true;
+    request.setResponseCacheStorageCacheName('v1');
+    request.setServiceWorkerResponseSource('cache-storage');
+  }
+
+  const test_url = findRequestByURL(/inspected-page\.html$/);
+  addCookieHeadersToRequest(test_url);
+  addServiceWorkerInfoToRequest(test_url);
   const requests = NetworkTestRunner.networkRequests();
   var log = await NetworkTestRunner.buildHARLog(requests);
   // Filter out favicon.ico requests that only appear on certain platforms.

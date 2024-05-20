@@ -33,6 +33,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     request.setPriority('VeryHigh');
     request.setResourceType(Common.ResourceType.resourceTypes.Fetch);
 
+    request.fetchedViaServiceWorker = true;
+    request.setResponseCacheStorageCacheName('v1');
+    request.setServiceWorkerResponseSource('cache-storage');
+
     // sample timing values used here are copied from a real request
     request.setIssueTime(357904.060558);
     request.endTime = 357904.867763;
@@ -46,8 +50,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       'connectEnd': 231.96,
       'sslStart': 133.24,
       'sslEnd': 231.942,
-      'workerStart': -1,
-      'workerReady': -1,
+      'workerStart': 231.942,
+      'workerReady': 232.1,
+      'workerFetchStart': 232.1,
+      'workerRespondWithSettled': 790,
       'sendStart': 232.218,
       'sendEnd': 232.515,
       'pushStart': 0,
