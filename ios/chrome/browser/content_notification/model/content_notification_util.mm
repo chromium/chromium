@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -16,6 +17,22 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
+
+// Enum for content notification promo events UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationEligibilityType enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationEligibilityType {
+  kPromoEnabled = 0,
+  kProvisionalEnabled = 1,
+  kSetUpListEnabled = 2,
+  kPromoRegistered = 3,
+  kProvisionalRegistered = 4,
+  kSetUpListRegistered = 5,
+  kMaxValue = kSetUpListRegistered,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
 bool IsClientEligible(bool user_signed_in, bool default_search_engine) {
   // Only users who signed in and using Google as default search engine are
@@ -129,6 +146,10 @@ bool IsSetUpListEligible(bool user_signed_in,
   return true;
 }
 
+void LogHistogramForEligibilityType(ContentNotificationEligibilityType type) {
+  base::UmaHistogramEnumeration("ContentNotifications.EligibilityType", type);
+}
+
 }  // namespace
 
 bool IsContentNotificationEnabled(bool user_signed_in,
@@ -166,45 +187,75 @@ bool IsContentNotificationRegistered(bool user_signed_in,
 bool IsContentNotificationPromoEnabled(bool user_signed_in,
                                        bool default_search_engine,
                                        PrefService* pref_service) {
-  return IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
-         IsContentPushNotificationsPromoEnabled();
+  if (IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
+      IsContentPushNotificationsPromoEnabled()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kPromoEnabled);
+    return true;
+  }
+  return false;
 }
 
 bool IsContentNotificationProvisionalEnabled(bool user_signed_in,
                                              bool default_search_engine,
                                              PrefService* pref_service) {
-  return IsProvisionalEligible(user_signed_in, default_search_engine,
-                               pref_service) &&
-         IsContentPushNotificationsProvisionalEnabled();
+  if (IsProvisionalEligible(user_signed_in, default_search_engine,
+                            pref_service) &&
+      IsContentPushNotificationsProvisionalEnabled()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kProvisionalEnabled);
+    return true;
+  }
+  return false;
 }
 
 bool IsContentNotificationSetUpListEnabled(bool user_signed_in,
                                            bool default_search_engine,
                                            PrefService* pref_service) {
-  return IsSetUpListEligible(user_signed_in, default_search_engine,
-                             pref_service) &&
-         IsContentPushNotificationsSetUpListEnabled();
+  if (IsSetUpListEligible(user_signed_in, default_search_engine,
+                          pref_service) &&
+      IsContentPushNotificationsSetUpListEnabled()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kSetUpListEnabled);
+    return true;
+  }
+  return false;
 }
 
 bool IsContentNotificationPromoRegistered(bool user_signed_in,
                                           bool default_search_engine,
                                           PrefService* pref_service) {
-  return IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
-         IsContentPushNotificationsPromoRegistrationOnly();
+  if (IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
+      IsContentPushNotificationsPromoRegistrationOnly()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kPromoRegistered);
+    return true;
+  }
+  return false;
 }
 
 bool IsContentNotificationProvisionalRegistered(bool user_signed_in,
                                                 bool default_search_engine,
                                                 PrefService* pref_service) {
-  return IsProvisionalEligible(user_signed_in, default_search_engine,
-                               pref_service) &&
-         IsContentPushNotificationsProvisionalRegistrationOnly();
+  if (IsProvisionalEligible(user_signed_in, default_search_engine,
+                            pref_service) &&
+      IsContentPushNotificationsProvisionalRegistrationOnly()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kProvisionalRegistered);
+    return true;
+  }
+  return false;
 }
 
 bool IsContentNotificationSetUpListRegistered(bool user_signed_in,
                                               bool default_search_engine,
                                               PrefService* pref_service) {
-  return IsSetUpListEligible(user_signed_in, default_search_engine,
-                             pref_service) &&
-         IsContentPushNotificationsSetUpListRegistrationOnly();
+  if (IsSetUpListEligible(user_signed_in, default_search_engine,
+                          pref_service) &&
+      IsContentPushNotificationsSetUpListRegistrationOnly()) {
+    LogHistogramForEligibilityType(
+        ContentNotificationEligibilityType::kSetUpListRegistered);
+    return true;
+  }
+  return false;
 }
