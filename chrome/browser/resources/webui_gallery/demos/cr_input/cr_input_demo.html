@@ -1,24 +1,3 @@
-<style include="cr-hidden-style cr-icons demo">
-  cr-input,
-  cr-textarea {
-    max-width: 400px;
-    width: 100%;
-  }
-
-  .no-error {
-    --cr-input-error-display: none;
-  }
-
-  .domain-name {
-    padding-inline-end: 8px;
-  }
-
-  label {
-    flex: 1;
-    white-space: nowrap;
-  }
-</style>
-
 <h1>cr-input</h1>
 <h2>Default "filled" inputs with built-in labels</h2>
 <div class="demos">
@@ -27,18 +6,20 @@
       type="text"
       label="Standard input"
       placeholder="Placeholder text"
-      value="{{textValue_}}">
+      .value="${this.textValue_}"
+      @value-changed="${this.onTextValueChanged_}">
   </cr-input>
 
   <cr-input
       class="no-error"
       type="search"
       placeholder="Search a query"
-      value="{{searchValue_}}">
+      .value="${this.searchValue_}"
+      @value-changed="${this.onSearchValueChanged_}">
     <div slot="inline-prefix" class="cr-icon icon-search" alt=""></div>
     <cr-icon-button class="icon-cancel"
-        hidden$="[[!searchValue_]]" slot="inline-suffix"
-        on-click="onClearSearchClick_"
+        ?hidden="${!this.searchValue_}" slot="inline-suffix"
+        @click="${this.onClearSearchClick_}"
         title="Clear search">
     </cr-icon-button>
   </cr-input>
@@ -48,7 +29,8 @@
       label="Email address"
       type="text"
       placeholder="username"
-      value="{{emailValue_}}">
+      .value="${this.emailValue_}"
+      @value-changed="${this.onEmailValueChanged_}">
     <div slot="inline-suffix" class="domain-name">@chromium.org</div>
   </cr-input>
 
@@ -60,8 +42,9 @@
       max="200"
       placeholder="A number between 5 and 200"
       error-message="Number needs to be between 5 and 200"
-      value="{{numberValue_}}">
-    <cr-button slot="suffix" on-click="onValidateClick_">Validate</cr-button>
+      .value="${this.numberValue_}"
+      @value-changed="${this.onNumberValueChanged_}">
+    <cr-button slot="suffix" @click="${this.onValidateClick_}">Validate</cr-button>
   </cr-input>
 
   <cr-input
@@ -70,7 +53,7 @@
       placeholder="Enter a pin of 4 digits"
       pattern="[0-9]{4}"
       error-message="Pin must be 4 digits"
-      value="{{pinValue_}}"
+      .value="${this.pinValue_}" @value-changed="${this.onPinValueChanged_}"
       auto-validate>
   </cr-input>
 
@@ -93,16 +76,17 @@
   <cr-textarea
       type="text"
       label="Textarea"
-      value="{{textareaValue_}}">
+      .value="${this.textareaValue_}"
+      @value-changed="${this.onTextareaValueChanged_}">
   </cr-textarea>
 
   <div>
-    <div>Text input value: [[textValue_]]</div>
-    <div>Search input value: [[searchValue_]]</div>
-    <div>Email input value: [[emailValue_]]</div>
-    <div>Number input value: [[numberValue_]]</div>
-    <div>Pin input value: [[pinValue_]]</div>
-    <div>Textarea value: [[textareaValue_]]</div>
+    <div>Text input value: ${this.textValue_}</div>
+    <div>Search input value: ${this.searchValue_}</div>
+    <div>Email input value: ${this.emailValue_}</div>
+    <div>Number input value: ${this.numberValue_}</div>
+    <div>Pin input value: ${this.pinValue_}</div>
+    <div>Textarea value: ${this.textareaValue_}</div>
   </div>
 </div>
 

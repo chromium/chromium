@@ -19,6 +19,9 @@ build_webui("build") {
     "demos/buttons/buttons_demo.css",
     "demos/card/card_demo.css",
     "demos/cr_action_menu/cr_action_menu_demo.css",
+    "demos/cr_dialog/cr_dialog_demo.css",
+    "demos/cr_icons/cr_icons_demo.css",
+    "demos/cr_input/cr_input_demo.css",
     "demos/demo.css",
     "demos/demo_lit.css",
   ]
