@@ -28,6 +28,88 @@
 
 namespace ash::settings {
 
+namespace {
+class AppUpdateWaiter {
+ public:
+  AppUpdateWaiter() {}
+  ~AppUpdateWaiter() {}
+
+  void SetUp(const std::string& app_id) {
+    condition_met_ = false;
+    app_id_ = app_id;
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  void Wait() {
+    if (!condition_met_) {
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+  }
+
+  void MaybeStop(const std::string& app_id) {
+    if (app_id != app_id_) {
+      return;
+    }
+    if (run_loop_->running()) {
+      run_loop_->Quit();
+    } else {
+      run_loop_.reset();
+    }
+    condition_met_ = true;
+  }
+
+ private:
+  bool condition_met_;
+  std::string app_id_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+class AppParentalControlsTestObserver
+    : public app_parental_controls::mojom::AppParentalControlsObserver {
+ public:
+  AppParentalControlsTestObserver() {}
+  ~AppParentalControlsTestObserver() override {}
+
+  void OnReadinessChanged(app_parental_controls::mojom::AppPtr app) override {
+    readiness_state_changed_++;
+    waiter_.MaybeStop(app->id);
+    recently_updated_app_ = std::move(app);
+  }
+
+  mojo::PendingRemote<app_parental_controls::mojom::AppParentalControlsObserver>
+  GenerateRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // Configures the `waiter_` object to wait for an update of the app identified
+  // by `app_id`. `WaitForAppUpdate()` has to be called after this to actually
+  // start the `RunLoop`.
+  void SetUpWaiterForAppUpdate(const std::string& app_id) {
+    waiter_.SetUp(app_id);
+  }
+
+  // `SetUpWaiterForAppUpdate()` must be called before calling
+  // `WaitForAppUpdate()`. The behaviour can be unpredictable otherwise.
+  void WaitForAppUpdate() { waiter_.Wait(); }
+
+  const app_parental_controls::mojom::AppPtr& recently_updated_app() {
+    return recently_updated_app_;
+  }
+
+  int readiness_state_changed() { return readiness_state_changed_; }
+
+ private:
+  std::vector<app_parental_controls::mojom::AppPtr> apps_;
+  app_parental_controls::mojom::AppPtr recently_updated_app_;
+  int readiness_state_changed_ = 0;
+  AppUpdateWaiter waiter_;
+
+  mojo::Receiver<app_parental_controls::mojom::AppParentalControlsObserver>
+      receiver_{this};
+};
+}  // namespace
+
 class AppParentalControlsHandlerTest
     : public on_device_controls::AppControlsTestBase {
  public:
@@ -39,6 +121,8 @@ class AppParentalControlsHandlerTest
 
     handler_ = std::make_unique<AppParentalControlsHandler>(
         app_service_test().proxy(), profile().GetPrefs());
+    observer_ = std::make_unique<AppParentalControlsTestObserver>();
+    handler_->AddObserver(observer_->GenerateRemote());
   }
 
   void TearDown() override {
@@ -67,6 +151,7 @@ class AppParentalControlsHandlerTest
 
  protected:
   std::unique_ptr<AppParentalControlsHandler> handler_;
+  std::unique_ptr<AppParentalControlsTestObserver> observer_;
 };
 
 TEST_F(AppParentalControlsHandlerTest, TestOnlyManageableArcAppsFetched) {
@@ -90,10 +175,12 @@ TEST_F(AppParentalControlsHandlerTest, TestOnlyManageableArcAppsFetched) {
   run_loop.Run();
 }
 
-TEST_F(AppParentalControlsHandlerTest, TesAppUpdate) {
+TEST_F(AppParentalControlsHandlerTest, TestAppUpdate) {
   const std::string package_name = "com.example.app1", app_name = "app1";
   const std::string app_id = InstallArcApp(package_name, app_name);
   ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(observer_->readiness_state_changed(), 1);
+  EXPECT_EQ(observer_->recently_updated_app()->id, app_id);
 
   base::RunLoop run_loop1;
   handler_->GetApps(base::BindLambdaForTesting(
@@ -105,7 +192,12 @@ TEST_F(AppParentalControlsHandlerTest, TesAppUpdate) {
       }));
   run_loop1.Run();
 
+  observer_->SetUpWaiterForAppUpdate(app_id);
   handler_->UpdateApp(app_id, /*is_blocked=*/true);
+  observer_->WaitForAppUpdate();
+
+  EXPECT_EQ(observer_->readiness_state_changed(), 2);
+  EXPECT_EQ(observer_->recently_updated_app()->id, app_id);
 
   base::RunLoop run_loop2;
   handler_->GetApps(base::BindLambdaForTesting(
@@ -117,7 +209,12 @@ TEST_F(AppParentalControlsHandlerTest, TesAppUpdate) {
       }));
   run_loop2.Run();
 
+  observer_->SetUpWaiterForAppUpdate(app_id);
   handler_->UpdateApp(app_id, /*is_blocked=*/false);
+  observer_->WaitForAppUpdate();
+
+  EXPECT_EQ(observer_->readiness_state_changed(), 3);
+  EXPECT_EQ(observer_->recently_updated_app()->id, app_id);
 
   base::RunLoop run_loop3;
   handler_->GetApps(base::BindLambdaForTesting(

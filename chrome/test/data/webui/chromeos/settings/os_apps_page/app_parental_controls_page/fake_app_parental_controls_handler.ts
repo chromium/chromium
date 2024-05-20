@@ -8,15 +8,16 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 type App = appParentalControlsHandlerMojom.App;
 type AppParentalControlsHandlerInterface =
     appParentalControlsHandlerMojom.AppParentalControlsHandlerInterface;
+type AppParentalControlsObserverRemoteType =
+    appParentalControlsHandlerMojom.AppParentalControlsObserverRemote;
 
 export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     AppParentalControlsHandlerInterface {
-  private apps_: App[];
+  private apps_: App[] = [];
+  private observer_: AppParentalControlsObserverRemoteType|null = null;
 
   constructor() {
-    super(['getApps', 'updateApp']);
-
-    this.apps_ = [];
+    super(['getApps', 'updateApp', 'addObserver']);
   }
 
   getApps(): Promise<{apps: App[]}> {
@@ -30,6 +31,9 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     for (const app of this.apps_) {
       if (app.id === id) {
         app.isBlocked = isBlocked;
+        if (this.observer_) {
+          this.observer_.onReadinessChanged(app);
+        }
       }
     }
     return Promise.resolve();
@@ -37,5 +41,16 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
 
   addAppForTesting(app: App) {
     this.apps_.push(app);
+  }
+
+  addObserver(remoteObserver: AppParentalControlsObserverRemoteType):
+      Promise<void> {
+    this.methodCalled('addObserver');
+    this.observer_ = remoteObserver;
+    return Promise.resolve();
+  }
+
+  getObserverRemote(): AppParentalControlsObserverRemoteType|null {
+    return this.observer_;
   }
 }

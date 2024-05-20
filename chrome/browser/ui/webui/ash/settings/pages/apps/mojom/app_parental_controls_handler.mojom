@@ -26,4 +26,14 @@ interface AppParentalControlsHandler {
 
   // Updates the blocked state of the app identified by `app_id`.
   UpdateApp(string app_id, bool is_blocked);
+
+  // Binds remote and notifies receiver in app parental controls page UI.
+  AddObserver(pending_remote<AppParentalControlsObserver> observer);
+};
+
+// Observer interface that sends remote updates to the app parental controls UI
+// in OSSettings.
+interface AppParentalControlsObserver {
+  // Notifies clients when app readiness has changed.
+  OnReadinessChanged(App app);
 };

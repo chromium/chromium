@@ -6,7 +6,7 @@ import '../../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import {App, AppParentalControlsHandlerInterface, AppParentalControlsObserverReceiver} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 
 import {getTemplate} from './app_parental_controls_subpage.html.js';
 import {getAppParentalControlsProvider} from './mojo_interface_provider.js';
@@ -31,10 +31,12 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
 
   private appList_: App[];
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
+  private observerReceiver: AppParentalControlsObserverReceiver|null;
 
   constructor() {
     super();
     this.mojoInterfaceProvider = getAppParentalControlsProvider();
+    this.observerReceiver = null;
   }
 
   override connectedCallback(): void {
@@ -43,10 +45,39 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
     this.mojoInterfaceProvider.getApps().then((result) => {
       this.appList_ = result.apps;
     });
+
+    this.observerReceiver = new AppParentalControlsObserverReceiver(this);
+    this.mojoInterfaceProvider.addObserver(
+        this.observerReceiver.$.bindNewPipeAndPassRemote());
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.observerReceiver!.$.close();
   }
 
   private alphabeticalSort_(first: App, second: App): number {
     return first.title!.localeCompare(second.title!);
+  }
+
+  onReadinessChanged(updatedApp: App): void {
+    // Using Polymer mutation methods do not properly handle splice updates with
+    // object that have deep properties. Create and assign a copy list instead.
+    const appList = Array.from(this.appList_);
+    const foundIdx = this.appList_.findIndex(app => {
+      return app.id === updatedApp.id;
+    });
+
+    if (foundIdx === -1) {
+      return;
+    }
+
+    const blockStateChanged =
+        this.appList_[foundIdx].isBlocked !== updatedApp.isBlocked;
+    if (blockStateChanged) {
+      appList[foundIdx] = updatedApp;
+      this.appList_ = appList;
+    }
   }
 }
 

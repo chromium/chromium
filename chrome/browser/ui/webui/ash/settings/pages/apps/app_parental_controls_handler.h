@@ -42,6 +42,9 @@ class AppParentalControlsHandler
   // app_parental_controls::mojom::AppParentalControlsHandler:
   void GetApps(GetAppsCallback callback) override;
   void UpdateApp(const std::string& id, bool is_blocked) override;
+  void AddObserver(mojo::PendingRemote<
+                   app_parental_controls::mojom::AppParentalControlsObserver>
+                       observer) override;
 
   void BindInterface(
       mojo::PendingReceiver<
@@ -49,10 +52,15 @@ class AppParentalControlsHandler
 
  private:
   // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
   std::vector<app_parental_controls::mojom::AppPtr> GetAppList();
+  void NotifyAppChanged(app_parental_controls::mojom::AppPtr app);
+
+  mojo::RemoteSet<app_parental_controls::mojom::AppParentalControlsObserver>
+      observer_list_;
 
   raw_ptr<apps::AppServiceProxy> app_service_proxy_ = nullptr;
 

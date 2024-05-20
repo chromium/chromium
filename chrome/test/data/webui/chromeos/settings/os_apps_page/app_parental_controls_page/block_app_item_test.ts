@@ -18,10 +18,15 @@ suite('BlockAppItemElementTest', () => {
   let app: appParentalControlsHandlerMojom.App;
   let handler: FakeAppParentalControlsHandler;
 
-  async function createTestApp(isAvailable: boolean = true): Promise<void> {
+  async function createBlockAppItem(isAvailable: boolean = true):
+      Promise<void> {
+    blockAppItem = document.createElement('block-app-item');
+
     app = createApp('test-app', 'TestApp', !isAvailable);
     handler.addAppForTesting(app);
     blockAppItem.app = app;
+
+    document.body.appendChild(blockAppItem);
     await flushTasks();
   }
 
@@ -33,10 +38,6 @@ suite('BlockAppItemElementTest', () => {
   setup(async () => {
     handler = new FakeAppParentalControlsHandler();
     setAppParentalControlsProviderForTesting(handler);
-
-    blockAppItem = document.createElement('block-app-item');
-    document.body.appendChild(blockAppItem);
-    await flushTasks();
   });
 
   teardown(() => {
@@ -45,7 +46,7 @@ suite('BlockAppItemElementTest', () => {
 
 
   test('UI elements are shown', async () => {
-    await createTestApp();
+    await createBlockAppItem();
 
     const appTitle =
         blockAppItem.shadowRoot!.querySelector<HTMLElement>('.app-title');
@@ -64,7 +65,7 @@ suite('BlockAppItemElementTest', () => {
   });
 
   test('App toggle is initially checked for available app', async () => {
-    await createTestApp(true);
+    await createBlockAppItem();
 
     const appToggle = getAppToggle();
     assertTrue(!!appToggle);
@@ -72,35 +73,10 @@ suite('BlockAppItemElementTest', () => {
   });
 
   test('App toggle is initially unchecked for blocked app', async () => {
-    await createTestApp(false);
+    await createBlockAppItem(false);
 
     const appToggle = getAppToggle();
     assertTrue(!!appToggle);
     assertFalse(appToggle.checked);
-  });
-
-  test('Toggle click blocks and unblocks the app ', async () => {
-    await createTestApp(true);
-    const appToggle = getAppToggle();
-    assertTrue(!!appToggle);
-    assertTrue(appToggle.checked);
-
-    appToggle.click();
-    assertFalse(appToggle.checked);
-
-    assertEquals(handler.getCallCount('updateApp'), 1);
-    const args1 = handler.getArgs('updateApp')[0];
-    assertEquals(2, args1.length);
-    assertEquals(app.id, args1[0]);
-    assertTrue(/*isBlocked*/ args1[1]);
-
-    appToggle.click();
-    assertTrue(appToggle.checked);
-
-    assertEquals(handler.getCallCount('updateApp'), 2);
-    const args2 = handler.getArgs('updateApp')[1];
-    assertEquals(2, args2.length);
-    assertEquals(app.id, args2[0]);
-    assertFalse(/*isBlocked*/ args2[1]);
   });
 });

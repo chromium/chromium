@@ -74,6 +74,23 @@ void AppParentalControlsHandler::UpdateApp(const std::string& id,
   blocked_app_registry_->RemoveApp(id);
 }
 
+void AppParentalControlsHandler::AddObserver(
+    mojo::PendingRemote<
+        app_parental_controls::mojom::AppParentalControlsObserver> observer) {
+  observer_list_.Add(std::move(observer));
+}
+
+void AppParentalControlsHandler::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.ReadinessChanged() && ShouldIncludeApp(update)) {
+    NotifyAppChanged(CreateAppPtr(update));
+  }
+}
+
+void AppParentalControlsHandler::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
+
 std::vector<app_parental_controls::mojom::AppPtr>
 AppParentalControlsHandler::GetAppList() {
   std::vector<app_parental_controls::mojom::AppPtr> apps;
@@ -87,9 +104,11 @@ AppParentalControlsHandler::GetAppList() {
   return apps;
 }
 
-void AppParentalControlsHandler::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observer_.Reset();
+void AppParentalControlsHandler::NotifyAppChanged(
+    app_parental_controls::mojom::AppPtr app) {
+  for (const auto& observer : observer_list_) {
+    observer->OnReadinessChanged(app.Clone());
+  }
 }
 
 }  // namespace ash::settings
