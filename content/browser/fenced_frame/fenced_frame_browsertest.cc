@@ -7124,7 +7124,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .destination = {"a.test",
                           "/set-header"
                           "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: true"},
+                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
           .report_event_result = Step::Result::kSuccess,
       },
       {
@@ -7158,7 +7158,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .destination = {"a.test",
                           "/set-header"
                           "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: true"},
+                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
           .report_event_result = Step::Result::kSuccess,
       },
       {
@@ -7382,7 +7382,7 @@ IN_PROC_BROWSER_TEST_F(
           .destination = {"a.test",
                           "/set-header"
                           "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: true"},
+                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
           .report_event_result = Step::Result::kSuccess,
       },
       {
@@ -7408,7 +7408,7 @@ IN_PROC_BROWSER_TEST_F(
           .destination = {"a.test",
                           "/set-header"
                           "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: true"},
+                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
           .report_event_result = Step::Result::kSuccess,
       },
       {

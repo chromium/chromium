@@ -145,5 +145,9 @@ struct ParsedHeaders {
   // https://patcg-individual-drafts.github.io/topics/#the-observe-browsing-topics-http-response-header-header
   bool observe_browsing_topics;
 
+  // The parsed value of the Allow-Cross-Origin-Event-Reporting header. See:
+  // https://wicg.github.io/fenced-frame/#fenced-frame-config-cross-origin-reporting-allowed
+  bool allow_cross_origin_event_reporting;
+
   // Please update `CheckParsedHeadersEquals` after adding new fields.
 };

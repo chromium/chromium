@@ -455,6 +455,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->no_vary_search_with_parse_error));
   CHECK(mojo::Equals(adjusted_lhs->observe_browsing_topics,
                      rhs->observe_browsing_topics));
+  CHECK(mojo::Equals(adjusted_lhs->allow_cross_origin_event_reporting,
+                     rhs->allow_cross_origin_event_reporting));
   NOTREACHED_IN_MIGRATION()
       << "The parsed headers don't match, but we don't know which "
          "field does not match. Please add a DCHECK before this one "
