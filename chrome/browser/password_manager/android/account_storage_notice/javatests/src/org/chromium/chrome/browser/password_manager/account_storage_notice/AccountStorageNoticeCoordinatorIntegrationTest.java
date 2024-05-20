@@ -28,20 +28,36 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/** Tests for AccountStorageNoticeCoordinator. */
+/**
+ * Tests that verify AccountStorageNoticeCoordinator's interaction with the view, e.g. click
+ * handling. These do not test the logic for when to show the view or not, see
+ * AccountStorageNoticeCoordinatorUnitTest for that. They also do not test the integration with
+ * embedders (saving and filling flows).
+ */
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class AccountStorageNoticeCoordinatorTest {
+@EnableFeatures(ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
+public class AccountStorageNoticeCoordinatorIntegrationTest {
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
+
     @Rule public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
 
     @Rule
@@ -62,6 +78,13 @@ public class AccountStorageNoticeCoordinatorTest {
     public void setUp() {
         mJniMocker.mock(AccountStorageNoticeCoordinatorJni.TEST_HOOKS, mJniMock);
         mActivityRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addTestAccountThenSignin();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Tests are batched, so reset the pref, otherwise the notice only shows once.
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .clearPref(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN);
+                });
     }
 
     @Test
@@ -108,12 +131,26 @@ public class AccountStorageNoticeCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testDestroyWhileShowing() {
+    public void testHideImmediatelyIfShowing() {
         AccountStorageNoticeCoordinator coordinator = createCoordinator();
         waitSheetVisible(true);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.destroy());
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
+
+        waitSheetVisible(false);
+        verify(mJniMock).onClosed(NATIVE_OBSERVER_PTR);
+    }
+
+    @Test
+    @MediumTest
+    public void testHideWithoutObserver() {
+        AccountStorageNoticeCoordinator coordinator = createCoordinator();
+        waitSheetVisible(true);
+        verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.setObserver(0));
+        TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
 
         waitSheetVisible(false);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
@@ -122,10 +159,16 @@ public class AccountStorageNoticeCoordinatorTest {
     private AccountStorageNoticeCoordinator createCoordinator() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    return new AccountStorageNoticeCoordinator(
-                            mActivityRule.getActivity().getWindowAndroid(),
-                            new SettingsLauncherImpl(),
-                            NATIVE_OBSERVER_PTR);
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    AccountStorageNoticeCoordinator coordinator =
+                            AccountStorageNoticeCoordinator.create(
+                                    SyncServiceFactory.getForProfile(
+                                            ProfileManager.getLastUsedRegularProfile()),
+                                    UserPrefs.get(profile),
+                                    mActivityRule.getActivity().getWindowAndroid(),
+                                    new SettingsLauncherImpl());
+                    coordinator.setObserver(NATIVE_OBSERVER_PTR);
+                    return coordinator;
                 });
     }
 

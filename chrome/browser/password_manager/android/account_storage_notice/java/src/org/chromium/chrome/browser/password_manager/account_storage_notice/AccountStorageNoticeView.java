@@ -19,15 +19,31 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 
 class AccountStorageNoticeView implements BottomSheetContent {
+    private static boolean sSkipLayoutForTesting;
+
     private final View mContentView;
 
-    public AccountStorageNoticeView(
-            Context context, Runnable buttonCallback, Runnable settingsLinkCallback) {
+    // Initialized lazily by the corresponding setters.
+    private Runnable mButtonCallback;
+    private Runnable mSettingsLinkCallback;
+
+    // TODO(crbug.com/341176706): Shadow the AccountStorageNoticeView constructor in the unit test
+    // instead. There seems to be a problem with shadow and release builds.
+    public static void setSkipLayoutForTesting(boolean skip) {
+        sSkipLayoutForTesting = skip;
+    }
+
+    public AccountStorageNoticeView(Context context) {
+        if (sSkipLayoutForTesting) {
+            mContentView = null;
+            return;
+        }
+
         mContentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.account_storage_notice_layout, /* root= */ null);
         ((ButtonCompat) mContentView.findViewById(R.id.account_storage_notice_button))
-                .setOnClickListener(unused -> buttonCallback.run());
+                .setOnClickListener(unused -> mButtonCallback.run());
         TextView linkView = mContentView.findViewById(R.id.account_storage_settings_link);
         SpannableString linkText =
                 SpanApplier.applySpans(
@@ -36,9 +52,17 @@ class AccountStorageNoticeView implements BottomSheetContent {
                                 "<link>",
                                 "</link>",
                                 new NoUnderlineClickableSpan(
-                                        context, unused -> settingsLinkCallback.run())));
+                                        context, unused -> mSettingsLinkCallback.run())));
         linkView.setText(linkText);
         linkView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    public void setButtonCallback(Runnable buttonCallback) {
+        mButtonCallback = buttonCallback;
+    }
+
+    public void setSettingsLinkCallback(Runnable settingsLinkCallback) {
+        mSettingsLinkCallback = settingsLinkCallback;
     }
 
     @Override

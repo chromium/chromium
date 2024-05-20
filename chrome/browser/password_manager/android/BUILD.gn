@@ -262,6 +262,7 @@ robolectric_binary("password_manager_junit_tests") {
     ":unified_password_manager_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
+    "account_storage_notice:junit",
     "add_username_dialog:junit",
     "pwd_migration:junit",
     "//base:base_java",

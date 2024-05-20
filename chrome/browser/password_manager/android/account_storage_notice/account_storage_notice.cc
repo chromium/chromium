@@ -8,38 +8,58 @@
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
 #include "chrome/browser/password_manager/android/account_storage_notice/jni/AccountStorageNoticeCoordinator_jni.h"
-#include "content/public/browser/web_contents.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
 #include "ui/android/window_android.h"
-#include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
 
-AccountStorageNotice::AccountStorageNotice(content::WebContents* web_contents,
-                                           base::OnceClosure closed_cb)
-    : java_coordinator_(Java_AccountStorageNoticeCoordinator_Constructor(
+// static
+std::unique_ptr<AccountStorageNotice> AccountStorageNotice::MaybeShow(
+    syncer::SyncService* sync_service,
+    PrefService* pref_service,
+    ui::WindowAndroid* window_android,
+    base::OnceClosure done_cb) {
+  base::android::ScopedJavaLocalRef<jobject> java_coordinator =
+      Java_AccountStorageNoticeCoordinator_create(
           AttachCurrentThread(),
-          web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-          Java_SettingsLauncherImpl_create(AttachCurrentThread()),
-          reinterpret_cast<intptr_t>(this))),
-      closed_cb_(std::move(closed_cb)) {
-  CHECK(closed_cb_);
+          sync_service ? sync_service->GetJavaObject() : nullptr,
+          pref_service->GetJavaObject(), window_android->GetJavaObject(),
+          Java_SettingsLauncherImpl_create(AttachCurrentThread()));
+  if (java_coordinator) {
+    return base::WrapUnique(
+        new AccountStorageNotice(java_coordinator, std::move(done_cb)));
+  }
+  // Creation failed, reply immediately.
+  std::move(done_cb).Run();
+  return nullptr;
+}
+
+AccountStorageNotice::AccountStorageNotice(
+    base::android::ScopedJavaLocalRef<jobject> java_coordinator,
+    base::OnceClosure done_cb)
+    : java_coordinator_(java_coordinator), done_cb_(std::move(done_cb)) {
+  CHECK(java_coordinator_);
+  CHECK(done_cb_);
+  Java_AccountStorageNoticeCoordinator_setObserver(
+      AttachCurrentThread(), java_coordinator_,
+      reinterpret_cast<intptr_t>(this));
 }
 
 AccountStorageNotice::~AccountStorageNotice() {
-  if (java_coordinator_) {
-    // See destructor docs as to when this can happen.
-    Java_AccountStorageNoticeCoordinator_destroy(AttachCurrentThread(),
-                                                 java_coordinator_);
-  }
+  // Remove the observer *before* calling hideImmediatelyIfShowing(), because we
+  // don't want to trigger OnClosed() and `done_cb` if the sheet was still
+  // showing.
+  Java_AccountStorageNoticeCoordinator_setObserver(AttachCurrentThread(),
+                                                   java_coordinator_, 0);
+  Java_AccountStorageNoticeCoordinator_hideImmediatelyIfShowing(
+      AttachCurrentThread(), java_coordinator_);
 }
 
 void AccountStorageNotice::OnClosed(JNIEnv* env) {
-  CHECK(java_coordinator_);
-  Java_AccountStorageNoticeCoordinator_destroy(AttachCurrentThread(),
-                                               java_coordinator_);
-  java_coordinator_.Reset();
-  std::move(closed_cb_).Run();
-  // `closed_cb_` might have deleted the object above, do nothing else.
+  std::move(done_cb_).Run();
+  // `done_cb_` might have deleted the object above, do nothing else.
 }
