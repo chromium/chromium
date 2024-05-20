@@ -998,6 +998,10 @@ std::optional<TabAlertState> Tab::GetAlertStateToShow(
   return alert_states[0];
 }
 
+void Tab::SetShouldShowDiscardIndicator(bool enabled) {
+  icon_->SetShouldShowDiscardIndicator(enabled);
+}
+
 void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
                                       int visual_width) const {
   if (ShouldRenderAsNormalTab()) {

@@ -47,11 +47,6 @@ void PerformanceHandler::RegisterMessages() {
       base::BindRepeating(&PerformanceHandler::HandleOpenSpeedFeedbackDialog,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "onDiscardRingTreatmentEnabledChanged",
-      base::BindRepeating(
-          &PerformanceHandler::HandleSetDiscardRingTreatmentEnabled,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "validateTabDiscardExceptionRule",
       base::BindRepeating(
           &PerformanceHandler::HandleValidateTabDiscardExceptionRule,
@@ -153,21 +148,6 @@ void PerformanceHandler::HandleOpenFeedbackDialog(
   chrome::ShowFeedbackPage(browser,
                            feedback::kFeedbackSourceSettingsPerformancePage,
                            unused, unused, category_tag, unused);
-}
-
-void PerformanceHandler::HandleSetDiscardRingTreatmentEnabled(
-    const base::Value::List& args) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    TabStrip* tab_strip =
-        BrowserView::GetBrowserViewForBrowser(browser)->tabstrip();
-
-    for (int tab_index = 0; tab_index < tab_strip_model->count(); ++tab_index) {
-      TabRendererData tab_data =
-          TabRendererData::FromTabInModel(tab_strip_model, tab_index);
-      tab_strip->SetTabData(tab_index, tab_data);
-    }
-  }
 }
 
 void PerformanceHandler::HandleValidateTabDiscardExceptionRule(

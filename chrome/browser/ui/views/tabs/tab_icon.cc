@@ -11,6 +11,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -238,6 +240,24 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
 void TabIcon::EnlargeDiscardIndicatorRadius(int radius) {
   CHECK(radius <= GetInsets().left());
   increased_discard_indicator_radius_ = radius;
+}
+
+void TabIcon::SetShouldShowDiscardIndicator(bool enabled) {
+  should_show_discard_indicator_ = enabled;
+  bool show_discard_indicator = is_discarded_ && should_show_discard_indicator_;
+  if (was_discard_indicator_shown_ != show_discard_indicator) {
+    was_discard_indicator_shown_ = show_discard_indicator;
+
+    // Directly set animations to their end states and do not animate.
+    if (show_discard_indicator) {
+      tab_discard_animation_.SetCurrentValue(1);
+      favicon_size_animation_.Reset(0);
+    } else {
+      tab_discard_animation_.SetCurrentValue(0);
+      favicon_size_animation_.Reset(1);
+    }
+    SchedulePaint();
+  }
 }
 
 void TabIcon::OnPaint(gfx::Canvas* canvas) {
@@ -521,10 +541,12 @@ void TabIcon::SetIcon(const ui::ImageModel& icon, bool should_themify_favicon) {
   UpdateThemedFavicon();
 }
 
-void TabIcon::SetDiscarded(bool should_show_discard_status) {
-  if (was_discard_indicator_shown_ != should_show_discard_status) {
-    was_discard_indicator_shown_ = should_show_discard_status;
-    if (should_show_discard_status) {
+void TabIcon::SetDiscarded(bool discarded) {
+  is_discarded_ = discarded;
+  bool show_discard_indicator = is_discarded_ && should_show_discard_indicator_;
+  if (was_discard_indicator_shown_ != show_discard_indicator) {
+    was_discard_indicator_shown_ = show_discard_indicator;
+    if (show_discard_indicator) {
       tab_discard_animation_.Start();
       favicon_size_animation_.Hide();
 

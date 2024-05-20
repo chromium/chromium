@@ -83,6 +83,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   bool GetActiveStateForTesting() { return is_active_tab_; }
 
   void EnlargeDiscardIndicatorRadius(int radius);
+  void SetShouldShowDiscardIndicator(bool enabled);
 
  private:
   class CrashAnimation;
@@ -191,6 +192,13 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // fade out
   gfx::LinearAnimation tab_discard_animation_;
 
+  // The discard indicator will be shown only if the tab is discarded and the
+  // discard ring treatment pref is enabled. Keep track of both of the component
+  // booleans, in order to determine if the discard indicator is shown/unshown
+  // due to a change in the discard status or a change to the pref, because
+  // we don't want to animate the discard ring in the latter case.
+  bool is_discarded_ = false;
+  bool should_show_discard_indicator_ = true;
   bool was_discard_indicator_shown_ = false;
 
   // Crash animation (in place of favicon). Lazily created since most of the

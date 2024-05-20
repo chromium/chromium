@@ -191,6 +191,8 @@ class Tab : public gfx::AnimationDelegate,
     return alert_indicator_button_;
   }
 
+  void SetShouldShowDiscardIndicator(bool enabled);
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;

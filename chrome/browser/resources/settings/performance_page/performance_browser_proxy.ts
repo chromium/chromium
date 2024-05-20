@@ -10,7 +10,6 @@ export interface PerformanceBrowserProxy {
   openBatterySaverFeedbackDialog(): void;
   openMemorySaverFeedbackDialog(): void;
   openSpeedFeedbackDialog(): void;
-  onDiscardRingTreatmentEnabledChanged(): void;
   validateTabDiscardExceptionRule(rule: string): Promise<boolean>;
 }
 
@@ -33,10 +32,6 @@ export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
 
   openSpeedFeedbackDialog() {
     chrome.send('openSpeedFeedbackDialog');
-  }
-
-  onDiscardRingTreatmentEnabledChanged() {
-    chrome.send('onDiscardRingTreatmentEnabledChanged');
   }
 
   validateTabDiscardExceptionRule(rule: string) {

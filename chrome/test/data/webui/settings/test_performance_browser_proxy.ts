@@ -17,7 +17,6 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
       'openBatterySaverFeedbackDialog',
       'openMemorySaverFeedbackDialog',
       'openSpeedFeedbackDialog',
-      'onDiscardRingTreatmentEnabledChanged',
       'validateTabDiscardExceptionRule',
     ]);
   }
@@ -46,10 +45,6 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
 
   openSpeedFeedbackDialog() {
     this.methodCalled('openSpeedFeedbackDialog');
-  }
-
-  onDiscardRingTreatmentEnabledChanged() {
-    this.methodCalled('onDiscardRingTreatmentEnabledChanged');
   }
 
   setValidationResults(results: Record<string, boolean>) {
