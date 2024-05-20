@@ -77,18 +77,15 @@ void PresentationConnectionCallbacks::OnSuccess(
 
   connection_->Init(std::move(connection_remote),
                     std::move(connection_receiver));
-
-  resolver_->Resolve(connection_);
 #if BUILDFLAG(IS_ANDROID)
   PresentationMetrics::RecordPresentationConnectionResult(request_, true);
 #endif
+
+  resolver_->Resolve(connection_);
 }
 
 void PresentationConnectionCallbacks::OnError(
     const mojom::blink::PresentationError& error) {
-  resolver_->Reject(CreatePresentationError(
-      resolver_->GetScriptState()->GetIsolate(), error));
-  connection_ = nullptr;
 #if BUILDFLAG(IS_ANDROID)
   // These two error types are not recorded because it's likely that they don't
   // represent an actual error.
@@ -99,6 +96,10 @@ void PresentationConnectionCallbacks::OnError(
     PresentationMetrics::RecordPresentationConnectionResult(request_, false);
   }
 #endif
+
+  resolver_->Reject(CreatePresentationError(
+      resolver_->GetScriptState()->GetIsolate(), error));
+  connection_ = nullptr;
 }
 
 }  // namespace blink
