@@ -183,6 +183,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void SetCommitResponsibility(FetchResponseFrom fetch_response_from) override;
 
   void OnConnectionClosed();
+  void InvalidateAndDeleteIfNeeded();
   void DeleteIfNeeded();
 
   network::mojom::ServiceWorkerStatus ConvertToServiceWorkerStatus(
@@ -308,6 +309,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Valid for fetching the worker script with the PlzDedicatedWorker is
   // enabled.
   std::string worker_parent_client_uuid_;
+
+  bool has_fetch_event_finished_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

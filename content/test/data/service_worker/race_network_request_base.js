@@ -16,11 +16,13 @@ const composeCustomResponse = () => {
       options);
 };
 
+const errors = [];
+
 self.addEventListener('activate', e => {
   e.waitUntil(clients.claim());
 });
 
-self.addEventListener("fetch", e => {
+self.addEventListener('fetch', e => {
   const {request} = e;
   const url = new URL(request.url);
 
@@ -45,10 +47,20 @@ self.addEventListener("fetch", e => {
   }
 
   if (url.search.includes('sw_pass_through')) {
-    e.respondWith(fetch(request));
+    e.respondWith(fetch(request).catch(err => {
+      errors.push(err);
+    }));
   }
 
   if (url.search.includes('sw_clone_pass_through')) {
-    e.respondWith(fetch(request.clone()));
+    e.respondWith(fetch(request.clone()).catch(err => {
+      errors.push(err);
+    }));
+  }
+});
+
+self.addEventListener('message', e => {
+  if (e.data == 'errors') {
+    e.source.postMessage(errors);
   }
 });

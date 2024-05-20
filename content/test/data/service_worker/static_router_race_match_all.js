@@ -4,11 +4,15 @@
 importScripts('./race_network_request_base.js');
 
 self.addEventListener('install', e => {
-  e.addRoutes({
-    condition: {
-      urlPattern: new URLPattern({})
+  e.addRoutes([
+    {
+      condition: {urlPattern: {pathname: '/service_worker/no_race'}},
+      source: 'fetch-event'
     },
-    source: "race-network-and-fetch-handler"
-  });
+    {
+      condition: {urlPattern: new URLPattern({})},
+      source: 'race-network-and-fetch-handler'
+    }
+  ]);
   self.skipWaiting();
 });
