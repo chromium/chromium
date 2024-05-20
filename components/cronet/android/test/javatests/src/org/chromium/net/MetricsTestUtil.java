@@ -7,6 +7,8 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import org.chromium.net.CronetTestRule.CronetImplementation;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -47,14 +49,21 @@ public class MetricsTestUtil {
     }
 
     /**
-     * Check existence of all the timing metrics that apply to most test requests,
-     * except those that come from net::LoadTimingInfo::ConnectTiming.
-     * Also check some timing differences, focusing on things we can't check with asserts in the
-     * CronetMetrics constructor.
-     * Don't check push times here.
+     * Check existence of all the timing metrics that apply to most test requests, except those that
+     * come from net::LoadTimingInfo::ConnectTiming. Also check some timing differences, focusing on
+     * things we can't check with asserts in the CronetMetrics constructor. Don't check push times
+     * here.
      */
     public static void checkTimingMetrics(
-            RequestFinishedInfo.Metrics metrics, Date startTime, Date endTime) {
+            CronetImplementation implementationUnderTest,
+            RequestFinishedInfo.Metrics metrics,
+            Date startTime,
+            Date endTime) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+            // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
+            // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+            return;
+        }
         assertThat(metrics.getRequestStart()).isNotNull();
         assertAfter(metrics.getRequestStart(), startTime);
         assertThat(metrics.getSendingStart()).isNotNull();
@@ -73,7 +82,16 @@ public class MetricsTestUtil {
      * except SSL times in the case of non-https requests.
      */
     public static void checkHasConnectTiming(
-            RequestFinishedInfo.Metrics metrics, Date startTime, Date endTime, boolean isSsl) {
+            CronetImplementation implementationUnderTest,
+            RequestFinishedInfo.Metrics metrics,
+            Date startTime,
+            Date endTime,
+            boolean isSsl) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+            // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
+            // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+            return;
+        }
         assertThat(metrics.getDnsStart()).isNotNull();
         assertAfter(metrics.getDnsStart(), startTime);
         assertThat(metrics.getDnsEnd()).isNotNull();
@@ -94,7 +112,14 @@ public class MetricsTestUtil {
     }
 
     /** Check that the timing metrics from net::LoadTimingInfo::ConnectTiming don't exist. */
-    public static void checkNoConnectTiming(RequestFinishedInfo.Metrics metrics) {
+    public static void checkNoConnectTiming(
+            CronetImplementation implementationUnderTest, RequestFinishedInfo.Metrics metrics) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+            // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
+            // metrics. Although the checks below would pass, generally, don't bother checking
+            // timing metrics for AOSP whether it passes or not.
+            return;
+        }
         assertThat(metrics.getDnsStart()).isNull();
         assertThat(metrics.getDnsEnd()).isNull();
         assertThat(metrics.getSslStart()).isNull();
@@ -103,9 +128,15 @@ public class MetricsTestUtil {
         assertThat(metrics.getConnectEnd()).isNull();
     }
 
-    /** Check that RequestFinishedInfo looks the way it should look for a normal successful request. */
+    /**
+     * Check that RequestFinishedInfo looks the way it should look for a normal successful request.
+     */
     public static void checkRequestFinishedInfo(
-            RequestFinishedInfo info, String url, Date startTime, Date endTime) {
+            CronetImplementation implementationUnderTest,
+            RequestFinishedInfo info,
+            String url,
+            Date startTime,
+            Date endTime) {
         assertWithMessage("RequestFinishedInfo.Listener must be called").that(info).isNotNull();
         assertThat(info.getUrl()).isEqualTo(url);
         assertThat(info.getResponseInfo()).isNotNull();
@@ -114,15 +145,20 @@ public class MetricsTestUtil {
         assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
                 .that(metrics)
                 .isNotNull();
-        // Check old (deprecated) timing metrics
-        assertThat(metrics.getTotalTimeMs()).isAtLeast(0L);
-        assertThat(metrics.getTotalTimeMs()).isAtLeast(metrics.getTtfbMs());
-        // Check new timing metrics
-        checkTimingMetrics(metrics, startTime, endTime);
-        assertThat(metrics.getPushStart()).isNull();
-        assertThat(metrics.getPushEnd()).isNull();
-        // Check data use metrics
-        assertThat(metrics.getSentByteCount()).isGreaterThan(0L);
-        assertThat(metrics.getReceivedByteCount()).isGreaterThan(0L);
+
+        // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
+        // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+            // Check old (deprecated) timing metrics
+            assertThat(metrics.getTotalTimeMs()).isAtLeast(0L);
+            assertThat(metrics.getTotalTimeMs()).isAtLeast(metrics.getTtfbMs());
+            // Check new timing metrics
+            checkTimingMetrics(implementationUnderTest, metrics, startTime, endTime);
+            assertThat(metrics.getPushStart()).isNull();
+            assertThat(metrics.getPushEnd()).isNull();
+            // Check data use metrics
+            assertThat(metrics.getSentByteCount()).isGreaterThan(0L);
+            assertThat(metrics.getReceivedByteCount()).isGreaterThan(0L);
+        }
     }
 }

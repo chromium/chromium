@@ -1073,7 +1073,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -1098,7 +1100,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnThrowingRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -1124,7 +1128,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnThrowingEngineRequestFinishedListener()
             throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1149,7 +1155,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnEngineRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();

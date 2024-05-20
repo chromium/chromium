@@ -98,6 +98,7 @@ public class BidirectionalStreamQuicTest {
     @Test
     @SmallTest
     public void testSimplePost() throws Exception {
+        CronetImplementation implementationUnderTest = mTestRule.implementationUnderTest();
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -124,9 +125,11 @@ public class BidirectionalStreamQuicTest {
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(finishedInfo, quicURL, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                implementationUnderTest, finishedInfo, quicURL, startTime, endTime);
         assertThat(finishedInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(finishedInfo.getMetrics(), startTime, endTime, true);
+        MetricsTestUtil.checkHasConnectTiming(
+                implementationUnderTest, finishedInfo.getMetrics(), startTime, endTime, true);
         assertThat(finishedInfo.getAnnotations()).containsExactly("request annotation", this);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)

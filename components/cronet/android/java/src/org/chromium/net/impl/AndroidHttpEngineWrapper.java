@@ -10,6 +10,7 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 import android.net.Network;
 import android.net.http.HttpEngine;
 import android.os.Process;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
@@ -28,18 +29,25 @@ import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHttpEngineWrapper extends CronetEngineBase {
+    private static final String TAG = "HttpEngineWrapper";
     private final HttpEngine mBackend;
     private final int mThreadPriority;
     // The thread that priority has been set on.
     private Thread mPriorityThread;
+    private final Map<
+                    RequestFinishedInfo.Listener, VersionSafeCallbacks.RequestFinishedInfoListener>
+            mFinishedListenerMap = Collections.synchronizedMap(new HashMap<>());
 
     public AndroidHttpEngineWrapper(HttpEngine backend, int threadPriority) {
         mBackend = backend;
@@ -117,6 +125,45 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
     }
 
     @Override
+    public void addRequestFinishedListener(RequestFinishedInfo.Listener listener) {
+        mFinishedListenerMap.put(
+                listener, new VersionSafeCallbacks.RequestFinishedInfoListener(listener));
+    }
+
+    @Override
+    public void removeRequestFinishedListener(RequestFinishedInfo.Listener listener) {
+        mFinishedListenerMap.remove(listener);
+    }
+
+    void reportRequestFinished(
+            RequestFinishedInfo requestInfo,
+            VersionSafeCallbacks.RequestFinishedInfoListener extraRequestListener) {
+        ArrayList<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners =
+                new ArrayList<>();
+        synchronized (mFinishedListenerMap) {
+            currentListeners.addAll(mFinishedListenerMap.values());
+        }
+        if (extraRequestListener != null) {
+            currentListeners.add(extraRequestListener);
+        }
+        for (final VersionSafeCallbacks.RequestFinishedInfoListener listener : currentListeners) {
+            try {
+                listener.getExecutor()
+                        .execute(
+                                () -> {
+                                    try {
+                                        listener.onRequestFinished(requestInfo);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Exception thrown from observation task", e);
+                                    }
+                                });
+            } catch (RejectedExecutionException failException) {
+                Log.e(TAG, "Exception posting task to executor", failException);
+            }
+        }
+    }
+
+    @Override
     public org.chromium.net.ExperimentalBidirectionalStream createBidirectionalStream(
             String url,
             BidirectionalStream.Callback callback,
@@ -125,7 +172,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
             List<Entry<String, String>> requestHeaders,
             @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush,
-            Collection<Object> requestAnnotations /* not in HttpEngine */,
+            Collection<Object> requestAnnotations,
             boolean trafficStatsTagSet,
             int trafficStatsTag,
             boolean trafficStatsUidSet,
@@ -151,7 +198,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
         }
 
         return AndroidBidirectionalStreamWrapper.createAndAddToCallback(
-                streamBuilder.build(), wrappedCallback);
+                streamBuilder.build(), wrappedCallback, this, url, requestAnnotations);
     }
 
     @Override
@@ -160,7 +207,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
             UrlRequest.Callback callback,
             Executor executor,
             @RequestPriority int priority,
-            Collection<Object> requestAnnotations /* not in HttpEngine */,
+            Collection<Object> requestAnnotations,
             boolean disableCache,
             boolean disableConnectionMigration /* not in HttpEngine */,
             boolean allowDirectExecutor,
@@ -168,7 +215,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
             int trafficStatsTag,
             boolean trafficStatsUidSet,
             int trafficStatsUid,
-            @Nullable RequestFinishedInfo.Listener requestFinishedListener /* not in HttpEngine */,
+            @Nullable RequestFinishedInfo.Listener requestFinishedListener,
             @Idempotency int idempotency /* not in HttpEngine */,
             long networkHandle,
             String method,
@@ -201,7 +248,12 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
         }
 
         return AndroidUrlRequestWrapper.createAndAddToCallback(
-                requestBuilder.build(), wrappedCallback);
+                requestBuilder.build(),
+                wrappedCallback,
+                this,
+                url,
+                requestAnnotations,
+                requestFinishedListener);
     }
 
     private Network getNetwork(long networkHandle) {

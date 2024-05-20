@@ -971,10 +971,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             final RequestFinishedInfo requestInfo,
             RefCountDelegate inflightCallbackCount,
             VersionSafeCallbacks.RequestFinishedInfoListener extraRequestFinishedInfoListener) {
-        List<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners;
+        List<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners = new ArrayList<>();
         synchronized (mFinishedListenerLock) {
-            if (mFinishedListenerMap.isEmpty() && extraRequestFinishedInfoListener == null) return;
-            currentListeners = new ArrayList<>(mFinishedListenerMap.values());
+            currentListeners.addAll(mFinishedListenerMap.values());
         }
         if (extraRequestFinishedInfoListener != null) {
             currentListeners.add(extraRequestFinishedInfoListener);

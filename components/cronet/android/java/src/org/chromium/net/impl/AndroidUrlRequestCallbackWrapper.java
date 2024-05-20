@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
 
+import org.chromium.net.CronetException;
+import org.chromium.net.RequestFinishedInfo;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -83,7 +86,17 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        mBackend.onSucceeded(mWrappedRequest, specializedResponseInfo);
+        try {
+            mBackend.onSucceeded(mWrappedRequest, specializedResponseInfo);
+        } finally {
+            // In a scenario where this throws, the side effect is that it will be propagated to
+            // CronetUrlRequest as an error in the callback and mess with the FinalUserCallbackThrew
+            // metrics. Because we catch most the exceptions, this side effect is negligible enough
+            // to
+            // not try to figure out a workaround.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.SUCCEEDED, specializedResponseInfo, null);
+        }
     }
 
     @Override
@@ -93,10 +106,15 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             HttpException error) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        mBackend.onFailed(
-                mWrappedRequest,
-                specializedResponseInfo,
-                CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error));
+        CronetException translatedException =
+                CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error);
+        try {
+            mBackend.onFailed(mWrappedRequest, specializedResponseInfo, translatedException);
+        } finally {
+            // See comment in onSucceeded.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.FAILED, specializedResponseInfo, translatedException);
+        }
     }
 
     @Override
@@ -105,7 +123,13 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             @Nullable android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        mBackend.onCanceled(mWrappedRequest, specializedResponseInfo);
+        try {
+            mBackend.onCanceled(mWrappedRequest, specializedResponseInfo);
+        } finally {
+            // See comment in onSucceeded.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.CANCELED, specializedResponseInfo, null);
+        }
     }
 
     void setRequest(AndroidUrlRequestWrapper request) {

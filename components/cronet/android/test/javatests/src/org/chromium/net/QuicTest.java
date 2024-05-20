@@ -249,6 +249,7 @@ public class QuicTest {
     @SmallTest
     public void testMetricsWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
+        CronetImplementation implementationUnderTest = mTestRule.implementationUnderTest();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         cronetEngine.addRequestFinishedListener(requestFinishedListener);
 
@@ -267,9 +268,11 @@ public class QuicTest {
         assertIsQuic(callback.getResponseInfoWithChecks());
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, quicURL, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                implementationUnderTest, requestInfo, quicURL, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, true);
+        MetricsTestUtil.checkHasConnectTiming(
+                implementationUnderTest, requestInfo.getMetrics(), startTime, endTime, true);
 
         // Second request should use the same connection and not have ConnectTiming numbers
         callback = new TestUrlRequestCallback();
@@ -286,9 +289,10 @@ public class QuicTest {
         assertIsQuic(callback.getResponseInfoWithChecks());
 
         requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, quicURL, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                implementationUnderTest, requestInfo, quicURL, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkNoConnectTiming(requestInfo.getMetrics());
+        MetricsTestUtil.checkNoConnectTiming(implementationUnderTest, requestInfo.getMetrics());
 
         cronetEngine.shutdown();
     }
