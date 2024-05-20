@@ -11,12 +11,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 
@@ -88,9 +86,7 @@ bool IsValid(SourceRegistrationTimeConfig source_registration_time_config,
 
 base::expected<std::optional<std::string>, TriggerRegistrationError>
 ParseTriggerContextId(base::Value* value) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionReportingTriggerContextId) ||
-      !value) {
+  if (!value) {
     return std::nullopt;
   }
 

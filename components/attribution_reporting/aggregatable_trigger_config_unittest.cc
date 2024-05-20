@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -126,27 +124,8 @@ TEST(AggregatableTriggerConfigTest, ParseTriggerContextId) {
     SCOPED_TRACE(test_case.desc);
 
     base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
-
-    {
-      SCOPED_TRACE("disabled");
-
-      base::test::ScopedFeatureList scoped_feature_list;
-      scoped_feature_list.InitAndDisableFeature(
-          features::kAttributionReportingTriggerContextId);
-
-      EXPECT_THAT(AggregatableTriggerConfig::Parse(input),
-                  test_case.disabled_matches);
-    }
-
-    {
-      SCOPED_TRACE("enabled");
-
-      base::test::ScopedFeatureList scoped_feature_list(
-          features::kAttributionReportingTriggerContextId);
-
-      EXPECT_THAT(AggregatableTriggerConfig::Parse(input),
-                  test_case.enabled_matches);
-    }
+    EXPECT_THAT(AggregatableTriggerConfig::Parse(input),
+                test_case.enabled_matches);
   }
 }
 
@@ -202,9 +181,6 @@ TEST(AggregatableTriggerConfigTest, Create) {
 }
 
 TEST(AggregatableTriggerConfigTest, Parse_TriggerContextIdLength) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionReportingTriggerContextId);
-
   constexpr char kTriggerContextId[] = "trigger_context_id";
 
   base::Value::Dict dict;

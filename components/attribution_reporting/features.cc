@@ -13,8 +13,4 @@ BASE_FEATURE(kConversionMeasurement,
              "ConversionMeasurement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAttributionReportingTriggerContextId,
-             "AttributionReportingTriggerContextId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace attribution_reporting::features
