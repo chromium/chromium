@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 #include "base/notreached.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -196,6 +198,26 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), info_->timing->service_worker_cache_lookup_start,
       info_->allow_negative_values, CrossOriginIsolatedCapability());
+}
+
+AtomicString PerformanceResourceTiming::matchedSourceType() const {
+  if (!info_->service_worker_router_info ||
+      !info_->service_worker_router_info->matched_source_type) {
+    return AtomicString();
+  }
+
+  return AtomicString(ServiceWorkerRouterInfo::GetRouterSourceTypeString(
+      *info_->service_worker_router_info->matched_source_type));
+}
+
+AtomicString PerformanceResourceTiming::finalSourceType() const {
+  if (!info_->service_worker_router_info ||
+      !info_->service_worker_router_info->actual_source_type) {
+    return AtomicString();
+  }
+
+  return AtomicString(ServiceWorkerRouterInfo::GetRouterSourceTypeString(
+      *info_->service_worker_router_info->actual_source_type));
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::WorkerReady() const {
@@ -450,6 +472,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("workerRouterEvaluationStart",
                       workerRouterEvaluationStart());
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
+    builder.AddString("matchedSourceType", matchedSourceType());
+    builder.AddString("finalSourceType", finalSourceType());
   }
   builder.AddNumber("redirectStart", redirectStart());
   builder.AddNumber("redirectEnd", redirectEnd());

@@ -15,12 +15,29 @@ scoped_refptr<ServiceWorkerRouterInfo> ServiceWorkerRouterInfo::Create() {
   return base::AdoptRef(new ServiceWorkerRouterInfo);
 }
 
+String ServiceWorkerRouterInfo::GetRouterSourceTypeString(
+    const network::mojom::ServiceWorkerRouterSourceType source) {
+  switch (source) {
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+      return "network";
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+      return "race-network-and-fetch";
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
+      return "cache";
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+      return "fetch-event";
+  }
+}
+
 network::mojom::blink::ServiceWorkerRouterInfoPtr
 ServiceWorkerRouterInfo::ToMojo() const {
   network::mojom::blink::ServiceWorkerRouterInfoPtr info =
       network::mojom::blink::ServiceWorkerRouterInfo::New();
   info->rule_id_matched = rule_id_matched_;
   info->matched_source_type = matched_source_type_;
+  info->actual_source_type = actual_source_type_;
+  info->route_rule_num = route_rule_num_;
+  info->evaluation_worker_status = evaluation_worker_status_;
   return info;
 }
 

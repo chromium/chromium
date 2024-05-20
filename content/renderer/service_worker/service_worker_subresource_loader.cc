@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 
 namespace content {
 
@@ -733,6 +735,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   std::optional<network::mojom::ServiceWorkerRouterInfo> router_info;
   if (response_head_->service_worker_router_info) {
     router_info = *response_head_->service_worker_router_info;
+    router_info->actual_source_type =
+        network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   }
   auto client_impl = std::make_unique<HeaderRewritingURLLoaderClient>(
       std::move(url_loader_client_),
@@ -838,6 +842,14 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // Constructed subresource responses are always same-origin as the requesting
   // client.
   response_head_->timing_allow_passed = true;
+
+  // Set the actual source type to `kFetchEvent` if nothing is set yet.
+  auto* router_info = response_head_->service_worker_router_info.get();
+  if (router_info && router_info->matched_source_type &&
+      !router_info->actual_source_type) {
+    router_info->actual_source_type =
+        network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+  }
 
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
@@ -1319,6 +1331,26 @@ bool ServiceWorkerSubresourceLoader::IsMainResourceLoader() {
   return false;
 }
 
+void ServiceWorkerSubresourceLoader::SetCommitResponsibility(
+    FetchResponseFrom fetch_response_from) {
+  // Set the actual source type used in Static Routing API when
+  // `race-network-and-fetch` is used. Determine this by checking the
+  // commit responsibility. If it's not the service worker, the network
+  // has won.
+  // This check is conducted here since in the case of `knetwork`, it does
+  // not call `DidDispatchFetchEvent`, where we set the `actual_source_type`
+  // for the other sources, and the `response_head_` is already passed on.
+  if (response_head_ && response_head_->service_worker_router_info &&
+      response_head_->service_worker_router_info->matched_source_type &&
+      *response_head_->service_worker_router_info->matched_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kRace &&
+      fetch_response_from == FetchResponseFrom::kWithoutServiceWorker) {
+    response_head_->service_worker_router_info->actual_source_type =
+        network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  }
+  ServiceWorkerResourceLoader::SetCommitResponsibility(fetch_response_from);
+}
+
 std::optional<ServiceWorkerRouterEvaluator::Result>
 ServiceWorkerSubresourceLoader::EvaluateRouterConditions() const {
   auto* router_evaluator = controller_connector_->router_evaluator();
@@ -1462,6 +1494,9 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
         // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
         result->get_response()->parsed_headers.reset();
       }
+      CHECK(response_head_->service_worker_router_info);
+      response_head_->service_worker_router_info->actual_source_type =
+          network::mojom::ServiceWorkerRouterSourceType::kCache;
       OnResponse(std::move(result->get_response()), std::move(timing));
       return;
     case blink::mojom::MatchResult::Tag::kEagerResponse:

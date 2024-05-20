@@ -143,6 +143,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
                                  std::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
+  void SetCommitResponsibility(FetchResponseFrom fetch_response_from) override;
+
   // ServiceWorkerResourceLoader overrides:
   void CommitResponseHeaders(
       const network::mojom::URLResponseHeadPtr&) override;

@@ -503,6 +503,9 @@ void WebURLResponse::SetServiceWorkerRouterInfo(
   auto info = ServiceWorkerRouterInfo::Create();
   info->SetRuleIdMatched(value.rule_id_matched);
   info->SetMatchedSourceType(value.matched_source_type);
+  info->SetActualSourceType(value.actual_source_type);
+  info->SetRouteRuleNum(value.route_rule_num);
+  info->SetEvaluationWorkerStatus(value.evaluation_worker_status);
   resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 
