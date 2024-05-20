@@ -65,6 +65,12 @@
     opacity: 0;
   }
 
+  #defaultScrim {
+    background-color: #151C26;
+    opacity: 5%;
+    pointer-events: none;
+  }
+
   #selectionElements > * {
     inset: 0;
     position: absolute;
@@ -165,6 +171,7 @@
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
+    <div id="defaultScrim"></div>
     <overlay-shimmer id="overlayShimmer"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         screenshot-data-uri="[[screenshotDataUri]]">
