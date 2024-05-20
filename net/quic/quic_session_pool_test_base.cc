@@ -159,6 +159,7 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
           &QuicSessionPoolTestBase::OnFailedOnDefaultNetwork,
           base::Unretained(this))),
       quic_params_(context_.params()) {
+  SetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5, true);
   enabled_features.push_back(features::kAsyncQuicSession);
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   FLAGS_quic_enable_http3_grease_randomness = false;

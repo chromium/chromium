@@ -90,6 +90,9 @@ class QuicTestPacketMaker {
   // define the frames in the packet, and finish with its `Build` method.
   QuicTestPacketBuilder& Packet(uint64_t packet_number);
 
+  // Clone all frames from |packet_number|.
+  quic::QuicFrames CloneSavedFrames(uint64_t packet_number);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeConnectivityProbingPacket(
       uint64_t packet_number);
 

@@ -413,6 +413,12 @@ QuicTestPacketMaker::MakeAckAndRetransmissionPacket(
   return builder.Build();
 }
 
+quic::QuicFrames QuicTestPacketMaker::CloneSavedFrames(uint64_t packet_number) {
+  DCHECK(connection_state_.save_packet_frames);
+  return CloneFrames(
+      connection_state_.saved_frames[quic::QuicPacketNumber(packet_number)]);
+}
+
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
     const std::vector<uint64_t>& original_packet_numbers,
