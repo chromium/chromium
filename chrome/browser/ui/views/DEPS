@@ -17,7 +17,7 @@ specific_include_rules = {
   "browser_user_education_service.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
-  "chrome_views_delegate_chromeos\.cc": [
+  "chrome_views_delegate_ash\.cc": [
     "+ash/shell.h",
   ],
   "isolated_web_app_installer_view_browsertest\.cc": [
