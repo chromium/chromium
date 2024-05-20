@@ -29,6 +29,7 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
   if (ui::PageTransitionIsRedirect(page_transition)) {
     return false;
   }
+
   if (!ui::PageTransitionIsMainFrame(page_transition)) {
     return false;
   }
@@ -112,8 +113,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     handle_from_sync_update_ = nullptr;
     return;
   }
-
-  handle_from_sync_update_ = nullptr;
 
   if (!IsSaveableNavigation(navigation_handle)) {
     return;
