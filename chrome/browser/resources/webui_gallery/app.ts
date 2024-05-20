@@ -185,6 +185,13 @@ export class WebuiGalleryAppElement extends PolymerElement {
   private onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
     const newUrl = new URL(e.detail.item.href);
     CrRouter.getInstance().setPath(newUrl.pathname);
+    this.onPathChanged_(newUrl.pathname);
+  }
+
+  // Prevent clicks on sidebar items from navigating and therefore reloading
+  // the page. onMenuItemSelect_() handles loading new demos when selected.
+  private onMenuItemClick_(e: MouseEvent) {
+    e.preventDefault();
   }
 
   private async onPathChanged_(newPath: string) {

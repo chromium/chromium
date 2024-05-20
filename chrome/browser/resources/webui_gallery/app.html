@@ -52,7 +52,9 @@
       on-iron-select="onMenuItemSelect_">
     <template is="dom-repeat" items="[[demos_]]">
       <a role="menuitem" href="[[item.path]]"
-          class="cr-nav-menu-item">[[item.name]]</a>
+          class="cr-nav-menu-item" on-click="onMenuItemClick_">
+        [[item.name]]
+      </a>
     </template>
   </cr-menu-selector>
 
