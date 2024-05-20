@@ -14,7 +14,6 @@
 #include "media/base/video_transformation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
 
@@ -103,13 +102,11 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
                      latest_frame_->natural_size());
   float x = (width() - rendered_frame_width) / 2.0;
 
-  if (features::IsChromeRefresh2023()) {
-    canvas->sk_canvas()->clipRRect(
-        SkRRect::MakeRectXY(
-            SkRect::MakeXYWH(x, 0, rendered_frame_width, height()),
-            rounded_radius_, rounded_radius_),
-        /*do_anti_alias=*/true);
-  }
+  canvas->sk_canvas()->clipRRect(
+      SkRRect::MakeRectXY(
+          SkRect::MakeXYWH(x, 0, rendered_frame_width, height()),
+          rounded_radius_, rounded_radius_),
+      /*do_anti_alias=*/true);
 
   const gfx::RectF dest_rect(x, 0, rendered_frame_width, height());
   cc::PaintFlags flags;
