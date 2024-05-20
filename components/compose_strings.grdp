@@ -23,7 +23,10 @@
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
     Open to continue
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW" desc="The message read out by a screen reader whtn the Compose nudge is shown.">
+  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE" desc="The message read out by a screen reader when the Compose nudge is shown.">
+    Help me write. Tab and press enter to open
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME" desc="The message read out by a screen reader when the Compose resume nudge is shown.">
     Resume Help me write. Tab and press enter to open
   </message>
   <message name="IDS_COMPOSE_DONT_SHOW_ON_THIS_SITE_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Autofill popup will no longer be displayed on the current domain.">

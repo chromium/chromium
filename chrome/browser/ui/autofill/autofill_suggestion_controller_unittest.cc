@@ -131,10 +131,10 @@ using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<
 // Regression test for (crbug.com/1513574): Showing an Autofill Compose
 // suggestion twice does not crash.
 TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
-  ShowSuggestions(manager(),
-                  {Suggestion(u"Help me write", SuggestionType::kCompose)});
-  ShowSuggestions(manager(),
-                  {Suggestion(u"Help me write", SuggestionType::kCompose)});
+  ShowSuggestions(manager(), {Suggestion(u"Help me write",
+                                         SuggestionType::kComposeResumeNudge)});
+  ShowSuggestions(manager(), {Suggestion(u"Help me write",
+                                         SuggestionType::kComposeResumeNudge)});
 }
 
 // Tests that the AED is informed when suggestions were shown.

@@ -182,10 +182,11 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillOptions:
     case SuggestionType::kClearForm:
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
@@ -479,10 +480,11 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kAutofillOptions:
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kShowAccountCards:
@@ -614,7 +616,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           std::move(callback));
       break;
     }
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
       if (AutofillComposeDelegate* delegate =
               manager_->client().GetComposeDelegate()) {
@@ -675,7 +678,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
 void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
     const Suggestion& suggestion) {
   switch (suggestion.type) {
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
       NOTIMPLEMENTED();
       return;
     default:
@@ -720,10 +723,11 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kMerchantPromoCodeEntry:

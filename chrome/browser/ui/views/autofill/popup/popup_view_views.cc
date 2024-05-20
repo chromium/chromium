@@ -218,10 +218,28 @@ bool PopupViewViews::Show(
     absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
-  // Compose popups are announced separately.
+
+  // Compose has separate on show announcements.
+  // TODO(b/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
-    AxAnnounce(
-        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
+    switch (controller_->GetSuggestionAt(0).type) {
+      case SuggestionType::kComposeResumeNudge:
+      case SuggestionType::kComposeSavedStateNotification:
+        AxAnnounce(l10n_util::GetStringUTF16(
+            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME));
+        break;
+      case SuggestionType::kComposeProactiveNudge:
+        AxAnnounce(l10n_util::GetStringUTF16(
+            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE));
+        break;
+      case SuggestionType::kComposeDisable:
+      case SuggestionType::kComposeGoToSettings:
+      case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+        break;
+      default:
+        // All Compose SuggestionTypes should already be handled.
+        NOTREACHED_NORETURN();
+    }
   }
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());

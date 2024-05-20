@@ -232,7 +232,7 @@ TEST_F(
                 {{autofill::Suggestion::Text(l10n_util::GetStringUTF16(
                     IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
-                autofill::SuggestionType::kCompose));
+                autofill::SuggestionType::kComposeResumeNudge));
 }
 
 TEST_F(ComposeManagerImplTest,
@@ -247,7 +247,7 @@ TEST_F(ComposeManagerImplTest,
                 {{autofill::Suggestion::Text(
                     l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
-                autofill::SuggestionType::kCompose));
+                autofill::SuggestionType::kComposeProactiveNudge));
 }
 
 TEST_F(ComposeManagerImplTest,

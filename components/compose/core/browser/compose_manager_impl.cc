@@ -50,7 +50,8 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
   static_cast<autofill::BrowserAutofillManager*>(manager.get())
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                            autofill::mojom::FieldActionType::kReplaceSelection,
-                           form, field, trimmed_text, SuggestionType::kCompose);
+                           form, field, trimmed_text,
+                           SuggestionType::kComposeResumeNudge);
 }
 
 }  // namespace
@@ -167,7 +168,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
   std::u16string suggestion_text;
   std::u16string label_text;
-  SuggestionType type = SuggestionType::kCompose;
+  SuggestionType type;
   // State is saved as a `ComposeSession` in the `ComposeClient`. A user can
   // resume where they left off in a field if the `ComposeClient` has a
   // `ComposeSession` for that field.
@@ -178,15 +179,16 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
     suggestion_text =
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
-    if (trigger_source ==
-        AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
-      type = SuggestionType::kComposeSavedStateNotification;
-    }
+    type = trigger_source ==
+                   AutofillSuggestionTriggerSource::kComposeDialogLostFocus
+               ? SuggestionType::kComposeSavedStateNotification
+               : SuggestionType::kComposeResumeNudge;
   } else {
     // Text for a new Compose session.
     suggestion_text =
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL);
+    type = SuggestionType::kComposeProactiveNudge;
   }
   Suggestion suggestion(std::move(suggestion_text));
   suggestion.labels = {{Suggestion::Text(std::move(label_text))}};

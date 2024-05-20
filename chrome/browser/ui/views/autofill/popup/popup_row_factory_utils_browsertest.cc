@@ -70,7 +70,7 @@ const Suggestion kSuggestions[] = {
                "Minor text",
                "label",
                Suggestion::Icon::kMagic,
-               SuggestionType::kCompose),
+               SuggestionType::kComposeResumeNudge),
     Suggestion("Edit_address",
                "label",
                Suggestion::Icon::kEdit,

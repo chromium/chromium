@@ -848,7 +848,7 @@ TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
 
 // Tests that pressing TAB selects a previously unselected Compose suggestion.
 TEST_F(PopupViewViewsTest, ComposeSuggestion_TabSelects) {
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   ASSERT_FALSE(view().GetSelectedCell().has_value());
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false);
   EXPECT_TRUE(view().GetSelectedCell().has_value());
@@ -859,7 +859,7 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_TabSelects) {
 TEST_F(PopupViewViewsTest, ComposeSuggestion_ShiftTabDoesNotAffect) {
   EXPECT_CALL(controller(), Hide).Times(0);
 
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   ASSERT_FALSE(view().GetSelectedCell().has_value());
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/true);
   EXPECT_FALSE(view().GetSelectedCell().has_value());
@@ -867,7 +867,7 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_ShiftTabDoesNotAffect) {
 
 TEST_F(PopupViewViewsTest, ComposeSuggestion_LeftAndRightKeyEventsAreHandled) {
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -891,7 +891,7 @@ TEST_F(PopupViewViewsTest,
   base::i18n::SetRTLForTesting(true);
 
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -955,7 +955,7 @@ TEST_F(PopupViewViewsTest,
        ComposeSuggestion_TabWithSelectedComposeSuggestionHidesPopup) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
 
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   view().SetSelectedCell(CellIndex{0u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false);
@@ -967,7 +967,7 @@ TEST_F(PopupViewViewsTest,
 TEST_F(PopupViewViewsTest, ComposeSuggestion_NoSubPopup_ShiftTabUnselects) {
   EXPECT_CALL(controller(), Hide).Times(0);
 
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   view().SetSelectedCell(CellIndex{0u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/true);
@@ -981,7 +981,7 @@ TEST_F(
     PopupViewViewsTest,
     ComposeSuggestion_SubPopupOpen_ShiftTabClosesSubpopupAndSelectsContentCell) {
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
   CreateAndShowView();
 
   CellIndex cell_content = CellIndex{0, CellType::kContent};
@@ -999,7 +999,7 @@ TEST_F(
 
 // Tests that pressing up/down cursor keys does not select a Compose suggestion.
 TEST_F(PopupViewViewsTest, ComposeSuggestion_CursorUpDownDoesNotSelect) {
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   ASSERT_FALSE(view().GetSelectedCell().has_value());
   SimulateKeyPress(ui::VKEY_DOWN, /*shift_modifier_pressed=*/false);
   EXPECT_FALSE(view().GetSelectedCell().has_value());
@@ -1011,7 +1011,7 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_CursorUpDownDoesNotSelect) {
 TEST_F(PopupViewViewsTest, ComposeSuggestion_EscapeClosesComposePopup) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
 
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
   SimulateKeyPress(ui::VKEY_ESCAPE, /*shift_modifier_pressed=*/false);
 }
 
@@ -1408,7 +1408,7 @@ TEST_F(PopupViewViewsTest,
 // Tests that `GetPopupScreenLocation` returns the bounds and arrow position of
 // the popup.
 TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
-  CreateAndShowView({SuggestionType::kCompose});
+  CreateAndShowView({SuggestionType::kComposeResumeNudge});
 
   using PopupScreenLocation = AutofillClient::PopupScreenLocation;
   auto MatchesScreenLocation =
