@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -24,26 +23,17 @@ bool ShouldIncludeApp(apps::AppType app_type) {
 
 }  // namespace
 
-BlockedAppRegistry::AppDetails::AppDetails()
-    : AppDetails(base::TimeTicks::Now()) {}
-
-BlockedAppRegistry::AppDetails::AppDetails(base::TimeTicks block_timestamp)
-    : block_timestamp(block_timestamp) {}
-
-BlockedAppRegistry::AppDetails::~AppDetails() = default;
-
-// static
-void BlockedAppRegistry::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kOnDeviceAppControlsBlockedApps);
-}
-
 BlockedAppRegistry::BlockedAppRegistry(apps::AppServiceProxy* app_service,
                                        PrefService* pref_service)
-    : app_service_(app_service), pref_service_(pref_service) {
+    : store_(pref_service), app_service_(app_service) {
   CHECK(app_service_);
-  CHECK(pref_service_);
 
+  registry_ = store_.GetFromPref();
   app_registry_cache_observer_.Observe(&GetAppCache());
+
+  VLOG(1) << "app-controls: calling block apps to initialize the state in app "
+             "service";
+  app_service_->BlockApps(GetBlockedApps());
 }
 
 BlockedAppRegistry::~BlockedAppRegistry() = default;
@@ -55,11 +45,13 @@ void BlockedAppRegistry::AddApp(const std::string& app_id) {
     LOG(WARNING) << app_id << " already in blocked app registry";
     return;
   }
-  registry_[app_id] = AppDetails();
+  registry_[app_id] = BlockedAppDetails();
 
+  VLOG(1) << "app-controls: calling block app: " << app_id;
   app_service_->BlockApps({app_id});
 
-  // TODO(b/338247185): Update pref state.
+  // TODO(b/338247185): Only update value that changed.
+  store_.SaveToPref(registry_);
 }
 
 void BlockedAppRegistry::RemoveApp(const std::string& app_id) {
@@ -71,9 +63,11 @@ void BlockedAppRegistry::RemoveApp(const std::string& app_id) {
   }
   registry_.erase(app_id);
 
+  VLOG(1) << "app-controls: calling unblock app: " << app_id;
   app_service_->UnblockApps({app_id});
 
-  // TODO(b/338247185): Update pref state.
+  // TODO(b/338247185): Only update value that changed.
+  store_.SaveToPref(registry_);
 }
 
 std::set<std::string> BlockedAppRegistry::GetBlockedApps() {
@@ -89,7 +83,7 @@ LocalAppState BlockedAppRegistry::GetAppState(const std::string& app_id) const {
     return LocalAppState::kAvailable;
   }
 
-  if (registry_.at(app_id).uninstall_timestamp.has_value()) {
+  if (!registry_.at(app_id).IsInstalled()) {
     return LocalAppState::kBlockedUninstalled;
   }
 
@@ -120,6 +114,8 @@ void BlockedAppRegistry::OnAppUpdate(const apps::AppUpdate& update) {
 }
 void BlockedAppRegistry::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
+  VLOG(1) << "app-controls: persisting apps before app service cache destroyed";
+  store_.SaveToPref(registry_);
   app_registry_cache_observer_.Reset();
 }
 
@@ -129,31 +125,32 @@ apps::AppRegistryCache& BlockedAppRegistry::GetAppCache() {
 
 void BlockedAppRegistry::OnAppReady(const std::string& app_id) {
   VLOG(1) << "app-controls: app ready " << app_id;
-
   if (GetAppState(app_id) == LocalAppState::kAvailable) {
     return;
   }
 
   if (GetAppState(app_id) == LocalAppState::kBlockedUninstalled) {
     // Clear the uninstall timestamp, but keep the initial blocked timestamp.
-    registry_[app_id].uninstall_timestamp.reset();
+    registry_[app_id].MarkInstalled();
+
+    // TODO(b/338247185): Only update value that changed.
+    store_.SaveToPref(registry_);
   }
 
+  VLOG(1) << "app-controls: calling block app: " << app_id;
   app_service_->BlockApps({app_id});
-
-  // TODO(b/338247185): Update pref state.
 }
 
 void BlockedAppRegistry::OnAppUninstalled(const std::string& app_id) {
   VLOG(1) << "app-controls: app uninstalled " << app_id;
-
   if (GetAppState(app_id) == LocalAppState::kAvailable) {
     return;
   }
 
-  registry_[app_id].uninstall_timestamp = base::TimeTicks::Now();
+  registry_[app_id].SetUninstallTimestamp(base::Time::Now());
 
-  // TODO(b/338247185): Update pref state.
+  // TODO(b/338247185): Only update value that changed.
+  store_.SaveToPref(registry_);
 }
 
 }  // namespace ash::on_device_controls

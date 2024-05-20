@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_store.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/on_device_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,6 +68,7 @@ AppControlsServiceFactory::BuildServiceInstanceForBrowserContext(
 void AppControlsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AppControlsService::RegisterProfilePrefs(registry);
+  BlockedAppStore::RegisterProfilePrefs(registry);
 }
 
 }  // namespace ash::on_device_controls

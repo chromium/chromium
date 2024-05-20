@@ -6,39 +6,25 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_ON_DEVICE_CONTROLS_BLOCKED_APP_REGISTRY_H_
 
 #include <map>
-#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_store.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_types.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace ash::on_device_controls {
-
-// State of the app
-enum class LocalAppState {
-  // App is not blocked by on device controls.
-  kAvailable = 0,
-  // App installed and blocked by on device controls.
-  kBlocked = 1,
-  // App uninstalled and blocked by on device controls.
-  // Used to block the app upon reinstallation.
-  kBlockedUninstalled = 2,
-};
 
 // Keeps track of blocked apps and persists blocked apps on the disk.
 // TODO(b/338246850): Handle app uninstall/reinstall.
 // TODO(b/338247185): Persist blocked apps in a pref.
 class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
  public:
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   BlockedAppRegistry(apps::AppServiceProxy* app_service,
                      PrefService* pref_service);
   BlockedAppRegistry(const BlockedAppRegistry&) = delete;
@@ -60,19 +46,6 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
   LocalAppState GetAppState(const std::string& app_id) const;
 
  private:
-  struct AppDetails {
-    AppDetails();
-    explicit AppDetails(base::TimeTicks block_timestamp);
-    ~AppDetails();
-
-    // The timestamp when the app was uninstalled..
-    // If not populated app is currently installed.
-    std::optional<base::TimeTicks> uninstall_timestamp;
-
-    // The timestamp when the app was blocked.
-    base::TimeTicks block_timestamp;
-  };
-
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -89,11 +62,12 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
 
   // The in-memory registry of the locked apps.
   // Maps blocked app id to blocked ap metadata.
-  std::map<std::string, AppDetails> registry_;
+  BlockedAppMap registry_;
+
+  // Manages persisting and restoring blocked apps.
+  BlockedAppStore store_;
 
   const raw_ptr<apps::AppServiceProxy> app_service_;
-
-  const raw_ptr<PrefService> pref_service_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
