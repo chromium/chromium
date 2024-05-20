@@ -5742,6 +5742,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/lacros/screen_capture_notification_ui_lacros_browsertest.cc",
       "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_lacros_browsertest.cc",
       "../browser/ui/startup/first_run_service_browsertest.cc",
+      "../browser/ui/views/chrome_views_delegate_lacros_browsertest.cc",
       "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
       "../browser/ui/views/frame/immersive_mode_browser_view_test.cc",
       "../browser/ui/views/frame/immersive_mode_controller_chromeos_browsertest.cc",
