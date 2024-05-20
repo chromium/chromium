@@ -82,10 +82,16 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       shouldIgnoreKeyRelease: {
         type: Boolean,
       },
+
+      hasFunctionKey: {
+        type: Boolean,
+      },
+
     };
   }
 
   hasLauncherButton: boolean = true;
+  hasFunctionKey: boolean = false;
   shortcutInputProvider: ShortcutInputProviderInterface|null = null;
   pendingKeyEvent: KeyEvent|null = null;
   pendingPrerewrittenKeyEvent: KeyEvent|null = null;
@@ -348,6 +354,13 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   /**
    * Returns the specified CSS state of the modifier key element.
    */
+  protected getFunctionState(): string {
+    return this.getModifierState(Modifier.FN_KEY);
+  }
+
+  /**
+   * Returns the specified CSS state of the modifier key element.
+   */
   private getModifierState(modifier: Modifier): KeyInputState {
     const keyEvent = this.getPendingKeyEvent();
     if (keyEvent && keyEvent?.modifiers & modifier) {
@@ -367,6 +380,8 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         return 'alt';
       case Modifier.COMMAND:
         return 'meta';
+      case Modifier.FN_KEY:
+        return 'fn';
     }
     return assertNotReached();
   }

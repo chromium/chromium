@@ -17,36 +17,65 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 function getConfirmKeyElement(shortcutInputElement: ShortcutInputElement|
                               null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#confirmKey');
 }
 
 function getPendingKeyElement(shortcutInputElement: ShortcutInputElement|
                               null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#pendingKey');
 }
 
 function getCtrlElement(shortcutInputElement: ShortcutInputElement|
                         null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#ctrlKey');
 }
 
 function getShiftElement(shortcutInputElement: ShortcutInputElement|
                          null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#shiftKey');
 }
 
 function getAltElement(shortcutInputElement: ShortcutInputElement|
                        null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#altKey');
 }
 
 function getSearchElement(shortcutInputElement: ShortcutInputElement|
                           null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#searchKey');
+}
+
+function getFunctionElement(shortcutInputElement: ShortcutInputElement|
+                            null): ShortcutInputKeyElement|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
+  return shortcutInputElement!.shadowRoot!.querySelector('#functionKey');
 }
 
 function getKeySeparator(shortcutInputElement: ShortcutInputElement|
                          null): Element|null {
+  if (shortcutInputElement === null) {
+    return null;
+  }
   return shortcutInputElement!.shadowRoot!.querySelector('#keySeparator');
 }
 
@@ -64,6 +93,7 @@ suite('ShortcutInput', function() {
     document.body.appendChild(element);
     element.shortcutInputProvider = shortcutInputProvider;
     element.showSeparator = true;
+    element.hasFunctionKey = true;
     element.addEventListener('shortcut-input-event', function() {
       ++numShortcutInputEvents;
     });
@@ -107,11 +137,13 @@ suite('ShortcutInput', function() {
     const altKey = getAltElement(shortcutInputElement);
     const searchKey = getSearchElement(shortcutInputElement);
     const shiftKey = getShiftElement(shortcutInputElement);
+    const functionKey = getFunctionElement(shortcutInputElement);
     assertFalse(isVisible(pendingKey));
     assertFalse(isVisible(ctrlKey));
     assertFalse(isVisible(altKey));
     assertFalse(isVisible(searchKey));
     assertFalse(isVisible(shiftKey));
+    assertFalse(isVisible(functionKey));
   });
 
   test('DisplayAlphaKey', async () => {
@@ -136,15 +168,18 @@ suite('ShortcutInput', function() {
     const altKey = getAltElement(shortcutInputElement);
     const searchKey = getSearchElement(shortcutInputElement);
     const shiftKey = getShiftElement(shortcutInputElement);
+    const functionKey = getFunctionElement(shortcutInputElement);
     // All keys should be visible and not selected.
     assertTrue(isVisible(ctrlKey));
     assertTrue(isVisible(altKey));
     assertTrue(isVisible(searchKey));
     assertTrue(isVisible(shiftKey));
+    assertTrue(isVisible(functionKey));
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey!.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, altKey!.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, searchKey!.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey!.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, functionKey!.keyState);
 
     const confirmContainer =
         shortcutInputElement!.shadowRoot!.querySelector('#confirmContainer');
@@ -172,16 +207,19 @@ suite('ShortcutInput', function() {
     const ctrlKey = getCtrlElement(shortcutInputElement);
     const altKey = getAltElement(shortcutInputElement);
     const searchKey = getSearchElement(shortcutInputElement);
+    const functionKey = getFunctionElement(shortcutInputElement);
     const shiftKey = getShiftElement(shortcutInputElement);
 
     // Only shift key should be selected, but all should be visible.
     assertTrue(isVisible(ctrlKey));
     assertTrue(isVisible(altKey));
     assertTrue(isVisible(searchKey));
+    assertTrue(isVisible(functionKey));
     assertTrue(isVisible(shiftKey));
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey!.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, altKey!.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, searchKey!.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, functionKey!.keyState);
     assertEquals(KeyInputState.MODIFIER_SELECTED, shiftKey!.keyState);
 
     const confirmContainer =
@@ -196,8 +234,8 @@ suite('ShortcutInput', function() {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
-      modifiers:
-          Modifier.SHIFT | Modifier.CONTROL | Modifier.ALT | Modifier.COMMAND,
+      modifiers: Modifier.SHIFT | Modifier.CONTROL | Modifier.ALT |
+          Modifier.COMMAND | Modifier.FN_KEY,
       keyDisplay: 'a',
     };
     shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
@@ -212,16 +250,19 @@ suite('ShortcutInput', function() {
     const altKey = getAltElement(shortcutInputElement);
     const searchKey = getSearchElement(shortcutInputElement);
     const shiftKey = getShiftElement(shortcutInputElement);
+    const functionKey = getFunctionElement(shortcutInputElement);
 
     // All modifier keys should be selected.
     assertTrue(isVisible(ctrlKey));
     assertTrue(isVisible(altKey));
     assertTrue(isVisible(searchKey));
     assertTrue(isVisible(shiftKey));
+    assertTrue(isVisible(functionKey));
     assertEquals(KeyInputState.MODIFIER_SELECTED, ctrlKey!.keyState);
     assertEquals(KeyInputState.MODIFIER_SELECTED, altKey!.keyState);
     assertEquals(KeyInputState.MODIFIER_SELECTED, searchKey!.keyState);
     assertEquals(KeyInputState.MODIFIER_SELECTED, shiftKey!.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, functionKey!.keyState);
 
     const confirmContainer =
         shortcutInputElement!.shadowRoot!.querySelector('#confirmContainer');

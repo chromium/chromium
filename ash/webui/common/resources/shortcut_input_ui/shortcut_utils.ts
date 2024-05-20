@@ -26,6 +26,7 @@ export enum Modifier {
   CONTROL = 1 << 2,
   ALT = 1 << 3,
   COMMAND = 1 << 4,
+  FN_KEY = 1 << 5,
 }
 
 export const Modifiers: Modifier[] = [
@@ -33,6 +34,7 @@ export const Modifiers: Modifier[] = [
   Modifier.CONTROL,
   Modifier.ALT,
   Modifier.COMMAND,
+  Modifier.FN_KEY,
 ];
 
 export enum AllowedModifierKeyCodes {
@@ -41,6 +43,7 @@ export enum AllowedModifierKeyCodes {
   ALT = 18,
   META_LEFT = 91,
   META_RIGHT = 92,
+  FN_KEY = 255,
 }
 
 export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
@@ -49,10 +52,11 @@ export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
   AllowedModifierKeyCodes.CTRL,
   AllowedModifierKeyCodes.META_LEFT,
   AllowedModifierKeyCodes.META_RIGHT,
+  AllowedModifierKeyCodes.FN_KEY,
 ];
 
 export const getSortedModifiers = (modifierStrings: string[]): string[] => {
-  const sortOrder = ['meta', 'ctrl', 'alt', 'shift'];
+  const sortOrder = ['meta', 'ctrl', 'alt', 'shift', 'fn'];
   if (modifierStrings.length <= 1) {
     return modifierStrings;
   }

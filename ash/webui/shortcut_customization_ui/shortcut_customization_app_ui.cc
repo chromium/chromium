@@ -247,6 +247,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       ash::features::IsJellyEnabledForShortcutCustomization());
   html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
                           features::IsInputDeviceSettingsSplitEnabled());
+  html_source->AddBoolean(
+      "hasFunctionKey",
+      Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
 }
 
 }  // namespace

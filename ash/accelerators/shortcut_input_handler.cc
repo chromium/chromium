@@ -23,7 +23,7 @@ namespace {
 
 constexpr int kKeyboardModifierFlags = ui::EF_CONTROL_DOWN |
                                        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN |
-                                       ui::EF_ALT_DOWN;
+                                       ui::EF_ALT_DOWN | ui::EF_FUNCTION_DOWN;
 
 ui::KeyboardCode RetrieveKeyCode(const ui::KeyEvent& event) {
   // Remap positional keys in the current layout to the corresponding US layout

@@ -69,6 +69,14 @@
                                       pendingPrerewrittenKeyEvent.*)]]"
           has-launcher-button="[[hasLauncherButton]]">
       </shortcut-input-key>
+      <template is="dom-if" if="[[hasFunctionKey]]">
+        <shortcut-input-key id="functionKey"
+            key="function"
+            key-state="[[getFunctionState(pendingKeyEvent.*,
+                                        pendingPrerewrittenKeyEvent.*)]]"
+            has-launcher-button="[[hasLauncherButton]]">
+        </shortcut-input-key>
+      </template>
       <div id="keySeparator"> + </div>
       <shortcut-input-key id="pendingKey"
           key="[[getKey(pendingKeyEvent.*, pendingPrerewrittenKeyEvent.*)]]"
