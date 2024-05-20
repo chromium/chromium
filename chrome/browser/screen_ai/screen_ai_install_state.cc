@@ -188,7 +188,6 @@ void ScreenAIInstallState::SetState(State state) {
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
-  DCHECK_EQ(state_, State::kDownloading);
   for (ScreenAIInstallState::Observer& observer : observers_) {
     observer.DownloadProgressChanged(progress);
   }
