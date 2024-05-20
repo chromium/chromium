@@ -70,6 +70,8 @@ source_set("platform") {
     "webrtc.h",
     "wifi_direct_medium.cc",
     "wifi_direct_medium.h",
+    "wifi_direct_server_socket.cc",
+    "wifi_direct_server_socket.h",
     "wifi_lan_medium.cc",
     "wifi_lan_medium.h",
     "wifi_lan_server_socket.cc",
