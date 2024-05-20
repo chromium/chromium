@@ -136,9 +136,24 @@ void WifiDirectMedium::OnGroupCreated(
     connection_.set_disconnect_handler(
         base::BindOnce(&WifiDirectMedium::OnDisconnect, base::Unretained(this)),
         task_runner_);
+
+    // Fetch the IPv4 address from the connection.
+    connection_->GetProperties(base::BindOnce(&WifiDirectMedium::OnProperties,
+                                              base::Unretained(this),
+                                              credentials, waitable_event));
+    return;
   }
 
   // Trigger sync signal.
+  waitable_event->Signal();
+}
+
+void WifiDirectMedium::OnProperties(
+    WifiDirectCredentials* credentials,
+    base::WaitableEvent* waitable_event,
+    ash::wifi_direct::mojom::WifiDirectConnectionPropertiesPtr properties) {
+  credentials->SetIPAddress(properties->ipv4_address);
+  credentials->SetGateway(properties->ipv4_address);
   waitable_event->Signal();
 }
 

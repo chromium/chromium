@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_DIRECT_MEDIUM_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_DIRECT_MEDIUM_H_
 
+#include "base/synchronization/waitable_event.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -53,6 +54,10 @@ class WifiDirectMedium : public api::WifiDirectMedium {
       ash::wifi_direct::mojom::WifiDirectOperationResult result,
       mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
           connection);
+  void OnProperties(
+      WifiDirectCredentials* credentials,
+      base::WaitableEvent* waitable_event,
+      ash::wifi_direct::mojom::WifiDirectConnectionPropertiesPtr properties);
 
   void OnDisconnect();
 

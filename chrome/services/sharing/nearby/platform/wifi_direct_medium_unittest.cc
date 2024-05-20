@@ -13,10 +13,16 @@
 
 namespace {
 
+constexpr char kTestIPv4Address[] = "127.0.0.1";
+
 class FakeWifiDirectConnection
     : public ash::wifi_direct::mojom::WifiDirectConnection {
   void GetProperties(GetPropertiesCallback callback) override {
-    NOTIMPLEMENTED();
+    auto properties =
+        ash::wifi_direct::mojom::WifiDirectConnectionProperties::New();
+    properties->ipv4_address = kTestIPv4Address;
+    properties->credentials = ash::wifi_direct::mojom::WifiCredentials::New();
+    std::move(callback).Run(std::move(properties));
   }
 
   void AssociateSocket(::mojo::PlatformHandle socket,
@@ -156,6 +162,8 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         WifiDirectCredentials credentials;
         EXPECT_TRUE(medium->StartWifiDirect(&credentials));
+        EXPECT_EQ(credentials.GetIPAddress(), kTestIPv4Address);
+        EXPECT_EQ(credentials.GetGateway(), kTestIPv4Address);
       },
       medium()));
 }
