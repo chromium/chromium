@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -438,8 +439,22 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        PressingEscRecordsHistogram) {
   const ui::Accelerator kEsc(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
+  views::Widget* bubble_widget = nullptr;
   RunTestSequence(
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
+      // Ensure that the bubble is active before trying to send an accelerator;
+      // widgets cannot accept accelerators before they become active.
+      // TODO(dfried): need to create a common WaitForActivation() verb.
+      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+               [&bubble_widget](views::View* view) {
+                 bubble_widget = view->GetWidget();
+               }),
+      If([&bubble_widget]() { return !bubble_widget->IsActive(); },
+         Steps(ObserveState(views::test::kCurrentWidgetFocus),
+               WaitForState(views::test::kCurrentWidgetFocus,
+                            [&bubble_widget]() {
+                              return bubble_widget->GetNativeView();
+                            }))),
       SendAccelerator(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting, kEsc),
       WaitForHide(

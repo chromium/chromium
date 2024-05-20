@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
       // Check that IPH shows, then open cookie controls bubble via icon.
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      PressButton(kCookieControlsIconElementId),
+      FlushEvents(), PressButton(kCookieControlsIconElementId),
       // Cookie controls bubble should show and IPH should close.
       InAnyContext(
           WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),

@@ -128,10 +128,11 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       ShowHelpBubble(kTabGroupEditorBubbleId, std::move(params)),
       // Activate the help bubble. This should not cause the editor to close.
       ActivateSurface(HelpBubbleView::kHelpBubbleElementIdForTesting),
-      // Re-Activate the dialog.
-      ActivateSurface(kTabGroupEditorBubbleId),
       // Close the help bubble.
       CloseHelpBubble(),
+      // Re-Activate the dialog. It may or may not receive activation when the
+      // help bubble closes.
+      ActivateSurface(kTabGroupEditorBubbleId),
       // Now that the help bubble is gone, locate the editor again and transfer
       // activation to its primary window widget (the browser window) - this
       // should close the editor as it is no longer pinned by the help bubble.

@@ -1000,21 +1000,22 @@ void HelpBubbleView::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
 #if BUILDFLAG(IS_LINUX)
   // Help bubbles anchored to menus may be clipped to their anchors' bounds,
   // resulting in visual errors, unless they use accelerated rendering. See
-  // crbug.com/1445770 for details.
+  // crbug.com/1445770 for details. This also applies to bubbles anchored to
+  // all accelerated windows below a certain size, especially those which are
+  // not top-level application windows (see crbug.com/340523110).
   //
-  // In Views, [nearly] all menus have a scroll container as their root view.
-  // Key off of this in order to minimize the number of widgets that are forced
-  // to be accelerated. Accelerated widgets are "desktop native" widgets and
-  // interact with the OS window activation system; this is, in turn, a problem
-  // for Linux because of known technical limitations around window activation.
+  // Because it is not possible to know exactly if a bubble will correctly fit
+  // in the bounds of its ancestor accelerator widget, due to things like
+  // anchor positioning and the possibility that a window size could change,
+  // make all Linux help bubbles accelerated.
   //
-  // See the following bug for more information regarding window activation
-  // issues in Weston, the windowing environment used on chrome's Wayland
-  // testbots:
+  // Note: accelerated widgets are "desktop native" widgets and interact with
+  // the OS window activation system; this is, in turn, a problem for Linux
+  // because of known technical limitations around window activation. See the
+  // following bug for more information regarding window activation issues in
+  // Weston, the windowing environment used on chrome's Wayland test-bots:
   // https://gitlab.freedesktop.org/wayland/weston/-/issues/669
-  if (GetAnchorAsMenuItem(this) != nullptr) {
-    params->use_accelerated_widget_override = true;
-  }
+  params->use_accelerated_widget_override = true;
 #endif
 }
 
