@@ -528,10 +528,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
                 GetElement()->GetExecutionContext()) &&
             GetElement()->GetExecutionContext()->IsSecureContext() &&
-            !GetElement()
-                 ->GetExecutionContext()
-                 ->GetSecurityOrigin()
-                 ->IsOpaque();
+            !SecurityOrigin::Create(url)->IsOpaque();
         resource_request.SetSharedStorageWritableOptedIn(
             shared_storage_writable_opted_in);
       }

@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -579,7 +580,7 @@ Request* Request::CreateRequestWithRequestOrString(
           " in secure contexts.");
       return nullptr;
     }
-    if (origin->IsOpaque()) {
+    if (SecurityOrigin::Create(request->Url())->IsOpaque()) {
       exception_state.ThrowTypeError(
           "sharedStorageWritable: sharedStorage operations are not available"
           " for opaque origins.");
