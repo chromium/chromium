@@ -26,7 +26,6 @@ enum class ExceptionContextType : int16_t {
   kIndexedPropertySetter,
   kIndexedPropertyDefiner,
   kIndexedPropertyDeleter,
-  kIndexedPropertyQuery,
   kNamedPropertyGetter,
   kNamedPropertyDescriptor,
   kNamedPropertySetter,
@@ -70,7 +69,6 @@ class PLATFORM_EXPORT ExceptionContext final {
       case ExceptionContextType::kIndexedPropertySetter:
       case ExceptionContextType::kIndexedPropertyDefiner:
       case ExceptionContextType::kIndexedPropertyDeleter:
-      case ExceptionContextType::kIndexedPropertyQuery:
       case ExceptionContextType::kNamedPropertyGetter:
       case ExceptionContextType::kNamedPropertyDescriptor:
       case ExceptionContextType::kNamedPropertySetter:
