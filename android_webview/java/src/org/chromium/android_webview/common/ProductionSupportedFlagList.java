@@ -1002,6 +1002,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.CONCURRENT_VIEW_TRANSITIONS_SPA,
                 "Allows concurrent transitions in local frames rendered in the same process"),
         Flag.baseFeature("WebViewCookieManagerUseThreadPool"),
+        Flag.baseFeature("WebViewVizUseThreadPool"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
