@@ -3991,6 +3991,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"stop-app-indexing-report", flag_descriptions::kStopAppIndexingReportName,
      flag_descriptions::kStopAppIndexingReportDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kStopAppIndexingReport)},
+    {"omnibox-rich-autocompletion-android",
+     flag_descriptions::kRichAutocompletionAndroidName,
+     flag_descriptions::kRichAutocompletionAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kRichAutocompletion)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

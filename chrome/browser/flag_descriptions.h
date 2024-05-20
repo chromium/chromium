@@ -2629,6 +2629,9 @@ extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
 
+extern const char kRichAutocompletionAndroidName[];
+extern const char kRichAutocompletionAndroidDescription[];
+
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[];
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
 

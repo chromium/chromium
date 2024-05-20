@@ -4432,6 +4432,12 @@ const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
     "Allow revoking site-level notification permission if Chrome has no "
     "app-level notification permission on Android.";
 
+const char kRichAutocompletionAndroidName[] =
+    "Omnibox rich inline autocompletion on Android";
+const char kRichAutocompletionAndroidDescription[] =
+    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
+    "to any type of input that users repeatedly use to get to specific URLs.";
+
 const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[] =
     "Safe Browsing new GMS API for browse URL database check";
 const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[] =
