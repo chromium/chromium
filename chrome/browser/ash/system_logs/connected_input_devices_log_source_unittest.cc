@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
+
 #include <functional>
+#include <memory>
 #include <set>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -29,32 +33,59 @@ class ConnectedInputDevicesLogSourceTest : public ::testing::Test {
       const ConnectedInputDevicesLogSourceTest&) = delete;
   ConnectedInputDevicesLogSourceTest& operator=(
       const ConnectedInputDevicesLogSourceTest&) = delete;
-  ~ConnectedInputDevicesLogSourceTest() override = default;
+  ~ConnectedInputDevicesLogSourceTest() override {
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
+    base::RunLoop().RunUntilIdle();
+  }
 
-  void SetUp() override { ui::DeviceDataManager::CreateInstance(); }
+  void SetUp() override {
+    ui::DeviceDataManager::CreateInstance();
+    ash::cros_healthd::FakeCrosHealthd::Initialize();
+  }
 
   void TearDown() override { ui::DeviceDataManager::DeleteInstance(); }
 
+  void SetCrosHealthdTouchpad(ash::cros_healthd::mojom::TelemetryInfoPtr& info,
+                              std::string driver_name) {
+    auto input_info = ash::cros_healthd::mojom::InputInfo::New();
+    input_info->touchpad_devices =
+        std::vector<ash::cros_healthd::mojom::TouchpadDevicePtr>{};
+
+    auto touchpad_device = ash::cros_healthd::mojom::TouchpadDevice::New();
+    touchpad_device->driver_name = driver_name;
+    auto touchpad_input_device = ash::cros_healthd::mojom::InputDevice::New();
+    touchpad_device->input_device = std::move(touchpad_input_device);
+
+    input_info->touchpad_devices->push_back(std::move(touchpad_device));
+
+    info->input_result = ash::cros_healthd::mojom::InputResult::NewInputInfo(
+        std::move(input_info));
+  }
+
  protected:
+  base::test::TaskEnvironment task_environment_;
+
   static const uint16_t unknown_vid;
   static const char unknown_vendor_name[];
 
   size_t num_callback_calls() const { return num_callback_calls_; }
   const SystemLogsResponse& response() const { return response_; }
 
-  SysLogsSourceCallback fetch_callback() {
+  SysLogsSourceCallback fetch_callback(base::OnceClosure quit_closure) {
     return base::BindOnce(&ConnectedInputDevicesLogSourceTest::OnFetchComplete,
-                          base::Unretained(this));
+                          base::Unretained(this), std::move(quit_closure));
   }
+
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
  private:
-  void OnFetchComplete(std::unique_ptr<SystemLogsResponse> response) {
+  void OnFetchComplete(base::OnceClosure quit_closure,
+                       std::unique_ptr<SystemLogsResponse> response) {
     ++num_callback_calls_;
     response_ = *response;
+    std::move(quit_closure).Run();
   }
 
-  // Creates the necessary browser threads.
-  content::BrowserTaskEnvironment task_environment_;
   // Used to verify that OnGetFeedbackData was called the correct number of
   // times.
   size_t num_callback_calls_ = 0;
@@ -71,19 +102,27 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single) {
   const std::string vendor_name = "Synaptics";
   const uint16_t vid = 0x06cb;
   const uint16_t pid = 0x685f;
+  const std::string driver_name = "SynPS/2";
 
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({ui::TouchpadDevice(
       /*id=*/1, ui::INPUT_DEVICE_INTERNAL, /*name=*/"", /*phys=*/"",
       /*sys_path=*/base::FilePath(), vid, pid, /*version=*/0)});
 
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  SetCrosHealthdTouchpad(telem_info, driver_name);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
-  ASSERT_EQ(2U, response().size());
+  ASSERT_EQ(3U, response().size());
 
   auto it = response().find("TOUCHPAD_VENDOR");
   ASSERT_NE(it, response().end());
@@ -91,6 +130,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single) {
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(driver_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -102,6 +143,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_other_ext) {
   const uint16_t t1_pid = 0x3b1d;
   const uint16_t t2_vid = 0x0457;
   const uint16_t t2_pid = 0x3462;
+  const std::string t1_driver_name = "driver1";
   const ui::TouchpadDevice tp1 = ui::TouchpadDevice(
       /*id=*/1, ui::INPUT_DEVICE_INTERNAL, /*name=*/"", /*phys=*/"",
       /*sys_path=*/base::FilePath(), t1_vid, t1_pid, /*version=*/0);
@@ -111,14 +153,23 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_other_ext) {
 
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({tp1, tp2});
 
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  // Currently healthD only pulls internal touchpad data, so only that needs
+  // to be set
+  SetCrosHealthdTouchpad(telem_info, t1_driver_name);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
-  ASSERT_EQ(2U, response().size());
+  ASSERT_EQ(3U, response().size());
 
   auto it = response().find("TOUCHPAD_VENDOR");
   ASSERT_NE(it, response().end());
@@ -126,6 +177,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_other_ext) {
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", t1_pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(t1_driver_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -137,6 +190,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_ts_ext) {
   const uint16_t tp_pid = 0x323b;
   const uint16_t ts_vid = 0x056a;
   const uint16_t ts_pid = 0xd4f4;
+  const std::string driver_name = "ElanPS/2";
   const ui::TouchpadDevice tp = ui::TouchpadDevice(
       /*id=*/1, ui::INPUT_DEVICE_INTERNAL, /*name=*/"", /*phys=*/"",
       /*sys_path=*/base::FilePath(), tp_vid, tp_pid, /*version=*/0);
@@ -148,14 +202,21 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_ts_ext) {
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices({{ts, gfx::Size(),
                                                          /*touch_points=*/0}});
 
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  SetCrosHealthdTouchpad(telem_info, driver_name);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
-  ASSERT_EQ(2U, response().size());
+  ASSERT_EQ(3U, response().size());
 
   auto it = response().find("TOUCHPAD_VENDOR");
   ASSERT_NE(it, response().end());
@@ -163,6 +224,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_ts_ext) {
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", tp_pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(driver_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -181,8 +244,9 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single) {
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -194,6 +258,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single) {
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(it, response().end());
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -221,8 +287,9 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_other_ext) {
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -234,6 +301,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_other_ext) {
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", t1_pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(it, response().end());
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -258,8 +327,9 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_tp_ext) {
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -271,6 +341,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_tp_ext) {
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", ts_pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(it, response().end());
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -280,6 +352,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
   const std::string tp_vendor_name = "Zinitix";
   const uint16_t tp_vid = 0x14e5;
   const uint16_t tp_pid = 0x0901;
+  std::string driver_name = "psmouse";
   const std::string ts_vendor_name = "Google";
   const uint16_t ts_vid = 0x18d1;
   const uint16_t ts_pid = 0x5400;
@@ -294,14 +367,21 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
       {{input, gfx::Size(), /*touch_points=*/0}});
 
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  SetCrosHealthdTouchpad(telem_info, driver_name);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
-  ASSERT_EQ(4U, response().size());
+  ASSERT_EQ(5U, response().size());
 
   auto it = response().find("TOUCHPAD_VENDOR");
   ASSERT_NE(it, response().end());
@@ -315,6 +395,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", ts_pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(driver_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -322,19 +404,27 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
 
 TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_unknown_vendor_single) {
   const uint16_t pid = 0x0002;
+  std::string driver_name = "psmouse";
 
   ui::DeviceDataManagerTestApi().SetTouchpadDevices({ui::TouchpadDevice(
       /*id=*/1, ui::INPUT_DEVICE_INTERNAL, /*name=*/"", /*phys=*/"",
       /*sys_path=*/base::FilePath(), unknown_vid, pid, /*version=*/0)});
 
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  SetCrosHealthdTouchpad(telem_info, driver_name);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
-  ASSERT_EQ(2U, response().size());
+  ASSERT_EQ(3U, response().size());
 
   auto it = response().find("TOUCHPAD_VENDOR");
   ASSERT_NE(it, response().end());
@@ -342,6 +432,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_unknown_vendor_single) {
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(driver_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -358,8 +450,9 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_unknown_vendor_single) {
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -371,6 +464,8 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_unknown_vendor_single) {
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(it, response().end());
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -394,8 +489,9 @@ TEST_F(ConnectedInputDevicesLogSourceTest, No_internal_touch_input) {
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
-  source.Fetch(fetch_callback());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
 
   /* Verify fetch_callback() has been called. */
   EXPECT_EQ(1U, num_callback_calls());

@@ -7,19 +7,22 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/devices/input_device.h"
 
 namespace system_logs {
 
 class ConnectedInputDevicesLogSource : public SystemLogsSource {
  public:
-  ConnectedInputDevicesLogSource() : SystemLogsSource("Input") {}
+  ConnectedInputDevicesLogSource();
   ConnectedInputDevicesLogSource(const ConnectedInputDevicesLogSource&) =
       delete;
   ConnectedInputDevicesLogSource& operator=(
       const ConnectedInputDevicesLogSource&) = delete;
-  ~ConnectedInputDevicesLogSource() override = default;
+  ~ConnectedInputDevicesLogSource() override;
   // Overridden from SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
 
@@ -28,6 +31,19 @@ class ConnectedInputDevicesLogSource : public SystemLogsSource {
                                  SystemLogsResponse* response,
                                  const std::string& vendor_str,
                                  const std::string& pid_str);
+
+  void OnTelemetryInfoProbeResponse(
+      base::OnceCallback<void(const std::string&)> callback,
+      ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+
+  void OnDisconnect();
+
+  ash::cros_healthd::mojom::CrosHealthdProbeService* GetCrosHealthdService();
+
+  mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
+      probe_service_;
+
+  base::WeakPtrFactory<ConnectedInputDevicesLogSource> weak_ptr_factory_{this};
 };
 
 }  // namespace system_logs
