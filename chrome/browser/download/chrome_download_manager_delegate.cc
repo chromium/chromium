@@ -99,7 +99,6 @@
 #include "base/android/build_info.h"
 #include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
-#include "base/process/process_handle.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_controller.h"
@@ -635,14 +634,9 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
           profile_->GetPrefs()->GetString(prefs::kDefaultCharset),
           download->GetSuggestedFilename(), download->GetMimeType(),
           l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
-      if (profile_->IsOffTheRecord()) {
-        download_path = download->GetDownloadFile()->FullPath();
-      } else {
-        base::FilePath cache_dir;
-        base::android::GetCacheDirectory(&cache_dir);
-        download_path =
-            cache_dir.Append(kPdfDirName).Append(generated_filename);
-      }
+      base::FilePath cache_dir;
+      base::android::GetCacheDirectory(&cache_dir);
+      download_path = cache_dir.Append(kPdfDirName).Append(generated_filename);
       action = DownloadPathReservationTracker::UNIQUIFY;
     } else {
       action = DownloadPathReservationTracker::OVERWRITE;

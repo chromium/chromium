@@ -717,34 +717,30 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
   if (info->transient && !info->is_must_download &&
       delegate_->ShouldOpenPdfInline() &&
       base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
-    if (IsOffTheRecord()) {
-      info->save_info->use_in_memory_file = true;
-    } else {
-      for (const auto& iter : downloads_by_guid_) {
-        download::DownloadItem* item = iter.second;
-        if (item->GetFileExternallyRemoved() ||
-            item->GetState() != download::DownloadItem::COMPLETE) {
-          continue;
-        }
-
-        if (item->GetMimeType() != kPdfMimeType ||
-            item->GetUrlChain() != info->url_chain) {
-          continue;
-        }
-
-        if (!item->IsTransient() || item->IsMustDownload()) {
-          continue;
-        }
-
-        disk_access_task_runner_->PostTaskAndReplyWithResult(
-            FROM_HERE,
-            base::BindOnce(&base::PathExists, item->GetTargetFilePath()),
-            base::BindOnce(&DownloadManagerImpl::CreateNewDownloadItemToStart,
-                           weak_factory_.GetWeakPtr(), std::move(info),
-                           std::move(on_started), std::move(callback), id,
-                           item->GetTargetFilePath()));
-        return;
+    for (const auto& iter : downloads_by_guid_) {
+      download::DownloadItem* item = iter.second;
+      if (item->GetFileExternallyRemoved() ||
+          item->GetState() != download::DownloadItem::COMPLETE) {
+        continue;
       }
+
+      if (item->GetMimeType() != kPdfMimeType ||
+          item->GetUrlChain() != info->url_chain) {
+        continue;
+      }
+
+      if (!item->IsTransient() || item->IsMustDownload()) {
+        continue;
+      }
+
+      disk_access_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&base::PathExists, item->GetTargetFilePath()),
+          base::BindOnce(&DownloadManagerImpl::CreateNewDownloadItemToStart,
+                         weak_factory_.GetWeakPtr(), std::move(info),
+                         std::move(on_started), std::move(callback), id,
+                         item->GetTargetFilePath()));
+      return;
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

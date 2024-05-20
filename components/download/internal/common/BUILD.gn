@@ -98,8 +98,6 @@ source_set("internal") {
     sources += [
       "android/download_collection_bridge.cc",
       "android/download_collection_bridge.h",
-      "in_memory_download_file.cc",
-      "in_memory_download_file.h",
     ]
 
     deps += [ ":jni_headers" ]
@@ -120,7 +118,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
       "android/java/src/org/chromium/components/download/DownloadDelegate.java",
-      "android/java/src/org/chromium/components/download/InMemoryDownloadFile.java",
     ]
 
     deps = [
@@ -134,10 +131,7 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [
-      "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
-      "android/java/src/org/chromium/components/download/InMemoryDownloadFile.java",
-    ]
+    sources = [ "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java" ]
   }
 }
 

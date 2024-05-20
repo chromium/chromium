@@ -89,9 +89,6 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
   // the location will be determined automatically using |file_path| as a
   // basis if |file_path| is not empty.
   bool prompt_for_save_location = false;
-
-  // Whether the file should be stored in memory.
-  bool use_in_memory_file = false;
 };
 
 }  // namespace download
