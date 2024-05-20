@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/photos/model/photos_policy.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -716,7 +717,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(
       prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, false);
-  registry->RegisterIntegerPref(prefs::kIosParcelTrackingOptInStatus, 2);
+  registry->RegisterIntegerPref(
+      prefs::kIosParcelTrackingOptInStatus,
+      static_cast<int>(IOSParcelTrackingOptInStatus::kStatusNotSet));
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptSwipedDown,
                                 false);
 

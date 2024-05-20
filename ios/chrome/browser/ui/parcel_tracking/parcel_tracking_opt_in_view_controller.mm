@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller_delegate.h"
@@ -115,6 +115,7 @@ CGFloat const kRadioButtonSize = 20;
       [self.delegate askToTrackTapped];
       break;
     case IOSParcelTrackingOptInStatus::kNeverTrack:
+    case IOSParcelTrackingOptInStatus::kStatusNotSet:
       NOTREACHED_IN_MIGRATION();
       break;
   }

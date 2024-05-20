@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/parcel_tracking/tracking_source.h"
@@ -2701,6 +2702,7 @@ enum class ToolbarKind {
                                                      kAskedToTrackPackage];
       break;
     case IOSParcelTrackingOptInStatus::kNeverTrack:
+    case IOSParcelTrackingOptInStatus::kStatusNotSet:
       // Do not display infobar.
       break;
   }

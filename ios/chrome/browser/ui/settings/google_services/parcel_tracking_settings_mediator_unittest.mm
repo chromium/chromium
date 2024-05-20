@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_mediator.h"
 
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -56,7 +56,8 @@ class ParcelTrackingSettingsMediatorUnittest : public PlatformTest {
 TEST_F(ParcelTrackingSettingsMediatorUnittest, TestLoadModel) {
   mediator_.consumer = consumer_;
 
-  EXPECT_EQ(consumer_.latestStatus, IOSParcelTrackingOptInStatus::kAskToTrack);
+  EXPECT_EQ(consumer_.latestStatus,
+            IOSParcelTrackingOptInStatus::kStatusNotSet);
 
   [mediator_ disconnect];
 }

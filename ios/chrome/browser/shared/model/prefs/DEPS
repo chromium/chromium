@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/photos/model/photos_policy.h",
   "+ios/chrome/browser/drive/model/drive_policy.h",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
+  "+ios/chrome/browser/parcel_tracking",
 ]
 
 specific_include_rules = {

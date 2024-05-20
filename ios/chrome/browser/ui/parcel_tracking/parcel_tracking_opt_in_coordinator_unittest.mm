@@ -9,7 +9,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

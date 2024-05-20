@@ -44,6 +44,10 @@ source_set("parcel_tracking_step") {
   sources = [ "parcel_tracking_step.h" ]
 }
 
+source_set("opt_in_status") {
+  sources = [ "parcel_tracking_opt_in_status.h" ]
+}
+
 source_set("prefs") {
   sources = [
     "parcel_tracking_prefs.h",
@@ -62,6 +66,7 @@ source_set("util") {
   ]
   deps = [
     ":metrics",
+    ":opt_in_status",
     ":prefs",
     ":tracking_source",
     "//base",
