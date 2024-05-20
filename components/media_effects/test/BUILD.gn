@@ -12,6 +12,8 @@ source_set("test_support") {
     "fake_audio_system_info.h",
     "fake_video_capture_service.cc",
     "fake_video_capture_service.h",
+    "fake_video_source.cc",
+    "fake_video_source.h",
     "fake_video_source_provider.cc",
     "fake_video_source_provider.h",
     "scoped_media_device_info.cc",
@@ -24,6 +26,7 @@ source_set("test_support") {
     "//components/media_effects:media_effects",
     "//content/public/browser",
     "//services/audio/public/cpp:test_support",
+    "//services/video_capture/public/cpp:mocks",
     "//services/video_capture/public/mojom",
   ]
 }

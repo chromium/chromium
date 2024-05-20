@@ -11,6 +11,7 @@ include_rules = [
   "+mojo/public/cpp/bindings",
   "+services/audio/public/cpp/fake_system_info.h",
   "+services/audio/public/mojom",
+  "+services/video_capture/public/cpp",
   "+services/video_capture/public/mojom",
   "+services/video_effects/public/mojom",
   "+services/video_effects/test",
