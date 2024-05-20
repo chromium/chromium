@@ -307,47 +307,56 @@ std::u16string GetSixPackKeyName(ui::KeyboardCode key_code) {
   }
 }
 
-std::u16string GetSixPackShortcutUpdatedString(
-    ui::KeyboardCode key_code,
-    SixPackShortcutModifier blocked_modifier) {
-  CHECK(blocked_modifier != SixPackShortcutModifier::kNone);
-  std::u16string input_key_string;
+std::u16string GetSixPackShortcutUpdatedString(ui::KeyboardCode key_code) {
   switch (key_code) {
     case ui::VKEY_PRIOR:
-      return blocked_modifier == SixPackShortcutModifier::kSearch
-                 ? l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_UP_NUDGE_DESCRIPTION)
-                 : l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_UP_NUDGE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_UP_NUDGE_DESCRIPTION);
     case ui::VKEY_NEXT:
-      return blocked_modifier == SixPackShortcutModifier::kSearch
-                 ? l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_DOWN_NUDGE_DESCRIPTION)
-                 : l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_DOWN_NUDGE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_DOWN_NUDGE_DESCRIPTION);
     case ui::VKEY_HOME:
-      return blocked_modifier == SixPackShortcutModifier::kSearch
-                 ? l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_LEFT_NUDGE_DESCRIPTION)
-                 : l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_LEFT_NUDGE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_HOME_NUDGE_DESCRIPTION);
     case ui::VKEY_END:
-      return blocked_modifier == SixPackShortcutModifier::kSearch
-                 ? l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_RIGHT_NUDGE_DESCRIPTION)
-                 : l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_RIGHT_NUDGE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_END_NUDGE_DESCRIPTION);
     case ui::VKEY_DELETE:
-      return blocked_modifier == SixPackShortcutModifier::kSearch
-                 ? l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_BACKSPACE_NUDGE_DESCRIPTION)
-                 : l10n_util::GetStringUTF16(
-                       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_BACKSPACE_NUDGE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION);
     case ui::VKEY_INSERT:
       return l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_SHIFT_BACKSPACE_NUDGE_DESCRIPTION);
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION);
     default:
       NOTREACHED_NORETURN();
+  }
+}
+
+void InsertSixPackShortcutKeyboardCodes(
+    ui::KeyboardCode key_code,
+    std::vector<ui::KeyboardCode>& keyboard_codes) {
+  switch (key_code) {
+    case ui::VKEY_PRIOR:
+      keyboard_codes.push_back(ui::VKEY_UP);
+      break;
+    case ui::VKEY_NEXT:
+      keyboard_codes.push_back(ui::VKEY_DOWN);
+      break;
+    case ui::VKEY_HOME:
+      keyboard_codes.push_back(ui::VKEY_LEFT);
+      break;
+    case ui::VKEY_END:
+      keyboard_codes.push_back(ui::VKEY_RIGHT);
+      break;
+    case ui::VKEY_DELETE:
+      keyboard_codes.push_back(ui::VKEY_BACK);
+      break;
+    case ui::VKEY_INSERT:
+      keyboard_codes.push_back(ui::VKEY_SHIFT);
+      keyboard_codes.push_back(ui::VKEY_BACK);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -1065,7 +1074,7 @@ void InputDeviceSettingsNotificationController::ShowTopRowRewritingNudge() {
   AnchoredNudgeData nudge_data(
       kTopRowKeyNoMatchNudgeId, NudgeCatalogName::kSearchTopRowKeyPressed,
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION));
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
 
@@ -1131,11 +1140,14 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
   prefs->SetInteger(shown_count_pref_name, shown_count + 1);
   prefs->SetTime(last_shown_time_pref_name, now);
 
-  AnchoredNudgeData nudge_data(
-      kSixPackKeyNoMatchNudgeId, NudgeCatalogName::kSixPackRemappingPressed,
-      GetSixPackShortcutUpdatedString(key_code, old_matched_modifier));
+  AnchoredNudgeData nudge_data(kSixPackKeyNoMatchNudgeId,
+                               NudgeCatalogName::kSixPackRemappingPressed,
+                               GetSixPackShortcutUpdatedString(key_code));
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
+  std::vector<ui::KeyboardCode> keyboard_codes = {ui::VKEY_FUNCTION};
+  InsertSixPackShortcutKeyboardCodes(key_code, keyboard_codes);
+  nudge_data.keyboard_codes = std::move(keyboard_codes);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
@@ -1170,6 +1182,7 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION));
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
+  nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }

@@ -84,7 +84,7 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
   if (key_label)
     return key_label.value();
 
-  return ash::KeycodeToKeyString(key_code, remap_positional_key);
+  return ash::GetKeyDisplay(key_code, remap_positional_key);
 }
 
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {

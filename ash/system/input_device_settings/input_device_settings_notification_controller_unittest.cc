@@ -636,7 +636,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_SHIFT_BACKSPACE_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION));
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
@@ -651,7 +651,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_BACKSPACE_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION));
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
@@ -662,7 +662,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_LEFT_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_HOME_NUDGE_DESCRIPTION));
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
@@ -673,7 +673,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_RIGHT_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_END_NUDGE_DESCRIPTION));
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
@@ -684,7 +684,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
       l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_UP_NUDGE_DESCRIPTION));
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_UP_NUDGE_DESCRIPTION));
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
