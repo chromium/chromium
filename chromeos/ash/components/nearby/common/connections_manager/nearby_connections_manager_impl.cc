@@ -1095,13 +1095,12 @@ void NearbyConnectionsManagerImpl::OnBandwidthChangedV3(
         << "; endpoint_id=" << endpoint_id;
     on_bandwidth_changed_endpoint_ids_v3_.emplace(endpoint_id);
   } else {
-    // TODO(b/325534442): Emit to a metric in the same that v1
-    // `NearbyConnectionsManagerImpl::OnBandwidthChanged()` emits
-    // "Nearby.Share.Medium.ChangedToMedium".
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": (V3) Changed to medium=" << bandwidth_info->medium
         << " , quality=" << bandwidth_info->quality
         << "; endpoint_id=" << endpoint_id;
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.V3.Medium.ChangedToMedium", bandwidth_info->medium);
     current_upgraded_mediums_v3_.insert_or_assign(endpoint_id,
                                                   bandwidth_info->medium);
 

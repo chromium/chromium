@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -2175,6 +2176,7 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionRequestedV3) {
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
+  base::HistogramTester histogram_tester;
   mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
   mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
 
@@ -2227,11 +2229,15 @@ TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
       presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kMedium,
                                                      Medium::kBluetooth));
+  histogram_tester.ExpectTotalCount(
+      "Nearby.Connections.V3.Medium.ChangedToMedium", 0);
   connection_listener_v3_remote->OnBandwidthChangedV3(
       presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kHigh,
                                                      Medium::kWebRtc));
   bandwidth_run_loop.Run();
+  histogram_tester.ExpectBucketCount(
+      "Nearby.Connections.V3.Medium.ChangedToMedium", Medium::kWebRtc, 1);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, PayloadListenerV3RemoteCallbacks) {

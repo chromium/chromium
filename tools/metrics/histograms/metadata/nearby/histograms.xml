@@ -315,6 +315,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.V3.Medium.ChangedToMedium"
+    enum="NearbyConnectionsMedium" expires_after="2025-05-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the data-transfer medium that the Nearby Connections library
+    successfully switches to for V3 connections. Emitted when the Nearby
+    Connections library notifies of a bandwidth upgrade.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2024-07-10">
   <owner>hansenmichael@google.com</owner>

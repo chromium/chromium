@@ -274,6 +274,8 @@ enum BandwidthQuality {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// This enum should be kept in sync with the `NearbyConnectionsMedium` enum at
+// //tools/metrics/histograms/metadata/nearby/enums.xml
 enum Medium {
   kUnknown = 0,
   kMdns = 1,
