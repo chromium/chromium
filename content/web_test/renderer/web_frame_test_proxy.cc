@@ -787,14 +787,24 @@ void WebFrameTestProxy::BlockTestUntilStart() {
 void WebFrameTestProxy::StartTest() {
   CHECK(!should_block_parsing_in_next_commit_);
   GetWebFrame()->FlushInputForTesting(base::BindOnce(
-      [](base::WeakPtr<RenderFrameImpl> render_frame) {
-        if (!render_frame || !render_frame->GetWebFrame()) {
+      [](base::WeakPtr<RenderFrameImpl> render_frame,
+         const TestRunner* test_runner) {
+        if (!render_frame) {
           return;
         }
 
-        render_frame->GetWebFrame()->ResumeParserForTesting();
+        auto* web_frame = render_frame->GetWebFrame();
+        if (!web_frame) {
+          return;
+        }
+
+        web_frame->ResumeParserForTesting();
+
+        if (test_runner->IsPrinting()) {
+          web_frame->WillPrintSoon();
+        }
       },
-      GetWeakPtr()));
+      GetWeakPtr(), this->test_runner_));
 }
 
 blink::FrameWidgetTestHelper*

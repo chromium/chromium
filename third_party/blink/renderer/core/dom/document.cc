@@ -3373,7 +3373,24 @@ bool Document::WillPrintSoon() {
     loading_for_print_ = loading_for_print_ || view->LoadAllLazyLoadedIframes();
   }
 
+  loading_for_print_ =
+      loading_for_print_ || InitiateStyleOrLayoutDependentLoadForPrint();
+
   return loading_for_print_;
+}
+
+bool Document::InitiateStyleOrLayoutDependentLoadForPrint() {
+  if (auto* view = View()) {
+    view->AdjustMediaTypeForPrinting(true);
+    UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+
+    view->AdjustMediaTypeForPrinting(false);
+    UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+
+    return !ShouldComplete();
+  }
+
+  return false;
 }
 
 void Document::SetPrinting(PrintingState state) {

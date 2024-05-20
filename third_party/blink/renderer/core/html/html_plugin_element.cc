@@ -936,9 +936,11 @@ const ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
       OriginalStyleForLayoutObject(style_recalc_context);
   if (IsImageType() && !GetLayoutObject() && style &&
       LayoutObjectIsNeeded(*style)) {
-    if (!image_loader_)
+    if (!image_loader_) {
       image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
-    image_loader_->UpdateFromElement();
+    }
+    image_loader_->UpdateFromElement(ImageLoader::kUpdateNormal,
+                                     /* force_blocking */ true);
   }
   return style;
 }

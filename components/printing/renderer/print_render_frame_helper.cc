@@ -1255,15 +1255,34 @@ void PrintRenderFrameHelper::BindPrintRenderFrameReceiver(
 }
 
 void PrintRenderFrameHelper::PrintRequestedPages() {
+  PrintRequestedPagesInternal(/*already_notified_frame=*/false);
+}
+
+void PrintRenderFrameHelper::PrintRequestedPagesInternal(
+    bool already_notified_frame) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
     return;
+  }
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
-  // Don't print if the RenderFrame is gone.
-  if (render_frame_gone_)
-    return;
+
+  if (!already_notified_frame) {
+    frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+    // Don't print if the RenderFrame is gone.
+    if (render_frame_gone_) {
+      return;
+    }
+
+    is_loading_ = frame->WillPrintSoon();
+    if (is_loading_) {
+      on_stop_loading_closure_ = base::BindOnce(
+          &PrintRenderFrameHelper::PrintRequestedPagesInternal,
+          weak_ptr_factory_.GetWeakPtr(), /*already_notified_frame=*/true);
+      SetupOnStopLoadingTimeout();
+      return;
+    }
+  }
 
   // If we are printing a frame with an internal PDF plugin element, find the
   // plugin node and print that instead.
@@ -2523,6 +2542,15 @@ void PrintRenderFrameHelper::PrintPageInternal(
   DCHECK(ret);
 }
 
+void PrintRenderFrameHelper::SetupOnStopLoadingTimeout() {
+  static constexpr base::TimeDelta kLoadEventTimeout = base::Seconds(2);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kLoadEventTimeout);
+}
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
   if (is_scripted_preview_delayed_) {
@@ -2530,19 +2558,6 @@ void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
     GetPrintManagerHost()->ShowScriptedPrintPreview(
         print_preview_context_.IsModifiable());
   }
-}
-
-void PrintRenderFrameHelper::WaitForLoad(PrintPreviewRequestType type) {
-  static constexpr base::TimeDelta kLoadEventTimeout = base::Seconds(2);
-
-  on_stop_loading_closure_ =
-      base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
-                     weak_ptr_factory_.GetWeakPtr(), type, true);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kLoadEventTimeout);
 }
 
 void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
@@ -2555,6 +2570,19 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     }
 
     is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
+    if (is_loading_) {
+      // Wait for DidStopLoading, for two reasons:
+      // * To give the document time to finish loading any pending resources
+      //   that are desired for printing.
+      // * Plugins may not know the correct `is_modifiable` value until they
+      //   are fully loaded, which occurs when DidStopLoading() is called.
+      //   Defer showing the preview until then.
+      on_stop_loading_closure_ =
+          base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
+                         weak_ptr_factory_.GetWeakPtr(), type, true);
+      SetupOnStopLoadingTimeout();
+      return;
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2578,16 +2606,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       //    loaded.
       RecordDebugEvent(DebugEvent::kRequestPrintPreviewScripted);
       is_scripted_preview_delayed_ = true;
-      if (is_loading_) {
-        // Wait for DidStopLoading, for two reasons:
-        // * To give the document time to finish loading any pending resources
-        ///  that are desired for printing.
-        // * Plugins may not know the correct|is_modifiable| value until they
-        //   are fully loaded, which occurs when DidStopLoading() is called.
-        //   Defer showing the preview until then.
-        WaitForLoad(type);
-        return;
-      }
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
@@ -2618,12 +2636,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     case PrintPreviewRequestType::kUserInitiatedEntireFrame: {
       RecordDebugEvent(
           DebugEvent::kRequestPrintPreviewUserInitiatedEntireFrame);
-      // See comment under PRINT_PREVIEW_SCRIPTED.
-      if (is_loading_) {
-        WaitForLoad(type);
-        return;
-      }
-
       break;
     }
     case PrintPreviewRequestType::kUserInitiatedSelection: {
@@ -2636,12 +2648,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
     case PrintPreviewRequestType::kUserInitiatedContextNode: {
       RecordDebugEvent(
           DebugEvent::kRequestPrintPreviewUserInitiatedContextNode);
-      // See comment under PRINT_PREVIEW_SCRIPTED.
-      if (is_loading_) {
-        WaitForLoad(type);
-        return;
-      }
-
       params->webnode_only = true;
       break;
     }

@@ -2333,6 +2333,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ResizeObserver& GetLazyLoadedAutoSizedImgObserver();
 
+  // Initiates data loading for print that is dependent on style or layout.
+  // Returns true if data loading has started.
+  bool InitiateStyleOrLayoutDependentLoadForPrint();
+
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
   mutable std::optional<DocumentToken> token_;

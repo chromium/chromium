@@ -129,6 +129,8 @@ class TestRunner {
   // can be done locally in the renderer via DumpPixelsInRenderer().
   bool CanDumpPixelsFromRenderer() const;
 
+  bool IsPrinting() const;
+
 #if BUILDFLAG(ENABLE_PRINTING)
   // Returns the default page size to be used for printing. This is either the
   // size that was explicitly set via SetPrintingSize or the size of the frame

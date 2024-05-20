@@ -624,7 +624,8 @@ class PrintRenderFrameHelper
     int count_ = 0;
   };
 
-  void WaitForLoad(PrintPreviewRequestType type);
+  void SetupOnStopLoadingTimeout();
+  void PrintRequestedPagesInternal(bool already_notified_frame);
 
   ScriptingThrottler scripting_throttler_;
 
