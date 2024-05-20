@@ -285,9 +285,7 @@ base::Value::Dict ProjectorTranscript::ToJson() {
     hypothesis_parts_list.Append(HypothesisPartsToDict(hypothesis_part));
 
   transcript.Set(kHypothesisPartsKey, std::move(hypothesis_parts_list));
-  if (ash::features::IsProjectorV2Enabled()) {
-    transcript.Set(kGroupIdKey, group_id_);
-  }
+  transcript.Set(kGroupIdKey, group_id_);
   return transcript;
 }
 
@@ -300,19 +298,9 @@ void ProjectorMetadata::SetCaptionLanguage(const std::string& language) {
 
 void ProjectorMetadata::AddTranscript(
     std::unique_ptr<ProjectorTranscript> transcript) {
-  if (ash::features::IsProjectorV2Enabled()) {
-    std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts =
-        SplitTranscriptIntoSentences(std::move(transcript), caption_language_);
-    AddSentenceTranscripts(std::move(sentence_transcripts));
-    return;
-  }
-
-  if (should_mark_key_idea_) {
-    key_ideas_.push_back(std::make_unique<ProjectorKeyIdea>(
-        transcript->start_time(), transcript->end_time()));
-  }
-  transcripts_.push_back(std::move(transcript));
-  should_mark_key_idea_ = false;
+  std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts =
+      SplitTranscriptIntoSentences(std::move(transcript), caption_language_);
+  AddSentenceTranscripts(std::move(sentence_transcripts));
 }
 
 void ProjectorMetadata::AddSentenceTranscripts(
@@ -396,10 +384,8 @@ base::Value::Dict ProjectorMetadata::ToJson() {
   metadata.Set(kKeyIdeasKey, std::move(key_ideas_list));
   metadata.Set(kRecognitionStatus,
                static_cast<int>(speech_recognition_status_));
-  if (ash::features::IsProjectorV2Enabled()) {
-    metadata.Set(kMetadataVersionNumber,
-                 static_cast<int>(metadata_version_number_));
-  }
+  metadata.Set(kMetadataVersionNumber,
+               static_cast<int>(metadata_version_number_));
   return metadata;
 }
 

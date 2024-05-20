@@ -67,7 +67,6 @@ constexpr char kSpeechRecognitionEndStateServerBased[] =
     "Ash.Projector.SpeechRecognitionEndState.ServerBased";
 
 constexpr char kMetadataFileName[] = "MyScreencast";
-constexpr char kProjectorExtension[] = "projector";
 constexpr char kProjectorV2Extension[] = "screencast";
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
@@ -395,8 +394,6 @@ class ProjectorOnDlpRestrictionCheckedAtVideoEndTest
 };
 
 TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
-  // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kProjectorV2);
   bool wrap_up_by_speech_stopped;
   bool transcript_end_timed_out;
   switch (std::get<0>(GetParam())) {
@@ -485,7 +482,7 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
           EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
           // Expects notification gets resumed if recording deleted.
           const std::vector<base::FilePath> screencast_files = {
-              expected_path.AddExtension(kProjectorMetadataFileExtension),
+              expected_path.AddExtension(kProjectorV2MetadataFileExtension),
               expected_path.AddExtension(kProjectorMediaFileExtension),
               expected_path.DirName().Append(
                   kScreencastDefaultThumbnailFileName)};
@@ -543,8 +540,6 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool()));
 
 TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
-  // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kProjectorV2);
   InitializeRealMetadataController();
   metadata_controller_->OnRecordingStarted();
 
@@ -562,15 +557,13 @@ TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
 
   // Verify the written metadata file size is between 0-100 bytes. Change this
   // limit as needed if you make significant changes to the metadata file.
-  base::File file(metadata_file.AddExtension(kProjectorExtension),
+  base::File file(metadata_file.AddExtension(kProjectorV2Extension),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_GT(file.GetLength(), 0);
   EXPECT_LT(file.GetLength(), 100);
 }
 
 TEST_F(ProjectorControllerTest, TranscriptsTest) {
-  // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kProjectorV2);
   InitializeRealMetadataController();
   metadata_controller_->OnRecordingStarted();
 
@@ -593,7 +586,7 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
   // Verify the written metadata file size is between 400-500 bytes. This file
   // should be larger than the one in the NoTranscriptsTest above. Change this
   // limit as needed if you make significant changes to the metadata file.
-  base::File file(metadata_file.AddExtension(kProjectorExtension),
+  base::File file(metadata_file.AddExtension(kProjectorV2Extension),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_GT(file.GetLength(), 400);
   EXPECT_LT(file.GetLength(), 500);
@@ -641,8 +634,6 @@ TEST_F(ProjectorControllerTest, OnDriveMountFailed) {
 }
 
 TEST_F(ProjectorControllerTest, SuppressDriveNotification) {
-  // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kProjectorV2);
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
@@ -664,7 +655,7 @@ TEST_F(ProjectorControllerTest, SuppressDriveNotification) {
 
   const std::vector<base::FilePath> screencast_files = {
       expected_path_with_no_extension.AddExtension(
-          kProjectorMetadataFileExtension),
+          kProjectorV2MetadataFileExtension),
       expected_path_with_no_extension.AddExtension(
           kProjectorMediaFileExtension),
       expect_container_path.Append(kScreencastDefaultThumbnailFileName)};

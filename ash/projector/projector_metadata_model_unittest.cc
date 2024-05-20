@@ -31,6 +31,7 @@ constexpr char kSerializedKeyIdeaTemplate[] = R"({
 
 constexpr char kSerializedTranscriptTemplate[] = R"({
   "endOffset": %i,
+  "groupId": %i,
   "startOffset": %i,
   "text": "%s",
   "hypothesisParts": %s
@@ -41,10 +42,11 @@ constexpr char kSerializedHypothesisPartTemplate[] = R"({
   "offset": %i
 })";
 
-constexpr char kCompleteMetadataTemplate[] = R"({
+constexpr char kCompleteMetadataTemplateWithStatus[] = R"({
     "captions": [
       {
         "endOffset": 3000,
+        "groupId": 1000,
         "hypothesisParts": [
           {
             "offset": 0,
@@ -64,6 +66,7 @@ constexpr char kCompleteMetadataTemplate[] = R"({
       },
       {
         "endOffset": 5000,
+        "groupId": 3000,
         "hypothesisParts": [
           {
             "offset": 0,
@@ -90,13 +93,8 @@ constexpr char kCompleteMetadataTemplate[] = R"({
     ],
     "captionLanguage": "en",
     "recognitionStatus": %i,
-    "tableOfContent": [
-      {
-        "endOffset": 5000,
-        "startOffset": 3000,
-        "text": ""
-      }
-    ]
+    "version": 2,
+    "tableOfContent": []
   })";
 
 constexpr char kCompleteMetadataV2Template[] = R"({
@@ -2296,10 +2294,11 @@ std::string BuildHypothesisPartsList(
 
 std::string BuildTranscriptJson(
     int start_offset,
+    int group_id,
     int end_offset,
     const std::string& text,
     const std::vector<media::HypothesisParts>& hypothesis_part) {
-  return base::StringPrintf(kSerializedTranscriptTemplate, end_offset,
+  return base::StringPrintf(kSerializedTranscriptTemplate, end_offset, group_id,
                             start_offset, text.c_str(),
                             BuildHypothesisPartsList(hypothesis_part).c_str());
 }
@@ -2551,13 +2550,6 @@ class ProjectorTranscriptTest : public testing::Test {
   ProjectorTranscriptTest(const ProjectorTranscriptTest&) = delete;
   ProjectorTranscriptTest& operator=(const ProjectorTranscriptTest&) = delete;
 
-  void SetUp() override {
-    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kProjectorV2});
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2569,8 +2561,8 @@ TEST_F(ProjectorTranscriptTest, ToJson) {
   hypothesis_parts.emplace_back(std::vector<std::string>({"text"}),
                                 base::Milliseconds(2000));
 
-  const auto expected_transcript =
-      BuildTranscriptJson(1000, 3000, "transcript text", hypothesis_parts);
+  const auto expected_transcript = BuildTranscriptJson(
+      1000, 1000, 3000, "transcript text", hypothesis_parts);
 
   ProjectorTranscript transcript(
       /*start_time=*/base::Milliseconds(1000),
@@ -2590,13 +2582,6 @@ class ProjectorMetadataTest : public testing::Test {
   ProjectorMetadataTest(const ProjectorMetadataTest&) = delete;
   ProjectorMetadataTest& operator=(const ProjectorMetadataTest&) = delete;
 
-  void SetUp() override {
-    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kProjectorV2});
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2606,26 +2591,26 @@ TEST_F(ProjectorMetadataTest, Serialize) {
 
   metadata->SetSpeechRecognitionStatus(RecognitionStatus::kIncomplete);
   AssertSerializedString(
-      base::StringPrintf(kCompleteMetadataTemplate,
+      base::StringPrintf(kCompleteMetadataTemplateWithStatus,
                          static_cast<int>(RecognitionStatus::kIncomplete)),
       metadata->Serialize());
 
   metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
   AssertSerializedString(
-      base::StringPrintf(kCompleteMetadataTemplate,
+      base::StringPrintf(kCompleteMetadataTemplateWithStatus,
                          static_cast<int>(RecognitionStatus::kComplete)),
       metadata->Serialize());
 
   metadata->SetSpeechRecognitionStatus(RecognitionStatus::kError);
   AssertSerializedString(
-      base::StringPrintf(kCompleteMetadataTemplate,
+      base::StringPrintf(kCompleteMetadataTemplateWithStatus,
                          static_cast<int>(RecognitionStatus::kError)),
       metadata->Serialize());
 
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
   // V2 feature flag not enabled, setting version number has no effort.
   AssertSerializedString(
-      base::StringPrintf(kCompleteMetadataTemplate,
+      base::StringPrintf(kCompleteMetadataTemplateWithStatus,
                          static_cast<int>(RecognitionStatus::kError)),
       metadata->Serialize());
 }
@@ -2636,13 +2621,6 @@ class ProjectorMetadataTestV2 : public testing::Test {
 
   ProjectorMetadataTestV2(const ProjectorMetadataTestV2&) = delete;
   ProjectorMetadataTestV2& operator=(const ProjectorMetadataTestV2&) = delete;
-
-  void SetUp() override {
-    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kProjectorV2},
-        /*disabled_features=*/{});
-  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;

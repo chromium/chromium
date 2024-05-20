@@ -8,7 +8,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_metrics.h"
@@ -148,9 +147,7 @@ NewScreencastPrecondition ServerBasedRecognitionAvailabilityToPrecondition(
 }
 
 const base::FilePath::StringPieceType getMetadataFileExtension() {
-  return ash::features::IsProjectorV2Enabled()
-             ? ash::kProjectorV2MetadataFileExtension
-             : ash::kProjectorMetadataFileExtension;
+  return ash::kProjectorV2MetadataFileExtension;
 }
 
 }  // namespace
