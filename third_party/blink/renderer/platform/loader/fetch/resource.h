@@ -194,6 +194,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
 
+  void UpdateResourceWidth(const AtomicString& resource_width);
+
   // Returns two priorities:
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from

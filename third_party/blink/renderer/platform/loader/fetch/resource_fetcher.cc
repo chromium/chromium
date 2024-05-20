@@ -1382,6 +1382,10 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     resource->DidChangePriority(resource_request.Priority(), 0);
   }
 
+  // The resource width can change after the request was initially created.
+  resource->UpdateResourceWidth(
+      resource_request.HttpHeaderField(AtomicString("sec-ch-width")));
+
   // If only the fragment identifiers differ, it is the same resource.
   DCHECK(EqualIgnoringFragmentIdentifier(resource->Url(), params.Url()));
   if (policy == RevalidationPolicy::kUse &&

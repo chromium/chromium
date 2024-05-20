@@ -1090,6 +1090,15 @@ void Resource::DidChangePriority(ResourceLoadPriority load_priority,
     loader_->DidChangePriority(load_priority, intra_priority_value);
 }
 
+void Resource::UpdateResourceWidth(const AtomicString& resource_width) {
+  if (resource_width) {
+    resource_request_.SetHttpHeaderField(AtomicString("sec-ch-width"),
+                                         resource_width);
+  } else {
+    resource_request_.ClearHttpHeaderField(AtomicString("sec-ch-width"));
+  }
+}
+
 // TODO(toyoshim): Consider to generate automatically. https://crbug.com/675515.
 static const char* InitiatorTypeNameToString(
     const AtomicString& initiator_type_name) {
