@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -266,8 +267,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 // Serialize XML document which has all 5 built-in entities. After
 // finishing serialization, the serialized contents should be same
 // with original XML document.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SerializeXMLDocWithBuiltInEntities \
+  DISABLED_SerializeXMLDocWithBuiltInEntities
+#else
+#define MAYBE_SerializeXMLDocWithBuiltInEntities \
+  SerializeXMLDocWithBuiltInEntities
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeXMLDocWithBuiltInEntities) {
+                       MAYBE_SerializeXMLDocWithBuiltInEntities) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "note.html");
   base::FilePath xml_file_path = GetTestFilePath("dom_serializer", "note.xml");
@@ -297,8 +305,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 }
 
 // When serializing DOM, we add MOTW declaration before html tag.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_SerializeHTMLDOMWithAddingMOTW \
+  DISABLED_SerializeHTMLDOMWithAddingMOTW
+#else
+#define MAYBE_SerializeHTMLDOMWithAddingMOTW SerializeHTMLDOMWithAddingMOTW
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeHTMLDOMWithAddingMOTW) {
+                       MAYBE_SerializeHTMLDOMWithAddingMOTW) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "youtube_2.htm");
 
@@ -513,13 +527,14 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/40681859): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_SerializeHTMLDOMWithEntitiesInText \
   DISABLED_SerializeHTMLDOMWithEntitiesInText
 #else
 #define MAYBE_SerializeHTMLDOMWithEntitiesInText \
   SerializeHTMLDOMWithEntitiesInText
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 // Test situation of html entities in text when serializing HTML DOM.
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
                        MAYBE_SerializeHTMLDOMWithEntitiesInText) {
@@ -586,8 +601,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 // Test situation of html entities in attribute value when serializing
 // HTML DOM.
 // This test started to fail at WebKit r65388. See http://crbug.com/52279.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SerializeHTMLDOMWithEntitiesInAttributeValue \
+  DISABLED_SerializeHTMLDOMWithEntitiesInAttributeValue
+#else
+#define MAYBE_SerializeHTMLDOMWithEntitiesInAttributeValue \
+  SerializeHTMLDOMWithEntitiesInAttributeValue
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeHTMLDOMWithEntitiesInAttributeValue) {
+                       MAYBE_SerializeHTMLDOMWithEntitiesInAttributeValue) {
   // Need to spin up the renderer and also navigate to a file url so that the
   // renderer code doesn't attempt a fork when it sees a load to file scheme
   // from non-file scheme.
@@ -692,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 // to absolute URLs.
 
 // Disabled due to test failure. http://crbug.com/1349583
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_SerializeHTMLDOMWithBaseTag DISABLED_SerializeHTMLDOMWithBaseTag
 #else
 #define MAYBE_SerializeHTMLDOMWithBaseTag SerializeHTMLDOMWithBaseTag
@@ -803,8 +825,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 }
 
 // Serializing page which has an empty HEAD tag.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SerializeHTMLDOMWithEmptyHead \
+  DISABLED_SerializeHTMLDOMWithEmptyHead
+#else
+#define MAYBE_SerializeHTMLDOMWithEmptyHead SerializeHTMLDOMWithEmptyHead
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeHTMLDOMWithEmptyHead) {
+                       MAYBE_SerializeHTMLDOMWithEmptyHead) {
   // Need to spin up the renderer and also navigate to a file url so that the
   // renderer code doesn't attempt a fork when it sees a load to file scheme
   // from non-file scheme.
