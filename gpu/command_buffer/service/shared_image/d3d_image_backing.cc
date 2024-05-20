@@ -835,7 +835,9 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
     if (shared_texture_memory.IsDeviceLost()) {
       // Erase from cache if external image is invalid i.e. device was lost.
       dawn_signaled_fences_map_.erase(device.Get());
-      dxgi_shared_handle_state_->EraseDawnSharedTextureMemory(device.Get());
+      if (dxgi_shared_handle_state_) {
+        dxgi_shared_handle_state_->EraseDawnSharedTextureMemory(device.Get());
+      }
     }
 
     EndAccessCommon(signaled_fences);
