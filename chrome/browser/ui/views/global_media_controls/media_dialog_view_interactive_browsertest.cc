@@ -40,6 +40,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/soda/constants.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
@@ -813,8 +814,11 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   // Allow the MediaSessionNotificationItem to flush its message to the
   // MediaSessionImpl. There isn't currently a clean way for us to access the
   // MediaSessionNotificationItem directly to force it to flush, so we use this
-  // non-ideal |RunUntilIdle()| call instead.
+  // non-ideal |RunUntilIdle()| call instead.  This guarantees that the click
+  // is processed by the item.  We then flush the media session separately, to
+  // be sure that any calls on it by the notification item have been processed.
   base::RunLoop().RunUntilIdle();
+  content::MediaSession::FlushObserversForTesting(first_web_contents);
 
   EXPECT_EQ(first_web_contents, GetActiveWebContents());
 }
