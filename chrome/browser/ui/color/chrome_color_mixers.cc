@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 #include "chrome/browser/ui/color/product_specifications_color_mixer.h"
 #include "chrome/browser/ui/color/tab_strip_color_mixer.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_utils.h"
 
 namespace {
@@ -66,13 +65,11 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
   AddProductSpecificationsColorMixer(provider, key);
   AddTabStripColorMixer(provider, key);
 
-  if (features::IsChromeRefresh2023()) {
-    AddMaterialChromeColorMixer(provider, key);
-    AddMaterialNewTabPageColorMixer(provider, key);
-    AddMaterialOmniboxColorMixer(provider, key);
-    AddMaterialSidePanelColorMixer(provider, key);
-    AddMaterialTabStripColorMixer(provider, key);
-  }
+  AddMaterialChromeColorMixer(provider, key);
+  AddMaterialNewTabPageColorMixer(provider, key);
+  AddMaterialOmniboxColorMixer(provider, key);
+  AddMaterialSidePanelColorMixer(provider, key);
+  AddMaterialTabStripColorMixer(provider, key);
 
   // Must be the last one in order to override other mixer colors.
   AddNativeChromeColorMixer(provider, key);

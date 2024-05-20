@@ -57,13 +57,9 @@ IN_PROC_BROWSER_TEST_P(NativeChromeColorMixerWinBrowsertest,
   accent_color_observer->SetAccentColorForTesting(kAccentColor);
   accent_color_observer->SetUseDwmFrameColorForTesting(true);
 
-  // When running refresh the header color should be unaffected as the theme
-  // service has not been set to follow the device theme. When running
-  // pre-refresh the header color should be set to the accent color as part of
-  // pervasive accent colors.
-  EXPECT_EQ(
-      features::IsChromeRefresh2023() ? initial_header_color : kAccentColor,
-      get_header_color());
+  // The header color should be unaffected as the theme service has not been set
+  // to follow the device theme.
+  EXPECT_EQ(initial_header_color, get_header_color());
 
   // Set the browser to follow the device colors. The header color should be
   // updated to track the accent color.
