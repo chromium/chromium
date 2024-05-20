@@ -690,9 +690,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Enterprise.DevicePolicyDeviceIdValidity2.{EnrollmentType}"
-    enum="EnterprisePolicyDeviceIdValidity" expires_after="M128">
+<histogram name="Enterprise.DevicePolicyDeviceIdValidity2.{EnrollmentType}"
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="2025-05-01">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
