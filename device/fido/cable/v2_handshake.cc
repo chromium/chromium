@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "base/base64url.h"
+#include "base/functional/overloaded.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -414,7 +415,7 @@ std::optional<Components> Parse(const std::string& qr_url) {
 }
 
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
-                   FidoRequestType request_type) {
+                   RequestType request_type) {
   cbor::Value::MapValue qr_contents;
   qr_contents.emplace(
       0, SeedToCompressedPublicKey(
@@ -574,19 +575,34 @@ void Derive(uint8_t* out,
 
 }  // namespace internal
 
-const char* RequestTypeToString(FidoRequestType request_type) {
-  switch (request_type) {
-    case FidoRequestType::kMakeCredential:
-      return "mc";
-    case FidoRequestType::kGetAssertion:
-      return "ga";
-      // If adding a value here, also update `RequestTypeFromString`.
-  }
+const char* RequestTypeToString(RequestType request_type) {
+  return absl::visit(
+      base::Overloaded{[](const FidoRequestType& request_type) {
+                         switch (request_type) {
+                           case FidoRequestType::kMakeCredential:
+                             return "mc";
+                           case FidoRequestType::kGetAssertion:
+                             return "ga";
+                             // If adding a value here, also update
+                             // `RequestTypeFromString`.
+                         }
+                       },
+                       [](const CredentialRequestType& request_type) {
+                         switch (request_type) {
+                           case CredentialRequestType::kPresentation:
+                             return "dcp";
+                             // If adding a value here, also update
+                             // `RequestTypeFromString`.
+                         }
+                       }},
+      request_type);
 }
 
-FidoRequestType RequestTypeFromString(const std::string& s) {
+RequestType RequestTypeFromString(const std::string& s) {
   if (s == "mc") {
     return FidoRequestType::kMakeCredential;
+  } else if (s == "dcp") {
+    return CredentialRequestType::kPresentation;
   }
   // kGetAssertion is the default if the value is unknown too.
   return FidoRequestType::kGetAssertion;
