@@ -1,6 +1,6 @@
 {
   "chromeos-betty-chrome": {
-    "args_file": "//build/args/chromeos/betty-arc-r.gni",
+    "args_file": "//build/args/chromeos/betty.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
@@ -9,7 +9,6 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_real_dbus_clients": false,
       "use_remoteexec": true
     }
   },
