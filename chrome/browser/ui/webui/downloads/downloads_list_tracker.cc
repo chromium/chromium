@@ -468,11 +468,6 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
 
-  if (download_model.IsDangerous()) {
-    base::UmaHistogramBoolean(
-        "Download.DownloadsPageDangerousWarningWasShownBefore",
-        download_model.WasUIWarningShown());
-  }
   MaybeRecordDangerousDownloadWarningShown(download_model);
 
   if (download_item->IsDangerous()) {
