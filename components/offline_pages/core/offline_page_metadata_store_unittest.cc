@@ -66,23 +66,26 @@ void BuildTestStoreWithSchemaFromM52(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL, "
-                                 "creation_time INTEGER NOT NULL, "
-                                 "file_size INTEGER NOT NULL, "
-                                 "version INTEGER NOT NULL, "
-                                 "last_access_time INTEGER NOT NULL, "
-                                 "access_count INTEGER NOT NULL, "
-                                 "status INTEGER NOT NULL DEFAULT 0, "
-                                 "user_initiated INTEGER, "
-                                 "client_namespace VARCHAR NOT NULL, "
-                                 "client_id VARCHAR NOT NULL, "
-                                 "online_url VARCHAR NOT NULL, "
-                                 "offline_url VARCHAR NOT NULL DEFAULT '', "
-                                 "file_path VARCHAR NOT NULL "
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                                   "(offline_id INTEGER PRIMARY KEY NOT NULL, "
+                                   "creation_time INTEGER NOT NULL, "
+                                   "file_size INTEGER NOT NULL, "
+                                   "version INTEGER NOT NULL, "
+                                   "last_access_time INTEGER NOT NULL, "
+                                   "access_count INTEGER NOT NULL, "
+                                   "status INTEGER NOT NULL DEFAULT 0, "
+                                   "user_initiated INTEGER, "
+                                   "client_namespace VARCHAR NOT NULL, "
+                                   "client_id VARCHAR NOT NULL, "
+                                   "online_url VARCHAR NOT NULL, "
+                                   "offline_url VARCHAR NOT NULL DEFAULT '', "
+                                   "file_path VARCHAR NOT NULL "
+                                   ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, version, "
@@ -110,24 +113,28 @@ void BuildTestStoreWithSchemaFromM53(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL, "
-                                 "creation_time INTEGER NOT NULL, "
-                                 "file_size INTEGER NOT NULL, "
-                                 "version INTEGER NOT NULL, "
-                                 "last_access_time INTEGER NOT NULL, "
-                                 "access_count INTEGER NOT NULL, "
-                                 "status INTEGER NOT NULL DEFAULT 0, "
-                                 "user_initiated INTEGER, "
-                                 "expiration_time INTEGER NOT NULL DEFAULT 0, "
-                                 "client_namespace VARCHAR NOT NULL, "
-                                 "client_id VARCHAR NOT NULL, "
-                                 "online_url VARCHAR NOT NULL, "
-                                 "offline_url VARCHAR NOT NULL DEFAULT '', "
-                                 "file_path VARCHAR NOT NULL "
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                           "(offline_id INTEGER PRIMARY KEY NOT NULL, "
+                           "creation_time INTEGER NOT NULL, "
+                           "file_size INTEGER NOT NULL, "
+                           "version INTEGER NOT NULL, "
+                           "last_access_time INTEGER NOT NULL, "
+                           "access_count INTEGER NOT NULL, "
+                           "status INTEGER NOT NULL DEFAULT 0, "
+                           "user_initiated INTEGER, "
+                           "expiration_time INTEGER NOT NULL DEFAULT 0, "
+                           "client_namespace VARCHAR NOT NULL, "
+                           "client_id VARCHAR NOT NULL, "
+                           "online_url VARCHAR NOT NULL, "
+                           "offline_url VARCHAR NOT NULL DEFAULT '', "
+                           "file_path VARCHAR NOT NULL "
+                           ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, version, "
@@ -155,25 +162,29 @@ void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL, "
-                                 "creation_time INTEGER NOT NULL, "
-                                 "file_size INTEGER NOT NULL, "
-                                 "version INTEGER NOT NULL, "
-                                 "last_access_time INTEGER NOT NULL, "
-                                 "access_count INTEGER NOT NULL, "
-                                 "status INTEGER NOT NULL DEFAULT 0, "
-                                 "user_initiated INTEGER, "
-                                 "expiration_time INTEGER NOT NULL DEFAULT 0, "
-                                 "client_namespace VARCHAR NOT NULL, "
-                                 "client_id VARCHAR NOT NULL, "
-                                 "online_url VARCHAR NOT NULL, "
-                                 "offline_url VARCHAR NOT NULL DEFAULT '', "
-                                 "file_path VARCHAR NOT NULL, "
-                                 "title VARCHAR NOT NULL DEFAULT ''"
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                           "(offline_id INTEGER PRIMARY KEY NOT NULL, "
+                           "creation_time INTEGER NOT NULL, "
+                           "file_size INTEGER NOT NULL, "
+                           "version INTEGER NOT NULL, "
+                           "last_access_time INTEGER NOT NULL, "
+                           "access_count INTEGER NOT NULL, "
+                           "status INTEGER NOT NULL DEFAULT 0, "
+                           "user_initiated INTEGER, "
+                           "expiration_time INTEGER NOT NULL DEFAULT 0, "
+                           "client_namespace VARCHAR NOT NULL, "
+                           "client_id VARCHAR NOT NULL, "
+                           "online_url VARCHAR NOT NULL, "
+                           "offline_url VARCHAR NOT NULL DEFAULT '', "
+                           "file_path VARCHAR NOT NULL, "
+                           "title VARCHAR NOT NULL DEFAULT ''"
+                           ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, version, "
@@ -207,21 +218,25 @@ void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL, "
-                                 "creation_time INTEGER NOT NULL, "
-                                 "file_size INTEGER NOT NULL, "
-                                 "last_access_time INTEGER NOT NULL, "
-                                 "access_count INTEGER NOT NULL, "
-                                 "expiration_time INTEGER NOT NULL DEFAULT 0, "
-                                 "client_namespace VARCHAR NOT NULL, "
-                                 "client_id VARCHAR NOT NULL, "
-                                 "online_url VARCHAR NOT NULL, "
-                                 "file_path VARCHAR NOT NULL, "
-                                 "title VARCHAR NOT NULL DEFAULT ''"
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                           "(offline_id INTEGER PRIMARY KEY NOT NULL, "
+                           "creation_time INTEGER NOT NULL, "
+                           "file_size INTEGER NOT NULL, "
+                           "last_access_time INTEGER NOT NULL, "
+                           "access_count INTEGER NOT NULL, "
+                           "expiration_time INTEGER NOT NULL DEFAULT 0, "
+                           "client_namespace VARCHAR NOT NULL, "
+                           "client_id VARCHAR NOT NULL, "
+                           "online_url VARCHAR NOT NULL, "
+                           "file_path VARCHAR NOT NULL, "
+                           "title VARCHAR NOT NULL DEFAULT ''"
+                           ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, "
@@ -251,22 +266,26 @@ void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL, "
-                                 "creation_time INTEGER NOT NULL, "
-                                 "file_size INTEGER NOT NULL, "
-                                 "last_access_time INTEGER NOT NULL, "
-                                 "access_count INTEGER NOT NULL, "
-                                 "expiration_time INTEGER NOT NULL DEFAULT 0, "
-                                 "client_namespace VARCHAR NOT NULL, "
-                                 "client_id VARCHAR NOT NULL, "
-                                 "online_url VARCHAR NOT NULL, "
-                                 "file_path VARCHAR NOT NULL, "
-                                 "title VARCHAR NOT NULL DEFAULT '', "
-                                 "original_url VARCHAR NOT NULL DEFAULT ''"
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                           "(offline_id INTEGER PRIMARY KEY NOT NULL, "
+                           "creation_time INTEGER NOT NULL, "
+                           "file_size INTEGER NOT NULL, "
+                           "last_access_time INTEGER NOT NULL, "
+                           "access_count INTEGER NOT NULL, "
+                           "expiration_time INTEGER NOT NULL DEFAULT 0, "
+                           "client_namespace VARCHAR NOT NULL, "
+                           "client_id VARCHAR NOT NULL, "
+                           "online_url VARCHAR NOT NULL, "
+                           "file_path VARCHAR NOT NULL, "
+                           "title VARCHAR NOT NULL DEFAULT '', "
+                           "original_url VARCHAR NOT NULL DEFAULT ''"
+                           ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, "
@@ -296,21 +315,24 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-                                 " creation_time INTEGER NOT NULL,"
-                                 " file_size INTEGER NOT NULL,"
-                                 " last_access_time INTEGER NOT NULL,"
-                                 " access_count INTEGER NOT NULL,"
-                                 " client_namespace VARCHAR NOT NULL,"
-                                 " client_id VARCHAR NOT NULL,"
-                                 " online_url VARCHAR NOT NULL,"
-                                 " file_path VARCHAR NOT NULL,"
-                                 " title VARCHAR NOT NULL DEFAULT '',"
-                                 " original_url VARCHAR NOT NULL DEFAULT ''"
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                                   "(offline_id INTEGER PRIMARY KEY NOT NULL,"
+                                   " creation_time INTEGER NOT NULL,"
+                                   " file_size INTEGER NOT NULL,"
+                                   " last_access_time INTEGER NOT NULL,"
+                                   " access_count INTEGER NOT NULL,"
+                                   " client_namespace VARCHAR NOT NULL,"
+                                   " client_id VARCHAR NOT NULL,"
+                                   " online_url VARCHAR NOT NULL,"
+                                   " file_path VARCHAR NOT NULL,"
+                                   " title VARCHAR NOT NULL DEFAULT '',"
+                                   " original_url VARCHAR NOT NULL DEFAULT ''"
+                                   ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, "
@@ -339,22 +361,25 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                                 "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-                                 " creation_time INTEGER NOT NULL,"
-                                 " file_size INTEGER NOT NULL,"
-                                 " last_access_time INTEGER NOT NULL,"
-                                 " access_count INTEGER NOT NULL,"
-                                 " client_namespace VARCHAR NOT NULL,"
-                                 " client_id VARCHAR NOT NULL,"
-                                 " online_url VARCHAR NOT NULL,"
-                                 " file_path VARCHAR NOT NULL,"
-                                 " title VARCHAR NOT NULL DEFAULT '',"
-                                 " original_url VARCHAR NOT NULL DEFAULT '',"
-                                 " request_origin VARCHAR NOT NULL DEFAULT ''"
-                                 ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                                   "(offline_id INTEGER PRIMARY KEY NOT NULL,"
+                                   " creation_time INTEGER NOT NULL,"
+                                   " file_size INTEGER NOT NULL,"
+                                   " last_access_time INTEGER NOT NULL,"
+                                   " access_count INTEGER NOT NULL,"
+                                   " client_namespace VARCHAR NOT NULL,"
+                                   " client_id VARCHAR NOT NULL,"
+                                   " online_url VARCHAR NOT NULL,"
+                                   " file_path VARCHAR NOT NULL,"
+                                   " title VARCHAR NOT NULL DEFAULT '',"
+                                   " original_url VARCHAR NOT NULL DEFAULT '',"
+                                   " request_origin VARCHAR NOT NULL DEFAULT ''"
+                                   ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, "
@@ -380,7 +405,8 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file) {
 }
 
 void InjectItemInM62Store(sql::Database* db, const OfflinePageItem& item) {
-  ASSERT_TRUE(db->BeginTransaction());
+  sql::Transaction transaction(db);
+  ASSERT_TRUE(transaction.Begin());
   sql::Statement statement(db->GetUniqueStatement(
       "INSERT INTO " OFFLINE_PAGES_TABLE_V1
       "(offline_id, creation_time, file_size, "
@@ -405,7 +431,7 @@ void InjectItemInM62Store(sql::Database* db, const OfflinePageItem& item) {
   statement.BindInt64(13, store_utils::ToDatabaseTime(item.file_missing_time));
   statement.BindString(14, item.digest);
   ASSERT_TRUE(statement.Run());
-  ASSERT_TRUE(db->CommitTransaction());
+  ASSERT_TRUE(transaction.Commit());
 }
 
 void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
@@ -413,27 +439,30 @@ void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  ASSERT_TRUE(
-      connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
-                         "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-                         " creation_time INTEGER NOT NULL,"
-                         " file_size INTEGER NOT NULL,"
-                         " last_access_time INTEGER NOT NULL,"
-                         " access_count INTEGER NOT NULL,"
-                         " system_download_id INTEGER NOT NULL DEFAULT 0,"
-                         " file_missing_time INTEGER NOT NULL DEFAULT 0,"
-                         " upgrade_attempt INTEGER NOT NULL DEFAULT 0,"
-                         " client_namespace VARCHAR NOT NULL,"
-                         " client_id VARCHAR NOT NULL,"
-                         " online_url VARCHAR NOT NULL,"
-                         " file_path VARCHAR NOT NULL,"
-                         " title VARCHAR NOT NULL DEFAULT '',"
-                         " original_url VARCHAR NOT NULL DEFAULT '',"
-                         " request_origin VARCHAR NOT NULL DEFAULT '',"
-                         " digest VARCHAR NOT NULL DEFAULT ''"
-                         ")"));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE " OFFLINE_PAGES_TABLE_V1
+                           "(offline_id INTEGER PRIMARY KEY NOT NULL,"
+                           " creation_time INTEGER NOT NULL,"
+                           " file_size INTEGER NOT NULL,"
+                           " last_access_time INTEGER NOT NULL,"
+                           " access_count INTEGER NOT NULL,"
+                           " system_download_id INTEGER NOT NULL DEFAULT 0,"
+                           " file_missing_time INTEGER NOT NULL DEFAULT 0,"
+                           " upgrade_attempt INTEGER NOT NULL DEFAULT 0,"
+                           " client_namespace VARCHAR NOT NULL,"
+                           " client_id VARCHAR NOT NULL,"
+                           " online_url VARCHAR NOT NULL,"
+                           " file_path VARCHAR NOT NULL,"
+                           " title VARCHAR NOT NULL DEFAULT '',"
+                           " original_url VARCHAR NOT NULL DEFAULT '',"
+                           " request_origin VARCHAR NOT NULL DEFAULT '',"
+                           " digest VARCHAR NOT NULL DEFAULT ''"
+                           ")"));
+    ASSERT_TRUE(transaction.Commit());
+  }
 
   OfflinePageItemGenerator generator;
   generator.SetNamespace(kTestClientNamespace);
@@ -453,10 +482,13 @@ void BuildTestStoreWithSchemaVersion1(const base::FilePath& file) {
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
-  sql::MetaTable meta_table;
-  ASSERT_TRUE(meta_table.Init(&connection, 1, 1));
-  ASSERT_TRUE(connection.CommitTransaction());
+  {
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 1, 1));
+    ASSERT_TRUE(transaction.Commit());
+  }
 
   OfflinePageItemGenerator generator;
   generator.SetUrl(GURL(kTestURL));

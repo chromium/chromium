@@ -1933,17 +1933,17 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
 
 bool LoginDatabase::BeginTransaction() {
   TRACE_EVENT0("passwords", "LoginDatabase::BeginTransaction");
-  return db_.BeginTransaction();
+  return db_.BeginTransactionDeprecated();
 }
 
 void LoginDatabase::RollbackTransaction() {
   TRACE_EVENT0("passwords", "LoginDatabase::RollbackTransaction");
-  db_.RollbackTransaction();
+  db_.RollbackTransactionDeprecated();
 }
 
 bool LoginDatabase::CommitTransaction() {
   TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
-  return db_.CommitTransaction();
+  return db_.CommitTransactionDeprecated();
 }
 
 void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {

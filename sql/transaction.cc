@@ -14,7 +14,7 @@ namespace sql {
 
 Transaction::Transaction(Database* database) {
   CHECK(database);
-  database_ = database->GetWeakPtr(InternalApiToken{});
+  database_ = database->GetWeakPtr(InternalApiToken());
 }
 
 Transaction::~Transaction() {
@@ -25,7 +25,7 @@ Transaction::~Transaction() {
 #endif  // DCHECK_IS_ON()
 
   if (is_active_ && database_ && database_->is_open()) {
-    database_->RollbackTransaction();
+    database_->RollbackTransaction(InternalApiToken());
   }
 }
 
@@ -40,7 +40,7 @@ bool Transaction::Begin() {
   if (!database_) {
     return false;
   }
-  is_active_ = database_->BeginTransaction();
+  is_active_ = database_->BeginTransaction(InternalApiToken());
   return is_active_;
 }
 
@@ -59,7 +59,7 @@ void Transaction::Rollback() {
   if (!database_) {
     return;
   }
-  database_->RollbackTransaction();
+  database_->RollbackTransaction(InternalApiToken());
 }
 
 bool Transaction::Commit() {
@@ -76,7 +76,7 @@ bool Transaction::Commit() {
   if (!database_) {
     return false;
   }
-  return database_->CommitTransaction();
+  return database_->CommitTransaction(InternalApiToken());
 }
 
 }  // namespace sql

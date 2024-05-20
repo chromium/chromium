@@ -113,11 +113,11 @@ WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
 }
 
 void WebDatabase::BeginTransaction() {
-  db_.BeginTransaction();
+  db_.BeginTransactionDeprecated();
 }
 
 void WebDatabase::CommitTransaction() {
-  db_.CommitTransaction();
+  db_.CommitTransactionDeprecated();
 }
 
 std::string WebDatabase::GetDiagnosticInfo(int extended_error,

@@ -252,7 +252,7 @@ bool AndroidCacheDatabase::Attach() {
   int transaction_nesting = GetDB().transaction_nesting();
   int count = transaction_nesting;
   while (count--)
-    GetDB().CommitTransaction();
+    GetDB().CommitTransactionDeprecated();
 
   bool result = DoAttach();
 
@@ -260,7 +260,7 @@ bool AndroidCacheDatabase::Attach() {
   // transaction stack again.
   count = transaction_nesting;
   while (count--)
-    GetDB().BeginTransaction();
+    GetDB().BeginTransactionDeprecated();
   return result;
 }
 

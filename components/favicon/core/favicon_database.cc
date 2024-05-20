@@ -279,15 +279,15 @@ void FaviconDatabase::ComputeDatabaseMetrics() {
 }
 
 void FaviconDatabase::BeginTransaction() {
-  db_.BeginTransaction();
+  db_.BeginTransactionDeprecated();
 }
 
 void FaviconDatabase::CommitTransaction() {
-  db_.CommitTransaction();
+  db_.CommitTransactionDeprecated();
 }
 
 void FaviconDatabase::RollbackTransaction() {
-  db_.RollbackTransaction();
+  db_.RollbackTransactionDeprecated();
 }
 
 void FaviconDatabase::Vacuum() {

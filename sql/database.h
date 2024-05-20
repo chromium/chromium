@@ -478,9 +478,15 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Normally you should use sql::Transaction to manage a transaction, which
   // will scope it to a C++ context.
-  bool BeginTransaction();
-  void RollbackTransaction();
-  bool CommitTransaction();
+  [[nodiscard]] bool BeginTransaction(InternalApiToken);
+  void RollbackTransaction(InternalApiToken);
+  [[nodiscard]] bool CommitTransaction(InternalApiToken);
+
+  // These methods are deprecated and will be removed in the future: The
+  // `Transaction` class should be used instead.
+  bool BeginTransactionDeprecated();
+  void RollbackTransactionDeprecated();
+  bool CommitTransactionDeprecated();
 
   // Rollback all outstanding transactions.  Use with care, there may
   // be scoped transactions on the stack.

@@ -25,7 +25,7 @@ class InternalApiToken {
   InternalApiToken() {}
   InternalApiToken(const InternalApiToken&) = default;
 
-  friend class Recovery;
+  friend class Database;
   friend class DatabaseTestPeer;
   friend class Recovery;
   friend class Transaction;
