@@ -29,7 +29,8 @@ WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
 }
 
 void WebauthnDialogControllerImpl::ShowOfferDialog(
-    AutofillClient::WebauthnDialogCallback offer_dialog_callback) {
+    payments::PaymentsAutofillClient::WebauthnDialogCallback
+        offer_dialog_callback) {
   DCHECK(!dialog_model_);
 
   callback_ = std::move(offer_dialog_callback);
@@ -38,7 +39,8 @@ void WebauthnDialogControllerImpl::ShowOfferDialog(
 }
 
 void WebauthnDialogControllerImpl::ShowVerifyPendingDialog(
-    AutofillClient::WebauthnDialogCallback verify_pending_dialog_callback) {
+    payments::PaymentsAutofillClient::WebauthnDialogCallback
+        verify_pending_dialog_callback) {
   DCHECK(!dialog_model_);
 
   callback_ = std::move(verify_pending_dialog_callback);

@@ -1064,15 +1064,16 @@ void CreditCardAccessManager::ShowWebauthnOfferDialog(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetOrCreateFidoAuthenticator()->OnWebauthnOfferDialogRequested(
       card_authorization_token);
-  client_->ShowWebauthnOfferDialog(base::BindRepeating(
+  payments_autofill_client()->ShowWebauthnOfferDialog(base::BindRepeating(
       &CreditCardAccessManager::HandleDialogUserResponse, GetWeakPtr()));
 #endif
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::ShowVerifyPendingDialog() {
-  client_->ShowWebauthnVerifyPendingDialog(base::BindRepeating(
-      &CreditCardAccessManager::HandleDialogUserResponse, GetWeakPtr()));
+  payments_autofill_client()->ShowWebauthnVerifyPendingDialog(
+      base::BindRepeating(&CreditCardAccessManager::HandleDialogUserResponse,
+                          GetWeakPtr()));
 }
 
 void CreditCardAccessManager::HandleDialogUserResponse(

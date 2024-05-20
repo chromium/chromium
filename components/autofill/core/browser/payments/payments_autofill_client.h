@@ -31,6 +31,7 @@ class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
 enum class OtpUnmaskResult;
 class VirtualCardEnrollmentManager;
+enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
@@ -79,6 +80,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Callback to run after credit card upload confirmation prompt is closed.
   using OnConfirmationClosedCallback = base::OnceClosure;
 
+  // Callback to run if the OK button or the cancel button in a
+  // Webauthn dialog is clicked.
+  using WebauthnDialogCallback =
+      base::RepeatingCallback<void(WebauthnDialogCallbackType)>;
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
   // exist.
@@ -111,6 +117,23 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback);
+
+  // TODO(crbug.com/40639086): Find a way to merge these two functions.
+  // Shouldn't use WebauthnDialogState as that state is a purely UI state
+  // (should not be accessible for managers?), and some of the states
+  // `KInactive` may be confusing here. Do we want to add another Enum?
+
+  // Will show a dialog offering the option to use device's platform
+  // authenticator in the future instead of CVC to verify the card being
+  // unmasked. Runs `offer_dialog_callback` if the OK button or the cancel
+  // button in the dialog is clicked.
+  virtual void ShowWebauthnOfferDialog(
+      WebauthnDialogCallback offer_dialog_callback);
+
+  // Will show a dialog indicating the card verification is in progress. It is
+  // shown after verification starts only if the WebAuthn is enabled.
+  virtual void ShowWebauthnVerifyPendingDialog(
+      WebauthnDialogCallback verify_pending_dialog_callback);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Shows upload result to users. Called after credit card upload is finished.

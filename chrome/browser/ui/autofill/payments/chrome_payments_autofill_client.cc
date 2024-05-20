@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -120,6 +121,20 @@ void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
   controller->UpdateCreditCardIcon(has_server_error, tip_message,
                                    migratable_credit_cards,
                                    delete_local_card_callback);
+}
+
+void ChromePaymentsAutofillClient::ShowWebauthnOfferDialog(
+    WebauthnDialogCallback offer_dialog_callback) {
+  WebauthnDialogControllerImpl::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
+      ->ShowOfferDialog(std::move(offer_dialog_callback));
+}
+
+void ChromePaymentsAutofillClient::ShowWebauthnVerifyPendingDialog(
+    WebauthnDialogCallback verify_pending_dialog_callback) {
+  WebauthnDialogControllerImpl::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
+      ->ShowVerifyPendingDialog(std::move(verify_pending_dialog_callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
