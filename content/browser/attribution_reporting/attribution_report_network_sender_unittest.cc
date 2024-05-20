@@ -5,13 +5,17 @@
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -74,10 +78,19 @@ AttributionReport DefaultEventLevelReport() {
       .Build();
 }
 
-AttributionReport DefaultAggregatableReport() {
-  return ReportBuilder(AttributionInfoBuilder().Build(),
-                       SourceBuilder(SourceBuilder(base::Time())).BuildStored())
-      .BuildAggregatableAttribution();
+AttributionReport DefaultAggregatableReport(
+    std::optional<std::string> trigger_context_id = std::nullopt) {
+  ReportBuilder builder(
+      AttributionInfoBuilder().Build(),
+      SourceBuilder(SourceBuilder(base::Time())).BuildStored());
+
+  if (trigger_context_id.has_value()) {
+    builder.SetTriggerContextId(std::move(*trigger_context_id))
+        .SetSourceRegistrationTimeConfig(
+            attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                kExclude);
+  }
+  return builder.BuildAggregatableAttribution();
 }
 
 }  // namespace
@@ -648,67 +661,94 @@ TEST_F(AttributionReportNetworkSenderTest,
 
 TEST_F(AttributionReportNetworkSenderTest,
        AggregatableReportSent_MetricsRecorded) {
-  // All OK
-  {
-    base::HistogramTester histograms;
-    auto report = DefaultAggregatableReport();
-    network_sender_->SendReport(report, /*is_debug_report=*/false,
-                                base::DoNothing());
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kAggregatableReportUrl, ""));
-    // kOk = 0.
-    histograms.ExpectUniqueSample("Conversions.ReportStatusAggregatable", 0, 1);
-    histograms.ExpectUniqueSample(
-        "Conversions.HttpResponseOrNetErrorCodeAggregatable", net::HTTP_OK, 1);
-  }
+  const auto verify_histogram = [](base::HistogramTester& histograms,
+                                   std::string_view suffix,
+                                   bool has_trigger_context_id,
+                                   base::HistogramBase::Sample sample,
+                                   base::HistogramBase::Count count) {
+    histograms.ExpectUniqueSample(base::StrCat({"Conversions.", suffix}),
+                                  sample, count);
+    if (has_trigger_context_id) {
+      histograms.ExpectUniqueSample(
+          base::StrCat({"Conversions.ContextID.", suffix}), sample, count);
+    } else {
+      histograms.ExpectUniqueSample(
+          base::StrCat({"Conversions.NoContextID.", suffix}), sample, count);
+    }
+  };
 
-  // Internal error
-  {
-    base::HistogramTester histograms;
-    auto report = DefaultAggregatableReport();
-    network_sender_->SendReport(report, /*is_debug_report=*/false,
-                                base::DoNothing());
-    network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GURL(kAggregatableReportUrl), completion_status,
-        network::mojom::URLResponseHead::New(), ""));
-    // kInternalError = 1.
-    histograms.ExpectUniqueSample("Conversions.ReportStatusAggregatable", 1, 1);
-    histograms.ExpectUniqueSample(
-        "Conversions.HttpResponseOrNetErrorCodeAggregatable", net::ERR_FAILED,
-        1);
-  }
-  // External error
-  {
-    base::HistogramTester histograms;
-    auto report = DefaultAggregatableReport();
-    network_sender_->SendReport(report, /*is_debug_report=*/false,
-                                base::DoNothing());
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kAggregatableReportUrl, "", net::HTTP_UNAUTHORIZED));
-    // kExternalError = 2.
-    histograms.ExpectUniqueSample("Conversions.ReportStatusAggregatable", 2, 1);
-    histograms.ExpectUniqueSample(
-        "Conversions.HttpResponseOrNetErrorCodeAggregatable",
-        net::HTTP_UNAUTHORIZED, 1);
-  }
-  // Retried network change error
-  {
-    base::HistogramTester histograms;
-    auto report = DefaultAggregatableReport();
-    network_sender_->SendReport(report, /*is_debug_report=*/false,
-                                base::DoNothing());
+  static const char kStatusMetric[] = "ReportStatusAggregatable";
+  static const char kErrorCodeMetric[] =
+      "HttpResponseOrNetErrorCodeAggregatable";
 
-    ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GURL(kAggregatableReportUrl),
-        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
-        network::mojom::URLResponseHead::New(), ""));
+  for (const bool has_trigger_context_id : {false, true}) {
+    SCOPED_TRACE(has_trigger_context_id);
 
-    ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kAggregatableReportUrl, ""));
+    std::optional<std::string> trigger_context_id;
+    if (has_trigger_context_id) {
+      trigger_context_id.emplace();
+    }
 
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceedAggregatable",
-                                  true, 1);
+    // All OK
+    {
+      base::HistogramTester histograms;
+      auto report = DefaultAggregatableReport(trigger_context_id);
+      network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                  base::DoNothing());
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kAggregatableReportUrl, ""));
+      // kOk = 0.
+      verify_histogram(histograms, kStatusMetric, has_trigger_context_id, 0, 1);
+      verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
+                       net::HTTP_OK, 1);
+    }
+
+    // Internal error
+    {
+      base::HistogramTester histograms;
+      auto report = DefaultAggregatableReport(trigger_context_id);
+      network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                  base::DoNothing());
+      network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GURL(kAggregatableReportUrl), completion_status,
+          network::mojom::URLResponseHead::New(), ""));
+      // kInternalError = 1.
+      verify_histogram(histograms, kStatusMetric, has_trigger_context_id, 1, 1);
+      verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
+                       net::ERR_FAILED, 1);
+    }
+    // External error
+    {
+      base::HistogramTester histograms;
+      auto report = DefaultAggregatableReport(trigger_context_id);
+      network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                  base::DoNothing());
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kAggregatableReportUrl, "", net::HTTP_UNAUTHORIZED));
+      // kExternalError = 2.
+      verify_histogram(histograms, kStatusMetric, has_trigger_context_id, 2, 1);
+      verify_histogram(histograms, kErrorCodeMetric, has_trigger_context_id,
+                       net::HTTP_UNAUTHORIZED, 1);
+    }
+    // Retried network change error
+    {
+      base::HistogramTester histograms;
+      auto report = DefaultAggregatableReport(trigger_context_id);
+      network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                  base::DoNothing());
+
+      ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GURL(kAggregatableReportUrl),
+          network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+          network::mojom::URLResponseHead::New(), ""));
+
+      ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kAggregatableReportUrl, ""));
+
+      verify_histogram(histograms, "ReportRetrySucceedAggregatable",
+                       has_trigger_context_id, 1, 1);
+    }
   }
 }
 

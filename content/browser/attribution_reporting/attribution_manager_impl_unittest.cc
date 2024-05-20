@@ -2047,6 +2047,9 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   histograms.ExpectUniqueTimeSample(
       "Conversions.AggregatableReport.ExtraReportDelay",
       base::Days(3) + kDefaultOfflineReportDelay.min, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.NoContextID.ExtraReportDelay",
+      base::Days(3) + kDefaultOfflineReportDelay.min, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
@@ -3570,6 +3573,32 @@ TEST_F(AttributionManagerImplTest, OsQueueNotReentrant) {
 
   cookie_checker_->RunNextDeferredCallback(true);
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(AttributionManagerImplTest,
+       AggregatableReportWithTriggerContextId_MetricsRecorded) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder()
+          .SetTriggerContextId("example")
+          .SetSourceRegistrationTimeConfig(
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kExclude)
+          .Build(/*generate_event_trigger_data=*/false),
+      kFrameId);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  histograms.ExpectTotalCount("Conversions.AggregatableReport.ExtraReportDelay",
+                              1);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.ContextID.ExtraReportDelay", 1);
 }
 
 }  // namespace content

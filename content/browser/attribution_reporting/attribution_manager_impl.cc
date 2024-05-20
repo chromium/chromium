@@ -284,52 +284,78 @@ void RecordAssembleAggregatableReportStatus(
       "Conversions.AggregatableReport.AssembleReportStatus", status);
 }
 
+void LogAggregatableReportHistogramCustomTimes(const char* suffix,
+                                               bool has_trigger_context_id,
+                                               base::TimeDelta sample,
+                                               base::TimeDelta min,
+                                               base::TimeDelta max,
+                                               size_t buckets) {
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Conversions.AggregatableReport.", suffix}), sample, min,
+      max, buckets);
+  if (has_trigger_context_id) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Conversions.AggregatableReport.ContextID.", suffix}),
+        sample, min, max, buckets);
+  } else {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Conversions.AggregatableReport.NoContextID.", suffix}),
+        sample, min, max, buckets);
+  }
+}
+
 // Called when |report| is to be sent over network for event-level reports or
 // to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
-  switch (report.GetReportType()) {
-    case AttributionReport::Type::kEventLevel: {
-      // Use a large time range to capture users that might not open the browser
-      // for a long time while a conversion report is pending. Revisit this
-      // range if it is non-ideal for real world data.
-      const AttributionInfo& attribution_info = report.attribution_info();
-      base::TimeDelta time_since_original_report_time =
-          now - report.initial_report_time();
-      base::UmaHistogramCustomTimes(
-          "Conversions.ExtraReportDelay2", time_since_original_report_time,
-          base::Seconds(1), base::Days(24), /*buckets=*/100);
+  absl::visit(
+      base::Overloaded{
+          [&](const AttributionReport::EventLevelData&) {
+            // Use a large time range to capture users that might not open the
+            // browser for a long time while a conversion report is pending.
+            // Revisit this range if it is non-ideal for real world data.
+            const AttributionInfo& attribution_info = report.attribution_info();
+            base::TimeDelta time_since_original_report_time =
+                now - report.initial_report_time();
+            base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay2",
+                                          time_since_original_report_time,
+                                          base::Seconds(1), base::Days(24),
+                                          /*buckets=*/100);
 
-      base::TimeDelta time_from_conversion_to_report_send =
-          report.report_time() - attribution_info.time;
-      UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
-                                time_from_conversion_to_report_send.InHours());
+            base::TimeDelta time_from_conversion_to_report_send =
+                report.report_time() - attribution_info.time;
+            UMA_HISTOGRAM_COUNTS_1000(
+                "Conversions.TimeFromConversionToReportSend",
+                time_from_conversion_to_report_send.InHours());
 
-      UMA_HISTOGRAM_CUSTOM_TIMES("Conversions.SchedulerReportDelay",
-                                 now - report.report_time(), base::Seconds(1),
-                                 base::Days(1), 50);
-      break;
-    }
-    case AttributionReport::Type::kAggregatableAttribution: {
-      base::TimeDelta time_from_conversion_to_report_assembly =
-          report.report_time() - report.attribution_info().time;
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
-          time_from_conversion_to_report_assembly, base::Minutes(1),
-          base::Days(24), 50);
+            UMA_HISTOGRAM_CUSTOM_TIMES("Conversions.SchedulerReportDelay",
+                                       now - report.report_time(),
+                                       base::Seconds(1), base::Days(1), 50);
+          },
+          [&](const AttributionReport::AggregatableAttributionData& data) {
+            base::TimeDelta time_from_conversion_to_report_assembly =
+                report.report_time() - report.attribution_info().time;
+            UMA_HISTOGRAM_CUSTOM_TIMES(
+                "Conversions.AggregatableReport."
+                "TimeFromTriggerToReportAssembly2",
+                time_from_conversion_to_report_assembly, base::Minutes(1),
+                base::Days(24), 50);
 
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Conversions.AggregatableReport.ExtraReportDelay",
-          now - report.initial_report_time(), base::Seconds(1), base::Days(24),
-          50);
+            LogAggregatableReportHistogramCustomTimes(
+                "ExtraReportDelay",
+                data.common_data.aggregatable_trigger_config
+                    .trigger_context_id()
+                    .has_value(),
+                now - report.initial_report_time(), base::Seconds(1),
+                base::Days(24), 50);
 
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Conversions.AggregatableReport.SchedulerReportDelay",
-          now - report.report_time(), base::Seconds(1), base::Days(1), 50);
-      break;
-    }
-    case AttributionReport::Type::kNullAggregatable:
-      break;
-  }
+            UMA_HISTOGRAM_CUSTOM_TIMES(
+                "Conversions.AggregatableReport.SchedulerReportDelay",
+                now - report.report_time(), base::Seconds(1), base::Days(1),
+                50);
+          },
+          [](const AttributionReport::NullAggregatableData&) {},
+      },
+      report.data());
 }
 
 // Called when |report| is sent, failed or dropped, for logging metrics.

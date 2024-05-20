@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AttributionReportingAggregatableContextType">
+  <variant name=""/>
+  <variant name="ContextID."/>
+  <variant name="NoContextID."/>
+</variants>
+
 <variants name="ContextMenuAndroidTypes">
   <variant name="" summary=""/>
   <variant name=".Image"
@@ -3162,20 +3168,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableReport.ExtraReportDelay" units="ms"
-    expires_after="2024-10-04">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the &quot;extra&quot; non-scheduled time it took to send a
-    particular aggregatable attribution report. This is primarily due to a
-    report's scheduled report time taking place while the browser is closed or
-    there is network issue. Recorded when an aggregatable report is to be
-    assembled.
-  </summary>
-</histogram>
-
 <histogram
     name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
     units="ms" expires_after="2024-09-15">
@@ -3317,6 +3309,22 @@ chromium-metrics-reviews@google.com.
     100,000 when the total budget exceeds 65,536. Recorded when creating the
     aggregatable histogram.
   </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.{ContextType}ExtraReportDelay"
+    units="ms" expires_after="2024-10-04">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to send a
+    particular aggregatable attribution report. This is primarily due to a
+    report's scheduled report time taking place while the browser is closed or
+    there is network issue. Recorded when an aggregatable report is to be
+    assembled.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
 <histogram name="Conversions.AllowedByPermissionPolicy" enum="BooleanAllowed"
@@ -3704,19 +3712,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.HttpResponseOrNetErrorCodeAggregatable"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-15">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending an attribution report, recorded for each sent
-    aggregatable report. The HTTP response code is recorded if there is no net
-    error code for the request, or the net error code indicates there was a
-    response code failure.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-15">
   <owner>anthonygarant@chromium.org</owner>
@@ -3960,17 +3955,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.ReportRetrySucceedAggregatable"
-    enum="BooleanSuccess" expires_after="2024-10-06">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular aggregatable attribution report was successful.
-    Emitted for all conversion aggregatable reports which retry.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ReportRetrySucceedEventLevel"
     enum="BooleanSuccess" expires_after="2024-09-15">
   <owner>anthonygarant@chromium.org</owner>
@@ -4020,18 +4004,6 @@ chromium-metrics-reviews@google.com.
     measurement-api-dev+alerts@google.com. Please make sure future versions of
     this histogram are properly set up for alerting, but prefer not to version
     the histogram if possible.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportStatusAggregatable"
-    enum="ConversionReportStatus" expires_after="2024-09-15">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high level request status of an attribution report. Recorded for
-    every aggregatable attribution report sent. For attribution report that has
-    been retried, every retry will be counted.
   </summary>
 </histogram>
 
@@ -4378,6 +4350,49 @@ chromium-metrics-reviews@google.com.
     verbose debug report. The net error code is recorded if the HTTP response
     code is unavailable.
   </summary>
+</histogram>
+
+<histogram
+    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatable"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-15">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each sent
+    aggregatable report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable"
+    enum="BooleanSuccess" expires_after="2024-10-06">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular aggregatable attribution report was successful.
+    Emitted for all conversion aggregatable reports which retry.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportStatusAggregatable"
+    enum="ConversionReportStatus" expires_after="2024-09-15">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an attribution report. Recorded for
+    every aggregatable attribution report sent. For attribution report that has
+    been retried, every retry will be counted.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
 <histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure"
