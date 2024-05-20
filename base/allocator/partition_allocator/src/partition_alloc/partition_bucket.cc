@@ -719,7 +719,22 @@ void PartitionBucket::InitCanStoreRawSize(bool use_small_single_slot_spans) {
   if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
     // Even when the slot size is below the standard floor for single
     // slot spans, there exist spans that happen to have exactly one
-    // slot per.
+    // slot per. If `use_small_single_slot_spans` is true, we use more
+    // nuanced criteria for determining if a span is "single-slot."
+    //
+    // The conditions are all of:
+    // *  Don't deal with slots trafficked by the thread cache [1].
+    // *  There must be exactly one slot in this span.
+    // *  There must be enough room in the super page metadata area [2]
+    //    to store the raw size - hence, this span must take up more
+    //    than one partition page.
+    //
+    // [1] Updating the raw size is considered slow relative to the
+    //     thread cache's fast paths. Letting the thread cache handle
+    //     single-slot spans forces us to stick branches and raw size
+    //     updates into fast paths. We avoid this by holding single-slot
+    //     spans and thread-cache-eligible spans disjoint.
+    // [2] ../../PartitionAlloc.md#layout-in-memory
     const bool not_handled_by_thread_cache =
         slot_size > kThreadCacheLargeSizeThreshold;
     can_store_raw_size =
