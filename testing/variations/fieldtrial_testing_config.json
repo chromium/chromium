@@ -17573,7 +17573,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "SafetyCheckMagicStackAutorunHoursThreshold": "24"
+                        "SafetyCheckMagicStackAutorunHoursThreshold": "720"
                     },
                     "enable_features": [
                         "SafetyCheckMagicStack"
