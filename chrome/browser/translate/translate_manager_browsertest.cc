@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/translate/core/browser/translate_manager.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -19,12 +21,12 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_error_details.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
@@ -44,6 +46,7 @@ namespace {
 
 static const char kTestValidScript[] =
     "var google = {};"
+    "window.isTranslationRestored = false;"
     "google.translate = (function() {"
     "  return {"
     "    TranslateService: function() {"
@@ -52,6 +55,7 @@ static const char kTestValidScript[] =
     "          return true;"
     "        },"
     "        restore : function() {"
+    "          isTranslationRestored = true;"
     "          return;"
     "        },"
     "        getDetectedLanguage : function() {"
@@ -1269,6 +1273,66 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
   EXPECT_EQ(TranslationType::kAutomaticTranslationByPref,
             language_state->translation_type());
   WaitUntilPageTranslated();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
+                       RestoreOriginStateAfterCache) {
+  SetTranslateScript(kTestValidScript);
+
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  ResetObserver();
+  chrome_translate_client = GetChromeTranslateClient();
+  WaitUntilLanguageDetermined(chrome_translate_client);
+
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+
+  manager->TranslatePage(
+      chrome_translate_client->GetLanguageState().source_language(), "en", true,
+      TranslationType::kAutomaticTranslationByPref);
+
+  WaitUntilPageTranslated();
+
+  {
+    // Intentionally check translated state directly in blink. Without any
+    // proxies.
+    ASSERT_EQ(true, content::EvalJs(rfh_a.get(), "cr.googleTranslate.finished",
+                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                    ISOLATED_WORLD_ID_TRANSLATE));
+    ASSERT_EQ(0, content::EvalJs(rfh_a.get(), "cr.googleTranslate.errorCode",
+                                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                 ISOLATED_WORLD_ID_TRANSLATE));
+  }
+
+  ResetObserver();
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
+
+  // A is frozen in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  // Navigate back.
+  ResetObserver();
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  {
+    // Intentionally check restored state directly in blink. Without any
+    // proxies.
+    ASSERT_EQ(true, content::EvalJs(rfh_a.get(), "window.isTranslationRestored",
+                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                    ISOLATED_WORLD_ID_TRANSLATE));
+    ASSERT_EQ(0, content::EvalJs(rfh_a.get(), "cr.googleTranslate.errorCode",
+                                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                 ISOLATED_WORLD_ID_TRANSLATE));
+  }
 }
 
 }  // namespace

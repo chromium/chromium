@@ -179,6 +179,12 @@ cr.googleTranslate = (function() {
     }
   }
 
+  window.addEventListener('pagehide', function(event) {
+    if (libReady && event.persisted) {
+      lib.restore();
+    }
+  });
+
   // Public API.
   return {
     /**
