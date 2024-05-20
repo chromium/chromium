@@ -54,7 +54,7 @@ class GerritAPITest(unittest.TestCase):
     def test_query_exportable_open_cls(self):
         host = MockHost()
         url = ('https://chromium-review.googlesource.com/changes/'
-               '?q=project:"chromium%2Fsrc"+branch:main+is:open+-is:wip'
+               '?q=project:"chromium%2Fsrc"+branch:main+is:submittable+-is:wip'
                '&n=500&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
                '&o=DETAILED_ACCOUNTS')
         payload = []
