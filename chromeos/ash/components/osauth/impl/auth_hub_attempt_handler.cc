@@ -189,6 +189,11 @@ void AuthHubAttemptHandler::OnFactorAttemptResult(AshAuthFactor factor,
     // the pointer here to avoid calling into a danling pointer.
     status_consumer_ = nullptr;
 
+    // Signal the successful auth to every auth engine.
+    for (const auto& [unused, engine] : engines_) {
+      engine->OnSuccessfulAuthentiation();
+    }
+
     owner_->OnAuthenticationSuccess(attempt_, factor);
     return;
   } else {

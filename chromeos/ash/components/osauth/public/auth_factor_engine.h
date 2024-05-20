@@ -177,6 +177,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   virtual void ShutdownTimedOut() {}
   virtual void StartFlowTimedOut() {}
   virtual void StopFlowTimedOut() {}
+
+  // Called when any engine successfully authenticates an auth factor. Engines
+  // can override this when they have some action (e.g. removing a lockout) that
+  // should be carried out upon auth even when doing via another engine.
+  virtual void OnSuccessfulAuthentiation() {}
 };
 
 }  // namespace ash
