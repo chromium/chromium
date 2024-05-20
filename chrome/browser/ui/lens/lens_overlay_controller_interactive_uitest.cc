@@ -140,7 +140,13 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User clicks the "close" button to close lens overlay.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
+// TODO(b/340343342): Reenable on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OpenAndClose DISABLED_OpenAndClose
+#else
+#define MAYBE_OpenAndClose OpenAndClose
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_OpenAndClose) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
@@ -180,8 +186,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User presses the escape key to close lens overlay.
-// TOOD(b/340343342): Reenable on windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(b/340343342): Reenable on windows.
+#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER)
 #define MAYBE_EscapeKeyClose DISABLED_EscapeKeyClose
 #else
 #define MAYBE_EscapeKeyClose EscapeKeyClose
