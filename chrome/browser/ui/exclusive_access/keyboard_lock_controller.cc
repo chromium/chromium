@@ -204,6 +204,7 @@ void KeyboardLockController::HandleUserHeldEscapeDeprecated() {
   manager->fullscreen_controller()->HandleUserPressedEscape();
   manager->pointer_lock_controller()->HandleUserPressedEscape();
   HandleUserPressedEscape();
+  base::RecordAction(base::UserMetricsAction("UnlockKeyboard_PressAndHoldEsc"));
 }
 
 void KeyboardLockController::ReShowExitBubbleIfNeeded() {
