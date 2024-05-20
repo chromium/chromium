@@ -441,7 +441,7 @@ void LensOverlayController::BindOverlay(
   page_.Bind(std::move(page));
 
   InitializeOverlayUI(*initialization_data_);
-  base::UmaHistogramBoolean("Desktop.LensOverlay.Shown", true);
+  base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
   state_ = State::kOverlay;
 
   // Only start the query flow again if we don't already have a full image
