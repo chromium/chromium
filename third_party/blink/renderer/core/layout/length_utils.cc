@@ -1489,8 +1489,10 @@ FragmentGeometry CalculateInitialFragmentGeometry(
   const auto border_scrollbar_padding = border_padding + scrollbar;
 
   if (node.IsReplaced()) {
-    const auto border_box_size =
-        ComputeReplacedSize(node, space, border_padding);
+    const auto border_box_size = ComputeReplacedSize(
+        node, space, border_padding,
+        is_intrinsic ? ReplacedSizeMode::kIgnoreInlineLengths
+                     : ReplacedSizeMode::kNormal);
     return {border_box_size, border, scrollbar, padding};
   }
 

@@ -907,14 +907,24 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
             constraint_space.IsBlockAutoBehaviorStretch());
   };
 
-  const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
-  const bool is_replaced = IsReplaced();
+  auto IntrinsicFragmentGeometry = [&]() -> FragmentGeometry {
+    return CalculateInitialFragmentGeometry(constraint_space, *this,
+                                            /* break_token */ nullptr,
+                                            /* is_intrinsic */ true);
+  };
 
-  if (has_aspect_ratio && !is_replaced && type == MinMaxSizesType::kContent) {
-    const FragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this,
-                                         /* break_token */ nullptr,
-                                         /* is_intrinsic */ true);
+  // Directly handle replaced elements, caching doesn't have substantial gains
+  // as most layouts are interested in the min/max content contribution which
+  // calls `ComputeReplacedSize` directly. This is mainly used by flex.
+  if (IsReplaced()) {
+    MinMaxSizes sizes;
+    sizes = IntrinsicFragmentGeometry().border_box_size.inline_size;
+    return {sizes, DependsOnBlockConstraints()};
+  }
+
+  const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
+  if (has_aspect_ratio && type == MinMaxSizesType::kContent) {
+    const FragmentGeometry fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     if (fragment_geometry.border_box_size.block_size != kIndefiniteSize) {
@@ -942,9 +952,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     return box_->CachedIndefiniteIntrinsicLogicalWidths();
   }
 
-  const FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-      constraint_space, *this, /* break_token */ nullptr,
-      /* is_intrinsic */ true);
+  const FragmentGeometry fragment_geometry = IntrinsicFragmentGeometry();
   const LayoutUnit initial_block_size =
       fragment_geometry.border_box_size.block_size;
 
@@ -971,10 +979,9 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   bool depends_on_block_constraints =
       (DependsOnBlockConstraints() ||
        UseParentPercentageResolutionBlockSizeForChildren()) &&
-      (result.depends_on_block_constraints || has_aspect_ratio || is_replaced);
+      (result.depends_on_block_constraints || has_aspect_ratio);
 
-  if (has_aspect_ratio && !is_replaced &&
-      initial_block_size == kIndefiniteSize) {
+  if (has_aspect_ratio && initial_block_size == kIndefiniteSize) {
     // If the block size will be computed from the aspect ratio, we need
     // to take the max-block-size into account.
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
