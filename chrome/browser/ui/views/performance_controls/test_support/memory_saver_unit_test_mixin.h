@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_UNIT_TEST_MIXIN_H_
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_UNIT_TEST_MIXIN_H_
 
-#include <type_traits>
+#include <concepts>
+
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h"
@@ -13,9 +14,8 @@
 
 // Template to be used as a mixin class for memory saver tests extending
 // TestWithBrowserView.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<TestWithBrowserView, T>>>
+template <typename T>
+  requires(std::derived_from<T, TestWithBrowserView>)
 class MemorySaverUnitTestMixin : public T {
  public:
   template <class... Args>

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_INTERACTIVE_TEST_MIXIN_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_INTERACTIVE_TEST_MIXIN_H_
 
-#include <type_traits>
+#include <concepts>
+
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
@@ -16,9 +17,8 @@
 
 // Template to be used as a mixin class for memory saver tests extending
 // InProcessBrowserTest.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
+  requires(std::derived_from<T, InProcessBrowserTest>)
 class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
  public:
   template <class... Args>
