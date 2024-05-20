@@ -541,7 +541,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
               privacy_sandbox::kTrackingProtectionSettingsLaunch));
   html_source->AddBoolean(
       "isIpProtectionV1Enabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx) && false);
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx));
   html_source->AddBoolean("isFingerprintingProtectionEnabled",
                           base::FeatureList::IsEnabled(
                               privacy_sandbox::kFingerprintingProtectionUx));
