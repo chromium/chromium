@@ -338,7 +338,7 @@ BASE_FEATURE(kHideDelegatedFrameHostMac,
 // Enabled by default 03/2014, kept to run a holdback experiment.
 BASE_FEATURE(kEvictionUnlocksResources,
              "EvictionUnlocksResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, FrameRateDecider will toggle to half framerate if there's only
 // one video on screen whose framerate is lower than the display vsync and in
