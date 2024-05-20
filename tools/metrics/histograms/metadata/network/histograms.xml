@@ -747,6 +747,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.WiFiDirect.TagSocket.OperationResult"
+    enum="BooleanSuccess" expires_after="2025-02-20">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the result of the tag socket operation. Emitted whenever
+    the operation is attempted.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.WiFiDirect.{Operation}.OperationResult"
     enum="WifiP2POperationResult" expires_after="2025-02-20">
   <owner>jiajunz@google.com</owner>

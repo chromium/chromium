@@ -471,7 +471,19 @@ void WifiP2PController::TagSocket(
     base::OnceCallback<void(bool success)> callback) {
   PatchPanelClient::Get()->TagSocket(
       socket_fd.get(), network_id,
-      PatchPanelClient::VpnRoutingPolicy::kBypassVpn, std::move(callback));
+      PatchPanelClient::VpnRoutingPolicy::kBypassVpn,
+      base::BindOnce(&WifiP2PController::OnTagSocketCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WifiP2PController::OnTagSocketCompleted(
+    base::OnceCallback<void(bool success)> callback,
+    bool success) {
+  if (!success) {
+    NET_LOG(ERROR) << "Tag socket operation failed.";
+  }
+  WifiP2PMetricsLogger::RecordTagSocketOperationResult(success);
+  std::move(callback).Run(success);
 }
 
 void WifiP2PController::OnPropertyChanged(const std::string& key,

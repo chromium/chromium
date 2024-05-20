@@ -187,6 +187,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
       const std::string& error_name,
       const std::string& error_message);
 
+  void OnTagSocketCompleted(base::OnceCallback<void(bool success)> callback,
+                            bool success);
+
   void GetP2PGroupMetadata(int shill_id,
                            const OperationType& type,
                            WifiP2PGroupCallback callback,

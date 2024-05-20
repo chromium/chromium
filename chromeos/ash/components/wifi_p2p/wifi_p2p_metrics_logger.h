@@ -24,6 +24,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
       const WifiP2PController::OperationType& type,
       const WifiP2PController::OperationResult& result);
 
+  // Emits whenever a tag socket operation is attempted.
+  static void RecordTagSocketOperationResult(bool success);
+
   WifiP2PMetricsLogger() = default;
   ~WifiP2PMetricsLogger() = default;
   WifiP2PMetricsLogger(const WifiP2PMetricsLogger&) = delete;
@@ -50,6 +53,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
   FRIEND_TEST_ALL_PREFIXES(WifiP2PControllerTest,
                            DisconnectFromP2PGroupFailure_NotConnected);
   FRIEND_TEST_ALL_PREFIXES(WifiP2PControllerTest, GetP2PCapabilities);
+  FRIEND_TEST_ALL_PREFIXES(WifiP2PControllerTest, TagSocketSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WifiP2PControllerTest, TagSocketFailure);
 
   // Represents the Wifi P2P capabilities for the metric. Entries should not be
   // renumbered and numeric values should never be reused.
@@ -66,6 +71,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
   static const char kConnectP2PGroupHistogram[];
   static const char kDisconnectP2PGroupHistogram[];
   static const char kDestroyP2PGroupHistogram[];
+  static const char kTagSocketHistogram[];
 
   static WifiP2PMetricsCapabilities GetWifiP2PMetricsCapabilities(
       const WifiP2PController::WifiP2PCapabilities& capablities);

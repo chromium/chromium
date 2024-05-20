@@ -427,6 +427,10 @@ TEST_F(WifiP2PControllerTest, TagSocketSuccess) {
   Init();
 
   EXPECT_TRUE(TagSocket(123, base::ScopedFD()));
+  histogram_tester_.ExpectTotalCount(WifiP2PMetricsLogger::kTagSocketHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(WifiP2PMetricsLogger::kTagSocketHistogram,
+                                      true, 1);
 }
 
 TEST_F(WifiP2PControllerTest, TagSocketFailure) {
@@ -434,6 +438,10 @@ TEST_F(WifiP2PControllerTest, TagSocketFailure) {
   FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
       /*success=*/false);
   EXPECT_FALSE(TagSocket(123, base::ScopedFD()));
+  histogram_tester_.ExpectTotalCount(WifiP2PMetricsLogger::kTagSocketHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(WifiP2PMetricsLogger::kTagSocketHistogram,
+                                      false, 1);
 }
 
 }  // namespace ash

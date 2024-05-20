@@ -33,6 +33,10 @@ const char WifiP2PMetricsLogger::kDestroyP2PGroupHistogram[] =
     "Network.Ash.WiFiDirect.DestroyP2PGroup.OperationResult";
 
 // static
+const char WifiP2PMetricsLogger::kTagSocketHistogram[] =
+    "Network.Ash.WiFiDirect.TagSocket.OperationResult";
+
+// static
 void WifiP2PMetricsLogger::RecordWifiP2PCapabilities(
     const WifiP2PCapabilities& capablities) {
   base::UmaHistogramEnumeration(kWifiP2PCapabilitiesHistogram,
@@ -58,6 +62,10 @@ void WifiP2PMetricsLogger::RecordWifiP2POperationResult(
       return;
   }
   NOTREACHED_IN_MIGRATION() << "Unknown WiFi P2P operation type: " << type;
+}
+
+void WifiP2PMetricsLogger::RecordTagSocketOperationResult(bool success) {
+  base::UmaHistogramBoolean(kTagSocketHistogram, success);
 }
 
 // static
