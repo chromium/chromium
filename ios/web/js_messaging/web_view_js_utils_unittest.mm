@@ -34,7 +34,7 @@ NSString* const kMockGetExistingFramesScript =
 
 // Returns the WKFrameInfo instance for the main frame of `web_view`.
 WKFrameInfo* GetMainFrameWKFrameInfo(WKWebView* web_view) {
-  // Setup a message handler and recieve a message to obtain a WKFrameInfo
+  // Setup a message handler and receive a message to obtain a WKFrameInfo
   // instance.
   CRWFakeScriptMessageHandler* script_message_handler =
       [[CRWFakeScriptMessageHandler alloc] init];

@@ -17,7 +17,7 @@
 
 // Starts a New Tab animation in `parentView`, from `originPoint` with
 // a `completion` block. The new tab will scale up and move from the direction
-// if `originPoint` to the center of the reciever. `originPoint` must be in
+// if `originPoint` to the center of the receiver. `originPoint` must be in
 // UIWindow coordinates.
 - (void)animateFrom:(CGPoint)originPoint withCompletion:(void (^)())completion;
 

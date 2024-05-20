@@ -86,7 +86,7 @@
                       center:(CGPoint)center
                         size:(CGSize)size;
 
-// Populate the `cell` view of the reciever by extracting snapshots from `view`,
+// Populate the `cell` view of the receiver by extracting snapshots from `view`,
 // using `rect` to define (in `view`'s coordinates) the main tab view, with any
 // space above and below `rect` being the top and bottom tab views.
 - (void)populateWithSnapshotsFromView:(UIView*)view middleRect:(CGRect)rect;

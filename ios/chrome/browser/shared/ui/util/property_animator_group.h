@@ -13,7 +13,7 @@
 // animators in a group. Since instances of this class conform to that protocol,
 // in most cases an animator group can be used where a single property animator
 // would be (provided that the call sites want a id<UIViewImplicitlyAnimating>).
-// Protocol methods that mutate the reciever are sequentially appiled to all of
+// Protocol methods that mutate the receiver are sequentially appiled to all of
 // the animators in the group (this include -startAnimation, -stopAnimation:,
 // and so on). -addAnimations:, -addCompletion:, and similar methods are just
 // applied to the first animator in the group. Methods (and property getters)

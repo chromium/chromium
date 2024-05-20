@@ -156,7 +156,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // A PendingReceiver for `url_loader_factory_`, used during service
   // initialization.
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      url_loader_factory_pending_reciever_;
+      url_loader_factory_pending_receiver_;
 
   // A SharedURLLoaderFactory that wraps `url_loader_factory_`.
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>

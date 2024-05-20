@@ -19,7 +19,7 @@ const NSTimeInterval kOverlayViewAnimationDuration = 0.3;
 }  // namespace
 
 @interface ShareDownloadOverlayCoordinator () {
-  // Web state that will recieve the overlay view.
+  // Web state that will receive the overlay view.
   raw_ptr<web::WebState> _webState;
 }
 

@@ -503,7 +503,7 @@ void IOSChromeSafetyCheckManager::StartOmahaCheck() {
       break;
   }
 
-  // If the Omaha response isn't recieved after `kOmahaNetworkWaitTime`,
+  // If the Omaha response isn't received after `kOmahaNetworkWaitTime`,
   // consider this an Omaha failure.
   task_runner_->PostDelayedTask(
       FROM_HERE,
