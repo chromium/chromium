@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -30,6 +29,7 @@
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/video/h264_parser.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -532,10 +532,11 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
 
   // In order to preserve the order of the callbacks between Decode() and
   // Reset(), we also trampoline |closure|.
-  base::ScopedClosureRunner scoped_trampoline_reset_cb(
-      base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
-                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
-                     std::move(closure)));
+  absl::Cleanup scoped_trampoline_reset = [closure =
+                                               std::move(closure)]() mutable {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
+  };
 
   // Invalidate pointers from and cancel all hypothetical in-flight requests
   // to the WaitOnceForEvents() routine.

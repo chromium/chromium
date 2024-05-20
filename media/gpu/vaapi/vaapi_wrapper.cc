@@ -56,6 +56,7 @@
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -1170,16 +1171,15 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
       vaCreateConfig(va_display, va_profile, entrypoint, &required_attribs[0],
                      required_attribs.size(), &va_config_id);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
-  base::ScopedClosureRunner vaconfig_destroyer(base::BindOnce(
-      [](VADisplay display, VAConfigID id) {
-        if (id != VA_INVALID_ID) {
-          VAStatus va_res = vaDestroyConfig(display, id);
-          if (va_res != VA_STATUS_SUCCESS)
-            LOG(ERROR) << "vaDestroyConfig failed. VA error: "
-                       << vaErrorStr(va_res);
-        }
-      },
-      va_display, va_config_id));
+  absl::Cleanup vaconfig_destroyer = [va_display, va_config_id] {
+    if (va_config_id != VA_INVALID_ID) {
+      VAStatus va_res = vaDestroyConfig(va_display, va_config_id);
+      if (va_res != VA_STATUS_SUCCESS) {
+        LOG(ERROR) << "vaDestroyConfig failed. VA error: "
+                   << vaErrorStr(va_res);
+      }
+    }
+  };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Nothing further to query for protected profile.
@@ -1271,16 +1271,15 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
   va_res = vaCreateConfig(va_display, va_profile, entrypoint, nullptr, 0,
                           &va_config_id);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
-  base::ScopedClosureRunner vaconfig_no_attribs_destroyer(base::BindOnce(
-      [](VADisplay display, VAConfigID id) {
-        if (id != VA_INVALID_ID) {
-          VAStatus va_res = vaDestroyConfig(display, id);
-          if (va_res != VA_STATUS_SUCCESS)
-            LOG(ERROR) << "vaDestroyConfig failed. VA error: "
-                       << vaErrorStr(va_res);
-        }
-      },
-      va_display, va_config_id));
+  absl::Cleanup vaconfig_no_attribs_destroyer = [va_display, va_config_id] {
+    if (va_config_id != VA_INVALID_ID) {
+      VAStatus va_res = vaDestroyConfig(va_display, va_config_id);
+      if (va_res != VA_STATUS_SUCCESS) {
+        LOG(ERROR) << "vaDestroyConfig failed. VA error: "
+                   << vaErrorStr(va_res);
+      }
+    }
+  };
   profile_info->supported_internal_formats = {};
   size_t max_num_config_attributes;
   if (!base::CheckedNumeric<int>(vaMaxNumConfigAttributes(va_display))
@@ -1319,7 +1318,7 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
   return is_any_profile_supported;
 }
 
-void DestroyVAImage(VADisplay va_display, VAImage image) {
+void DestroyVAImage(VADisplay va_display, const VAImage& image) {
   if (image.image_id != VA_INVALID_ID)
     vaDestroyImage(va_display, image.image_id);
 }
@@ -1573,13 +1572,11 @@ bool VADisplayStateSingleton::Initialize() {
   }
 
   const VADisplay va_display = vaGetDisplayDRM(drm_fd_.get());
-  base::ScopedClosureRunner va_display_cleaner_cb(base::BindOnce(
-      [](VADisplay va_display) {
-        if (vaDisplayIsValid(va_display)) {
-          vaTerminate(va_display);
-        }
-      },
-      va_display));
+  absl::Cleanup va_display_cleaner_cb = [va_display] {
+    if (vaDisplayIsValid(va_display)) {
+      vaTerminate(va_display);
+    }
+  };
 
   if (!vaDisplayIsValid(va_display)) {
     LOG(ERROR) << "Could not get a valid VA display";
@@ -1632,7 +1629,7 @@ bool VADisplayStateSingleton::Initialize() {
     return false;
   }
 
-  std::ignore = va_display_cleaner_cb.Release();
+  std::move(va_display_cleaner_cb).Cancel();
   refcount_ = 1;
   va_display_ = va_display;
   implementation_type_ = implementation_type;
@@ -2814,8 +2811,11 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateImage, false);
     needs_va_put_image = true;
   }
-  base::ScopedClosureRunner vaimage_deleter(
-      base::BindOnce(&DestroyVAImage, va_display_, image));
+  absl::Cleanup vaimage_deleter =
+      [this, &image]() EXCLUSIVE_LOCKS_REQUIRED(va_lock_.get()) {
+        VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        DestroyVAImage(va_display_, image);
+      };
 
   if (image.format.fourcc != VA_FOURCC_NV12) {
     LOG(ERROR) << "Unsupported image format: " << image.format.fourcc;
@@ -3121,20 +3121,22 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::ScopedClosureRunner protected_session_detacher;
   if (va_protected_session_id != VA_INVALID_ID) {
     const VAStatus va_res = vaAttachProtectedSession(
         va_display_, va_context_id_, va_protected_session_id);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAAttachProtectedSession,
                          false);
-    // Note that we use a lambda expression to wrap vaDetachProtectedSession()
-    // because the function in |protected_session_detacher| must return void.
-    protected_session_detacher.ReplaceClosure(base::BindOnce(
-        [](VADisplay va_display, VAContextID va_context_id) {
-          vaDetachProtectedSession(va_display, va_context_id);
-        },
-        va_display_, va_context_id_));
   }
+
+  absl::Cleanup protected_session_detacher =
+      [va_protected_session_id, this]()
+          EXCLUSIVE_LOCKS_REQUIRED(va_lock_.get()) {
+            if (va_protected_session_id == VA_INVALID_ID) {
+              return;
+            }
+            VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+            vaDetachProtectedSession(va_display_, va_context_id_);
+          };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   TRACE_EVENT2("media,gpu", "VaapiWrapper::BlitSurface", "src_rect",
@@ -3504,8 +3506,11 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
   MAYBE_ASSERT_ACQUIRED(va_lock_);
 
   DCHECK(IsValidVABufferType(va_buffer.type));
-  base::ScopedClosureRunner pending_buffers_destroyer_on_failure(base::BindOnce(
-      &VaapiWrapper::DestroyPendingBuffers_Locked, base::Unretained(this)));
+  absl::Cleanup pending_buffers_destroyer_on_failure =
+      [this]() EXCLUSIVE_LOCKS_REQUIRED(va_lock_.get()) {
+        VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        DestroyPendingBuffers_Locked();
+      };
   unsigned int va_buffer_size;
   // We use a null |va_buffer|.data for testing: it signals that we want this
   // SubmitBuffer_Locked() call to fail.
@@ -3529,7 +3534,7 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
   }
 
   pending_va_buffers_.push_back(buffer_id);
-  pending_buffers_destroyer_on_failure.ReplaceClosure(base::DoNothing());
+  std::move(pending_buffers_destroyer_on_failure).Cancel();
   return true;
 }
 

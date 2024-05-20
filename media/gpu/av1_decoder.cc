@@ -5,14 +5,15 @@
 #include "media/gpu/av1_decoder.h"
 
 #include <bitset>
+#include <utility>
 
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/av1_picture.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
@@ -250,15 +251,14 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     return kRanOutOfStreamData;
   }
   while (parser_->HasData() || current_frame_header_) {
-    base::ScopedClosureRunner clear_current_frame(
-        base::BindOnce(&AV1Decoder::ClearCurrentFrame, base::Unretained(this)));
+    absl::Cleanup clear_current_frame = [this] { ClearCurrentFrame(); };
     if (pending_pic_) {
       const AV1Accelerator::Status status = DecodeAndOutputPicture(
           std::move(pending_pic_), parser_->tile_buffers());
       if (status == AV1Accelerator::Status::kFail)
         return kDecodeError;
       if (status == AV1Accelerator::Status::kTryAgain) {
-        clear_current_frame.ReplaceClosure(base::DoNothing());
+        std::move(clear_current_frame).Cancel();
         return kTryAgain;
       }
       // Continue so that we force |clear_current_frame| to run before moving
@@ -368,7 +368,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           profile_ = new_profile;
           bit_depth_ = new_bit_depth;
           picture_color_space_ = new_color_space;
-          clear_current_frame.ReplaceClosure(base::DoNothing());
+          std::move(clear_current_frame).Cancel();
           return kConfigChange;
         }
       }
@@ -480,7 +480,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                               : accelerator_->CreateAV1Picture(
                                     frame_header.film_grain_params.apply_grain);
     if (!pic) {
-      clear_current_frame.ReplaceClosure(base::DoNothing());
+      std::move(clear_current_frame).Cancel();
       return kRanOutOfSurfaces;
     }
 
@@ -501,7 +501,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     if (status == AV1Accelerator::Status::kFail)
       return kDecodeError;
     if (status == AV1Accelerator::Status::kTryAgain) {
-      clear_current_frame.ReplaceClosure(base::DoNothing());
+      std::move(clear_current_frame).Cancel();
       return kTryAgain;
     }
   }

@@ -24,6 +24,7 @@
 #include "media/gpu/v4l2/stateless/vp8_delegate.h"
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
 #include "media/gpu/v4l2/v4l2_status.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 // Logging for the decoder is following this convention:
 //
@@ -242,10 +243,11 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
 
   // In order to preserve the order of the callbacks between Decode() and
   // Reset(), we also trampoline |reset_cb|.
-  base::ScopedClosureRunner scoped_trampoline_reset_cb(
-      base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
-                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
-                     std::move(reset_cb)));
+  absl::Cleanup scoped_trampoline_reset_cb =
+      [reset_cb = std::move(reset_cb)]() mutable {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(reset_cb));
+      };
 
   decoder_->Reset();
 

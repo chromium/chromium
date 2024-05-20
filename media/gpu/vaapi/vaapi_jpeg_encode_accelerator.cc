@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -31,6 +30,7 @@
 #include "media/gpu/vaapi/vaapi_jpeg_encoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/parsers/jpeg_parser.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace media {
 
@@ -316,8 +316,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  base::ScopedClosureRunner output_gmb_buffer_unmapper(base::BindOnce(
-      &gfx::GpuMemoryBuffer::Unmap, base::Unretained(output_gmb_buffer.get())));
+  absl::Cleanup output_gmb_buffer_unmapper = [&output_gmb_buffer] {
+    output_gmb_buffer->Unmap();
+  };
 
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
