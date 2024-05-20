@@ -2698,9 +2698,6 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
                   .on_device_model_service_response()
                   .has_repeats());
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
-      true, 1);
-  histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kResponseHadRepeats, 1);
 }

@@ -524,8 +524,6 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     // If a repeat is detected, halt the response, and cancel/finish early.
     on_device_state_->receiver.reset();
     logged_response->set_has_repeats(true);
-    LogResponseHasRepeats(feature_, true);
-
     if (features::GetOnDeviceModelRetractRepeats()) {
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
@@ -554,6 +552,10 @@ void SessionImpl::OnComplete(
   // Stop timer, just in case we didn't already via OnResponse().
   on_device_state_->timer_for_first_response.Stop();
 
+  proto::OnDeviceModelServiceResponse* logged_response =
+      on_device_state_->MutableLoggedResponse();
+  LogResponseHasRepeats(feature_, logged_response->has_repeats());
+
   base::TimeDelta time_to_completion =
       base::TimeTicks::Now() - on_device_state_->start;
   base::UmaHistogramMediumTimes(
@@ -561,7 +563,7 @@ void SessionImpl::OnComplete(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
            GetStringNameForModelExecutionFeature(feature_)}),
       time_to_completion);
-  on_device_state_->MutableLoggedResponse()->set_time_to_completion_millis(
+  logged_response->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
   on_device_state_->opts.model_client->OnResponseCompleted();
 
@@ -746,12 +748,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   if (!is_complete) {
     SendPartialResponseCallback(*output);
     return;
-  }
-
-  if (!on_device_state_->MutableLoggedResponse()->has_repeats()) {
-    // Log completed responses with no repeats to calculate percentage of
-    // responses that have repeats.
-    LogResponseHasRepeats(feature_, false);
   }
 
   if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
