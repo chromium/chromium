@@ -134,11 +134,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"controlOpenAnyway", IDS_OPEN_DOWNLOAD_ANYWAY},
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
+      {"toastDeletedFromHistoryStillOnDevice",
+       IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE},
+      {"toastDeletedFromHistory", IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY},
       {"undo", IDS_DOWNLOAD_UNDO},
       {"controlKeepDangerous", IDS_DOWNLOAD_KEEP_DANGEROUS_FILE},
       {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
       {"controlKeepUnverified", IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE},
       {"controlKeepInsecure", IDS_DOWNLOAD_KEEP_INSECURE_FILE},
+      {"controlDeleteFromHistory", IDS_DOWNLOAD_DELETE_FROM_HISTORY},
 
       // Accessible labels for file icons.
       {"accessibleLabelDangerous",
@@ -172,6 +176,9 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"esbDownloadRowPromoString", IDS_DOWNLOAD_ROW_ESB_PROMOTION},
       {"esbDownloadRowPromoA11y", IDS_DOWNLOAD_ROW_ESB_PROMO_A11Y},
 #endif
+      // Dangerous File
+      {"noSafeBrowsingDesc",
+       IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -221,16 +228,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                              improved_download_warnings_ux
                                  ? IDS_BLOCK_DOWNLOAD_REASON_INSECURE
                                  : IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
-  source->AddLocalizedString(
-      "noSafeBrowsingDesc",
-      IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING);
-  source->AddLocalizedString("controlDeleteFromHistory",
-                             IDS_DOWNLOAD_DELETE_FROM_HISTORY);
-  source->AddLocalizedString(
-      "toastDeletedFromHistoryStillOnDevice",
-      IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE);
-  source->AddLocalizedString("toastDeletedFromHistory",
-                             IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Download Row ESB Promo:
