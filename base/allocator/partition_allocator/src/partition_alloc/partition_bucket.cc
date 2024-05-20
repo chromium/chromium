@@ -405,7 +405,9 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!direct_map_metadata->bucket.decommitted_slot_spans_head);
     PA_DCHECK(!direct_map_metadata->bucket.num_system_pages_per_slot_span);
     PA_DCHECK(!direct_map_metadata->bucket.num_full_slot_spans);
+
     direct_map_metadata->bucket.slot_size = slot_size;
+    direct_map_metadata->bucket.can_store_raw_size = true;
 
     new (&page_metadata->slot_span_metadata)
         SlotSpanMetadata(&direct_map_metadata->bucket);
@@ -619,6 +621,8 @@ void PartitionBucket::Init(uint32_t new_slot_size) {
       ;
   num_system_pages_per_slot_span =
       ComputeSystemPagesPerSlotSpan(slot_size, prefer_smaller_slot_spans);
+
+  InitCanStoreRawSize();
 }
 
 PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
@@ -696,6 +700,28 @@ PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
 
   return slot_span;
+}
+
+void PartitionBucket::InitCanStoreRawSize() {
+  // By definition, direct map buckets can store the raw size. The value
+  // of `can_store_raw_size` is set explicitly in that code path (see
+  // `PartitionDirectMap()`), bypassing this method.
+  PA_DCHECK(!is_direct_mapped());
+
+  can_store_raw_size = false;
+
+  // For direct-map as well as single-slot slot spans (recognized by checking
+  // against |MaxRegularSlotSpanSize()|), we have some spare metadata space in
+  // subsequent PartitionPage to store the raw size. It isn't only metadata
+  // space though, slot spans that have more than one slot can't have raw size
+  // stored, because we wouldn't know which slot it applies to.
+  if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
+    return;
+  }
+
+  PA_CHECK((slot_size % SystemPageSize()) == 0);
+  PA_CHECK(get_slots_per_span() == 1);
+  can_store_raw_size = true;
 }
 
 uintptr_t PartitionBucket::AllocNewSuperPageSpan(PartitionRoot* root,

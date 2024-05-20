@@ -47,6 +47,7 @@ struct PartitionBucket {
   // integer division (or modulo) operation with a pair of multiplication and a
   // bit shift, i.e. `value / size` becomes `(value * size_reciprocal) >> M`.
   uint64_t slot_size_reciprocal;
+  bool can_store_raw_size;
 
   // This is `M` from the formula above. For accurate results, both `value` and
   // `size`, which are bound by `kMaxBucketed` for our purposes, must be less
@@ -81,21 +82,7 @@ struct PartitionBucket {
                     bool* is_already_zeroed)
           PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
-  PA_ALWAYS_INLINE bool CanStoreRawSize() const {
-    // For direct-map as well as single-slot slot spans (recognized by checking
-    // against |MaxRegularSlotSpanSize()|), we have some spare metadata space in
-    // subsequent PartitionPage to store the raw size. It isn't only metadata
-    // space though, slot spans that have more than one slot can't have raw size
-    // stored, because we wouldn't know which slot it applies to.
-    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
-      return false;
-    }
-
-    PA_DCHECK((slot_size % SystemPageSize()) == 0);
-    PA_DCHECK(is_direct_mapped() || get_slots_per_span() == 1);
-
-    return true;
-  }
+  PA_ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size; }
 
   // Some buckets are pseudo-buckets, which are disabled because they would
   // otherwise not fulfill alignment constraints.
@@ -172,6 +159,9 @@ struct PartitionBucket {
   void InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span);
 
  private:
+  // Sets `this->can_store_raw_size`.
+  void InitCanStoreRawSize();
+
   // Allocates several consecutive super pages. Returns the address of the first
   // super page.
   PA_ALWAYS_INLINE uintptr_t AllocNewSuperPageSpan(PartitionRoot* root,
