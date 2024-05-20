@@ -1248,9 +1248,8 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                 "both");
 // Expose keyboard shortcut where it makes sense.
 #if BUILDFLAG(IS_MAC)
-  // Use cloverleaf symbol for command key.
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                base::WideToUTF8(L"\u2318L"));
+                                "⌘L");
 #else
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                                 "Ctrl+L");

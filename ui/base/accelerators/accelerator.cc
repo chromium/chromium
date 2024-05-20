@@ -421,14 +421,21 @@ std::u16string Accelerator::ApplyShortFormModifiers(
   std::u16string result;
   result.reserve(6);
 
-  if (IsCtrlDown())
+  // Add modifiers in the order that matches how they are displayed in native
+  // menus.
+  if (IsCtrlDown()) {
     result.push_back(u'⌃');  // U+2303, UP ARROWHEAD
-  if (IsAltDown())
+  }
+  if (IsAltDown()) {
     result.push_back(u'⌥');  // U+2325, OPTION KEY
-  if (IsShiftDown())
+  }
+  if (IsShiftDown()) {
     result.push_back(u'⇧');  // U+21E7, UPWARDS WHITE ARROW
-  if (IsCmdDown())
+  }
+  if (IsCmdDown()) {
     result.push_back(u'⌘');  // U+2318, PLACE OF INTEREST SIGN
+  }
+
   if (IsFunctionDown()) {
     // The real "fn" used by menus is actually U+E23E in the Private Use Area in
     // the keyboard font obtained with CTFontCreateUIFontForLanguage, with key
@@ -449,8 +456,8 @@ std::u16string Accelerator::ApplyShortFormModifiers(
     // -[NSKeyboardShortcut localizedModifierMaskDisplayName] for an example of
     // this.
     //
-    // TODO(crbug.com/40800376): Implement all of this when text-style
-    // presentations are implemented for Views in https://crbug.com/1099591.
+    // TODO(http://crbug.com/40800376): Implement all of this when text-style
+    // presentations are implemented for Views in https://crbug.com/40137571.
     result.append(u"(fn) ");
   }
 
