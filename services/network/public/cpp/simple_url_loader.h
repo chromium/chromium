@@ -372,9 +372,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   virtual int NetError() const = 0;
 
   // The URLResponseHead for the request. Will be nullptr if ResponseInfo
-  // was never received. May only be called once the loader has informed the
-  // caller of completion.
+  // was never received or if `TakeResponseInfo()` has been called. May only be
+  // called once the loader has informed the caller of completion.
   virtual const mojom::URLResponseHead* ResponseInfo() const = 0;
+
+  // The URLResponseHead for the request. Ownership is transferred to the
+  // caller. Will be nullptr if ResponseInfo was never received. May only be
+  // called once the loader has informed the caller of completion.
+  virtual mojom::URLResponseHeadPtr TakeResponseInfo() = 0;
 
   // The URLLoaderCompletionStatus for the request. Will be nullopt if the
   // response never completed. May only be called once the loader has informed

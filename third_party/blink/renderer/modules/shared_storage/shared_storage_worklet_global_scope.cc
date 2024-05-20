@@ -15,6 +15,7 @@
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -41,6 +43,8 @@
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_operation_definition.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_fetcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
@@ -356,6 +360,24 @@ void SharedStorageWorkletGlobalScope::AddModule(
       WTF::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
                     WrapWeakPersistent(this), script_source_url,
                     std::move(callback)));
+
+  // Create a ResourceRequest and populate only the fields needed by
+  // `CodeCacheFetcher`.
+  //
+  // TODO(yaoxia): Move `code_cache_fetcher_` to `ModuleScriptDownloader` to
+  // avoid replicating the ResourceRequest here. This isn't viable today because
+  // `ModuleScriptDownloader` lives in blink/public/common, due to its use of
+  // `network::SimpleURLLoader`.
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(script_source_url);
+  resource_request->destination =
+      network::mojom::RequestDestination::kSharedStorageWorklet;
+
+  CHECK(GetCodeCacheHost());
+  code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
+      *resource_request, *GetCodeCacheHost(),
+      WTF::BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
+                    WrapWeakPersistent(this)));
 }
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
@@ -579,8 +601,30 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     const KURL& script_source_url,
     mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
-    std::string error_message) {
+    std::string error_message,
+    network::mojom::URLResponseHeadPtr response_head) {
   module_script_downloader_.reset();
+
+  // If we haven't received the code cache data, defer handing the response.
+  if (code_cache_fetcher_ && code_cache_fetcher_->is_waiting()) {
+    handle_script_download_response_after_code_cache_response_ = WTF::BindOnce(
+        &SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
+        WrapPersistent(this), script_source_url, std::move(callback),
+        std::move(response_body), std::move(error_message),
+        std::move(response_head));
+    return;
+  }
+
+  // Note: There's no need to check the `cached_metadata` param from
+  // `URLLoaderClient::OnReceiveResponse`. This param is only set for data
+  // fetched from ServiceWorker caches. Today, shared storage script fetch
+  // cannot be intercepted by service workers.
+
+  std::optional<mojo_base::BigBuffer> cached_metadata =
+      (code_cache_fetcher_ && response_head)
+          ? code_cache_fetcher_->TakeCodeCacheForResponse(*response_head)
+          : std::nullopt;
+  code_cache_fetcher_.reset();
 
   mojom::blink::SharedStorageWorkletService::AddModuleCallback
       add_module_finished_callback = std::move(callback).Then(WTF::BindOnce(
@@ -594,6 +638,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   }
 
   DCHECK(error_message.empty());
+  DCHECK(response_head);
 
   if (!ScriptController()) {
     std::move(add_module_finished_callback)
@@ -601,16 +646,45 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     return;
   }
 
-  ScriptState* script_state = ScriptController()->GetScriptState();
-  DCHECK(script_state);
+  WebURLResponse response =
+      WebURLResponse::Create(script_source_url, *response_head.get(),
+                             /*report_security_info=*/false, /*request_id=*/0);
+
+  const ResourceResponse& resource_response = response.ToResourceResponse();
+
+  // Create a `ScriptCachedMetadataHandler` for http family URLs. This
+  // replicates the core logic from `ScriptResource::ResponseReceived`,
+  // simplified since shared storage doesn't require
+  // `ScriptCachedMetadataHandlerWithHashing` which is only used for certain
+  // schemes.
+  ScriptCachedMetadataHandler* cached_metadata_handler = nullptr;
+
+  if (script_source_url.ProtocolIsInHTTPFamily()) {
+    std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+        resource_response, mojom::blink::CodeCacheType::kJavascript,
+        GetSecurityOrigin());
+
+    cached_metadata_handler = MakeGarbageCollected<ScriptCachedMetadataHandler>(
+        WTF::TextEncoding(response_head->charset.c_str()), std::move(sender));
+
+    if (cached_metadata) {
+      cached_metadata_handler->SetSerializedCachedMetadata(
+          std::move(*cached_metadata));
+    }
+  }
 
   // TODO(crbug.com/1419253): Using a classic script with the custom script
   // loader is tentative. Eventually, this should migrate to the blink-worklet's
   // script loading infrastructure.
-  ClassicScript* worker_script =
-      ClassicScript::Create(String(*response_body),
-                            /*source_url=*/script_source_url,
-                            /*base_url=*/KURL(), ScriptFetchOptions());
+  ClassicScript* worker_script = ClassicScript::Create(
+      String(*response_body),
+      /*source_url=*/script_source_url,
+      /*base_url=*/KURL(), ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize,
+      cached_metadata_handler);
+
+  ScriptState* script_state = ScriptController()->GetScriptState();
+  DCHECK(script_state);
 
   v8::HandleScope handle_scope(script_state->GetIsolate());
   ScriptEvaluationResult result =
@@ -633,6 +707,12 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   std::move(add_module_finished_callback)
       .Run(true, /*error_message=*/g_empty_string);
+}
+
+void SharedStorageWorkletGlobalScope::DidReceiveCachedCode() {
+  if (handle_script_download_response_after_code_cache_response_) {
+    std::move(handle_script_download_response_after_code_cache_response_).Run();
+  }
 }
 
 void SharedStorageWorkletGlobalScope::RecordAddModuleFinished() {

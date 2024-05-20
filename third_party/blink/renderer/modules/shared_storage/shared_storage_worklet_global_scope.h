@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,10 +37,12 @@
 namespace blink {
 
 struct GlobalScopeCreationParams;
+class CodeCacheFetcher;
 class ModuleScriptDownloader;
 class SharedStorageOperationDefinition;
 class V8NoArgumentConstructor;
 class SharedStorage;
+class ScriptCachedMetadataHandler;
 class PrivateAggregation;
 class Crypto;
 
@@ -141,7 +144,10 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       const KURL& script_source_url,
       mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
-      std::string error_message);
+      std::string error_message,
+      network::mojom::URLResponseHeadPtr response_head);
+
+  void DidReceiveCachedCode();
 
   void RecordAddModuleFinished();
 
@@ -182,6 +188,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
   int64_t operation_counter_ = 0;
 
+  base::OnceClosure handle_script_download_response_after_code_cache_response_;
+
   // `receiver_`'s disconnect handler explicitly deletes the worklet thread
   // object that owns this service, thus deleting `this` upon disconnect. To
   // ensure that the worklet thread object and this service are not leaked,
@@ -214,6 +222,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       operation_definition_map_;
 
   std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
+
+  scoped_refptr<CodeCacheFetcher> code_cache_fetcher_;
 
   // This is associated because on the client side (i.e. worklet host), we want
   // the call-in methods (e.g. storage access) and the callback methods

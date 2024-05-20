@@ -1247,6 +1247,24 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
 
   bool ResolveSelectURLToConfig() override { return GetParam(); }
 
+  mojo_base::BigBuffer GetCodeCacheDataForUrl(RenderFrameHost* rfh,
+                                              const GURL& url) {
+    mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host;
+    RenderFrameHostImpl::From(rfh)->CreateCodeCacheHost(
+        pending_code_cache_host.InitWithNewPipeAndPassReceiver());
+
+    mojo::Remote<blink::mojom::CodeCacheHost> inspecting_code_cache_host(
+        std::move(pending_code_cache_host));
+
+    base::test::TestFuture<base::Time, mojo_base::BigBuffer> code_cache_future;
+    inspecting_code_cache_host->FetchCachedCode(
+        blink::mojom::CodeCacheType::kJavascript, url,
+        code_cache_future.GetCallback());
+
+    auto [response_time, data] = code_cache_future.Take();
+    return std::move(data);
+  }
+
   ~SharedStorageBrowserTest() override = default;
 
  private:
@@ -1432,6 +1450,63 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       AddModue_TheThirdTimeCompilesWithV8CodeCache) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  GURL module_url = https_server()->GetURL(
+      "a.test", "/shared_storage/large_cacheable_script.js");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Initially, the code cache has no data.
+  mojo_base::BigBuffer code_cache_data0 = GetCodeCacheDataForUrl(
+      shell()->web_contents()->GetPrimaryMainFrame(), module_url);
+  EXPECT_EQ(code_cache_data0.size(), 0u);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule(
+        'shared_storage/large_cacheable_script.js');
+    )"));
+
+  mojo_base::BigBuffer code_cache_data1 = GetCodeCacheDataForUrl(
+      shell()->web_contents()->GetPrimaryMainFrame(), module_url);
+  EXPECT_GT(code_cache_data1.size(), 0u);
+
+  // After the first script loading, the code cache has some data.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule(
+        'shared_storage/large_cacheable_script.js');
+    )"));
+
+  // After the second script loading, the code cache has more data. This implies
+  // that the code cache wasn't used for the second compilation. This is
+  // expected, as we won't store the cached code entirely for first seen URLs.
+  mojo_base::BigBuffer code_cache_data2 = GetCodeCacheDataForUrl(
+      shell()->web_contents()->GetPrimaryMainFrame(), module_url);
+  EXPECT_GT(code_cache_data2.size(), code_cache_data1.size());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule(
+        'shared_storage/large_cacheable_script.js');
+    )"));
+
+  // After the third script loading, the code cache does not change. This
+  // implies that the code cache was used for the third compilation.
+  mojo_base::BigBuffer code_cache_data3 = GetCodeCacheDataForUrl(
+      shell()->web_contents()->GetPrimaryMainFrame(), module_url);
+  EXPECT_EQ(code_cache_data3.size(), code_cache_data2.size());
+  EXPECT_TRUE(std::equal(code_cache_data3.begin(), code_cache_data3.end(),
+                         code_cache_data2.begin()));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {

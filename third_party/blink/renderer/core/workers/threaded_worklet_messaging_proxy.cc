@@ -98,7 +98,10 @@ void ThreadedWorkletMessagingProxy::Initialize(
         client_provided_global_scope_creation_params->devtools_token,
         /*worker_settings=*/nullptr,
         /*v8_cache_options=*/mojom::blink::V8CacheOptions::kDefault,
-        /*module_responses_map=*/nullptr);
+        /*module_responses_map=*/nullptr,
+        /*browser_interface_broker=*/mojo::NullRemote(),
+        std::move(
+            client_provided_global_scope_creation_params->code_cache_host));
 
     auto devtools_params = std::make_unique<WorkerDevToolsParams>();
     devtools_params->devtools_worker_token =

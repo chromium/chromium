@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/exported/web_shared_storage_worklet_thread_impl.h"
 
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
@@ -26,6 +27,8 @@ mojom::blink::WorkletGlobalScopeCreationParamsPtr ToBlinkMojomType(
       global_scope_creation_params->devtools_token,
       CrossVariantMojoRemote<mojom::WorkletDevToolsHostInterfaceBase>(
           std::move(global_scope_creation_params->devtools_host)),
+      CrossVariantMojoRemote<mojom::CodeCacheHostInterfaceBase>(
+          std::move(global_scope_creation_params->code_cache_host)),
       global_scope_creation_params->wait_for_debugger);
 }
 

@@ -33,6 +33,7 @@ class BrowserContext;
 class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
+class SharedStorageCodeCacheHostProxy;
 class SharedStorageWorkletDriver;
 class SharedStorageWorkletHostManager;
 class StoragePartitionImpl;
@@ -340,6 +341,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // ensure the URL is not modified by a compromised worklet; to enforce the
   // application/javascript request header; to enforce same-origin mode; etc.
   std::unique_ptr<SharedStorageURLLoaderFactoryProxy> url_loader_factory_proxy_;
+
+  // The proxy is used to limit the request that the worklet can make, e.g. to
+  // ensure the URL is not modified by a compromised worklet. This is reset
+  // after the script loading finishes, to prevent leaking the shared storage
+  // data after that.
+  std::unique_ptr<SharedStorageCodeCacheHostProxy> code_cache_host_proxy_;
 
   base::WeakPtrFactory<SharedStorageWorkletHost> weak_ptr_factory_{this};
 };

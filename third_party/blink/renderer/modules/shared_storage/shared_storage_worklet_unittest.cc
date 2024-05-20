@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -60,6 +61,8 @@ namespace {
 
 constexpr char kModuleScriptSource[] = "https://foo.com/module_script.js";
 constexpr char kMaxChar16StringLengthPlusOneLiteral[] = "2621441";
+constexpr base::Time kScriptResponseTime =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(100));
 
 struct VoidOperationResult {
   bool success = true;
@@ -304,6 +307,75 @@ class MockMojomPrivateAggregationHost
   mojo::ReceiverSet<blink::mojom::blink::PrivateAggregationHost> receiver_set_;
 };
 
+class MockMojomCoceCacheHost : public blink::mojom::blink::CodeCacheHost {
+ public:
+  MockMojomCoceCacheHost() = default;
+
+  void FlushForTesting() { receiver_set_.FlushForTesting(); }
+
+  mojo::ReceiverSet<blink::mojom::blink::CodeCacheHost>& receiver_set() {
+    return receiver_set_;
+  }
+
+  // blink::mojom::blink::CoceCacheHost:
+  void DidGenerateCacheableMetadata(mojom::CodeCacheType cache_type,
+                                    const KURL& url,
+                                    base::Time expected_response_time,
+                                    mojo_base::BigBuffer data) override {
+    did_generate_cacheable_metadata_count_++;
+
+    // Store the time and data. This mirrors the real-world behavior.
+    response_time_ = expected_response_time;
+    data_ = std::move(data);
+  }
+
+  void FetchCachedCode(mojom::CodeCacheType cache_type,
+                       const KURL& url,
+                       FetchCachedCodeCallback callback) override {
+    fetch_cached_code_count_++;
+    std::move(callback).Run(response_time_, data_.Clone());
+  }
+
+  void ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
+                           const KURL& url) override {
+    clear_code_cache_entry_count_++;
+  }
+
+  void DidGenerateCacheableMetadataInCacheStorage(
+      const KURL& url,
+      base::Time expected_response_time,
+      mojo_base::BigBuffer data,
+      const String& cache_storage_cache_name) override {
+    NOTREACHED();
+  }
+
+  void OverrideFetchCachedCodeResult(base::Time response_time,
+                                     mojo_base::BigBuffer data) {
+    response_time_ = response_time;
+    data_ = std::move(data);
+  }
+
+  size_t did_generate_cacheable_metadata_count() const {
+    return did_generate_cacheable_metadata_count_;
+  }
+
+  size_t fetch_cached_code_count() const { return fetch_cached_code_count_; }
+
+  size_t clear_code_cache_entry_count() const {
+    return clear_code_cache_entry_count_;
+  }
+
+ private:
+  base::Time response_time_;
+  mojo_base::BigBuffer data_;
+
+  size_t did_generate_cacheable_metadata_count_ = 0;
+  size_t fetch_cached_code_count_ = 0;
+  size_t clear_code_cache_entry_count_ = 0;
+
+  mojo::ReceiverSet<blink::mojom::blink::CodeCacheHost> receiver_set_;
+};
+
 std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
   return std::make_unique<GlobalScopeCreationParams>(
       KURL("https://foo.com"),
@@ -332,7 +404,9 @@ std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
 
 class SharedStorageWorkletTest : public PageTestBase {
  public:
-  SharedStorageWorkletTest() = default;
+  SharedStorageWorkletTest() {
+    mock_code_cache_host_ = std::make_unique<MockMojomCoceCacheHost>();
+  }
 
   void TearDown() override {
     // Shut down the worklet gracefully. Otherwise, there could the a data race
@@ -358,6 +432,7 @@ class SharedStorageWorkletTest : public PageTestBase {
     auto head = network::mojom::URLResponseHead::New();
     head->mime_type = mime_type;
     head->charset = "us-ascii";
+    head->response_time = kScriptResponseTime;
 
     proxied_url_loader_factory.AddResponse(
         GURL(kModuleScriptSource), std::move(head),
@@ -451,6 +526,7 @@ class SharedStorageWorkletTest : public PageTestBase {
   std::unique_ptr<TestWorkletDevToolsHost> test_worklet_devtools_host_;
   std::unique_ptr<MockMojomPrivateAggregationHost>
       mock_private_aggregation_host_;
+  std::unique_ptr<MockMojomCoceCacheHost> mock_code_cache_host_;
 
   base::HistogramTester histogram_tester_;
 
@@ -512,6 +588,16 @@ class SharedStorageWorkletTest : public PageTestBase {
     test_worklet_devtools_host_ = std::make_unique<TestWorkletDevToolsHost>(
         std::move(pending_devtools_host_receiver));
 
+    mojo::PendingRemote<mojom::blink::CodeCacheHost>
+        pending_code_cache_host_remote;
+    mojo::PendingReceiver<mojom::blink::CodeCacheHost>
+        pending_code_cache_host_receiver =
+            pending_code_cache_host_remote.InitWithNewPipeAndPassReceiver();
+
+    mock_code_cache_host_->receiver_set().Add(
+        mock_code_cache_host_.get(),
+        std::move(pending_code_cache_host_receiver));
+
     messaging_proxy_ = MakeGarbageCollected<SharedStorageWorkletMessagingProxy>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         CrossVariantMojoReceiver<
@@ -524,6 +610,7 @@ class SharedStorageWorkletTest : public PageTestBase {
             Vector({mojom::blink::OriginTrialFeature::kSharedStorageAPI}),
             /*devtools_worker_token=*/base::UnguessableToken(),
             std::move(pending_devtools_host_remote),
+            std::move(pending_code_cache_host_remote),
             /*wait_for_debugger=*/false),
         worklet_terminated_future_.GetCallback());
 
@@ -582,6 +669,135 @@ TEST_F(SharedStorageWorkletTest, AddModule_ScriptDownloadError) {
   EXPECT_EQ(result.error_message,
             "Rejecting load of https://foo.com/module_script.js due to "
             "unexpected MIME type.");
+}
+
+TEST_F(SharedStorageWorkletTest,
+       CodeCache_NoClearDueToEmptyCache_NoGenerateData) {
+  // Configure to return empty data, with matched response time.
+  mock_code_cache_host_->OverrideFetchCachedCodeResult(
+      /*response_time=*/kScriptResponseTime,
+      /*data=*/std::vector<uint8_t>());
+
+  AddModule(/*script_content=*/"");
+
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 1u);
+
+  // No invalidation was triggered, as `FetchCachedCode()` responded with empty
+  // data.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
+
+  // No code cache was generated, as the script size is too small.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest,
+       CodeCache_DidClearDueToUnmatchedTime_NoGenerateData) {
+  // Configure to return non-empty data, with unmatched response time.
+  mock_code_cache_host_->OverrideFetchCachedCodeResult(
+      /*response_time=*/kScriptResponseTime - base::Days(1),
+      /*data=*/std::vector<uint8_t>(1));
+
+  AddModule(/*script_content=*/"");
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 1u);
+
+  // Cache was cleared, as the response time did not match the time from the
+  // script loading.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 1u);
+
+  // No code cache was generated, as the script size is too small.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest,
+       CodeCache_NoClearDueToMatchedTime_NoGenerateData) {
+  // Configure to return non-empty data, with matched response time.
+  mock_code_cache_host_->OverrideFetchCachedCodeResult(
+      /*response_time=*/kScriptResponseTime,
+      /*data=*/std::vector<uint8_t>(1));
+
+  AddModule(/*script_content=*/"");
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 1u);
+
+  // No invalidation was triggered, as `FetchCachedCode()` responded with some
+  // data with a matched response time.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
+
+  // No code cache was generated, as the script size is too small.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, CodeCache_DidGenerateData) {
+  // Code cache will be generated when the code length is at least 1024 bytes.
+  std::string large_script;
+  while (large_script.size() < 1024) {
+    large_script += "a=1;";
+  }
+
+  AddModule(large_script);
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 1u);
+
+  // No invalidation was triggered, as `FetchCachedCode()` responded with empty
+  // data.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
+
+  // Code cache was generated.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 1u);
+}
+
+TEST_F(SharedStorageWorkletTest, CodeCache_AddModuleTwice) {
+  // Code cache will be generated when the code length is at least 1024 bytes.
+  std::string large_script;
+  while (large_script.size() < 1024) {
+    large_script += "a=1;";
+  }
+
+  AddModule(large_script);
+  AddModule(large_script);
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 2u);
+
+  // No invalidation was triggered. The second code cache fetch returns a
+  // response time from the first result, which matches the response time from
+  // the second script loading.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
+
+  // The second script loading also triggered the code cache generation. This
+  // implies that the code cache was still not used. This is expected, as we
+  // won't store the cached code entirely for first seen URLs.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 2u);
+}
+
+TEST_F(SharedStorageWorkletTest, CodeCache_AddModuleThreeTimes) {
+  // Code cache will be generated when the code length is at least 1024 bytes.
+  std::string large_script;
+  while (large_script.size() < 1024) {
+    large_script += "a=1;";
+  }
+
+  AddModule(large_script);
+  AddModule(large_script);
+  AddModule(large_script);
+  mock_code_cache_host_->FlushForTesting();
+
+  EXPECT_EQ(mock_code_cache_host_->fetch_cached_code_count(), 3u);
+
+  // No invalidation was triggered. The second and third code cache fetch
+  // returns a response time from the first result, which matches the response
+  // time from the second and third script loading.
+  EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
+
+  // The third script loading did not trigger the code cache generation. This
+  // implies that the cached code was used for the third script loading.
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 2u);
 }
 
 TEST_F(SharedStorageWorkletTest, WorkletTerminationDueToDisconnect) {

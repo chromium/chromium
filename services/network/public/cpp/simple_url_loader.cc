@@ -283,6 +283,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   int NetError() const override;
   const mojom::URLResponseHead* ResponseInfo() const override;
+  mojom::URLResponseHeadPtr TakeResponseInfo() override;
   const std::optional<URLLoaderCompletionStatus>& CompletionStatus()
       const override;
   const GURL& GetFinalURL() const override;
@@ -1584,6 +1585,12 @@ const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
   return request_state_->response_info.get();
+}
+
+mojom::URLResponseHeadPtr SimpleURLLoaderImpl::TakeResponseInfo() {
+  // Should only be called once the request is complete.
+  DCHECK(request_state_->finished);
+  return std::move(request_state_->response_info);
 }
 
 const std::optional<URLLoaderCompletionStatus>&

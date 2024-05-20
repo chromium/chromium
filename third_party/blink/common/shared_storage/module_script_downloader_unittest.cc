@@ -89,12 +89,15 @@ class ModuleScriptDownloaderTest : public testing::Test {
   }
 
  protected:
-  void DownloadCompleteCallback(std::unique_ptr<std::string> body,
-                                std::string error) {
+  void DownloadCompleteCallback(
+      std::unique_ptr<std::string> body,
+      std::string error,
+      network::mojom::URLResponseHeadPtr response_head) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
     error_ = std::move(error);
+    response_head_ = std::move(response_head);
     EXPECT_EQ(error_.empty(), !!body_);
     run_loop_->Quit();
   }
@@ -106,6 +109,7 @@ class ModuleScriptDownloaderTest : public testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
   std::string error_;
+  network::mojom::URLResponseHeadPtr response_head_;
 
   network::TestURLLoaderFactory url_loader_factory_;
 };
@@ -113,12 +117,13 @@ class ModuleScriptDownloaderTest : public testing::Test {
 TEST_F(ModuleScriptDownloaderTest, NetworkError) {
   network::URLLoaderCompletionStatus status;
   status.error_code = net::ERR_FAILED;
-  url_loader_factory_.AddResponse(url_, nullptr /* head */, kAsciiResponseBody,
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
                                   status);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Failed to load https://url.test/script.js error = net::ERR_FAILED.",
       error_);
+  EXPECT_FALSE(response_head_);
 }
 
 // HTTP 404 responses are treated as failures.
@@ -131,6 +136,8 @@ TEST_F(ModuleScriptDownloaderTest, HttpError) {
   EXPECT_EQ(
       "Failed to load https://url.test/script.js HTTP status = 404 Not Found.",
       error_);
+  EXPECT_TRUE(response_head_);
+  EXPECT_EQ(response_head_->mime_type, kJavascriptMimeType);
 }
 
 // Redirect responses are treated as failures.
@@ -149,6 +156,7 @@ TEST_F(ModuleScriptDownloaderTest, Redirect) {
               kAsciiResponseBody, net::HTTP_OK, std::move(redirects));
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ("Unexpected redirect on https://url.test/script.js.", error_);
+  EXPECT_FALSE(response_head_);
 }
 
 TEST_F(ModuleScriptDownloaderTest, Success) {

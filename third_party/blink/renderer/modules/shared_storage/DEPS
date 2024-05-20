@@ -7,6 +7,7 @@ include_rules = [
     "+third_party/blink/renderer/modules/crypto",
     "+third_party/blink/renderer/modules/v8",
     "+third_party/blink/renderer/core",
+    "+services/network/public/cpp",
     "+gin/converter.h",
     "+mojo/public/cpp/base/string16_mojom_traits.h",
     "+url",

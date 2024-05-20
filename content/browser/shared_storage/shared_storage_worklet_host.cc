@@ -26,6 +26,7 @@
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/shared_storage/shared_storage_code_cache_host_proxy.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_render_thread_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
@@ -1097,6 +1098,20 @@ void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback callback,
     bool success,
     const std::string& error_message) {
+  // After the initial script loading, accessing shared storage will be allowed.
+  // We want to disable the communication with network and with the cache, to
+  // prevent leaking shared storage data.
+  //
+  // Note: The last code cache message (i.e. `DidGenerateCacheableMetadata()`,
+  // if any) could race with this `OnAddModuleOnWorkletFinished()` callback, as
+  // they are from separate mojom channels. It could impact the utility (i.e.
+  // the generated code is not stored when the race happens).
+  //
+  // TODO(crbug.com/341690728): Measure how often the race happens, and
+  // rearchitect if necessary.
+  url_loader_factory_proxy_.reset();
+  code_cache_host_proxy_.reset();
+
   std::move(callback).Run(success, error_message);
 
   DecrementPendingOperationsCount();
@@ -1312,11 +1327,24 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         document_service_->render_frame_host().IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kPrivateAggregation);
 
+    mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
+    static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host())
+        .CreateCodeCacheHost(
+            actual_code_cache_host.InitWithNewPipeAndPassReceiver());
+
+    mojo::PendingRemote<blink::mojom::CodeCacheHost> proxied_code_cache_host;
+
+    code_cache_host_proxy_ = std::make_unique<SharedStorageCodeCacheHostProxy>(
+        std::move(actual_code_cache_host),
+        proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
+        script_source_url_);
+
     auto global_scope_creation_params =
         blink::mojom::WorkletGlobalScopeCreationParams::New(
             script_source_url_, shared_storage_origin_, origin_trial_features_,
             devtools_handle_->devtools_token(),
             devtools_handle_->BindNewPipeAndPassRemote(),
+            std::move(proxied_code_cache_host),
             devtools_handle_->wait_for_debugger());
 
     driver_->StartWorkletService(
