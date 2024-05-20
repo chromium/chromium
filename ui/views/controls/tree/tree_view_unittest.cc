@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/compositor/canvas_painter.h"
@@ -1027,7 +1028,7 @@ TEST_F(TreeViewTest, VirtualAccessibleAction) {
   // Do nothing when a valid node id is not provided. This can happen if the
   // actions target the owner view itself.
   tree()->SetSelectedNode(GetNodeByTitle("b"));
-  data.target_node_id = -1;
+  data.target_node_id = ui::kInvalidAXNodeID;
   data.action = ax::mojom::Action::kDoDefault;
   EXPECT_FALSE(tree()->HandleAccessibleAction(data));
   EXPECT_EQ("b", GetActiveNodeTitle());
@@ -1047,7 +1048,7 @@ TEST_F(TreeViewTest, VirtualAccessibleAction) {
 
   // Do not handle accessible actions when no node is selected.
   tree()->SetSelectedNode(nullptr);
-  data.target_node_id = -1;
+  data.target_node_id = ui::kInvalidAXNodeID;
   data.action = ax::mojom::Action::kDoDefault;
   EXPECT_FALSE(tree()->HandleAccessibleAction(data));
   EXPECT_EQ(std::string(), GetActiveNodeTitle());
@@ -1156,7 +1157,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   ClearAccessibilityEvents();
   tree()->GetFocusManager()->ClearFocus();
   tree()->SetSelectedNode(GetNodeByTitle("b"));
-  data.target_node_id = -1;
+  data.target_node_id = ui::kInvalidAXNodeID;
   data.action = ax::mojom::Action::kFocus;
   EXPECT_FALSE(tree()->HandleAccessibleAction(data));
   EXPECT_FALSE(tree()->HasFocus());
@@ -1177,7 +1178,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   static_cast<TestNode*>(empty_model.GetRoot())->SetTitle(u"root");
   tree()->SetModel(&empty_model);
   tree()->SetRootShown(false);
-  data.target_node_id = -1;
+  data.target_node_id = ui::kInvalidAXNodeID;
   data.action = ax::mojom::Action::kFocus;
   EXPECT_TRUE(tree()->HandleAccessibleAction(data));
   EXPECT_TRUE(tree()->HasFocus());

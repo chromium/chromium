@@ -36,5 +36,5 @@ struct AXActionData {
   [MinVersion=1] ax.mojom.AXTreeID? child_tree_id;
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
-  [MinVersion=2] ax.mojom.Role target_role;
+  [MinVersion=2] ax.mojom.Role target_role = ax.mojom.Role.kUnknown;
 };

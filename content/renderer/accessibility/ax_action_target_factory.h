@@ -32,7 +32,7 @@ class CONTENT_EXPORT AXActionTargetFactory {
       const blink::WebDocument& document,
       content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
       ui::AXNodeID node_id,
-      ax::mojom::Role role = ax::mojom::Role::kNone);
+      ax::mojom::Role role = ax::mojom::Role::kUnknown);
 };
 
 }  // namespace content

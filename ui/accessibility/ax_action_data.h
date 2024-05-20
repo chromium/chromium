@@ -44,14 +44,14 @@ struct AX_BASE_EXPORT AXActionData {
   //
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
-  AXNodeID target_node_id = -1;
+  AXNodeID target_node_id = kInvalidAXNodeID;
 
   // Searches for the first node with the given role and performs the action on
   // that node.
   //
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
-  ax::mojom::Role target_role = ax::mojom::Role::kNone;
+  ax::mojom::Role target_role = ax::mojom::Role::kUnknown;
 
   // The request id of this action tracked by the client.
   int request_id = -1;

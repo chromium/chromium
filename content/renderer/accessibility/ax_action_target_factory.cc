@@ -8,6 +8,8 @@
 #include "content/renderer/accessibility/blink_ax_action_target.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/null_ax_action_target.h"
 
 namespace content {
@@ -19,10 +21,13 @@ AXActionTargetFactory::CreateFromNodeIdOrRole(
     content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
     ui::AXNodeID node_id,
     ax::mojom::Role role) {
-  CHECK(node_id == -1 || role == ax::mojom::Role::kNone)
+  if (node_id == ui::kInvalidAXNodeID && role == ax::mojom::Role::kUnknown) {
+    return std::make_unique<ui::NullAXActionTarget>();
+  }
+  CHECK(node_id == ui::kInvalidAXNodeID || role == ax::mojom::Role::kUnknown)
       << "We cannot set both the `node_id` and the `role`";
   blink::WebAXObject blink_target;
-  if (role != ax::mojom::Role::kNone) {
+  if (role != ax::mojom::Role::kUnknown) {
     blink_target =
         blink::WebAXObject::FromWebDocumentFirstWithRole(document, role);
   } else {

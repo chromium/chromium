@@ -1277,7 +1277,6 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kStitchChildTree:
       CHECK_NE(data.target_tree_id, ui::AXTreeIDUnknown());
       CHECK_EQ(data.target_tree_id, manager()->GetTreeID());
-      CHECK_NE(data.target_node_id, ui::kInvalidAXNodeID);
       CHECK_EQ(data.target_node_id, node()->id());
       CHECK_NE(data.child_tree_id, ui::AXTreeIDUnknown());
       CHECK_NE(data.child_tree_id, manager()->GetTreeID())

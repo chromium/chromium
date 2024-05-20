@@ -2194,6 +2194,7 @@ class AutomationUtil {
     actionData.sourceExtensionId = '';
     actionData.requestId = 0;
     actionData.targetNodeId = 0;
+    actionData.targetRole = ax.mojom.Role.kUnknown;
     actionData.flags = 0;
     actionData.action = ax.mojom.Action.kNone;
     actionData.anchorNodeId = 0;

@@ -6853,9 +6853,6 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
       Scroll(action_data.action);
       return true;
     case ax::mojom::blink::Action::kStitchChildTree:
-      if (action_data.target_node_id == static_cast<int32_t>(AXID())) {
-        return false;
-      }
       if (action_data.child_tree_id == ui::AXTreeIDUnknown()) {
         return false;  // No child tree ID provided.;
       }
