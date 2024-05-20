@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -42,47 +42,47 @@ using ::attribution_reporting::mojom::SourceType;
 }  // namespace
 
 // static
-std::unique_ptr<AttributionStorageDelegate>
-AttributionStorageDelegateImpl::CreateForTesting(
+std::unique_ptr<AttributionResolverDelegate>
+AttributionResolverDelegateImpl::CreateForTesting(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode,
     const AttributionConfig& config) {
   return base::WrapUnique(
-      new AttributionStorageDelegateImpl(noise_mode, delay_mode, config));
+      new AttributionResolverDelegateImpl(noise_mode, delay_mode, config));
 }
 
-AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
+AttributionResolverDelegateImpl::AttributionResolverDelegateImpl(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode)
-    : AttributionStorageDelegateImpl(noise_mode,
+    : AttributionResolverDelegateImpl(noise_mode,
                                      delay_mode,
                                      AttributionConfig()) {}
 
-AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
+AttributionResolverDelegateImpl::AttributionResolverDelegateImpl(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode,
     const AttributionConfig& config)
-    : AttributionStorageDelegate(config),
+    : AttributionResolverDelegate(config),
       noise_mode_(noise_mode),
       delay_mode_(delay_mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-AttributionStorageDelegateImpl::~AttributionStorageDelegateImpl() = default;
+AttributionResolverDelegateImpl::~AttributionResolverDelegateImpl() = default;
 
 base::TimeDelta
-AttributionStorageDelegateImpl::GetDeleteExpiredSourcesFrequency() const {
+AttributionResolverDelegateImpl::GetDeleteExpiredSourcesFrequency() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Minutes(5);
 }
 
 base::TimeDelta
-AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
+AttributionResolverDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Minutes(5);
 }
 
-base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
+base::Time AttributionResolverDelegateImpl::GetEventLevelReportTime(
     const attribution_reporting::EventReportWindows& event_report_windows,
     base::Time source_time,
     base::Time trigger_time) const {
@@ -96,7 +96,7 @@ base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
   }
 }
 
-base::Time AttributionStorageDelegateImpl::GetAggregatableReportTime(
+base::Time AttributionResolverDelegateImpl::GetAggregatableReportTime(
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -116,13 +116,13 @@ base::Time AttributionStorageDelegateImpl::GetAggregatableReportTime(
   }
 }
 
-base::Uuid AttributionStorageDelegateImpl::NewReportID() const {
+base::Uuid AttributionResolverDelegateImpl::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Uuid::GenerateRandomV4();
 }
 
-std::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
-AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
+std::optional<AttributionResolverDelegate::OfflineReportDelayConfig>
+AttributionResolverDelegateImpl::GetOfflineReportDelayConfig() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (noise_mode_ == AttributionNoiseMode::kDefault &&
@@ -142,7 +142,7 @@ AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
   return std::nullopt;
 }
 
-void AttributionStorageDelegateImpl::ShuffleReports(
+void AttributionResolverDelegateImpl::ShuffleReports(
     std::vector<AttributionReport>& reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -155,7 +155,7 @@ void AttributionStorageDelegateImpl::ShuffleReports(
   }
 }
 
-void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
+void AttributionResolverDelegateImpl::ShuffleTriggerVerifications(
     std::vector<network::TriggerVerification>& verifications) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -168,7 +168,7 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
   }
 }
 
-double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
+double AttributionResolverDelegateImpl::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon) const {
@@ -177,8 +177,8 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
       GetNumStates(trigger_specs, max_event_level_reports), epsilon);
 }
 
-AttributionStorageDelegate::GetRandomizedResponseResult
-AttributionStorageDelegateImpl::GetRandomizedResponse(
+AttributionResolverDelegate::GetRandomizedResponseResult
+AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
@@ -204,7 +204,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
   return response;
 }
 
-bool AttributionStorageDelegateImpl::
+bool AttributionResolverDelegateImpl::
     GenerateNullAggregatableReportForLookbackDay(
         int lookback_day,
         attribution_reporting::mojom::SourceRegistrationTimeConfig

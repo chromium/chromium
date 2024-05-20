@@ -57,8 +57,8 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -135,7 +135,7 @@ const GlobalRenderFrameHostId kFrameId = {0, 1};
 constexpr attribution_reporting::Registrar kRegistrar =
     attribution_reporting::Registrar::kWeb;
 
-constexpr AttributionStorageDelegate::OfflineReportDelayConfig
+constexpr AttributionResolverDelegate::OfflineReportDelayConfig
     kDefaultOfflineReportDelay{
         .min = base::Minutes(0),
         .max = base::Minutes(1),
@@ -191,7 +191,7 @@ AggregatableReport CreateExampleAggregatableReport() {
 }
 
 // Time after impression that a conversion can first be sent. See
-// AttributionStorageDelegateImpl::GetReportTimeForConversion().
+// AttributionResolverDelegateImpl::GetReportTimeForConversion().
 constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 
 // Give impressions a sufficiently long expiry.
@@ -817,7 +817,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
 
   // Simulate startup and ensure the report is sent before being expired.
   // Advance by the max offline report delay, per
-  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
+  // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
 
   EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
@@ -996,7 +996,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
   }
 }
 
-// This functionality is tested more thoroughly in the AttributionStorageSql
+// This functionality is tested more thoroughly in the AttributionResolverImpl
 // unit tests. Here, just test to make sure the basic control flow is working.
 TEST_F(AttributionManagerImplTest, ClearDataFromBrowserOnly) {
   for (bool match_url : {true, false}) {
@@ -1378,7 +1378,7 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
 
   // Ensure that the expired report is delayed based on the time the browser
   // started and the min and max offline report delays, per
-  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
+  // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`.
   base::Time min_new_time = base::Time::Now();
   EXPECT_THAT(StoredReports(),
               ElementsAre(ReportTimeIs(
@@ -1834,7 +1834,7 @@ class AttributionManagerImplOnlineConnectionTypeTest
   void ConfigureStorageDelegate(
       ConfigurableStorageDelegate& delegate) const override {
     delegate.set_offline_report_delay_config(
-        AttributionStorageDelegate::OfflineReportDelayConfig{
+        AttributionResolverDelegate::OfflineReportDelayConfig{
             .min = base::Minutes(1),
             .max = base::Minutes(1),
         });
@@ -1850,7 +1850,7 @@ TEST_F(AttributionManagerImplOnlineConnectionTypeTest,
 
   // Deliberately avoid running tasks so that the connection change and time
   // advance can be "atomic", which is necessary because
-  // `AttributionStorage::AdjustOfflineReportTimes()` only adjusts times for
+  // `AttributionResolver::AdjustOfflineReportTimes()` only adjusts times for
   // reports that should have been sent before now. In other words, the call to
   // `AdjustOfflineReportTimes()` would have no effect if we used
   // `FastForwardBy()` here, and we wouldn't be able to detect it below.

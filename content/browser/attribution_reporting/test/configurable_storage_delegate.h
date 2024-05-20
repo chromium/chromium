@@ -14,16 +14,16 @@
 #include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 
 namespace content {
 
-class ConfigurableStorageDelegate : public AttributionStorageDelegate {
+class ConfigurableStorageDelegate : public AttributionResolverDelegate {
  public:
   ConfigurableStorageDelegate();
   ~ConfigurableStorageDelegate() override;
 
-  // AttributionStorageDelegate:
+  // AttributionResolverDelegate:
   base::Time GetEventLevelReportTime(
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,

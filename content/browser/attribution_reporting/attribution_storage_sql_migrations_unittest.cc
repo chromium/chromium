@@ -16,7 +16,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_resolver.h"
+#include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -56,13 +57,13 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
   void MigrateDatabase() {
-    AttributionStorageSql storage(
+    AttributionResolverImpl storage(
         temp_directory_.GetPath(),
         std::make_unique<ConfigurableStorageDelegate>());
 
     // We need to run an operation on storage to force the lazy initialization.
     std::ignore =
-        static_cast<AttributionStorage*>(&storage)->GetAttributionReports(
+        static_cast<AttributionResolver*>(&storage)->GetAttributionReports(
             base::Time::Min());
   }
 
@@ -133,13 +134,13 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
 TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
   base::HistogramTester histograms;
   {
-    AttributionStorageSql storage(
+    AttributionResolverImpl storage(
         temp_directory_.GetPath(),
         std::make_unique<ConfigurableStorageDelegate>());
 
     // We need to perform an operation that is non-trivial on an empty database
     // to force initialization.
-    static_cast<AttributionStorage*>(&storage)->StoreSource(
+    static_cast<AttributionResolver*>(&storage)->StoreSource(
         SourceBuilder(base::Time::Min()).Build());
   }
 
@@ -400,14 +401,14 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
     ASSERT_TRUE(db.Open(DbPath()));
   }
   {
-    AttributionStorageSql storage(
+    AttributionResolverImpl storage(
         temp_directory_.GetPath(),
         std::make_unique<ConfigurableStorageDelegate>());
 
     // Store a valid report to verify corruption deletion.
-    static_cast<AttributionStorage*>(&storage)->StoreSource(
+    static_cast<AttributionResolver*>(&storage)->StoreSource(
         SourceBuilder().Build());
-    static_cast<AttributionStorage*>(&storage)->MaybeCreateAndStoreReport(
+    static_cast<AttributionResolver*>(&storage)->MaybeCreateAndStoreReport(
         DefaultTrigger());
   }
   MigrateDatabase();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate_impl.h"
 
 #include <stdint.h>
 
@@ -36,30 +36,30 @@ using ::testing::SizeIs;
 
 // This is more comprehensively tested in
 // //components/attribution_reporting/event_report_windows_unittest.cc.
-TEST(AttributionStorageDelegateImplTest, GetEventLevelReportTime) {
+TEST(AttributionResolverDelegateImplTest, GetEventLevelReportTime) {
   constexpr base::Time kSourceTime;
   constexpr base::Time kTriggerTime = kSourceTime + base::Seconds(1);
   constexpr base::TimeDelta kEnd = base::Days(3);
 
   EXPECT_EQ(kSourceTime + kEnd,
-            AttributionStorageDelegateImpl().GetEventLevelReportTime(
+            AttributionResolverDelegateImpl().GetEventLevelReportTime(
                 *EventReportWindows::Create(/*start_time=*/base::Seconds(0),
                                             /*end_times=*/{kEnd}),
                 kSourceTime, kTriggerTime));
 }
 
-TEST(AttributionStorageDelegateImplTest, GetAggregatableReportTime) {
+TEST(AttributionResolverDelegateImplTest, GetAggregatableReportTime) {
   base::Time trigger_time = base::Time::Now();
   EXPECT_THAT(
-      AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
+      AttributionResolverDelegateImpl().GetAggregatableReportTime(trigger_time),
       AllOf(Ge(trigger_time), Lt(trigger_time + base::Minutes(10))));
 }
 
-TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
-  EXPECT_TRUE(AttributionStorageDelegateImpl().NewReportID().is_valid());
+TEST(AttributionResolverDelegateImplTest, NewReportID_IsValidGUID) {
+  EXPECT_TRUE(AttributionResolverDelegateImpl().NewReportID().is_valid());
 }
 
-TEST(AttributionStorageDelegateImplTest,
+TEST(AttributionResolverDelegateImplTest,
      RandomizedResponse_NoNoiseModeReturnsRealRateAndNullResponse) {
   for (auto source_type : {SourceType::kNavigation, SourceType::kEvent}) {
     const auto source =
@@ -72,7 +72,7 @@ TEST(AttributionStorageDelegateImplTest,
                     : 1)
             .BuildStored();
 
-    auto result = AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
+    auto result = AttributionResolverDelegateImpl(AttributionNoiseMode::kNone)
                       .GetRandomizedResponse(source.common_info().source_type(),
                                              source.trigger_specs(),
                                              source.max_event_level_reports(),
@@ -83,7 +83,7 @@ TEST(AttributionStorageDelegateImplTest,
   }
 }
 
-TEST(AttributionStorageDelegateImplTest,
+TEST(AttributionResolverDelegateImplTest,
      RandomizedResponse_ExceedsLimit_ReturnsError) {
   const struct {
     SourceType source_type;
@@ -120,7 +120,7 @@ TEST(AttributionStorageDelegateImplTest,
     config.event_level_limit.max_event_info_gain =
         test_case.max_event_info_gain;
 
-    auto delegate = AttributionStorageDelegateImpl::CreateForTesting(
+    auto delegate = AttributionResolverDelegateImpl::CreateForTesting(
         AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault, config);
 
     const auto source =

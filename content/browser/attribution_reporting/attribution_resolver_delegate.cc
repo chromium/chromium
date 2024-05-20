@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -17,20 +17,20 @@ using ::attribution_reporting::mojom::SourceType;
 
 }  // namespace
 
-AttributionStorageDelegate::AttributionStorageDelegate(
+AttributionResolverDelegate::AttributionResolverDelegate(
     const AttributionConfig& config)
     : config_(config) {
   DCHECK(config_.Validate());
 }
 
-AttributionStorageDelegate::~AttributionStorageDelegate() = default;
+AttributionResolverDelegate::~AttributionResolverDelegate() = default;
 
-int AttributionStorageDelegate::GetMaxSourcesPerOrigin() const {
+int AttributionResolverDelegate::GetMaxSourcesPerOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.max_sources_per_origin;
 }
 
-int AttributionStorageDelegate::GetMaxReportsPerDestination(
+int AttributionResolverDelegate::GetMaxReportsPerDestination(
     attribution_reporting::mojom::ReportType report_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
@@ -43,19 +43,19 @@ int AttributionStorageDelegate::GetMaxReportsPerDestination(
   }
 }
 
-int AttributionStorageDelegate::GetMaxDestinationsPerSourceSiteReportingSite()
+int AttributionResolverDelegate::GetMaxDestinationsPerSourceSiteReportingSite()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.max_destinations_per_source_site_reporting_site;
 }
 
 const AttributionConfig::RateLimitConfig&
-AttributionStorageDelegate::GetRateLimits() const {
+AttributionResolverDelegate::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.rate_limit;
 }
 
-double AttributionStorageDelegate::GetMaxChannelCapacity(
+double AttributionResolverDelegate::GetMaxChannelCapacity(
     SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
@@ -66,19 +66,19 @@ double AttributionStorageDelegate::GetMaxChannelCapacity(
   }
 }
 
-absl::uint128 AttributionStorageDelegate::GetMaxTriggerStateCardinality()
+absl::uint128 AttributionResolverDelegate::GetMaxTriggerStateCardinality()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.event_level_limit.max_trigger_state_cardinality;
 }
 
-int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
+int AttributionResolverDelegate::GetMaxAggregatableReportsPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.aggregate_limit.max_aggregatable_reports_per_source;
 }
 
 AttributionConfig::DestinationRateLimit
-AttributionStorageDelegate::GetDestinationRateLimit() const {
+AttributionResolverDelegate::GetDestinationRateLimit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.destination_rate_limit;
 }

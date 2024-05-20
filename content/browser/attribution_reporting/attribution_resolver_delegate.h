@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_H_
 
 #include <stdint.h>
 
@@ -40,11 +40,11 @@ namespace content {
 
 class AttributionReport;
 
-// Storage delegate that can supplied to extend basic attribution storage
+// Resolver delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports. Users and subclasses must NOT assume
 // that the delegate has the same lifetime as the `AttributionManager` or
-// `AttributionStorage` classes.
-class CONTENT_EXPORT AttributionStorageDelegate {
+// `AttributionResolver` classes.
+class CONTENT_EXPORT AttributionResolverDelegate {
  public:
   // Both bounds are inclusive.
   struct OfflineReportDelayConfig {
@@ -52,16 +52,16 @@ class CONTENT_EXPORT AttributionStorageDelegate {
     base::TimeDelta max;
   };
 
-  explicit AttributionStorageDelegate(const AttributionConfig& config);
+  explicit AttributionResolverDelegate(const AttributionConfig& config);
 
-  virtual ~AttributionStorageDelegate();
+  virtual ~AttributionResolverDelegate();
 
-  AttributionStorageDelegate(const AttributionStorageDelegate&) = delete;
-  AttributionStorageDelegate& operator=(const AttributionStorageDelegate&) =
+  AttributionResolverDelegate(const AttributionResolverDelegate&) = delete;
+  AttributionResolverDelegate& operator=(const AttributionResolverDelegate&) =
       delete;
 
-  AttributionStorageDelegate(AttributionStorageDelegate&&) = delete;
-  AttributionStorageDelegate& operator=(AttributionStorageDelegate&&) = delete;
+  AttributionResolverDelegate(AttributionResolverDelegate&&) = delete;
+  AttributionResolverDelegate& operator=(AttributionResolverDelegate&&) = delete;
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
@@ -174,4 +174,4 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_H_

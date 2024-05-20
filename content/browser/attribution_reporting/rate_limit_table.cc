@@ -18,7 +18,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
@@ -49,9 +49,9 @@ bool IsAttribution(RateLimitTable::Scope scope) {
 
 }  // namespace
 
-RateLimitTable::RateLimitTable(const AttributionStorageDelegate* delegate)
-    : delegate_(raw_ref<const AttributionStorageDelegate>::from_ptr(delegate)) {
-}
+RateLimitTable::RateLimitTable(const AttributionResolverDelegate* delegate)
+    : delegate_(
+          raw_ref<const AttributionResolverDelegate>::from_ptr(delegate)) {}
 
 RateLimitTable::~RateLimitTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -635,7 +635,7 @@ void RateLimitTable::AppendRateLimitDataKeys(
   }
 }
 
-void RateLimitTable::SetDelegate(const AttributionStorageDelegate& delegate) {
+void RateLimitTable::SetDelegate(const AttributionResolverDelegate& delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = delegate;
 }

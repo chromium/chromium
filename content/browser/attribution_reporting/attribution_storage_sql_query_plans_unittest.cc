@@ -11,7 +11,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
-#include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/attribution_resolver.h"
+#include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
@@ -35,8 +36,8 @@ class AttributionSqlQueryPlanTest : public testing::Test {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
 
     {
-      std::unique_ptr<AttributionStorage> storage =
-          std::make_unique<AttributionStorageSql>(
+      std::unique_ptr<AttributionResolver> storage =
+          std::make_unique<AttributionResolverImpl>(
               temp_directory_.GetPath(),
               std::make_unique<ConfigurableStorageDelegate>());
 

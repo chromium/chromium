@@ -37,7 +37,7 @@ class Database;
 namespace content {
 
 struct AttributionInfo;
-class AttributionStorageDelegate;
+class AttributionResolverDelegate;
 class CommonSourceInfo;
 class StorableSource;
 
@@ -70,7 +70,7 @@ class CONTENT_EXPORT RateLimitTable {
     kMaxValue = kError,
   };
 
-  explicit RateLimitTable(const AttributionStorageDelegate*);
+  explicit RateLimitTable(const AttributionResolverDelegate*);
   RateLimitTable(const RateLimitTable&) = delete;
   RateLimitTable& operator=(const RateLimitTable&) = delete;
   RateLimitTable(RateLimitTable&&) = delete;
@@ -145,7 +145,7 @@ class CONTENT_EXPORT RateLimitTable {
   void AppendRateLimitDataKeys(sql::Database* db,
                                std::set<AttributionDataModel::DataKey>& keys);
 
-  void SetDelegate(const AttributionStorageDelegate&);
+  void SetDelegate(const AttributionResolverDelegate&);
 
   static constexpr int64_t kUnsetReportId = -1;
 
@@ -179,7 +179,7 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool DeleteExpiredRateLimits(sql::Database* db)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  raw_ref<const AttributionStorageDelegate> delegate_
+  raw_ref<const AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to

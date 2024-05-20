@@ -61,7 +61,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -465,13 +465,13 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
 
 AttributionStorageSql::AttributionStorageSql(
     const base::FilePath& user_data_directory,
-    std::unique_ptr<AttributionStorageDelegate> delegate)
+    AttributionResolverDelegate* delegate)
     : path_to_database_(user_data_directory.empty()
                             ? base::FilePath()
                             : DatabasePath(user_data_directory)),
       db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32}),
-      delegate_(std::move(delegate)),
-      rate_limit_table_(delegate_.get()) {
+      delegate_(delegate),
+      rate_limit_table_(delegate_) {
   DCHECK(delegate_);
 
   db_.set_histogram_tag("Conversions");
@@ -3292,12 +3292,11 @@ void AttributionStorageSql::DeleteByDataKey(
             /*delete_rate_limit_data=*/true);
 }
 
-void AttributionStorageSql::SetDelegate(
-    std::unique_ptr<AttributionStorageDelegate> delegate) {
+void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate);
   rate_limit_table_.SetDelegate(*delegate);
-  delegate_ = std::move(delegate);
+  delegate_ = delegate;
 }
 
 }  // namespace content

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_IMPL_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_IMPL_H_
 
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 
 #include "base/thread_annotations.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -48,30 +48,30 @@ enum class AttributionDelayMode {
 
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created reports. It
-// also controls constants for AttributionStorage. This is owned by
+// also controls constants for AttributionResolver. This is owned by
 // AttributionStorageSql, and should only be accessed on the attribution storage
 // task runner.
-class CONTENT_EXPORT AttributionStorageDelegateImpl
-    : public AttributionStorageDelegate {
+class CONTENT_EXPORT AttributionResolverDelegateImpl
+    : public AttributionResolverDelegate {
  public:
-  static std::unique_ptr<AttributionStorageDelegate> CreateForTesting(
+  static std::unique_ptr<AttributionResolverDelegate> CreateForTesting(
       AttributionNoiseMode noise_mode,
       AttributionDelayMode delay_mode,
       const AttributionConfig& config);
 
-  explicit AttributionStorageDelegateImpl(
+  explicit AttributionResolverDelegateImpl(
       AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,
       AttributionDelayMode delay_mode = AttributionDelayMode::kDefault);
-  AttributionStorageDelegateImpl(const AttributionStorageDelegateImpl&) =
+  AttributionResolverDelegateImpl(const AttributionResolverDelegateImpl&) =
       delete;
-  AttributionStorageDelegateImpl& operator=(
-      const AttributionStorageDelegateImpl&) = delete;
-  AttributionStorageDelegateImpl(AttributionStorageDelegateImpl&&) = delete;
-  AttributionStorageDelegateImpl& operator=(AttributionStorageDelegateImpl&&) =
+  AttributionResolverDelegateImpl& operator=(
+      const AttributionResolverDelegateImpl&) = delete;
+  AttributionResolverDelegateImpl(AttributionResolverDelegateImpl&&) = delete;
+  AttributionResolverDelegateImpl& operator=(AttributionResolverDelegateImpl&&) =
       delete;
-  ~AttributionStorageDelegateImpl() override;
+  ~AttributionResolverDelegateImpl() override;
 
-  // AttributionStorageDelegate:
+  // AttributionResolverDelegate:
   base::Time GetEventLevelReportTime(
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
@@ -100,7 +100,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const override;
 
  protected:
-  AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
+  AttributionResolverDelegateImpl(AttributionNoiseMode noise_mode,
                                  AttributionDelayMode delay_mode,
                                  const AttributionConfig& config);
 
@@ -111,4 +111,4 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_DELEGATE_IMPL_H_

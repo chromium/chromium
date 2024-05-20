@@ -48,6 +48,7 @@
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -270,7 +271,7 @@ class AttributionStorageSqlTest : public testing::Test {
     CloseDatabase();
     auto delegate = std::make_unique<ConfigurableStorageDelegate>();
     delegate_ = delegate.get();
-    storage_ = std::make_unique<AttributionStorageSql>(
+    storage_ = std::make_unique<AttributionResolverImpl>(
         temp_directory_.GetPath(), std::move(delegate));
   }
 
@@ -304,7 +305,7 @@ class AttributionStorageSqlTest : public testing::Test {
     return temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
   }
 
-  AttributionStorage* storage() { return storage_.get(); }
+  AttributionResolver* storage() { return storage_.get(); }
 
   ConfigurableStorageDelegate* delegate() { return delegate_; }
 
@@ -393,7 +394,7 @@ class AttributionStorageSqlTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
 
  private:
-  std::unique_ptr<AttributionStorage> storage_;
+  std::unique_ptr<AttributionResolver> storage_;
   raw_ptr<ConfigurableStorageDelegate> delegate_ = nullptr;
 };
 
@@ -1085,12 +1086,12 @@ TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
 TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
   base::CreateDirectoryAndGetError(db_path(), nullptr);
 
-  auto sql_storage = std::make_unique<AttributionStorageSql>(
+  auto sql_storage = std::make_unique<AttributionResolverImpl>(
       temp_directory_.GetPath(),
       std::make_unique<ConfigurableStorageDelegate>());
   sql_storage->set_ignore_errors_for_testing(true);
 
-  std::unique_ptr<AttributionStorage> storage = std::move(sql_storage);
+  std::unique_ptr<AttributionResolver> storage = std::move(sql_storage);
 
   // These calls should be no-ops.
   storage->StoreSource(SourceBuilder().Build());
@@ -1101,8 +1102,8 @@ TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
 
 TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
   // Give the storage layer a database directory that doesn't exist.
-  std::unique_ptr<AttributionStorage> storage =
-      std::make_unique<AttributionStorageSql>(
+  std::unique_ptr<AttributionResolver> storage =
+      std::make_unique<AttributionResolverImpl>(
           temp_directory_.GetPath().Append(
               FILE_PATH_LITERAL("ConversionFolder/")),
           std::make_unique<ConfigurableStorageDelegate>());

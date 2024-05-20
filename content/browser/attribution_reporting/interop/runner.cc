@@ -58,7 +58,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/storage_partition_impl.h"
@@ -163,12 +163,12 @@ class FakeCookieChecker : public AttributionCookieChecker {
   base::flat_set<base::Time> debug_cookie_set_;
 };
 
-class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
+class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
  public:
   explicit ControllableStorageDelegate(AttributionInteropRun& run)
-      : AttributionStorageDelegateImpl(AttributionNoiseMode::kNone,
-                                       AttributionDelayMode::kDefault,
-                                       run.config.attribution_config) {
+      : AttributionResolverDelegateImpl(AttributionNoiseMode::kNone,
+                                        AttributionDelayMode::kDefault,
+                                        run.config.attribution_config) {
     std::vector<std::pair<base::Time, RandomizedResponse>> responses;
     std::vector<std::pair<base::Time, base::flat_set<int>>>
         null_aggregatable_reports_days;
@@ -203,7 +203,7 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
       delete;
 
  private:
-  // AttributionStorageDelegateImpl:
+  // AttributionResolverDelegateImpl:
   GetRandomizedResponseResult GetRandomizedResponse(
       const attribution_reporting::mojom::SourceType source_type,
       const attribution_reporting::TriggerSpecs& trigger_specs,
@@ -213,7 +213,7 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
 
     ASSIGN_OR_RETURN(
         auto response_data,
-        AttributionStorageDelegateImpl::GetRandomizedResponse(
+        AttributionResolverDelegateImpl::GetRandomizedResponse(
             source_type, trigger_specs, max_event_level_reports, epsilon));
 
     auto it = randomized_responses_.find(base::Time::Now());
@@ -242,7 +242,7 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
           source_registration_time_config) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    bool ret = AttributionStorageDelegateImpl::
+    bool ret = AttributionResolverDelegateImpl::
         GenerateNullAggregatableReportForLookbackDay(
             lookback_day, source_registration_time_config);
     auto it = null_aggregatable_reports_days_.find(base::Time::Now());

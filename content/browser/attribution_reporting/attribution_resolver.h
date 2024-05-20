@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_H_
 
 #include <memory>
 #include <optional>
@@ -21,7 +21,7 @@ class Time;
 
 namespace content {
 
-class AttributionStorageDelegate;
+class AttributionResolverDelegate;
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
@@ -29,15 +29,15 @@ class StoreSourceResult;
 class StoredSource;
 
 // This class provides an interface for persisting attribution data to
-// disk, and performing queries on it. AttributionStorage should initialize
-// itself. Calls to a AttributionStorage instance that failed to initialize
+// disk, and performing queries on it. AttributionResolver should initialize
+// itself. Calls to a AttributionResolver instance that failed to initialize
 // properly should result in no-ops.
-class AttributionStorage {
+class AttributionResolver {
  public:
-  virtual ~AttributionStorage() = default;
+  virtual ~AttributionResolver() = default;
 
   // When adding a new method, also add it to
-  // AttributionStorageTest.StorageUsedAfterFailedInitilization_FailsSilently.
+  // AttributionResolverTest.StorageUsedAfterFailedInitilization_FailsSilently.
 
   // Add |source| to storage. Two sources are considered
   // matching when they share a <reporting origin, attribution destination>
@@ -46,15 +46,14 @@ class AttributionStorage {
   // Unconverted matching sources are not modified.
   virtual StoreSourceResult StoreSource(StorableSource source) = 0;
 
-  // Finds all stored sources matching a given `trigger`, and stores the
+  // Finds all stored sources matching a given `trigger`, and creates a
   // new associated report. Only active sources will receive new attributions.
   // Returns whether a new report has been scheduled/added to storage.
   virtual CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger) = 0;
 
   // Returns all of the reports that should be sent before
-  // |max_report_time|. This call is logically const, and does not modify the
-  // underlying storage. |limit| limits the number of reports to return; use
-  // a negative number for no limit. Reports are shuffled before being returned.
+  // |max_report_time|. |limit| limits the number of reports to return; use
+  // a negative number for no limit. Reports are shuffled before being returned. This call is logically const and does not mutate reports.
   virtual std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1) = 0;
@@ -63,7 +62,7 @@ class AttributionStorage {
   virtual std::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
   // Returns the report with the given ID. This call is logically const, and
-  // does not modify the underlying storage.
+  // does not mutate reports.
   virtual std::optional<AttributionReport> GetReport(AttributionReport::Id) = 0;
 
   // Returns all active sources in storage. Active sources are all
@@ -79,7 +78,7 @@ class AttributionStorage {
   // in the event of an error.
   virtual std::set<AttributionDataModel::DataKey> GetAllDataKeys() = 0;
 
-  // Deletes all data in storage for storage keys matching the provided
+  // Deletes all data for storage keys matching the provided
   // reporting origin in the data key.
   virtual void DeleteByDataKey(const AttributionDataModel::DataKey&) = 0;
 
@@ -96,7 +95,7 @@ class AttributionStorage {
 
   // Adjusts the report time of all reports that should have been sent while the
   // browser was offline, according to
-  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`. If that
+  // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`. If that
   // method returns null, no delay is applied. Otherwise, applies a random value
   // between `min_delay` and `max_delay`, both inclusive. Returns the new first
   // report time in storage, if any.
@@ -118,9 +117,9 @@ class AttributionStorage {
                          StoragePartition::StorageKeyMatcherFunction filter,
                          bool delete_rate_limit_data = true) = 0;
 
-  virtual void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) = 0;
+  virtual void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) = 0;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_RESOLVER_H_
