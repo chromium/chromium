@@ -20,6 +20,14 @@
 
 namespace reporting {
 
+namespace internal {
+// A concept that determines whether a type U is implicitly convertible from a
+// type V.
+template <class U, typename V>
+concept IsImplicitlyConstructible =
+    std::is_constructible_v<U, V> && std::is_convertible_v<V, U>;
+}  // namespace internal
+
 // `FilteredReportQueue` is a wrapper template using actual `ReportQueue`
 // instance. It will make a call to a provided filtering interface `Filter`
 // whenever `Enqueue` API is called.
@@ -62,14 +70,6 @@ namespace reporting {
 //
 template <typename T>
 class FilteredReportQueue {
-  // A traits class that determines whether a type U is implicitly convertible
-  // from a type V. If it is convertible, then the |value| member of this class
-  // is statically set to true, otherwise it is statically set to false.
-  template <class U, typename V>
-  struct is_implicitly_constructible
-      : std::conjunction<std::is_constructible<U, V>,
-                         std::is_convertible<V, U>> {};
-
  public:
   // `Filter` interface, to be subclassed and owned by `FilteredReportQueue`.
   // When `Enqueue` is called, the `record` parameter is first passed to
@@ -94,12 +94,9 @@ class FilteredReportQueue {
       : filter_(std::move(filter)), report_queue_(std::move(report_queue)) {}
 
   // String and Dict forms of `Enqueue` are forwarded to `report_queue_`
-  template <typename U,
-            std::enable_if_t<
-                std::disjunction<
-                    is_implicitly_constructible<std::string, U>,
-                    is_implicitly_constructible<base::Value::Dict, U>>::value,
-                bool> = true>
+  template <typename U>
+    requires(internal::IsImplicitlyConstructible<std::string, U> ||
+             internal::IsImplicitlyConstructible<base::Value::Dict, U>)
   void Enqueue(U record,
                Priority priority,
                ReportQueue::EnqueueCallback callback) const {
@@ -115,11 +112,10 @@ class FilteredReportQueue {
 
   // Proto form of `Enqueue` is forwarded to `report_queue_` wrapping the
   // argument in unique_ptr.
-  template <typename U,
-            std::enable_if_t<is_implicitly_constructible<
-                                 std::unique_ptr<google::protobuf::MessageLite>,
-                                 std::unique_ptr<U>>::value,
-                             bool> = true>
+  template <typename U>
+    requires(internal::IsImplicitlyConstructible<
+             std::unique_ptr<google::protobuf::MessageLite>,
+             std::unique_ptr<U>>)
   void Enqueue(U record,
                Priority priority,
                ReportQueue::EnqueueCallback callback) const {
