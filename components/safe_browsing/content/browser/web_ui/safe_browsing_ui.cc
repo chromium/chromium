@@ -823,8 +823,8 @@ base::Value::Dict SerializeImageFeatureEmbedding(
 
 std::string SerializeReportType(ClientPhishingRequest::ReportType report_type) {
   switch (report_type) {
-    case ClientPhishingRequest::UNKNOWN:
-      return "UNKNOWN";
+    case ClientPhishingRequest::REPORT_TYPE_UNSPECIFIED:
+      return "REPORT_TYPE_UNSPECIFIED";
     case ClientPhishingRequest::FULL_REPORT:
       return "FULL_REPORT";
     case ClientPhishingRequest::SAMPLE_REPORT:

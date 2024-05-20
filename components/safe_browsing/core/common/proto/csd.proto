@@ -256,7 +256,7 @@ message ClientPhishingRequest {
   optional ImageFeatureEmbedding image_feature_embedding = 29;
 
   enum ReportType {
-    UNKNOWN = 0;
+    REPORT_TYPE_UNSPECIFIED = 0;
     // Normal/full ping to Safe Browsing containing all the fields in the
     // ClientPhishingRequest.
     FULL_REPORT = 1;
