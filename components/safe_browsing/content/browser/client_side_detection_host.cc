@@ -119,6 +119,8 @@ std::string GetRequestTypeName(
       return "KeyboardLockRequested";
     case safe_browsing::ClientSideDetectionType::POINTER_LOCK_REQUESTED:
       return "PointerLockRequested";
+    case safe_browsing::ClientSideDetectionType::VIBRATION_API:
+      return "VibrationApi";
   }
 }
 
@@ -591,6 +593,24 @@ void ClientSideDetectionHost::PointerLockRequested() {
   }
 
   MaybeStartPreClassification(ClientSideDetectionType::POINTER_LOCK_REQUESTED);
+}
+
+void ClientSideDetectionHost::VibrationRequested() {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+    return;
+  }
+  // Vibration API can be triggered on a page in intervals between 0 and 1
+  // seconds. Because of this, we want to only classify once per given URL since
+  // a page can send a request multiple vibration at a time.
+  if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+    ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+    ClientSideDetectionFeatureCache* feature_cache_map =
+        ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+    if (!feature_cache_map->WasVibrationClassificationTriggered(current_url_)) {
+      MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
+    }
+  }
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(

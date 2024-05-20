@@ -759,6 +759,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
     <variant name=".TriggerModel" summary="Trigger model"/>
     <variant name=".Unknown" summary="Unknown"/>
+    <variant name=".VibrationApi" summary="Vibration API"/>
   </token>
 </histogram>
 
@@ -783,6 +784,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
     <variant name=".TriggerModel" summary="Trigger model"/>
     <variant name=".Unknown" summary="Unknown"/>
+    <variant name=".VibrationApi" summary="Vibration API"/>
   </token>
 </histogram>
 
@@ -843,6 +845,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".PointerLockRequested" summary="pointer lock request"/>
     <variant name=".TriggerModel" summary="trigger model"/>
     <variant name=".Unknown" summary="Unknown"/>
+    <variant name=".VibrationApi" summary="Vibration API"/>
   </token>
 </histogram>
 

@@ -48,6 +48,10 @@ class ClientSideDetectionFeatureCache
   size_t GetMaxMapCapacity();
   long GetTotalVerdictEntriesSize();
 
+  // Checks whether the vibration API was triggered for a given URL within the
+  // last |kVibrationReportsInterval|. If not found, insert into the times map.
+  bool WasVibrationClassificationTriggered(const GURL& url);
+
   // The following functions are related to caching debugging metadata for
   // PhishGuard pings.
   LoginReputationClientRequest::DebuggingMetadata*
@@ -72,10 +76,13 @@ class ClientSideDetectionFeatureCache
       GURL,
       std::unique_ptr<LoginReputationClientRequest::DebuggingMetadata>>
       debug_metadata_map_;
+  base::flat_map<GURL, base::Time> vibration_api_classification_times_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::queue<GURL> gurl_queue_;
   std::deque<GURL> debugging_metadata_deque_
       GUARDED_BY_CONTEXT(sequence_checker_);
   static constexpr size_t kMaxMapCapacity = 10;
+  static constexpr base::TimeDelta kVibrationReportsInterval = base::Days(1);
   base::CallbackListSubscription clear_cache_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);

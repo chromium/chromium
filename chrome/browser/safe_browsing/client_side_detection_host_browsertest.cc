@@ -28,6 +28,8 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/prerender_test_util.h"
@@ -843,6 +845,239 @@ IN_PROC_BROWSER_TEST_F(
   // MockSafeBrowsingUIManager does not do any navigation on the page, but a red
   // warning page navigation will change the state of WebContents, which
   // ultimately removes the fullscreen and thus the lock.
+}
+
+class ClientSideDetectionHostVibrateTest : public InProcessBrowserTest {
+ public:
+  ClientSideDetectionHostVibrateTest() {}
+
+  ClientSideDetectionHostVibrateTest(
+      const ClientSideDetectionHostVibrateTest&) = delete;
+  ClientSideDetectionHostVibrateTest& operator=(
+      const ClientSideDetectionHostVibrateTest&) = delete;
+  ~ClientSideDetectionHostVibrateTest() override = default;
+
+  void SetUpOnMainThread() override {
+    set_up_client_side_model();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void set_up_client_side_model() {
+    flatbuffers::FlatBufferBuilder builder(1024);
+    std::vector<flatbuffers::Offset<flat::Hash>> hashes;
+    // Make sure this is sorted.
+    std::vector<std::string> hashes_vector = {
+        "feature1", "feature2", "feature3", "token one", "token two"};
+    for (std::string& feature : hashes_vector) {
+      std::vector<uint8_t> hash_data(feature.begin(), feature.end());
+      hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
+    }
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
+        hashes_flat = builder.CreateVector(hashes);
+
+    std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
+    std::vector<int32_t> rule_feature1 = {};
+    std::vector<int32_t> rule_feature2 = {0};
+    std::vector<int32_t> rule_feature3 = {0, 1};
+    rules.push_back(
+        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
+    rules.push_back(
+        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
+    rules.push_back(
+        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
+    flatbuffers::Offset<
+        flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
+        rules_flat = builder.CreateVector(rules);
+
+    std::vector<int32_t> page_terms_vector = {3, 4};
+    flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
+        builder.CreateVector(page_terms_vector);
+
+    std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
+    flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
+        builder.CreateVector(page_words_vector);
+
+    std::vector<flatbuffers::Offset<
+        safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
+        thresholds_vector = {};
+    flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
+        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
+                                              0);
+    flat::ClientSideModelBuilder csd_model_builder(builder);
+    csd_model_builder.add_version(123);
+    // The model will always trigger.
+    csd_model_builder.add_threshold_probability(-1);
+    csd_model_builder.add_hashes(hashes_flat);
+    csd_model_builder.add_rule(rules_flat);
+    csd_model_builder.add_page_term(page_term_flat);
+    csd_model_builder.add_page_word(page_word_flat);
+    csd_model_builder.add_max_words_per_term(2);
+    csd_model_builder.add_murmur_hash_seed(12345U);
+    csd_model_builder.add_max_shingles_per_page(10);
+    csd_model_builder.add_shingle_size(3);
+    csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+    builder.Finish(csd_model_builder.Finish());
+    flatbuffer_model_str_ = std::string(
+        reinterpret_cast<char*>(builder.GetBufferPointer()), builder.GetSize());
+  }
+
+  std::string client_side_model() { return flatbuffer_model_str_; }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  void TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
+    content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+    std::string script =
+        "navigator.vibrate(" + base::NumberToString(duration) + ")";
+    EXPECT_TRUE(ExecJs(frame, script));
+    std::move(vibrate_done).Run();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kClientSideDetectionVibrationApi};
+
+ private:
+  std::string flatbuffer_model_str_;
+};
+
+class VibrationObserverWaiter : public content::WebContentsObserver {
+ public:
+  explicit VibrationObserverWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void VibrationRequested() override {
+    did_vibrate_ = true;
+    run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (!did_vibrate_) {
+      run_loop_.Run();
+    }
+  }
+
+  bool DidVibrate() { return did_vibrate_; }
+
+ private:
+  bool did_vibrate_ = false;
+  base::RunLoop run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
+                       VibrationApiTriggersPreclassificationCheck) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // TODO(andysjlim): Navigating to initial page alongside the first page logs
+  // the histogram twice. Figure out why.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult", 2);
+
+  VibrationObserverWaiter waiter(GetWebContents());
+  EXPECT_FALSE(waiter.DidVibrate());
+
+  base::RunLoop run_loop;
+  TriggerVibrate(1234, run_loop.QuitClosure());
+  run_loop.Run();
+  waiter.Wait();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult", 3);
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
+  EXPECT_TRUE(
+      feature_cache_map->WasVibrationClassificationTriggered(initial_url));
+  EXPECT_TRUE(waiter.DidVibrate());
+
+  // Triggering vibration again on the same page will not trigger
+  // PreClassification.
+  base::RunLoop second_vibrate_run_loop;
+  TriggerVibrate(1234, second_vibrate_run_loop.QuitClosure());
+  second_vibrate_run_loop.Run();
+  waiter.Wait();
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult", 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
+                       VibrationApiClassificationTriggersCSPPPing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Bypass the pre-classification check because it would otherwise return
+  // "NO_CLASSIFY_PRIVATE_IP".
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::VIBRATION_API,
+      /*should_classify=*/true, /*is_sample_ping=*/false);
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.VibrationApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+  std::move(fake_csd_service.saved_callback())
+      .Run(initial_url, true, net::HTTP_OK);
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.VibrationApi", 1);
 }
 
 }  // namespace safe_browsing

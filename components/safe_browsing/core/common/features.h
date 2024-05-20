@@ -41,6 +41,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
 // preclassification check conditions pass.
 BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
 
+// Expand CSPP beyond phishing and trigger when vibration API is called on the
+// web page.
+BASE_DECLARE_FEATURE(kClientSideDetectionVibrationApi);
+
 // Creates and sends CSBRRs when notification permissions are accepted for an
 // abusive site whose interstitial has been bypassed.
 BASE_DECLARE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports);

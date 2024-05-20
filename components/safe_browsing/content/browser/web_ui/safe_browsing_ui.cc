@@ -802,6 +802,8 @@ std::string SerializeClientSideDetectionType(ClientSideDetectionType csd_type) {
       return "KEYBOARD_LOCK_REQUESTED";
     case ClientSideDetectionType::POINTER_LOCK_REQUESTED:
       return "POINTER_LOCK_REQUESTED";
+    case ClientSideDetectionType::VIBRATION_API:
+      return "VIBRATION_API";
   }
   return "UNKNOWN_ENUM_SPECIFIED";
 }

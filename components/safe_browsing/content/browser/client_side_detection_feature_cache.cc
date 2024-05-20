@@ -80,6 +80,27 @@ ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
   return debugging_metadata;
 }
 
+bool ClientSideDetectionFeatureCache::WasVibrationClassificationTriggered(
+    const GURL& vibration_requested_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Time cutoff = base::Time::Now() - kVibrationReportsInterval;
+  for (std::pair<GURL, base::Time> url :
+       vibration_api_classification_times_map_) {
+    if (url.second < cutoff) {
+      vibration_api_classification_times_map_.erase(url.first);
+    }
+  }
+
+  if (vibration_api_classification_times_map_.contains(
+          vibration_requested_url)) {
+    return true;
+  } else {
+    vibration_api_classification_times_map_[vibration_requested_url] =
+        base::Time::Now();
+    return false;
+  }
+}
+
 void ClientSideDetectionFeatureCache::RemoveDebuggingMetadataForURL(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

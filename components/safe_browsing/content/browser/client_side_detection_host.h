@@ -98,10 +98,11 @@ class ClientSideDetectionHost
   // From content::WebContentsObserver.  If we navigate away we cancel all
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL. If a request to lock the keyboard or
-  // pointer has arrived, we will re-trigger classification.
+  // pointer or vibrate the page has arrived, we will re-trigger classification.
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
+  void VibrationRequested() override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -149,6 +150,10 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
+                           VibrationApiTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
+                           VibrationApiClassificationTriggersCSPPPing);
 
   // Helper function to create preclassification check once requirements are
   // met.
