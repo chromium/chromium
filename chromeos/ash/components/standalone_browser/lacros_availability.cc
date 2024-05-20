@@ -65,6 +65,7 @@ bool IsGoogleInternal(const user_manager::User* user) {
 
   const std::string_view email = user->GetAccountId().GetUserEmail();
   return gaia::IsGoogleInternalAccountEmail(email) ||
+         gaia::IsGoogleRobotAccountEmail(email) ||
          gaia::ExtractDomainName(gaia::SanitizeEmail(email)) ==
              "managedchrome.com";
 }
