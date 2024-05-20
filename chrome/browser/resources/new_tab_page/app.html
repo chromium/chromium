@@ -1,6 +1,9 @@
 <style include="cr-shared-style cr-icons">
   :host {
     --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
+    --cr-realbox-height: 44px;
+    --cr-realbox-icon-left-position: 12px;
+    --cr-realbox-icon-top-position: 0;
     --cr-realbox-min-width: var(--ntp-search-box-width);
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
@@ -15,6 +18,15 @@
     --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   }
 
+  /**
+   * Maintain a larger width if the secondary side can be shown and was at any
+   * point available to be shown.
+   */
+  :host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
+  :host([realbox-can-show-secondary-side][realbox-width-behavior_='wide']) {
+    --ntp-search-box-width: 746px;
+  }
+
   @media (min-width: 560px) {
     :host {
       --ntp-search-box-width: 449px;
@@ -25,6 +37,10 @@
     :host {
       --ntp-search-box-width: 561px;
     }
+  }
+
+  :host([realbox-is-tall_]) {
+    --cr-realbox-height: 48px;
   }
 
   /*A module width of 768px with 18px gaps on each side. */
@@ -426,7 +442,9 @@
     <cr-realbox id="realbox" is-dark="[[theme_.isDark]]"
         color-source-is-baseline="[[colorSourceIsBaseline]]"
         on-open-lens-search="onOpenLensSearch_"
-        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
+        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]"
+        had-secondary-side="{{realboxHadSecondarySide}}"
+        can-show-secondary-side="[[realboxCanShowSecondarySide]]">
     </cr-realbox>
     <template is="dom-if" if="[[showLensUploadDialog_]]" restamp>
       <ntp-lens-upload-dialog id="lensUploadDialog"

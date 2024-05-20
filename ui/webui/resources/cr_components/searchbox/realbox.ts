@@ -23,10 +23,6 @@ import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHand
 import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
 
-// 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
-const canShowSecondarySideMediaQueryList =
-    window.matchMedia('(min-width: 900px)');
-
 interface Input {
   text: string;
   inline: string;
@@ -71,7 +67,6 @@ export class RealboxElement extends RealboxElementBase {
        */
       canShowSecondarySide: {
         type: Boolean,
-        value: () => canShowSecondarySideMediaQueryList.matches,
         reflectToAttribute: true,
       },
 
@@ -93,6 +88,7 @@ export class RealboxElement extends RealboxElementBase {
       hadSecondarySide: {
         type: Boolean,
         reflectToAttribute: true,
+        notify: true,
       },
 
       /*
@@ -241,28 +237,9 @@ export class RealboxElement extends RealboxElementBase {
         type: String,
         computed: `computeInputAriaLive_(selectedMatch_)`,
       },
-
-      widthBehavior_: {
-        type: String,
-        value: () => loadTimeData.getString('realboxWidthBehavior'),
-        reflectToAttribute: true,
-      },
-
-      isTall_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxIsTall'),
-        reflectToAttribute: true,
-      },
-
-      inSidePanel_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
-        reflectToAttribute: true,
-      },
     };
   }
 
-  canShowSecondarySide: boolean;
   colorSourceIsBaseline: boolean;
   dropdownIsVisible: boolean;
   hadSecondarySide: boolean;
@@ -316,8 +293,6 @@ export class RealboxElement extends RealboxElementBase {
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
-    canShowSecondarySideMediaQueryList.addEventListener(
-        'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -329,8 +304,6 @@ export class RealboxElement extends RealboxElementBase {
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
-    canShowSecondarySideMediaQueryList.removeEventListener(
-        'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   override ready() {
@@ -405,10 +378,6 @@ export class RealboxElement extends RealboxElementBase {
   //============================================================================
   // Event handlers
   //============================================================================
-
-  private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
-    this.canShowSecondarySide = e.matches;
-  }
 
   private onHeaderFocusin_() {
     // The header got focus. Unselect the selected match and clear the input.

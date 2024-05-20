@@ -1,12 +1,4 @@
 <style include="cr-icons">
-  :host {
-    --cr-realbox-min-width: 340px;
-  }
-
-  :host([is-back-arrow-visible]) {
-    --cr-realbox-min-width: 300px;
-  }
-
   .results-pane {
     border: none;
      /* Viewport height minus the realbox height and margin. */
@@ -74,6 +66,15 @@
     --color-realbox-foreground: #202124ff;
     --color-realbox-placeholder: #5f6368ff;
     --color-realbox-shadow: #20212451;
+    /* Variables used by cr-realbox */
+    --cr-realbox-height: 52px;
+    --cr-realbox-icon-left-position: 10px;
+    --cr-realbox-icon-top-position: 1px;
+    --cr-realbox-min-width: min(calc(100vw - 16px), 768px);
+  }
+
+  :host([is-back-arrow-visible]) #realboxContainer {
+    --cr-realbox-min-width: min(calc(100vw - 60px), 768px);
   }
 
   cr-icon-button.icon-arrow-back {
