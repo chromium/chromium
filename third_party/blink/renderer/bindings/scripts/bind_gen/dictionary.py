@@ -852,6 +852,10 @@ def make_fill_values_impl_function(cg_context):
         exposure_conditional = expr_from_exposure(member.exposure)
         if not exposure_conditional.is_always_true:
             node = CxxLikelyIfNode(cond=exposure_conditional, body=node)
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
 
         body.append(node)
 
@@ -972,6 +976,10 @@ def make_v8_to_blink_function(cg_context):
         conditional = expr_from_exposure(member.exposure)
         if not conditional.is_always_true:
             node = CxxLikelyIfNode(cond=conditional, body=node)
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
 
         body.append(node)
 
