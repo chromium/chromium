@@ -43,6 +43,9 @@ public class AppMenuItemProperties {
     /** Whether the menu item is checked. */
     public static final WritableBooleanPropertyKey CHECKED = new WritableBooleanPropertyKey();
 
+    /** Whether the menu item is managed by policy. */
+    public static final WritableBooleanPropertyKey MANAGED = new WritableBooleanPropertyKey();
+
     /** The icon for the menu item. */
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
@@ -92,6 +95,7 @@ public class AppMenuItemProperties {
                 HIGHLIGHTED,
                 CHECKABLE,
                 CHECKED,
+                MANAGED,
                 ICON,
                 ICON_COLOR_RES,
                 ICON_SHOW_BADGE,

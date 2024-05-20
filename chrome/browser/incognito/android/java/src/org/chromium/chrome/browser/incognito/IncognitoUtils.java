@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -21,18 +23,31 @@ public class IncognitoUtils {
     /**
      * @return true if incognito mode is enabled.
      */
+    @Deprecated
     public static boolean isIncognitoModeEnabled() {
         if (sIsEnabledForTesting != null) {
             return sIsEnabledForTesting;
         }
-        return IncognitoUtilsJni.get().getIncognitoModeEnabled();
+        return isIncognitoModeEnabled(ProfileManager.getLastUsedRegularProfile());
     }
 
     /**
-     * @return true if incognito mode is managed by policy.
+     * @param profile The {@link Profile} used to determine incognito status.
+     * @return Whether incognito mode is enabled.
      */
-    public static boolean isIncognitoModeManaged() {
-        return IncognitoUtilsJni.get().getIncognitoModeManaged();
+    public static boolean isIncognitoModeEnabled(Profile profile) {
+        if (sIsEnabledForTesting != null) {
+            return sIsEnabledForTesting;
+        }
+        return IncognitoUtilsJni.get().getIncognitoModeEnabled(profile);
+    }
+
+    /**
+     * @param profile The {@link Profile} used to determine incognito status.
+     * @return Whether incognito mode is managed by policy.
+     */
+    public static boolean isIncognitoModeManaged(Profile profile) {
+        return IncognitoUtilsJni.get().getIncognitoModeManaged(profile);
     }
 
     /**
@@ -57,9 +72,9 @@ public class IncognitoUtils {
     }
 
     @NativeMethods
-    interface Natives {
-        boolean getIncognitoModeEnabled();
+    public interface Natives {
+        boolean getIncognitoModeEnabled(@JniType("Profile*") Profile profile);
 
-        boolean getIncognitoModeManaged();
+        boolean getIncognitoModeManaged(@JniType("Profile*") Profile profile);
     }
 }
