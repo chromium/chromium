@@ -58,16 +58,11 @@ MdTextButton::MdTextButton(
       [](MdTextButton* host) { return host->GetHoverColor(host->GetStyle()); },
       this));
 
-  if (features::IsChromeRefresh2023()) {
-    constexpr int kImageSpacing = 8;
-    SetImageLabelSpacing(kImageSpacing);
-    // Highlight button colors already have opacity applied.
-    // Set the opacity to 1 so the two values do not compound.
-    InkDrop::Get(this)->SetHighlightOpacity(1);
-  } else {
-    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        ShapeContextTokens::kButtonRadius));
-  }
+  constexpr int kImageSpacing = 8;
+  SetImageLabelSpacing(kImageSpacing);
+  // Highlight button colors already have opacity applied.
+  // Set the opacity to 1 so the two values do not compound.
+  InkDrop::Get(this)->SetHighlightOpacity(1);
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -240,7 +235,7 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
   int right_padding = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_BUTTON_HORIZONTAL_PADDING);
   int left_padding = right_padding;
-  if (HasImage(GetVisualState()) && features::IsChromeRefresh2023()) {
+  if (HasImage(GetVisualState())) {
     constexpr int kLeftPadding = 12;
     left_padding = kLeftPadding;
   }
@@ -316,13 +311,11 @@ void MdTextButton::UpdateBackgroundColor() {
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateRoundRectWith1PxBorderPainter(
           bg_color, stroke_color, GetCornerRadiusValue(), SkBlendMode::kSrcOver,
-          true /* antialias */,
-          features::IsChromeRefresh2023() /* should_border_scale */)));
+          true /* antialias */, true /* should_border_scale */)));
 }
 
 void MdTextButton::UpdateIconColor() {
-  if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
-      HasImage(ButtonState::STATE_NORMAL)) {
+  if (use_text_color_for_icon_ && HasImage(ButtonState::STATE_NORMAL)) {
     const std::optional<ui::ImageModel>& image_model =
         GetImageModel(ButtonState::STATE_NORMAL);
     if (image_model.has_value() && image_model->IsVectorIcon()) {
@@ -346,10 +339,6 @@ void MdTextButton::UpdateColors() {
 }
 
 SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
-  if (!features::IsChromeRefresh2023()) {
-    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
-  }
-
   switch (button_style) {
     case ui::ButtonStyle::kProminent:
       return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);

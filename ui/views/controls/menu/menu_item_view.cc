@@ -1443,10 +1443,7 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
     submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsChromeRefresh2023()
-            ? vector_icons::kSubmenuArrowChromeRefreshIcon
-            : vector_icons::kSubmenuArrowIcon,
-        colors.icon_color));
+        vector_icons::kSubmenuArrowChromeRefreshIcon, colors.icon_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&

@@ -29,7 +29,6 @@ namespace views {
 
 namespace {
 constexpr int kFocusRingRadius = 16;
-constexpr int kRadioButtonIconDipSize = 16;
 constexpr int kRadioButtonIconDipSizeCr2023 = 20;
 }  // namespace
 
@@ -133,10 +132,7 @@ const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
 }
 
 gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
-  return gfx::CreateVectorIcon(GetVectorIcon(),
-                               features::IsChromeRefresh2023()
-                                   ? kRadioButtonIconDipSizeCr2023
-                                   : kRadioButtonIconDipSize,
+  return gfx::CreateVectorIcon(GetVectorIcon(), kRadioButtonIconDipSizeCr2023,
                                GetIconImageColor(GetIconState(for_state)));
 }
 

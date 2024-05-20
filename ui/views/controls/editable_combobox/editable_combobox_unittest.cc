@@ -371,11 +371,6 @@ TEST_F(EditableComboboxTest, TabMovesToOtherViewAndClosesMenu) {
   EXPECT_TRUE(IsTextfieldFocused());
   SendKeyEvent(ui::VKEY_TAB);
   EXPECT_FALSE(IsTextfieldFocused());
-  // In Chrome Refresh the drop down arrow will behave more like a normal button
-  // and therefore will be focusable.
-  if (!features::IsChromeRefresh2023()) {
-    EXPECT_TRUE(dummy_focusable_view_->HasFocus());
-  }
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
 }

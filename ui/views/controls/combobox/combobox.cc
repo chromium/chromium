@@ -80,10 +80,8 @@ class TransparentButton : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
-    if (features::IsChromeRefresh2023()) {
-      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                    GetCornerRadius());
-    }
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  GetCornerRadius());
     ConfigureComboboxButtonInkDrop(this);
   }
   TransparentButton(const TransparentButton&) = delete;
@@ -141,9 +139,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
 
-  SetBackgroundColorId(features::IsChromeRefresh2023()
-                           ? ui::kColorComboboxBackground
-                           : ui::kColorTextfieldBackground);
+  SetBackgroundColorId(ui::kColorComboboxBackground);
 
   UpdateBorder();
 
@@ -154,31 +150,25 @@ Combobox::Combobox(ui::ComboboxModel* model) {
       AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(
           &Combobox::ArrowButtonPressed, base::Unretained(this))));
 
-  if (features::IsChromeRefresh2023()) {
-    // TODO(crbug.com/40250124): This setter should be removed and the behavior
-    // made default when ChromeRefresh2023 is finalized.
-    SetEventHighlighting(true);
-    enabled_changed_subscription_ =
-        AddEnabledChangedCallback(base::BindRepeating(
-            [](Combobox* combobox) {
-              combobox->SetBackgroundColorId(
-                  combobox->GetEnabled()
-                      ? ui::kColorComboboxBackground
-                      : ui::kColorComboboxBackgroundDisabled);
-              combobox->UpdateBorder();
-            },
-            base::Unretained(this)));
-  }
+  // TODO(crbug.com/40250124): This setter should be removed and the behavior
+  // made default when ChromeRefresh2023 is finalized.
+  SetEventHighlighting(true);
+  enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
+      [](Combobox* combobox) {
+        combobox->SetBackgroundColorId(
+            combobox->GetEnabled() ? ui::kColorComboboxBackground
+                                   : ui::kColorComboboxBackgroundDisabled);
+        combobox->UpdateBorder();
+      },
+      base::Unretained(this)));
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  if (features::IsChromeRefresh2023()) {
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  GetCornerRadius());
-  }
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                GetCornerRadius());
 
   SetAccessibilityProperties(ax::mojom::Role::kComboBoxSelect);
 }
@@ -568,23 +558,15 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 }
 
 void Combobox::UpdateBorder() {
-  if (features::IsChromeRefresh2023()) {
-    if (!GetEnabled()) {
-      SetBorder(nullptr);
-      return;
-    }
-    SetBorder(CreateThemedRoundedRectBorder(
-        kBorderThickness, GetCornerRadius(),
-        invalid_
-            ? ui::kColorAlertHighSeverity
-            : border_color_id_.value_or(ui::kColorComboboxContainerOutline)));
-  } else {
-    auto border = std::make_unique<FocusableBorder>();
-    border->SetColorId(invalid_ ? ui::kColorAlertHighSeverity
-                                : border_color_id_.value_or(
-                                      ui::kColorFocusableBorderUnfocused));
-    SetBorder(std::move(border));
+  if (!GetEnabled()) {
+    SetBorder(nullptr);
+    return;
   }
+  SetBorder(CreateThemedRoundedRectBorder(
+      kBorderThickness, GetCornerRadius(),
+      invalid_
+          ? ui::kColorAlertHighSeverity
+          : border_color_id_.value_or(ui::kColorComboboxContainerOutline)));
 }
 
 void Combobox::AdjustBoundsForRTLUI(gfx::Rect* rect) const {

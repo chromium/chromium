@@ -374,7 +374,7 @@ bool FocusRing::ShouldSetOutsetFocusRing() const {
   // move the focus ring away from the host. If those places want to outset the
   // focus ring in the chrome refresh style, they need to be audited separately
   // with UX.
-  return features::IsChromeRefresh2023() && !outset_focus_ring_disabled_ &&
+  return !outset_focus_ring_disabled_ &&
          halo_inset_ == FocusRing::kDefaultHaloInset;
 }
 

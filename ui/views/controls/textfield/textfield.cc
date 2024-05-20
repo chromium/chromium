@@ -231,20 +231,18 @@ Textfield::Textfield()
                                                 GetCornerRadius());
   FocusRing::Install(this);
   FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  if (::features::IsChromeRefresh2023()) {
-    InkDropHost* ink_drop_host =
-        InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
-    ink_drop_host->SetMode(InkDropHost::InkDropMode::ON);
-    ink_drop_host->SetLayerRegion(LayerRegion::kAbove);
-    ink_drop_host->SetHighlightOpacity(1.0f);
-    ink_drop_host->SetBaseColorCallback(base::BindRepeating(
-        [](Textfield* host) {
-          return host->HasFocus() ? SK_ColorTRANSPARENT
-                                  : host->GetColorProvider()->GetColor(
-                                        ui::kColorTextfieldHover);
-        },
-        this));
-  }
+  InkDropHost* ink_drop_host =
+      InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
+  ink_drop_host->SetMode(InkDropHost::InkDropMode::ON);
+  ink_drop_host->SetLayerRegion(LayerRegion::kAbove);
+  ink_drop_host->SetHighlightOpacity(1.0f);
+  ink_drop_host->SetBaseColorCallback(base::BindRepeating(
+      [](Textfield* host) {
+        return host->HasFocus() ? SK_ColorTRANSPARENT
+                                : host->GetColorProvider()->GetColor(
+                                      ui::kColorTextfieldHover);
+      },
+      this));
 
 #if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
@@ -673,7 +671,7 @@ ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
 bool Textfield::OnMousePressed(const ui::MouseEvent& event) {
   const bool had_focus = HasFocus();
   bool handled = controller_ && controller_->HandleMouseEvent(this, event);
-  if (::features::IsChromeRefresh2023() && InkDrop::Get(this)) {
+  if (InkDrop::Get(this)) {
     // When a textfield is pressed, the hover state should be off and the
     // background color should no longer have a mask.
     InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
@@ -2625,8 +2623,7 @@ void Textfield::UpdateDefaultBorder() {
   if (!use_default_border_) {
     return;
   }
-  auto border = std::make_unique<views::FocusableBorder>(
-      ::features::IsChromeRefresh2023());
+  auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
   border->SetColorId(ui::kColorTextfieldOutline);
   border->SetInsets(gfx::Insets::TLBR(
