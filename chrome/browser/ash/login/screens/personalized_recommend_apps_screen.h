@@ -50,7 +50,7 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
                           const std::vector<OOBEDeviceUseCase>& use_cases,
                           AppsFetchingResult result);
 
-  std::vector<OOBEAppDefinition> app_infos_;
+  void OnInstall(base::Value::List selected_apps_package_ids) const;
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;

@@ -5,11 +5,19 @@
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 
 #include <algorithm>
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
@@ -20,6 +28,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/personalized_recommend_apps_screen_handler.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
 namespace ash {
@@ -87,6 +97,7 @@ bool PersonalizedRecommendAppsScreen::MaybeSkip(WizardContext& context) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (prefs->GetBoolean(prefs::kOobeMarketingOptInScreenFinished) &&
       !ash::switches::ShouldSkipNewUserCheckForTesting()) {
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
 
@@ -127,10 +138,6 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
     LOG(ERROR) << "Empty set of use-cases received from the server";
     exit_callback_.Run(Result::kNotApplicable);
   }
-
-  // Save locally into the screen class to retrieve data needed for the
-  // installation after the user's selection.
-  app_infos_ = app_infos;
 
   // This code performs the following steps to prepare recommended app data for
   // the WebUI:
@@ -261,6 +268,63 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
 void PersonalizedRecommendAppsScreen::HideImpl() {}
 
+void PersonalizedRecommendAppsScreen::OnInstall(
+    base::Value::List selected_apps_package_ids) const {
+  base::Value::List selected_arc_apps;
+  std::vector<apps::PackageId> selected_web_apps;
+
+  // We need to separate ARC and Web apps because they are installed
+  // differently.
+  // TODO(b/341309803): Unify installation logic by using AppInstallService for
+  // all cases when available.
+  for (const auto& selected_app_package_id : selected_apps_package_ids) {
+    std::optional<apps::PackageId> package_id =
+        apps::PackageId::FromString(selected_app_package_id.GetString());
+    if (!package_id.has_value()) {
+      LOG(ERROR) << "Can't create PackageId from " << selected_app_package_id;
+      continue;
+    }
+    if (package_id->package_type() == apps::PackageType::kArc) {
+      selected_arc_apps.Append(package_id->identifier());
+    } else {
+      selected_web_apps.emplace_back(std::move(*package_id));
+    }
+  }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  // ARC apps installation logic based on the `ArcFastAppReinstallStarter`.
+  if (selected_arc_apps.size() > 0) {
+    PrefService* prefs = profile->GetPrefs();
+    prefs->SetList(arc::prefs::kArcFastAppReinstallPackages,
+                   std::move(selected_arc_apps));
+
+    arc::ArcFastAppReinstallStarter* fast_app_reinstall_starter =
+        arc::ArcSessionManager::Get()->fast_app_resintall_starter();
+    if (fast_app_reinstall_starter) {
+      fast_app_reinstall_starter->OnAppsSelectionFinished();
+    } else {
+      LOG(ERROR) << "Cannot complete Fast App Reinstall flow. Starter is not "
+                    "available.";
+    }
+  }
+
+  // Web apps installation logic based on the `AppInstallService`.
+  if (selected_web_apps.size() > 0) {
+    apps::AppInstallService& install_service =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->AppInstallService();
+
+    for (const auto& selected_web_app : selected_web_apps) {
+      install_service.InstallAppHeadless(
+          apps::AppInstallSurface::kOobeAppRecommendations, selected_web_app,
+          // TODO(b/341305093): Implement callback that will log whether
+          // installation successful or not.
+          base::DoNothing());
+    }
+  }
+}
+
 void PersonalizedRecommendAppsScreen::OnUserAction(
     const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
@@ -273,6 +337,7 @@ void PersonalizedRecommendAppsScreen::OnUserAction(
   if (action_id == kUserActionNext) {
     CHECK_EQ(args.size(), 2u);
     // TODO(b/339789465) : the install logic of the apps.
+    OnInstall(args[1].GetList().Clone());
     exit_callback_.Run(Result::kNext);
     return;
   }

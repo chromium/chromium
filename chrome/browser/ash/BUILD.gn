@@ -3775,6 +3775,7 @@ source_set("ash") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/crosapi",
