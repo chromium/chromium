@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 
 namespace net {
 class IOBuffer;
@@ -16,14 +17,17 @@ class IOBuffer;
 
 namespace embedder_support {
 
+BASE_DECLARE_FEATURE(kEnableCustomInputStreamBufferSize);
+
 // Abstract wrapper used to access the InputStream Java class.
 // This class is safe to pass around between threads (the destructor,
 // constructor and methods can be called on different threads) but calling
 // methods concurrently might have undefined results.
 class InputStream {
  public:
-  // Maximum size of |buffer_|.
-  static const int kBufferSize;
+  // Returns the size to be used for the intermediate buffer to copy from Java's
+  // InputStream into C++'s net::IOBuffer.
+  static int GetIntermediateBufferSize();
 
   // |stream| should be an instance of the InputStream Java class.
   // |stream| can't be null.
