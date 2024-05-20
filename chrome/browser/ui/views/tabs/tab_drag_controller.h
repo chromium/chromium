@@ -206,6 +206,9 @@ class TabDragController : public views::WidgetObserver,
   // false if that would be problematic for the drag session.
   bool CanRemoveTabDuringDrag(content::WebContents* contents) const;
 
+  // Returns true if restoring a fullscreen window during a drag is allowed.
+  bool CanRestoreFullscreenWindowDuringDrag() const;
+
   // Invoked to drag to the new location, in screen coordinates.
   void Drag(const gfx::Point& point_in_screen);
 
