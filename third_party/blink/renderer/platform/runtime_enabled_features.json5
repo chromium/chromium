@@ -3554,6 +3554,9 @@
       public: true,
     },
     {
+      name: "ServiceWorkerStaticRouterTimingInfo",
+    },
+    {
       name: "SetSequentialFocusStartingPoint",
       status: "experimental",
     },

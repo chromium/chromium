@@ -72,6 +72,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual AtomicString renderBlockingStatus() const;
   virtual AtomicString contentType() const;
   DOMHighResTimeStamp workerStart() const;
+  DOMHighResTimeStamp workerRouterEvaluationStart() const;
+  DOMHighResTimeStamp workerCacheLookupStart() const;
   virtual DOMHighResTimeStamp redirectStart() const;
   virtual DOMHighResTimeStamp redirectEnd() const;
   virtual DOMHighResTimeStamp fetchStart() const;

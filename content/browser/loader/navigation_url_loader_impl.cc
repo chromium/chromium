@@ -979,6 +979,12 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     head->service_worker_router_info =
         std::move(head_update_params_.router_info);
   }
+  if (!head_update_params_.load_timing_info
+           .service_worker_router_evaluation_start.is_null()) {
+    head->load_timing.service_worker_router_evaluation_start =
+        head_update_params_.load_timing_info
+            .service_worker_router_evaluation_start;
+  }
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new

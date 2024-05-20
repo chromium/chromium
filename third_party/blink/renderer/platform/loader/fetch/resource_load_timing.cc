@@ -24,7 +24,8 @@ network::mojom::blink::LoadTimingInfoPtr ResourceLoadTiming::ToMojo() const {
           send_start_, send_end_, receive_headers_start_, receive_headers_end_,
           receive_non_informational_headers_start_, receive_early_hints_start_,
           push_start_, push_end_, worker_start_, worker_ready_,
-          worker_fetch_start_, worker_respond_with_settled_);
+          worker_fetch_start_, worker_respond_with_settled_,
+          worker_router_evaluation_start_, worker_cache_lookup_start_);
   return timing;
 }
 
@@ -73,6 +74,16 @@ void ResourceLoadTiming::SetWorkerFetchStart(
 void ResourceLoadTiming::SetWorkerRespondWithSettled(
     base::TimeTicks worker_respond_with_settled) {
   worker_respond_with_settled_ = worker_respond_with_settled;
+}
+
+void ResourceLoadTiming::SetWorkerRouterEvaluationStart(
+    base::TimeTicks worker_router_evluation_start) {
+  worker_router_evaluation_start_ = worker_router_evluation_start;
+}
+
+void ResourceLoadTiming::SetWorkerCacheLookupStart(
+    base::TimeTicks worker_cache_lookup_start) {
+  worker_cache_lookup_start_ = worker_cache_lookup_start;
 }
 
 void ResourceLoadTiming::SetSendStart(base::TimeTicks send_start) {

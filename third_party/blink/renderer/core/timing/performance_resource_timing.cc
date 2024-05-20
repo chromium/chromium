@@ -175,6 +175,29 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerStart() const {
       info_->allow_negative_values, CrossOriginIsolatedCapability());
 }
 
+DOMHighResTimeStamp PerformanceResourceTiming::workerRouterEvaluationStart()
+    const {
+  if (!info_->timing ||
+      info_->timing->service_worker_router_evaluation_start.is_null()) {
+    return 0.0;
+  }
+
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), info_->timing->service_worker_router_evaluation_start,
+      info_->allow_negative_values, CrossOriginIsolatedCapability());
+}
+
+DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
+  if (!info_->timing ||
+      info_->timing->service_worker_cache_lookup_start.is_null()) {
+    return 0.0;
+  }
+
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), info_->timing->service_worker_cache_lookup_start,
+      info_->allow_negative_values, CrossOriginIsolatedCapability());
+}
+
 DOMHighResTimeStamp PerformanceResourceTiming::WorkerReady() const {
   if (!info_->timing || info_->timing->service_worker_ready_time.is_null()) {
     return 0.0;
@@ -423,6 +446,11 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddString("contentType", contentType());
   }
   builder.AddNumber("workerStart", workerStart());
+  if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled()) {
+    builder.AddNumber("workerRouterEvaluationStart",
+                      workerRouterEvaluationStart());
+    builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
+  }
   builder.AddNumber("redirectStart", redirectStart());
   builder.AddNumber("redirectEnd", redirectEnd());
   builder.AddNumber("fetchStart", fetchStart());

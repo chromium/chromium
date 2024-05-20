@@ -42,6 +42,10 @@ bool StructTraits<network::mojom::LoadTimingInfoDataView, net::LoadTimingInfo>::
          data.ReadPushEnd(&out->push_end) &&
          data.ReadServiceWorkerStartTime(&out->service_worker_start_time) &&
          data.ReadServiceWorkerReadyTime(&out->service_worker_ready_time) &&
+         data.ReadServiceWorkerRouterEvaluationStart(
+             &out->service_worker_router_evaluation_start) &&
+         data.ReadServiceWorkerCacheLookupStart(
+             &out->service_worker_cache_lookup_start) &&
          data.ReadServiceWorkerFetchStart(&out->service_worker_fetch_start) &&
          data.ReadServiceWorkerRespondWithSettled(
              &out->service_worker_respond_with_settled);

@@ -131,6 +131,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return obj.service_worker_fetch_start;
   }
 
+  static base::TimeTicks service_worker_router_evaluation_start(
+      const net::LoadTimingInfo& obj) {
+    return obj.service_worker_router_evaluation_start;
+  }
+
+  static base::TimeTicks service_worker_cache_lookup_start(
+      const net::LoadTimingInfo& obj) {
+    return obj.service_worker_cache_lookup_start;
+  }
+
   static base::TimeTicks service_worker_respond_with_settled(
       const net::LoadTimingInfo& obj) {
     return obj.service_worker_respond_with_settled;

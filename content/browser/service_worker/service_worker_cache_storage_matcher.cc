@@ -52,7 +52,8 @@ void ServiceWorkerCacheStorageMatcher::Run() {
                          "ServiceWorkerCacheStorageMatcher::Run",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  dispatch_event_time_ = base::TimeTicks::Now();
+  CHECK(cache_lookup_start_.is_null());
+  cache_lookup_start_ = base::TimeTicks::Now();
   // If `GetMainScriptResponse` is not set, it need to be set from the
   // installed script.  Or, calling the fallback function may fail.
   if (!version_->GetMainScriptResponse()) {
@@ -116,8 +117,6 @@ void ServiceWorkerCacheStorageMatcher::DidMatch(
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
-  timing->dispatch_event_time = dispatch_event_time_;
-  timing->respond_with_settled_time = base::TimeTicks::Now();
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
       base::UmaHistogramEnumeration(
@@ -159,9 +158,6 @@ void ServiceWorkerCacheStorageMatcher::FailFallback() {
                          "ServiceWorkerCacheStorageMatcher::FailFallback",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
-  timing->dispatch_event_time = dispatch_event_time_;
-  timing->respond_with_settled_time = base::TimeTicks::Now();
 
   // `Run` method will be called in
   // `ServiceWorkerMainResourceLoader::StartRequest`.
@@ -178,7 +174,8 @@ void ServiceWorkerCacheStorageMatcher::FailFallback() {
           weak_ptr_factory_.GetWeakPtr(),
           blink::ServiceWorkerStatusCode::kErrorFailed,
           ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback,
-          blink::mojom::FetchAPIResponse::New(), nullptr, std::move(timing)));
+          blink::mojom::FetchAPIResponse::New(), nullptr,
+          blink::mojom::ServiceWorkerFetchEventTiming::New()));
   return;
 }
 

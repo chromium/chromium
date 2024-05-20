@@ -110,24 +110,24 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
-  // TODO(crbug.com/41496865): remove the function after the spec has been
-  // decided and the implementation is ready.
-  //
-  // Currently, timing info for the ServiceWorker static routing API
-  // has not been decided yet.  To avoid unnecessary confusion, no metrics
-  // are recorded if the fetch handler is not executed. i.e. cache or network
-  // sources are used.
-  bool ShouldAvoidRecordingServiceWorkerTimingInfo();
-  void set_used_router_source_type(
+  // Determine if the fetch start should be recorded, by checking the matched
+  // source type of ServiceWorker static routing API. If no source is matched,
+  // or the source is matched to `race` or `fetch-event`, we should record fetch
+  // start time since these cases will start the ServiceWorker and trigger fetch
+  // event.
+  bool ShouldRecordServiceWorkerFetchStart();
+  bool IsMatchedRouterSourceType(
+      network::mojom::ServiceWorkerRouterSourceType type);
+  void set_matched_router_source_type(
       network::mojom::ServiceWorkerRouterSourceType type) {
-    used_router_source_type_ = type;
+    matched_router_source_type_ = type;
   }
 
  private:
   FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
   DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
   std::optional<network::mojom::ServiceWorkerRouterSourceType>
-      used_router_source_type_;
+      matched_router_source_type_;
 };
 }  // namespace content
 
