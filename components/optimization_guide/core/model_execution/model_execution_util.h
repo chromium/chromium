@@ -13,7 +13,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace optimization_guide {
@@ -72,12 +71,6 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
 prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
     PrefService* local_state);
-
-// Returns the model adaptation override from the command line. The override can
-// be specified as feature|weigths_path|model_pb_path, where the paths are all
-// absolute. model_pb_path is optional.
-std::optional<on_device_model::AdaptationAssetPaths>
-GetOnDeviceModelAdaptationOverride(proto::ModelExecutionFeature feature);
 
 OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
     on_device_model::mojom::LoadModelResult result);
