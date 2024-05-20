@@ -18,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -200,17 +199,13 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
 
 std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
     std::unique_ptr<views::TableView> table) {
-  if (features::IsChromeRefresh2023()) {
-    auto scroll_view = std::make_unique<views::ScrollView>(
-        views::ScrollView::ScrollWithLayers::kEnabled);
-    scroll_view->SetDrawOverflowIndicator(false);
-    scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
-    scroll_view->SetContents(std::move(table));
-    scroll_view->SetBorder(nullptr);
-    return scroll_view;
-  } else {
-    return views::TableView::CreateScrollViewWithTable(std::move(table));
-  }
+  auto scroll_view = std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled);
+  scroll_view->SetDrawOverflowIndicator(false);
+  scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
+  scroll_view->SetContents(std::move(table));
+  scroll_view->SetBorder(nullptr);
+  return scroll_view;
 }
 
 }  // namespace
@@ -352,33 +347,17 @@ void DesktopMediaTabList::OnThemeChanged() {
   DesktopMediaListController::ListView::OnThemeChanged();
 
   const ui::ColorProvider* const color_provider = GetColorProvider();
-  if (features::IsChromeRefresh2023()) {
-    table_->SetBorder(nullptr);
-  } else {
-    table_->SetBorder(views::CreateSolidBorder(
-        /*thickness=*/1,
-        color_provider->GetColor(kColorDesktopMediaTabListBorder)));
-  }
+  table_->SetBorder(nullptr);
 
-  if (features::IsChromeRefresh2023()) {
-    scroll_view_->SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
-    const SkColor background_color =
-        color_provider->GetColor(ui::kColorSysTonalContainer);
-    preview_wrapper_->SetBackground(
-        views::CreateRoundedRectBackground(background_color, 8));
-    empty_preview_label_->SetBackground(
-        views::CreateRoundedRectBackground(background_color, 8));
-    empty_preview_label_->SetBackgroundColor(background_color);
-  } else {
-    const SkColor background_color =
-        color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
-    preview_wrapper_->SetBackground(
-        views::CreateSolidBackground(background_color));
-    empty_preview_label_->SetBackground(
-        views::CreateSolidBackground(background_color));
-    empty_preview_label_->SetBackgroundColor(background_color);
-  }
+  scroll_view_->SetBackground(views::CreateRoundedRectBackground(
+      GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
+  const SkColor background_color =
+      color_provider->GetColor(ui::kColorSysTonalContainer);
+  preview_wrapper_->SetBackground(
+      views::CreateRoundedRectBackground(background_color, 8));
+  empty_preview_label_->SetBackground(
+      views::CreateRoundedRectBackground(background_color, 8));
+  empty_preview_label_->SetBackgroundColor(background_color);
 }
 
 std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {

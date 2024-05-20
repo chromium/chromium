@@ -13,7 +13,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -55,19 +54,15 @@ DesktopMediaSourceView::DesktopMediaSourceView(
       source_id_(source_id),
       selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  image_view_ = AddChildView(features::IsChromeRefresh2023()
-                                 ? std::make_unique<RoundedCornerImageView>()
-                                 : std::make_unique<views::ImageView>());
+  image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style);
   views::FocusRing::Install(this);
-  if (features::IsChromeRefresh2023()) {
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kCornerRadius);
-  }
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kCornerRadius);
 }
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
@@ -102,23 +97,14 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
       }
     }
 
-    if (features::IsChromeRefresh2023()) {
-      SetBackground(views::CreateRoundedRectBackground(
-          GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
-          kCornerRadius));
-    } else {
-      image_view_->SetBackground(views::CreateSolidBackground(
-          GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected)));
-    }
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
+        kCornerRadius));
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::BOLD));
     parent_->OnSelectionChanged();
   } else {
-    if (features::IsChromeRefresh2023()) {
-      SetBackground(nullptr);
-    } else {
-      image_view_->SetBackground(nullptr);
-    }
+    SetBackground(nullptr);
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::NORMAL));
   }

@@ -280,9 +280,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 
 std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(
-      features::IsChromeRefresh2023() ? ui::kColorSysSurface4
-                                      : ui::kColorSubtleEmphasisBackground);
+  scroll_view->SetBackgroundThemeColorId(ui::kColorSysSurface4);
   // The overflow indicator is disabled to reduce clutter next to the
   // separator to the audio control when audio is requested or the bottom of
   // the dialog when audio is not requested.
@@ -367,9 +365,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
-  if (features::IsChromeRefresh2023()) {
-    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
-  }
+  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
