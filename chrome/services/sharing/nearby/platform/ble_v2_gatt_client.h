@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_CLIENT_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_CLIENT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "device/bluetooth/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -19,8 +20,31 @@ namespace nearby::chrome {
 
 class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
  public:
-  explicit BleV2GattClient(
-      mojo::PendingRemote<bluetooth::mojom::Device> device);
+  // Representation of the remote GattServices discovered by BleV2GattClient.
+  class GattService {
+   public:
+    class Factory {
+     public:
+      virtual std::unique_ptr<GattService> Create();
+
+      virtual ~Factory();
+    };
+
+    virtual ~GattService();
+    GattService(GattService&) = delete;
+    GattService& operator=(GattService&) = delete;
+
+    bluetooth::mojom::ServiceInfoPtr service_info;
+    std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+        characteristics;
+
+   protected:
+    GattService();
+  };
+
+  BleV2GattClient(mojo::PendingRemote<bluetooth::mojom::Device> device,
+                  std::unique_ptr<GattService::Factory> gatt_service_factory =
+                      std::make_unique<GattService::Factory>());
   ~BleV2GattClient() override;
 
   BleV2GattClient(const BleV2GattClient&) = delete;
@@ -47,15 +71,6 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   void Disconnect() override;
 
  private:
-  struct GattService {
-    GattService();
-    ~GattService();
-
-    bluetooth::mojom::ServiceInfoPtr service_info;
-    std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
-        characteristics;
-  };
-
   void DoDiscoverServices(
       base::WaitableEvent* discover_services_waitable_event);
   void OnGetGattServices(
@@ -87,6 +102,7 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
       const Uuid& characteristic_uuid);
 
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
+  void OnMojoDisconnect();
 
   bool have_gatt_services_been_discovered_ = false;
   std::map<std::string, std::unique_ptr<GattService>>
@@ -102,7 +118,11 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   base::flat_set<raw_ptr<base::WaitableEvent>>
       pending_read_characteristic_waitable_events_;
 
+  std::unique_ptr<GattService::Factory> gatt_service_factory_;
+
   mojo::SharedRemote<bluetooth::mojom::Device> remote_device_;
+
+  base::WeakPtrFactory<BleV2GattClient> weak_ptr_factory_{this};
 };
 
 }  // namespace nearby::chrome

@@ -123,12 +123,29 @@ std::string_view GattResultToString(bluetooth::mojom::GattResult result) {
 
 namespace nearby::chrome {
 
+std::unique_ptr<BleV2GattClient::GattService>
+BleV2GattClient::GattService::Factory::Create() {
+  return base::WrapUnique(new BleV2GattClient::GattService());
+}
+
+BleV2GattClient::GattService::Factory::~Factory() = default;
+
+BleV2GattClient::GattService::GattService() = default;
+BleV2GattClient::GattService::~GattService() = default;
+
 BleV2GattClient::BleV2GattClient(
-    mojo::PendingRemote<bluetooth::mojom::Device> device)
+    mojo::PendingRemote<bluetooth::mojom::Device> device,
+    std::unique_ptr<GattService::Factory> gatt_service_factory)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      gatt_service_factory_(std::move(gatt_service_factory)),
       remote_device_(std::move(device), /*bind_task_runner=*/task_runner_) {
   CHECK(remote_device_.is_bound());
+
+  remote_device_.set_disconnect_handler(
+      base::BindOnce(&BleV2GattClient::OnMojoDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()),
+      task_runner_);
 }
 
 BleV2GattClient::~BleV2GattClient() {
@@ -288,10 +305,6 @@ void BleV2GattClient::Disconnect() {
   remote_device_->Disconnect();
 }
 
-BleV2GattClient::GattService::GattService() = default;
-
-BleV2GattClient::GattService::~GattService() = default;
-
 void BleV2GattClient::DoDiscoverServices(
     base::WaitableEvent* discover_services_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -323,7 +336,7 @@ void BleV2GattClient::OnGetGattServices(
   for (const auto& service : services) {
     Uuid nearby_service_uuid = BluetoothUuidToNearbyUuid(service->uuid);
     uuid_to_discovered_gatt_service_map_.insert_or_assign(
-        std::string(nearby_service_uuid), std::make_unique<GattService>());
+        std::string(nearby_service_uuid), gatt_service_factory_->Create());
     uuid_to_discovered_gatt_service_map_.at(std::string(nearby_service_uuid))
         ->service_info = service.Clone();
   }
@@ -476,11 +489,15 @@ BleV2GattClient::GetCharacteristicInfoMojom(const Uuid& service_uuid,
 void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  Disconnect();
+  // The `remote_device_` might have already been reset in `OnMojoDisconnect()`.
+  if (remote_device_.is_bound()) {
+    Disconnect();
 
-  // Note that resetting the Remote will cancel any pending callbacks, including
-  // those already in the task queue.
-  remote_device_.reset();
+    // Note that resetting the Remote will cancel any pending callbacks,
+    // including those already in the task queue.
+    remote_device_.reset();
+  }
+
   uuid_to_discovered_gatt_service_map_.clear();
 
   // Cancel all pending calls. This is sequence safe because all
@@ -491,6 +508,12 @@ void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CancelPendingTasks(pending_read_characteristic_waitable_events_);
 
   shutdown_waitable_event->Signal();
+}
+
+void BleV2GattClient::OnMojoDisconnect() {
+  LOG(WARNING) << __func__ << ": Device remote unexpectedly disconnected";
+  remote_device_.reset();
+  uuid_to_discovered_gatt_service_map_.clear();
 }
 
 }  // namespace nearby::chrome

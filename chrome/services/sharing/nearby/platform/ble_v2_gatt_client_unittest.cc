@@ -6,11 +6,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_device.h"
+#include "device/bluetooth/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -46,6 +48,40 @@ std::vector<bluetooth::mojom::CharacteristicInfoPtr> GenerateCharacteristicInfo(
   return characteristic_infos;
 }
 
+class FakeGattService : public nearby::chrome::BleV2GattClient::GattService {
+ public:
+  explicit FakeGattService(base::OnceClosure on_destroyed_callback)
+      : on_destroyed_callback_(std::move(on_destroyed_callback)) {}
+
+  ~FakeGattService() override {
+    if (on_destroyed_callback_) {
+      std::move(on_destroyed_callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_destroyed_callback_;
+};
+
+class FakeGattServiceFactory
+    : public nearby::chrome::BleV2GattClient::GattService::Factory {
+ public:
+  std::unique_ptr<nearby::chrome::BleV2GattClient::GattService> Create()
+      override {
+    return std::make_unique<FakeGattService>(
+        std::move(next_fake_gatt_service_destroyed_callback_));
+  }
+
+  void SetNextFakeGattServiceDestroyedCallback(
+      base::OnceClosure on_destroyed_callback) {
+    next_fake_gatt_service_destroyed_callback_ =
+        std::move(on_destroyed_callback);
+  }
+
+ private:
+  base::OnceClosure next_fake_gatt_service_destroyed_callback_;
+};
+
 }  // namespace
 
 namespace nearby::chrome {
@@ -61,22 +97,29 @@ class BleV2GattClientTest : public testing::Test {
     auto fake_device = std::make_unique<bluetooth::FakeDevice>();
     fake_device_ = fake_device.get();
     mojo::PendingRemote<bluetooth::mojom::Device> pending_device;
-    mojo::MakeSelfOwnedReceiver(
+    device_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::move(fake_device),
         pending_device.InitWithNewPipeAndPassReceiver());
-    ble_v2_gatt_client_ =
-        std::make_unique<BleV2GattClient>(std::move(pending_device));
+
+    auto fake_gatt_service_factory = std::make_unique<FakeGattServiceFactory>();
+    fake_gatt_service_factory_ = fake_gatt_service_factory.get();
+    ble_v2_gatt_client_ = std::make_unique<BleV2GattClient>(
+        std::move(pending_device), std::move(fake_gatt_service_factory));
   }
 
   void TearDown() override {
-    base::RunLoop run_loop;
-    fake_device_->set_on_disconnected_callback(run_loop.QuitClosure());
-    ble_v2_gatt_client_->Disconnect();
-    run_loop.Run();
+    // `fake_device_` might be invalided if this is run during the
+    // `DisconnectHandler()` test.
+    if (fake_device_) {
+      base::RunLoop run_loop;
+      fake_device_->set_on_disconnected_callback(run_loop.QuitClosure());
+      ble_v2_gatt_client_->Disconnect();
+      run_loop.Run();
 
-    // Need to reset `fake_device_` since it gets deleted on disconnect to avoid
-    // dangling raw_ptr.
-    fake_device_ = nullptr;
+      // Need to reset `fake_device_` since it gets deleted on disconnect to
+      // avoid dangling raw_ptr.
+      fake_device_ = nullptr;
+    }
   }
 
   void CallDiscoverServiceAndCharacteristics(
@@ -125,7 +168,9 @@ class BleV2GattClientTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<BleV2GattClient> ble_v2_gatt_client_;
+  raw_ptr<FakeGattServiceFactory> fake_gatt_service_factory_;
   raw_ptr<bluetooth::FakeDevice> fake_device_;
+  mojo::SelfOwnedReceiverRef<bluetooth::mojom::Device> device_receiver_;
 };
 
 TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
@@ -266,6 +311,26 @@ TEST_F(BleV2GattClientTest,
                          kServiceUuid1, kCharacteristicUuid1),
           run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest, DisconnectHandler) {
+  base::RunLoop run_loop;
+  bool fake_gatt_service_destroyed = false;
+  fake_gatt_service_factory_->SetNextFakeGattServiceDestroyedCallback(
+      base::BindLambdaForTesting([&]() {
+        fake_gatt_service_destroyed = true;
+        run_loop.Quit();
+      }));
+
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
+
+  // Close the Mojo pipe.
+  fake_device_ = nullptr;
+  device_receiver_->Close();
+
+  run_loop.Run();
+  EXPECT_TRUE(fake_gatt_service_destroyed);
 }
 
 }  // namespace nearby::chrome

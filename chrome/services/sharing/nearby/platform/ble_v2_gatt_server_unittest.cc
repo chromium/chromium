@@ -32,11 +32,7 @@ const device::BluetoothUUID kCharacteristicUuid2 =
     device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
 const char kNewCharacteristicValue[] = "1010101";
 
-}  // namespace
-
-namespace nearby::chrome {
-
-class FakeGattService : public BleV2GattServer::GattService {
+class FakeGattService : public nearby::chrome::BleV2GattServer::GattService {
  public:
   explicit FakeGattService(base::OnceClosure on_destroyed_callback)
       : on_destroyed_callback_(std::move(on_destroyed_callback)) {}
@@ -51,9 +47,11 @@ class FakeGattService : public BleV2GattServer::GattService {
   base::OnceClosure on_destroyed_callback_;
 };
 
-class FakeGattServiceFactory : public BleV2GattServer::GattService::Factory {
+class FakeGattServiceFactory
+    : public nearby::chrome::BleV2GattServer::GattService::Factory {
  public:
-  std::unique_ptr<BleV2GattServer::GattService> Create() override {
+  std::unique_ptr<nearby::chrome::BleV2GattServer::GattService> Create()
+      override {
     return std::make_unique<FakeGattService>(
         std::move(next_fake_gatt_service_destroyed_callback_));
   }
@@ -67,6 +65,10 @@ class FakeGattServiceFactory : public BleV2GattServer::GattService::Factory {
  private:
   base::OnceClosure next_fake_gatt_service_destroyed_callback_;
 };
+
+}  // namespace
+
+namespace nearby::chrome {
 
 class BleV2GattServerTest : public testing::Test {
  public:
