@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CursorHighlight"/>
   <variant name="Dictation"/>
   <variant name="DockedMagnifier"/>
+  <variant name="FaceGaze"/>
   <variant name="FocusHighlight"/>
   <variant name="HighContrast"/>
   <variant name="LargeCursor"/>
@@ -994,7 +995,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
     <variant name="Autoclick"/>
-    <variant name="FaceGaze"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
     <variant name="SpokenFeedback"/>
@@ -1094,7 +1094,6 @@ chromium-metrics-reviews@google.com.
   <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
     <variant name="Autoclick"/>
     <variant name="CursorColor"/>
-    <variant name="FaceGaze"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
     <variant name="MouseKeys"/>
