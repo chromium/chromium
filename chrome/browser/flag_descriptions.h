@@ -2351,9 +2351,6 @@ extern const char kBoardingPassDetectorDescription[];
 extern const char kCCTBeforeUnloadName[];
 extern const char kCCTBeforeUnloadDescription[];
 
-extern const char kCCTEmbedderSpecialBehaviorTriggerName[];
-extern const char kCCTEmbedderSpecialBehaviorTriggerDescription[];
-
 extern const char kCCTEphemeralModeName[];
 extern const char kCCTEphemeralModeDescription[];
 

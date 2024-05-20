@@ -183,7 +183,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClearOmniboxFocusAfterNavigation,
     &kCCTBeforeUnload,
     &kCCTClientDataHeader,
-    &kCCTEmbedderSpecialBehaviorTrigger,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTFeatureUsage,
     &kCCTEphemeralMode,
@@ -503,10 +502,6 @@ BASE_FEATURE(kCCTBeforeUnload,
 
 BASE_FEATURE(kCCTClientDataHeader,
              "CCTClientDataHeader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger,
-             "CCTEmbedderSpecialBehaviorTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEphemeralMode,

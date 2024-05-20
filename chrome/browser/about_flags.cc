@@ -7366,11 +7366,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-embedder-special-behaviour-trigger",
-     flag_descriptions::kCCTEmbedderSpecialBehaviorTriggerName,
-     flag_descriptions::kCCTEmbedderSpecialBehaviorTriggerDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTEmbedderSpecialBehaviorTrigger)},
     {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
      flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHub)},
