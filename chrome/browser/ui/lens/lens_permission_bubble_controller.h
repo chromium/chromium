@@ -62,6 +62,10 @@ class LensPermissionBubbleController {
       const LensPermissionBubbleController&) = delete;
   ~LensPermissionBubbleController();
 
+  const views::Widget* dialog_widget_for_testing() {
+    return dialog_widget_.get();
+  }
+
   // Shows a tab-modal dialog. `callback` is called when the permission is
   // granted, whether by user directly accepting this dialog or indirectly via
   // pref change.
