@@ -371,7 +371,8 @@ void WebNNGraphImplBackendTest::SetUp() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
+// TODO(crbug.com/325612086): Parameterize these tests for different backends.
+#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
@@ -420,7 +421,7 @@ void WebNNGraphImplBackendTest::SetUp() {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
   }
 }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
 
 template <typename T>
 struct ArgMinMaxTester {
