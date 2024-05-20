@@ -1081,7 +1081,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   // used to differentiate webapp sessions for different handling.
   auto* web_contents_delegate = web_contents()->GetDelegate();
   info->ignore_for_active_session =
-      base::FeatureList::IsEnabled(features::kWebAppSystemMediaControlsWin) &&
+      base::FeatureList::IsEnabled(features::kWebAppSystemMediaControls) &&
       web_contents_delegate &&
       web_contents_delegate->ShouldUseInstancedSystemMediaControls();
 #else

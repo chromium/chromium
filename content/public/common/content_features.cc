@@ -1035,10 +1035,14 @@ BASE_FEATURE(kVerifyDidCommitParams,
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables per PWA System Media Controls on Windows
-BASE_FEATURE(kWebAppSystemMediaControlsWin,
-             "WebAppSystemMediaControlsWin",
+// Enables per PWA System Media Controls. Only supported on Windows and macOS.
+BASE_FEATURE(kWebAppSystemMediaControls,
+             "WebAppSystemMediaControls",
+#if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Enable WebAssembly baseline compilation (Liftoff).
 BASE_FEATURE(kWebAssemblyBaseline,

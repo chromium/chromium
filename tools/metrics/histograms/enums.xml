@@ -17775,7 +17775,6 @@ from previous Chrome versions.
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1534702850" label="RenderPassDrawnRect:disabled"/>
-  <int value="-1534613092" label="WebAppSystemMediaControlsWin:disabled"/>
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
@@ -18476,6 +18475,7 @@ from previous Chrome versions.
   <int value="-1236644821"
       label="FullscreenInsetsApiMigrationOnAutomotive:disabled"/>
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
+  <int value="-1235772843" label="WebAppSystemMediaControls:enabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
   <int value="-1235356380" label="UseOutOfProcessVideoDecoding:disabled"/>
   <int value="-1235021573" label="ImeOptionsInSettings:disabled"/>
@@ -19955,7 +19955,6 @@ from previous Chrome versions.
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
   <int value="-577443556" label="kTearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
-  <int value="-576656013" label="WebAppSystemMediaControlsWin:enabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
@@ -20060,6 +20059,7 @@ from previous Chrome versions.
   <int value="-535226444" label="PictureInPictureV2:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
   <int value="-535037237" label="StartSurfaceReturnTime:enabled"/>
+  <int value="-534975514" label="WebAppSystemMediaControls:disabled"/>
   <int value="-534722229" label="LauncherNudgeShortInterval:enabled"/>
   <int value="-534525820" label="MediaAppPhotosIntegrationImage:enabled"/>
   <int value="-534470003" label="OmniboxOnDeviceHeadProviderIncognito:enabled"/>

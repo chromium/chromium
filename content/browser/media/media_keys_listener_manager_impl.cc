@@ -510,11 +510,12 @@ bool MediaKeysListenerManagerImpl::ShouldActiveMediaSessionControllerReceiveKey(
 }
 
 bool MediaKeysListenerManagerImpl::ShouldUseWebAppSystemMediaControls() const {
-#if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kWebAppSystemMediaControlsWin);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // This feature is enabled by default on Windows, disabled on mac.
+  return base::FeatureList::IsEnabled(features::kWebAppSystemMediaControls);
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 bool MediaKeysListenerManagerImpl::IsDelegateForWebAppSession(

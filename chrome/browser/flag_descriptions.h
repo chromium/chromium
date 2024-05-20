@@ -3063,8 +3063,10 @@ extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 extern const char kUseScreen2xV2Name[];
 extern const char kUseScreen2xV2Description[];
 
-extern const char kWebAppSystemMediaControlsWinName[];
-extern const char kWebAppSystemMediaControlsWinDescription[];
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+extern const char kWebAppSystemMediaControlsName[];
+extern const char kWebAppSystemMediaControlsDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
