@@ -1580,4 +1580,12 @@ void EventRouter::OnLocalUserFilesPolicyChanged() {
   OnFileManagerPrefsChanged();
 }
 
+bool EventRouter::AddCloudOpenTask(const storage::FileSystemURL& file_url) {
+  return office_tasks_->cloud_open_tasks.emplace(file_url.path()).second;
+}
+
+void EventRouter::RemoveCloudOpenTask(const storage::FileSystemURL& file_url) {
+  office_tasks_->cloud_open_tasks.erase(file_url.path());
+}
+
 }  // namespace file_manager

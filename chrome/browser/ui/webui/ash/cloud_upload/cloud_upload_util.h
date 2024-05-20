@@ -174,7 +174,8 @@ enum class OfficeTaskResult {
   kFallbackQuickOfficeAfterOpen = 18,
   kCancelledAtFallbackAfterOpen = 19,
   kCannotGetFallbackChoiceAfterOpen = 20,
-  kMaxValue = kCannotGetFallbackChoiceAfterOpen,
+  kFileAlreadyBeingOpened = 21,
+  kMaxValue = kFileAlreadyBeingOpened,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

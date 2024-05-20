@@ -70,6 +70,7 @@ bool DidEndBeforeCallingOpenOrMoveFiles(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCannotShowSetupDialog:
     case OfficeTaskResult::kNoFilesToOpen:
     case OfficeTaskResult::kOkAtFallback:
+    case OfficeTaskResult::kFileAlreadyBeingOpened:
       return true;
     case OfficeTaskResult::kOpened:
     case OfficeTaskResult::kMoved:
@@ -113,6 +114,7 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCannotShowSetupDialog:
     case OfficeTaskResult::kCannotShowMoveConfirmation:
     case OfficeTaskResult::kNoFilesToOpen:
+    case OfficeTaskResult::kFileAlreadyBeingOpened:
       return false;
   }
 }
@@ -143,6 +145,7 @@ bool DidEndAtMoveConfirmation(OfficeTaskResult task_result) {
     case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
     case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
     case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
+    case OfficeTaskResult::kFileAlreadyBeingOpened:
       return false;
   }
 }
@@ -598,10 +601,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
     } else {
       // TransferRequired was kCopy or kMove.
       if (task_result.logged() &&
-          (DidEndAtMoveConfirmation(task_result.value) ||
-           task_result.value == OfficeTaskResult::kFileAlreadyBeingUploaded)) {
-        // The cloud upload flow was exited at the Move Confirmation Dialog or
-        // the upload was abandoned.
+          (DidEndAtMoveConfirmation(task_result.value))) {
+        // The cloud upload flow was exited at the Move Confirmation Dialog.
         ExpectNotLogged(upload_result);
       } else {
         // The upload should have succeeded or failed.
@@ -697,6 +698,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
           case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
           case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
+          case OfficeTaskResult::kFileAlreadyBeingOpened:
             SetWrongValueLogged(task_result);
             break;
         }

@@ -836,6 +836,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Fallback (QuickOffice) after open attempt"/>
   <int value="19" label="Cancelled at fallback after open attempt"/>
   <int value="20" label="Cannot get fallback choice after open attempt"/>
+  <int value="21" label="File already being opened"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">

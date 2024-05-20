@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/skyvault/observer.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -217,6 +218,11 @@ class EventRouter
 
   // policy::local_user_files::Observer:
   void OnLocalUserFilesPolicyChanged() override;
+
+  // Records that there's a `CloudOpenTask` for the `file_url`.
+  bool AddCloudOpenTask(const storage::FileSystemURL& file_url);
+  // Removes the record of a `CloudOpenTask` for the `file_url`.
+  void RemoveCloudOpenTask(const storage::FileSystemURL& file_url);
 
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.

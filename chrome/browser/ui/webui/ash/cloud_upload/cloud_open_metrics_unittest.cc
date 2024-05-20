@@ -543,38 +543,32 @@ TEST_F(
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
-// Tests that the UploadResult companion metric is set correctly when
-// TransferRequired is logged as kCopy and TaskResult is
-// kFileAlreadyBeingUploaded and it is logged consistently.
-TEST_F(
-    CloudOpenMetricsTest,
-    MetricsConsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+// Tests that the TransferRequired companion metric is set correctly when
+// TaskResult is kFileAlreadyBeingOpened and it is logged consistently.
+TEST_F(CloudOpenMetricsTest,
+       MetricsConsistentWhenTaskResultIsFileAlreadyBeingOpened) {
   {
     CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
                                         /*file_count=*/1);
-    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
-    cloud_open_metrics.LogTaskResult(
-        OfficeTaskResult::kFileAlreadyBeingUploaded);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFileAlreadyBeingOpened);
   }
-  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
                                 MetricState::kCorrectlyNotLogged, 1);
 }
 
-// Tests that the UploadResult companion metric is set correctly when
-// TransferRequired is logged as kCopy and TaskResult is
-// kFileAlreadyBeingUploaded and it is logged inconsistently.
+// Tests that the TransferRequired companion metric is set incorrectly when
+// TaskResult is kFileAlreadyBeingOpened and it is logged consistently.
 TEST_F(
     CloudOpenMetricsTest,
-    MetricsInconsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+    MetricsInconsistentWhenTaskResultIsFileAlreadyBeingOpenedAndTransferRequiredLogged) {
   {
     CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
                                         /*file_count=*/1);
+    // No TransferRequired should be logged.
     cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
-    cloud_open_metrics.LogTaskResult(
-        OfficeTaskResult::kFileAlreadyBeingUploaded);
-    cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFileAlreadyBeingOpened);
   }
-  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
                                 MetricState::kIncorrectlyLogged, 1);
 }
 

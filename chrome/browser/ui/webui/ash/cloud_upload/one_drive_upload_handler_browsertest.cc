@@ -697,51 +697,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                                 OfficeFilesUploadResult::kCloudAccessDenied, 1);
 }
 
-// Tests that a duplicate upload is abandoned.
-IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, NoDuplicateUploads) {
-  SetUpObservers();
-  SetUpMyFiles();
-  SetUpODFS();
-  const std::string test_file_name = "text.docx";
-  FileSystemURL source_file_url = CopyTestFile(test_file_name, my_files_dir_);
-
-  // Start the second upload after the first one starts.
-  provided_file_system_->SetCreateFileCallback(
-      base::BindLambdaForTesting([&]() {
-        auto one_drive_upload_handler2 =
-            std::make_unique<OneDriveUploadHandler>(
-                profile(), source_file_url,
-                base::BindOnce(
-                    &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
-                    base::Unretained(this), /*expected_task_result=*/
-                    OfficeTaskResult::kFileAlreadyBeingUploaded),
-                cloud_open_metrics_ref_);
-        one_drive_upload_handler2->Run();
-      }));
-
-  // Start the first upload.
-  auto one_drive_upload_handler1 = std::make_unique<OneDriveUploadHandler>(
-      profile(), source_file_url,
-      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
-                     base::Unretained(this),
-                     /*expected_task_result=*/OfficeTaskResult::kMoved),
-      cloud_open_metrics_ref_);
-  one_drive_upload_handler1->Run();
-
-  SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
-
-  // Check that the source file has been moved to OneDrive.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
-  }
-
-  // There should only be one UploadResult from the first upload.
-  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
-                                OfficeFilesUploadResult::kSuccess, 1);
-}
-
 // Tests that when there is an upload occurring followed by a second, unrelated
 // upload, both are successful.
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UnrelatedUploads) {

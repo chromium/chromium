@@ -25,6 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -432,6 +433,14 @@ CloudOpenTask::CloudOpenTask(
 }
 
 CloudOpenTask::~CloudOpenTask() {
+  auto* event_router =
+      file_manager::EventRouterFactory::GetForProfile(profile_);
+  DCHECK(!file_urls_.empty());
+  if (event_router) {
+    event_router->RemoveCloudOpenTask(file_urls_.front());
+  } else {
+    LOG(ERROR) << "Cannot get EventRouter";
+  }
   BrowserList::RemoveObserver(this);
 }
 
@@ -444,6 +453,20 @@ bool CloudOpenTask::ExecuteInternal() {
     LOG(ERROR) << "No files to open";
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kNoFilesToOpen);
     return false;
+  }
+
+  auto* event_router =
+      file_manager::EventRouterFactory::GetForProfile(profile_);
+  // TODO(b/242685536) add support for multiple files.
+  if (event_router) {
+    if (!event_router->AddCloudOpenTask(file_urls_.front())) {
+      LOG(ERROR) << "File already being opened";
+      cloud_open_metrics_->LogTaskResult(
+          OfficeTaskResult::kFileAlreadyBeingOpened);
+      return false;
+    }
+  } else {
+    LOG(ERROR) << "Cannot get EventRouter";
   }
 
   // Run the setup flow if we don't have explicit default file handlers set for

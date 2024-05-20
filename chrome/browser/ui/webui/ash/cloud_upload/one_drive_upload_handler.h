@@ -51,9 +51,6 @@ class OneDriveUploadHandler
   OneDriveUploadHandler& operator=(const OneDriveUploadHandler&) = delete;
 
  private:
-  // Checks if there already exists an upload task for this file.
-  bool FileAlreadyBeingUploaded();
-
   void GetODFSMetadataAndStartIOTask();
 
   // If reauth is required, request a new mount without a notification. If that

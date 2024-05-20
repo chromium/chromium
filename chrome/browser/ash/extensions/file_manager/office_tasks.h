@@ -18,6 +18,9 @@ class OfficeTasks {
   OfficeTasks();
   ~OfficeTasks();
 
+  // Keeps track of active `CloudOpenTask`s for a file.
+  std::set<const base::FilePath> cloud_open_tasks;
+
   // Keeps track of IO tasks interacting with ODFS.
   std::map<io_task::IOTaskId,
            std::unique_ptr<ash::file_system_provider::ScopedUserInteraction>>
