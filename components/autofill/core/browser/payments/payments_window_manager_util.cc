@@ -8,7 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -17,11 +16,12 @@
 
 namespace autofill::payments {
 
-base::expected<PaymentsWindowManager::RedirectCompletionProof,
+base::expected<PaymentsWindowManager::RedirectCompletionResult,
                PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
-ParseUrlForVcn3ds(const GURL& url) {
-  std::optional<bool> should_proceed;
-  std::string redirect_completion_proof;
+ParseUrlForVcn3ds(const GURL& url,
+                  const Vcn3dsChallengeOptionMetadata& metadata) {
+  std::string redirect_completion_result;
+  bool is_failure = false;
   std::string_view query_piece = url.query_piece();
   url::Component query(0, query_piece.length());
   url::Component key;
@@ -29,25 +29,23 @@ ParseUrlForVcn3ds(const GURL& url) {
   while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
     std::string_view key_view = query_piece.substr(key.begin, key.len);
     std::string_view value_view = query_piece.substr(value.begin, value.len);
-    if (key_view == "shouldProceed") {
-      should_proceed = value_view == "true";
-    } else if (key_view == "token") {
-      redirect_completion_proof = std::string(value_view);
+    if (key_view == metadata.success_query_param_name) {
+      redirect_completion_result = std::string(value_view);
+    } else if (key_view == metadata.failure_query_param_name) {
+      is_failure = true;
     }
   }
 
-  // `should_proceed` being present, having a value of true, and there being a
-  // `redirect_completion_proof` present indicates the user completed the
+  // `redirect_completion_result` being present indicates the user completed the
   // authentication and a request to the Payments servers is required to
   // retrieve the authentication result.
-  if (should_proceed.value_or(false) && !redirect_completion_proof.empty()) {
-    return base::ok(PaymentsWindowManager::RedirectCompletionProof(
-        redirect_completion_proof));
+  if (!redirect_completion_result.empty()) {
+    return base::ok(PaymentsWindowManager::RedirectCompletionResult(
+        redirect_completion_result));
   }
 
-  // `should_proceed` being present and having a value of false is the Google
-  // Payments server's way of telling Chrome that the authentication failed.
-  if (!should_proceed.value_or(true)) {
+  // `is_failure` being true indicates the authentication has failed.
+  if (is_failure) {
     return base::unexpected(
         PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult::
             kAuthenticationFailed);
@@ -62,7 +60,8 @@ PaymentsNetworkInterface::UnmaskRequestDetails
 CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
-    PaymentsWindowManager::RedirectCompletionProof redirect_completion_proof) {
+    PaymentsWindowManager::RedirectCompletionResult
+        redirect_completion_result) {
   payments::PaymentsNetworkInterface::UnmaskRequestDetails request_details;
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
@@ -81,8 +80,8 @@ CreateUnmaskRequestDetailsForVcn3ds(
   }
 
   request_details.selected_challenge_option = context.challenge_option;
-  request_details.redirect_completion_proof =
-      std::move(redirect_completion_proof);
+  request_details.redirect_completion_result =
+      std::move(redirect_completion_result);
   return request_details;
 }
 

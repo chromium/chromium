@@ -89,7 +89,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // retrieve the virtual card. This method is run once risk data is loaded for
   // VCN 3DS.
   void OnDidLoadRiskDataForVcn3ds(
-      RedirectCompletionProof redirect_completion_proof,
+      RedirectCompletionResult redirect_completion_result,
       const std::string& risk_data);
 
   // Closes the progress dialog and runs the completion callback

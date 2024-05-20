@@ -136,7 +136,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     std::optional<url::Origin> merchant_domain_for_footprints;
     // The token received in the final redirect of a PaymentsWindowManager flow,
     // which is the only scenario where this field should be populated.
-    PaymentsWindowManager::RedirectCompletionProof redirect_completion_proof;
+    PaymentsWindowManager::RedirectCompletionResult redirect_completion_result;
   };
 
   // Information retrieved from an UnmaskRequest.

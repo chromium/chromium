@@ -20,8 +20,8 @@ namespace autofill::payments {
 // systems.
 class PaymentsWindowManager {
  public:
-  using RedirectCompletionProof =
-      base::StrongAlias<class RedirectCompletionProofTag, std::string>;
+  using RedirectCompletionResult =
+      base::StrongAlias<class RedirectCompletionResultTag, std::string>;
 
   // The response fields for a VCN 3DS authentication, created once a response
   // to the second UnmaskCardRequest has been received.

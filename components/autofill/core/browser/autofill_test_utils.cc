@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -609,7 +610,11 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
         challenge_option.id =
             CardUnmaskChallengeOption::ChallengeOptionId("456");
         challenge_option.type = type;
-        challenge_option.url_to_open = GURL("https://www.example.com");
+        Vcn3dsChallengeOptionMetadata metadata;
+        metadata.url_to_open = GURL("https://www.example.com");
+        metadata.success_query_param_name = "token";
+        metadata.failure_query_param_name = "failure";
+        challenge_option.vcn_3ds_metadata = std::move(metadata);
         challenge_options.emplace_back(std::move(challenge_option));
         break;
       }

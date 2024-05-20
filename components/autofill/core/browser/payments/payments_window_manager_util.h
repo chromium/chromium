@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
@@ -17,25 +18,27 @@ class AutofillClient;
 
 namespace payments {
 
-// Parses the URL for VCN 3DS, which is set in `url`. If the parsed URL denotes
-// the authentication completed successfully, this function will return a
-// PaymentsWindowManager::RedirectCompletionProof as the expected response.
-// Otherwise this function will return the non-success result.
-base::expected<PaymentsWindowManager::RedirectCompletionProof,
+// Parses the URL for VCN 3DS, which is set in `url`. `metadata` contains the
+// required query parameter information to search for in `url`.  If the parsed
+// URL denotes the authentication completed successfully, this function will
+// return a PaymentsWindowManager::RedirectCompletionResult as the expected
+// response. Otherwise this function will return the non-success result.
+base::expected<PaymentsWindowManager::RedirectCompletionResult,
                PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
-ParseUrlForVcn3ds(const GURL& url);
+ParseUrlForVcn3ds(const GURL& url,
+                  const Vcn3dsChallengeOptionMetadata& metadata);
 
 // Creates UnmaskRequestDetails specific to VCN 3DS. `client` is the
 // AutofillClient associated with the original browser window. `context` is the
 // context that was set when the flow was initialized, and
-// `redirect_completion_proof` is the token that was parsed from the query
+// `redirect_completion_result` is the token that was parsed from the query
 // parameters in the final redirect of the pop-up. Refer to
-// ParseFinalUrlForVcn3ds() for when `redirect_completion_proof` is set.
+// ParseFinalUrlForVcn3ds() for when `redirect_completion_result` is set.
 PaymentsNetworkInterface::UnmaskRequestDetails
 CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
-    PaymentsWindowManager::RedirectCompletionProof redirect_completion_proof);
+    PaymentsWindowManager::RedirectCompletionResult redirect_completion_result);
 
 // Creates the Vcn3dsAuthenticationResponse for the response from the
 // UnmaskCardRequest that was sent during the VCN 3DS authentication.

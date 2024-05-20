@@ -56,10 +56,26 @@ void ParseAs3dsChallengeOption(
         CardUnmaskChallengeOption::ChallengeOptionId(*challenge_id);
   }
 
-  const auto* url_to_open = defined_challenge_option.FindString("redirect_url");
-  if (url_to_open) {
-    parsed_challenge_option.url_to_open = GURL(*url_to_open);
+  Vcn3dsChallengeOptionMetadata metadata;
+  if (const auto* url_to_open =
+          defined_challenge_option.FindString("popup_url")) {
+    metadata.url_to_open = GURL(*url_to_open);
   }
+
+  if (const auto* query_params =
+          defined_challenge_option.FindDict("query_params_for_popup_close")) {
+    if (const auto* success_query_param_name =
+            query_params->FindString("success_query_param_name")) {
+      metadata.success_query_param_name = *success_query_param_name;
+    }
+
+    if (const auto* failure_query_param_name =
+            query_params->FindString("failure_query_param_name")) {
+      metadata.failure_query_param_name = *failure_query_param_name;
+    }
+  }
+
+  parsed_challenge_option.vcn_3ds_metadata = std::move(metadata);
 
   parsed_challenge_option.challenge_info = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_THREE_DOMAIN_SECURE_CHALLENGE_INFO);
@@ -196,7 +212,7 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   // `defined_challenge_option` to the defined challenge option found, parse the
   // challenge option, and return it.
   else if ((defined_challenge_option =
-                challenge_option.FindDict("redirect_challenge_option")) &&
+                challenge_option.FindDict("popup_challenge_option")) &&
            IsVcn3dsEnabled()) {
     ParseAs3dsChallengeOption(*defined_challenge_option,
                               parsed_challenge_option);
@@ -304,11 +320,11 @@ std::string UnmaskCardRequest::GetRequestContent() {
       challenge_option.Set(
           "challenge_id",
           request_details_.selected_challenge_option->id.value());
-      challenge_option.Set(
-          "redirect_url",
-          request_details_.selected_challenge_option->url_to_open.spec());
-      challenge_option.Set("redirect_completion_proof",
-                           request_details_.redirect_completion_proof.value());
+      challenge_option.Set("popup_url",
+                           request_details_.selected_challenge_option
+                               ->vcn_3ds_metadata->url_to_open.spec());
+      challenge_option.Set("redirect_completion_result",
+                           request_details_.redirect_completion_result.value());
       request_dict.Set("redirect_challenge_option",
                        std::move(challenge_option));
     }
