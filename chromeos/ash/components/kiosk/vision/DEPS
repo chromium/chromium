@@ -1,5 +1,15 @@
 include_rules = [
   "+chromeos/ash/components/dbus/dlcservice",
   "+chromeos/ash/components/mojo_service_manager",
+  "+content/public/browser",
   "+media/capture/video/chromeos/mojom",
+  "+services/video_capture/public",
+  "+components/capture_mode",
 ]
+
+specific_include_rules = {
+  "kiosk_vision_unittest.cc": [
+    "+components/media_effects/test",
+    "+content/public/test",
+  ],
+}

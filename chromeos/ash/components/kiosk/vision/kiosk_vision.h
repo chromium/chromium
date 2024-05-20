@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   // otherwise.
   TelemetryProcessor* GetTelemetryProcessor();
 
+  const CameraServiceConnector* GetCameraConnectorForTesting() const;
+
  private:
   void Enable();
   void Disable();

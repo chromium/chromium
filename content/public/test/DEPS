@@ -85,7 +85,10 @@ specific_include_rules = {
     "+content/browser/media/captured_surface_controller.h"
   ],
   "mock_video_picture_in_picture_window_controller_impl.h": [
-    "+content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"  
+    "+content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
+  ],
+  "test_image_transport_factory.h": [
+    "+content/browser/compositor/image_transport_factory.h"
   ],
   "test_shared_storage_header_observer.h": [
     "+content/browser/shared_storage/shared_storage_header_observer.h"

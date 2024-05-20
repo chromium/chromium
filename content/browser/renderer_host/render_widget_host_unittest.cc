@@ -92,7 +92,7 @@
 #endif
 
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
-#include "content/browser/compositor/test/test_image_transport_factory.h"
+#include "content/public/test/test_image_transport_factory.h"
 #endif
 
 #if defined(USE_AURA)

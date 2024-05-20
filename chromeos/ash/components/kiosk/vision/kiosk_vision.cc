@@ -91,10 +91,16 @@ void KioskVision::InitializeProcessors(std::string dlc_path) {
   detection_observer_.emplace(
       DetectionProcessors({&telemetry_processor_.value()}));
   camera_connector_.emplace(std::move(dlc_path), &detection_observer_.value());
+  camera_connector_->Start();
 }
 
 TelemetryProcessor* KioskVision::GetTelemetryProcessor() {
   return telemetry_processor_.has_value() ? &*telemetry_processor_ : nullptr;
+}
+
+const CameraServiceConnector* KioskVision::GetCameraConnectorForTesting()
+    const {
+  return camera_connector_.has_value() ? &*camera_connector_ : nullptr;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

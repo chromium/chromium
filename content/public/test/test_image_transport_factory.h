@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
-#define CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
+#ifndef CONTENT_PUBLIC_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
+#define CONTENT_PUBLIC_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
 
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -62,4 +62,4 @@ class TestImageTransportFactory : public ui::ContextFactory,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
+#endif  // CONTENT_PUBLIC_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
