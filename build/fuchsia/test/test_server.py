@@ -10,7 +10,7 @@ import subprocess
 
 from typing import List, Optional, Tuple
 
-from common import DIR_SRC_ROOT, run_ffx_command
+from common import DIR_SRC_ROOT, get_ssh_address
 from compatible_utils import get_ssh_prefix
 
 sys.path.append(os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'common'))
@@ -19,11 +19,14 @@ import chrome_test_server_spawner
 # pylint: enable=import-error,wrong-import-position
 
 
-def port_forward(host_port_pair: str, host_port: int) -> int:
-    """Establishes a port forwarding SSH task to a localhost TCP endpoint
-    hosted at port |local_port|. Blocks until port forwarding is established.
+def ports_forward(host_port_pair: str,
+                  ports: List[Tuple[int, int]]) -> subprocess.CompletedProcess:
+    """Establishes a port forwarding SSH task to forward ports from fuchsia to
+    the local endpoints specified by tuples of port numbers. Blocks until port
+    forwarding is established.
 
-    Returns the remote port number."""
+    Returns the CompletedProcess of the SSH task."""
+    assert len(ports) > 0
 
     ssh_prefix = get_ssh_prefix(host_port_pair)
 
@@ -33,11 +36,11 @@ def port_forward(host_port_pair: str, host_port: int) -> int:
     forward_cmd = [
         '-O',
         'forward',  # Send SSH mux control signal.
-        '-R',
-        '0:localhost:%d' % host_port,
         '-v',  # Get forwarded port info from stderr.
         '-NT'  # Don't execute command; don't allocate terminal.
     ]
+    for port in ports:
+        forward_cmd.extend(['-R', f'{port[0]}:localhost:{port[1]}'])
     forward_proc = subprocess.run(ssh_prefix + forward_cmd,
                                   capture_output=True,
                                   check=False,
@@ -46,9 +49,17 @@ def port_forward(host_port_pair: str, host_port: int) -> int:
         raise Exception(
             'Got an error code when requesting port forwarding: %d' %
             forward_proc.returncode)
+    return forward_proc
 
-    output = forward_proc.stdout
-    parsed_port = int(output.splitlines()[0].strip())
+
+def port_forward(host_port_pair: str, host_port: int) -> int:
+    """Establishes a port forwarding SSH task to a localhost TCP endpoint
+    hosted at port |local_port|. Blocks until port forwarding is established.
+
+    Returns the remote port number."""
+
+    forward_proc = ports_forward(host_port_pair, [(0, host_port)])
+    parsed_port = int(forward_proc.stdout.splitlines()[0].strip())
     logging.debug('Port forwarding established (local=%d, device=%d)',
                   host_port, parsed_port)
     return parsed_port
@@ -110,9 +121,7 @@ def setup_test_server(target_id: Optional[str], test_concurrency: int)\
 
     logging.debug('Starting test server.')
 
-    host_port_pair = run_ffx_command(cmd=('target', 'get-ssh-address'),
-                                     target_id=target_id,
-                                     capture_output=True).stdout.strip()
+    host_port_pair = get_ssh_address(target_id)
 
     # The TestLauncher can launch more jobs than the limit specified with
     # --test-launcher-jobs so the max number of spawned test servers is set to

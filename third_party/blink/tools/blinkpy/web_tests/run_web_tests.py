@@ -96,42 +96,14 @@ def parse_args(args):
     printing.add_print_options_group(parser)
 
     fuchsia_group = parser.add_argument_group('Fuchsia-specific Options')
-    fuchsia_group.add_argument(
-        '--zircon-logging',
-        action='store_true',
-        default=True,
-        help='Log Zircon debug messages (enabled by default).')
-    fuchsia_group.add_argument('--no-zircon-logging',
-                               dest='zircon_logging',
-                               action='store_false',
-                               default=True,
-                               help='Do not log Zircon debug messages.')
-    fuchsia_group.add_argument(
-        '--device',
-        choices=['qemu', 'device', 'fvdl'],
-        default='fvdl',
-        help='Choose device to launch Fuchsia with. Defaults to fvdl.')
-    fuchsia_group.add_argument(
-        '--fuchsia-target-cpu',
-        choices=['x64', 'arm64'],
-        default='x64',
-        help='cpu architecture of the device. Defaults to x64.')
     fuchsia_group.add_argument('--fuchsia-out-dir',
                                help='Path to Fuchsia build output directory.')
     fuchsia_group.add_argument(
         '--custom-image',
         help='Specify an image used for booting up the emulator.')
     fuchsia_group.add_argument(
-        '--fuchsia-ssh-config',
-        help=('The path to the SSH configuration used for '
-              'connecting to the target device.'))
-    fuchsia_group.add_argument(
         '--fuchsia-target-id',
         help='The node-name of the device to boot or deploy to.')
-    fuchsia_group.add_argument(
-        '--fuchsia-host-ip',
-        help=('The IP address of the test host observed by the Fuchsia '
-              'device. Required if running on hardware devices.'))
     fuchsia_group.add_argument('--logs-dir',
                                help='Location of diagnostics logs')
 

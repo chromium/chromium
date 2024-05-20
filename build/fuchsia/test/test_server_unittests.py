@@ -75,7 +75,7 @@ class TestServerTest(unittest.TestCase):
         server = test_server.chrome_test_server_spawner.SpawningServer
         server.Start = mock.Mock()
         server_mock.return_value = server
-        with mock.patch('test_server.run_ffx_command'):
+        with mock.patch('test_server.get_ssh_address'):
             _, url = test_server.setup_test_server(_HOST_PORT_PAIR, 4)
         self.assertTrue(str(_HOST_PORT) in url)
 
