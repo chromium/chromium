@@ -1773,11 +1773,9 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(b:315076421): Remove "New" badge for preview.
     if (base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
                                       IDS_CONTENT_CONTEXT_OPENLINKPREVIEW);
-      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
       // We don't show in-production-help for ChromeOS for now because we should
       // use a different trigger.
       //
@@ -2036,10 +2034,6 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
       menu_model_.GetIndexOfCommandId(search_for_image_idc).value();
   menu_model_.SetElementIdentifierAt(command_index, kSearchForImageItem);
 
-  if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
-  }
-
   MaybePrepareForLensQuery();
 
   auto* service = TemplateURLServiceFactory::GetForProfile(GetProfile());
@@ -2112,7 +2106,6 @@ void RenderViewContextMenu::AppendVideoItems() {
         GetSearchForVideoFrameIdc(),
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
                                    GetImageSearchProviderName(provider)));
-    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     MaybePrepareForLensQuery();
   }
 }
@@ -2368,9 +2361,6 @@ void RenderViewContextMenu::AppendSearchProvider() {
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                      default_provider->short_name(),
                                      printable_selection_text));
-      if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
-      }
       if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
         // Add an "in new tab" item performing the non-side panel behavior.
         if (base::FeatureList::IsEnabled(
@@ -2437,8 +2427,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       // TODO(b/303646344): Remove new feature tag when no longer new.
       menu_model_.SetIsNewFeatureAt(
           menu_model_.GetItemCount() - 1,
-          GetBrowser()->window()->MaybeShowNewBadgeFor(
-              compose::features::kEnableCompose));
+          UserEducationService::MaybeShowNewBadge(
+              GetBrowserContext(), compose::features::kEnableCompose));
       render_separator = true;
     }
   }
@@ -2700,10 +2690,6 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     menu_model_.AddItem(region_search_idc,
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
-    if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
-    }
-
     menu_model_.SetElementIdentifierAt(
         menu_model_.GetIndexOfCommandId(region_search_idc).value(),
         kRegionSearchItem);

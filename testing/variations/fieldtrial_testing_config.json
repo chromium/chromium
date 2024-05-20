@@ -19289,7 +19289,6 @@
                         "VisualQuerySuggestions"
                     ],
                     "disable_features": [
-                        "CompanionEnableNewBadgesInContextMenu",
                         "SideSearch"
                     ]
                 }

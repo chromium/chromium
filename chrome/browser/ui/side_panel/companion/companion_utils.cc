@@ -140,14 +140,6 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
          ShouldEnableOpenCompanionForImageSearch();
 }
 
-bool IsNewBadgeEnabledForSearchMenuItem(const Browser* browser) {
-  if (!browser) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      features::kCompanionEnableNewBadgesInContextMenu);
-}
-
 void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CHECK(profile);
