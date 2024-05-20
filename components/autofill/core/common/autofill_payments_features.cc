@@ -8,8 +8,6 @@
 
 namespace autofill::features {
 
-// Features
-
 // When enabled, Android N+ devices will be supported for FIDO authentication.
 BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
              "AutofillEnableAndroidNKeyForFidoAuthentication",
