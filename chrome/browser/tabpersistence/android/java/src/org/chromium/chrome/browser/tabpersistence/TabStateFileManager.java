@@ -518,7 +518,7 @@ public class TabStateFileManager {
                 try {
                     FlatBufferTabStateSerializer serializer =
                             new FlatBufferTabStateSerializer(encrypted);
-                    ByteBuffer data = serializer.serialize(state);
+                    ByteBuffer data = serializer.serialize(state, contentsStateBytes);
                     if (encrypted) {
                         dataOutputStream.writeInt(data.remaining());
                     }

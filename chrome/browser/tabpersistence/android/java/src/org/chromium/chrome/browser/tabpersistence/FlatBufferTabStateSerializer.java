@@ -58,9 +58,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
     }
 
     @Override
-    public ByteBuffer serialize(TabState state) {
+    public ByteBuffer serialize(TabState state, byte[] contentsStateBytes) {
         FlatBufferBuilder fbb = new FlatBufferBuilder();
-        byte[] contentsStateBytes = getContentStateByteArray(state.contentsState);
         int webContentsState =
                 TabStateFlatBufferV1.createWebContentsStateBytesVector(fbb, contentsStateBytes);
         int openerAppId =
@@ -89,19 +88,6 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
-    }
-
-    private static byte[] getContentStateByteArray(WebContentsState webContentsState) {
-        if (webContentsState == null
-                || webContentsState.buffer() == null
-                || webContentsState.buffer().limit() == 0) {
-            return new byte[] {};
-        }
-        ByteBuffer buffer = webContentsState.buffer().asReadOnlyBuffer();
-        byte[] contentsStateBytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(contentsStateBytes);
-        return contentsStateBytes;
     }
 
     @Override
