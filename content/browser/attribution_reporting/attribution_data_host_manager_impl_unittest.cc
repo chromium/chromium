@@ -778,6 +778,98 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
 }
 
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHostRegistration_RegistrationsPerNavigationRecorded) {
+  base::HistogramTester histograms;
+
+  const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
+  const auto reporting_url = GURL("https://report.test");
+  const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
+
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(SourceTypeIs(SourceType::kNavigation),
+                                 ImpressionOriginIs(page_origin),
+                                 ReportingOriginIs(reporting_origin)),
+                           kFrameId))
+      .Times(3);
+
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(SourceTypeIs(SourceType::kEvent),
+                                 ImpressionOriginIs(page_origin),
+                                 ReportingOriginIs(reporting_origin),
+                                 SourceIsWithinFencedFrameIs(true)),
+                           kFrameId));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+
+  SourceRegistration source_data(*DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger.example")}));
+  source_data.source_event_id = 10;
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
+
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
+
+  source_data.destination_set = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger2.example")});
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
+
+  data_host_remote.reset();
+
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionSuitableContext::CreateForTesting(
+          page_origin, /*is_nested_within_fenced_frame=*/true, kFrameId,
+          kLastNavigationId),
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
+
+  source_data.destination_set = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger3.example")});
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
+
+  data_host_remote.reset();
+
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+
+  const blink::AttributionSrcToken attribution_src_token_2;
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote_2;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote_2.BindNewPipeAndPassReceiver(), attribution_src_token_2);
+
+  source_data.destination_set = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger4.example")});
+  data_host_remote_2->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
+
+  data_host_remote_2.reset();
+
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          page_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+
+  task_environment_.RunUntilIdle();
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
+
+  // kProcessed = 3.
+  histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 2);
+
+  histograms.ExpectBucketCount(
+      "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch", 2,
+      1);
+}
+
 // Ensures correct behavior in
 // `AttributionDataHostManagerImpl::OnDataHostDisconnected()` when a data host
 // is registered but disconnects before registering a source or trigger.
@@ -3919,6 +4011,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   const blink::AttributionSrcToken attribution_src_token;
 
   const auto reporting_url = GURL("https://report.test");
+  const auto reporting_url2 = GURL("https://report2.test");
   const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
   const auto context_origin =
       *SuitableOrigin::Deserialize("https://source.test");
@@ -3954,7 +4047,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                          kRegisterSourceJson);
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers_2.get(), reporting_url,
+        kBackgroundId, headers_2.get(), reporting_url2,
         network::AttributionReportingRuntimeFeatures(),
         /*trigger_verifications=*/{}));
 
@@ -3987,6 +4080,14 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     // kTiedWithDelay=1, kNeverTiedIneligible=3
     if (navigation_eventually_starts) {
       histograms.ExpectBucketCount(kBackgroundNavigationOutcome, 1, 2);
+      // reporting_url1
+      histograms.ExpectBucketCount(
+          "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
+          2, 1);
+      // reporting_url2
+      histograms.ExpectBucketCount(
+          "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
+          1, 1);
     } else {
       histograms.ExpectBucketCount(kBackgroundNavigationOutcome, 3, 2);
     }

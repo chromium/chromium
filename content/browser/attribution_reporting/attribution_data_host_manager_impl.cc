@@ -1778,7 +1778,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   auto source_type = SourceType::kEvent;
-  if (context->navigation_id().has_value()) {
+  auto navigation_id = context->navigation_id();
+  if (navigation_id.has_value()) {
     source_type = SourceType::kNavigation;
   }
 
@@ -1795,6 +1796,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   RecordRegistrationMethod(
       context->GetRegistrationMethod(was_fetched_via_service_worker));
+
+  if (navigation_id.has_value()) {
+    AddNavigationSourceRegistrationToBatchMap(*navigation_id, reporting_origin);
+  }
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_origin=*/context->context_origin(), source_type,
@@ -2016,6 +2021,11 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
     ASSIGN_OR_RETURN(auto registration,
                      attribution_reporting::SourceRegistration::Parse(
                          std::move(*dict), source_type));
+
+    if (auto navigation_id = registrations.navigation_id()) {
+      AddNavigationSourceRegistrationToBatchMap(
+          *navigation_id, pending_decode.reporting_origin);
+    }
 
     return StorableSource(std::move(pending_decode.reporting_origin),
                           std::move(registration),
@@ -2265,8 +2275,33 @@ void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
       navigation_id, due_to_timeout
                          ? OsRegistrationsBufferFlushReason::kTimeout
                          : OsRegistrationsBufferFlushReason::kNavigationDone);
+  ClearRegistrationsForNavigationBatch(navigation_id);
   MaybeBindDeferredReceivers(navigation_id, due_to_timeout);
   ClearRegistrationsDeferUntilNavigation(navigation_id);
+}
+
+void AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
+    int64_t navigation_id,
+    const SuitableOrigin& reporting_origin) {
+  auto [it, inserted] = registrations_per_navigation_.try_emplace(
+      navigation_id, base::flat_map<SuitableOrigin, int>());
+  auto [it_inner, inserted_inner] = it->second.try_emplace(reporting_origin, 0);
+  it_inner->second++;
+}
+
+void AttributionDataHostManagerImpl::ClearRegistrationsForNavigationBatch(
+    int64_t navigation_id) {
+  auto it = registrations_per_navigation_.find(navigation_id);
+  if (it == registrations_per_navigation_.end()) {
+    return;
+  }
+
+  for (const auto& [_, count] : it->second) {
+    base::UmaHistogramExactLinear(
+        "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
+        count, /*exclusive_max=*/50);
+  }
+  registrations_per_navigation_.erase(it);
 }
 
 void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
