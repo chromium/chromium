@@ -198,7 +198,8 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
+// TODO(b/341659658): Fails to initialize Lacros window.
+IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, DISABLED_SmartDim) {
   // Lacros fails to start up correctly on VM tryservers like
   // chromeos-amd64-generic (Lacros restarts in a loop). b/303359438
   if (base::CPU().is_running_in_vm()) {

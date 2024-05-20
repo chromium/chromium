@@ -167,7 +167,9 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
+// TODO(b/341659658): Fails to open Lacros window.
+IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
+                       DISABLED_ManagedDeviceInfo) {
   // On VM tryservers like chromeos-amd64-generic Lacros fails to start up
   // correctly (it restarts in a loop). b/303359438
   if (base::CPU().is_running_in_vm()) {
