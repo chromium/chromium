@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "os", "sheriff_rotations", "siso")
+load("//lib/builders.star", "cpu", "os", "sheriff_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -449,9 +449,6 @@ linux_memory_builder(
 
 ci.builder(
     name = "Mac ASan 64 Builder",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 2,
-    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -474,11 +471,13 @@ ci.builder(
             "release_builder",
             "reclient",
             "dcheck_always_on",
+            "x64",
         ],
     ),
-    builderless = False,
-    cores = None,  # Swapping between 8 and 24
+    builderless = True,
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "bld",
@@ -534,9 +533,10 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-memory-archive",
     ),
-    builderless = False,
-    cores = 12,
+    builderless = True,
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "tst",
