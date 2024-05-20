@@ -2954,7 +2954,9 @@ class GETnHandler(TypeHandler):
   result->SetNumResults(0);
   helper_->%(func_name)s(%(arg_string)s,
       GetResultShmId(), result.offset());
-  WaitForCmd();
+  if (!WaitForCmd()) {
+    return;
+  }
   result->CopyResult(%(last_arg_name)s);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -4456,7 +4458,9 @@ TEST_P(%(test_name)s, %(name)sInvalidArgsBadSharedMemoryId) {
       f.write(
           "  helper_->%s(%s, GetResultShmId(), result.offset());\n" %
               (func.name, arg_string))
-      f.write("  WaitForCmd();\n")
+      f.write("  if (!WaitForCmd()) {\n")
+      f.write("    return %s; \n" % error_value)
+      f.write("  }\n")
       f.write("  %s result_value = *result" % func.return_type)
       if func.return_type == "GLboolean":
         f.write(" != 0")
