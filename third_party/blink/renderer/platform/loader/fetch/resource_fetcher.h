@@ -589,6 +589,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void ScheduleLoadingPotentiallyUnusedPreload(Resource*);
   void StartLoadAndFinishIfFailed(Resource*,
                                   bool is_potentially_unused_preload);
+  void ScheduleStartLoadAndFinishIfFailed(Resource* resource,
+                                          bool is_potentially_unused_preload);
 
   bool IsPotentiallyUnusedPreload(const FetchParameters& params) const;
 

@@ -819,6 +819,8 @@ enum class LcppDeferUnusedPreloadTiming {
   kPostTask,
   // Start loading after the LCPP timing. crbug.com/40285771 for more details.
   kLcpTimingPredictor,
+  // LCPTimingPredictor + PostTask.
+  kLcpTimingPredictorWithPostTask,
 };
 
 BLINK_COMMON_EXPORT extern const base::FeatureParam<

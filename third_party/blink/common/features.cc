@@ -1342,6 +1342,8 @@ const base::FeatureParam<LcppDeferUnusedPreloadTiming>::Option
         {LcppDeferUnusedPreloadTiming::kPostTask, "post_task"},
         {LcppDeferUnusedPreloadTiming::kLcpTimingPredictor,
          "lcp_timing_predictor"},
+        {LcppDeferUnusedPreloadTiming::kLcpTimingPredictorWithPostTask,
+         "lcp_timing_predictor_with_post_task"},
 };
 
 const base::FeatureParam<LcppDeferUnusedPreloadTiming>

@@ -62,6 +62,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -2522,15 +2523,19 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
       features::kLcppDeferUnusedPreloadTiming.Get();
   switch (load_timing) {
     case features::LcppDeferUnusedPreloadTiming::kPostTask:
-      freezable_task_runner_->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                        /*is_potentially_unused_preload=*/true));
+      ScheduleStartLoadAndFinishIfFailed(
+          resource, /*is_potentially_unused_preload=*/true);
       break;
     case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
       context_->AddLcpPredictedCallback(
           WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                        /*is_potentially_unused_preload=*/true));
+      break;
+    case features::LcppDeferUnusedPreloadTiming::
+        kLcpTimingPredictorWithPostTask:
+      context_->AddLcpPredictedCallback(
+          WTF::BindOnce(&ResourceFetcher::ScheduleStartLoadAndFinishIfFailed,
                         WrapWeakPersistent(this), WrapWeakPersistent(resource),
                         /*is_potentially_unused_preload=*/true));
       break;
@@ -2557,6 +2562,16 @@ void ResourceFetcher::StartLoadAndFinishIfFailed(
     resource->FinishAsError(ResourceError::CancelledError(resource->Url()),
                             freezable_task_runner_.get());
   }
+}
+
+void ResourceFetcher::ScheduleStartLoadAndFinishIfFailed(
+    Resource* resource,
+    bool is_potentially_unused_preload) {
+  freezable_task_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                    WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                    is_potentially_unused_preload));
 }
 
 void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {

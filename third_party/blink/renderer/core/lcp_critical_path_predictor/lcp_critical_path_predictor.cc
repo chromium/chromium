@@ -28,10 +28,17 @@ bool IsTimingPredictorEnabled() {
           blink::features::kLCPTimingPredictorPrerender2)) {
     return true;
   }
-  if (base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload) &&
-      features::kLcppDeferUnusedPreloadTiming.Get() ==
-          features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor) {
-    return true;
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
+    static const features::LcppDeferUnusedPreloadTiming timing =
+        features::kLcppDeferUnusedPreloadTiming.Get();
+    switch (timing) {
+      case features::LcppDeferUnusedPreloadTiming::kPostTask:
+        return false;
+      case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
+      case features::LcppDeferUnusedPreloadTiming::
+          kLcpTimingPredictorWithPostTask:
+        return true;
+    }
   }
 
   return false;
