@@ -283,8 +283,14 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
                                     base::Unretained(&device_closed_))));
   // TODO(kamesan): Reduce the timeout back to 1 second when we have a solution
   // in platform level (b/258048698).
-  const base::TimeDelta kWaitTimeoutSecs = base::Seconds(2);
-  device_closed_.TimedWait(kWaitTimeoutSecs);
+  const int kWaitTimeoutSecs = 2;
+  bool is_signaled = device_closed_.TimedWait(base::Seconds(kWaitTimeoutSecs));
+  if (!is_signaled) {
+    LOG(WARNING) << "Camera "
+                 << camera_hal_delegate_->GetCameraIdFromDeviceId(
+                        device_descriptor_.device_id)
+                 << " can't be closed in " << kWaitTimeoutSecs << " seconds.";
+  }
 
   std::move(suspend_callback).Run();
 }
