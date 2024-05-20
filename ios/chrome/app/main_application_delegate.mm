@@ -14,6 +14,11 @@
 #import "components/download/public/background_service/background_download_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
@@ -25,11 +30,13 @@
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -37,7 +44,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -241,24 +248,16 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
                             true);
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        if (IsContentPushNotificationsEnabled()) {
+        if ([self isContentNotificationAvailable]) {
           Browser* browser = self.mainController.browserProviderInterface
                                  .mainBrowserProvider.browser;
-          if (browser) {
-            [self.pushNotificationDelegate
-                applicationDidRegisterWithAPNS:deviceToken
-                                  browserState:browser->GetBrowserState()];
-            // Logs when a Registration succeeded. (BrowserState loaded).
-            base::UmaHistogramBoolean(
-                "ContentNotifications.Registration.BrowserStateUnavailable",
-                false);
-          } else {
-            // Logs when a Registration failed. (BrowserState not available).
-            // Does not register the user and instead waits for the next
-            // registration opportunity/call.
-            base::UmaHistogramBoolean(
-                "IOS.PushNotification.APNSDeviceRegistration", true);
-          }
+          [self.pushNotificationDelegate
+              applicationDidRegisterWithAPNS:deviceToken
+                                browserState:browser->GetBrowserState()];
+          // Logs when a Registration succeeded with a loaded BrowserState.
+          base::UmaHistogramBoolean(
+              "ContentNotifications.Registration.BrowserStateUnavailable",
+              false);
         } else {
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
@@ -371,11 +370,13 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         [weakSelf firstSceneDidEnterForeground];
       });
 
-  if (_startupInformation.isColdStart) {
-    [PushNotificationUtil registerDeviceWithAPNS];
-  } else if (IsContentPushNotificationsEnabled()) {
-    // Register on every foreground for Content Push Notifications.
-    [PushNotificationUtil registerDeviceWithAPNS];
+  // Register if it's a cold start or when bringing Chrome to foreground with
+  // Content Push Notifications available.
+  if (_startupInformation.isColdStart ||
+      [self isContentNotificationAvailable]) {
+    [PushNotificationUtil
+        registerDeviceWithAPNSWithContentNotificationsAvailable:
+            [self isContentNotificationAvailable]];
   }
 
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
@@ -478,6 +479,36 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
           browser->GetBrowserState());
 
   tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+}
+
+// `YES` if Content notification is enabled or registered. Called before
+// register device With APNS.
+- (BOOL)isContentNotificationAvailable {
+  Browser* browser =
+      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+
+  if (!browser) {
+    base::UmaHistogramBoolean(
+        "ContentNotifications.Registration.BrowserStateUnavailable", true);
+    return NO;
+  }
+
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  bool isUserSignedIn = identityManager && identityManager->HasPrimaryAccount(
+                                               signin::ConsentLevel::kSignin);
+  const TemplateURL* defaultSearchURLTemplate =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+          ->GetDefaultSearchProvider();
+  bool isDefaultSearchEngine =
+      defaultSearchURLTemplate && defaultSearchURLTemplate->prepopulate_id() ==
+                                      TemplateURLPrepopulateData::google.id;
+  PrefService* prefService = browserState->GetPrefs();
+  return IsContentNotificationEnabled(isUserSignedIn, isDefaultSearchEngine,
+                                      prefService) ||
+         IsContentNotificationRegistered(isUserSignedIn, isDefaultSearchEngine,
+                                         prefService);
 }
 
 @end

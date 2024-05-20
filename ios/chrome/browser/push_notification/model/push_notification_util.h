@@ -35,8 +35,10 @@ enum class SettingsAuthorizationStatus {
 // didRegisterForNotificationsWithDeviceToken function is called if the device
 // was successfully registered with APNS. If the device's registration was
 // unsuccessful, then AppDelegate's didRegisterForNotificationsWithError
-// function is called.
-+ (void)registerDeviceWithAPNS;
+// function is called. `contentNotificationAvailability` is YES when content
+// notification is enabled or need to be registered.
++ (void)registerDeviceWithAPNSWithContentNotificationsAvailable:
+    (BOOL)contentNotificationAvailability;
 
 // The function registers the set of `UNNotificationCategory` objects with iOS'
 // UNNotificationCenter.
