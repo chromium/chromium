@@ -52,7 +52,13 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 // Tests that the settings page is dismissed by swiping down from the top.
 // TODO(crbug.com/326070899): remove this test when Tips Notifications is
 // enabled by default.
-- (void)testTrackingPriceSwipeDown {
+// TODO(crbug.com/341308196): reenable for device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTrackingPriceSwipeDown DISABLED_testTrackingPriceSwipeDown
+#else
+#define MAYBE_testTrackingPriceSwipeDown testTrackingPriceSwipeDown
+#endif
+- (void)MAYBE_testTrackingPriceSwipeDown {
   [self openTrackingPriceSettings];
 
   // Check that Tracking Price TableView is presented.
