@@ -47,6 +47,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/common",
     "//ios/chrome/common",

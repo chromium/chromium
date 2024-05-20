@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
@@ -37,7 +38,9 @@
 @implementation MagicStackModuleContentsFactory
 
 - (UIView*)contentViewForConfig:(MagicStackModule*)config
-                traitCollection:(UITraitCollection*)traitCollection {
+                traitCollection:(UITraitCollection*)traitCollection
+            contentViewDelegate:
+                (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
   switch (config.type) {
     case ContentSuggestionsModuleType::kMostVisited: {
       MostVisitedTilesConfig* mvtConfig =
@@ -68,7 +71,8 @@
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);
-      return [self safetyCheckViewForConfigState:safetyCheckConfig];
+      return [self safetyCheckViewForConfigState:safetyCheckConfig
+                             contentViewDelegate:contentViewDelegate];
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -182,9 +186,13 @@
   return parcelTrackingModuleView;
 }
 
-- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state {
+- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state
+                     contentViewDelegate:
+                         (id<MagicStackModuleContentViewDelegate>)
+                             contentViewDelegate {
   SafetyCheckView* safetyCheckView =
-      [[SafetyCheckView alloc] initWithState:state];
+      [[SafetyCheckView alloc] initWithState:state
+                         contentViewDelegate:contentViewDelegate];
   safetyCheckView.audience = state.audience;
   [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;

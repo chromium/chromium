@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
@@ -53,7 +54,8 @@ const CGFloat kSeparatorHeight = 0.5;
 
 }  // namespace
 
-@interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate>
+@interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate,
+                                         MagicStackModuleContentViewDelegate>
 
 // Redefined as ReadWrite.
 @property(nonatomic, assign, readwrite) ContentSuggestionsModuleType type;
@@ -272,7 +274,10 @@ const CGFloat kSeparatorHeight = 0.5;
 
   _separator.hidden = ![self shouldShowSeparator];
 
-  _contentView = [_magicStackModuleContentsFactory contentViewForConfig:config traitCollection:self.traitCollection];
+  _contentView = [_magicStackModuleContentsFactory
+      contentViewForConfig:config
+           traitCollection:self.traitCollection
+       contentViewDelegate:self];
   [_stackView addArrangedSubview:_contentView];
 
   // Configures `contentView` to be the view willing to expand if needed to
@@ -389,6 +394,13 @@ const CGFloat kSeparatorHeight = 0.5;
       self.traitCollection.preferredContentSizeCategory) {
     _title.font = [self fontForTitle];
   }
+}
+
+#pragma mark - MagicStackModuleContentViewDelegate
+
+- (void)setSubtitle:(NSString*)subtitle {
+  _subtitle.text = subtitle;
+  _subtitle.accessibilityIdentifier = subtitle;
 }
 
 #pragma mark - UIContextMenuInteractionDelegate

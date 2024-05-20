@@ -11,6 +11,7 @@
 
 @protocol SafetyCheckAudience;
 @class SafetyCheckState;
+@protocol MagicStackModuleContentViewDelegate;
 
 // A view that displays the Safety Check in the Magic Stack.
 //
@@ -18,8 +19,10 @@
 // Safe Browsing check.
 @interface SafetyCheckView : UIView <SafetyCheckMagicStackConsumer>
 
-// Initializes the SafetyCheckView with `state`.
-- (instancetype)initWithState:(SafetyCheckState*)state;
+// Initializes the SafetyCheckView with `state` and `contentViewDelegate`.
+- (instancetype)initWithState:(SafetyCheckState*)state
+          contentViewDelegate:
+              (id<MagicStackModuleContentViewDelegate>)contentViewDelegate;
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<SafetyCheckAudience> audience;

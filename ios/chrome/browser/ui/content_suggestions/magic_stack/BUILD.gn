@@ -72,6 +72,7 @@ source_set("cells") {
   ]
   deps = [
     ":constants",
+    ":magic_stack_module_content_view_delegate",
     ":public",
     "//base",
     "//ios/chrome/app/strings",
@@ -187,4 +188,8 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
+}
+
+source_set("magic_stack_module_content_view_delegate") {
+  sources = [ "magic_stack_module_content_view_delegate.h" ]
 }
