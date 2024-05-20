@@ -18,6 +18,7 @@ class Time;
 }  // namespace base
 
 namespace gfx {
+class Image;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -40,7 +41,16 @@ enum class Slot {
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
-enum class BuiltInIcon { kRedeem, kContainerApp, kG1 };
+enum class BuiltInVectorIcon { kRedeem = 0, kMaxValue = kRedeem };
+
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused.
+enum class BuiltInImage {
+  kContainerApp = 0,
+  kG1 = 1,
+  kRebuy = 2,
+  kMaxValue = kRebuy
+};
 
 // Supported window anchor element.
 // These values are deserialized from Growth Campaign, so entries should not
@@ -433,7 +443,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Anchor {
 //
 // The structure looks like:
 // {
-//   "builtInImage": 0
+//  "builtInImage": 0
 // }
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
  public:
@@ -442,14 +452,63 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
   Image& operator=(const Image) = delete;
   ~Image();
 
-  const gfx::VectorIcon* GetVectorIcon() const;
-  const std::optional<ui::ImageModel> GetImage() const;
+  const gfx::Image* GetImage() const;
 
  private:
   // Get built in icon based on the given image data.
-  const std::optional<ui::ImageModel> GetBuiltInIcon() const;
+  const gfx::Image* GetBuiltInImage() const;
 
   raw_ptr<const base::Value::Dict> image_dict_;
+};
+
+// Wrapper around vector icon dictionary.
+//
+// The structure looks like:
+// {
+//  "builtVectorIcon": 0
+// }
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) VectorIcon {
+ public:
+  explicit VectorIcon(const base::Value::Dict* vector_icon_dict);
+  VectorIcon(const VectorIcon&) = delete;
+  VectorIcon& operator=(const VectorIcon) = delete;
+  ~VectorIcon();
+
+  const gfx::VectorIcon* GetVectorIcon() const;
+
+ private:
+  // Get built in icon based on the given image data.
+  const gfx::VectorIcon* GetBuiltInVectorIcon() const;
+
+  raw_ptr<const base::Value::Dict> vector_icon_dict_;
+};
+
+// Wrapper around image model dictionary.
+//
+// The structure looks like:
+// {
+//   "image": {
+//    "builtInImage": 0
+//   }
+// }
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) ImageModel {
+ public:
+  explicit ImageModel(const base::Value::Dict* image_model_dict);
+  ImageModel(const Image&) = delete;
+  ImageModel& operator=(const ImageModel) = delete;
+  ~ImageModel();
+
+  const std::optional<ui::ImageModel> GetImageModel() const;
+
+ private:
+  // Get built in icon based on the given image data.
+  // If given data is referring to an image, the image will be resized to 60 *
+  // 60 so it can be used in the nudge.
+  // TODO: b/340945779 - consider moving the resize logic to
+  // `ShowNudgeActionPerformer`.
+  const std::optional<ui::ImageModel> GetBuiltInImageModel() const;
+
+  raw_ptr<const base::Value::Dict> image_model_dict_;
 };
 
 }  // namespace growth
