@@ -90,24 +90,11 @@ class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
   bool ShouldLockCursor() const override { return lock_cursor_; }
 
-  void OnSwallowed(const std::string& mime_type) override {
-    ASSERT_FALSE(swallowed_);
-    swallowed_ = true;
-  }
-
-  void OnUnswallowed(const std::string& mime_type,
-                     const gfx::Vector2d& offset) override {
-    ASSERT_TRUE(swallowed_);
-    swallowed_ = false;
-  }
-
   void OnDataSourceDestroying() override { delete this; }
 
  private:
   const bool allow_drap_no_target_;
   const bool lock_cursor_;
-
-  bool swallowed_ = true;
 };
 
 class ExtendedDragSourceTest : public test::ExoTestBase {
