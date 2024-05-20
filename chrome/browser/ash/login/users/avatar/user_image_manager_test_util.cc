@@ -7,16 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string>
-#include <utility>
 
 #include "base/files/file_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/image/image_skia_rep.h"
 
-namespace ash {
-namespace test {
+namespace ash::test {
 
 const char kUserAvatarImage1RelativePath[] = "chromeos/avatars/avatar1.jpg";
 const char kUserAvatarImage2RelativePath[] = "chromeos/avatars/avatar2.jpg";
@@ -50,6 +46,10 @@ bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second) {
   return true;
 }
 
+// *****************************************************************************
+// ImageLoader
+// *****************************************************************************
+
 ImageLoader::ImageLoader(const base::FilePath& path) : path_(path) {}
 
 ImageLoader::~ImageLoader() {}
@@ -79,5 +79,25 @@ void ImageLoader::OnDecodeImageFailed() {
   run_loop_.Quit();
 }
 
-}  // namespace test
-}  // namespace ash
+// *****************************************************************************
+// UserImageChangeWaiter
+// *****************************************************************************
+
+UserImageChangeWaiter::UserImageChangeWaiter() = default;
+
+UserImageChangeWaiter::~UserImageChangeWaiter() = default;
+
+void UserImageChangeWaiter::Wait() {
+  user_manager::UserManager::Get()->AddObserver(this);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  user_manager::UserManager::Get()->RemoveObserver(this);
+}
+
+void UserImageChangeWaiter::OnUserImageChanged(const user_manager::User& user) {
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
+}
+
+}  // namespace ash::test

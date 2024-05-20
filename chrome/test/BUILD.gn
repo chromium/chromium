@@ -815,6 +815,8 @@ static_library("test_support") {
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h",
       "../browser/ash/login/test/network_portal_detector_mixin.cc",
       "../browser/ash/login/test/network_portal_detector_mixin.h",
+      "../browser/ash/login/users/avatar/mock_user_image_loader_delegate.cc",
+      "../browser/ash/login/users/avatar/mock_user_image_loader_delegate.h",
       "../browser/ash/login/users/avatar/user_image_manager_test_util.cc",
       "../browser/ash/login/users/avatar/user_image_manager_test_util.h",
       "../browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.cc",

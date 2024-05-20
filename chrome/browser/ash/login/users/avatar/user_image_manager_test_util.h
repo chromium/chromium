@@ -8,14 +8,14 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class FilePath;
 }
 
-namespace ash {
-namespace test {
+namespace ash::test {
 
 extern const char kUserAvatarImage1RelativePath[];
 extern const char kUserAvatarImage2RelativePath[];
@@ -47,7 +47,24 @@ class ImageLoader : public ImageDecoder::ImageRequest {
   gfx::ImageSkia decoded_image_;
 };
 
-}  // namespace test
-}  // namespace ash
+class UserImageChangeWaiter : public user_manager::UserManager::Observer {
+ public:
+  UserImageChangeWaiter();
+
+  UserImageChangeWaiter(const UserImageChangeWaiter&) = delete;
+  UserImageChangeWaiter& operator=(const UserImageChangeWaiter&) = delete;
+
+  ~UserImageChangeWaiter() override;
+
+  void Wait();
+
+  // user_manager::UserManager::Observer:
+  void OnUserImageChanged(const user_manager::User& user) override;
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+}  // namespace ash::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_

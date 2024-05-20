@@ -32,6 +32,7 @@ class UserManager;
 
 namespace ash {
 
+class UserImageLoaderDelegate;
 class UserImageSyncObserver;
 
 // Provides a mechanism for updating user images. There is an instance of this
@@ -41,6 +42,10 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   // The name of the histogram that records when a user changes a device image.
   inline static constexpr char kUserImageChangedHistogramName[] =
       "UserImage.Changed2";
+
+  // The name of the histogram that records the user's chosen image at login.
+  inline static constexpr char kUserImageLoggedInHistogramName[] =
+      "UserImage.LoggedIn3";
 
   // Converts `image_index` to UMA histogram value.
   static int ImageIndexToHistogramIndex(int image_index);
@@ -52,7 +57,8 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   UserImageManagerImpl(const AccountId& account_id,
-                       user_manager::UserManager* user_manager);
+                       user_manager::UserManager* user_manager,
+                       UserImageLoaderDelegate* user_image_loader_delegate);
 
   UserImageManagerImpl(const UserImageManagerImpl&) = delete;
   UserImageManagerImpl& operator=(const UserImageManagerImpl&) = delete;
@@ -139,6 +145,7 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
 
  private:
   friend class UserImageManagerTestBase;
+  friend class UserImageManagerImplTest;
 
   // ID of user which images are managed by current instance of
   // UserImageManager.
@@ -224,6 +231,10 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
 
   // The user manager.
   raw_ptr<user_manager::UserManager> user_manager_;
+
+  // A delegate to retrieve user images from disk and network. Allows injecting
+  // a mock for testing.
+  raw_ptr<UserImageLoaderDelegate> user_image_loader_delegate_;
 
   // Whether the `profile_downloader_` is downloading the profile image for the
   // currently logged-in user (and not just the full name). Only valid when a

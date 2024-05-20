@@ -97,33 +97,6 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
   return policy_manager->core()->store();
 }
 
-class UserImageChangeWaiter : public user_manager::UserManager::Observer {
- public:
-  UserImageChangeWaiter() {}
-
-  UserImageChangeWaiter(const UserImageChangeWaiter&) = delete;
-  UserImageChangeWaiter& operator=(const UserImageChangeWaiter&) = delete;
-
-  ~UserImageChangeWaiter() override {}
-
-  void Wait() {
-    user_manager::UserManager::Get()->AddObserver(this);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    user_manager::UserManager::Get()->RemoveObserver(this);
-  }
-
-  // user_manager::UserManager::Observer:
-  void OnUserImageChanged(const user_manager::User& user) override {
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-
 }  // namespace
 
 class UserImageManagerTestBase : public LoginManagerTest,
@@ -352,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveAndLoadUserImage) {
   ASSERT_TRUE(user);
   // Wait for image load.
   if (user->image_index() == user_manager::User::USER_IMAGE_INVALID) {
-    UserImageChangeWaiter().Wait();
+    test::UserImageChangeWaiter().Wait();
   }
   // Check image dimensions. Images can't be compared since JPEG is lossy.
   const gfx::ImageSkia& saved_image = default_user_image::GetStubDefaultImage();
