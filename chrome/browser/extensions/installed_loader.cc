@@ -564,7 +564,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         // status.
         if (dev_mode_enabled) {
           base::UmaHistogramEnumeration(
-              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled",
+              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled2",
               location);
         } else {
           base::UmaHistogramEnumeration(
@@ -910,7 +910,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         !disabled_extension->from_webstore()) {
       if (dev_mode_enabled) {
         base::UmaHistogramEnumeration(
-            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled",
+            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled2",
             location);
       } else {
         base::UmaHistogramEnumeration(
