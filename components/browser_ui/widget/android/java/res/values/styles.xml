@@ -161,6 +161,7 @@ found in the LICENSE file.
         <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Primary</item>
         <item name="solidColorChip">true</item>
         <item name="chipColor">@macro/history_chip_bg_color</item>
+        <item name="verticalInset">0dp</item>
     </style>
     <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
         <item name="iconWidth">28dp</item>
