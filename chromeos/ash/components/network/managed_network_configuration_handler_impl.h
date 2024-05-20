@@ -335,6 +335,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                             bool can_affect_other_networks,
                             PolicyApplicator::Options options);
 
+  // Called in SetPolicy, sets shill DisconnectWiFiOnEthernet Manager property
+  // base on value of DisconnectWiFiOnEthernet GlobalNetworkConfiguration.
+  void ApplyDisconnectWiFiOnEthernetPolicy();
+
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);
 

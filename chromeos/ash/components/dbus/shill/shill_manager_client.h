@@ -163,6 +163,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void SetManagerProperty(const std::string& key,
                                     const base::Value& value) = 0;
 
+    // Get stub manager properties.
+    virtual base::Value::Dict GetStubProperties() = 0;
+
     // Modify services in the Manager's list.
     virtual void AddManagerService(const std::string& service_path,
                                    bool notify_observers) = 0;

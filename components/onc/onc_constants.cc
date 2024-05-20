@@ -578,6 +578,9 @@ const char kPSIMAdminAssignedAPNs[] = "PSIMAdminAssignedAPNs";
 const char kRecommendedValuesAreEphemeral[] = "RecommendedValuesAreEphemeral";
 const char kUserCreatedNetworkConfigurationsAreEphemeral[] =
     "UserCreatedNetworkConfigurationsAreEphemeral";
+const char kDisconnectWiFiOnEthernet[] = "DisconnectWiFiOnEthernet";
+const char kDisconnectWiFiOnEthernetWhenConnected[] = "WhenConnected";
+const char kDisconnectWiFiOnEthernetWhenOnline[] = "WhenOnline";
 }  // global_network_config
 
 namespace device_state {

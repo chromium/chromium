@@ -127,6 +127,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void ClearProperties() override;
   void SetManagerProperty(const std::string& key,
                           const base::Value& value) override;
+  base::Value::Dict GetStubProperties() override;
   void AddManagerService(const std::string& service_path,
                          bool notify_observers) override;
   void RemoveManagerService(const std::string& service_path) override;

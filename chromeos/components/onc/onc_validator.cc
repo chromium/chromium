@@ -1383,7 +1383,8 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
       ::onc::global_network_config::kBlockedHexSSIDs,
       ::onc::global_network_config::kRecommendedValuesAreEphemeral,
       ::onc::global_network_config::
-          kUserCreatedNetworkConfigurationsAreEphemeral};
+          kUserCreatedNetworkConfigurationsAreEphemeral,
+      ::onc::global_network_config::kDisconnectWiFiOnEthernet};
   for (std::string_view key : kDevicePolicyOnlyKeys) {
     if (!IsInDevicePolicy(result, key)) {
       return false;

@@ -858,6 +858,10 @@ void FakeShillManagerClient::SetManagerProperty(const std::string& key,
   SetProperty(key, value, base::DoNothing(), base::BindOnce(&LogErrorCallback));
 }
 
+base::Value::Dict FakeShillManagerClient::GetStubProperties() {
+  return stub_properties_.Clone();
+}
+
 void FakeShillManagerClient::AddManagerService(const std::string& service_path,
                                                bool notify_observers) {
   VLOG(2) << "AddManagerService: " << service_path;

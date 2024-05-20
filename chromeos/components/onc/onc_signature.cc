@@ -429,6 +429,8 @@ const OncFieldSignature global_network_configuration_fields[] = {
      &kStringListSignature},
     {::onc::global_network_config::kPSIMAdminAssignedAPNs,
      &kCellularApnListSignature},
+    {::onc::global_network_config::kDisconnectWiFiOnEthernet,
+     &kStringSignature},
     {nullptr}};
 
 const OncFieldSignature certificate_fields[] = {
