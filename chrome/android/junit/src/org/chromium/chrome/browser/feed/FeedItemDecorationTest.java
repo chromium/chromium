@@ -162,7 +162,7 @@ public final class FeedItemDecorationTest {
     }
 
     @Test
-    public void testDrawForStaggeredLayout() {
+    public void testDrawForMultiColumnStaggeredLayout() {
         // *****************
         // *     view0     * NTP header view
         // *****************
@@ -227,5 +227,125 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomLeftRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+    }
+
+    @Test
+    public void testDrawForMultiColumnStaggeredLayout_fullSpanViewBeyondMultiColumn() {
+        // *****************
+        // *     view0     * NTP header view
+        // *****************
+        // *     view1     * <- top rounded
+        // *****************
+        // * view2 * view3 * <- view2: not rounded
+        // *       * view3 * <- view3: not rounded
+        // *****************
+        // *     view1     * <- not rounded
+        // *****************
+        // *     view1     * <- bottom rounded
+        // *****************
+        // *     view6     * special bottom view
+        // *****************
+        when(mCoordinator.useStaggeredLayout()).thenReturn(true);
+        when(mLayoutHelper.getColumnIndex(mView0)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView1)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView2)).thenReturn(0);
+        when(mLayoutHelper.getColumnIndex(mView3)).thenReturn(1);
+        when(mLayoutHelper.getColumnIndex(mView4)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView5)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView6)).thenReturn(-1);
+        mBoundsList.get(0).set(0, 0, 500, 100);
+        mBoundsList.get(1).set(0, 100, 500, 200);
+        mBoundsList.get(2).set(0, 200, 250, 300);
+        mBoundsList.get(3).set(250, 200, 500, 250);
+        mBoundsList.get(4).set(0, 300, 500, 400);
+        mBoundsList.get(5).set(0, 400, 500, 500);
+        mBoundsList.get(6).set(0, 500, 500, 600);
+
+        FeedItemDecoration feedItemDecoration =
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
+        int gutterPadding = feedItemDecoration.getGutterPaddingForTesting();
+        int extraPadding = feedItemDecoration.getExtraPaddingForTesting();
+        feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
+
+        verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mBottomLeftRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+
+        Rect bounds1 = new Rect(mBoundsList.get(1));
+        bounds1.right += extraPadding;
+        verify(mTopRoundedDrawable, times(1)).setBounds(eq(bounds1));
+
+        Rect bounds2 = new Rect(mBoundsList.get(2));
+        bounds2.right += gutterPadding;
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds2));
+
+        Rect bounds3 = new Rect(mBoundsList.get(3));
+        bounds3.right += extraPadding;
+        bounds3.bottom = bounds2.bottom;
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds3));
+
+        Rect bounds4 = new Rect(mBoundsList.get(4));
+        bounds4.right += extraPadding;
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds4));
+
+        Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.right += extraPadding;
+        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(bounds5));
+
+        verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+        verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+        verify(mBottomLeftRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+        verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+    }
+
+    @Test
+    public void testDrawForSingleColumnStaggeredLayout() {
+        // *****************
+        // *     view0     * NTP header view
+        // *****************
+        // *     view1     * <- top rounded
+        // *****************
+        // *     view2     * <- not rounded
+        // *****************
+        // *     view3     * <- not rounded
+        // *****************
+        // *     view4     * <- not rounded
+        // *****************
+        // *     view5     * <- bottom rounded
+        // *****************
+        // *     view6     * special bottom view
+        // *****************
+        when(mCoordinator.useStaggeredLayout()).thenReturn(true);
+        when(mLayoutHelper.getColumnIndex(mView0)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView1)).thenReturn(-1);
+        when(mLayoutHelper.getColumnIndex(mView2)).thenReturn(0);
+        when(mLayoutHelper.getColumnIndex(mView3)).thenReturn(0);
+        when(mLayoutHelper.getColumnIndex(mView4)).thenReturn(0);
+        when(mLayoutHelper.getColumnIndex(mView5)).thenReturn(0);
+        when(mLayoutHelper.getColumnIndex(mView6)).thenReturn(-1);
+        mBoundsList.get(0).set(0, 0, 500, 100);
+        mBoundsList.get(1).set(0, 100, 500, 200);
+        mBoundsList.get(2).set(0, 200, 500, 300);
+        mBoundsList.get(3).set(0, 300, 500, 400);
+        mBoundsList.get(4).set(0, 400, 500, 500);
+        mBoundsList.get(5).set(0, 500, 500, 600);
+        mBoundsList.get(6).set(0, 600, 500, 700);
+
+        FeedItemDecoration feedItemDecoration =
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
+        feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
+
+        verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
+        verify(mTopRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(1)));
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(2)));
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(3)));
+        verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(4)));
+        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(5)));
+        verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+        verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+        verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
     }
 }

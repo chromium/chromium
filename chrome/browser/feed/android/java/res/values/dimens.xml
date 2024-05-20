@@ -56,7 +56,6 @@ found in the LICENSE file.
 
     <!-- Feed containment. -->
     <dimen name="feed_containment_margin">16dp</dimen>
-    <dimen name="feed_containment_horizontal_padding">16dp</dimen>
     <dimen name="feed_containment_feed_header_top_margin">8dp</dimen>
 
     <!-- Feed unread dot dimens -->
