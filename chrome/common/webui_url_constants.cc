@@ -412,6 +412,7 @@ const char kChromeUIPrintManagementUrl[] = "chrome://print-management";
 const char kChromeUIPowerHost[] = "power";
 const char kChromeUIPowerUrl[] = "chrome://power";
 const char kChromeUIRemoteManagementCurtainHost[] = "security-curtain";
+const char kChromeUISanitizeAppURL[] = "chrome://sanitize";
 const char kChromeUIScanningAppURL[] = "chrome://scanning";
 const char kChromeUISetTimeHost[] = "set-time";
 const char kChromeUISetTimeURL[] = "chrome://set-time/";

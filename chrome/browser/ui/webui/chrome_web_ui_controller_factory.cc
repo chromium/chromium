@@ -1072,6 +1072,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIOSSettingsURL),
     GURL(chrome::kChromeUIPowerUrl),
     GURL(chrome::kChromeUIPrintManagementUrl),
+    GURL(chrome::kChromeUISanitizeAppURL),
     GURL(chrome::kChromeUIScanningAppURL),
     GURL(chrome::kChromeUISensorInfoURL),
     GURL(chrome::kChromeUISetTimeURL),

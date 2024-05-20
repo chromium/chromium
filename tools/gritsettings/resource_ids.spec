@@ -890,6 +890,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [6180],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sanitize_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [6190],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/scanning/resources/resources.grd": {
     "META": {"sizes": {"includes": [100],}},
     "includes": [6200],

@@ -377,6 +377,7 @@ extern const char kChromeUIPrintManagementUrl[];
 extern const char kChromeUIPowerHost[];
 extern const char kChromeUIPowerUrl[];
 extern const char kChromeUIRemoteManagementCurtainHost[];
+extern const char kChromeUISanitizeAppURL[];
 extern const char kChromeUIScanningAppURL[];
 extern const char kChromeUISetTimeHost[];
 extern const char kChromeUISetTimeURL[];
