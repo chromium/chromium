@@ -122342,6 +122342,19 @@
        {}
       ]
      ],
+     "downloadable-font-scoped-to-document.html": [
+      "2dbc350069cd9c61925967655f83217b800fc9eb",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/downloadable-font-scoped-to-document-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-available-font-001.html": [
       "5eb88f7bf6713b80e0adb4728681e62c3f2dc2bc",
       [
@@ -160220,6 +160233,214 @@
        {}
       ]
      ],
+     "line-clamp-auto-001.tentative.html": [
+      "02d8479736d4d6fd7e26df53611624e7a75d0989",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-002.tentative.html": [
+      "ff9e802f0f9e376635230707972611ab5a0ec7d6",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-auto-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-003.tentative.html": [
+      "a74704dd3b0765434c27935c944fac010415b13c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-auto-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-004.tentative.html": [
+      "2dbf9d54084034f2a1b83eccf370e281af24dc8c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-005.tentative.html": [
+      "1c9148e2647f310522103d1b5c6c2765a6c6644c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-auto-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-006.tentative.html": [
+      "ab6915f52163f9cbd1c4c2f2fa4e9d8bf90a3a88",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-007.tentative.html": [
+      "f7d56bfa6557413e33bbb2422c5234437ac302b4",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-008.tentative.html": [
+      "9e7f38ab7ca09debf7628505d8d63ce473dc355e",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-009.tentative.html": [
+      "44d111056c6b021c796ea694d744816125314def",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-036-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-010.tentative.html": [
+      "cb706bba08e2c9dd6ff05b926be23eb22c9c25b7",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-037-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-011.tentative.html": [
+      "00076a5336e89004b6a2143e9bd6c72ec9fe95e0",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-auto-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-012.tentative.html": [
+      "56957b15c9223466ddd6f06a45bb854cab18fda6",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-013.tentative.html": [
+      "dd864fbdcb3fbd3cfeb11a385df61a99e739aba9",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-014.tentative.html": [
+      "6738c708706e778dd4ee307b8532ca32e8b7b881",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-015.tentative.html": [
+      "cdb1ed18c0d7a913fc3b9e446dbff15add266300",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-auto-016.tentative.html": [
+      "372213983b7a753037616485bfc2aae7524abfd5",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-auto-016-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "line-clamp-with-abspos-001.tentative.html": [
       "79667f23fbdc3d941484c343b2cf0a04ec34363f",
       [
@@ -170816,7 +171037,7 @@
       ]
      ],
      "ruby-no-transform.html": [
-      "1cdd4f3bbf5af81309805285a25622f7e444a3ee",
+      "56b2fc8380957743ddad8b6de6787c6110fae353",
       [
        null,
        [
@@ -313495,6 +313716,10 @@
       "28a92a86dcaf6bc9c45bb75fce4869bc0ae21c37",
       []
      ],
+     "downloadable-font-scoped-to-document-ref.html": [
+      "4d7da060cbf1a161aa1366f0bcb00b94e09502ad",
+      []
+     ],
      "first-available-font-001-ref.html": [
       "0acbd338e0ce9f558d2eaa2e48ad4be0524fb0ae",
       []
@@ -320670,6 +320895,18 @@
        "6ed4aa506e95a35a065318f597547653bda52eb5",
        []
       ],
+      "iframe-missing-font-face-rule.html": [
+       "da97b781e8072923138e0160320e76d3013c3e53",
+       []
+      ],
+      "iframe-using-ahem-as-web-font.html": [
+       "b21066df8f57a8b11432a1168a62e7a4fbbe07b1",
+       []
+      ],
+      "iframe-without-web-font.html": [
+       "85e7fef282889894016088e082b623b92a436784",
+       []
+      ],
       "js": {
        "font-variant-features.js": [
         "4b56fee193956710b847ba79c5f9c3a5a7d15a33",
@@ -327314,6 +327551,22 @@
        "d794c76e3c9653dd94b2bad73cdf2a4574db5f50",
        []
       ],
+      "line-clamp-auto-002-ref.html": [
+       "fe0a8dbd588a8a56c8ac0488713a061ef83474f9",
+       []
+      ],
+      "line-clamp-auto-005-ref.html": [
+       "01eea67a0da77dc7a99bcd0b8677abdd3a4033f5",
+       []
+      ],
+      "line-clamp-auto-011-ref.html": [
+       "5f7120ee39a2014f75f2f700ebedcc0b0e6e6275",
+       []
+      ],
+      "line-clamp-auto-016-ref.html": [
+       "4a5f3536cc62c33e1a30ed9fce9a21cecda341bc",
+       []
+      ],
       "line-clamp-with-abspos-001-ref.html": [
        "d756162dde0c54bd52646597b01bbff8a80f5fd8",
        []
@@ -330358,7 +330611,7 @@
       []
      ],
      "ruby-no-transform-ref.html": [
-      "56afd9366fe787670771a82874f1016335f1b7c6",
+      "1c075de18fab1951de3a809e2d85cd2f2d6c3827",
       []
      ],
      "ruby-position-alternate-expected.txt": [
@@ -392203,7 +392456,7 @@
        []
       ],
       "utils.js": [
-       "bc1bc5911eb8552efd689f84a0e61d2f74aa268a",
+       "9cd47b69dd75128e6c522833325e1538c35a1f78",
        []
       ],
       "wake-lock.https.html": [
