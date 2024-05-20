@@ -37,6 +37,7 @@ function createSpecsProduct(overrides?: Partial<ProductSpecificationsProduct>):
       {
         productClusterId: BigInt(0),
         title: '',
+        productUrl: {url: ''},
         imageUrl: {url: ''},
         productDimensionValues: new Map<bigint, string[]>(),
         summary: '',
@@ -261,11 +262,13 @@ suite('AppTest', () => {
     const info1 = createInfo({
       clusterId: BigInt(123),
       title: 'qux',
+      productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'qux.com/image'},
     });
     const info2 = createInfo({
       clusterId: BigInt(231),
       title: 'foobar',
+      productUrl: {url: 'https://example2.com/'},
       imageUrl: {url: 'foobar.com/image'},
     });
 
@@ -287,14 +290,14 @@ suite('AppTest', () => {
           {
             selectedItem: {
               title: specsProduct1.title,
-              url: 'https://example.com',
+              url: 'https://example.com/',
               imageUrl: info1.imageUrl.url,
             },
           },
           {
             selectedItem: {
               title: '',
-              url: 'https://example.com',
+              url: 'https://example2.com/',
               imageUrl: info2.imageUrl.url,
             },
           },
@@ -322,7 +325,7 @@ suite('AppTest', () => {
     const table =
         appElement.shadowRoot!.querySelector('product-specifications-table');
     assertTrue(!!table);
-    const newUrl = 'https://example3.com';
+    const newUrl = 'https://example3.com/';
     table.dispatchEvent(new CustomEvent('url-change', {
       detail: {
         url: newUrl,
@@ -363,6 +366,25 @@ suite('AppTest', () => {
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
     assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
     assertEquals(0, table.columns.length);
+  });
+
+  test('deletes product specification set', async () => {
+    const urlsParam = ['https://example.com/'];
+    const promiseValues = createAppPromiseValues(
+        {urlsParam: urlsParam, specsSet: createSpecsSet()});
+    await createAppElementWithPromiseValues(promiseValues);
+
+    const uuid =
+        shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][2];
+    const header =
+        appElement.shadowRoot!.querySelector('product-specifications-header');
+    assertTrue(!!header);
+    header.dispatchEvent(new CustomEvent('delete-click'));
+
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+    assertEquals(
+        uuid, shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
   });
 
   suite('Header', () => {
@@ -423,7 +445,7 @@ suite('AppTest', () => {
     });
 
     test('hides empty state after product selection', async () => {
-      const url = 'https://example.com';
+      const url = 'https://example.com/';
       const openTabs = [{
         title: 'title',
         url: stringToMojoUrl(url),
@@ -434,7 +456,10 @@ suite('AppTest', () => {
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
       const promiseValues = createAppPromiseValues({
         urlsParam: [],
-        infos: [createInfo({clusterId: BigInt(123)})],
+        infos: [createInfo({
+          clusterId: BigInt(123),
+          productUrl: {url: 'https://example.com/'},
+        })],
       });
       createAppElementWithPromiseValues(promiseValues);
 

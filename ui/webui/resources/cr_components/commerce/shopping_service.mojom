@@ -25,9 +25,7 @@ struct ProductInfo {
   // Direct link to the product image.
   url.mojom.Url image_url;
 
-  // Direct link to the product page. Right now this is
-  // only used to fetch site favicon in case image_url
-  // is not available.
+  // Direct link to the product page.
   url.mojom.Url product_url;
 
   // Price as shown in the page. This should include
