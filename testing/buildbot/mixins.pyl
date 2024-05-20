@@ -1467,12 +1467,12 @@
   'xcode_15_beta': {
     'args': [
       '--xcode-build-version',
-      '15f31c',
+      '15f31d',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15f31c',
+          'name': 'xcode_ios_15f31d',
           'path': 'Xcode.app',
         },
       ],
