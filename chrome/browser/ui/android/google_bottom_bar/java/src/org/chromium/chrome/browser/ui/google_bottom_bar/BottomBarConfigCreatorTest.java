@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,11 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCr
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,11 +34,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +51,11 @@ import java.util.List;
 public class BottomBarConfigCreatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private CustomButtonParams mCustomButtonParams;
 
     private BottomBarConfigCreator mConfigCreator;
@@ -52,7 +63,7 @@ public class BottomBarConfigCreatorTest {
 
     @Before
     public void setup() {
-        mContext = ContextUtils.getApplicationContext();
+        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
         mConfigCreator = new BottomBarConfigCreator(mContext);
     }
 
@@ -146,6 +157,41 @@ public class BottomBarConfigCreatorTest {
 
         // the button has the expected custom button params set
         assertEquals(pendingIntent, buttonConfig.getButtonList().get(2).getPendingIntent());
+    }
+
+    @Test
+    public void hasPageInsightsCustomParams_usesChromePageInsightsIconInButtonConfig() {
+        Drawable drawable = mock(Drawable.class);
+        when(mCustomButtonParams.getId()).thenReturn(103); // PAGE INSIGHTS
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
+        var pendingIntent = mock(PendingIntent.class);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+
+        // PIH_BASIC, SHARE, SAVE
+        BottomBarConfig buttonConfig =
+                mConfigCreator.create("0,1,2,3", List.of(mCustomButtonParams));
+
+        Bitmap expectedBitmap =
+                drawableToBitmap(
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.page_insights_icon,
+                                R.color.default_icon_color_baseline));
+        Bitmap actualBitmap = drawableToBitmap(buttonConfig.getButtonList().get(0).getIcon());
+        // the button has the expected custom button params set
+        assertTrue(expectedBitmap.sameAs(actualBitmap));
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
     private static void assertDefaultConfig(BottomBarConfig config) {
