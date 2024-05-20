@@ -5506,6 +5506,7 @@ data/accessibility/regression/reused-map-move-image-to-top.html
 data/accessibility/regression/reused-map-move-image.html
 data/accessibility/regression/reused-map.html
 data/accessibility/regression/root-becomes-leaf.html
+data/accessibility/regression/select-expand-many-options-crash.html
 data/accessibility/regression/slot-creation-crash-expected-blink.txt
 data/accessibility/regression/slot-creation-crash.html
 data/accessibility/regression/title-in-shadow-expected-blink.txt

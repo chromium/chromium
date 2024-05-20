@@ -1,0 +1,22 @@
+<!--
+@DEFAULT-ACTION-ON:Fruit
+-->
+<!-- crbug.com/338646632: crash with 1001+ options -->
+<!DOCTYPE html>
+<html>
+<body>
+<select aria-label="Fruit">
+</select>
+<script>
+const selectElement = document.querySelector("select");
+const numOptions = 1020;
+
+for (let i = 0; i < numOptions; i++) {
+  const option = document.createElement("option");
+  option.value = i;
+  option.text = i;
+  selectElement.add(option);
+}
+</script>
+</body>
+</html>
