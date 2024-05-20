@@ -50,7 +50,8 @@
       <th class="col">
         <product-selector
             selected-item="[[column.selectedItem]]"
-            on-selected-url-change="onSelectedUrlChange_">
+            on-selected-url-change="onSelectedUrlChange_"
+            on-remove-url="onUrlRemove_">
         </product-selector>
         <div id="imgContainer">
           <img is="cr-auto-img"

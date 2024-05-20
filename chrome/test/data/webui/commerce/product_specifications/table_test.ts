@@ -126,6 +126,25 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(0, event.detail.index);
   });
 
+  test('fires url remove event', async () => {
+    // Arrange
+    tableElement.columns = [
+      {selectedItem: {title: 'title', url: 'https://foo.com', imageUrl: ''}},
+      {selectedItem: {title: 'title2', url: 'https://bar.com', imageUrl: ''}},
+    ];
+    await waitAfterNextRender(tableElement);
+    const productSelector =
+        tableElement.shadowRoot!.querySelector('product-selector');
+    assertTrue(!!productSelector);
+    const eventPromise = eventToPromise('url-remove', tableElement);
+    productSelector.dispatchEvent(new CustomEvent('remove-url'));
+
+    // Assert.
+    const event = await eventPromise;
+    assertTrue(!!event);
+    assertEquals(0, event.detail.index);
+  });
+
   test('opens new tab', async () => {
     // Arrange
     const testUrl = 'https://example.com';

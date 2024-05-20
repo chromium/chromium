@@ -63,6 +63,10 @@ export class ProductSelectorElement extends PolymerElement {
   private getUrl_(item: UrlListEntry) {
     return getAbbreviatedUrl(item.url);
   }
+
+  private getSelectedUrl_() {
+    return this.selectedItem?.url ?? '';
+  }
 }
 
 declare global {

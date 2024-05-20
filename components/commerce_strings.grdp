@@ -540,4 +540,7 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_DELETE" translateable="false" desc="The title of the menu item for deleting the product specification list.">
     Delete product specification list
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN" translateable="false" desc="The title of the menu item for removing a column in the product specification list.">
+    Remove column
+  </message>
 </grit-part>

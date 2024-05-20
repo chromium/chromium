@@ -14,6 +14,13 @@
     padding: 6px 16px;
   }
 
+  hr {
+    background: var(--color-product-specifications-divider);
+    border: none;
+    height: 1px;
+    margin: 0;
+  }
+
   .dropdown-item {
     padding: 0 16px;
   }
@@ -44,6 +51,17 @@
     padding: 12px;
     width: var(--product-selector-width);
   }
+
+  #remove {
+    --icon-size: 16px;
+    --iron-icon-height: var(--icon-size);
+    --iron-icon-width: var(--icon-size);
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+    font-size: 12px;
+    gap: 8px;
+    padding: 16px;
+  }
 </style>
 
 <cr-lazy-render id="menu">
@@ -71,6 +89,14 @@
         </template>
         <div id="empty" hidden="[[sections]]">$i18n{emptyMenu}</div>
       </div>
+      <template is="dom-if" if="[[selectedUrl.length]]">
+        <hr>
+        <button id="remove" class="dropdown-item" role="menuitem"
+            on-click="onRemoveClick_">
+          <cr-icon icon="product-specifications:remove"></cr-icon>
+          $i18n{removeColumn}
+        </button>
+      </template>
     </cr-action-menu>
   </template>
 </cr-lazy-render>

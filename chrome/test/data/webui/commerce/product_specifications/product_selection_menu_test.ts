@@ -198,7 +198,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const listElements =
         menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
-    assertEquals(1, listElements.length);
+    assertEquals(2, listElements.length);
 
     const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
         '.description-text');
@@ -223,6 +223,24 @@ suite('ProductSelectionMenuTest', () => {
 
     assertTrue(!!event);
     assertEquals('http://example.com', event.detail.url);
+    assertFalse(crActionMenu.open);
+  });
+
+  test('fires removal event', async () => {
+    initUrlInfos();
+    const menu = await createMenu();
+    menu.showAt(document.body);
+    await flushTasks();
+
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+    const removeButton = crActionMenu.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    const eventPromise = eventToPromise('remove-url', menu);
+    removeButton.click();
+    const event = await eventPromise;
+
+    assertTrue(!!event);
     assertFalse(crActionMenu.open);
   });
 

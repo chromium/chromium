@@ -140,23 +140,25 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private async populateTable_(urls: string[]) {
-    const {productSpecs} =
-        await this.shoppingApi_.getProductSpecificationsForUrls(
-            urls.map(url => ({url})));
-
+    let aggregatedDatas: Record<string, AggregatedProductData> = {};
     const rows: TableRow[] = [];
-    productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
-      rows.push({
-        title: value,
-        values: productSpecs.products.map(
-            (p: ProductSpecificationsProduct) =>
-                p.productDimensionValues.get(key)!.join(',')),
+    if (urls.length) {
+      const {productSpecs} =
+          await this.shoppingApi_.getProductSpecificationsForUrls(
+              urls.map(url => ({url})));
+      productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
+        rows.push({
+          title: value,
+          values: productSpecs.products.map(
+              (p: ProductSpecificationsProduct) =>
+                  p.productDimensionValues.get(key)!.join(',')),
+        });
       });
-    });
+      const infos = await this.getInfoForUrls_(urls);
+      aggregatedDatas =
+          aggregateProductDataByClusterId(infos, productSpecs.products);
+    }
 
-    const infos = await this.getInfoForUrls_(urls);
-    const aggregatedDatas =
-        aggregateProductDataByClusterId(infos, productSpecs.products);
     this.specsTable_ = {
       columns:
           Object.values(aggregatedDatas).map((data: AggregatedProductData) => {
@@ -215,6 +217,12 @@ export class ProductSpecificationsElement extends PolymerElement {
   private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
     const urls = this.getTableUrls_();
     urls[e.detail.index] = e.detail.url;
+    this.populateTable_(urls);
+  }
+
+  private onUrlRemove_(e: CustomEvent<{index: number}>) {
+    const urls = this.getTableUrls_();
+    urls.splice(e.detail.index, 1);
     this.populateTable_(urls);
   }
 

@@ -68,6 +68,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"openTabs", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
       {"recentlyViewedTabs",
        IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
+      {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},
       {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
       {"seeAll", IDS_PRODUCT_SPECIFICATIONS_SEE_ALL},
   };

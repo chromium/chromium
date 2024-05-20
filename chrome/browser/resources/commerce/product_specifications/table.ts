@@ -63,6 +63,16 @@ export class TableElement extends PolymerElement {
       },
     }));
   }
+
+  private onUrlRemove_(e: DomRepeatEvent<TableColumn>) {
+    this.dispatchEvent(new CustomEvent('url-remove', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        index: e.model.index,
+      },
+    }));
+  }
 }
 
 declare global {

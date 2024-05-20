@@ -337,6 +337,34 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[1]);
   });
 
+  test('updates on removal', async () => {
+    const urlsParam = ['https://example.com/'];
+    const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
+    await createAppElementWithPromiseValues(promiseValues);
+
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
+    assertArrayEquals(
+        urlsParam.map(url => ({url})),
+        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
+
+    const table =
+        appElement.shadowRoot!.querySelector('product-specifications-table');
+    assertTrue(!!table);
+    table.dispatchEvent(new CustomEvent('url-remove', {
+      detail: {
+        index: 0,
+      },
+    }));
+
+    // Should not get called on an empty url list
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
+    assertEquals(0, table.columns.length);
+  });
+
   suite('Header', () => {
     test('displays correct subtitle for retrieved sets', async () => {
       const specsSet = createSpecsSet({

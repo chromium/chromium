@@ -123,6 +123,14 @@ export class ProductSelectionMenuElement extends PolymerElement {
     }));
   }
 
+  private onRemoveClick_() {
+    this.close();
+    this.dispatchEvent(new CustomEvent('remove-url', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onClose_() {
     this.dispatchEvent(new CustomEvent('close-menu', {
       bubbles: true,
