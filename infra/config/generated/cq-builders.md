@@ -77,6 +77,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [mac_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/mac_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac_chromium_compile_dbg_ng""))
 
+* [win-arm64-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-compile-dbg""))
+
 * [win-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/win-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-libfuzzer-asan-rel""))
 
 * [win-presubmit](https://ci.chromium.org/p/chromium/builders/try/win-presubmit) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-presubmit""))
@@ -685,9 +687,6 @@ as required builders.
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
   * Experiment percentage: 1.0
-
-* [win-arm64-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-compile-dbg""))
-  * Experiment percentage: 100.0
 
 
 ## Mega CQ builders

@@ -385,8 +385,6 @@ try_.builder(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
-        # TODO(crbug.com/328175907) Enable after resources verified.
-        experiment_percentage = 100,
     ),
 )
 
