@@ -32,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
@@ -1287,7 +1288,9 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION) {
       const int window_corner_radius =
-          chromeos::features::RoundedWindowsRadius();
+          chromeos::features::IsRoundedWindowsEnabled()
+              ? chromeos::features::RoundedWindowsRadius()
+              : chromeos::kTopCornerRadiusWhenRestored;
 
       zaura_shell_send_window_corners_radii(
           aura_shell_resource_, window_corner_radius, window_corner_radius,
