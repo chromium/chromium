@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
@@ -157,18 +158,6 @@ gfx::NativeView TopLevelNativeView(content::WebContents* contents) {
   views::Widget* top_level_widget =
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   return top_level_widget->GetNativeView();
-}
-
-// TODO(b/341360519): Move this to a separate file.
-bool SidePanelShouldUseDarkMode(ThemeService* theme_service) {
-  if (!lens::features::UseBrowserDarkModeSettingForLensOverlay()) {
-    return false;
-  }
-  ThemeService::BrowserColorScheme color_scheme =
-      theme_service->GetBrowserColorScheme();
-  return color_scheme == ThemeService::BrowserColorScheme::kSystem
-             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-             : color_scheme == ThemeService::BrowserColorScheme::kDark;
 }
 
 }  // namespace
@@ -339,7 +328,7 @@ void LensOverlayController::ShowUI(
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
       variations_client_, identity_manager_, invocation_source,
-      SidePanelShouldUseDarkMode(theme_service_));
+      lens::LensOverlayShouldUseDarkMode(theme_service_));
 
   side_panel_coordinator_ =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);

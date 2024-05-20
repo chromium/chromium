@@ -6,7 +6,9 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -85,6 +87,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                           lens::features::GetLensOverlayTapRegionHeight());
   html_source->AddInteger("tapRegionWidth",
                           lens::features::GetLensOverlayTapRegionWidth());
+  html_source->AddBoolean(
+      "darkMode",
+      lens::LensOverlayShouldUseDarkMode(
+          ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
