@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -109,7 +110,9 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
 class ModelExecutionManagerTest : public testing::Test {
  public:
   ModelExecutionManagerTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kTextSafetyClassifier);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kTextSafetyClassifier,
+             features::internal::kModelAdaptationCompose});
   }
   ~ModelExecutionManagerTest() override = default;
 
@@ -660,7 +663,9 @@ class ModelExecutionManagerSafetyEnabledTest
     : public ModelExecutionManagerTest {
  public:
   ModelExecutionManagerSafetyEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTextSafetyClassifier);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTextSafetyClassifier},
+        {features::internal::kModelAdaptationCompose});
   }
 
  private:

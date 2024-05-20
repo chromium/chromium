@@ -98,7 +98,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_topk", "1"},
            {"on_device_model_temperature", "0"}}},
          {features::kTextSafetyClassifier, {}}},
-        {});
+        {features::internal::kModelAdaptationCompose});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
     // Fake the requirements to install the model.

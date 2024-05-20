@@ -4714,6 +4714,29 @@
             ]
         }
     ],
+    "ComposeOnDeviceModel": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "on_device_retract_unsafe_content": "false",
+                        "on_device_text_safety_token_interval": "10"
+                    },
+                    "enable_features": [
+                        "OptimizationGuideComposeOnDeviceEval",
+                        "OptimizationGuideOnDeviceModel",
+                        "TextSafetyClassifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeUiRefinement": [
         {
             "platforms": [
@@ -20273,27 +20296,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TextInputHostMojoCapabilityControlWorkaround"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TextSafetyClassifier": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "on_device_retract_unsafe_content": "false",
-                        "on_device_text_safety_token_interval": "10"
-                    },
-                    "enable_features": [
-                        "TextSafetyClassifier"
                     ]
                 }
             ]
