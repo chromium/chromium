@@ -269,11 +269,12 @@ fyi_reclient_staging_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols", "x64"],
     ),
     builderless = True,
-    cores = 12,
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
