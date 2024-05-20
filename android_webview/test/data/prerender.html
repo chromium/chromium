@@ -1,35 +1,15 @@
 <html>
   <body>
   </body>
+  <script src="prerender-test-setup.js"></script>
   <script>
     // Objects starting with the "aw" prefix are injected by AwPrerenderTest.
-
-    function createIframe(url) {
-      const iframe = document.createElement("iframe");
-      iframe.setAttribute("src", url);
-      document.body.appendChild(iframe);
-    }
 
     const params = new URLSearchParams(document.location.search);
     const iframeSrc = params.get("iframeSrc");
     if (iframeSrc !== null) {
       createIframe(iframeSrc);
     }
-
-    function wasActivated() {
-      return self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0;
-    }
-
-    const wasPrerendered = document.prerendering || wasActivated();
-
-    if (wasActivated()) {
-      awActivationFuture.activated();
-    } else {
-      document.onprerenderingchange = () => awActivationFuture.activated();
-    }
-
-    // Notify the primary page that this prerendered page started.
-    window.localStorage.setItem("pageStarted", location.href);
 
     // Post a message to Java (AwPrerenderTest.java). This should be deferred
     // until activation.

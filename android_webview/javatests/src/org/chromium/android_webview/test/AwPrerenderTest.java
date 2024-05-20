@@ -69,6 +69,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
     private static final String INITIAL_URL = "/android_webview/test/data/hello_world.html";
     private static final String PRERENDER_URL = "/android_webview/test/data/prerender.html";
+    private static final String PRERENDER_SETUP_SCRIPT_URL =
+            "/android_webview/test/data/prerender-test-setup.js";
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private AwEmbeddedTestServer mTestServer;
@@ -363,6 +365,40 @@ public class AwPrerenderTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    // Tests speculation rules prerendering with No-Vary-Search header with multiple params.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({BlinkFeatures.PRERENDER2_NO_VARY_SEARCH})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNoVarySearchHeaderMultipleParams() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .build();
+
+        final String path =
+                "/android_webview/test/data/prerender-no-vary-search-multiple-params.html";
+
+        // Start prerendering `?a=1&b=2&c=3`. This response will have
+        // `No-Vary-Search: key-order, params, except=("a" "c")` header.
+        final String prerenderingUrl = mTestServer.getURL(path.concat("?a=1&b=2&c=3"));
+        injectSpeculationRulesAndWait(prerenderingUrl);
+
+        // Navigate to `?c=3&b=20&a=1`. This doesn't exactly match the prerendering URL but should
+        // activate the prerendered page for the No-Vary-Search header.
+        final String navigatingUrl = mTestServer.getURL(path.concat("?c=3&b=20&a=1"));
+        activatePage(navigatingUrl, ActivationBy.JAVASCRIPT);
+
+        // Wait until the navigation activates the prerendered page.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     // Tests speculation rules prerendering with No-Vary-Search header. This is similar to the
     // previous test but navigates to a URL whose search param is different from the No-Vary-Search
     // header. This should not activate the prerendered page.
@@ -409,6 +445,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
         String url2 = mTestServer.getURL(PRERENDER_URL);
         String url3 = mTestServer.getURL(INITIAL_URL.concat("?q=3"));
+        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -425,6 +462,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRules(url2);
         helper.waitForCallback(callCount);
         Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
 
         callCount = helper.getCallCount();
         // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
@@ -550,12 +592,20 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // This test will attempt to prerender a non-existent URL. Generally this should fail, but
         // in this test shouldInterceptRequestHelper will serve a custom response instead.
-        final String nonExistentUrl = mTestServer.getURL("/non_existent.html");
+        final String nonExistentUrl =
+                mTestServer.getURL("/android_webview/test/data/non_existent.html");
 
         // Construct a custom response.
         FileInputStream body = new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_URL));
         WebResourceResponseInfo response = new WebResourceResponseInfo("text/html", "utf-8", body);
         shouldInterceptRequestHelper.setReturnValueForUrl(nonExistentUrl, response);
+
+        final String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        FileInputStream scriptBody =
+                new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_SETUP_SCRIPT_URL));
+        WebResourceResponseInfo scriptResponse =
+                new WebResourceResponseInfo("text/javascript", "utf-8", scriptBody);
+        shouldInterceptRequestHelper.setReturnValueForUrl(scriptUrl, scriptResponse);
 
         int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
 
@@ -563,11 +613,16 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // of onLoadResource that is never called when a custom response is served.
         injectSpeculationRules(nonExistentUrl);
 
-        // Ensure that ShouldInterceptRequest is called.
+        // Ensure that ShouldInterceptRequest is called for the main resource and the setup script.
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
         AwContentsClient.AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(nonExistentUrl);
         Assert.assertNotNull(request);
+
+        shouldInterceptRequestHelper.waitForNext();
+        AwContentsClient.AwWebResourceRequest scriptRequest =
+                shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
+        Assert.assertNotNull(scriptRequest);
 
         // Activation with the non-existent URL should succeed.
         activatePage(nonExistentUrl, ActivationBy.JAVASCRIPT);
@@ -683,6 +738,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 mTestServer.getURL(
                         "/android_webview/test/data/prerender.html?iframeSrc="
                                 .concat(subframeUrl1));
+        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -694,6 +750,16 @@ public class AwPrerenderTest extends AwParameterizedTest {
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
+            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        }
+
+        {
+            helper.clearUrls();
+            int callCount = helper.getCallCount();
+            helper.waitForCallback(callCount);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
+            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(scriptUrl);
+            // Subframe navigation of prerendered page also has a Sec-Purpose header.
             Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
         }
 
