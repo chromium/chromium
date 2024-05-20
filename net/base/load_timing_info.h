@@ -26,6 +26,8 @@ namespace net {
 //
 // The general order for events is:
 // request_start
+// service_worker_router_evaluation_start
+// service_worker_cache_lookup_start
 // service_worker_start_time
 // proxy_start
 // proxy_end
@@ -139,6 +141,14 @@ struct NET_EXPORT LoadTimingInfo {
   // Corresponds to |fetchStart| in ResourceTiming
   // (http://www.w3.org/TR/resource-timing/) for Web-surfacing requests.
   base::TimeTicks request_start;
+
+  // The time immediately before ServiceWorker static routing API starts
+  // matching a request with the registered router rules.
+  base::TimeTicks service_worker_router_evaluation_start;
+
+  // The time immediately before ServiceWorker static routing API starts
+  // looking up the cache storage when "cache" is specified as its source.
+  base::TimeTicks service_worker_cache_lookup_start;
 
   // The time immediately before starting ServiceWorker. If the response is not
   // provided by the ServiceWorker, kept empty.
