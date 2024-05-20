@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
-#define SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
+#ifndef SERVICES_WEBNN_TFLITE_GRAPH_IMPL_TFLITE_H_
+#define SERVICES_WEBNN_TFLITE_GRAPH_IMPL_TFLITE_H_
 
 #include <memory>
 #include <string>
@@ -19,20 +19,20 @@
 
 namespace webnn::tflite {
 
-class ContextImpl;
+class ContextImplTflite;
 
-// GraphImpl inherits from WebNNGraphImpl to represent a TFLite graph
+// GraphImplTflite inherits from WebNNGraphImpl to represent a TFLite graph
 // implementation. It is mainly responsible for building a TFLite flatbuffer
-// model from mojom::GraphInfo via tflite::GraphBuilder, then initializing and
-// executing the graph.
-class GraphImpl final : public WebNNGraphImpl {
+// model from mojom::GraphInfo via tflite::GraphBuilderTflite, then initializing
+// and executing the graph.
+class GraphImplTflite final : public WebNNGraphImpl {
  public:
-  static base::expected<std::unique_ptr<GraphImpl>, mojom::ErrorPtr>
-  CreateAndBuild(mojom::GraphInfoPtr graph_info, ContextImpl* context);
+  static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
+  CreateAndBuild(mojom::GraphInfoPtr graph_info, ContextImplTflite* context);
 
-  GraphImpl(const GraphImpl&) = delete;
-  GraphImpl& operator=(const GraphImpl&) = delete;
-  ~GraphImpl() override;
+  GraphImplTflite(const GraphImplTflite&) = delete;
+  GraphImplTflite& operator=(const GraphImplTflite&) = delete;
+  ~GraphImplTflite() override;
 
  private:
   class GraphResources;
@@ -42,10 +42,10 @@ class GraphImpl final : public WebNNGraphImpl {
   using AsyncComputeResult =
       std::pair<mojom::ComputeResultPtr, std::unique_ptr<ComputeResources>>;
 
-  GraphImpl(ComputeResourceInfo compute_resource_info,
-            scoped_refptr<GraphResources> graph_resources,
-            std::unique_ptr<ComputeResources> compute_resources,
-            ContextImpl* context);
+  GraphImplTflite(ComputeResourceInfo compute_resource_info,
+                  scoped_refptr<GraphResources> graph_resources,
+                  std::unique_ptr<ComputeResources> compute_resources,
+                  ContextImplTflite* context);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` were
   // validated in base class so we can use them to compute directly, the result
@@ -60,14 +60,15 @@ class GraphImpl final : public WebNNGraphImpl {
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
       override;
 
-  // This class is owned by the `UniqueAssociatedReceiverSet` in `ContextImpl`.
-  raw_ptr<ContextImpl> context_;
+  // This class is owned by the `UniqueAssociatedReceiverSet` in
+  // `ContextImplTflite`.
+  raw_ptr<ContextImplTflite> context_;
 
   scoped_refptr<GraphResources> graph_resources_;
   std::unique_ptr<ComputeResources> compute_resources_;
-  base::WeakPtrFactory<GraphImpl> weak_factory_{this};
+  base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};
 };
 
 }  // namespace webnn::tflite
 
-#endif  // SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
+#endif  // SERVICES_WEBNN_TFLITE_GRAPH_IMPL_TFLITE_H_

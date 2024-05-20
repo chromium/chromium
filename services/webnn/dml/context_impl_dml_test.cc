@@ -32,7 +32,7 @@ class WebNNContextDMLImplTest : public TestBase {
       mojo::Remote<mojom::WebNNContext>& webnn_context_remote) {
     bool is_platform_supported = true;
 
-    // Create the dml::ContextImpl through context provider.
+    // Create the ContextImplDml through context provider.
     base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
     webnn_provider_remote->CreateWebNNContext(
         mojom::CreateContextOptions::New(
@@ -75,7 +75,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   builder.BuildRelu(input_operand_id, output_operand_id);
 
-  // The dml::GraphImpl should be built successfully.
+  // The GraphImplDml should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
   webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
                                     create_graph_future.GetCallback());

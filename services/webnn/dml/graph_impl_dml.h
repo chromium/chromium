@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_DML_GRAPH_IMPL_H_
-#define SERVICES_WEBNN_DML_GRAPH_IMPL_H_
+#ifndef SERVICES_WEBNN_DML_GRAPH_IMPL_DML_H_
+#define SERVICES_WEBNN_DML_GRAPH_IMPL_DML_H_
 
 #include <map>
 #include <memory>
@@ -27,8 +27,8 @@ namespace webnn::dml {
 
 class Adapter;
 class CommandRecorder;
-class ContextImpl;
-class GraphBuilder;
+class ContextImplDml;
+class GraphBuilderDml;
 
 // Record the total byte length of buffers and the D3D12_RANGE for each
 // buffer, all with the required alignment.
@@ -38,27 +38,27 @@ struct AlignedByteLength {
   std::map<Key, D3D12_RANGE> key_to_d3d12_range_map;
 };
 
-// GraphImpl inherits WebNNGraphImpl to represent a DML graph implementation. It
-// is mainly responsible for building and compiling a DML graph from
-// mojom::GraphInfo via GraphBuilder, then initializing and executing the graph
-// represented by an IDMLCompiledOperator.
-class GraphImpl final : public WebNNGraphImpl {
+// GraphImplDml inherits WebNNGraphImpl to represent a DML graph implementation.
+// It is mainly responsible for building and compiling a DML graph from
+// mojom::GraphInfo via GraphBuilderDml, then initializing and executing the
+// graph represented by an IDMLCompiledOperator.
+class GraphImplDml final : public WebNNGraphImpl {
  public:
   // This method builds and compiles a DML graph from mojom::GraphInfo via
-  // GraphBuilder, and then call CommandRecorder::InitializeOperator method to
-  // initialize the DML graph. Next, it calls CommandQueue::WaitAsync method to
-  // wait for the initialization work to be completed on GPU, the GraphImpl
-  // instance will only be created and bound to the mojom receiver in
-  // GraphImpl::OnInitializationComplete method.
+  // GraphBuilderDml, and then call CommandRecorder::InitializeOperator method
+  // to initialize the DML graph. Next, it calls CommandQueue::WaitAsync method
+  // to wait for the initialization work to be completed on GPU, the
+  // GraphImplDml instance will only be created and bound to the mojom receiver
+  // in GraphImplDml::OnInitializationComplete method.
   static void CreateAndBuild(scoped_refptr<Adapter> adapter,
-                             base::WeakPtr<ContextImpl> context,
+                             base::WeakPtr<ContextImplDml> context,
                              mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback,
                              bool pass_dml_execution_disable_meta_commands);
 
-  GraphImpl(const GraphImpl&) = delete;
-  GraphImpl& operator=(const GraphImpl&) = delete;
-  ~GraphImpl() override;
+  GraphImplDml(const GraphImplDml&) = delete;
+  GraphImplDml& operator=(const GraphImplDml&) = delete;
+  ~GraphImplDml() override;
 
  private:
   // It records the graph's buffer binding info to create the buffer binding
@@ -193,14 +193,14 @@ class GraphImpl final : public WebNNGraphImpl {
       const PersistentResource* persistent_resource,
       const GraphBufferBindingInfo& graph_buffer_binding_info);
 
-  GraphImpl(scoped_refptr<Adapter> adapter,
-            ContextImpl* context,
-            std::unique_ptr<CommandRecorder> command_recorder,
-            std::unique_ptr<PersistentResource> persistent_resource,
-            Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
-            ComputeResourceInfo compute_resource_info,
-            GraphBufferBindingInfo graph_buffer_binding_info,
-            std::unique_ptr<ComputeResources> compute_resources);
+  GraphImplDml(scoped_refptr<Adapter> adapter,
+               ContextImplDml* context,
+               std::unique_ptr<CommandRecorder> command_recorder,
+               std::unique_ptr<PersistentResource> persistent_resource,
+               Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+               ComputeResourceInfo compute_resource_info,
+               GraphBufferBindingInfo graph_buffer_binding_info,
+               std::unique_ptr<ComputeResources> compute_resources);
 
   // The method compiles all DML operators into an IDMLCompiledOperator
   // which can be dispatched to GPU. Since IDMLDevice1::CompileGraph called in
@@ -208,7 +208,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // this method should run on a background thread rather than the current GPU
   // main thread to avoid blocking.
   static Microsoft::WRL::ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
-      GraphBuilder graph_builder,
+      GraphBuilderDml graph_builder,
       bool pass_dml_execution_disable_meta_commands);
 
   // After the CompileOnBackgroundThread task is completed on a background
@@ -227,7 +227,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // graph execution.
   static void OnCompilationComplete(
       scoped_refptr<Adapter> adapter,
-      base::WeakPtr<ContextImpl> context,
+      base::WeakPtr<ContextImplDml> context,
       mojom::WebNNContext::CreateGraphCallback callback,
       std::unique_ptr<CommandRecorder> command_recorder,
       base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
@@ -236,14 +236,14 @@ class GraphImpl final : public WebNNGraphImpl {
       ComputeResourceInfo compute_resource_info,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
 
-  // Create the GraphImpl instance and bind it to the mojom::WebNNGraph
+  // Create the GraphImplDml instance and bind it to the mojom::WebNNGraph
   // receiver, then run callback to send the pending remote to the
   // render.
   // Notice that the persistent_buffer could be nullptr which means it isn't
   // required by the graph.
   static void OnInitializationComplete(
       scoped_refptr<Adapter> adapter,
-      base::WeakPtr<ContextImpl> context,
+      base::WeakPtr<ContextImplDml> context,
       std::unique_ptr<CommandRecorder> command_recorder,
       std::unique_ptr<PersistentResource> persistent_resource,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -268,7 +268,7 @@ class GraphImpl final : public WebNNGraphImpl {
   void OnDispatchComplete(std::unique_ptr<GraphResources> graph_resources,
                           HRESULT hr);
 
-  // If GraphImpl::ComputeImpl fails, report and log an error message and
+  // If GraphImplDml::ComputeImpl fails, report and log an error message and
   // release the command recorder since it may haven't been closed normally by
   // CommandRecorder::CloseAndExecute.
   void HandleComputationFailure(const std::string& error_message,
@@ -280,7 +280,7 @@ class GraphImpl final : public WebNNGraphImpl {
                                 HRESULT hr,
                                 mojom::WebNNGraph::ComputeCallback callback);
 
-  // If GraphImpl::DispatchImpl fails, report and log an error message and
+  // If GraphImplDml::DispatchImpl fails, report and log an error message and
   // release the command recorder since it may haven't been closed normally by
   // CommandRecorder::CloseAndExecute.
   void HandleDispatchFailure(std::string_view error_message, HRESULT hr);
@@ -340,9 +340,9 @@ class GraphImpl final : public WebNNGraphImpl {
   // is done.
   std::unique_ptr<GraphResources> graph_resources_;
 
-  base::WeakPtrFactory<GraphImpl> weak_factory_{this};
+  base::WeakPtrFactory<GraphImplDml> weak_factory_{this};
 };
 
 }  // namespace webnn::dml
 
-#endif  // SERVICES_WEBNN_DML_GRAPH_IMPL_H_
+#endif  // SERVICES_WEBNN_DML_GRAPH_IMPL_DML_H_

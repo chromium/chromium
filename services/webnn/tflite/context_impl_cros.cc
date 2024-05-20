@@ -5,7 +5,7 @@
 #include "services/webnn/tflite/context_impl_cros.h"
 
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "services/webnn/tflite/buffer_impl.h"
+#include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/graph_impl_cros.h"
 
 namespace webnn::tflite {
@@ -90,8 +90,8 @@ std::unique_ptr<WebNNBufferImpl> ContextImplCrOS::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
-  return BufferImpl::Create(std::move(receiver), this, std::move(buffer_info),
-                            buffer_handle);
+  return BufferImplTflite::Create(std::move(receiver), this,
+                                  std::move(buffer_info), buffer_handle);
 }
 
 }  // namespace webnn::tflite

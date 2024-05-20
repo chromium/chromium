@@ -18,8 +18,8 @@ buildflag_header("buildflags") {
 if (is_posix) {
   source_set("coreml_graph_builder") {
     sources = [
-      "coreml/graph_builder.cc",
-      "coreml/graph_builder.h",
+      "coreml/graph_builder_coreml.cc",
+      "coreml/graph_builder_coreml.h",
     ]
     deps = [
       ":webnn_utils",
@@ -32,8 +32,8 @@ if (is_posix) {
 
 source_set("tflite_graph_builder") {
   sources = [
-    "tflite/graph_builder.cc",
-    "tflite/graph_builder.h",
+    "tflite/graph_builder_tflite.cc",
+    "tflite/graph_builder_tflite.h",
   ]
   public_deps = [
     ":webnn_utils",
@@ -80,19 +80,19 @@ component("webnn_service") {
     sources += [
       "dml/adapter.cc",
       "dml/adapter.h",
-      "dml/buffer_impl.cc",
-      "dml/buffer_impl.h",
+      "dml/buffer_impl_dml.cc",
+      "dml/buffer_impl_dml.h",
       "dml/command_queue.cc",
       "dml/command_queue.h",
       "dml/command_recorder.cc",
       "dml/command_recorder.h",
-      "dml/context_impl.cc",
-      "dml/context_impl.h",
+      "dml/context_impl_dml.cc",
+      "dml/context_impl_dml.h",
       "dml/error.h",
-      "dml/graph_builder.cc",
-      "dml/graph_builder.h",
-      "dml/graph_impl.cc",
-      "dml/graph_impl.h",
+      "dml/graph_builder_dml.cc",
+      "dml/graph_builder_dml.h",
+      "dml/graph_impl_dml.cc",
+      "dml/graph_impl_dml.h",
       "dml/platform_functions.cc",
       "dml/platform_functions.h",
       "dml/tensor_desc.cc",
@@ -114,10 +114,10 @@ component("webnn_service") {
 
   if (is_mac) {
     sources += [
-      "coreml/context_impl.h",
-      "coreml/context_impl.mm",
-      "coreml/graph_impl.h",
-      "coreml/graph_impl.mm",
+      "coreml/context_impl_coreml.h",
+      "coreml/context_impl_coreml.mm",
+      "coreml/graph_impl_coreml.h",
+      "coreml/graph_impl_coreml.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -129,8 +129,8 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
-      "tflite/buffer_impl.cc",
-      "tflite/buffer_impl.h",
+      "tflite/buffer_impl_tflite.cc",
+      "tflite/buffer_impl_tflite.h",
       "tflite/op_resolver.cc",
       "tflite/op_resolver.h",
     ]
@@ -143,10 +143,10 @@ component("webnn_service") {
       ]
     } else {
       sources += [
-        "tflite/context_impl.cc",
-        "tflite/context_impl.h",
-        "tflite/graph_impl.cc",
-        "tflite/graph_impl.h",
+        "tflite/context_impl_tflite.cc",
+        "tflite/context_impl_tflite.h",
+        "tflite/graph_impl_tflite.cc",
+        "tflite/graph_impl_tflite.h",
       ]
     }
 
@@ -194,8 +194,8 @@ source_set("tests") {
       "dml/adapter_test.cc",
       "dml/command_queue_test.cc",
       "dml/command_recorder_test.cc",
-      "dml/context_impl_test.cc",
-      "dml/graph_builder_test.cc",
+      "dml/context_impl_dml_test.cc",
+      "dml/graph_builder_dml_test.cc",
       "dml/platform_functions_test.cc",
       "dml/tensor_desc_test.cc",
       "dml/test_base.cc",

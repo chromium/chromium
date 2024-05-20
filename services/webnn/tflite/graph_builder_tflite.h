@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_H_
-#define SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_H_
+#ifndef SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_TFLITE_H_
+#define SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_TFLITE_H_
 
 #include <concepts>
 #include <cstdint>
@@ -43,15 +43,15 @@ concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t>;
 //
 // The instances of the class may not be allocated on the heap, but as a member
 // variable of a non-stack-allocated class and be single-use per conversion.
-class GraphBuilder final {
+class GraphBuilderTflite final {
   STACK_ALLOCATED();
 
  public:
-  GraphBuilder(const GraphBuilder&) = delete;
-  GraphBuilder& operator=(const GraphBuilder&) = delete;
+  GraphBuilderTflite(const GraphBuilderTflite&) = delete;
+  GraphBuilderTflite& operator=(const GraphBuilderTflite&) = delete;
 
-  // Factory method that creates a GraphBuilder and builds a TFLite Flatbuffer
-  // Returns unexpected if it fails.
+  // Factory method that creates a GraphBuilderTflite and builds a TFLite
+  // Flatbuffer Returns unexpected if it fails.
   [[nodiscard]] static base::expected<flatbuffers::DetachedBuffer, std::string>
   CreateAndBuild(const mojom::GraphInfo& graph_info);
 
@@ -63,8 +63,8 @@ class GraphBuilder final {
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
 
-  explicit GraphBuilder(const mojom::GraphInfo& graph_info);
-  ~GraphBuilder();
+  explicit GraphBuilderTflite(const mojom::GraphInfo& graph_info);
+  ~GraphBuilderTflite();
 
   // Serialize tensor for input, constant and output operand. It's output
   // operand of graph if the `graph_output_name` is specified, returns the index
@@ -263,4 +263,4 @@ class GraphBuilder final {
 
 }  // namespace webnn::tflite
 
-#endif  // SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_H_
+#endif  // SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_TFLITE_H_

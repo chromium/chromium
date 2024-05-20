@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/tflite/context_impl.h"
+#include "services/webnn/tflite/context_impl_tflite.h"
 
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/tflite/buffer_impl.h"
-#include "services/webnn/tflite/graph_impl.h"
+#include "services/webnn/tflite/buffer_impl_tflite.h"
+#include "services/webnn/tflite/graph_impl_tflite.h"
 
 namespace webnn::tflite {
 
-ContextImpl::ContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                         WebNNContextProviderImpl* context_provider,
-                         mojom::CreateContextOptionsPtr options)
+ContextImplTflite::ContextImplTflite(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    WebNNContextProviderImpl* context_provider,
+    mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver), context_provider),
       options_(std::move(options)) {}
 
-ContextImpl::~ContextImpl() = default;
+ContextImplTflite::~ContextImplTflite() = default;
 
-void ContextImpl::CreateGraphImpl(
+void ContextImplTflite::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  ASSIGN_OR_RETURN(std::unique_ptr<GraphImpl> graph,
-                   GraphImpl::CreateAndBuild(std::move(graph_info), this),
+  ASSIGN_OR_RETURN(std::unique_ptr<GraphImplTflite> graph,
+                   GraphImplTflite::CreateAndBuild(std::move(graph_info), this),
                    [&callback](mojom::ErrorPtr error) {
                      std::move(callback).Run(
                          mojom::CreateGraphResult::NewError(std::move(error)));
@@ -36,12 +37,12 @@ void ContextImpl::CreateGraphImpl(
       mojom::CreateGraphResult::NewGraphRemote(std::move(remote)));
 }
 
-std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
+std::unique_ptr<WebNNBufferImpl> ContextImplTflite::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
-  return BufferImpl::Create(std::move(receiver), this, std::move(buffer_info),
-                            buffer_handle);
+  return BufferImplTflite::Create(std::move(receiver), this,
+                                  std::move(buffer_info), buffer_handle);
 }
 
 }  // namespace webnn::tflite

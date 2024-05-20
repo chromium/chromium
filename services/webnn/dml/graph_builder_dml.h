@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
-#define SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
+#ifndef SERVICES_WEBNN_DML_GRAPH_BUILDER_DML_H_
+#define SERVICES_WEBNN_DML_GRAPH_BUILDER_DML_H_
 
 #include <list>
 #include <optional>
@@ -50,9 +50,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Node {
   Type type_;
 };
 
-// Represents a graph input node. Created by `GraphBuilder::CreateInputNode()`.
-// Holds the graph input index which is used to set
-// `DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex`.
+// Represents a graph input node. Created by
+// `GraphBuilderDml::CreateInputNode()`. Holds the graph input index which is
+// used to set `DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex`.
 class InputNode final : public Node {
  public:
   explicit InputNode(uint32_t graph_input_index);
@@ -65,7 +65,7 @@ class InputNode final : public Node {
 };
 
 // Represents a graph operator node. Created by
-// `GraphBuilder::CreateOperatorNode()`. Holds the node index and DirectML
+// `GraphBuilderDml::CreateOperatorNode()`. Holds the node index and DirectML
 // operator.
 //
 // The node index is increased from 0 when a new operator node is created. The
@@ -89,8 +89,8 @@ class OperatorNode final : public Node {
 };
 
 // Represents an output (edge) of a node. Created by
-// `GraphBuilder::CreateNodeOutput`. Holds the index and tensor description of
-// this node output.
+// `GraphBuilderDml::CreateNodeOutput`. Holds the index and tensor description
+// of this node output.
 //
 // The output index is used to identity the node output when creating DirectML
 // graph edge structures, e.g., `FromNodeOutputIndex` of
@@ -124,25 +124,25 @@ class NodeOutput {
   TensorDesc tensor_desc_;
 };
 
-// GraphBuilder is a helper class to build a DML graph. It provides methods to
-// create the input nodes, operator nodes and connect these nodes. The input
+// GraphBuilderDml is a helper class to build a DML graph. It provides methods
+// to create the input nodes, operator nodes and connect these nodes. The input
 // edges and intermediate edges are created when connecting nodes, and the
 // output edges are created at last to indicate which node's output is graph's
 // output.
-class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
+class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
  public:
-  explicit GraphBuilder(Microsoft::WRL::ComPtr<IDMLDevice> device);
+  explicit GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice> device);
 
-  GraphBuilder(const GraphBuilder& other) = delete;
-  GraphBuilder& operator=(const GraphBuilder& other) = delete;
+  GraphBuilderDml(const GraphBuilderDml& other) = delete;
+  GraphBuilderDml& operator=(const GraphBuilderDml& other) = delete;
 
-  GraphBuilder(GraphBuilder&& other);
-  GraphBuilder& operator=(GraphBuilder&& other);
+  GraphBuilderDml(GraphBuilderDml&& other);
+  GraphBuilderDml& operator=(GraphBuilderDml&& other);
 
-  ~GraphBuilder();
+  ~GraphBuilderDml();
 
   // Create a constant or non-constant input node stored in
-  // `GraphBuilder::input_nodes_` and returns its pointer.
+  // `GraphBuilderDml::input_nodes_` and returns its pointer.
   const InputNode* CreateInputNode();
 
   // Create the IDMLOperator for the DML graph, meanwhile, connect multiple node
@@ -158,14 +158,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
   // input index.
   //
   // When creation of IDMLOperator succeeds, it creates an operator node
-  // stored in `GraphBuilder::operator_nodes_` and returns its pointer. When it
-  // fails to create IDMLOperator, a nullptr is returned.
+  // stored in `GraphBuilderDml::operator_nodes_` and returns its pointer. When
+  // it fails to create IDMLOperator, a nullptr is returned.
   const OperatorNode* CreateOperatorNode(DML_OPERATOR_TYPE type,
                                          const void* operator_desc,
                                          base::span<const NodeOutput*> inputs);
 
-  // Create a node output stored in `GraphBuilder::node_outputs_` and return its
-  // pointer.
+  // Create a node output stored in `GraphBuilderDml::node_outputs_` and return
+  // its pointer.
   const NodeOutput* CreateNodeOutput(const Node* node,
                                      TensorDesc tensor_desc,
                                      uint32_t output_index = 0);
@@ -194,4 +194,4 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
 
 }  // namespace webnn::dml
 
-#endif  // SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
+#endif  // SERVICES_WEBNN_DML_GRAPH_BUILDER_DML_H_

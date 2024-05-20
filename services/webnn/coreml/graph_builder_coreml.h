@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
-#define SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
+#ifndef SERVICES_WEBNN_COREML_GRAPH_BUILDER_COREML_H_
+#define SERVICES_WEBNN_COREML_GRAPH_BUILDER_COREML_H_
 
 #include <cstdint>
 #include <memory>
@@ -51,7 +51,7 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name);
 //
 // The instances of the class may not be allocated on the heap, but as a member
 // variable of a non-stack-allocated class and be single-use per conversion.
-class GraphBuilder {
+class GraphBuilderCoreml {
   STACK_ALLOCATED();
 
  public:
@@ -82,8 +82,8 @@ class GraphBuilder {
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
-  // Used by `GraphImpl` to get model input's information. The model inputs
-  // dimensions are always non scalar.
+  // Used by `GraphImplCoreml` to get model input's information. The model
+  // inputs dimensions are always non scalar.
   struct InputOperandInfo {
     InputOperandInfo();
     InputOperandInfo(std::string name,
@@ -119,7 +119,7 @@ class GraphBuilder {
     std::map<uint64_t, OperandInfo> id_to_operand_info_map;
   };
 
-  // Factory method that creates a GraphBuilder, builds and serializes the
+  // Factory method that creates a GraphBuilderCoreml, builds and serializes the
   // CoreML model to the `working_directory`. This expects the
   // `working_directory` to be an empty directory.
   //
@@ -128,14 +128,14 @@ class GraphBuilder {
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  const base::FilePath& working_directory);
 
-  GraphBuilder(const GraphBuilder&) = delete;
-  GraphBuilder& operator=(const GraphBuilder&) = delete;
+  GraphBuilderCoreml(const GraphBuilderCoreml&) = delete;
+  GraphBuilderCoreml& operator=(const GraphBuilderCoreml&) = delete;
 
-  ~GraphBuilder();
+  ~GraphBuilderCoreml();
 
  private:
-  GraphBuilder(const mojom::GraphInfo& graph_info,
-               base::FilePath ml_package_dir);
+  GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
+                     base::FilePath ml_package_dir);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel();
 
@@ -393,4 +393,4 @@ class GraphBuilder {
 
 }  // namespace webnn::coreml
 
-#endif  // SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
+#endif  // SERVICES_WEBNN_COREML_GRAPH_BUILDER_COREML_H_

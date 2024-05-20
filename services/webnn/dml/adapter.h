@@ -26,10 +26,10 @@ class CommandQueue;
 // An `Adapter` instance creates and maintains corresponding `IDXGIAdapter` or
 // `IDXCoreAdapter`, `ID3D12Device`, `IDMLDevice` and `webnn::dml::CommandQueue`
 // for a physical adapter. A single `Adapter` instance is shared and
-// reference-counted by all `webnn::dml::GraphImpl` of the same adapter. The
-// `Adapter` instance is created upon the first `webnn::dml::GraphImpl` call
+// reference-counted by all `GraphImplDml` of the same adapter. The
+// `Adapter` instance is created upon the first `GraphImplDml` call
 // `Adapter::GetGpuInstance()` or `Adapter::GetNpuInstance()` and is released
-// when the last `webnn::dml::GraphImpl` is destroyed.
+// when the last `GraphImplDml` is destroyed.
 class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
     : public base::RefCounted<Adapter> {
  public:

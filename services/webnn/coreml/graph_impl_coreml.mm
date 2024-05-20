@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/coreml/graph_impl.h"
+#include "services/webnn/coreml/graph_impl_coreml.h"
 
 #import <Foundation/Foundation.h>
 
@@ -29,7 +29,7 @@
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "services/webnn/coreml/graph_builder.h"
+#include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/error.h"
 #include "services/webnn/webnn_switches.h"
 
@@ -124,7 +124,7 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 }  // namespace
 
 // static
-void GraphImpl::CreateAndBuild(
+void GraphImplCoreml::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   auto current_runner = base::SequencedTaskRunner::GetCurrentDefault();
@@ -132,13 +132,13 @@ void GraphImpl::CreateAndBuild(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(&GraphImpl::CreateAndBuildOnBackgroundThread,
+      base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), current_runner,
                      std::move(callback)));
 }
 
 // static
-void GraphImpl::CreateAndBuildOnBackgroundThread(
+void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
     mojom::WebNNContext::CreateGraphCallback callback) {
@@ -147,15 +147,16 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   if (!model_file_dir.CreateUniqueTempDir()) {
     originating_sequence->PostTask(
         FROM_HERE,
-        base::BindOnce(&GraphImpl::OnCreateAndBuildFailure, std::move(callback),
-                       "Model allocation error."));
+        base::BindOnce(&GraphImplCoreml::OnCreateAndBuildFailure,
+                       std::move(callback), "Model allocation error."));
     return;
   }
   base::ElapsedTimer ml_model_write_timer;
   // Generate .mlpackage.
   ASSIGN_OR_RETURN(
-      std::unique_ptr<GraphBuilder::Result> build_graph_result,
-      GraphBuilder::CreateAndBuild(*graph_info.get(), model_file_dir.GetPath()),
+      std::unique_ptr<GraphBuilderCoreml::Result> build_graph_result,
+      GraphBuilderCoreml::CreateAndBuild(*graph_info.get(),
+                                         model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         originating_sequence->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback),
@@ -175,13 +176,13 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
       compute_resource_info.input_name_to_byte_length_map.size());
   for (auto const& [name, size] :
        compute_resource_info.input_name_to_byte_length_map) {
-    std::optional<GraphImpl::CoreMLFeatureInfo> coreml_feature_info =
+    std::optional<GraphImplCoreml::CoreMLFeatureInfo> coreml_feature_info =
         GetCoreMLFeatureInfo(
             build_graph_result->FindModelInputOperandInfo(name));
     if (!coreml_feature_info.has_value()) {
       originating_sequence->PostTask(
           FROM_HERE,
-          base::BindOnce(&GraphImpl::OnCreateAndBuildFailure,
+          base::BindOnce(&GraphImplCoreml::OnCreateAndBuildFailure,
                          std::move(callback), "Model inputs error."));
       return;
     }
@@ -231,7 +232,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
           DLOG(ERROR) << error;
           originating_sequence->PostTask(
               FROM_HERE,
-              base::BindOnce(&GraphImpl::OnCreateAndBuildFailure,
+              base::BindOnce(&GraphImplCoreml::OnCreateAndBuildFailure,
                              std::move(compilation_context->callback),
                              "Model compilation error."));
           return;
@@ -247,19 +248,19 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
           DLOG(ERROR) << model_load_error;
           originating_sequence->PostTask(
               FROM_HERE,
-              base::BindOnce(&GraphImpl::OnCreateAndBuildFailure,
+              base::BindOnce(&GraphImplCoreml::OnCreateAndBuildFailure,
                              std::move(compilation_context->callback),
                              "Model load error."));
           return;
         }
         originating_sequence->PostTask(
-            FROM_HERE, base::BindOnce(&GraphImpl::OnCreateAndBuildSuccess,
+            FROM_HERE, base::BindOnce(&GraphImplCoreml::OnCreateAndBuildSuccess,
                                       std::move(compilation_context)));
       }];
 }
 
 // static
-void GraphImpl::OnCreateAndBuildFailure(
+void GraphImplCoreml::OnCreateAndBuildFailure(
     mojom::WebNNContext::CreateGraphCallback callback,
     std::string error) {
   DLOG(ERROR) << error;
@@ -268,14 +269,14 @@ void GraphImpl::OnCreateAndBuildFailure(
 }
 
 // static
-void GraphImpl::OnCreateAndBuildSuccess(
+void GraphImplCoreml::OnCreateAndBuildSuccess(
     std::unique_ptr<CompilationContext> context) {
   CHECK(context->ml_model);
   // The remote sent to the renderer.
   mojo::PendingAssociatedRemote<mojom::WebNNGraph> webnn_graph;
-  // The receiver bound to GraphImpl.
+  // The receiver bound to GraphImplCoreml.
   mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(
+      base::WrapUnique(new GraphImplCoreml(
           std::move(context->compute_resource_info),
           std::move(context->input_feature_info),
           std::move(context->coreml_name_to_operand_name), context->ml_model)),
@@ -285,8 +286,8 @@ void GraphImpl::OnCreateAndBuildSuccess(
 }
 
 // static
-MLFeatureValue* GraphImpl::CreateFeatureValue(
-    GraphImpl::CoreMLFeatureInfo* feature_info,
+MLFeatureValue* GraphImplCoreml::CreateFeatureValue(
+    GraphImplCoreml::CoreMLFeatureInfo* feature_info,
     mojo_base::BigBuffer data) {
   NSError* error;
   __block mojo_base::BigBuffer captured_data = std::move(data);
@@ -305,8 +306,9 @@ MLFeatureValue* GraphImpl::CreateFeatureValue(
 }
 
 // static
-std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
-    const GraphBuilder::InputOperandInfo& operand_info) {
+std::optional<GraphImplCoreml::CoreMLFeatureInfo>
+GraphImplCoreml::GetCoreMLFeatureInfo(
+    const GraphBuilderCoreml::InputOperandInfo& operand_info) {
   enum MLMultiArrayDataType data_type;
   switch (operand_info.data_type) {
     case webnn::mojom::Operand_DataType::kFloat32:
@@ -347,11 +349,11 @@ std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
     current_stride = current_stride / dimension;
     [stride addObject:@(current_stride)];
   }
-  return GraphImpl::CoreMLFeatureInfo(data_type, shape, stride,
+  return GraphImplCoreml::CoreMLFeatureInfo(data_type, shape, stride,
                                       operand_info.coreml_name);
 }
 
-GraphImpl::GraphImpl(
+GraphImplCoreml::GraphImplCoreml(
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
     base::flat_map<std::string, std::string> coreml_name_to_operand_name,
@@ -361,13 +363,13 @@ GraphImpl::GraphImpl(
       coreml_name_to_operand_name_(std::move(coreml_name_to_operand_name)),
       ml_model_(ml_model) {}
 
-GraphImpl::~GraphImpl() = default;
+GraphImplCoreml::~GraphImplCoreml() = default;
 
-void GraphImpl::ComputeImpl(
+void GraphImplCoreml::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::ComputeImpl");
+  TRACE_EVENT0("gpu", "webnn::coreml::GraphImplCoreml::ComputeImpl");
   CHECK(ml_model_);
 
   base::ElapsedTimer model_predict_timer;
@@ -411,7 +413,7 @@ void GraphImpl::ComputeImpl(
       [[WebNNMLFeatureProvider alloc] initWithFeatures:feature_names
                                          featureValues:feature_values];
   auto done_callback =
-      base::BindOnce(&GraphImpl::DidPredict, weak_factory_.GetWeakPtr(),
+      base::BindOnce(&GraphImplCoreml::DidPredict, weak_factory_.GetWeakPtr(),
                      std::move(model_predict_timer), std::move(callback));
   [ml_model_ predictionFromFeatures:feature_provider
                   completionHandler:base::CallbackToBlock(
@@ -419,7 +421,7 @@ void GraphImpl::ComputeImpl(
                                             std::move(done_callback)))];
 }
 
-void GraphImpl::DidPredict(base::ElapsedTimer model_predict_timer,
+void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
                            mojom::WebNNGraph::ComputeCallback callback,
                            id<MLFeatureProvider> output_features,
                            NSError* error) {
@@ -500,14 +502,14 @@ void GraphImpl::DidPredict(base::ElapsedTimer model_predict_timer,
   }
 }
 
-void GraphImpl::DispatchImpl(
+void GraphImplCoreml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for CoreML.
+  // TODO(crbug.com/333392274): Implement MLBuffer for CoreML.
   NOTIMPLEMENTED();
 }
 
-GraphImpl::CompilationContext::CompilationContext(
+GraphImplCoreml::CompilationContext::CompilationContext(
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
     base::flat_map<std::string, std::string> coreml_name_to_operand_name,
@@ -519,7 +521,7 @@ GraphImpl::CompilationContext::CompilationContext(
       model_file_dir(std::move(model_file_dir)),
       callback(std::move(callback)) {}
 
-GraphImpl::CompilationContext::~CompilationContext() {
+GraphImplCoreml::CompilationContext::~CompilationContext() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNCoreMlDumpModel)) {
     const auto dump_directory =

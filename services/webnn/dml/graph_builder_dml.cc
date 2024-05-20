@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/dml/graph_builder.h"
+#include "services/webnn/dml/graph_builder_dml.h"
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -83,22 +83,22 @@ const TensorDesc& NodeOutput::GetTensorDesc() const {
   return tensor_desc_;
 }
 
-GraphBuilder::GraphBuilder(Microsoft::WRL::ComPtr<IDMLDevice> dml_device)
+GraphBuilderDml::GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice> dml_device)
     : dml_device_(std::move(dml_device)) {}
 
-GraphBuilder::GraphBuilder(GraphBuilder&& other) = default;
-GraphBuilder& GraphBuilder::operator=(GraphBuilder&& other) = default;
+GraphBuilderDml::GraphBuilderDml(GraphBuilderDml&& other) = default;
+GraphBuilderDml& GraphBuilderDml::operator=(GraphBuilderDml&& other) = default;
 
-GraphBuilder::~GraphBuilder() = default;
+GraphBuilderDml::~GraphBuilderDml() = default;
 
-const InputNode* GraphBuilder::CreateInputNode() {
+const InputNode* GraphBuilderDml::CreateInputNode() {
   const uint32_t graph_input_index =
       base::checked_cast<uint32_t>(input_nodes_.size());
   input_nodes_.emplace_back(graph_input_index);
   return &input_nodes_.back();
 }
 
-const OperatorNode* GraphBuilder::CreateOperatorNode(
+const OperatorNode* GraphBuilderDml::CreateOperatorNode(
     DML_OPERATOR_TYPE type,
     const void* operator_desc,
     base::span<const NodeOutput*> inputs) {
@@ -149,7 +149,7 @@ const OperatorNode* GraphBuilder::CreateOperatorNode(
   return operator_node;
 }
 
-const NodeOutput* GraphBuilder::CreateNodeOutput(const Node* node,
+const NodeOutput* GraphBuilderDml::CreateNodeOutput(const Node* node,
                                                  TensorDesc tensor_desc,
                                                  uint32_t output_index) {
   CHECK(node);
@@ -157,7 +157,7 @@ const NodeOutput* GraphBuilder::CreateNodeOutput(const Node* node,
   return &node_outputs_.back();
 }
 
-uint32_t GraphBuilder::CreateOutputEdge(const NodeOutput* node_output) {
+uint32_t GraphBuilderDml::CreateOutputEdge(const NodeOutput* node_output) {
   CHECK(node_output);
   const OperatorNode* from_operator_node =
       node_output->GetNode().AsOperatorNode();
@@ -171,9 +171,9 @@ uint32_t GraphBuilder::CreateOutputEdge(const NodeOutput* node_output) {
   return graph_output_index;
 }
 
-Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
+Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilderDml::Compile(
     DML_EXECUTION_FLAGS flags) const {
-  TRACE_EVENT0("gpu", "dml::GraphBuilder::Compile");
+  TRACE_EVENT0("gpu", "dml::GraphBuilderDml::Compile");
   // Ensure `dml_nodes` vector is ordered by node index of operator node.
   std::vector<DML_GRAPH_NODE_DESC> dml_nodes(operator_nodes_.size());
   for (const auto& operator_node : operator_nodes_) {

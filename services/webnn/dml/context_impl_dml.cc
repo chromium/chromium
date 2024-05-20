@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/dml/context_impl.h"
+#include "services/webnn/dml/context_impl_dml.h"
 
 #include <limits>
 
@@ -12,9 +12,9 @@
 #include "base/containers/span.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/buffer_impl.h"
+#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
-#include "services/webnn/dml/graph_impl.h"
+#include "services/webnn/dml/graph_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
 
@@ -22,11 +22,12 @@ namespace webnn::dml {
 
 using Microsoft::WRL::ComPtr;
 
-ContextImpl::ContextImpl(scoped_refptr<Adapter> adapter,
-                         mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                         WebNNContextProviderImpl* context_provider,
-                         std::unique_ptr<CommandRecorder> command_recorder,
-                         const gpu::GpuFeatureInfo& gpu_feature_info)
+ContextImplDml::ContextImplDml(
+    scoped_refptr<Adapter> adapter,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    WebNNContextProviderImpl* context_provider,
+    std::unique_ptr<CommandRecorder> command_recorder,
+    const gpu::GpuFeatureInfo& gpu_feature_info)
     : WebNNContextImpl(std::move(receiver), context_provider),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
@@ -34,18 +35,18 @@ ContextImpl::ContextImpl(scoped_refptr<Adapter> adapter,
   CHECK(command_recorder_);
 }
 
-ContextImpl::~ContextImpl() = default;
+ContextImplDml::~ContextImplDml() = default;
 
-void ContextImpl::CreateGraphImpl(
+void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  GraphImpl::CreateAndBuild(adapter_, weak_factory_.GetWeakPtr(),
+  GraphImplDml::CreateAndBuild(adapter_, weak_factory_.GetWeakPtr(),
                             std::move(graph_info), std::move(callback),
                             gpu_feature_info_->IsWorkaroundEnabled(
                                 gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
-std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
+std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
@@ -73,13 +74,14 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
 
   // The receiver bound to WebNNBufferImpl.
   //
-  // Safe to use ContextImpl* because this context owns the buffer
+  // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  return std::make_unique<BufferImpl>(std::move(receiver), std::move(buffer),
-                                      this, buffer_info->size, buffer_handle);
+  return std::make_unique<BufferImplDml>(std::move(receiver), std::move(buffer),
+                                         this, buffer_info->size,
+                                         buffer_handle);
 }
 
-void ContextImpl::ReadBuffer(const WebNNBufferImpl& src_buffer,
+void ContextImplDml::ReadBuffer(const WebNNBufferImpl& src_buffer,
                              mojom::WebNNBuffer::ReadBufferCallback callback) {
   HRESULT hr = StartRecordingIfNecessary();
   if (FAILED(hr)) {
@@ -101,8 +103,8 @@ void ContextImpl::ReadBuffer(const WebNNBufferImpl& src_buffer,
     return;
   }
 
-  const BufferImpl& src_buffer_impl =
-      static_cast<const BufferImpl&>(src_buffer);
+  const BufferImplDml& src_buffer_impl =
+      static_cast<const BufferImplDml&>(src_buffer);
   ReadbackBufferWithBarrier(command_recorder_.get(), download_buffer,
                             src_buffer_impl.buffer(), src_buffer_size);
 
@@ -126,12 +128,12 @@ void ContextImpl::ReadBuffer(const WebNNBufferImpl& src_buffer,
   // recorder by calling `ReadbackBufferWithBarrier()` then
   // CommandRecorder::CloseAndExecute().
   adapter_->command_queue()->WaitAsync(base::BindOnce(
-      &ContextImpl::OnReadbackComplete, weak_factory_.GetWeakPtr(),
+      &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
       std::move(download_buffer), checked_src_buffer_size.ValueOrDie(),
       std::move(callback)));
 }
 
-void ContextImpl::OnReadbackComplete(
+void ContextImplDml::OnReadbackComplete(
     ComPtr<ID3D12Resource> download_buffer,
     size_t read_byte_size,
     mojom::WebNNBuffer::ReadBufferCallback callback,
@@ -169,7 +171,7 @@ void ContextImpl::OnReadbackComplete(
       mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
+void ContextImplDml::WriteBuffer(const WebNNBufferImpl& dst_buffer,
                               mojo_base::BigBuffer src_buffer) {
   if (FAILED(StartRecordingIfNecessary())) {
     return;
@@ -206,8 +208,8 @@ void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
 
   upload_buffer->Unmap(0, nullptr);
 
-  const BufferImpl& dst_buffer_impl =
-      static_cast<const BufferImpl&>(dst_buffer);
+  const BufferImplDml& dst_buffer_impl =
+      static_cast<const BufferImplDml&>(dst_buffer);
   UploadBufferWithBarrier(command_recorder_.get(), dst_buffer_impl.buffer(),
                           std::move(upload_buffer), src_buffer.size());
 
@@ -226,10 +228,10 @@ void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
   // to OnUploadComplete() and will be finally released once the wait is
   // satisfied.
   adapter_->command_queue()->WaitAsync(base::BindOnce(
-      &ContextImpl::OnUploadComplete, weak_factory_.GetWeakPtr()));
+      &ContextImplDml::OnUploadComplete, weak_factory_.GetWeakPtr()));
 }
 
-void ContextImpl::OnUploadComplete(HRESULT hr) {
+void ContextImplDml::OnUploadComplete(HRESULT hr) {
   // Once the upload is complete, tell the queue to de-queue the dst_buffer and
   // upload buffer which immediately releases it.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -240,7 +242,7 @@ void ContextImpl::OnUploadComplete(HRESULT hr) {
   }
 }
 
-HRESULT ContextImpl::StartRecordingIfNecessary() {
+HRESULT ContextImplDml::StartRecordingIfNecessary() {
   // Recreate the recorder on error since resources recorded but
   // not executed would remain alive until this context gets destroyed and
   // this context would be prevented from recording new commands.
@@ -273,7 +275,7 @@ HRESULT ContextImpl::StartRecordingIfNecessary() {
   return hr;
 }
 
-void ContextImpl::HandleRecordingError(std::string_view error_message,
+void ContextImplDml::HandleRecordingError(std::string_view error_message,
                                        HRESULT hr) {
   LOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/dml/graph_impl.h"
+#include "services/webnn/dml/graph_impl_dml.h"
 
 #include <winerror.h>
 
@@ -27,12 +27,12 @@
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/buffer_impl.h"
+#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
-#include "services/webnn/dml/context_impl.h"
+#include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/error.h"
-#include "services/webnn/dml/graph_builder.h"
+#include "services/webnn/dml/graph_builder_dml.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
@@ -62,8 +62,8 @@ using mojom::Operation;
 // A map of all mojom operands in `mojom::GraphInfo` using the mojom operand id
 // as key.
 using IdToOperandMap = base::flat_map<uint64_t, OperandPtr>;
-// A map of all node outputs in `dml::GraphBuilder` using the mojom operand id
-// as key.
+// A map of all node outputs in `dml::GraphBuilderDml` using the mojom operand
+// id as key.
 using IdToNodeOutputMap = std::map<uint64_t, const NodeOutput*>;
 
 static constexpr auto kDmlFloatDataTypes =
@@ -283,13 +283,14 @@ HRESULT MapAndCopyInputDataToBuffer(
 
 // Define some methods like CreateInputNode and CreateOperatorNodeForRelu here
 // to focus on converting the mojo graph struct to corresponding DML graph node
-// by using dml::GraphBuilder as a helper. dml::GraphBuilder should be decoupled
-// from mojo graph structs and focus on manipulating DML graph structs.
+// by using dml::GraphBuilderDml as a helper. dml::GraphBuilderDml should be
+// decoupled from mojo graph structs and focus on manipulating DML graph
+// structs.
 //
 // The return value is the GraphInputIndex assigned by graph builder.
 uint32_t CreateInputNode(const IdToOperandMap& id_to_operand_map,
                          uint64_t input_id,
-                         GraphBuilder& graph_builder,
+                         GraphBuilderDml& graph_builder,
                          IdToNodeOutputMap& id_to_node_output_map) {
   const OperandPtr& operand = id_to_operand_map.at(input_id);
   // If the operand is constant, the tensor is identified by
@@ -386,7 +387,7 @@ const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ArgMinMaxPtr& arg_min_max,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, arg_min_max->input_operand_id);
@@ -1164,7 +1165,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
@@ -1336,7 +1337,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ClampPtr& clamp,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, clamp->input_operand_id);
@@ -1372,7 +1373,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ConcatPtr& concat,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_operand_ids = concat->input_operand_ids;
   size_t input_num = input_operand_ids.size();
@@ -1419,7 +1420,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& conv2d = operation->get_conv2d();
   const NodeOutput* input =
@@ -1592,7 +1593,7 @@ template <typename DML_OPERATOR_DESC>
 const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
                                          const TensorDesc& b_tensor,
                                          const TensorDesc& output_tensor,
-                                         GraphBuilder& graph_builder,
+                                         GraphBuilderDml& graph_builder,
                                          DML_OPERATOR_TYPE operator_type,
                                          base::span<const NodeOutput*> inputs) {
   DML_OPERATOR_DESC binary_operator_desc{
@@ -1608,7 +1609,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& binary = operation->get_element_wise_binary();
   // The input a and b tensor descriptions may be broadcasted.
@@ -1764,7 +1765,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPad(
     const IdToOperandMap& id_to_operand_map,
     const mojom::PadPtr& pad,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, pad->input_operand_id);
@@ -1825,7 +1826,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPad(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Pool2dPtr& pool2d,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, pool2d->input_operand_id);
@@ -1987,7 +1988,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
     const IdToOperandMap& id_to_operand_map,
     const mojom::PreluPtr& prelu,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, prelu->input_operand_id);
@@ -2035,7 +2036,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSlice(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SlicePtr& slice,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   base::expected<void, mojom::ErrorPtr> create_operator_result;
   const NodeOutput* input =
@@ -2087,7 +2088,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSlice(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSplit(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SplitPtr& split,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, split->input_operand_id);
@@ -2136,7 +2137,7 @@ template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
 const OperatorNode* CreateUnaryOperator(const TensorDesc& input_tensor,
                                         const TensorDesc& output_tensor,
                                         const NodeOutput* input,
-                                        GraphBuilder& graph_builder) {
+                                        GraphBuilderDml& graph_builder) {
   DML_OPERATOR_DESC unary_operator_desc{
       .InputTensor = &input_tensor.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
@@ -2151,7 +2152,7 @@ template <typename OperatorDesc,
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
     const IdToOperandMap& id_to_operand_map,
     const Operation& operation,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, operation->input_operand_id);
@@ -2180,7 +2181,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForNeg(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ElementWiseUnaryPtr& operation,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, operation->input_operand_id);
@@ -2221,7 +2222,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForNeg(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ElementWiseUnaryPtr& operation,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, operation->input_operand_id);
@@ -2331,7 +2332,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Resample2dPtr& resample2d,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, resample2d->input_operand_id);
@@ -2403,7 +2404,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ReducePtr& reduce,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reduce->input_operand_id);
@@ -2454,7 +2455,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReshape(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ReshapePtr& reshape,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
@@ -2491,7 +2492,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReshape(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
     const IdToOperandMap& id_to_operand_map,
     const mojom::EluPtr& elu,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, elu->input_operand_id);
@@ -2525,7 +2526,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForExpand(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ExpandPtr& expand,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, expand->input_operand_id);
@@ -2563,7 +2564,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForExpand(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
     const IdToOperandMap& id_to_operand_map,
     const mojom::GatherPtr& gather,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, gather->input_operand_id);
@@ -2660,7 +2661,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& gemm = operation->get_gemm();
   const NodeOutput* input_a_node_output =
@@ -2765,7 +2766,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
 // Append an identity node to the input node output. Return the node output of
 // the identity operator if it's successfully created, otherwise return a
 // nullptr.
-const NodeOutput* AppendIdentityNode(GraphBuilder& graph_builder,
+const NodeOutput* AppendIdentityNode(GraphBuilderDml& graph_builder,
                                      const NodeOutput* input) {
   CHECK(input);
   const TensorDesc& input_tensor_desc = input->GetTensorDesc();
@@ -2785,8 +2786,9 @@ const NodeOutput* AppendIdentityNode(GraphBuilder& graph_builder,
 // This helper checks if the input node output is a constant operand, if so,
 // append an identity node to the input node output by calling
 // `AppendIdentityNode`, otherwise do nothing and return `input` directly.
-const NodeOutput* AppendIdentityToConstantOperand(GraphBuilder& graph_builder,
-                                                  const NodeOutput* input) {
+const NodeOutput* AppendIdentityToConstantOperand(
+    GraphBuilderDml& graph_builder,
+    const NodeOutput* input) {
   CHECK(input);
   // Do nothing if the input is without the DML_TENSOR_FLAG_OWNED_BY_DML flag.
   if (!(input->GetTensorDesc().GetFlags() & DML_TENSOR_FLAG_OWNED_BY_DML)) {
@@ -2805,7 +2807,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     const IdToOperandMap& id_to_operand_map,
     const GruType& gru,
     mojom::GraphInfoPtr& graph_info,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
@@ -3106,7 +3108,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
     const IdToOperandMap& id_to_operand_map,
     const mojom::HardSigmoidPtr& hard_sigmoid,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, hard_sigmoid->input_operand_id);
@@ -3145,7 +3147,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSwish(
     const IdToOperandMap& id_to_operand_map,
     const mojom::HardSwishPtr& hard_swish,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, hard_swish->input_operand_id);
@@ -3206,7 +3208,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id,
@@ -3353,7 +3355,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LeakyReluPtr& leaky_relu,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, leaky_relu->input_operand_id);
@@ -3388,7 +3390,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLinear(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LinearPtr& linear,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, linear->input_operand_id);
@@ -3425,7 +3427,7 @@ template <typename LstmType>
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     const LstmType& lstm,
     mojom::GraphInfoPtr& graph_info,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
@@ -3806,7 +3808,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& matmul = operation->get_matmul();
   const NodeOutput* input_a_node_output =
@@ -3897,7 +3899,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
     Adapter* adapter,
     const IdToOperandMap& id_to_operand_map,
     const mojom::SoftmaxPtr& softmax,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, softmax->input_operand_id);
@@ -3960,7 +3962,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SoftplusPtr& softplus,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(id_to_node_output_map,
                                                     softplus->input_operand_id);
@@ -3998,7 +4000,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
     const IdToOperandMap& id_to_operand_map,
     const mojom::TransposePtr& transpose,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, transpose->input_operand_id);
@@ -4066,7 +4068,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     const mojom::TriangularPtr& triangular,
     mojom::GraphInfoPtr& graph_info,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
@@ -4404,7 +4406,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForWhere(
     const IdToOperandMap& id_to_operand_map,
     const mojom::WherePtr& where,
-    GraphBuilder& graph_builder,
+    GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* condition = GetNodeOutputForOperand(
       id_to_node_output_map, where->condition_operand_id);
@@ -4486,15 +4488,16 @@ void HandleGraphCreationFailure(
 
 }  // namespace
 
-GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
-GraphImpl::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
+GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
+GraphImplDml::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
 
-GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo(
+GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo(
     GraphBufferBindingInfo&&) = default;
-GraphImpl::GraphBufferBindingInfo& GraphImpl::GraphBufferBindingInfo::operator=(
-    GraphBufferBindingInfo&&) = default;
+GraphImplDml::GraphBufferBindingInfo&
+GraphImplDml::GraphBufferBindingInfo::operator=(GraphBufferBindingInfo&&) =
+    default;
 
-GraphImpl::PersistentResource::PersistentResource(
+GraphImplDml::PersistentResource::PersistentResource(
     uint64_t persistent_buffer_byte_length,
     ComPtr<ID3D12Resource> persistent_resource)
     : persistent_buffer(std::move(persistent_resource)) {
@@ -4508,9 +4511,9 @@ GraphImpl::PersistentResource::PersistentResource(
       .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
 }
 
-GraphImpl::PersistentResource::~PersistentResource() = default;
+GraphImplDml::PersistentResource::~PersistentResource() = default;
 
-GraphImpl::GraphResources::GraphResources(
+GraphImplDml::GraphResources::GraphResources(
     ComPtr<ID3D12DescriptorHeap> descriptor_heap,
     uint64_t temporary_buffer_byte_length,
     ComPtr<ID3D12Resource> temporary_resource)
@@ -4528,13 +4531,13 @@ GraphImpl::GraphResources::GraphResources(
   }
 }
 
-GraphImpl::GraphResources::~GraphResources() = default;
+GraphImplDml::GraphResources::~GraphResources() = default;
 
 // static
-base::expected<std::unique_ptr<GraphImpl::GraphResources>, HRESULT>
-GraphImpl::AllocateGraphResources(Adapter* adapter,
-                                  IDMLCompiledOperator* compiled_operator) {
-  TRACE_EVENT0("gpu", "GraphImpl::AllocateGraphResources");
+base::expected<std::unique_ptr<GraphImplDml::GraphResources>, HRESULT>
+GraphImplDml::AllocateGraphResources(Adapter* adapter,
+                                     IDMLCompiledOperator* compiled_operator) {
+  TRACE_EVENT0("gpu", "GraphImplDml::AllocateGraphResources");
   // Create the descriptor heap.
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
@@ -4559,7 +4562,7 @@ GraphImpl::AllocateGraphResources(Adapter* adapter,
                                              std::move(temporary_buffer)));
 }
 
-GraphImpl::ComputeResources::ComputeResources(
+GraphImplDml::ComputeResources::ComputeResources(
     ComPtr<ID3D12DescriptorHeap> descriptor_heap,
     AlignedByteLength<std::string> input_aligned_byte_length,
     ComPtr<ID3D12Resource> upload_buffer,
@@ -4581,15 +4584,15 @@ GraphImpl::ComputeResources::ComputeResources(
                       std::move(temporary_resource)),
       command_recorder(std::move(command_recorder)) {}
 
-GraphImpl::ComputeResources::~ComputeResources() = default;
+GraphImplDml::ComputeResources::~ComputeResources() = default;
 
 // static
-base::expected<std::unique_ptr<GraphImpl::ComputeResources>, HRESULT>
-GraphImpl::AllocateComputeResources(
+base::expected<std::unique_ptr<GraphImplDml::ComputeResources>, HRESULT>
+GraphImplDml::AllocateComputeResources(
     Adapter* adapter,
     IDMLCompiledOperator* compiled_operator,
     const ComputeResourceInfo& compute_resource_info) {
-  TRACE_EVENT0("gpu", "GraphImpl::AllocateComputeResources");
+  TRACE_EVENT0("gpu", "GraphImplDml::AllocateComputeResources");
 
   // Create the descriptor heap.
   DML_BINDING_PROPERTIES execution_binding_properties =
@@ -4706,7 +4709,7 @@ GraphImpl::AllocateComputeResources(
 }
 
 // static
-HRESULT GraphImpl::RecordGraphExecution(
+HRESULT GraphImplDml::RecordGraphExecution(
     Adapter* adapter,
     IDMLCompiledOperator* compiled_operator,
     const ComputeResources* compute_resources,
@@ -4802,14 +4805,15 @@ HRESULT GraphImpl::RecordGraphExecution(
   return S_OK;
 }
 
-GraphImpl::GraphImpl(scoped_refptr<Adapter> adapter,
-                     ContextImpl* context,
-                     std::unique_ptr<CommandRecorder> command_recorder,
-                     std::unique_ptr<PersistentResource> persistent_resource,
-                     ComPtr<IDMLCompiledOperator> compiled_operator,
-                     ComputeResourceInfo compute_resource_info,
-                     GraphBufferBindingInfo graph_buffer_binding_info,
-                     std::unique_ptr<ComputeResources> compute_resources)
+GraphImplDml::GraphImplDml(
+    scoped_refptr<Adapter> adapter,
+    ContextImplDml* context,
+    std::unique_ptr<CommandRecorder> command_recorder,
+    std::unique_ptr<PersistentResource> persistent_resource,
+    ComPtr<IDMLCompiledOperator> compiled_operator,
+    ComputeResourceInfo compute_resource_info,
+    GraphBufferBindingInfo graph_buffer_binding_info,
+    std::unique_ptr<ComputeResources> compute_resources)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
@@ -4820,12 +4824,12 @@ GraphImpl::GraphImpl(scoped_refptr<Adapter> adapter,
 
 //  Notice that it's the CommandQueue's responsibility to wait for all of the
 //  queued work to complete before destructing itself.
-GraphImpl::~GraphImpl() = default;
+GraphImplDml::~GraphImplDml() = default;
 
-ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
-    GraphBuilder graph_builder,
+ComPtr<IDMLCompiledOperator> GraphImplDml::CompileOnBackgroundThread(
+    GraphBuilderDml graph_builder,
     const bool pass_dml_execution_disable_meta_commands) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::CompileOnBackgroundThread");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::CompileOnBackgroundThread");
   DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_NONE;
   if (pass_dml_execution_disable_meta_commands) {
     flags |= DML_EXECUTION_FLAG_DISABLE_META_COMMANDS;
@@ -4834,9 +4838,9 @@ ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
 }
 
 // static
-void GraphImpl::OnCompilationComplete(
+void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
-    base::WeakPtr<ContextImpl> context,
+    base::WeakPtr<ContextImplDml> context,
     mojom::WebNNContext::CreateGraphCallback callback,
     std::unique_ptr<CommandRecorder> command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
@@ -4844,7 +4848,7 @@ void GraphImpl::OnCompilationComplete(
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::OnCompilationComplete");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
   if (!compiled_operator) {
     HandleGraphCreationFailure("Failed to compile the graph.",
                                std::move(callback));
@@ -5011,7 +5015,7 @@ void GraphImpl::OnCompilationComplete(
   scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
 
   command_queue->WaitAsync(base::BindOnce(
-      &GraphImpl::OnInitializationComplete, std::move(adapter),
+      &GraphImplDml::OnInitializationComplete, std::move(adapter),
       std::move(context), std::move(command_recorder),
       std::move(persistent_resource), std::move(compiled_operator),
       std::move(compute_resource_info), std::move(graph_buffer_binding_info),
@@ -5019,9 +5023,9 @@ void GraphImpl::OnCompilationComplete(
 }
 
 // static
-void GraphImpl::OnInitializationComplete(
+void GraphImplDml::OnInitializationComplete(
     scoped_refptr<Adapter> adapter,
-    base::WeakPtr<ContextImpl> context,
+    base::WeakPtr<ContextImplDml> context,
     std::unique_ptr<CommandRecorder> command_recorder,
     std::unique_ptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -5029,7 +5033,7 @@ void GraphImpl::OnInitializationComplete(
     GraphBufferBindingInfo graph_buffer_binding_info,
     mojom::WebNNContext::CreateGraphCallback callback,
     HRESULT hr) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::OnInitializationComplete");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::OnInitializationComplete");
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
         "Failed to wait for the initialization to complete.", hr,
@@ -5074,10 +5078,10 @@ void GraphImpl::OnInitializationComplete(
   scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
   // The remote sent to the renderer.
   mojo::PendingAssociatedRemote<mojom::WebNNGraph> blink_remote;
-  // The receiver bound to GraphImpl.
+  // The receiver bound to GraphImplDml.
   context->OnWebNNGraphImplCreated(
       blink_remote.InitWithNewEndpointAndPassReceiver(),
-      base::WrapUnique(new GraphImpl(
+      base::WrapUnique(new GraphImplDml(
           std::move(adapter), context.get(), std::move(command_recorder),
           std::move(persistent_resource), std::move(compiled_operator),
           std::move(compute_resource_info),
@@ -5088,13 +5092,13 @@ void GraphImpl::OnInitializationComplete(
 }
 
 // static
-void GraphImpl::CreateAndBuild(
+void GraphImplDml::CreateAndBuild(
     scoped_refptr<Adapter> adapter,
-    base::WeakPtr<ContextImpl> context,
+    base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::CreateAndBuild");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
   std::unique_ptr<CommandRecorder> command_recorder =
       CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
@@ -5104,7 +5108,7 @@ void GraphImpl::CreateAndBuild(
     return;
   }
 
-  GraphBuilder graph_builder(adapter->dml_device());
+  GraphBuilderDml graph_builder(adapter->dml_device());
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
   std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
@@ -5517,10 +5521,10 @@ void GraphImpl::CreateAndBuild(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
+      base::BindOnce(&GraphImplDml::CompileOnBackgroundThread,
                      std::move(graph_builder),
                      pass_dml_execution_disable_meta_commands),
-      base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(adapter),
+      base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
                      std::move(context), std::move(callback),
                      std::move(command_recorder),
                      std::move(graph_info->constant_id_to_buffer_map),
@@ -5529,7 +5533,7 @@ void GraphImpl::CreateAndBuild(
                      ComputeResourceInfo(graph_info)));
 }
 
-void GraphImpl::HandleComputationFailure(
+void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
     mojom::WebNNGraph::ComputeCallback callback) {
   DLOG(ERROR) << error_message;
@@ -5538,7 +5542,7 @@ void GraphImpl::HandleComputationFailure(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
 
-void GraphImpl::HandleComputationFailure(
+void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
     HRESULT hr,
     mojom::WebNNGraph::ComputeCallback callback) {
@@ -5556,16 +5560,16 @@ void GraphImpl::HandleComputationFailure(
 }
 
 // TODO(crbug.com/41492165): generate error using context.
-void GraphImpl::HandleDispatchFailure(std::string_view error_message,
-                                      HRESULT hr) {
+void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
+                                         HRESULT hr) {
   DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();
 }
 
-void GraphImpl::ComputeImpl(
+void GraphImplDml::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::ComputeImpl");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::ComputeImpl");
 
   // It indicates whether we need to record commands and bind resources again
   // for the graph execution by calling `RecordGraphExecution` method. If either
@@ -5633,15 +5637,15 @@ void GraphImpl::ComputeImpl(
   }
 
   adapter_->command_queue()->WaitAsync(base::BindOnce(
-      &GraphImpl::OnComputationComplete, weak_factory_.GetWeakPtr(),
+      &GraphImplDml::OnComputationComplete, weak_factory_.GetWeakPtr(),
       std::move(callback), std::move(compute_resources)));
 }
 
-void GraphImpl::OnComputationComplete(
+void GraphImplDml::OnComputationComplete(
     mojom::WebNNGraph::ComputeCallback callback,
     std::unique_ptr<ComputeResources> compute_resources,
     HRESULT hr) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::OnComputationComplete");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::OnComputationComplete");
   if (FAILED(hr)) {
     HandleComputationFailure("Failed to wait for the computation to complete.",
                              hr, std::move(callback));
@@ -5687,10 +5691,10 @@ void GraphImpl::OnComputationComplete(
       ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
-void GraphImpl::DispatchImpl(
+void GraphImplDml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::DispatchImpl");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   if (!command_recorder_) {
     command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
@@ -5703,7 +5707,7 @@ void GraphImpl::DispatchImpl(
 
   // Use the existing graph resource if it is available, otherwise allocate
   // a new one.
-  // TODO(crbug.com/1472888): pre-allocate graph resources in graph
+  // TODO(crbug.com/40278771): pre-allocate graph resources in graph
   // initialization.
   std::unique_ptr<GraphResources> graph_resources = std::move(graph_resources_);
   if (!graph_resources) {
@@ -5718,7 +5722,7 @@ void GraphImpl::DispatchImpl(
   }
   CHECK(graph_resources);
 
-  // TODO(crbug.com/1472888): avoid re-recording commands between dispatches.
+  // TODO(crbug.com/40278771): avoid re-recording commands between dispatches.
   HRESULT hr = command_recorder_->Open();
   if (FAILED(hr)) {
     HandleDispatchFailure("Failed to open the command recorder.", hr);
@@ -5737,7 +5741,8 @@ void GraphImpl::DispatchImpl(
       DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
   for (auto& [name, input_buffer] : named_inputs) {
-    BufferImpl* input_buffer_impl = static_cast<BufferImpl*>(input_buffer);
+    BufferImplDml* input_buffer_impl =
+        static_cast<BufferImplDml*>(input_buffer);
     // Get the graph input index for the name.
     const size_t graph_input_index =
         graph_buffer_binding_info_.graph_input_name_to_index_map.at(
@@ -5751,7 +5756,7 @@ void GraphImpl::DispatchImpl(
         &graph_input_buffer_bindings[graph_input_index]};
   }
 
-  // TODO(crbug.com/1472888): consider pre-computing the output binding count.
+  // TODO(crbug.com/40278771): consider pre-computing the output binding count.
   const size_t output_buffer_binding_count =
       graph_buffer_binding_info_.graph_output_name_to_index_map.size();
 
@@ -5767,7 +5772,8 @@ void GraphImpl::DispatchImpl(
       DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
   for (auto& [name, output_buffer] : named_outputs) {
-    BufferImpl* output_buffer_impl = static_cast<BufferImpl*>(output_buffer);
+    BufferImplDml* output_buffer_impl =
+        static_cast<BufferImplDml*>(output_buffer);
     // Get the graph output index with the name.
     const size_t graph_output_index =
         graph_buffer_binding_info_.graph_output_name_to_index_map.at(
@@ -5807,14 +5813,14 @@ void GraphImpl::DispatchImpl(
 
   // Prepare for the next dispatch.
   adapter_->command_queue()->WaitAsync(
-      base::BindOnce(&GraphImpl::OnDispatchComplete, weak_factory_.GetWeakPtr(),
-                     std::move(graph_resources)));
+      base::BindOnce(&GraphImplDml::OnDispatchComplete,
+                     weak_factory_.GetWeakPtr(), std::move(graph_resources)));
 }
 
-void GraphImpl::OnDispatchComplete(
+void GraphImplDml::OnDispatchComplete(
     std::unique_ptr<GraphResources> graph_resources,
     HRESULT hr) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::OnDispatchComplete");
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::OnDispatchComplete");
   if (FAILED(hr)) {
     HandleDispatchFailure("Failed to wait for the dispatch to complete.", hr);
     return;

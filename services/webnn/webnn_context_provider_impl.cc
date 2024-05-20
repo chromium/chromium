@@ -21,19 +21,19 @@
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
-#include "services/webnn/dml/context_impl.h"
+#include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "services/webnn/coreml/context_impl.h"
+#include "services/webnn/coreml/context_impl_coreml.h"
 #endif
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 #if BUILDFLAG(IS_CHROMEOS)
 #include "services/webnn/tflite/context_impl_cros.h"
 #else
-#include "services/webnn/tflite/context_impl.h"
+#include "services/webnn/tflite/context_impl_tflite.h"
 #endif
 #endif
 
@@ -63,7 +63,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     return dml::Adapter::GetInstanceForTesting(kMinDMLFeatureLevelForWebNN);
   }
 
-  // At the current stage, all `ContextImpl` share this instance.
+  // At the current stage, all `ContextImplDml` share this instance.
   //
   // TODO(crbug.com/40277628): Support getting `Adapter` instance based on
   // `options`.
@@ -177,8 +177,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_CHROMEOS)
   auto* context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
 #else
-  auto* context_impl =
-      new tflite::ContextImpl(std::move(receiver), this, std::move(options));
+  auto* context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
+                                                     std::move(options));
 #endif
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
   std::move(callback).Run(
@@ -205,8 +205,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 
   // Get the `Adapter` instance which is created for the adapter according to
-  // the device type. At the current stage, all `ContextImpl` share one instance
-  // for one device type.
+  // the device type. At the current stage, all `ContextImplDml` share one
+  // instance for one device type.
   base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr>
       adapter_creation_result;
   switch (options->device) {
@@ -241,7 +241,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   // The receiver bound to WebNNContextImpl.
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImplDml(
       std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(), this,
       std::move(command_recorder), gpu_feature_info_)));
   std::move(callback).Run(
@@ -253,8 +253,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     // The receiver bound to WebNNContextImpl.
     //
     // TODO: crbug.com/41481333 - Create the CoreML context using `options`.
-    impls_.push_back(base::WrapUnique<WebNNContextImpl>(new coreml::ContextImpl(
-        blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+    impls_.push_back(
+        base::WrapUnique<WebNNContextImpl>(new coreml::ContextImplCoreml(
+            blink_remote.InitWithNewPipeAndPassReceiver(), this)));
     std::move(callback).Run(
         mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
   } else {

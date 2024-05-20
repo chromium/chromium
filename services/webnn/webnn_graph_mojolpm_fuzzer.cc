@@ -14,13 +14,13 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-mojolpm.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/tflite/graph_builder.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_graph_mojolpm_fuzzer.pb.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include "services/webnn/coreml/graph_builder.h"
+#include "services/webnn/coreml/graph_builder_coreml.h"
 #endif
 
 namespace {
@@ -68,12 +68,13 @@ class WebnnGraphLPMFuzzer {
       // Test the Core ML graph builder.
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
-      auto coreml_graph_builder = webnn::coreml::GraphBuilder::CreateAndBuild(
-          *graph_info_ptr, temp_dir.GetPath());
+      auto coreml_graph_builder =
+          webnn::coreml::GraphBuilderCoreml::CreateAndBuild(*graph_info_ptr,
+                                                            temp_dir.GetPath());
 #endif
       // Test the TFLite graph builder.
       auto flatbuffer =
-          webnn::tflite::GraphBuilder::CreateAndBuild(*graph_info_ptr);
+          webnn::tflite::GraphBuilderTflite::CreateAndBuild(*graph_info_ptr);
     }
 
     ++action_index_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/dml/graph_builder.h"
+#include "services/webnn/dml/graph_builder_dml.h"
 
 #include "base/logging.h"
 #include "services/webnn/dml/adapter.h"
@@ -17,7 +17,7 @@
 
 namespace webnn::dml {
 
-class WebNNGraphBuilderTest : public TestBase {
+class WebNNGraphBuilderDmlTest : public TestBase {
  public:
   void SetUp() override;
 
@@ -25,7 +25,7 @@ class WebNNGraphBuilderTest : public TestBase {
   Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
 };
 
-void WebNNGraphBuilderTest::SetUp() {
+void WebNNGraphBuilderDmlTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = Adapter::GetInstanceForTesting();
@@ -42,8 +42,8 @@ void WebNNGraphBuilderTest::SetUp() {
 }
 
 // Test creating an invalid operator node with inconsistent tensor dimensions.
-TEST_F(WebNNGraphBuilderTest, CreateInvalidOperator) {
-  GraphBuilder graph_builder(dml_device_);
+TEST_F(WebNNGraphBuilderDmlTest, CreateInvalidOperator) {
+  GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 3, 4});
   TensorDesc output_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 3});
@@ -64,8 +64,8 @@ TEST_F(WebNNGraphBuilderTest, CreateInvalidOperator) {
 }
 
 // Test building a DML graph with single operator relu.
-TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorRelu) {
-  GraphBuilder graph_builder(dml_device_);
+TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
+  GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 3, 4});
   const InputNode* input_node = graph_builder.CreateInputNode();
@@ -92,8 +92,8 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorRelu) {
 
 // Test building a DML graph with single operator conv2d which has multiple
 // inputs.
-TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorConv2d) {
-  GraphBuilder graph_builder(dml_device_);
+TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorConv2d) {
+  GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
   const InputNode* input_node = graph_builder.CreateInputNode();
@@ -147,8 +147,8 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorConv2d) {
 
 // Test building a DML graph with single operator split which has multiple
 // outputs.
-TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorSplit) {
-  GraphBuilder graph_builder(dml_device_);
+TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorSplit) {
+  GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 6, 4});
   const InputNode* input_node = graph_builder.CreateInputNode();
@@ -200,8 +200,8 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorSplit) {
 //      relu   /
 //        \   /
 //       conv2d
-TEST_F(WebNNGraphBuilderTest, BuildGraphWithReluAndConv2d) {
-  GraphBuilder graph_builder(dml_device_);
+TEST_F(WebNNGraphBuilderDmlTest, BuildGraphWithReluAndConv2d) {
+  GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
   const InputNode* input_node = graph_builder.CreateInputNode();

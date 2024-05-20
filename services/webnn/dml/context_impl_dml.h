@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_DML_CONTEXT_IMPL_H_
-#define SERVICES_WEBNN_DML_CONTEXT_IMPL_H_
+#ifndef SERVICES_WEBNN_DML_CONTEXT_IMPL_DML_H_
+#define SERVICES_WEBNN_DML_CONTEXT_IMPL_DML_H_
 
 #include <d3d12.h>
 
@@ -16,22 +16,22 @@ namespace webnn::dml {
 class Adapter;
 class CommandRecorder;
 
-// `ContextImpl` is created by `WebNNContextProviderImpl` and responsible for
-// creating `GraphImpl` and `BufferImpl` of DirectML backend for Windows
-// platform. The `Adapter` instance is shared by all `GraphImpl` and
-// `BufferImpl` created by this context.
-class ContextImpl final : public WebNNContextImpl {
+// `ContextImplDml` is created by `WebNNContextProviderImpl` and responsible for
+// creating `GraphImplDml` and `BufferImplDml` of DirectML backend for Windows
+// platform. The `Adapter` instance is shared by all `GraphImplDml` and
+// `BufferImplDml` created by this context.
+class ContextImplDml final : public WebNNContextImpl {
  public:
-  ContextImpl(scoped_refptr<Adapter> adapter,
-              mojo::PendingReceiver<mojom::WebNNContext> receiver,
-              WebNNContextProviderImpl* context_provider,
-              std::unique_ptr<CommandRecorder> command_recorder,
-              const gpu::GpuFeatureInfo& gpu_feature_info);
+  ContextImplDml(scoped_refptr<Adapter> adapter,
+                 mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                 WebNNContextProviderImpl* context_provider,
+                 std::unique_ptr<CommandRecorder> command_recorder,
+                 const gpu::GpuFeatureInfo& gpu_feature_info);
 
-  ContextImpl(const WebNNContextImpl&) = delete;
-  ContextImpl& operator=(const ContextImpl&) = delete;
+  ContextImplDml(const WebNNContextImpl&) = delete;
+  ContextImplDml& operator=(const ContextImplDml&) = delete;
 
-  ~ContextImpl() override;
+  ~ContextImplDml() override;
 
   void ReadBuffer(const WebNNBufferImpl& src_buffer,
                   mojom::WebNNBuffer::ReadBufferCallback callback);
@@ -70,7 +70,8 @@ class ContextImpl final : public WebNNContextImpl {
   // release the staging buffer used for the GPU upload.
   void OnUploadComplete(HRESULT hr);
 
-  // The `Adapter` instance shared by all `GraphImpl` created by this context.
+  // The `Adapter` instance shared by all `GraphImplDml` created by this
+  // context.
   scoped_refptr<Adapter> adapter_;
 
   // The `CommandRecorder` instance used exclusively by this context.
@@ -78,9 +79,9 @@ class ContextImpl final : public WebNNContextImpl {
 
   const raw_ref<const gpu::GpuFeatureInfo> gpu_feature_info_;
 
-  base::WeakPtrFactory<ContextImpl> weak_factory_{this};
+  base::WeakPtrFactory<ContextImplDml> weak_factory_{this};
 };
 
 }  // namespace webnn::dml
 
-#endif  // SERVICES_WEBNN_DML_CONTEXT_IMPL_H_
+#endif  // SERVICES_WEBNN_DML_CONTEXT_IMPL_DML_H_

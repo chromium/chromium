@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/tflite/buffer_impl.h"
+#include "services/webnn/tflite/buffer_impl_tflite.h"
 
 #include <climits>
 
@@ -10,7 +10,7 @@
 
 namespace webnn::tflite {
 
-std::unique_ptr<WebNNBufferImpl> BufferImpl::Create(
+std::unique_ptr<WebNNBufferImpl> BufferImplTflite::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info,
@@ -21,11 +21,11 @@ std::unique_ptr<WebNNBufferImpl> BufferImpl::Create(
     return nullptr;
   }
 
-  return base::WrapUnique(new BufferImpl(std::move(receiver), context,
+  return base::WrapUnique(new BufferImplTflite(std::move(receiver), context,
                                          buffer_info->size, buffer_handle));
 }
 
-BufferImpl::BufferImpl(
+BufferImplTflite::BufferImplTflite(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     size_t size,
@@ -34,14 +34,14 @@ BufferImpl::BufferImpl(
   buffer_ = base::HeapArray<uint8_t>::WithSize(size);
 }
 
-BufferImpl::~BufferImpl() = default;
+BufferImplTflite::~BufferImplTflite() = default;
 
-void BufferImpl::ReadBufferImpl(ReadBufferCallback callback) {
+void BufferImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
   std::move(callback).Run(
       mojom::ReadBufferResult::NewBuffer(mojo_base::BigBuffer(buffer_)));
 }
 
-void BufferImpl::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void BufferImplTflite::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
   buffer_.first(src_buffer.size()).copy_from(base::span(src_buffer));
 }
 

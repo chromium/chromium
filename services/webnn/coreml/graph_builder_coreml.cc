@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/coreml/graph_builder.h"
+#include "services/webnn/coreml/graph_builder_coreml.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -449,7 +449,7 @@ void PopulateValueType(CoreML::Specification::MILSpec::DataType mil_data_type,
 }
 
 void PopulateValueTypeFromOperandInfo(
-    const GraphBuilder::OperandInfo& operand,
+    const GraphBuilderCoreml::OperandInfo& operand,
     CoreML::Specification::MILSpec::ValueType& value_type) {
   PopulateValueType(operand.mil_data_type, operand.dimensions, value_type);
 }
@@ -535,8 +535,8 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name) {
 }
 
 // static
-base::expected<std::unique_ptr<GraphBuilder::Result>, mojom::ErrorPtr>
-GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
+base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
+GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
                              const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
   // compileModelAtURL creates a folder directly in the NSTemporaryDirectory
@@ -548,15 +548,15 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
 
   base::FilePath data_dir = ml_package_dir.Append(kMlPackageDataDir);
 
-  GraphBuilder graph_builder(graph_info, std::move(ml_package_dir));
+  GraphBuilderCoreml graph_builder(graph_info, std::move(ml_package_dir));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
   return graph_builder.FinishAndTakeResult();
 }
 
-GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
-                           base::FilePath ml_package_dir)
+GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
+                                       base::FilePath ml_package_dir)
     : graph_info_(graph_info),
       internal_operand_id_(
           base::ranges::max_element(
@@ -566,10 +566,10 @@ GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
               ->first),
       result_(std::make_unique<Result>(std::move(ml_package_dir))) {}
 
-GraphBuilder::~GraphBuilder() = default;
+GraphBuilderCoreml::~GraphBuilderCoreml() = default;
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilder::BuildCoreMLModel() {
+GraphBuilderCoreml::BuildCoreMLModel() {
   CHECK_EQ(ml_model_.specificationversion(), 0);
   // Based on comment in Model.proto
   //  * 8 : iOS 17, macOS 14, tvOS 17, watchOS 10 (Core ML 7)
@@ -775,7 +775,7 @@ GraphBuilder::BuildCoreMLModel() {
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::SerializeModel() {
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::SerializeModel() {
   base::ElapsedTimer ml_model_write_timer;
   base::FilePath model_file_path = ml_package_dir()
                                        .Append(kMlPackageDataDir)
@@ -797,11 +797,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::SerializeModel() {
   return base::ok();
 }
 
-std::unique_ptr<GraphBuilder::Result> GraphBuilder::FinishAndTakeResult() {
+std::unique_ptr<GraphBuilderCoreml::Result>
+GraphBuilderCoreml::FinishAndTakeResult() {
   return std::move(result_);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
     CoreML::Specification::MILSpec::Block& block) {
   base::FilePath weights_file_path = ml_package_dir()
                                          .Append(kMlPackageDataDir)
@@ -860,7 +861,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
   return base::ok();
 }
 
-void GraphBuilder::AddPlaceholderInput(
+void GraphBuilderCoreml::AddPlaceholderInput(
     CoreML::Specification::MILSpec::Function& main_function,
     CoreML::Specification::MILSpec::Block& block) {
   auto* mutable_description = ml_model_.mutable_description();
@@ -900,7 +901,8 @@ void GraphBuilder::AddPlaceholderInput(
   PopulateValueTypeFromOperandInfo(operand_info, output_value_type);
 }
 
-[[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddInput(
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddInput(
     uint64_t input_id,
     CoreML::Specification::MILSpec::Function& main_function,
     CoreML::Specification::MILSpec::Block& block) {
@@ -929,8 +931,8 @@ void GraphBuilder::AddPlaceholderInput(
   return base::ok();
 }
 
-[[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOutput(
-    uint64_t output_id) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOutput(uint64_t output_id) {
   CHECK(id_to_operand_info_map().contains(output_id));
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
@@ -939,12 +941,13 @@ void GraphBuilder::AddPlaceholderInput(
 }
 
 base::expected<CoreML::Specification::MILSpec::Operation*, mojom::ErrorPtr>
-GraphBuilder::CreateUnaryOperation(SupportedDataType supported_data_type,
-                                   std::string_view op_name,
-                                   uint64_t input_operand_id,
-                                   uint64_t output_operand_id,
-                                   CoreML::Specification::MILSpec::Block& block,
-                                   std::string_view operand_op_name) {
+GraphBuilderCoreml::CreateUnaryOperation(
+    SupportedDataType supported_data_type,
+    std::string_view op_name,
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
+    CoreML::Specification::MILSpec::Block& block,
+    std::string_view operand_op_name) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   switch (supported_data_type) {
     case SupportedDataType::kFloats: {
@@ -976,7 +979,7 @@ GraphBuilder::CreateUnaryOperation(SupportedDataType supported_data_type,
   return op;
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
     SupportedDataType supported_data_type,
     std::string_view op_name,
     uint64_t input_operand_id,
@@ -990,7 +993,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
 }
 
 template <typename T>
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
     SupportedDataType supported_data_type,
     std::string_view op_name,
     const T& operation,
@@ -1002,7 +1005,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
+GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
     std::string_view input_name,
     CoreML::Specification::MILSpec::DataType input_mil_data_type,
@@ -1029,7 +1032,7 @@ GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
 
 template <typename T>
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
+GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
     const T& operation,
     float epsilon,
@@ -1043,7 +1046,7 @@ GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForBatchNormalization(
+GraphBuilderCoreml::AddOperationForBatchNormalization(
     const mojom::BatchNormalization& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -1109,7 +1112,7 @@ GraphBuilder::AddOperationForBatchNormalization(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForCast(
     uint64_t input_operand_id,
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
@@ -1149,7 +1152,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForClamp(
     uint64_t input_operand_id,
     float min_value,
     float max_value,
@@ -1182,7 +1185,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForClamp(
     const mojom::Clamp& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForClamp(operation.input_operand_id, operation.min_value,
@@ -1190,7 +1193,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
                               block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConcat(
     const mojom::Concat& operation,
     CoreML::Specification::MILSpec::Block& block) {
   // Note that BOOL is also supported by CoreML, but WebNN does not have a
@@ -1227,7 +1230,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
     const mojom::Conv2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
@@ -1380,7 +1383,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForElementwiseBinary(
+GraphBuilderCoreml::AddOperationForElementwiseBinary(
     uint64_t lhs_operand_id,
     uint64_t rhs_operand_id,
     uint64_t output_operand_id,
@@ -1480,7 +1483,7 @@ GraphBuilder::AddOperationForElementwiseBinary(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForElementwiseUnary(
+GraphBuilderCoreml::AddOperationForElementwiseUnary(
     const mojom::ElementWiseUnary& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const CoreML::Specification::MILSpec::DataType input_data_type =
@@ -1582,7 +1585,7 @@ GraphBuilder::AddOperationForElementwiseUnary(
   }
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForElu(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForElu(
     uint64_t input_operand_id,
     float alpha,
     uint64_t output_operand_id,
@@ -1597,14 +1600,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForElu(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForElu(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForElu(
     const mojom::Elu& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForElu(operation.input_operand_id, operation.alpha,
                             operation.output_operand_id, block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGather(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
     const mojom::Gather& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -1660,7 +1663,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGather(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
     const mojom::Gemm& operation,
     CoreML::Specification::MILSpec::Block& block) {
   // Gemm is not supported in CoreML. This is emulated with:
@@ -1758,7 +1761,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
       mojom::ElementWiseBinary::Kind::kAdd, block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForHardSigmoid(
     uint64_t input_operand_id,
     float alpha,
     float beta,
@@ -1785,7 +1789,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForHardSigmoid(
     const mojom::HardSigmoid& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForHardSigmoid(operation.input_operand_id, operation.alpha,
@@ -1793,7 +1798,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
                                     block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSwish(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForHardSwish(
     const mojom::HardSwish& operation,
     CoreML::Specification::MILSpec::Block& block) {
   // Hardswish is not supported in CoreML, the formula is:
@@ -1821,7 +1827,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSwish(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForInstanceNormalization(
+GraphBuilderCoreml::AddOperationForInstanceNormalization(
     const mojom::InstanceNormalization& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -1860,7 +1866,8 @@ GraphBuilder::AddOperationForInstanceNormalization(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLeakyRelu(
     uint64_t input_operand_id,
     float alpha,
     uint64_t output_operand_id,
@@ -1878,14 +1885,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLeakyRelu(
     const mojom::LeakyRelu& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForLeakyRelu(operation.input_operand_id, operation.alpha,
                                   operation.output_operand_id, block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
     const mojom::Linear& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -1936,7 +1944,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForMatmul(
+GraphBuilderCoreml::AddOperationForMatmul(
     uint64_t input_x_operand_id,
     uint64_t input_y_operand_id,
     bool transpose_x,
@@ -1971,7 +1979,7 @@ GraphBuilder::AddOperationForMatmul(
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddOperationForMatmul(
+GraphBuilderCoreml::AddOperationForMatmul(
     const mojom::Matmul& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return (AddOperationForMatmul(
@@ -1979,7 +1987,7 @@ GraphBuilder::AddOperationForMatmul(
       /*transpose_y=*/false, operation.output_operand_id, block));
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
     const mojom::Pool2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2070,7 +2078,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReduce(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
     const mojom::Reduce& operation,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -2135,7 +2143,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReduce(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForResample2d(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForResample2d(
     const mojom::Resample2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2204,7 +2213,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForResample2d(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReshape(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForReshape(
     uint64_t input_operand_id,
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2242,14 +2252,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReshape(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReshape(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForReshape(
     const mojom::Reshape& operation,
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForReshape(operation.input_operand_id,
                                 operation.output_operand_id, block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSlice(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForSlice(
     const mojom::Slice& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2297,7 +2308,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSlice(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftmax(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForSoftmax(
     const mojom::Softmax& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2317,7 +2329,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftmax(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForTranspose(
     const mojom::Transpose& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2350,7 +2363,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddConstantImmediateValue(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddConstantImmediateValue(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();
@@ -2406,7 +2420,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddConstantImmediateValue(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddConstantFileValue(
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddConstantFileValue(
     uint64_t constant_id,
     uint64_t offset,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2430,7 +2444,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddConstantFileValue(
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::AddInternalConstantWithValue(
+GraphBuilderCoreml::AddInternalConstantWithValue(
     uint64_t internal_operand_id,
     CoreML::Specification::MILSpec::Value value,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2443,17 +2457,18 @@ GraphBuilder::AddInternalConstantWithValue(
   return base::ok();
 }
 
-const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
+const mojom::Operand& GraphBuilderCoreml::GetOperand(
+    uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-[[nodiscard]] const GraphBuilder::OperandInfo& GraphBuilder::GetOperandInfo(
-    uint64_t operand_id) const {
+[[nodiscard]] const GraphBuilderCoreml::OperandInfo&
+GraphBuilderCoreml::GetOperandInfo(uint64_t operand_id) const {
   return result_->GetOperandInfo(operand_id);
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::PopulateConstantOpFromOperand(
+GraphBuilderCoreml::PopulateConstantOpFromOperand(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Operation& op) {
   CoreML::Specification::MILSpec::DataType mil_data_type =
@@ -2469,7 +2484,8 @@ GraphBuilder::PopulateConstantOpFromOperand(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::PopulateFeatureDescription(
     uint64_t operand_id,
     ::CoreML::Specification::FeatureDescription& feature_description) {
   const mojom::Operand& operand = GetOperand(operand_id);
@@ -2524,7 +2540,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
 }
 
 base::expected<uint64_t, mojom::ErrorPtr>
-GraphBuilder::GenerateInternalOperandInfo(
+GraphBuilderCoreml::GenerateInternalOperandInfo(
     CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions) {
   internal_operand_id_++;
@@ -2545,7 +2561,7 @@ GraphBuilder::GenerateInternalOperandInfo(
   return operand_id;
 }
 
-void GraphBuilder::PopulateNamedValueType(
+void GraphBuilderCoreml::PopulateNamedValueType(
     uint64_t operand_id,
     CoreML::Specification::MILSpec::NamedValueType& named_value_type) {
   named_value_type.set_name(GetOperandInfo(operand_id).coreml_name);
@@ -2553,7 +2569,7 @@ void GraphBuilder::PopulateNamedValueType(
   PopulateValueTypeFromOperandInfo(GetOperandInfo(operand_id), value_type);
 }
 
-void GraphBuilder::PopulateNamedValueType(
+void GraphBuilderCoreml::PopulateNamedValueType(
     std::string_view name,
     CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions,
@@ -2563,7 +2579,7 @@ void GraphBuilder::PopulateNamedValueType(
   PopulateValueType(mil_data_type, dimensions, value_type);
 }
 
-void GraphBuilder::PopulateNamedValueTypeForInput(
+void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
     uint64_t operand_id,
     CoreML::Specification::MILSpec::NamedValueType& named_value_type) {
   PopulateNamedValueType(operand_id, named_value_type);
@@ -2578,7 +2594,7 @@ void GraphBuilder::PopulateNamedValueTypeForInput(
   }
 }
 
-void GraphBuilder::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
+void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   CHECK(
       id_to_operand_info_map()
@@ -2590,7 +2606,7 @@ void GraphBuilder::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
 }
 
 base::expected<void, mojom::ErrorPtr>
-GraphBuilder::SetupMlPackageDirStructure() {
+GraphBuilderCoreml::SetupMlPackageDirStructure() {
   if (!base::CreateDirectory(ml_package_dir())) {
     return NewUnknownError("Fail to create .mlpackage directory.");
   }
@@ -2642,7 +2658,7 @@ GraphBuilder::SetupMlPackageDirStructure() {
   return base::ok();
 }
 
-std::string GraphBuilder::GetCoreMLNameFromOperand(uint64_t operand_id) {
+std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   // CoreML doesn't allow op output names to start with numbers, so "var_"
   // prefixes are added.
@@ -2666,7 +2682,7 @@ std::string GraphBuilder::GetCoreMLNameFromOperand(uint64_t operand_id) {
   }
 }
 
-GraphBuilder::OperandInfo::OperandInfo(
+GraphBuilderCoreml::OperandInfo::OperandInfo(
     std::string name,
     base::span<const uint32_t> dimensions,
     CoreML::Specification::MILSpec::DataType mil_data_type)
@@ -2675,12 +2691,12 @@ GraphBuilder::OperandInfo::OperandInfo(
       dimensions(dimensions.begin(), dimensions.end()),
       mil_data_type(mil_data_type) {}
 
-GraphBuilder::OperandInfo::OperandInfo() = default;
-GraphBuilder::OperandInfo::~OperandInfo() = default;
-GraphBuilder::OperandInfo::OperandInfo(OperandInfo&) = default;
-GraphBuilder::OperandInfo::OperandInfo(OperandInfo&&) = default;
+GraphBuilderCoreml::OperandInfo::OperandInfo() = default;
+GraphBuilderCoreml::OperandInfo::~OperandInfo() = default;
+GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&) = default;
+GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&&) = default;
 
-GraphBuilder::InputOperandInfo::InputOperandInfo(
+GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(
     std::string name,
     std::vector<uint32_t> dimensions,
     mojom::Operand::DataType data_type)
@@ -2688,16 +2704,19 @@ GraphBuilder::InputOperandInfo::InputOperandInfo(
       dimensions(std::move(dimensions)),
       data_type(data_type) {}
 
-GraphBuilder::InputOperandInfo::InputOperandInfo() = default;
-GraphBuilder::InputOperandInfo::~InputOperandInfo() = default;
-GraphBuilder::InputOperandInfo::InputOperandInfo(InputOperandInfo&) = default;
-GraphBuilder::InputOperandInfo::InputOperandInfo(InputOperandInfo&&) = default;
+GraphBuilderCoreml::InputOperandInfo::InputOperandInfo() = default;
+GraphBuilderCoreml::InputOperandInfo::~InputOperandInfo() = default;
+GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(InputOperandInfo&) =
+    default;
+GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(InputOperandInfo&&) =
+    default;
 
-GraphBuilder::Result::Result(base::FilePath ml_package_dir)
+GraphBuilderCoreml::Result::Result(base::FilePath ml_package_dir)
     : ml_package_dir(std::move(ml_package_dir)) {}
-GraphBuilder::Result::~Result() = default;
+GraphBuilderCoreml::Result::~Result() = default;
 
-GraphBuilder::InputOperandInfo GraphBuilder::Result::FindModelInputOperandInfo(
+GraphBuilderCoreml::InputOperandInfo
+GraphBuilderCoreml::Result::FindModelInputOperandInfo(
     const std::string& input_name) const {
   auto it = input_name_to_id_map.find(input_name);
   const OperandInfo& input_operand = GetOperandInfo(it->second);
@@ -2710,12 +2729,12 @@ GraphBuilder::InputOperandInfo GraphBuilder::Result::FindModelInputOperandInfo(
       MILDataTypeToOperandType(input_operand.mil_data_type)};
 }
 
-const base::FilePath& GraphBuilder::Result::GetModelFilePath() {
+const base::FilePath& GraphBuilderCoreml::Result::GetModelFilePath() {
   return ml_package_dir;
 }
 
-const GraphBuilder::OperandInfo& GraphBuilder::Result::GetOperandInfo(
-    uint64_t operand_id) const {
+const GraphBuilderCoreml::OperandInfo&
+GraphBuilderCoreml::Result::GetOperandInfo(uint64_t operand_id) const {
   auto it = id_to_operand_info_map.find(operand_id);
   CHECK(it != id_to_operand_info_map.end());
   return it->second;

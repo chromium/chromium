@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/tflite/graph_impl.h"
+#include "services/webnn/tflite/graph_impl_tflite.h"
 
 #include "base/location.h"
 #include "base/task/task_traits.h"
@@ -14,8 +14,8 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/tflite/context_impl.h"
-#include "services/webnn/tflite/graph_builder.h"
+#include "services/webnn/tflite/context_impl_tflite.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -66,7 +66,7 @@ base::span<uint8_t> SpanFromTensor(TfLiteTensor* tensor) {
 // Represents the thread-safe collection of graph resources which are shared
 // among all interpreters. Since this class is reference counted it MUST be
 // safe to destroy on any thread.
-class GraphImpl::GraphResources
+class GraphImplTflite::GraphResources
     : public base::RefCountedThreadSafe<GraphResources> {
  public:
   static base::expected<scoped_refptr<GraphResources>, mojom::ErrorPtr> Create(
@@ -74,7 +74,7 @@ class GraphImpl::GraphResources
     auto self = base::MakeRefCounted<GraphResources>();
 
     ASSIGN_OR_RETURN(
-        self->model_content_, GraphBuilder::CreateAndBuild(graph_info),
+        self->model_content_, GraphBuilderTflite::CreateAndBuild(graph_info),
         [](std::string error) {
           return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                    std::move(error));
@@ -108,10 +108,11 @@ class GraphImpl::GraphResources
 
 // Represents the non-thread-safe collection of graph resources associated with
 // a particular compute context (i.e. a TFLite interpreter).
-class GraphImpl::ComputeResources {
+class GraphImplTflite::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  Create(scoped_refptr<GraphResources> graph_resources, ContextImpl* context) {
+  Create(scoped_refptr<GraphResources> graph_resources,
+         ContextImplTflite* context) {
     auto self = std::make_unique<ComputeResources>();
 
     int num_threads =
@@ -206,33 +207,34 @@ class GraphImpl::ComputeResources {
 };
 
 // static
-base::expected<std::unique_ptr<GraphImpl>, mojom::ErrorPtr>
-GraphImpl::CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                          ContextImpl* context) {
+base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
+GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
+                                ContextImplTflite* context) {
   ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
                    GraphResources::Create(*graph_info));
 
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
                    ComputeResources::Create(graph_resources, context));
 
-  return base::WrapUnique(new GraphImpl(ComputeResourceInfo(graph_info),
-                                        std::move(graph_resources),
-                                        std::move(compute_resources), context));
+  return base::WrapUnique(new GraphImplTflite(
+      ComputeResourceInfo(graph_info), std::move(graph_resources),
+      std::move(compute_resources), context));
 }
 
-GraphImpl::~GraphImpl() = default;
+GraphImplTflite::~GraphImplTflite() = default;
 
-GraphImpl::GraphImpl(ComputeResourceInfo compute_resource_info,
-                     scoped_refptr<GraphResources> graph_resources,
-                     std::unique_ptr<ComputeResources> compute_resources,
-                     ContextImpl* context)
+GraphImplTflite::GraphImplTflite(
+    ComputeResourceInfo compute_resource_info,
+    scoped_refptr<GraphResources> graph_resources,
+    std::unique_ptr<ComputeResources> compute_resources,
+    ContextImplTflite* context)
     : WebNNGraphImpl(std::move(compute_resource_info)),
       context_(context),
       graph_resources_(std::move(graph_resources)),
       compute_resources_(std::move(compute_resources)) {}
 
-void GraphImpl::ComputeImpl(NamedBuffers named_inputs,
-                            ComputeCallback callback) {
+void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
+                                  ComputeCallback callback) {
   // Borrow `compute_resources_` for the current invocation, creating a new one
   // if necessary.
   auto compute_resources = std::move(compute_resources_);
@@ -256,12 +258,12 @@ void GraphImpl::ComputeImpl(NamedBuffers named_inputs,
             return {std::move(result), std::move(compute_resources)};
           },
           std::move(named_inputs), std::move(compute_resources)),
-      base::BindOnce(&GraphImpl::OnComputeComplete, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&GraphImplTflite::OnComputeComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GraphImpl::OnComputeComplete(ComputeCallback callback,
-                                  AsyncComputeResult result) {
+void GraphImplTflite::OnComputeComplete(ComputeCallback callback,
+                                        AsyncComputeResult result) {
   // Returns the borrowed `compute_resources_` if another task hasn't already.
   if (!compute_resources_) {
     compute_resources_ = std::move(result.second);
@@ -270,10 +272,10 @@ void GraphImpl::OnComputeComplete(ComputeCallback callback,
   std::move(callback).Run(std::move(result.first));
 }
 
-void GraphImpl::DispatchImpl(
+void GraphImplTflite::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
+  // TODO(crbug.com/40278771): Implement MLBuffer for TFLite. Involve
   // an IPC security reviewer.
   NOTIMPLEMENTED();
 }

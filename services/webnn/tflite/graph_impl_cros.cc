@@ -8,7 +8,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/tflite/context_impl_cros.h"
-#include "services/webnn/tflite/graph_builder.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -21,7 +21,7 @@ void GraphImplCrOS::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   base::expected<flatbuffers::DetachedBuffer, std::string> conversion_result =
-      GraphBuilder::CreateAndBuild(*graph_info);
+      GraphBuilderTflite::CreateAndBuild(*graph_info);
   if (!conversion_result.has_value()) {
     std::move(callback).Run(ToError<mojom::CreateGraphResult>(
         mojom::Error::Code::kUnknownError, conversion_result.error()));
@@ -108,7 +108,7 @@ void GraphImplCrOS::ComputeImpl(
 void GraphImplCrOS::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
+  // TODO(crbug.com/40278771): Implement MLBuffer for TFLite. Involve
   // an IPC security reviewer.
   NOTIMPLEMENTED();
 }

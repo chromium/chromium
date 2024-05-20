@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/tflite/graph_builder.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 
 #include <cstdint>
 #include <vector>
@@ -245,8 +245,8 @@ GetActivationFunctionType(const mojom::Activation& activation) {
 
 // static
 base::expected<flatbuffers::DetachedBuffer, std::string>
-GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
-  GraphBuilder builder(graph_info);
+GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
+  GraphBuilderTflite builder(graph_info);
 
   for (const auto& [operand_id, operand] : graph_info.id_to_operand_map) {
     RETURN_IF_ERROR(builder.SerializeOperand(operand_id, *operand));
@@ -260,16 +260,16 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
                                          graph_info.output_operands);
 }
 
-GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info)
+GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)
     : graph_info_(graph_info) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
 }
 
-GraphBuilder::~GraphBuilder() = default;
+GraphBuilderTflite::~GraphBuilderTflite() = default;
 
-base::expected<void, std::string> GraphBuilder::SerializeOperand(
+base::expected<void, std::string> GraphBuilderTflite::SerializeOperand(
     uint64_t operand_id,
     const mojom::Operand& operand) {
   // The index of `tflite::Tensor` array, each `Operand` (input, constant,
@@ -303,7 +303,7 @@ base::expected<void, std::string> GraphBuilder::SerializeOperand(
   return base::ok();
 }
 
-base::expected<void, std::string> GraphBuilder::SerializeOperation(
+base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     const mojom::Operation& op) {
   OperatorOffset operator_offset;
   switch (op.which()) {
@@ -439,7 +439,7 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
   return base::ok();
 }
 
-flatbuffers::DetachedBuffer GraphBuilder::FinishAndTakeFlatBuffer(
+flatbuffers::DetachedBuffer GraphBuilderTflite::FinishAndTakeFlatBuffer(
     base::span<const uint64_t> input_operands,
     base::span<const uint64_t> output_operands) {
   CHECK(!is_created_model_);
@@ -488,7 +488,8 @@ flatbuffers::DetachedBuffer GraphBuilder::FinishAndTakeFlatBuffer(
   return builder_.Release();
 }
 
-uint32_t GraphBuilder::SerializeBuffer(const mojo_base::BigBuffer& constant) {
+uint32_t GraphBuilderTflite::SerializeBuffer(
+    const mojo_base::BigBuffer& constant) {
   const auto buffer_data =
       builder_.CreateVector(constant.data(), constant.size());
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
@@ -499,7 +500,7 @@ uint32_t GraphBuilder::SerializeBuffer(const mojo_base::BigBuffer& constant) {
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
-int32_t GraphBuilder::SerializeTensorWithBuffer(
+int32_t GraphBuilderTflite::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
@@ -516,7 +517,7 @@ int32_t GraphBuilder::SerializeTensorWithBuffer(
   return tensor_index;
 }
 
-int32_t GraphBuilder::SerializeTemporaryTensor(
+int32_t GraphBuilderTflite::SerializeTemporaryTensor(
     base::span<const int32_t> dimensions,
     ::tflite::TensorType tensor_type) {
   const int32_t temporary_tensor_index =
@@ -527,7 +528,8 @@ int32_t GraphBuilder::SerializeTemporaryTensor(
   return temporary_tensor_index;
 }
 
-uint32_t GraphBuilder::GetOperatorCodeIndex(::tflite::BuiltinOperator code) {
+uint32_t GraphBuilderTflite::GetOperatorCodeIndex(
+    ::tflite::BuiltinOperator code) {
   // New builtin operators, whose operator code is larger than 127, can not be
   // assigned to the `deprecated_code` field. In such cases, the value of the
   // `code` field should be used for the builtin operator code, the value 127
@@ -546,11 +548,12 @@ uint32_t GraphBuilder::GetOperatorCodeIndex(::tflite::BuiltinOperator code) {
   return operator_code_index;
 }
 
-const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
+const mojom::Operand& GraphBuilderTflite::GetOperand(
+    uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-auto GraphBuilder::SerializeUnaryOperation(
+auto GraphBuilderTflite::SerializeUnaryOperation(
     ::tflite::BuiltinOperator code,
     int32_t input_tensor_index,
     int32_t output_tensor_index,
@@ -571,7 +574,7 @@ auto GraphBuilder::SerializeUnaryOperation(
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeCastOperation(
+auto GraphBuilderTflite::SerializeCastOperation(
     int32_t input_tensor_index,
     ::tflite::TensorType input_tensor_type,
     int32_t output_tensor_index,
@@ -589,11 +592,11 @@ auto GraphBuilder::SerializeCastOperation(
       ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
 }
 
-auto GraphBuilder::SerializeBinaryOperation(::tflite::BuiltinOperator code,
-                                            int32_t lhs_tensor_index,
-                                            int32_t rhs_tensor_index,
-                                            int32_t output_tensor_index)
-    -> OperatorOffset {
+auto GraphBuilderTflite::SerializeBinaryOperation(
+    ::tflite::BuiltinOperator code,
+    int32_t lhs_tensor_index,
+    int32_t rhs_tensor_index,
+    int32_t output_tensor_index) -> OperatorOffset {
   const uint32_t operator_code_index = GetOperatorCodeIndex(code);
   const std::array<int32_t, 2> op_inputs = {lhs_tensor_index, rhs_tensor_index};
   const std::array<int32_t, 1> op_outputs = {output_tensor_index};
@@ -602,7 +605,7 @@ auto GraphBuilder::SerializeBinaryOperation(::tflite::BuiltinOperator code,
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilder::SerializeLinearOperation(
+auto GraphBuilderTflite::SerializeLinearOperation(
     base::span<const int32_t> input_dimensions,
     ::tflite::TensorType input_tensor_type,
     int32_t input_tensor_index,
@@ -628,7 +631,7 @@ auto GraphBuilder::SerializeLinearOperation(
                                   output_tensor_index);
 }
 
-auto GraphBuilder::SerializeTransposeOperation(
+auto GraphBuilderTflite::SerializeTransposeOperation(
     int32_t input_tensor_index,
     int32_t output_tensor_index,
     base::span<const uint32_t> permutation) -> OperatorOffset {
@@ -647,9 +650,9 @@ auto GraphBuilder::SerializeTransposeOperation(
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilder::InsertPadOperation(const mojom::Operand& input_operand,
-                                      int32_t input_tensor_index,
-                                      base::span<const uint32_t> paddings)
+auto GraphBuilderTflite::InsertPadOperation(const mojom::Operand& input_operand,
+                                            int32_t input_tensor_index,
+                                            base::span<const uint32_t> paddings)
     -> base::expected<int32_t, std::string> {
   // WebNN explicit padding is in [beginning_height, ending_height,
   // beginning_width, ending_width] sequence.
@@ -715,7 +718,7 @@ auto GraphBuilder::InsertPadOperation(const mojom::Operand& input_operand,
   return output_tensor_index;
 }
 
-int32_t GraphBuilder::InsertTransposeOperation(
+int32_t GraphBuilderTflite::InsertTransposeOperation(
     const mojom::Operand& input_operand,
     int32_t input_tensor_index,
     base::span<const uint32_t> permutation) {
@@ -745,7 +748,7 @@ int32_t GraphBuilder::InsertTransposeOperation(
   return output_tensor_index;
 }
 
-auto GraphBuilder::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
+auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
     -> base::expected<OperatorOffset, std::string> {
   // The axis is a scalar constraint in arg_min_max::Prepare() function here
   // third_party/tflite/src/tensorflow/lite/kernels/arg_min_max.cc, the tensor
@@ -801,7 +804,7 @@ auto GraphBuilder::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
+auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
     -> base::expected<OperatorOffset, std::string> {
   ASSIGN_OR_RETURN(ClampRange clamp_range, GetClampRange(clamp));
   ::tflite::BuiltinOperator code;
@@ -822,7 +825,7 @@ auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
       operand_to_index_map_.at(clamp.output_operand_id));
 }
 
-auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
+auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
     -> OperatorOffset {
   int32_t* operator_inputs = nullptr;
   auto operator_inputs_index = builder_.CreateUninitializedVector<int32_t>(
@@ -849,7 +852,7 @@ auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
       ::tflite::BuiltinOptions_ConcatenationOptions, concat_options.Union());
 }
 
-auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
+auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
   if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
     return base::unexpected("convTranspose2d is not implemented.");
@@ -957,7 +960,7 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeElementWiseBinary(
+auto GraphBuilderTflite::SerializeElementWiseBinary(
     const mojom::ElementWiseBinary& op) -> OperatorOffset {
   ::tflite::BuiltinOperator code;
   switch (op.kind) {
@@ -1005,7 +1008,8 @@ auto GraphBuilder::SerializeElementWiseBinary(
       operand_to_index_map_.at(op.output_operand_id));
 }
 
-auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
+auto GraphBuilderTflite::SerializeElementWiseUnary(
+    const mojom::ElementWiseUnary& op)
     -> base::expected<OperatorOffset, std::string> {
   const int32_t input_tensor_index =
       operand_to_index_map_.at(op.input_operand_id);
@@ -1082,7 +1086,7 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
   }
 }
 
-auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
+auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
     -> base::expected<OperatorOffset, std::string> {
   if (elu.alpha != 1.0) {
     // TODO: crbug.com/328736354 - Support custom alpha values.
@@ -1095,7 +1099,7 @@ auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
       operand_to_index_map_.at(elu.output_operand_id));
 }
 
-auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
+auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
     -> base::expected<OperatorOffset, std::string> {
   // The WebNN indices must be one of type uint32, int32, int64, but TFLite
   // indices need int32 or int64 type, so a cast operation need to be inserted
@@ -1139,7 +1143,7 @@ auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
       ::tflite::BuiltinOptions_GatherOptions, gather_options.Union());
 }
 
-auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
+auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
     -> base::expected<OperatorOffset, std::string> {
   // Check for unsupported inputs.
   const mojom::Operand& output_operand = GetOperand(gemm.output_operand_id);
@@ -1209,8 +1213,8 @@ auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilder::SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid)
-    -> OperatorOffset {
+auto GraphBuilderTflite::SerializeHardSigmoid(
+    const mojom::HardSigmoid& hard_sigmoid) -> OperatorOffset {
   // Emulate the hardSigmoid operation with function `y = max(0, min(1, alpha *
   // x + beta))` that is applied to the input tensor element-wise.
   //
@@ -1239,7 +1243,7 @@ auto GraphBuilder::SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid)
       operand_to_index_map_.at(hard_sigmoid.output_operand_id));
 }
 
-auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
+auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
     -> OperatorOffset {
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_HARD_SWISH,
@@ -1247,7 +1251,7 @@ auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
       operand_to_index_map_.at(hard_swish.output_operand_id));
 }
 
-auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
+auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
     -> OperatorOffset {
   const auto leaky_rely_options =
       ::tflite::CreateLeakyReluOptions(builder_, leaky_relu.alpha);
@@ -1259,7 +1263,7 @@ auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
       ::tflite::BuiltinOptions_LeakyReluOptions, leaky_rely_options.Union());
 }
 
-auto GraphBuilder::SerializeLinear(const mojom::Linear& linear)
+auto GraphBuilderTflite::SerializeLinear(const mojom::Linear& linear)
     -> OperatorOffset {
   const auto& input_operand = GetOperand(linear.input_operand_id);
   // The input shape has been validated to not overflow before creating tensor.
@@ -1274,7 +1278,7 @@ auto GraphBuilder::SerializeLinear(const mojom::Linear& linear)
       linear.beta);
 }
 
-auto GraphBuilder::SerializeLogicalNot(
+auto GraphBuilderTflite::SerializeLogicalNot(
     const mojom::ElementWiseUnary& logical_not) -> OperatorOffset {
   // The data type of WebNN LogicalNot operation is uint8, but TFLite LogicalNot
   // builtin operation needs bool type, so a cast operation need to be inserted
@@ -1315,7 +1319,7 @@ auto GraphBuilder::SerializeLogicalNot(
       /*output_tensor_type=*/::tflite::TensorType_UINT8);
 }
 
-auto GraphBuilder::SerializeMatmul(const mojom::Matmul& matmul)
+auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
     -> OperatorOffset {
   const mojom::Operand::DataType a_operand_data_type =
       GetOperand(matmul.a_operand_id).data_type;
@@ -1337,7 +1341,7 @@ auto GraphBuilder::SerializeMatmul(const mojom::Matmul& matmul)
       ::tflite::BuiltinOptions_BatchMatMulOptions, matmul_options.Union());
 }
 
-auto GraphBuilder::SerializePad(const mojom::Pad& pad)
+auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
     -> base::expected<OperatorOffset, std::string> {
   CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
 
@@ -1423,7 +1427,7 @@ auto GraphBuilder::SerializePad(const mojom::Pad& pad)
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
+auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
     -> base::expected<OperatorOffset, std::string> {
   // TODO(crbug.com/40206287): Transpose input operand to support other layouts
   // because tflite only support nhwc layout.
@@ -1490,7 +1494,7 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
       ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
 }
 
-auto GraphBuilder::SerializePrelu(const mojom::Prelu& prelu)
+auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(prelu.input_operand_id);
   CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat32 ||
@@ -1520,7 +1524,7 @@ auto GraphBuilder::SerializePrelu(const mojom::Prelu& prelu)
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilder::SerializeReciprocal(
+auto GraphBuilderTflite::SerializeReciprocal(
     const mojom::ElementWiseUnary& reciprocal)
     -> base::expected<OperatorOffset, std::string> {
   // Emulate the reciprocal operation whose calculation follows the expression
@@ -1543,7 +1547,7 @@ auto GraphBuilder::SerializeReciprocal(
       operand_to_index_map_.at(reciprocal.output_operand_id));
 }
 
-auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
+auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     -> base::expected<OperatorOffset, std::string> {
   // Serialize the axes tensor to reduce input tensor.
   ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
@@ -1595,7 +1599,8 @@ auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
       ::tflite::BuiltinOptions_ReducerOptions, reduce_options.Union());
 }
 
-auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
+auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
+    -> OperatorOffset {
   const mojom::Operand::DataType input_data_type =
       GetOperand(relu.input_operand_id).data_type;
   CHECK(kFloatDataTypes.contains(input_data_type) ||
@@ -1608,7 +1613,8 @@ auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
       operand_to_index_map_.at(relu.output_operand_id));
 }
 
-auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
+auto GraphBuilderTflite::SerializeResample2d(
+    const mojom::Resample2d& resample2d)
     -> base::expected<OperatorOffset, std::string> {
   // TODO: crbug.com/329543543 - `resample2d.scales` is dropped on the floor.
 
@@ -1674,8 +1680,8 @@ auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeReshape(uint64_t input_operand_id,
-                                    uint64_t output_operand_id)
+auto GraphBuilderTflite::SerializeReshape(uint64_t input_operand_id,
+                                          uint64_t output_operand_id)
     -> base::expected<OperatorOffset, std::string> {
   // Get the shape of the output tensor, such that this operator can reshape the
   // input to it.
@@ -1695,7 +1701,7 @@ auto GraphBuilder::SerializeReshape(uint64_t input_operand_id,
                                  reshape_options.Union());
 }
 
-auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
+auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
     -> OperatorOffset {
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_LOGISTIC,
@@ -1703,7 +1709,7 @@ auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
       operand_to_index_map_.at(sigmoid.output_operand_id));
 }
 
-auto GraphBuilder::SerializeSlice(const mojom::Slice& slice)
+auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
     -> base::expected<OperatorOffset, std::string> {
   // The number of starts and sizes are the same as input rank that is verified
   // in ValidateSliceAndInferOutput() function.
@@ -1750,7 +1756,7 @@ auto GraphBuilder::SerializeSlice(const mojom::Slice& slice)
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
+auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
     -> OperatorOffset {
   const auto softmax_options =
       ::tflite::CreateSoftmaxOptions(builder_, /*beta=*/1.0);
@@ -1762,7 +1768,7 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
       ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
 }
 
-auto GraphBuilder::SerializeSoftplus(const mojom::Softplus& softplus)
+auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
     -> base::expected<OperatorOffset, std::string> {
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
@@ -1805,7 +1811,7 @@ auto GraphBuilder::SerializeSoftplus(const mojom::Softplus& softplus)
       operand_to_index_map_.at(softplus.output_operand_id));
 }
 
-auto GraphBuilder::SerializeSoftsign(const mojom::Softsign& softsign)
+auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
     -> base::expected<OperatorOffset, std::string> {
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
@@ -1850,7 +1856,7 @@ auto GraphBuilder::SerializeSoftsign(const mojom::Softsign& softsign)
       operand_to_index_map_.at(softsign.output_operand_id));
 }
 
-auto GraphBuilder::SerializeSplit(const mojom::Split& split)
+auto GraphBuilderTflite::SerializeSplit(const mojom::Split& split)
     -> base::expected<OperatorOffset, std::string> {
   // Serialize the axis tensor to split input tensor along it.
   const auto checked_axis = base::MakeCheckedNum<int32_t>(split.axis);
@@ -1905,7 +1911,7 @@ auto GraphBuilder::SerializeSplit(const mojom::Split& split)
       ::tflite::BuiltinOptions_SplitVOptions, split_options.Union());
 }
 
-auto GraphBuilder::SerializeTan(const mojom::ElementWiseUnary& tan)
+auto GraphBuilderTflite::SerializeTan(const mojom::ElementWiseUnary& tan)
     -> OperatorOffset {
   // The tangent operation defines the expression `opposite side / adjacent
   // side` to a right triangle as the described here
@@ -1937,14 +1943,15 @@ auto GraphBuilder::SerializeTan(const mojom::ElementWiseUnary& tan)
       operand_to_index_map_.at(tan.output_operand_id));
 }
 
-auto GraphBuilder::SerializeTanh(const mojom::Tanh& tanh) -> OperatorOffset {
+auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
+    -> OperatorOffset {
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_TANH,
       operand_to_index_map_.at(tanh.input_operand_id),
       operand_to_index_map_.at(tanh.output_operand_id));
 }
 
-auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
+auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
     -> OperatorOffset {
   return SerializeTransposeOperation(
       operand_to_index_map_.at(transpose.input_operand_id),
@@ -1952,7 +1959,8 @@ auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
       transpose.permutation);
 }
 
-auto GraphBuilder::SerializeWhere(const mojom::Where& where) -> OperatorOffset {
+auto GraphBuilderTflite::SerializeWhere(const mojom::Where& where)
+    -> OperatorOffset {
   // The data type of WebNN condition operand is uint8, but TFLite requires the
   // condition operand to be of type bool, so a cast operation need to be
   // inserted before the operation to convert uint8 to bool for the condition

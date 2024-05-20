@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_COREML_GRAPH_IMPL_H_
-#define SERVICES_WEBNN_COREML_GRAPH_IMPL_H_
+#ifndef SERVICES_WEBNN_COREML_GRAPH_IMPL_COREML_H_
+#define SERVICES_WEBNN_COREML_GRAPH_IMPL_COREML_H_
 
 #import <CoreML/CoreML.h>
 
@@ -14,31 +14,30 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "services/webnn/coreml/graph_builder.h"
+#include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::coreml {
 
-// GraphImpl inherits from WebNNGraphImpl to represent a CoreML graph
+// GraphImplCoreml inherits from WebNNGraphImpl to represent a CoreML graph
 // implementation. It is mainly responsible for building and compiling a CoreML
-// graph from mojom::GraphInfo via GraphBuilder, then initializing and executing
-// the graph.
-// Mac OS 13.0+ is required for model compilation
+// graph from mojom::GraphInfo via GraphBuilderCoreml, then initializing and
+// executing the graph. Mac OS 13.0+ is required for model compilation
 // https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
 // Mac OS 14.0+ is required to support WebNN logical binary operators because
 // the cast operator does not support casting to uint8 prior to Mac OS 14.0.
 // CoreML returns bool tensors for logical operators which need to be cast to
 // uint8 tensors to match WebNN expectations.
-class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
+class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback);
 
-  GraphImpl(const GraphImpl&) = delete;
-  GraphImpl& operator=(const GraphImpl&) = delete;
-  ~GraphImpl() override;
+  GraphImplCoreml(const GraphImplCoreml&) = delete;
+  GraphImplCoreml& operator=(const GraphImplCoreml&) = delete;
+  ~GraphImplCoreml() override;
 
  private:
   // Additional information about the model input that is required
@@ -59,12 +58,12 @@ class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
     std::string coreml_name;
   };
   static MLFeatureValue* CreateFeatureValue(
-      GraphImpl::CoreMLFeatureInfo* feature_info,
+      GraphImplCoreml::CoreMLFeatureInfo* feature_info,
       mojo_base::BigBuffer data);
   static std::optional<CoreMLFeatureInfo> GetCoreMLFeatureInfo(
-      const GraphBuilder::InputOperandInfo& operand_info);
+      const GraphBuilderCoreml::InputOperandInfo& operand_info);
   using CoreMLFeatureInfoMap = base::flat_map<std::string, CoreMLFeatureInfo>;
-  GraphImpl(
+  GraphImplCoreml(
       ComputeResourceInfo compute_resource_info,
       std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
       base::flat_map<std::string, std::string> coreml_name_to_operand_name,
@@ -128,10 +127,10 @@ class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
   base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
   MLModel* __strong ml_model_;
 
-  base::WeakPtrFactory<GraphImpl> weak_factory_
+  base::WeakPtrFactory<GraphImplCoreml> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace webnn::coreml
 
-#endif  // SERVICES_WEBNN_COREML_GRAPH_IMPL_H_
+#endif  // SERVICES_WEBNN_COREML_GRAPH_IMPL_COREML_H_

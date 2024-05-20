@@ -16,8 +16,8 @@ class ContextImplCrOS;
 
 // GraphImplCrOS inherits from WebNNGraphImpl to represent a TFLite graph
 // implementation on ChromeOS platform. It is mainly responsible for building a
-// TFLite flatbuffer model from mojom::GraphInfo via tflite::GraphBuilder, then
-// initializing and executing the graph with ML Service.
+// TFLite flatbuffer model from mojom::GraphInfo via tflite::GraphBuilderTflite,
+// then initializing and executing the graph with ML Service.
 class GraphImplCrOS final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(ContextImplCrOS* context_impl,

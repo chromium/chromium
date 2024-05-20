@@ -43,11 +43,11 @@ class WebNNContextProviderImplTest : public testing::Test {
 // For supported platforms, it should be tested by the backend specific test
 // cases.
 //
-// For Windows platform, `dml::ContextImpl` is implemented by the DirectML
+// For Windows platform, `dml::ContextImplDml` is implemented by the DirectML
 // backend. It relies on a real GPU adapter and is tested by
 // `WebNNContextDMLImplTest`.
 //
-// For platforms using TFLite, `tflite::ContextImpl` is always available.
+// For platforms using TFLite, `tflite::ContextImplTflite` is always available.
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE)
 
