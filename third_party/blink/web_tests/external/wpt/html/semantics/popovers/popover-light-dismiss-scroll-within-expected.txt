@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Scrolling within a popover should not close the popover
-  assert_equals: popover should be scrolled expected 50 but got 0
-Harness: the test ran to completion.
-
