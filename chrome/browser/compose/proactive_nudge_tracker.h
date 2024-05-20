@@ -5,14 +5,18 @@
 #ifndef CHROME_BROWSER_COMPOSE_PROACTIVE_NUDGE_TRACKER_H_
 #define CHROME_BROWSER_COMPOSE_PROACTIVE_NUDGE_TRACKER_H_
 
+#include <map>
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace compose {
@@ -57,7 +61,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     autofill::FormGlobalId form;
     autofill::FieldGlobalId field;
     std::u16string initial_text_value;
-    std::optional<bool> segmentation_result = std::nullopt;
+    std::optional<segmentation_platform::ClassificationResult>
+        segmentation_result = std::nullopt;
     base::OneShotTimer timer;
     bool timer_complete = false;
 
@@ -88,12 +93,20 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   void FocusChangedInPage();
 
+  void Clear();
+
+  void ComposeSessionCompleted(autofill::FieldRendererId field_renderer_id,
+                               ComposeSessionCloseReason session_close_reason,
+                               const compose::ComposeSessionEvents& events);
+  void OnUserDisabledNudge(bool single_site_only);
+
   // autofill::AutofillManager::Observer:
   void OnAfterFocusOnFormField(autofill::AutofillManager& manager,
                                autofill::FormGlobalId form,
                                autofill::FieldGlobalId field) override;
 
  private:
+  class EngagementTracker;
   bool SegmentationStateIsValid();
   void ResetState();
   void ShowTimerElapsed();
@@ -103,8 +116,15 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void MaybeShowProactiveNudge();
   bool MatchesCurrentField(autofill::FormGlobalId form,
                            autofill::FieldGlobalId field);
+  void CollectTrainingData(
+      const segmentation_platform::TrainingRequestId training_request_id,
+      ProactiveNudgeDerivedEngagement engagement);
+  bool ShouldShow(const State& state);
 
   std::unique_ptr<State> state_;
+
+  std::map<autofill::FieldRendererId, std::unique_ptr<EngagementTracker>>
+      engagement_trackers_;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       segmentation_service_;

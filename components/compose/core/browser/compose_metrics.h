@@ -208,6 +208,26 @@ enum class ComposeRequestFeedback {
   kMaxValue = kRequestError,
 };
 
+// The output metric for the proactive nudge segmentation model. Represents what
+// effect the nudge had on the user's engagement. Stored as
+// "Compose.ProactiveNudge.DerivedEngagement".
+enum class ProactiveNudgeDerivedEngagement {
+  // The user didn't interact with the nudge.
+  kIgnored,
+  // The user disabled the nudge on this site using the three-dot menu.
+  kNudgeDisabledOnSingleSite,
+  // The user disabled the nudge on all sites using the three-dot menu.
+  kNudgeDisabledOnAllSites,
+  // User clicked the nudge, but didn't press generate in Compose.
+  kOpenedComposeMinimalUse,
+  // User clicked the nudge, pressed generate at least once, but didn't accept
+  // the suggestion.
+  kGeneratedComposeSuggestion,
+  // User clicked, pressed generate, and accepted a suggestion.
+  kAcceptedComposeSuggestion,
+  kMaxValue = kAcceptedComposeSuggestion,
+};
+
 // Struct containing event and logging information for an individual
 // |ComposeSession|.
 struct ComposeSessionEvents {
