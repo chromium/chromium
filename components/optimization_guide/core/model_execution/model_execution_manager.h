@@ -133,6 +133,9 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   scoped_refptr<OnDeviceModelServiceController>
       on_device_model_service_controller_;
 
+  // Whether the user registered for supplementary on-device models.
+  bool did_register_for_supplementary_on_device_models_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get `weak_ptr_` to self.
