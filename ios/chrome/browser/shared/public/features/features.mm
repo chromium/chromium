@@ -380,6 +380,14 @@ BASE_FEATURE(kContentPushNotifications,
              "ContentPushNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContentNotificationExperiment,
+             "ContentNotificationExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContentNotificationExperimentEnalbed() {
+  return base::FeatureList::IsEnabled(kContentNotificationExperiment);
+}
+
 BASE_FEATURE(kIOSLargeFakebox,
              "IOSLargeFakebox",
              base::FEATURE_DISABLED_BY_DEFAULT);

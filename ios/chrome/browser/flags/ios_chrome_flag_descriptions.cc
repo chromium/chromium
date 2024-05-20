@@ -206,6 +206,11 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
+const char kContentNotificationExperimentName[] =
+    "Content Notification Experiment";
+const char kContentNotificationExperimentDescription[] =
+    "Enable Content Notification Experiment.";
+
 const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";

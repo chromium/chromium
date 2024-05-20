@@ -209,28 +209,11 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       GetApplicationContext()->GetSingleSignOnService();
 
   if (browserState) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
-    BOOL isSignedIn = authService && authService->HasPrimaryIdentity(
-                                         signin::ConsentLevel::kSignin);
-    const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
-            ->GetDefaultSearchProvider();
-    bool isDefaultSearchEngine = defaultSearchURLTemplate &&
-                                 defaultSearchURLTemplate->prepopulate_id() ==
-                                     TemplateURLPrepopulateData::google.id;
-    PrefService* prefService = browserState->GetPrefs();
-    // Created the local variables to make sure all experimental types have been
-    // checked, because multiple experimental types can be enabled at the same
-    // time, and the UMA will be active after the feature check.
-    bool contentNotificationEnabled = IsContentNotificationEnabled(
-        isSignedIn, isDefaultSearchEngine, prefService);
-    bool contentNotificationRegistered = IsContentNotificationRegistered(
-        isSignedIn, isDefaultSearchEngine, prefService);
     config.shouldRegisterContentNotification =
-        contentNotificationEnabled || contentNotificationRegistered;
-
+        [self isContentNotificationAvailable:browserState];
     if (config.shouldRegisterContentNotification) {
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(browserState);
       id<SystemIdentity> identity =
           authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       config.primaryAccount = identity;
@@ -260,7 +243,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
-  if (IsContentPushNotificationsEnabled()) {
+  // TODO(crbug.com/339102426): Cleanup browserStates.
+  ChromeBrowserState* browserState =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
+  if ([self isContentNotificationAvailable:browserState]) {
     // Send an NAU every time the OS authorization status changes.
     [PushNotificationUtil
         getPermissionSettings:^(UNNotificationSettings* settings) {
@@ -276,12 +264,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
                 settings.authorizationStatus;
             config.settingsAction =
                 [[ContentNotificationSettingsAction alloc] init];
-            // TODO(crbug.com/339102426): Cleanup browserStates.
             ContentNotificationService* contentNotificationService =
                 ContentNotificationServiceFactory::GetForBrowserState(
-                    GetApplicationContext()
-                        ->GetChromeBrowserStateManager()
-                        ->GetLastUsedBrowserStateDeprecatedDoNotUse());
+                    browserState);
             contentNotificationService->SendNAUForConfiguration(config);
           }
         }];
@@ -296,6 +281,34 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 #pragma mark - Private
 - (void)recordLifeCycleEvent:(PushNotificationLifecycleEvent)event {
   base::UmaHistogramEnumeration(kLifecycleEventsHistogram, event);
+}
+
+- (BOOL)isContentNotificationAvailable:(ChromeBrowserState*)browserState {
+  if (!IsContentNotificationExperimentEnalbed()) {
+    return false;
+  }
+  if (!browserState) {
+    return false;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  BOOL isSignedIn = authService && authService->HasPrimaryIdentity(
+                                       signin::ConsentLevel::kSignin);
+  const TemplateURL* defaultSearchURLTemplate =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+          ->GetDefaultSearchProvider();
+  bool isDefaultSearchEngine =
+      defaultSearchURLTemplate && defaultSearchURLTemplate->prepopulate_id() ==
+                                      TemplateURLPrepopulateData::google.id;
+  PrefService* prefService = browserState->GetPrefs();
+  // Created the local variables to make sure all experimental types have been
+  // checked, because multiple experimental types can be enabled at the same
+  // time, and the UMA will be active after the feature check.
+  bool contentNotificationEnabled = IsContentNotificationEnabled(
+      isSignedIn, isDefaultSearchEngine, prefService);
+  bool contentNotificationRegistered = IsContentNotificationRegistered(
+      isSignedIn, isDefaultSearchEngine, prefService);
+  return contentNotificationEnabled || contentNotificationRegistered;
 }
 
 @end

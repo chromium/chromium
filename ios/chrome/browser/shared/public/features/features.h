@@ -365,6 +365,9 @@ extern const char kContentPushNotificationsExperimentType[];
 // Feature flag to enable the content notifications.
 BASE_DECLARE_FEATURE(kContentPushNotifications);
 
+// Feature flag to enable Content Notification experiments.
+BASE_DECLARE_FEATURE(kContentNotificationExperiment);
+
 // Feature flag to enable the Large Fakebox design changes.
 BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 
@@ -483,6 +486,9 @@ bool IsFeedAblationEnabled();
 
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
+
+// YES if content push notification experiments are enabled.
+bool IsContentNotificationExperimentEnalbed();
 
 // YES when any of the content push notification variations are enabled.
 bool IsContentPushNotificationsEnabled();
