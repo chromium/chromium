@@ -142,7 +142,7 @@ class AutofillProfileComparatorTest : public testing::Test {
                                            const char* state,
                                            const char* zip,
                                            const char* country) {
-    AutofillProfile profile(kLegacyHierarchyCountryCode);
+    AutofillProfile profile(AddressCountryCode{country});
     test::SetProfileInfo(&profile, "", "", "", "", "", line1, line2, city,
                          state, zip, country, "");
     return profile;
@@ -586,15 +586,18 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   //    - Street/St/Saint/Sainte
   //    - etc...
   AutofillProfile empty = CreateProfileWithAddress("", "", "", "", "", "");
+
+  // Currently, South Africa uses the legacy address model which supports all
+  // the field types set below.
   AutofillProfile p1 = CreateProfileWithAddress(
-      "1 Some Street", "Unit 3", "Carver", "CA - California", "90210", "US");
+      "1 Some Street", "Unit 3", "Carver", "CA - California", "90210", "ZA");
   p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some String");
   p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz CEDEX");
 
   AutofillProfile p2 = CreateProfileWithAddress(
-      "Unit 3", "1 Some Street", "Suburb", "california", "90 210-3214", "");
+      "Unit 3", "1 Some Street", "Suburb", "california", "90 210-3214", "ZA");
   AutofillProfile p3 = CreateProfileWithAddress("1 Some Street #3", "",
-                                                "Carver City", "ca", "", "us");
+                                                "Carver City", "ca", "", "ZA");
 
   AutofillProfile differentCountry =
       CopyAndModify(p1, {{ADDRESS_HOME_COUNTRY, u"CA"}});
@@ -612,6 +615,8 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   AutofillProfile differentSortingCode =
       CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
 
+  // A profile with no country uses the legacy address and can be merged with
+  // other profiles using the same hierarchy.
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(empty, p2));
 
@@ -954,7 +959,7 @@ TEST_F(AutofillProfileComparatorTest, MergeAddresses) {
   AutofillProfile p1 = CreateProfileWithAddress(
       "1 Some Street", "Unit 3", "Carver", "CA - California", "90210", "US");
   AutofillProfile p2 = CreateProfileWithAddress(
-      "1 Some Street #3", "", "Carver City", "ca", "90210-1234", "us");
+      "1 Some Street #3", "", "Carver City", "ca", "90210-1234", "US");
 
   Address expected(kLegacyHierarchyCountryCode);
   expected.SetRawInfo(ADDRESS_HOME_LINE1, u"1 Some Street");
@@ -980,7 +985,7 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
   p1.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Unit 3");
 
   AutofillProfile p2 = CreateProfileWithAddress(
-      "1 Some Other Street", "Unit 3", "Carver City", "ca", "90210-1234", "us");
+      "1 Some Other Street", "Unit 3", "Carver City", "ca", "90210-1234", "US");
 
   p2.set_use_date(p1.use_date() + base::Minutes(1));
   p2.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Some Other Street");
@@ -1167,11 +1172,6 @@ TEST_F(AutofillProfileComparatorTest,
                        "mail@mail.com", "company", "line1", "line2", "city",
                        "state", "zip", "US", "phone");
 
-  existing_profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
-  existing_profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS,
-                              u"Cross streets example");
-  existing_profile.SetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2,
-                              u"Admin level 2 example");
 
   // A profile compared with itself cannot have different settings visible
   // values.
@@ -1182,8 +1182,7 @@ TEST_F(AutofillProfileComparatorTest,
   // Test for most settings visible types that a change is correctly recognized.
   for (FieldType changed_type :
        {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-        ADDRESS_HOME_ZIP, ADDRESS_HOME_ADMIN_LEVEL2, EMAIL_ADDRESS,
-        PHONE_HOME_WHOLE_NUMBER}) {
+        ADDRESS_HOME_ZIP, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
     // Make a fresh copy and test that the function returns false.
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(
