@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 class Profile;
@@ -41,8 +42,15 @@ class LensOverlaySidePanelWebView
           navigation_handle_callback) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
  private:
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
   base::WeakPtrFactory<LensOverlaySidePanelWebView> weak_factory_{this};
 };
 
