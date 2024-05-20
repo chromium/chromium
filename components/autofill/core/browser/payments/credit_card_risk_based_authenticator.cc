@@ -23,10 +23,10 @@ CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::operator=(
   result = other.result;
   error_dialog_context = other.error_dialog_context;
   card = other.card;
-  if (other.fido_request_options.has_value()) {
-    fido_request_options = other.fido_request_options->Clone();
+  if (other.fido_request_options.empty()) {
+    fido_request_options.clear();
   } else {
-    fido_request_options.reset();
+    fido_request_options = other.fido_request_options.Clone();
   }
   context_token = other.context_token;
   return *this;
@@ -141,9 +141,9 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       // The Payments server indicates further authentication is required.
       response.result =
           RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
-      if (response_details.fido_request_options.has_value()) {
+      if (!response_details.fido_request_options.empty()) {
         response.fido_request_options =
-            response_details.fido_request_options->Clone();
+            response_details.fido_request_options.Clone();
       }
       response.context_token = response_details.context_token;
 

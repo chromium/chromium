@@ -233,8 +233,8 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
                 Result::kAuthenticationRequired);
   EXPECT_FALSE(
       requester_->risk_based_authentication_response().card.has_value());
-  EXPECT_TRUE(requester_->risk_based_authentication_response()
-                  .fido_request_options.has_value());
+  EXPECT_FALSE(requester_->risk_based_authentication_response()
+                   .fido_request_options.empty());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(

@@ -55,10 +55,10 @@ PaymentsNetworkInterface::UnmaskDetails& PaymentsNetworkInterface::UnmaskDetails
     const PaymentsNetworkInterface::UnmaskDetails& other) {
   unmask_auth_method = other.unmask_auth_method;
   offer_fido_opt_in = other.offer_fido_opt_in;
-  if (other.fido_request_options.has_value()) {
-    fido_request_options = other.fido_request_options->Clone();
+  if (other.fido_request_options.empty()) {
+    fido_request_options.clear();
   } else {
-    fido_request_options.reset();
+    fido_request_options = other.fido_request_options.Clone();
   }
   fido_eligible_card_ids = other.fido_eligible_card_ids;
   return *this;
@@ -125,10 +125,10 @@ PaymentsNetworkInterface::UnmaskResponseDetails::operator=(
   dcvv = other.dcvv;
   expiration_month = other.expiration_month;
   expiration_year = other.expiration_year;
-  if (other.fido_request_options.has_value()) {
-    fido_request_options = other.fido_request_options->Clone();
+  if (other.fido_request_options.empty()) {
+    fido_request_options.clear();
   } else {
-    fido_request_options.reset();
+    fido_request_options = other.fido_request_options.Clone();
   }
   card_authorization_token = other.card_authorization_token;
   card_unmask_challenge_options = other.card_unmask_challenge_options;

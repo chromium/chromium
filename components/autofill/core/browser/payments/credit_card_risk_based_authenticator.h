@@ -72,7 +72,7 @@ class CreditCardRiskBasedAuthenticator {
     // The items below will be set when the server response was successful and
     // the card's real pan was not returned from the server side.
     // FIDO request options will be present only when FIDO is available.
-    std::optional<base::Value::Dict> fido_request_options;
+    base::Value::Dict fido_request_options;
     // Stores the latest version of the context token, passed between Payments
     // calls and unmodified by Chrome.
     std::string context_token;

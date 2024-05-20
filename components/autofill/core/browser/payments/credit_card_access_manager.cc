@@ -259,9 +259,9 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
   // Set delay as fido request timeout if available, otherwise set to default.
   base::TimeDelta delay = kDelayForGetUnmaskDetails;
-  if (unmask_details_.fido_request_options.has_value()) {
+  if (!unmask_details_.fido_request_options.empty()) {
     if (std::optional<int> request_timeout =
-            unmask_details_.fido_request_options->FindInt("timeout_millis")) {
+            unmask_details_.fido_request_options.FindInt("timeout_millis")) {
       delay = base::Milliseconds(*request_timeout);
     }
   }
@@ -549,15 +549,15 @@ void CreditCardAccessManager::Authenticate(
         return;
       }
 
-      // For virtual cards the |fido_request_option| comes from the
-      // UnmaskResponseDetails while for masked server cards, it comes from the
+      // For virtual cards the `fido_request_options` come from the
+      // UnmaskResponseDetails while for masked server cards, they come from the
       // UnmaskDetails.
       base::Value::Dict fido_request_options;
       std::optional<std::string> context_token;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         context_token = virtual_card_unmask_response_details_.context_token;
         fido_request_options = std::move(
-            virtual_card_unmask_response_details_.fido_request_options.value());
+            virtual_card_unmask_response_details_.fido_request_options);
       } else {
         CHECK_EQ(card_->record_type(),
                  CreditCard::RecordType::kMaskedServerCard);
@@ -568,13 +568,13 @@ void CreditCardAccessManager::Authenticate(
           CHECK(!risk_based_authentication_response_.context_token.empty());
           context_token = risk_based_authentication_response_.context_token;
           fido_request_options = std::move(
-              risk_based_authentication_response_.fido_request_options.value());
+              risk_based_authentication_response_.fido_request_options);
         } else {
           // If risk-based authentication is not available, the response of
           // UnmaskDetails preflight call will be used as the resource of
           // `fido_request_options`.
           fido_request_options =
-              std::move(unmask_details_.fido_request_options.value());
+              std::move(unmask_details_.fido_request_options);
         }
       }
       GetOrCreateFidoAuthenticator()->Authenticate(
@@ -704,22 +704,22 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_register_card_with_fido) {
 #if !BUILDFLAG(IS_IOS)
-    std::optional<base::Value::Dict> request_options = std::nullopt;
-    if (unmask_details_.fido_request_options.has_value()) {
+    base::Value::Dict request_options;
+    if (!unmask_details_.fido_request_options.empty()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
       // unmask detail response.
-      request_options = unmask_details_.fido_request_options->Clone();
-    } else if (response.request_options.has_value()) {
+      request_options = unmask_details_.fido_request_options.Clone();
+    } else if (!response.request_options.empty()) {
       // For Android users, request_options are provided from GetRealPan if the
       // user has chosen to opt-in.
-      request_options = response.request_options->Clone();
+      request_options = response.request_options.Clone();
     }
 
     // Additionally authorizes the card with FIDO. It also delays the form
     // filling.
     GetOrCreateFidoAuthenticator()->Authorize(GetWeakPtr(),
                                               response.card_authorization_token,
-                                              request_options->Clone());
+                                              request_options.Clone());
 #endif
   }
   if (ShouldOfferFidoOptInDialog(response)) {
@@ -738,7 +738,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
 #if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
   if (!unmask_details_.offer_fido_opt_in &&
-      unmask_details_.fido_request_options.has_value()) {
+      !unmask_details_.fido_request_options.empty()) {
     // Server instructed the client to not offer fido because the client is
     // already opted in. This can be verified with the presence of request
     // options in the server response.
@@ -943,7 +943,7 @@ bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
   // by the risk-based authentication call will be used as the indicator about
   // whether the selected card is FIDO authorized.
   if (IsMaskedServerCardRiskBasedAuthAvailable()) {
-    return risk_based_authentication_response_.fido_request_options.has_value();
+    return !risk_based_authentication_response_.fido_request_options.empty();
   }
   DCHECK_NE(unmask_details_.unmask_auth_method,
             AutofillClient::UnmaskAuthMethod::kUnknown);
@@ -957,7 +957,7 @@ bool CreditCardAccessManager::ShouldRespondImmediately(
   // GetRealPan did not return RequestOptions (user did not specify intent to
   // opt-in) AND flow is not registering a new card, so fill the form
   // directly.
-  if (!response.request_options.has_value() &&
+  if (response.request_options.empty() &&
       unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
     return true;
   }
@@ -989,11 +989,12 @@ bool CreditCardAccessManager::ShouldRegisterCardWithFido(
   // For Android, we will delay the form filling for both intent-to-opt-in user
   // opting in and opted-in user registering a new card (kCvcThenFido). So we
   // check one more scenario for Android here. If the GetRealPan response
-  // includes |request_options|, that means the user showed intention to opt-in
+  // includes `request_options`, that means the user showed intention to opt-in
   // while unmasking and must complete the challenge before successfully
   // opting-in and filling the form.
-  if (response.request_options.has_value())
+  if (!response.request_options.empty()) {
     return true;
+  }
 #endif
 
   // No conditions to offer FIDO registration are met, so we return false.
@@ -1007,7 +1008,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   return false;
 #else
   if (!unmask_details_.offer_fido_opt_in &&
-      unmask_details_.fido_request_options.has_value()) {
+      !unmask_details_.fido_request_options.empty()) {
     // Server instructed the client to not offer fido because the client is
     // already opted in. This can be verified with the presence of request
     // options in the server response.
@@ -1285,7 +1286,7 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       // GetUnmaskDetails to determine whether the card can be enrolled into
       // FIDO.
       StartAuthenticationFlow(IsFidoAuthEnabled(
-          /*fido_auth_offered=*/response.fido_request_options.has_value() ||
+          /*fido_auth_offered=*/!response.fido_request_options.empty() ||
           unmask_details_.unmask_auth_method ==
               AutofillClient::UnmaskAuthMethod::kFido));
       break;
@@ -1361,7 +1362,7 @@ void CreditCardAccessManager::
         /*show_confirmation_before_closing=*/false,
         /*no_interactive_authentication_callback=*/base::OnceClosure());
     StartAuthenticationFlow(
-        IsFidoAuthEnabled(response_details.fido_request_options.has_value()));
+        IsFidoAuthEnabled(!response_details.fido_request_options.empty()));
     return;
   }
 

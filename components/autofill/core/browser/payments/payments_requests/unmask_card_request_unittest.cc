@@ -157,7 +157,7 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options->FindString("challenge"));
+            *response_details.fido_request_options.FindString("challenge"));
 
   // Verify that the response is considered complete.
   EXPECT_TRUE(GetRequest()->IsResponseComplete());
@@ -315,7 +315,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options->FindString("challenge"));
+            *response_details.fido_request_options.FindString("challenge"));
 
   // Verify the six (or seven, if 3DS is enabled) challenge options are two SMS
   // OTP challenge options, two CVC challenge options, two email OTP challenge

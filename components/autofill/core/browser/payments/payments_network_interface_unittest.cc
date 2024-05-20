@@ -710,9 +710,9 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedYellowPathResponse) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details()->context_token);
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *unmask_response_details()->fido_request_options->FindString(
-                "challenge"));
+  EXPECT_EQ(
+      "fake_fido_challenge",
+      *unmask_response_details()->fido_request_options.FindString("challenge"));
   // Verify the three challenge options are two sms challenge options and one
   // cvc challenge option, and fields can be correctly parsed.
   ASSERT_EQ(3u,
@@ -767,9 +767,9 @@ TEST_F(PaymentsNetworkInterfaceTest,
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details()->context_token);
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *unmask_response_details()->fido_request_options->FindString(
-                "challenge"));
+  EXPECT_EQ(
+      "fake_fido_challenge",
+      *unmask_response_details()->fido_request_options.FindString("challenge"));
   // Verify that the unknow new challenge option type won't break the parsing.
   // We ignore the unknown new type, and only return the supported challenge
   // option.

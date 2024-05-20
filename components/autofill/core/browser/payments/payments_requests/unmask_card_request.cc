@@ -548,7 +548,7 @@ bool UnmaskCardRequest::IsAllCardInformationValidIncludingDcvv() {
 
 bool UnmaskCardRequest::CanPerformVirtualCardAuth() {
   return !response_details_.context_token.empty() &&
-         (response_details_.fido_request_options.has_value() ||
+         (!response_details_.fido_request_options.empty() ||
           !response_details_.card_unmask_challenge_options.empty() ||
           !response_details_.flow_status.empty());
 }

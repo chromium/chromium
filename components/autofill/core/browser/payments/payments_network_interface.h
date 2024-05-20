@@ -97,7 +97,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.
     // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
-    std::optional<base::Value::Dict> fido_request_options;
+    base::Value::Dict fido_request_options;
     // Set of credit cards ids that are eligible for FIDO Authentication.
     std::set<std::string> fido_eligible_card_ids;
   };
@@ -170,7 +170,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     std::string expiration_year;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    std::optional<base::Value::Dict> fido_request_options;
+    base::Value::Dict fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token;
