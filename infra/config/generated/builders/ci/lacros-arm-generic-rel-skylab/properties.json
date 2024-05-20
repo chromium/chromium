@@ -56,7 +56,8 @@
           "builder": "lacros-arm-generic-rel-skylab",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

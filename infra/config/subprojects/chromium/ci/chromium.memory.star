@@ -16,6 +16,9 @@ load("//lib/xcode.star", "xcode")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.memory",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
@@ -170,9 +173,6 @@ linux_memory_builder(
         ),
         build_gs_bucket = "chromium-memory-archive",
     ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
-    ),
     gn_args = gn_args.config(
         configs = [
             "cfi_full",
@@ -258,9 +258,6 @@ linux_memory_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-memory-archive",
-    ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "cros|asan",

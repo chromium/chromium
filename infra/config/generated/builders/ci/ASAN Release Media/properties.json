@@ -50,7 +50,8 @@
           "builder": "linux-asan-media-rel",
           "group": "tryserver.chromium.fuzz"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

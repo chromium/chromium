@@ -51,7 +51,8 @@
           "builder": "fuchsia-x64-cast-receiver-dbg-compile",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

@@ -86,7 +86,8 @@
           "builder": "win-arm64-dbg",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

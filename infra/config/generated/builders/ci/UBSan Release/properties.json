@@ -48,7 +48,8 @@
           "builder": "linux-ubsan-rel",
           "group": "tryserver.chromium.fuzz"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

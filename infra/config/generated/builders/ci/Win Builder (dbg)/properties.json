@@ -44,7 +44,8 @@
           "builder": "win_chromium_compile_dbg_ng",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

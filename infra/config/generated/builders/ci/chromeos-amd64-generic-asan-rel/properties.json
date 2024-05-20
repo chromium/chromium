@@ -51,7 +51,8 @@
           "builder": "chromeos-amd64-generic-asan-rel",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

@@ -52,7 +52,8 @@
           "builder": "lacros-arm64-generic-rel",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

@@ -48,7 +48,8 @@
           "builder": "ios-simulator-full-configs",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

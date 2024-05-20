@@ -165,7 +165,8 @@
           "builder": "win_chromium_x64_rel_ng",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

@@ -78,7 +78,8 @@
           "builder": "mac_chromium_compile_rel_ng",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

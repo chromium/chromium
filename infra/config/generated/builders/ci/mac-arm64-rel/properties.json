@@ -234,7 +234,8 @@
           "builder": "mac14-arm64-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

@@ -44,7 +44,8 @@
           "builder": "network_service_linux",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

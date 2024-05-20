@@ -44,7 +44,8 @@
           "builder": "layout_test_leak_detection",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

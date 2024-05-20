@@ -49,7 +49,8 @@
           "builder": "fuchsia-arm64-cast-receiver-rel",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

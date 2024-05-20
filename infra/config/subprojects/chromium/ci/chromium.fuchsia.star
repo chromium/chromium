@@ -14,6 +14,9 @@ load("//lib/gn_args.star", "gn_args")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.fuchsia",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,

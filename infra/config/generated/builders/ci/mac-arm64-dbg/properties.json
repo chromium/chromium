@@ -38,7 +38,8 @@
           "builder": "mac-arm64-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

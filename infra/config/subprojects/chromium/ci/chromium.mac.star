@@ -16,6 +16,9 @@ load("//lib/xcode.star", "xcode")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.mac",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     os = os.MAC_DEFAULT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
@@ -449,9 +452,6 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "11",
@@ -477,9 +477,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-    ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "mac",

@@ -56,7 +56,8 @@
           "builder": "chromeos-jacuzzi-rel",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

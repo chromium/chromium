@@ -70,7 +70,8 @@
           "builder": "win10-dbg",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

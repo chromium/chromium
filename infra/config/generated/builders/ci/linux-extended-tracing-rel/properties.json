@@ -44,7 +44,8 @@
           "builder": "linux-extended-tracing-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

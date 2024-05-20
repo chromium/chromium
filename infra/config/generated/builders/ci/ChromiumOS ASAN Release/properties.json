@@ -53,7 +53,8 @@
           "builder": "linux-chromeos-asan-rel",
           "group": "tryserver.chromium.fuzz"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

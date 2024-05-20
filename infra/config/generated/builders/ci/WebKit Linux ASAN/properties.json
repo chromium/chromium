@@ -45,7 +45,8 @@
           "builder": "linux-webkit-asan-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

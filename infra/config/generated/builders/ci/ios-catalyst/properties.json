@@ -45,7 +45,8 @@
           "builder": "ios-catalyst",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

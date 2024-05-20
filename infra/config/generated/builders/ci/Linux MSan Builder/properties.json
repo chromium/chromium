@@ -80,7 +80,8 @@
           "builder": "linux_chromium_msan_rel_ng",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

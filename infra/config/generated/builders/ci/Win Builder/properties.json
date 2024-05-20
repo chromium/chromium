@@ -80,7 +80,8 @@
           "builder": "win_chromium_compile_rel_ng",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

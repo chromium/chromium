@@ -16,6 +16,9 @@ load("//lib/targets.star", "targets")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.linux",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
@@ -348,9 +351,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst",
@@ -387,9 +387,6 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
-    ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
     ),
     targets = targets.bundle(
         targets = [

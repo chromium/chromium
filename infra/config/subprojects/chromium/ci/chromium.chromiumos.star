@@ -15,6 +15,9 @@ load("//lib/gn_args.star", "gn_args")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.chromiumos",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
@@ -1056,9 +1059,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
-    ),
     gn_args = gn_args.config(
         configs = [
             "chromeos_with_codecs",
@@ -1195,9 +1195,6 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
-    ),
-    builder_config_settings = builder_config.ci_settings(
-        retry_failed_shards = True,
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
