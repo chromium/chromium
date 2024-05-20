@@ -518,8 +518,20 @@ bool BleV2Medium::GetRemotePeripheral(const std::string& mac_address,
 
 bool BleV2Medium::GetRemotePeripheral(api::ble_v2::BlePeripheral::UniqueId id,
                                       GetRemotePeripheralCallback callback) {
-  NOTIMPLEMENTED();
-  return false;
+  auto it =
+      std::find_if(discovered_ble_peripherals_map_.begin(),
+                   discovered_ble_peripherals_map_.end(),
+                   [&](const auto& address_device_pair) {
+                     return address_device_pair.second.GetUniqueId() == id;
+                   });
+
+  if (it == discovered_ble_peripherals_map_.end()) {
+    LOG(WARNING) << __func__ << ": no match for device at id = " << id;
+    return false;
+  }
+
+  std::move(callback)(it->second);
+  return true;
 }
 
 void BleV2Medium::PresentChanged(bool present) {

@@ -46,6 +46,7 @@ const device::BluetoothUUID kService2BluetoothUuid{base::span<const uint8_t>(
     kTestServiceUuid2.data().size())};
 const char kServiceId[] = "TestServiceId";
 const char kCharacteristicUuid[] = "1234";
+const uint64_t kUniqueId = 1053256082272529;
 
 std::vector<uint8_t> GetByteVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -58,7 +59,7 @@ class FakeBleV2RemotePeripheral : public api::ble_v2::BlePeripheral {
 
   std::string GetAddress() const override { return kDeviceAddress; }
 
-  UniqueId GetUniqueId() const override { NOTREACHED_NORETURN(); }
+  UniqueId GetUniqueId() const override { return kUniqueId; }
 };
 
 }  // namespace
@@ -192,6 +193,12 @@ TEST_F(BleV2MediumTest, TestScanning_OneService) {
                       kDeviceServiceData1ByteArray);
             found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
+
+            EXPECT_TRUE(ble_v2_medium_->GetRemotePeripheral(
+                peripheral.GetUniqueId(),
+                [&](api::ble_v2::BlePeripheral& device) {
+                  EXPECT_EQ(kDeviceAddress, device.GetAddress());
+                }));
           }};
 
   auto scanning_session = ble_v2_medium_->StartScanning(
@@ -236,6 +243,12 @@ TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
               const api::ble_v2::BleAdvertisementData& advertisement_data) {
             session_1_found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
+
+            EXPECT_TRUE(ble_v2_medium_->GetRemotePeripheral(
+                peripheral.GetUniqueId(),
+                [&](api::ble_v2::BlePeripheral& device) {
+                  EXPECT_EQ(kDeviceAddress, device.GetAddress());
+                }));
           }};
   api::ble_v2::BleMedium::ScanningCallback scanning_callback_2 = {
       .start_scanning_result =
@@ -248,6 +261,12 @@ TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
               const api::ble_v2::BleAdvertisementData& advertisement_data) {
             session_2_found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
+
+            EXPECT_TRUE(ble_v2_medium_->GetRemotePeripheral(
+                peripheral.GetUniqueId(),
+                [&](api::ble_v2::BlePeripheral& device) {
+                  EXPECT_EQ(kDeviceAddress, device.GetAddress());
+                }));
           }};
 
   auto scanning_session_1 = ble_v2_medium_->StartScanning(
