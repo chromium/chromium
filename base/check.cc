@@ -396,8 +396,8 @@ NotReachedNoreturnError::~NotReachedNoreturnError() {
   log_message_.reset();
 
   // Make sure we die if we haven't.
-  // TODO(crbug.com/40254046): Replace this with NOTREACHED() once LOG(FATAL) is
-  // [[noreturn]].
+  // TODO(crbug.com/40254046): Replace this with NOTREACHED_NORETURN() once
+  // LOG(FATAL) is [[noreturn]].
   base::ImmediateCrash();
 }
 

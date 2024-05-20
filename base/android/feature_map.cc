@@ -36,8 +36,8 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
     return it->second;
   }
 
-  NOTREACHED() << "Queried feature cannot be found in FeatureMap: "
-               << feature_name;
+  NOTREACHED_NORETURN() << "Queried feature cannot be found in FeatureMap: "
+                        << feature_name;
 }
 
 static jboolean JNI_FeatureMap_IsEnabled(JNIEnv* env,

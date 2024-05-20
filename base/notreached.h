@@ -46,10 +46,18 @@ namespace logging {
          : EAT_CHECK_STREAM_PARAMS()
 #endif
 
+// TODO(crbug.com/40580068): Migrate existing NOTREACHED() instances to
+// NOTREACHED_IN_MIGRATION() then replace the NOTREACHED_IN_MIGRATION() branch
+// here with the NOTREACHED_NORETURN() implementation.
+#define NOTREACHED(...)                                          \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), NOTREACHED_IN_MIGRATION(), \
+          LOGGING_CHECK_FUNCTION_IMPL(                           \
+              ::logging::NotReachedError::NotReached(__VA_ARGS__), false))
+
 // NOTREACHED_NORETURN() annotates paths that are supposed to be unreachable.
 // They crash if they are ever hit.
-// TODO(crbug.com/40580068): Merge this with NOTREACHED() once
-// NOTREACHED_NORETURN() callers are renamed NOTREACHED().
+// TODO(crbug.com/40580068): Rename back to NOTREACHED() once there are no
+// callers of the old non-CHECK-fatal macro.
 #if CHECK_WILL_STREAM()
 #define NOTREACHED_NORETURN() ::logging::NotReachedNoreturnError()
 #else
@@ -63,11 +71,6 @@ namespace logging {
 #define NOTREACHED_NORETURN() \
   (true) ? ::logging::NotReachedFailure() : EAT_CHECK_STREAM_PARAMS()
 #endif
-
-#define NOTREACHED(...)                                      \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), NOTREACHED_NORETURN(), \
-          LOGGING_CHECK_FUNCTION_IMPL(                       \
-              ::logging::NotReachedError::NotReached(__VA_ARGS__), false))
 
 // The DUMP_WILL_BE_NOTREACHED_NORETURN() macro provides a convenient way to
 // non-fatally dump in official builds if ever hit. See DUMP_WILL_BE_CHECK for

@@ -505,10 +505,10 @@ TEST(CheckDeathTest, OstreamVsToString) {
                CHECK_EQ(g, h));
 }
 
-// This non-void function is here to make sure that NOTREACHED() is properly
-// annotated as [[noreturn]] and does not require a return statement.
-int NotReachedInFunction() {
-  NOTREACHED();
+// This non-void function is here to make sure that NOTREACHED_NORETURN() is
+// properly annotated as [[noreturn]] and does not require a return statement.
+int NotReachedNoreturnInFunction() {
+  NOTREACHED_NORETURN();
   // No return statement here.
 }
 
@@ -549,7 +549,7 @@ TEST(CheckDeathTest, NotReached) {
                                  "Check failed: false. NOTREACHED log messages "
                                  "are omitted in official builds. Sorry!\n");
 #endif
-  EXPECT_DEATH_IF_SUPPORTED(NotReachedInFunction(),
+  EXPECT_DEATH_IF_SUPPORTED(NotReachedNoreturnInFunction(),
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
 }
 
