@@ -168,4 +168,43 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
       medium()));
 }
 
+TEST_F(WifiDirectMediumTest, StopWifiDirect_MissingConnection) {
+  manager()->SetWifiDirectConnection(nullptr);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_FALSE(medium->StartWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_FALSE(medium->StopWifiDirect());
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, StopWifiDirect_ExistingConnection) {
+  manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_TRUE(medium->StartWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_TRUE(medium->StopWifiDirect());
+      },
+      medium()));
+}
+
 }  // namespace nearby::chrome

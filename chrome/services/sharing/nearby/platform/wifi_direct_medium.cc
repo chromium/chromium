@@ -45,7 +45,10 @@ bool WifiDirectMedium::StartWifiDirect(WifiDirectCredentials* credentials) {
 }
 
 bool WifiDirectMedium::StopWifiDirect() {
-  NOTIMPLEMENTED();
+  if (connection_) {
+    connection_.reset();
+    return true;
+  }
   return false;
 }
 
