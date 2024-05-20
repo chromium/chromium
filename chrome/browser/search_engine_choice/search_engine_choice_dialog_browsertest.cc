@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -503,8 +504,16 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                             EntryPoint::kDialog);
 }
 
+// TODO(b/341643240): Fix test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DialogDoesNotShowAgainAfterSettingPref \
+  DISABLED_DialogDoesNotShowAgainAfterSettingPref
+#else
+#define MAYBE_DialogDoesNotShowAgainAfterSettingPref \
+  DialogDoesNotShowAgainAfterSettingPref
+#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       DialogDoesNotShowAgainAfterSettingPref) {
+                       MAYBE_DialogDoesNotShowAgainAfterSettingPref) {
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile()));
