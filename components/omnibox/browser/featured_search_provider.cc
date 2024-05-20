@@ -7,15 +7,19 @@
 #include <stddef.h>
 
 #include <string>
+#include <vector>
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -64,6 +68,21 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   }
 
   DoStarterPackAutocompletion(input);
+}
+
+void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
+  // Only `NULL_RESULT_MESSAGE` types from this provider are deletable.
+  CHECK(match.deletable);
+  CHECK(match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE);
+
+  // Set the pref so this provider doesn't continue to offer the suggestion.
+  PrefService* prefs = client_->GetPrefs();
+  prefs->SetBoolean(omnibox::kShowGeminiIPH, false);
+
+  // Delete `match` from `matches_`.
+  std::erase_if(matches_, [&match](const auto& i) {
+    return i.contents == match.contents;
+  });
 }
 
 FeaturedSearchProvider::~FeaturedSearchProvider() = default;
@@ -171,6 +190,13 @@ void FeaturedSearchProvider::AddStarterPackMatch(
 }
 
 void FeaturedSearchProvider::AddIPHMatch() {
+  // If the IPH suggestion has been deleted by the user and the pref gets set,
+  // do not continue to offer it.
+  PrefService* prefs = client_->GetPrefs();
+  if (!prefs->GetBoolean(omnibox::kShowGeminiIPH)) {
+    return;
+  }
+
   // This value doesn't really matter as this suggestion is grouped after all
   // other suggestions. Use an arbitrary constant.
   constexpr int kRelevanceScore = 1000;
@@ -180,6 +206,7 @@ void FeaturedSearchProvider::AddIPHMatch() {
   // Use this suggestion's contents field to display a message to the user that
   // cannot be acted upon.
   match.contents = l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH);
+  match.deletable = true;
 
   // Bolds just the "@gemini" portion of the IPH string. The rest of the string
   // is dimmed.

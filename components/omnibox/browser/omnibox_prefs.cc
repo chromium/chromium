@@ -49,6 +49,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(omnibox::kShowGeminiIPH, true);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
