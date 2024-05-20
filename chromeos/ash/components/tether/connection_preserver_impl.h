@@ -12,12 +12,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/connection_preserver.h"
-#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/ash/components/tether/host_connection.h"
 
 namespace ash {
 
@@ -25,15 +20,12 @@ class NetworkStateHandler;
 
 namespace tether {
 
-class SecureChannelClient;
 class TetherHostResponseRecorder;
 
 // Concrete implementation of ConnectionPreserver.
-class ConnectionPreserverImpl
-    : public ConnectionPreserver,
-      public secure_channel::ConnectionAttempt::Delegate,
-      public secure_channel::ClientChannel::Observer,
-      public ActiveHost::Observer {
+class ConnectionPreserverImpl : public ConnectionPreserver,
+                                public HostConnection::PayloadListener,
+                                public ActiveHost::Observer {
  public:
   // The maximum duration of time that a BLE Connection should be preserved.
   // A preserved BLE Connection will be torn down if not used within this time.
@@ -42,8 +34,7 @@ class ConnectionPreserverImpl
   static constexpr const uint32_t kTimeoutSeconds = 60;
 
   ConnectionPreserverImpl(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      HostConnection::Factory* host_connection_factory,
       NetworkStateHandler* network_state_handler,
       ActiveHost* active_host,
       TetherHostResponseRecorder* tether_host_response_recorder);
@@ -58,15 +49,12 @@ class ConnectionPreserverImpl
       const std::string& device_id) override;
 
  protected:
-  // secure_channel::ConnectionAttempt::Delegate:
-  void OnConnectionAttemptFailure(
-      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(
-      std::unique_ptr<secure_channel::ClientChannel> channel) override;
+  // HostConnection::PayloadListener:
+  void OnMessageReceived(std::unique_ptr<MessageWrapper> message) override;
 
-  // secure_channel::ClientChannel::Observer:
-  void OnDisconnected() override;
-  void OnMessageReceived(const std::string& payload) override;
+  void OnConnectionAttemptFinished(
+      std::unique_ptr<HostConnection> host_connection);
+  void OnDisconnected();
 
   // ActiveHost::Observer:
   void OnActiveHostChanged(
@@ -82,13 +70,10 @@ class ConnectionPreserverImpl
       const std::string& device_id);
   void SetPreservedConnection(const std::string& device_id);
   void RemovePreservedConnectionIfPresent();
-  std::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
-      const std::string device_id);
 
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer_for_test);
 
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<HostConnection::Factory> host_connection_factory_;
   raw_ptr<NetworkStateHandler> network_state_handler_;
   raw_ptr<ActiveHost> active_host_;
   raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
@@ -97,8 +82,7 @@ class ConnectionPreserverImpl
 
   std::string preserved_connection_device_id_;
 
-  std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
-  std::unique_ptr<secure_channel::ClientChannel> client_channel_;
+  std::unique_ptr<HostConnection> preserved_host_connection_;
 
   base::WeakPtrFactory<ConnectionPreserverImpl> weak_ptr_factory_{this};
 };

@@ -17,7 +17,6 @@ static_library("tether") {
     "asynchronous_shutdown_object_container_impl.h",
     "connect_tethering_operation.cc",
     "connect_tethering_operation.h",
-    "connection_preserver.cc",
     "connection_preserver.h",
     "connection_preserver_impl.cc",
     "connection_preserver_impl.h",

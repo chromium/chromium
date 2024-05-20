@@ -7,9 +7,7 @@
 
 #include <memory>
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // Preserves a single BLE Connection beyond its immediately useful lifetime in
 // the hope that the BLE Connection will be useful in the future -- thus
@@ -17,12 +15,7 @@ namespace tether {
 // is only used after a host scan, in anticipation of a host connection attempt.
 class ConnectionPreserver {
  public:
-  ConnectionPreserver();
-
-  ConnectionPreserver(const ConnectionPreserver&) = delete;
-  ConnectionPreserver& operator=(const ConnectionPreserver&) = delete;
-
-  virtual ~ConnectionPreserver();
+  virtual ~ConnectionPreserver() = default;
 
   // Should be called after each successful host scan result, to request that
   // the Connection with that device be preserved.
@@ -30,8 +23,6 @@ class ConnectionPreserver {
       const std::string& device_id) = 0;
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_CONNECTION_PRESERVER_H_

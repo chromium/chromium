@@ -131,8 +131,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
               active_host_.get(),
               base::DefaultClock::GetInstance())),
       connection_preserver_(std::make_unique<ConnectionPreserverImpl>(
-          device_sync_client,
-          secure_channel_client,
+          asychronous_container->host_connection_factory(),
           network_state_handler_,
           active_host_.get(),
           tether_host_response_recorder_.get())),

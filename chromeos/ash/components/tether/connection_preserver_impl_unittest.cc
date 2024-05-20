@@ -18,11 +18,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
+#include "chromeos/ash/components/tether/fake_host_connection.h"
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
-#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -31,9 +28,7 @@ using testing::_;
 using testing::NiceMock;
 using testing::Return;
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -61,23 +56,15 @@ class ConnectionPreserverImplTest : public testing::Test {
 
  protected:
   ConnectionPreserverImplTest()
-      : test_local_device_(multidevice::RemoteDeviceRefBuilder()
-                               .SetPublicKey("local device")
-                               .Build()),
-        test_remote_devices_(multidevice::CreateRemoteDeviceRefListForTest(3)) {
+      : test_remote_devices_(multidevice::CreateRemoteDeviceRefListForTest(3)) {
     base::ranges::transform(test_remote_devices_,
                             std::back_inserter(test_remote_device_ids_),
                             &multidevice::RemoteDeviceRef::GetDeviceId);
   }
 
   void SetUp() override {
-    fake_device_sync_client_ =
-        std::make_unique<device_sync::FakeDeviceSyncClient>();
-    fake_device_sync_client_->set_local_device_metadata(test_local_device_);
-    fake_device_sync_client_->set_synced_devices(test_remote_devices_);
-    fake_secure_channel_client_ =
-        std::make_unique<secure_channel::FakeSecureChannelClient>();
-
+    fake_host_connection_factory_ =
+        std::make_unique<FakeHostConnection::Factory>();
     fake_active_host_ = std::make_unique<FakeActiveHost>();
 
     previously_connected_host_ids_.clear();
@@ -89,9 +76,8 @@ class ConnectionPreserverImplTest : public testing::Test {
             this, &ConnectionPreserverImplTest::GetPreviouslyConnectedHostIds));
 
     connection_preserver_ = std::make_unique<ConnectionPreserverImpl>(
-        fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
-        helper_.network_state_handler(), fake_active_host_.get(),
-        mock_tether_host_response_recorder_.get());
+        fake_host_connection_factory_.get(), helper_.network_state_handler(),
+        fake_active_host_.get(), mock_tether_host_response_recorder_.get());
 
     mock_timer_ = new base::MockOneShotTimer();
     connection_preserver_->SetTimerForTesting(
@@ -102,44 +88,21 @@ class ConnectionPreserverImplTest : public testing::Test {
 
   void SimulateSuccessfulHostScan(multidevice::RemoteDeviceRef remote_device,
                                   bool should_remain_registered) {
-    // |connection_preserver_| should only grab |fake_connection_attempt| if
-    // it is intended to keep the connection open.
-    auto fake_connection_attempt =
-        std::make_unique<secure_channel::FakeConnectionAttempt>();
-    auto* fake_connection_attempt_raw = fake_connection_attempt.get();
-    fake_secure_channel_client_->set_next_listen_connection_attempt(
-        remote_device, test_local_device_, std::move(fake_connection_attempt));
+    fake_host_connection_factory_->SetupConnectionAttempt(
+        TetherHost(remote_device));
 
     connection_preserver_->HandleSuccessfulTetherAvailabilityResponse(
         remote_device.GetDeviceId());
 
-    // If |connection_preserver_| is not expected to preserve the connection, it
-    // should not create a ConnectionAttempt, i.e., |next_connection_attempt|
-    // should still be present.
-    secure_channel::ConnectionAttempt* next_connection_attempt =
-        fake_secure_channel_client_->peek_next_listen_connection_attempt(
-            remote_device, test_local_device_);
     if (should_remain_registered) {
-      EXPECT_FALSE(next_connection_attempt);
+      EXPECT_EQ(fake_host_connection_factory_->GetPendingConnectionAttempt(
+                    remote_device.GetDeviceId()),
+                nullptr);
     } else {
-      // Expect that |connection_preserver_| did not grab the ConnectionAttempt.
-      EXPECT_TRUE(next_connection_attempt);
-      // Clean up |next_connection_attempt| or else
-      // |fake_secure_channel_client_| will fail a DCHECK when it's destroyed.
-      fake_secure_channel_client_->clear_next_listen_connection_attempt(
-          remote_device, test_local_device_);
+      EXPECT_TRUE(fake_host_connection_factory_->GetPendingConnectionAttempt(
+          remote_device.GetDeviceId()));
       return;
     }
-
-    auto fake_client_channel =
-        std::make_unique<secure_channel::FakeClientChannel>();
-    auto* fake_client_channel_raw = fake_client_channel.get();
-    fake_client_channel_raw->set_destructor_callback(
-        base::BindOnce(&ConnectionPreserverImplTest::OnClientChannelDestroyed,
-                       base::Unretained(this), remote_device));
-
-    fake_connection_attempt_raw->NotifyConnection(
-        std::move(fake_client_channel));
 
     // Expect that |connection_preserver_| continues to hold on to the
     // ClientChannel until it is destroyed or the active host becomes connected.
@@ -151,11 +114,13 @@ class ConnectionPreserverImplTest : public testing::Test {
       multidevice::RemoteDeviceRef remote_device,
       bool expect_destroyed) {
     if (expect_destroyed) {
-      EXPECT_TRUE(remote_device_to_client_channel_destruction_count_map_
-                      [remote_device]);
+      EXPECT_EQ(fake_host_connection_factory_->GetActiveConnection(
+                    remote_device.GetDeviceId()),
+                nullptr);
     } else {
-      EXPECT_FALSE(remote_device_to_client_channel_destruction_count_map_
-                       [remote_device]);
+      EXPECT_NE(fake_host_connection_factory_->GetActiveConnection(
+                    remote_device.GetDeviceId()),
+                nullptr);
     }
   }
 
@@ -168,27 +133,14 @@ class ConnectionPreserverImplTest : public testing::Test {
     return previously_connected_host_ids_;
   }
 
-  void OnClientChannelDestroyed(multidevice::RemoteDeviceRef remote_device) {
-    remote_device_to_client_channel_destruction_count_map_[remote_device]++;
-  }
-
   base::test::TaskEnvironment task_environment_;
 
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
 
-  const multidevice::RemoteDeviceRef test_local_device_;
   const multidevice::RemoteDeviceRefList test_remote_devices_;
   std::vector<std::string> test_remote_device_ids_;
 
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 secure_channel::FakeClientChannel*>
-      remote_device_to_fake_client_channel_map_;
-  base::flat_map<multidevice::RemoteDeviceRef, int>
-      remote_device_to_client_channel_destruction_count_map_;
-
-  std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  std::unique_ptr<secure_channel::FakeSecureChannelClient>
-      fake_secure_channel_client_;
+  std::unique_ptr<FakeHostConnection::Factory> fake_host_connection_factory_;
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<NiceMock<MockTetherHostResponseRecorder>>
       mock_tether_host_response_recorder_;
@@ -302,6 +254,4 @@ TEST_F(
                                         false /* expect_destroyed */);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
