@@ -89,9 +89,20 @@ base::Value::Dict BookmarkCodec::Encode(
 
   InitializeChecksum();
   base::Value::Dict roots;
-  roots.Set(kBookmarkBarFolderNameKey, EncodeNode(bookmark_bar_node));
-  roots.Set(kOtherBookmarkFolderNameKey, EncodeNode(other_folder_node));
-  roots.Set(kMobileBookmarkFolderNameKey, EncodeNode(mobile_folder_node));
+
+  if (bookmark_bar_node) {
+    // If one permanent node is provided, all permanent nodes should have been
+    // provided.
+    CHECK(other_folder_node);
+    CHECK(mobile_folder_node);
+    roots.Set(kBookmarkBarFolderNameKey, EncodeNode(bookmark_bar_node));
+    roots.Set(kOtherBookmarkFolderNameKey, EncodeNode(other_folder_node));
+    roots.Set(kMobileBookmarkFolderNameKey, EncodeNode(mobile_folder_node));
+  } else {
+    // No permanent node should have been provided.
+    CHECK(!other_folder_node);
+    CHECK(!mobile_folder_node);
+  }
 
   FinalizeChecksum();
   // We are going to store the computed checksum. So set stored checksum to be
@@ -112,6 +123,10 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
                            std::string* sync_metadata_str) {
   const int64_t max_already_assigned_id =
       already_assigned_ids.empty() ? 0 : *already_assigned_ids.rbegin();
+
+  if (sync_metadata_str) {
+    sync_metadata_str->clear();
+  }
 
   ids_ = std::move(already_assigned_ids);
   uuids_ = {base::Uuid::ParseLowercase(kRootNodeUuid),
@@ -205,6 +220,14 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
       return false;
   }
 
+  if (sync_metadata_str) {
+    const std::string* sync_metadata_str_base64 =
+        value.FindString(kSyncMetadata);
+    if (sync_metadata_str_base64) {
+      base::Base64Decode(*sync_metadata_str_base64, sync_metadata_str);
+    }
+  }
+
   const base::Value::Dict* roots = value.FindDict(kRootsKey);
   if (!roots)
     return false;  // No roots, or invalid type for roots.
@@ -221,13 +244,6 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
   DecodeNode(*bb_value, nullptr, bb_node);
   DecodeNode(*other_folder_value, nullptr, other_folder_node);
   DecodeNode(*mobile_folder_value, nullptr, mobile_folder_node);
-
-  if (sync_metadata_str) {
-    const std::string* sync_metadata_str_base64 =
-        value.FindString(kSyncMetadata);
-    if (sync_metadata_str_base64)
-      base::Base64Decode(*sync_metadata_str_base64, sync_metadata_str);
-  }
 
   // Need to reset the title as the title is persisted and restored from
   // the file.

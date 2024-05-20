@@ -36,6 +36,9 @@ class BookmarkCodec {
   ~BookmarkCodec();
 
   // Encodes the bookmark bar and other folders returning the JSON value.
+  // Either none or all permanent nodes must be null. The null case it useful to
+  // encode sync metadata only (which is useful in error cases, when a user may
+  // contain too many bookmarks in sync, server-side).
   base::Value::Dict Encode(
       const BookmarkNode* bookmark_bar_node,
       const BookmarkNode* other_folder_node,

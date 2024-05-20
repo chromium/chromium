@@ -20,6 +20,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
@@ -2619,6 +2620,78 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
   EXPECT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kInitiallyAccountTitle)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
+                       PRE_ShouldPersistIfInitialUpdatesCrossMaxCountLimit) {
+  // Create two bookmarks on the server under BookmarkBar with a truncated
+  // title.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  const std::string kTitle1 = "title1";
+  const std::string kUrl1 = "http://www.url1.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle1).BuildBookmark(
+          GURL(kUrl1)));
+
+  const std::string kTitle2 = "title2";
+  const std::string kUrl2 = "http://www.url2.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle2).BuildBookmark(
+          GURL(kUrl2)));
+
+  ASSERT_TRUE(SetupClients());
+  // Set a limit of 4 bookmarks. This should result in an error when we get an
+  // update of size 5.
+  AccountBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
+      ->SetBookmarksLimitForTesting(4);
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  // Note: Depending on the state of feature flags (specifically
+  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
+  // selected by default.
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
+
+  // Update of size 5 exceeds the limit.
+  EXPECT_TRUE(
+      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
+          .Wait());
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+  EXPECT_THAT(model->account_bookmark_bar_node(), IsNull());
+  EXPECT_THAT(model->account_other_node(), IsNull());
+  EXPECT_THAT(model->account_mobile_node(), IsNull());
+
+  // Bookmarks should be in an error state. Thus excluding it from the
+  // CheckForDataTypeFailures() check.
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
+                       ShouldPersistIfInitialUpdatesCrossMaxCountLimit) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+
+  // The fact that too many bookmarks were downloaded should have been persisted
+  // and hence remembered now. Note that this test doesn't override
+  // SetBookmarksLimitForTesting(), so the error must have been detected in
+  // the PRE_ test.
+  EXPECT_TRUE(
+      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
+          .Wait());
+
+  // Account permanent nodes should remain absent.
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+  EXPECT_THAT(model->account_bookmark_bar_node(), IsNull());
+  EXPECT_THAT(model->account_other_node(), IsNull());
+  EXPECT_THAT(model->account_mobile_node(), IsNull());
+
+  // Bookmarks should be in an error state. Thus excluding it from the
+  // CheckForDataTypeFailures() check.
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
