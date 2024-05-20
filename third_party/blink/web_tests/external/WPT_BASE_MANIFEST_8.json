@@ -143538,6 +143538,19 @@
       ]
      },
      "text-box-trim": {
+      "text-box-trim-accumulation-001.html": [
+       "08eedbdbfebc3263bcaefb2ce25727eceb1e91e7",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=text",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-float-start-001.html": [
        "99e4736baf09257d4f14577598f4f8d531c7c681",
        [
@@ -637771,6 +637784,13 @@
          {}
         ]
        ],
+       "static-router-resource-timing.https.html": [
+        "e99c2d3d0b3996cbd7074cea08f9500a0971e0bf",
+        [
+         null,
+         {}
+        ]
+       ],
        "static-router-subresource.https.html": [
         "ab05a3d25282473d5425d9086ef76a132fa2c5da",
         [
@@ -647344,7 +647364,7 @@
       ]
      ],
      "from.any.js": [
-      "58ad4d4add127d933c00af0b36c1d8c16b08f76d",
+      "ff27012ea15bc35dc804814c4ca251d55546a43a",
       [
        "streams/readable-streams/from.any.html",
        {
@@ -682475,7 +682495,7 @@
       ]
      ],
      "elementwise-logical.https.any.js": [
-      "86183b074ae0fe832a9f9837791a8f28799e3212",
+      "25d7b59924cc4d5a2cff89ece5c5397f92d04c11",
       [
        "webnn/validation_tests/elementwise-logical.https.any.html",
        {

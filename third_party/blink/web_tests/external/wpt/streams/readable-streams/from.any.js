@@ -51,44 +51,50 @@ const iterableFactories = [
 
   ['a sync iterable of values', () => {
     const chunks = ['a', 'b'];
-    const it = {
+    const iterator = {
       next() {
         return {
           done: chunks.length === 0,
           value: chunks.shift()
         };
-      },
-      [Symbol.iterator]: () => it
+      }
     };
-    return it;
+    const iterable = {
+      [Symbol.iterator]: () => iterator
+    };
+    return iterable;
   }],
 
   ['a sync iterable of promises', () => {
     const chunks = ['a', 'b'];
-    const it = {
+    const iterator = {
       next() {
         return chunks.length === 0 ? { done: true } : {
           done: false,
           value: Promise.resolve(chunks.shift())
         };
-      },
-      [Symbol.iterator]: () => it
+      }
     };
-    return it;
+    const iterable = {
+      [Symbol.iterator]: () => iterator
+    };
+    return iterable;
   }],
 
   ['an async iterable', () => {
     const chunks = ['a', 'b'];
-    const it = {
+    const asyncIterator = {
       next() {
         return Promise.resolve({
           done: chunks.length === 0,
           value: chunks.shift()
         })
-      },
-      [Symbol.asyncIterator]: () => it
+      }
     };
-    return it;
+    const asyncIterable = {
+      [Symbol.asyncIterator]: () => asyncIterator
+    };
+    return asyncIterable;
   }],
 
   ['a ReadableStream', () => {
