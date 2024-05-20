@@ -26,6 +26,7 @@ component("public") {
     "download_destination_observer.h",
     "download_features.cc",
     "download_features.h",
+    "download_file.cc",
     "download_file.h",
     "download_file_factory.h",
     "download_file_impl.h",
