@@ -11,7 +11,10 @@
 namespace nearby::chrome {
 
 namespace {
-const char kAddress[] = "address";
+
+const char kAddress[] = "11:12:13:14:15:16";
+constexpr uint64_t kUniqueId = 24279786918417;
+
 }  // namespace
 
 class BleV2RemotePeripheralTest : public testing::Test {
@@ -24,6 +27,13 @@ TEST_F(BleV2RemotePeripheralTest, GetAddress) {
   device_info->address = kAddress;
   BleV2RemotePeripheral peripheral{std::move(device_info)};
   EXPECT_EQ(peripheral.GetAddress(), kAddress);
+}
+
+TEST_F(BleV2RemotePeripheralTest, GetUniqueId) {
+  auto device_info = bluetooth::mojom::DeviceInfo::New();
+  device_info->address = kAddress;
+  BleV2RemotePeripheral peripheral{std::move(device_info)};
+  EXPECT_EQ(kUniqueId, peripheral.GetUniqueId());
 }
 
 TEST_F(BleV2RemotePeripheralTest, CanUpdateWithSameAddress) {
