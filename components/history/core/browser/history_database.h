@@ -24,7 +24,6 @@
 #include "sql/meta_table.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/history/core/browser/android/android_cache_database.h"
 #include "components/history/core/browser/android/android_urls_database.h"
 #endif
 
@@ -50,7 +49,6 @@ namespace history {
 class HistoryDatabase : public DownloadDatabase,
 #if BUILDFLAG(IS_ANDROID)
                         public AndroidURLsDatabase,
-                        public AndroidCacheDatabase,
 #endif
                         public URLDatabase,
                         public VisitDatabase,

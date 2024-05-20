@@ -135,8 +135,6 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
-      "android/android_cache_database.cc",
-      "android/android_cache_database.h",
       "android/android_history_types.cc",
       "android/android_history_types.h",
       "android/android_urls_database.cc",
