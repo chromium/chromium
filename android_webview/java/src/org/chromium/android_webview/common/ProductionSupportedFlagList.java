@@ -522,9 +522,6 @@ public final class ProductionSupportedFlagList {
                 "Switches skia to use DMSAA instead of MSAA for tile raster"
                         + " on Android GL backend."),
         Flag.baseFeature(
-                BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
-                "Initialize VideoEncodeAccelerator on the first encode."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),

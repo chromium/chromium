@@ -1624,8 +1624,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcHideLocalIpsWithMdns);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace);
-// Initialize VideoEncodeAccelerator on the first encode.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame);
 // If enabled, the WebRTC_* threads in peerconnection module will use
 // kResourceEfficient thread type.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

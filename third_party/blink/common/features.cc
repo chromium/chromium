@@ -2526,10 +2526,6 @@ BASE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace,
              "WebRtcIgnoreUnspecifiedColorSpace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame,
-             "WebRtcInitializeEncoderOnFirstFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRtcThreadsUseResourceEfficientType,
              "WebRtcThreadsUseResourceEfficientType",
              base::FEATURE_DISABLED_BY_DEFAULT);
