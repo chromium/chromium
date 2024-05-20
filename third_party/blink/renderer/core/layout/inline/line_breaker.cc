@@ -924,6 +924,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
   if (ruby_break_token_) {
     HandleRuby(ruby_break_token_, line_info);
     ruby_break_token_ = nullptr;
+    HandleOverflowIfNeeded(line_info);
   }
 
   while (state_ != LineBreakState::kDone) {

@@ -1176,6 +1176,21 @@ TEST_F(LineBreakerTest, CreateSubLineInfoAvailableWidth) {
   EXPECT_GE(line_info.Results()[1].ruby_column->base_line.EndTextOffset(), 79u);
 }
 
+// crbug.com/341142174 A crash with an overflowing continuation ruby column.
+TEST_F(LineBreakerTest, OverflowingContinuationRuby) {
+  InlineNode node = CreateInlineNode(R"HTML(
+<div id="container" style="width:1px; font-variant:small-caps;">
+<ruby>
+<q>
+AxBxC AxBxC
+</q>
+<rt>C b
+C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</ruby>)HTML");
+  ComputeMinMaxSizes(node);
+  // This test passes if no CHECK failures.
+}
+
 struct CanBreakInsideTestData {
   bool can_break_insde;
   const char* html;
