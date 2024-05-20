@@ -15727,26 +15727,6 @@
             ]
         }
     ],
-    "PrivacySandboxAttestationsSentinel": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DisablePrivacySandboxAttestationsSentinel",
-                    "disable_features": [
-                        "PrivacySandboxAttestationsSentinel"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxHatsForDesktopM1": [
         {
             "platforms": [

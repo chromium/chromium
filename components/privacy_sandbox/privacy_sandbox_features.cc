@@ -108,7 +108,7 @@ BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
 
 BASE_FEATURE(kPrivacySandboxAttestationSentinel,
              "PrivacySandboxAttestationsSentinel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
