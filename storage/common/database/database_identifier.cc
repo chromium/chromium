@@ -14,6 +14,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
+#include "url/url_features.h"
 
 namespace storage {
 
@@ -149,13 +150,23 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
 
   GURL url(scheme + "://" + hostname + "/");
 
-  if (!url.IsStandard())
-    hostname.clear();
-
   // If a url doesn't parse cleanly or doesn't round trip, reject it.
-  if (!url.is_valid() || url.scheme() != scheme || url.host() != hostname)
+  if (!url.is_valid() || url.scheme() != scheme) {
     return DatabaseIdentifier();
-
+  }
+  // Unless StandardCompliantNonSpecialSchemeURLParsing feature is enabled,
+  // url.host() always return an empty string for non-special URLs.
+  if ((url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() ||
+       url.IsStandard()) &&
+      (url.host() != hostname)) {
+    return DatabaseIdentifier();
+  }
+  // Clear hostname for a non-special URL. This behavior existed before
+  // non-special URLs are properly supported, and we're keeping this for
+  // compatibility reasons.
+  if (!url.IsStandard()) {
+    hostname.clear();
+  }
   return DatabaseIdentifier(scheme, hostname, port, false /* unique */, false);
 }
 

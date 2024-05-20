@@ -8,9 +8,11 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_features.h"
 
 namespace storage {
 
@@ -183,7 +185,28 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
   }
 }
 
-TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class DatabaseIdentifierParamTest : public testing::TestWithParam<bool> {
+ public:
+  DatabaseIdentifierParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Use a parameterized test here to ensure that
+// StandardCompliantNonSpecialSchemeURLParsing feature doesn't change the
+// behavior of DatabaseIdentifier.
+TEST_P(DatabaseIdentifierParamTest, ExtractOriginDataFromIdentifier) {
   struct IdentifierTestCase {
     std::string str;
     std::string expected_scheme;
@@ -258,6 +281,8 @@ TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
     EXPECT_EQ(GURL("null"), actual_origin) << "test case " << bogus_component;
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DatabaseIdentifierParamTest, ::testing::Bool());
 
 static GURL GURLToAndFromOriginIdentifier(const GURL& origin_url) {
   std::string id = storage::GetIdentifierFromOrigin(origin_url);
