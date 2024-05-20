@@ -123,12 +123,6 @@ gfx::Insets GetContentViewInsets() {
   return kContentViewInsets;
 }
 
-// Maximum height QuickAnswersView can expand to.
-int MaximumViewHeight() {
-  return kMainViewInsets.height() + GetContentViewInsets().height() +
-         kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip;
-}
-
 class MainView : public views::Button {
   METADATA_HEADER(MainView, views::Button)
 
@@ -190,6 +184,8 @@ class ReportQueryView : public views::Button {
   METADATA_HEADER(ReportQueryView, views::Button)
 
  public:
+  static constexpr size_t kMaximumHeight = kDogfoodIconSizeDip;
+
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
     SetBackground(views::CreateThemedSolidBackground(
@@ -254,6 +250,13 @@ class ReportQueryView : public views::Button {
 
 BEGIN_METADATA(ReportQueryView)
 END_METADATA
+
+// Maximum height QuickAnswersView can expand to.
+int MaximumViewHeight(bool is_internal) {
+  return kMainViewInsets.height() + GetContentViewInsets().height() +
+         kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip +
+         (is_internal ? ReportQueryView::kMaximumHeight : 0);
+}
 
 }  // namespace
 
@@ -356,7 +359,7 @@ gfx::Size QuickAnswersView::GetMaximumSize() const {
   // in `ReadWriteCardsUiController`. We need to reserve space at
   // the top since the view might expand for two-line answers.
   // Note that the width will not be used in the calculation.
-  return gfx::Size(0, MaximumViewHeight());
+  return gfx::Size(0, MaximumViewHeight(is_internal_));
 }
 
 void QuickAnswersView::UpdateBoundsForQuickAnswers() {

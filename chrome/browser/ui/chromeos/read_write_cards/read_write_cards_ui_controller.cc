@@ -148,8 +148,6 @@ void ReadWriteCardsUiController::Relayout() {
   // view's `GetMaximumSize()` to calculate this reserved height.
   int extra_reserved_height = 0;
   if (quick_answers_view_ && !quick_answers_view_->GetMaximumSize().IsZero()) {
-    CHECK_GE(quick_answers_view_->GetMaximumSize().height(),
-             quick_answers_view_->size().height());
     extra_reserved_height = quick_answers_view_->GetMaximumSize().height() -
                             quick_answers_view_->size().height();
   }
