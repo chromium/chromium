@@ -211,13 +211,13 @@ async function create_prerendered_page(t, opt = {}, init_opt = {}, rule_extras =
   const prerender_remote = new RemoteContext(prerender_uuid);
   const discard_remote = new RemoteContext(discard_uuid);
 
-  const init_params = new URLSearchParams(baseUrl.search);
+  const init_params = new URLSearchParams();
   init_params.set('uuid', init_uuid);
   for (const p in init_opt)
     init_params.set(p, init_opt[p]);
   window.open(`${baseUrl}?${init_params.toString()}&init`, '_blank', 'noopener');
 
-  const params = new URLSearchParams(baseUrl.search);
+  const params = new URLSearchParams();
   params.set('uuid', prerender_uuid);
   params.set('discard_uuid', discard_uuid);
   for (const p in opt)
