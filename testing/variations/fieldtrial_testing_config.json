@@ -88,6 +88,21 @@
             ]
         }
     ],
+    "AccessibilityManageBroadcastReceiverOnBackground": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityManageBroadcastReceiverOnBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityPageZoom": [
         {
             "platforms": [
