@@ -1237,6 +1237,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
            partition_alloc::TagViolationReportingMode::kDisabled));
   }
 
+  allocator_shim::UseSmallSingleSlotSpans use_small_single_slot_spans(
+      base::FeatureList::IsEnabled(
+          features::kPartitionAllocUseSmallSingleSlotSpans));
+
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
@@ -1244,7 +1248,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_branch_capacity_in_bytes,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
-      allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists));
+      allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists),
+      use_small_single_slot_spans);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

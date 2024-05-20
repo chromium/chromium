@@ -217,6 +217,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
 // aggressively when in the foreground.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
 
+// When enabled, uses a more nuanced heuristic to determine if slot
+// spans can be treated as "single-slot."
+//
+// See also: https://crbug.com/333443437
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans);
+
 }  // namespace features
 }  // namespace base
 

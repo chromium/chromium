@@ -64,7 +64,7 @@ struct PartitionBucket {
 
   // Public API.
   PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  void Init(uint32_t new_slot_size, bool use_small_single_slot_spans = false);
+  void Init(uint32_t new_slot_size, bool use_small_single_slot_spans);
 
   // Sets |is_already_zeroed| to true if the allocation was satisfied by
   // requesting (a) new page(s) from the operating system, or false otherwise.

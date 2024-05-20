@@ -494,9 +494,8 @@ void ConfigurePartitions(
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
-    UsePoolOffsetFreelists use_pool_offset_freelists
-
-) {
+    UsePoolOffsetFreelists use_pool_offset_freelists,
+    UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
@@ -537,6 +536,10 @@ void ConfigurePartitions(
             .reporting_mode = memory_tagging_reporting_mode};
         opts.use_pool_offset_freelists =
             use_pool_offset_freelists
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
+        opts.use_small_single_slot_spans =
+            use_small_single_slot_spans
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
         return opts;

@@ -187,6 +187,7 @@ struct PartitionOptions {
 #endif
 
   EnableToggle use_pool_offset_freelists = kDisabled;
+  EnableToggle use_small_single_slot_spans = kDisabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;

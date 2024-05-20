@@ -5538,7 +5538,7 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
 TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
   auto run_test = [](size_t count) {
     PartitionBucket bucket;
-    bucket.Init(16);
+    bucket.Init(16, /*use_small_single_slot_spans=*/false);
     bucket.active_slot_spans_head = nullptr;
 
     std::vector<SlotSpanMetadata> slot_spans;

@@ -485,5 +485,9 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
              "PartitionAllocAdjustSizeWhenInForeground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans,
+             "PartitionAllocUseSmallSingleSlotSpans",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace base

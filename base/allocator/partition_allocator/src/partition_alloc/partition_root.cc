@@ -1089,12 +1089,16 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // This is a "magic" value so we can test if a root pointer is valid.
     inverted_self = ~reinterpret_cast<uintptr_t>(this);
 
+    const bool use_small_single_slot_spans =
+        opts.use_small_single_slot_spans == PartitionOptions::kEnabled;
+
     // Set up the actual usable buckets first.
     constexpr internal::BucketIndexLookup lookup{};
     size_t bucket_index = 0;
     while (lookup.bucket_sizes()[bucket_index] !=
            internal::kInvalidBucketSize) {
-      buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index]);
+      buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index],
+                                 use_small_single_slot_spans);
       bucket_index++;
     }
     PA_DCHECK(bucket_index < internal::kNumBuckets);
@@ -1103,7 +1107,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
     for (size_t index = bucket_index; index < internal::kNumBuckets; index++) {
       // Cannot init with size 0 since it computes 1 / size, but make sure the
       // bucket is invalid.
-      buckets[index].Init(internal::kInvalidBucketSize);
+      buckets[index].Init(internal::kInvalidBucketSize,
+                          use_small_single_slot_spans);
       buckets[index].active_slot_spans_head = nullptr;
       PA_DCHECK(!buckets[index].is_valid());
     }
