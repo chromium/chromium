@@ -6,6 +6,7 @@
 #define UI_DISPLAY_TYPES_DISPLAY_COLOR_MANAGEMENT_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "third_party/skia/modules/skcms/skcms.h"
