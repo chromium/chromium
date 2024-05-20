@@ -946,7 +946,8 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
     return pseudo_id;
   }
 
-  auto tokens = CSSTokenizer(selector_string).TokenizeToEOF();
+  CSSTokenizer tokenizer(selector_string);
+  auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   int ident_start = 0;
   if (range.Peek().GetType() == kColonToken) {
