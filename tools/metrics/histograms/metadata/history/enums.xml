@@ -133,6 +133,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="EmbeddingsModelInfoStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model info is valid"/>
+  <int value="2" label="Model info is empty"/>
+  <int value="3" label="Model info does not contain model metadata"/>
+  <int value="4" label="Model info has invalid model metadata"/>
+  <int value="5" label="Model info has invalid data for additional files"/>
+</enum>
+
 <enum name="EmbeddingsUserActions">
   <int value="0" label="Non-empty query History search"/>
   <int value="1" label="Embeddings search"/>

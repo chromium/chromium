@@ -4,6 +4,7 @@
 
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -27,6 +28,24 @@ passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
   return params;
 }
 
+class ScopedEmbeddingsModelInfoStatusLogger {
+ public:
+  ScopedEmbeddingsModelInfoStatusLogger() = default;
+  ~ScopedEmbeddingsModelInfoStatusLogger() {
+    CHECK_NE(history_embeddings::EmbeddingsModelInfoStatus::kUnknown, status_);
+    base::UmaHistogramEnumeration("History.Embeddings.Embedder.ModelInfoStatus",
+                                  status_);
+  }
+
+  void set_status(history_embeddings::EmbeddingsModelInfoStatus status) {
+    status_ = status;
+  }
+
+ private:
+  history_embeddings::EmbeddingsModelInfoStatus status_ =
+      history_embeddings::EmbeddingsModelInfoStatus::kUnknown;
+};
+
 }  // namespace
 
 namespace history_embeddings {
@@ -36,7 +55,6 @@ PassageEmbeddingsServiceController::PassageEmbeddingsServiceController() =
 PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
     default;
 
-// TODO(b/338650221): Add histograms for bad model info.
 bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // Reset everything, so if the model info is invalid, the service controller
@@ -46,7 +64,9 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
   model_metadata_ = std::nullopt;
   ResetRemotes();
 
-  if (!model_info.has_value() || !model_info->GetModelMetadata()) {
+  ScopedEmbeddingsModelInfoStatusLogger logger;
+  if (!model_info.has_value()) {
+    logger.set_status(EmbeddingsModelInfoStatus::kEmpty);
     return false;
   }
 
@@ -54,16 +74,22 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
   base::flat_set<base::FilePath> additional_files =
       model_info->GetAdditionalFiles();
   if (additional_files.size() != 1u) {
+    logger.set_status(EmbeddingsModelInfoStatus::kInvalidAdditionalFiles);
     return false;
   }
 
   // Check validity of model metadata.
   const std::optional<optimization_guide::proto::Any>& metadata =
       model_info->GetModelMetadata();
+  if (!metadata) {
+    logger.set_status(EmbeddingsModelInfoStatus::kNoMetadata);
+    return false;
+  }
   std::optional<history_embeddings::proto::PassageEmbeddingsModelMetadata>
       embeddings_metadata = optimization_guide::ParsedAnyMetadata<
           history_embeddings::proto::PassageEmbeddingsModelMetadata>(*metadata);
   if (!embeddings_metadata) {
+    logger.set_status(EmbeddingsModelInfoStatus::kInvalidMetadata);
     return false;
   }
 
@@ -74,6 +100,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
 
   CHECK(!embeddings_model_path_.empty());
   CHECK(!sp_model_path_.empty());
+  logger.set_status(EmbeddingsModelInfoStatus::kValid);
   return true;
 }
 

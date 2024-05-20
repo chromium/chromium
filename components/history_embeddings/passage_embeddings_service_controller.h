@@ -13,6 +13,29 @@
 
 namespace history_embeddings {
 
+enum class EmbeddingsModelInfoStatus {
+  kUnknown = 0,
+
+  // Model info is valid.
+  kValid = 1,
+
+  // Model info is empty.
+  kEmpty = 2,
+
+  // Model info does not contain model metadata.
+  kNoMetadata = 3,
+
+  // Model info has invalid metadata.
+  kInvalidMetadata = 4,
+
+  // Model info has invalid additional files.
+  kInvalidAdditionalFiles = 5,
+
+  // This must be kept in sync with EmbeddingsModelInfoStatus in
+  // history/enums.xml
+  kMaxValue = kInvalidAdditionalFiles,
+};
+
 class PassageEmbeddingsServiceController {
  public:
   PassageEmbeddingsServiceController();

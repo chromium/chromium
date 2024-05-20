@@ -16,7 +16,6 @@ PassageEmbeddingsService::PassageEmbeddingsService(
 
 PassageEmbeddingsService::~PassageEmbeddingsService() = default;
 
-// TODO(b/338650221): Add histogram for whether model load succeeds or not.
 void PassageEmbeddingsService::LoadModels(
     mojom::PassageEmbeddingsLoadModelsParamsPtr params,
     mojo::PendingReceiver<mojom::PassageEmbedder> model,

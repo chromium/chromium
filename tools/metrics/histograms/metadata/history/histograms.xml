@@ -1792,6 +1792,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.ModelInfoStatus"
+    enum="EmbeddingsModelInfoStatus" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the model metadata received from optimization guide model provider
+    is valid. Logged each time the embedder receives an model update from
+    optimization guide.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.PassageTokenCount" units="tokens"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
