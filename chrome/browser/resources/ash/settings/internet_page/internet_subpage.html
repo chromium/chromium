@@ -1,9 +1,9 @@
 <style include="cr-shared-style os-settings-icons settings-shared iron-flex">
   #networkListDiv {
-    min-height: var(--cr-section-min-height);
+    min-height: var(--cr-section-two-line-min-height);
   }
 
-  :host(:not([is-showing-vpn_])) #networkListDiv {
+  :host(:not([is-showing-vpn_], [is-showing-tether_])) #networkListDiv {
     margin-top: var(--cr-section-vertical-margin);
   }
 
@@ -44,7 +44,7 @@
   }
 
   .no-networks {
-    margin: 4px;
+    min-height: var(--cr-section-two-line-min-height);
   }
 
   network-list {
@@ -83,9 +83,8 @@
 </style>
 
 <template is="dom-if" if="[[shouldShowBluetoothDisabledTetherErrorMessage_(deviceState)]]">
-  <div id="networkListDiv" class="layout vertical flex">
+  <div id="networkListDiv" class="layout horizontal center">
     <localized-link
-      class="no-networks"
       localized-string="[[getBluetoothDisabledErrorMessageForTether_()]]">
     </localized-link>
   </div>
@@ -164,6 +163,7 @@
           <div id="your-device-hotspots-title">$i18n{internetYourDeviceHotspots}</div>
       </template>
       <network-list id="networkList" show-buttons
+          class="layout horizontal center"
           show-technology-badge="[[showTechnologyBadge_]]"
           networks="[[networkStateList_]]"
           global-policy="[[globalPolicy]]"
@@ -211,12 +211,13 @@
     </template>
 
     <!-- Text shown if no networks exist. -->
-    <localized-link
-        class="no-networks"
-        hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
-        localized-string=
-            "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
-    </localized-link>
+    <template is="dom-if" if="[[!hideNoNetworksMessage_(networkStateList_, deviceState)]]">
+      <div class="layout horizontal center no-networks">
+        <localized-link
+          localized-string="[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
+        </localized-link>
+      </div>
+    </template>
 
     <template is="dom-if" if="[[isShowingVpn_]]">
       <!-- Third party VPNs. -->
