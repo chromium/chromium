@@ -872,11 +872,6 @@ class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
 
 // Test that the debuggers can attach to the PDF embedder frame.
 IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
-  if (IsParamFeatureEnabled()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
 }
 
