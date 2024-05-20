@@ -3897,6 +3897,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Helper functions for logging crash keys when ValidateDidCommitParams()
   // determines it cannot commit a URL or origin.
   void LogCannotCommitUrlCrashKeys(const GURL& url,
+                                   const url::Origin& origin,
                                    bool is_same_document_navigation,
                                    NavigationRequest* navigation_request,
                                    std::string& origin_calculation_debug_info);

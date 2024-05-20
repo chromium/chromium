@@ -13450,7 +13450,7 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
                   << " origin '" << origin << "'"
                   << " lock '" << process->GetProcessLock().ToString() << "'";
       VLOG(1) << "Blocked URL " << url.spec();
-      LogCannotCommitUrlCrashKeys(url, is_same_document_navigation,
+      LogCannotCommitUrlCrashKeys(url, origin, is_same_document_navigation,
                                   navigation_request,
                                   origin_calculation_debug_info);
 
@@ -13633,9 +13633,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     //   DidCommitSameDocumentNavigation).
     // TODO(crbug.com/40150370): Make this a CHECK instead once we're
     // sure we never hit this case.
-    LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
-                                navigation_request.get(),
-                                params->origin_calculation_debug_info);
+    LogCannotCommitUrlCrashKeys(
+        params->url, params->origin, is_same_document_navigation,
+        navigation_request.get(), params->origin_calculation_debug_info);
     base::debug::DumpWithoutCrashing();
   }
 
@@ -13658,9 +13658,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
           params->url, frame_tree_node_->is_on_initial_empty_document());
   if (!navigation_request && !is_synchronous_about_blank_commit &&
       !is_same_document_navigation) {
-    LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
-                                navigation_request.get(),
-                                params->origin_calculation_debug_info);
+    LogCannotCommitUrlCrashKeys(
+        params->url, params->origin, is_same_document_navigation,
+        navigation_request.get(), params->origin_calculation_debug_info);
 
     bad_message::ReceivedBadMessage(
         GetProcess(),
@@ -13691,12 +13691,24 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     ChildProcessSecurityPolicyImpl::GetInstance()
         ->GrantOriginCheckExemptionForWebView(GetProcess()->GetID(),
                                               params->origin);
+    // Log a crash key when LoadDataWithBaseURL is given an exemption, to help
+    // diagnose any renderer kills that result from it.
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "ever_had_loaddatawithbaseurl_exemption",
+        base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(crash_key, "true");
   }
   if (GetOrCreateWebPreferences().allow_universal_access_from_file_urls &&
       params->origin.scheme() == url::kFileScheme) {
     ChildProcessSecurityPolicyImpl::GetInstance()
         ->GrantOriginCheckExemptionForWebView(GetProcess()->GetID(),
                                               params->origin);
+    // Log a crash key when universal access is given an exemption, to help
+    // diagnose any renderer kills that result from it.
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "ever_had_universal_access_exemption",
+        base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(crash_key, "true");
   }
 
   if (!ValidateDidCommitParams(navigation_request.get(), params.get(),
@@ -14933,6 +14945,7 @@ void RenderFrameHostImpl::AddMessageToConsoleImpl(
 
 void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
     const GURL& url,
+    const url::Origin& origin,
     bool is_same_document_navigation,
     NavigationRequest* navigation_request,
     std::string& origin_calculation_debug_info) {
@@ -14972,6 +14985,17 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       "is_local_root", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_local_root_key,
                                  bool_to_crash_key(is_local_root()));
+
+  static auto* const is_opaque_origin_key = base::debug::AllocateCrashKeyString(
+      "is_opaque_origin", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(is_opaque_origin_key,
+                                 bool_to_crash_key(origin.opaque()));
+
+  static auto* const is_file_origin_key = base::debug::AllocateCrashKeyString(
+      "is_file_origin", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(
+      is_file_origin_key,
+      bool_to_crash_key(origin.scheme() == url::kFileScheme));
 
   static auto* const site_lock_key = base::debug::AllocateCrashKeyString(
       "site_lock", base::debug::CrashKeySize::Size256);
