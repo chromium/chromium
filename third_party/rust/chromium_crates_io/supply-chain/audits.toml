@@ -822,6 +822,15 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.rand_chacha]]
+who = "Allen Webb <allenwebb@google.com>"
+criteria = "crypto-safe"
+version = "0.3.1"
+notes = """
+This crate doesn't actually implement ChaCha, it uses the implementation in
+`c2-chacha`.  Note that this review has been internally tracked in b/330501364.
+"""
+
 [[audits.rand_pcg]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
