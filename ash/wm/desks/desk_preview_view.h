@@ -31,43 +31,34 @@ class WallpaperBaseView;
 //                +---------------------------+
 //                |             <-------------+------  This view's layer.
 //                +---------------------------+
-//              /    |          |               \  ----->>>>> Higher in Z-order.
-//             /     |          |                \
-//     +-----+    +-----+    +-----+               +-----+
-//     |     |    |     |    |     |               |     |
-//     +-----+    +-----+    +-----+               +-----+
-//        ^          ^          ^    \                ^
-//        |          |          |     \ +-----+       |
-//        |          |          |       |     |       |
-//        |          |          |       +-----+       |
-//        |          |          |          ^          |
-//        |          |          |          |   `highlight_overlay_`'s layer:
-//        |          |          |          |   A solid color layer that is
-//        |          |          |          |   visible when `mini_view_`'s
-//        |          |          |          |   `DeskActionContextMenu` is open.
-//        |          |          |          |
-//        |          |          |          |
-//        |          |          |    The root layer of the desk's mirrored
-//        |          |          |    contents layer tree. This tree is owned by
-//        |          |          |    `desk_mirrored_contents_layer_tree_owner_`.
-//        |          |          |
-//        |          |          |
-//        |          |     `desk_mirrored_contents_view_`'s layer: Will be the
-//        |          |      parent layer of the desk's contents mirrored layer
-//        |          |      tree.
-//        |          |
-//        |          |
-//        |     `wallpaper_preview_`'s layer: On which the wallpaper is painted
-//        |      without the dimming and blur that overview mode adds.
-//        |
-//        |
-//     `shadow_layer_`: A layer that paints a shadow behind this view.
+//                       |               \  ----->>>>> Higher in Z-order.
+//                       |                \
+//                    +-----+               +-----+
+//                    |     |               |     |
+//                    +-----+               +-----+
+//                       ^    \                ^
+//                       |     \ +-----+       |
+//                       |       |     |       |
+//                       |       +-----+       |
+//                       |          ^          |
+//                       |          |   `highlight_overlay_`'s layer:
+//                       |          |   A solid color layer that is
+//                       |          |   visible when `mini_view_`'s
+//                       |          |   `DeskActionContextMenu` is open.
+//                       |          |
+//                       |          |
+//                       |    The root layer of the desk's mirrored
+//                       |    contents layer tree. This tree is owned by
+//                       |    `desk_mirrored_contents_layer_tree_owner_`.
+//                       |
+//                       |
+//             `desk_mirrored_contents_view_`'s layer: Will be the
+//              parent layer of the desk's contents mirrored layer tree.
 //
-// Note that `desk_mirrored_contents_view_`, `wallpaper_preview_`, and
-// `highlight_overlay_` paint to layers with rounded corners. In order to use
-// the fast rounded corners implementation we must make them sibling layers,
-// rather than one being a descendant of the other. Otherwise, this will trigger
-// a render surface.
+// Note that `desk_mirrored_contents_view_` and `highlight_overlay_` paint to
+// layers with rounded corners. In order to use the fast rounded corners
+// implementation we must make them sibling layers, rather than one being a
+// descendant of the other. Otherwise, this will trigger a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button,
                                    public OverviewFocusableView {
   METADATA_HEADER(DeskPreviewView, views::Button)

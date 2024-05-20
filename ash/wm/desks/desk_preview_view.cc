@@ -34,6 +34,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,6 +44,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -61,10 +63,31 @@ constexpr int kDeskPreviewMinHeight = 48;
 constexpr int kUseSmallerHeightDividerWidthThreshold = 600;
 
 // The rounded corner radii, also in dips.
-constexpr gfx::RoundedCornersF kCornerRadius(8);
+constexpr float kCornerRadiusInDips = 8;
+constexpr gfx::RoundedCornersF kCornerRadius(kCornerRadiusInDips);
 
 // Used for painting the highlight when the context menu is open.
 constexpr float kHighlightTransparency = 0.3f * 0xFF;
+
+// Applies rounded corner clipping to the canvas before the wallpaper is
+// painted. This is several milliseconds faster on low-end devices than giving
+// the wallpaper its own layer and applying rounded corners to the layer.
+class WallpaperRoundedCornerView : public WallpaperBaseView {
+ public:
+  WallpaperRoundedCornerView() = default;
+  WallpaperRoundedCornerView(const WallpaperRoundedCornerView&) = delete;
+  WallpaperRoundedCornerView& operator=(const WallpaperRoundedCornerView&) =
+      delete;
+  ~WallpaperRoundedCornerView() override = default;
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    canvas->sk_canvas()->clipRRect(
+        SkRRect::MakeRectXY(gfx::RectToSkRect(GetContentsBounds()),
+                            kCornerRadiusInDips, kCornerRadiusInDips),
+        /*do_anti_alias=*/true);
+    WallpaperBaseView::OnPaint(canvas);
+  }
+};
 
 // Holds data about the original desk's layers to determine what we should do
 // when we attempt to mirror those layers.
@@ -337,7 +360,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
                                  DeskMiniView* mini_view)
     : views::Button(std::move(callback)),
       mini_view_(mini_view),
-      wallpaper_preview_(new DeskWallpaperPreview),
+      wallpaper_preview_(new WallpaperRoundedCornerView),
       desk_mirrored_contents_view_(new views::View),
       force_desk_occlusion_tracker_visible_(
           aura::WindowOcclusionTracker::ScopedForceVisible(
@@ -353,11 +376,6 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
-  wallpaper_preview_->SetPaintToLayer();
-  auto* wallpaper_preview_layer = wallpaper_preview_->layer();
-  wallpaper_preview_layer->SetFillsBoundsOpaquely(false);
-  wallpaper_preview_layer->SetRoundedCornerRadius(kCornerRadius);
-  wallpaper_preview_layer->SetIsFastRoundedCorner(true);
   AddChildView(wallpaper_preview_.get());
 
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
