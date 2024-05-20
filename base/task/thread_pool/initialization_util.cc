@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/numerics/clamped_math.h"
 #include "base/system/sys_info.h"
 
 namespace base {
@@ -14,10 +15,10 @@ namespace base {
 size_t RecommendedMaxNumberOfThreadsInThreadGroup(size_t min,
                                                   size_t max,
                                                   double cores_multiplier,
-                                                  size_t offset) {
+                                                  int offset) {
   const auto num_of_cores = static_cast<size_t>(SysInfo::NumberOfProcessors());
-  const size_t threads =
-      std::ceil<size_t>(num_of_cores * cores_multiplier) + offset;
+  const size_t threads = ClampAdd<size_t>(
+      std::ceil<size_t>(num_of_cores * cores_multiplier), offset);
   return std::clamp(threads, min, max);
 }
 
