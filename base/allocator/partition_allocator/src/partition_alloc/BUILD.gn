@@ -160,7 +160,7 @@ component("raw_ptr") {
 # carry out runtime evaluation of PartitionAlloc's two freelist
 # implementations: the existing encoded-next freelist and the new
 # pool offset freelist. When false, the latter is not built.
-use_freelist_dispatcher = has_64_bit_pointers && false
+use_freelist_dispatcher = has_64_bit_pointers
 
 pa_buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
