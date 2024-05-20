@@ -116,6 +116,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
     return manual_fallback_flow_.get();
   }
 
+  base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
+
  private:
   // Called just before showing a popup to log which |suggestions| were shown.
   void LogMetricsForSuggestions(

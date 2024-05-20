@@ -42,6 +42,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
@@ -145,10 +146,11 @@ class ChromePasswordManagerClient
       password_manager::ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type) override;
 
-  bool ShowKeyboardReplacingSurface(
+  void ShowKeyboardReplacingSurface(
       password_manager::PasswordManagerDriver* driver,
       const password_manager::PasswordFillingParams& password_filling_params,
-      bool is_webauthn_form) override;
+      bool is_webauthn_form,
+      base::OnceCallback<void(bool)> shown_cb) override;
 #endif
 
   bool CanUseBiometricAuthForFilling(
@@ -365,6 +367,13 @@ class ChromePasswordManagerClient
 
 #if BUILDFLAG(IS_ANDROID)
   TouchToFillController* GetOrCreateTouchToFillController();
+
+  void MaybeShowAccountStorageNotice(base::OnceClosure callback);
+
+  void ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
+      base::WeakPtr<password_manager::ContentPasswordManagerDriver> weak_driver,
+      const password_manager::PasswordFillingParams& password_filling_params,
+      base::OnceCallback<void(bool)> shown_cb);
 #endif
 
   // content::WebContentsObserver overrides.
@@ -460,6 +469,8 @@ class ChromePasswordManagerClient
   SaveUpdatePasswordMessageDelegate save_update_password_message_delegate_;
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
+
+  std::unique_ptr<AccountStorageNotice> account_storage_notice_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // As a mojo service, will be registered into service registry

@@ -34,11 +34,12 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
     ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {}
 
-bool PasswordManagerClient::ShowKeyboardReplacingSurface(
+void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
     const PasswordFillingParams& password_filling_params,
-    bool is_webauthn_form) {
-  return false;
+    bool is_webauthn_form,
+    base::OnceCallback<void(bool)> shown_cb) {
+  std::move(shown_cb).Run(false);
 }
 #endif
 

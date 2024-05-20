@@ -141,6 +141,7 @@
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #else
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -292,8 +293,15 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   if (form_to_save->IsBlocklisted())
     return false;
 
-  save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
-      web_contents(), std::move(form_to_save), update_password, this);
+  // base::Unretained() is safe: If the callback is called, AccountStorageNotice
+  // is alive, then so are its parent ChromePasswordManagerClient, its sibling
+  // SaveUpdatePasswordMessageDelegate and web_contents() (the client is per
+  // web_contents()).
+  MaybeShowAccountStorageNotice(base::BindOnce(
+      &SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt,
+      base::Unretained(&save_update_password_message_delegate_),
+      base::Unretained(web_contents()), std::move(form_to_save),
+      update_password, base::Unretained(this)));
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
@@ -435,15 +443,18 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
   }
 }
 
-bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
+void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
     const password_manager::PasswordFillingParams& password_filling_params,
-    bool is_webauthn_form) {
+    bool is_webauthn_form,
+    base::OnceCallback<void(bool)> shown_cb) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSuggestionBottomSheetV2) &&
       keyboard_replacing_surface_visibility_controller_ &&
       !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
-    return keyboard_replacing_surface_visibility_controller_->IsVisible();
+    std::move(shown_cb).Run(
+        keyboard_replacing_surface_visibility_controller_->IsVisible());
+    return;
   }
 
   password_manager::ContentPasswordManagerDriver* content_driver =
@@ -454,8 +465,31 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
               driver->AsWeakPtr(), password_filling_params),
           content_driver->AsWeakPtrImpl(), is_webauthn_form)) {
-    return true;
+    std::move(shown_cb).Run(true);
+    return;
   }
+
+  // base::Unretained() is safe: if the callback is called, AccountStorageNotice
+  // is alive, then so is its parent ChromePasswordManagerClient.
+  MaybeShowAccountStorageNotice(
+      base::BindOnce(&ChromePasswordManagerClient::
+                         ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone,
+                     base::Unretained(this), content_driver->AsWeakPtrImpl(),
+                     password_filling_params, std::move(shown_cb)));
+}
+
+void ChromePasswordManagerClient::
+    ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
+        base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+            weak_driver,
+        const password_manager::PasswordFillingParams& password_filling_params,
+        base::OnceCallback<void(bool)> shown_cb) {
+  // TODO(crbug.com/338576301): Maybe don't show TTF if there was a navigation.
+  if (!weak_driver) {
+    return std::move(shown_cb).Run(false);
+  }
+
+  password_manager::ContentPasswordManagerDriver* driver = weak_driver.get();
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
   std::vector<password_manager::PasskeyCredential> passkeys;
   bool should_show_hybrid_option = false;
@@ -475,13 +509,14 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           password_filling_params.focused_field_renderer_id_,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
-  return GetOrCreateTouchToFillController()->Show(
+
+  const bool shown = GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
           .GetCredentials(),
       passkeys, std::move(ttf_controller_autofill_delegate),
-      GetWebAuthnCredManDelegateForDriver(driver),
-      content_driver->AsWeakPtrImpl());
+      GetWebAuthnCredManDelegateForDriver(driver), driver->AsWeakPtrImpl());
+  std::move(shown_cb).Run(shown);
 }
 #endif
 
@@ -1399,6 +1434,33 @@ ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
         profile_, GetOrCreateKeyboardReplacingSurfaceVisibilityController());
   }
   return touch_to_fill_controller_.get();
+}
+
+void ChromePasswordManagerClient::MaybeShowAccountStorageNotice(
+    base::OnceClosure callback) {
+  // Unretained() is safe because `this` outlives `account_storage_notice_`.
+  auto destroy_notice_cb = base::BindOnce(
+      [](ChromePasswordManagerClient* client) {
+        client->account_storage_notice_.reset();
+      },
+      base::Unretained(this));
+  const bool had_notice = account_storage_notice_.get();
+  account_storage_notice_ = AccountStorageNotice::MaybeShow(
+      SyncServiceFactory::GetForProfile(profile_), profile_->GetPrefs(),
+      web_contents()->GetNativeView()->GetWindowAndroid(),
+      std::move(destroy_notice_cb).Then(std::move(callback)));
+  // MaybeShow() will return non-null at most once, since this is a one-off
+  // notice. So the possible cases are:
+  // - `account_storage_notice_` was null and stayed so:  No notice shown, just
+  //   invokes `callback`.
+  // - `account_storage_notice_` was null and became non-null: Shows the notice.
+  // - (Speculative) `account_storage_notice_` was non-null and became null:
+  //   Hides the notice and executes `callback`. The alternative would be to
+  //   ignore `callback` and wait for `account_storage_notice_` to go away, but
+  //   that's dangerous (if there's a bug and `account_storage_notice_` is never
+  //   reset, the method would always no-op, breaking the saving/filling
+  //   callers).
+  CHECK(!had_notice || !account_storage_notice_);
 }
 
 password_manager::CredManController*

@@ -212,11 +212,14 @@ class PasswordManagerClient {
       password_manager::PasswordStoreBackendErrorType error_type);
 
   // Instructs the client to show a keyboard replacing surface UI (e.g.
-  // TouchToFill).
-  virtual bool ShowKeyboardReplacingSurface(
+  // TouchToFill). `shown_cb` will be invoked with whether the view was shown.
+  // TODO(crbug.com/341322405): Make this synchronous again once the account
+  // storage notice is gone.
+  virtual void ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
       const PasswordFillingParams& password_filling_params,
-      bool is_webauthn_form);
+      bool is_webauthn_form,
+      base::OnceCallback<void(bool)> shown_cb);
 #endif
 
   virtual bool CanUseBiometricAuthForFilling(

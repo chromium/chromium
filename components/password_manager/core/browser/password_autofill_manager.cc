@@ -477,6 +477,10 @@ void PasswordAutofillManager::SetManualFallbackFlowForTest(
   manual_fallback_flow_.swap(manual_fallback_flow);
 }
 
+base::WeakPtr<PasswordAutofillManager> PasswordAutofillManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PasswordAutofillManager, private:
 

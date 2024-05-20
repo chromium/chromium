@@ -512,29 +512,41 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
         "form.fields.size()!");
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kPasswordSuggestionBottomSheetV2)) {
-    // TODO(crbug.com/40269373): Remove the parameter
-    // autofill::mojom::SubmissionReadinessState::kNoInformation when the
-    // feature is launched.
-    if (client_->ShowKeyboardReplacingSurface(
-            this,
-            PasswordFillingParams(
-                request.form_data, request.username_field_index,
-                request.password_field_index, request.element_id,
-                autofill::mojom::SubmissionReadinessState::kNoInformation),
-            request.show_webauthn_credentials)) {
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  GetPasswordAutofillManager()->OnShowPasswordSuggestions(
-      request.element_id, request.trigger_source, request.text_direction,
-      request.typed_username,
+  base::OnceClosure show_with_autofill_manager_cb = base::BindOnce(
+      &PasswordAutofillManager::OnShowPasswordSuggestions,
+      GetPasswordAutofillManager()->GetWeakPtr(), request.element_id,
+      request.trigger_source, request.text_direction, request.typed_username,
       ShowWebAuthnCredentials(request.show_webauthn_credentials),
       TransformToRootCoordinates(render_frame_host_, request.bounds));
+#if !BUILDFLAG(IS_ANDROID)
+  std::move(show_with_autofill_manager_cb).Run();
+#else
+  if (!base::FeatureList::IsEnabled(
+          features::kPasswordSuggestionBottomSheetV2)) {
+    std::move(show_with_autofill_manager_cb).Run();
+    return;
+  }
+  // TODO(crbug.com/40269373): Remove the parameter
+  // autofill::mojom::SubmissionReadinessState::kNoInformation when the
+  // feature is launched.
+  client_->ShowKeyboardReplacingSurface(
+      this,
+      PasswordFillingParams(
+          request.form_data, request.username_field_index,
+          request.password_field_index, request.element_id,
+          autofill::mojom::SubmissionReadinessState::kNoInformation),
+      request.show_webauthn_credentials,
+      base::BindOnce(
+          [](base::OnceClosure cb, bool shown) {
+            if (shown) {
+              // UI shown by `client_`, all done.
+              return;
+            }
+            // Otherwise, show with PasswordAutofillManager.
+            std::move(cb).Run();
+          },
+          std::move(show_with_autofill_manager_cb)));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -555,7 +567,7 @@ void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
       this,
       PasswordFillingParams(form, 0, 0, autofill::FieldRendererId(),
                             submission_readiness),
-      is_webauthn_form);
+      is_webauthn_form, base::DoNothing());
 }
 #endif
 
