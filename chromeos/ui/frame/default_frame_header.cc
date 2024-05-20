@@ -123,8 +123,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 #endif
   }
 
-  if (::features::IsChromeRefresh2023() &&
-      ShouldApplyDynamicColor(GetTargetWindow())) {
+  if (ShouldApplyDynamicColor(GetTargetWindow())) {
     UpdateCaptionButtonColors(mode() == MODE_ACTIVE
                                   ? ui::kColorSysPrimary
                                   : ui::kColorFrameCaptionButtonUnfocused);

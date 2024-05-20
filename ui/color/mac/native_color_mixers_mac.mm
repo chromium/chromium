@@ -8,7 +8,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -112,15 +111,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       mixer[kColorSysStateFocusRing] = PickGoogleColor(
           skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
           kColorSysBase, color_utils::kMinimumVisibleContrastRatio);
-    }
-    if (!features::IsChromeRefresh2023()) {
-      SkColor menu_separator_color =
-          properties.dark ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                          : SkColorSetA(SK_ColorBLACK, 0x26);
-      mixer[kColorMenuSeparator] = {menu_separator_color};
-    }
 
-    if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
       const SkColor system_highlight_color =
           skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
       mixer[kColorTextSelectionBackground] = {system_highlight_color};
@@ -156,7 +147,7 @@ void AddNativePostprocessingMixer(ColorProvider* provider,
   // Ensure the system tint is applied by default for pre-refresh browsers. For
   // post-refresh only apply the tint if running old design system themes or the
   // color source is explicitly configured for grayscale.
-  if (features::IsChromeRefresh2023() && !key.custom_theme &&
+  if (!key.custom_theme &&
       key.user_color_source != ColorProviderKey::UserColorSource::kGrayscale) {
     return;
   }

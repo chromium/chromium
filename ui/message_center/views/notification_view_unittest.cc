@@ -463,11 +463,8 @@ TEST_F(NotificationViewTest, InlineSettingsBlockAll) {
   EXPECT_TRUE(delegate_->disable_notification_called());
 }
 
-// TODO (crbug/1521442): Test fails under ChromeRefresh2023. Fix and re-enable.
-TEST_F(NotificationViewTest, TestAccentColor) {
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1521442): Test fails post-ChromeRefresh2023. Fix and re-enable.
+TEST_F(NotificationViewTest, DISABLED_TestAccentColor) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_buttons(CreateButtons(2));
 

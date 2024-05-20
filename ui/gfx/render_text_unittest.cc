@@ -7725,8 +7725,7 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kSubpixelAntiAlias);
 #else
-  if (features::IsChromeRefresh2023() &&
-      !base::FeatureList::IsEnabled(features::kCr2023MacFontSmoothing)) {
+  if (!base::FeatureList::IsEnabled(features::kCr2023MacFontSmoothing)) {
     EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kAntiAlias);
   } else {
     EXPECT_EQ(GetRendererFont().getEdging(),
