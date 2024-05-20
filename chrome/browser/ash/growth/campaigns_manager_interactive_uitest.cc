@@ -6,6 +6,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,6 +25,7 @@
 #include "ui/aura/env.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -112,6 +114,13 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     InteractiveAshTest::SetUpCommandLine(command_line);
   }
 
+  void TearDownOnMainThread() override {
+    if (InTabletMode()) {
+      ash::TabletModeControllerTestApi().LeaveTabletMode();
+    }
+    InteractiveAshTest::TearDownOnMainThread();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -151,6 +160,19 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     });
   }
 
+  auto SetTabletMode(const bool enable) {
+    return Do([=]() {
+      if (InTabletMode() == enable) {
+        return;
+      }
+      enable ? ash::TabletModeControllerTestApi().EnterTabletMode()
+             : ash::TabletModeControllerTestApi().LeaveTabletMode();
+      CHECK_EQ(InTabletMode(), enable);
+    });
+  }
+
+  auto ToggleTabletMode() { return SetTabletMode(!InTabletMode()); }
+
   feature_engagement::test::MockTracker* GetMockTracker() {
     return static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetInstance()->GetForBrowserContext(
@@ -160,6 +182,8 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   base::ScopedTempDir temp_dir_;
 
  private:
+  bool InTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -208,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
 // CampaignsManagerInteractiveUiNudgeTest ----------------------------------
 
 class CampaignsManagerInteractiveUiNudgeTest
-    : public CampaignsManagerInteractiveUiTest {
+    : public CampaignsManagerInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
  public:
   CampaignsManagerInteractiveUiNudgeTest() {
     base::WriteFile(GetCampaignsFilePath(temp_dir_), kCampaignsNudge);
@@ -227,16 +252,23 @@ class CampaignsManagerInteractiveUiNudgeTest
     return Do(
         [=]() { ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type); });
   }
+
+  bool ShouldUseTabletMode() { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         CampaignsManagerInteractiveUiNudgeTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
                        AnchorPersonalizationApp) {
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
   RunTestSequence(
       InAnyContext(
-          Steps(LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
+          Steps(SetTabletMode(ShouldUseTabletMode()),
+                LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
       WaitForWindowWithTitle(env, u"Wallpaper & style"),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
       InAnyContext(Steps(
@@ -245,34 +277,39 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
-          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               0))));
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
+          ToggleTabletMode())),
+      EnsurePresent(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents());
 }
 
-IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
                        NotShowOnSettingsApp) {
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
   RunTestSequence(
-      InAnyContext(Steps(LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS))),
+      InAnyContext(Steps(SetTabletMode(ShouldUseTabletMode()),
+                         LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS))),
       WaitForWindowWithTitle(env, u"Settings"),
       EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
       FlushEvents(),
       InAnyContext(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 0),
-          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               0))));
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
+          ToggleTabletMode())),
+      EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
+      FlushEvents());
 }
 
-IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
                        ClickPrimaryButtonInAnchoredNudge) {
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
   RunTestSequence(
       InAnyContext(
-          Steps(LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
+          Steps(SetTabletMode(ShouldUseTabletMode()),
+                LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
       PressButton(ash::SystemNudgeView::kPrimaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
@@ -287,14 +324,15 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
                                1))));
 }
 
-IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
                        ClickSecondaryButtonInAnchoredNudge) {
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
   RunTestSequence(
       InAnyContext(
-          Steps(LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
+          Steps(SetTabletMode(ShouldUseTabletMode()),
+                LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
       PressButton(ash::SystemNudgeView::kSecondaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
