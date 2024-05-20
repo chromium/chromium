@@ -276,6 +276,11 @@ bool CampaignsManagerSession::IsEligible() {
     return false;
   }
 
+  // TODO: b/341328441 - Enable Growth Framework on guest mode.
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
   return true;
 }
 

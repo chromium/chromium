@@ -167,3 +167,13 @@ TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentManagedDevice) {
 
   EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
 }
+
+TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentGuestMode) {
+  auto campaigns_manager_session = CampaignsManagerSession();
+  auto* profile = profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
+  campaigns_manager_session.SetProfileForTesting(profile);
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
+}
