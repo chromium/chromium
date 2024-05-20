@@ -145,7 +145,7 @@
 </settings-toggle-button>
 
 <div class="hr bottom-margin">
-  <template is="dom-if" if="[[!shouldShowShortcutReminder_(
+  <template is="dom-if" if="[[shouldShowShortcutReminder_(
       shortcutReminderBody_.length)]]">
     <keyboard-shortcut-banner header="$i18n{imeShortcutReminderTitle}"
         body="[[shortcutReminderBody_]]"
