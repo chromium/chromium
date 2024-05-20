@@ -205,4 +205,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // AwContents to leak in apps that don't call destroy().
   aw_feature_overrides.DisableFeature(blink::features::kDevicePosture);
   aw_feature_overrides.DisableFeature(blink::features::kViewportSegments);
+
+  // New Safe Browsing API is still being rolled out on WebView.
+  aw_feature_overrides.DisableFeature(
+      safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
 }

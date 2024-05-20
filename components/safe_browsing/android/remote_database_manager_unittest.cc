@@ -157,8 +157,8 @@ class RemoteDatabaseManagerTest : public testing::Test {
 
 TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashDatabase) {
   GURL url("https://example.com");
-  url_interceptor_->SetSafetyNetThreatTypeForUrl(url,
-                                                 SB_THREAT_TYPE_URL_PHISHING);
+  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(
+      url, SB_THREAT_TYPE_URL_PHISHING);
   TestClient client(db_, /*expected_url=*/url,
                     /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
 

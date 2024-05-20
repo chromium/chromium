@@ -17543,28 +17543,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSubresourceFilter",
-                    "enable_features": [
-                        "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
-                        "SafeBrowsingNewGmsApiForSubresourceFilterCheck"
-                    ]
-                },
-                {
-                    "name": "EnabledWithCallOnStartup",
-                    "enable_features": [
-                        "SafeBrowsingCallNewGmsApiOnStartup",
-                        "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
-                        "SafeBrowsingNewGmsApiForSubresourceFilterCheck"
-                    ]
-                }
-            ]
         }
     ],
     "SafeBrowsingSevenZipEvaluationEnabled": [

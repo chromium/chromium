@@ -227,6 +227,9 @@ public final class SafeBrowsingApiBridge {
                 int responseStatus,
                 long checkDelta) {
             if (callbackId == CALLBACK_ID_FOR_STARTUP) {
+                // Not delivering the callback result to native if this is the call for startup. The
+                // native library may not be ready, and there is no one on the native side listening
+                // to the call for startup anyway.
                 return;
             }
             synchronized (sSafeBrowsingApiHandlerLock) {
@@ -298,9 +301,20 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafeBrowsingApiHandlerLock) {
             if (sSafeBrowsingApiHandler == null) {
                 // sSafeBrowsingApiHandler can only be null in tests.
-                SafeBrowsingApiBridgeJni.get()
-                        .onUrlCheckDoneBySafeBrowsingApi(
-                                callbackId, LookupResult.FAILURE_HANDLER_NULL, 0, new int[0], 0, 0);
+                // Not delivering the callback result to native if this is the call for startup. The
+                // native library may not be ready, and there is no one on the native side listening
+                // to the call for startup anyway.
+                // This is handled the same way as in onUrlCheckDone.
+                if (callbackId != CALLBACK_ID_FOR_STARTUP) {
+                    SafeBrowsingApiBridgeJni.get()
+                            .onUrlCheckDoneBySafeBrowsingApi(
+                                    callbackId,
+                                    LookupResult.FAILURE_HANDLER_NULL,
+                                    0,
+                                    new int[0],
+                                    0,
+                                    0);
+                }
                 return;
             }
             sSafeBrowsingApiHandler.startUriLookup(callbackId, uri, threatTypes, protocol);
