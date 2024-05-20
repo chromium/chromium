@@ -3799,8 +3799,7 @@ void View::AdvanceFocusIfNecessary() {
   // unfocusable. If the view is still focusable or is not focused, we can
   // return early avoiding further unnecessary checks. Focusability check is
   // performed first as it tends to be faster.
-  if (GetViewAccessibility().ViewAccessibility::IsAccessibilityFocusable() ||
-      !HasFocus()) {
+  if (GetViewAccessibility().IsAccessibilityFocusable() || !HasFocus()) {
     return;
   }
 
