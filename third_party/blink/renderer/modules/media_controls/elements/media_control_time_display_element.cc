@@ -32,13 +32,16 @@ MediaControlTimeDisplayElement::MediaControlTimeDisplayElement(
 }
 
 void MediaControlTimeDisplayElement::SetCurrentValue(double time) {
+  if (current_value_ == time) {
+    return;
+  }
   current_value_ = time;
   String formatted_time = FormatTime();
   setInnerText(formatted_time);
 }
 
 double MediaControlTimeDisplayElement::CurrentValue() const {
-  return current_value_;
+  return current_value_.value_or(0);
 }
 
 gfx::Size MediaControlTimeDisplayElement::GetSizeOrDefault() const {
@@ -54,7 +57,7 @@ int MediaControlTimeDisplayElement::EstimateElementWidth() const {
 }
 
 String MediaControlTimeDisplayElement::FormatTime() const {
-  return MediaControlsSharedHelpers::FormatTime(current_value_);
+  return MediaControlsSharedHelpers::FormatTime(CurrentValue());
 }
 
 }  // namespace blink
