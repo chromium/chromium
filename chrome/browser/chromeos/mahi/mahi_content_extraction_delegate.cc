@@ -40,8 +40,6 @@
 namespace mahi {
 
 namespace {
-// The word count threshold for a distillable page.
-static constexpr int kWordCountThreshold = 50;
 
 #if DCHECK_IS_ON()
 // Save the contents to the `Download` directory. This function is used for
@@ -60,11 +58,8 @@ void SaveContentToDiskOnWorker(const base::FilePath& download_path,
 #endif
 }  // namespace
 
-MahiContentExtractionDelegate::MahiContentExtractionDelegate(
-    base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
-        distillable_check_callback)
-    : distillable_check_callback_(std::move(distillable_check_callback)),
-      io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+MahiContentExtractionDelegate::MahiContentExtractionDelegate()
+    : io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   // Do not bind to the services if mahi is not enabled.
@@ -144,46 +139,6 @@ void MahiContentExtractionDelegate::ExtractContent(
                      weak_pointer_factory_.GetWeakPtr(),
                      web_content_state.page_id, client_id,
                      web_content_state.url, std::move(callback)));
-}
-
-void MahiContentExtractionDelegate::CheckDistillablity(
-    const WebContentState& web_content_state,
-    const base::Time& start_time) {
-  // Early returns if the snapshot is not valid.
-  // TODO(b/318565573) consider adding some error states so that OS side have a
-  // better sense of the operations on the browser side.
-  if (web_content_state.snapshot.root_id == ui::kInvalidAXNodeID) {
-    return;
-  }
-
-  // Only rule based algorithm is used for triggering check.
-  mojom::ExtractionMethodsPtr extraction_methods =
-      mojom::ExtractionMethods::New(/*use_algorithm=*/true,
-                                    /*use_screen2x=*/false);
-
-  // Generates the extraction request.
-  mojom::ExtractionRequestPtr extraction_request =
-      mojom::ExtractionRequest::New(
-          /*ukm_source_id=*/web_content_state.ukm_source_id,
-          /*snapshot=*/web_content_state.snapshot,
-          /*extraction_methods=*/std::move(extraction_methods));
-
-  remote_content_extraction_service_->GetContentSize(
-      std::move(extraction_request),
-      base::BindOnce(&MahiContentExtractionDelegate::OnGetContentSize,
-                     weak_pointer_factory_.GetWeakPtr(),
-                     web_content_state.page_id, start_time));
-}
-
-void MahiContentExtractionDelegate::OnGetContentSize(
-    const base::UnguessableToken& page_id,
-    const base::Time& start_time,
-    mojom::ContentSizeResponsePtr response) {
-  base::UmaHistogramMicrosecondsTimes(
-      chromeos::mahi::kMahiContentExtractionTriggeringLatency,
-      base::Time::Now() - start_time);
-  distillable_check_callback_.Run(page_id,
-                                  response->word_count >= kWordCountThreshold);
 }
 
 void MahiContentExtractionDelegate::OnGetContent(

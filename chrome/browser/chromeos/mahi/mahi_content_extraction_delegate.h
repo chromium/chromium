@@ -24,11 +24,11 @@ using GetContentCallback =
 
 // This is the delegate of the mahi content extraction service. It is
 // responsible for the service setup, binding and requests.
+// TODO(b:336438243): updates the mojom to reflects the removal of
+// CheckDistabillity().
 class MahiContentExtractionDelegate {
  public:
-  explicit MahiContentExtractionDelegate(
-      base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
-          distillable_check_callback);
+  MahiContentExtractionDelegate();
   MahiContentExtractionDelegate(const MahiContentExtractionDelegate&) = delete;
   MahiContentExtractionDelegate& operator=(
       const MahiContentExtractionDelegate&) = delete;
@@ -45,12 +45,6 @@ class MahiContentExtractionDelegate {
   void ExtractContent(const WebContentState& web_content_state,
                       const base::UnguessableToken& client_id,
                       GetContentCallback callback);
-
-  // Requests the content extraction service to check the page distillability
-  // based on the a11y update. `distillable_check_callback_` will be triggered
-  // when the check is finished.
-  void CheckDistillablity(const WebContentState& web_content_state,
-                          const base::Time& start_time);
 
  private:
   void OnGetContentSize(const base::UnguessableToken& page_id,
@@ -72,11 +66,6 @@ class MahiContentExtractionDelegate {
       remote_content_extraction_service_factory_;
   mojo::Remote<mojom::ContentExtractionService>
       remote_content_extraction_service_;
-
-  // This is the callback function to notifies the `MahiWebContentManager` with
-  // the distillability check result.
-  base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
-      distillable_check_callback_;
 
   // This task runner is used to save the extracted content to disk. It meant to
   // be used for debugging purposes only, and should not be used in production.

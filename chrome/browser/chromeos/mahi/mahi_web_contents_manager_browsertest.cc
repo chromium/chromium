@@ -183,13 +183,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Initially, the focused state and the requested state should be different.
-  EXPECT_NE(
-      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
-  base::UnguessableToken focused_page_id =
-      fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
-
   base::RunLoop run_loop;
   // Expects that `MahiBrowserDelegate` should receive the context menu click
   // action.
@@ -208,14 +201,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                                                         kQuestion);
   run_loop.Run();
 
-  // After the context menu request, the requested state should be updated to
-  // the focused state and the focused state stays the same.
-  EXPECT_EQ(
-      focused_page_id,
-      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
-  EXPECT_EQ(
-      focused_page_id,
-      fake_mahi_web_contents_manager_->focused_web_content_state().page_id);
   EXPECT_EQ(GURL(),
             fake_mahi_web_contents_manager_->focused_web_content_state().url);
   EXPECT_EQ(u"",
@@ -233,10 +218,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   base::HistogramTester histogram;
 
-  // Initially, the focused state and the requested state should be different.
-  EXPECT_NE(
-      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   // Initially, the focused state's favicon is empty.
   EXPECT_TRUE(fake_mahi_web_contents_manager_->focused_web_content_state()
                   .favicon.isNull());
@@ -295,9 +276,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Initially, the focused state and the requested state should be different.
-  EXPECT_NE(
-      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   base::UnguessableToken focused_page_id =
       fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
 
@@ -333,11 +311,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
   CreateWebContent();
   run_loop.Run();
 
-  // After the content request, the requested state should be updated to the
-  // focused state and the focused state stays the same.
-  EXPECT_EQ(
-      focused_page_id,
-      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   EXPECT_EQ(
       focused_page_id,
       fake_mahi_web_contents_manager_->focused_web_content_state().page_id);

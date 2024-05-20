@@ -52,6 +52,10 @@ void MahiTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(web_contents());
 }
 
+void MahiTabHelper::WebContentsDestroyed() {
+  MahiWebContentsManager::Get()->WebContentsDestroyed(web_contents());
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MahiTabHelper);
 
 }  // namespace mahi

@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/image/image_skia.h"
@@ -55,6 +56,10 @@ class MahiWebContentsManager {
   // Clears the focused web content state, and notifies mahi manager.
   void ClearFocusedWebContentState();
 
+  // Clears the focused web content and its state if the focused content is
+  // destroyed.
+  void WebContentsDestroyed(content::WebContents* web_contents);
+
   // Called when the browser context menu has been clicked by the user.
   // `question` is used only if `ButtonType` is kQA.
   // Virtual so we can override in tests.
@@ -84,9 +89,15 @@ class MahiWebContentsManager {
   MahiWebContentsManager();
   virtual ~MahiWebContentsManager();
 
+  void OnGetInnerText(
+      const base::UnguessableToken& page_id,
+      const base::Time& start_time,
+      std::unique_ptr<content_extraction::InnerTextResult> result);
+
   void OnGetSnapshot(const base::UnguessableToken& page_id,
                      content::WebContents* web_contents,
                      const base::Time& start_time,
+                     GetContentCallback callback,
                      const ui::AXTreeUpdate& snapshot);
 
   void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
@@ -96,10 +107,6 @@ class MahiWebContentsManager {
   // content.
   void RequestContent(const base::UnguessableToken& page_id,
                       GetContentCallback callback);
-
-  // Should be called when user requests on the focused page. We should update
-  // the focused page state to the requested page state.
-  void FocusedPageGotRequest();
 
   // Gets the favicon from the given web contents. Returns an empty imageskia if
   // there is no valid one.
@@ -118,8 +125,7 @@ class MahiWebContentsManager {
 
   // The state of the web content which get focus in the browser.
   WebContentState focused_web_content_state_{/*url=*/GURL(), /*title=*/u""};
-  // The state of the web content which is requested by the user.
-  WebContentState requested_web_content_state_{/*url=*/GURL(), /*title=*/u""};
+  raw_ptr<content::WebContents> focused_web_contents_;
 
   base::WeakPtrFactory<MahiWebContentsManager> weak_pointer_factory_{this};
 };

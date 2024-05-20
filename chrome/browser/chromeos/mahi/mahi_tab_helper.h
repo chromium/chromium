@@ -34,6 +34,7 @@ class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
   void OnWebContentsLostFocus(
       content::RenderWidgetHost* render_widget_host) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void WebContentsDestroyed() override;
 
  private:
   friend class content::WebContentsUserData<MahiTabHelper>;

@@ -38,10 +38,6 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
     focused_web_content_state_.is_distillable.emplace(value);
   }
 
-  WebContentState requested_web_content_state() {
-    return requested_web_content_state_;
-  }
-
   void RequestContentFromPage(const base::UnguessableToken& page_id,
                               GetContentCallback callback);
 
