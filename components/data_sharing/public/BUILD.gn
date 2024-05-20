@@ -36,6 +36,8 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingUIDelegate.java",
+      "android/java/src/org/chromium/components/data_sharing/GroupData.java",
+      "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/GroupMemberConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
@@ -47,6 +49,22 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
+    ]
+
+    srcjar_deps = [ ":enums_java" ]
+  }
+
+  java_cpp_enum("enums_java") {
+    sources = [
+      "data_sharing_service.h",
+      "group_data.h",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/GroupData.java",
+      "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
     ]
   }
 }

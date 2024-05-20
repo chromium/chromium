@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/channel.h"
+#include "components/data_sharing/internal/fake_data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
@@ -85,179 +85,6 @@ class MockObserver : public DataSharingService::Observer {
   MOCK_METHOD(void, OnGroupRemoved, (const std::string&), (override));
 };
 
-class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
- public:
-  FakeDataSharingSDKDelegate() = default;
-  ~FakeDataSharingSDKDelegate() override = default;
-
-  // Convenience methods for testing.
-  std::optional<data_sharing_pb::GroupData> GetGroup(
-      const std::string& group_id) {
-    auto it = groups_.find(group_id);
-    if (it != groups_.end()) {
-      return it->second;
-    }
-    return std::nullopt;
-  }
-
-  void RemoveGroup(const std::string& group_id) { groups_.erase(group_id); }
-
-  void UpdateGroup(const std::string& group_id,
-                   const std::string& new_display_name) {
-    auto it = groups_.find(group_id);
-    ASSERT_TRUE(it != groups_.end());
-
-    it->second.set_display_name(new_display_name);
-  }
-
-  std::string AddGroupAndReturnId(const std::string& display_name) {
-    data_sharing_pb::GroupData group_data;
-    group_data.set_group_id(base::NumberToString(next_group_id_++));
-    group_data.set_display_name(display_name);
-    groups_[group_data.group_id()] = group_data;
-    return group_data.group_id();
-  }
-
-  void AddMember(const std::string& group_id,
-                 const std::string& member_gaia_id) {
-    auto group_it = groups_.find(group_id);
-    ASSERT_TRUE(group_it != groups_.end());
-
-    data_sharing_pb::GroupMember member;
-    member.set_gaia_id(member_gaia_id);
-    *group_it->second.add_members() = member;
-  }
-
-  void AddAccount(const std::string& email, const std::string& gaia_id) {
-    email_to_gaia_id_[email] = gaia_id;
-  }
-
-  // DataSharingSDKDelegate implementation.
-  void CreateGroup(
-      const data_sharing_pb::CreateGroupParams& params,
-      base::OnceCallback<
-          void(const base::expected<data_sharing_pb::CreateGroupResult,
-                                    absl::Status>&)> callback) override {
-    std::string group_id = AddGroupAndReturnId(params.display_name());
-
-    data_sharing_pb::CreateGroupResult result;
-    *result.mutable_group_data() = groups_[group_id];
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result));
-  }
-
-  void ReadGroups(const data_sharing_pb::ReadGroupsParams& params,
-                  base::OnceCallback<void(
-                      const base::expected<data_sharing_pb::ReadGroupsResult,
-                                           absl::Status>&)> callback) override {
-    data_sharing_pb::ReadGroupsResult result;
-    for (const auto& group_id : params.group_ids()) {
-      if (groups_.find(group_id) != groups_.end()) {
-        *result.add_group_data() = groups_[group_id];
-      }
-    }
-
-    if (result.group_data().empty()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), base::unexpected(absl::Status(
-                                                  absl::StatusCode::kNotFound,
-                                                  "Groups not found"))));
-      return;
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result));
-  }
-
-  void AddMember(
-      const data_sharing_pb::AddMemberParams& params,
-      base::OnceCallback<void(const absl::Status&)> callback) override {
-    auto group_it = groups_.find(params.group_id());
-    absl::Status status = absl::OkStatus();
-    if (group_it != groups_.end()) {
-      data_sharing_pb::GroupMember member;
-      member.set_gaia_id(params.member_gaia_id());
-      *group_it->second.add_members() = member;
-    } else {
-      status = absl::Status(absl::StatusCode::kNotFound, "Group not found");
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), status));
-  }
-
-  void RemoveMember(
-      const data_sharing_pb::RemoveMemberParams& params,
-      base::OnceCallback<void(const absl::Status&)> callback) override {
-    auto group_it = groups_.find(params.group_id());
-    if (group_it == groups_.end()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback),
-                                    absl::Status(absl::StatusCode::kNotFound,
-                                                 "Group not found")));
-      return;
-    }
-
-    absl::Status status = absl::OkStatus();
-    auto* group_members = group_it->second.mutable_members();
-    auto member_it =
-        std::find_if(group_members->begin(), group_members->end(),
-                     [&params](const data_sharing_pb::GroupMember& member) {
-                       return member.gaia_id() == params.member_gaia_id();
-                     });
-    if (member_it != group_members->end()) {
-      group_members->erase(member_it);
-    } else {
-      status = absl::Status(absl::StatusCode::kNotFound, "Member not found");
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), status));
-  }
-
-  void DeleteGroup(
-      const data_sharing_pb::DeleteGroupParams& params,
-      base::OnceCallback<void(const absl::Status&)> callback) override {
-    absl::Status status = absl::OkStatus();
-    if (groups_.find(params.group_id()) != groups_.end()) {
-      groups_.erase(params.group_id());
-    } else {
-      status = absl::Status(absl::StatusCode::kNotFound, "Group not found");
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), status));
-  }
-
-  void LookupGaiaIdByEmail(
-      const data_sharing_pb::LookupGaiaIdByEmailParams& params,
-      base::OnceCallback<
-          void(const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
-                                    absl::Status>&)> callback) override {
-    auto it = email_to_gaia_id_.find(params.email());
-    if (it != email_to_gaia_id_.end()) {
-      data_sharing_pb::LookupGaiaIdByEmailResult result;
-      result.set_gaia_id(it->second);
-
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), result));
-      return;
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       base::unexpected(absl::Status(
-                           absl::StatusCode::kNotFound, "Account not found"))));
-  }
-
- private:
-  std::map<std::string, data_sharing_pb::GroupData> groups_;
-  std::map<std::string, std::string> email_to_gaia_id_;
-  int next_group_id_ = 0;
-};
 
 }  // namespace
 

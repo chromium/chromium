@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
@@ -38,12 +40,21 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     virtual void OnGroupRemoved(const std::string& group_id) {}
   };
 
-  enum class PeopleGroupActionFailure { kTransientFailure, kPersistentFailure };
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class PeopleGroupActionFailure {
+    kUnknown = 0,
+    kTransientFailure = 1,
+    kPersistentFailure = 2
+  };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
   enum class PeopleGroupActionOutcome {
-    kSuccess,
-    kTransientFailure,
-    kPersistentFailure
+    kUnknown = 0,
+    kSuccess = 1,
+    kTransientFailure = 2,
+    kPersistentFailure = 3
   };
 
   using GroupDataOrFailureOutcome =

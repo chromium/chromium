@@ -26,12 +26,39 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   explicit DataSharingServiceAndroid(DataSharingService* service);
   ~DataSharingServiceAndroid() override;
 
+  // DataSharingService Java API methods, implemented by native service:
+  void ReadAllGroups(JNIEnv* env, const JavaParamRef<jobject>& j_callback);
+  void ReadGroup(JNIEnv* env,
+                 const JavaParamRef<jstring>& group_id,
+                 const JavaParamRef<jobject>& j_callback);
+  void CreateGroup(JNIEnv* env,
+                   const JavaParamRef<jstring>& group_name,
+                   const JavaParamRef<jobject>& j_callback);
+  void DeleteGroup(JNIEnv* env,
+                   const JavaParamRef<jstring>& group_id,
+                   const JavaParamRef<jobject>& j_callback);
+  void InviteMember(JNIEnv* env,
+                    const JavaParamRef<jstring>& group_id,
+                    const JavaParamRef<jstring>& invitee_email,
+                    const JavaParamRef<jobject>& j_callback);
+  void RemoveMember(JNIEnv* env,
+                    const JavaParamRef<jstring>& group_id,
+                    const JavaParamRef<jstring>& member_email,
+                    const JavaParamRef<jobject>& j_callback);
   bool IsEmptyService(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
   ScopedJavaLocalRef<jobject> GetNetworkLoader(JNIEnv* env);
 
+  // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // Returns the observer that routes the notifications to Java observers. The
+  // returned object is of type:
+  // org.chromium.components.data_sharing.ObserverBridge.
+  ScopedJavaLocalRef<jobject> GetJavaObserverBridge();
+
  private:
+  class GroupDataObserverBridge;
+
   // A reference to the Java counterpart of this class.  See
   // DataSharingServiceImpl.java.
   ScopedJavaGlobalRef<jobject> java_obj_;
@@ -40,6 +67,8 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   raw_ptr<DataSharingService> data_sharing_service_;
 
   std::unique_ptr<DataSharingNetworkLoaderAndroid> network_loader_;
+
+  std::unique_ptr<GroupDataObserverBridge> observer_bridge_;
 };
 
 }  // namespace data_sharing

@@ -66,6 +66,8 @@ DataSharingService::PeopleGroupActionOutcome StatusToPeopleGroupActionOutcome(
     return DataSharingService::PeopleGroupActionOutcome::kSuccess;
   }
   switch (StatusToPeopleGroupActionFailure(status)) {
+    case DataSharingService::PeopleGroupActionFailure::kUnknown:
+      return DataSharingService::PeopleGroupActionOutcome::kUnknown;
     case DataSharingService::PeopleGroupActionFailure::kPersistentFailure:
       return DataSharingService::PeopleGroupActionOutcome::kPersistentFailure;
     case DataSharingService::PeopleGroupActionFailure::kTransientFailure:

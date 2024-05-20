@@ -11,7 +11,9 @@
 
 namespace data_sharing {
 
-enum class MemberRole { kUnknown, kOwner, kMember, kInvitee };
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.data_sharing.member_role)
+enum class MemberRole { kUnknown = 0, kOwner = 1, kMember = 2, kInvitee = 3 };
 
 struct GroupMember {
   GroupMember();

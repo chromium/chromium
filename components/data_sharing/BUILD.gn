@@ -4,6 +4,11 @@
 
 import("//build/buildflag_header.gni")
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 group("unit_tests") {
   testonly = true
 
@@ -35,4 +40,17 @@ source_set("test_support") {
     "//testing/gmock",
     "//url",
   ]
+}
+
+if (is_android) {
+  android_library("test_support_java") {
+    sources = [ "test_support/android/java/src/org/chromium/components/data_sharing/TestDataSharingService.java" ]
+    deps = [
+      "//base:base_java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+  }
 }
