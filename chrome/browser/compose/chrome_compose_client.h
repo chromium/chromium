@@ -271,7 +271,7 @@ class ChromeComposeClient
 
   // A state machine that decides whether the proactive nudge should be shown at
   // a given moment.
-  compose::ProactiveNudgeTracker nudge_tracker_{this};
+  compose::ProactiveNudgeTracker nudge_tracker_;
 
   // Observer for autofill field focus changes. This is used to prevent showing
   // the saved state notification on a previous focused field when an autofill

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace compose {
 
@@ -73,6 +74,9 @@ Config::Config() {
           features::kEnableComposeProactiveNudge,
           "proactive_nudge_delay_milliseconds",
           proactive_nudge_delay.InMilliseconds()));
+
+  proactive_nudge_segmentation = base::FeatureList::IsEnabled(
+      segmentation_platform::features::kSegmentationPlatformComposePromotion);
 
   saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,

@@ -23,6 +23,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -76,11 +77,15 @@ std::u16string RemoveLastCharIfInvalid(std::u16string str) {
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ChromeComposeClient>(*web_contents),
-      translate_language_provider_(new TranslateLanguageProvider()) {
+      translate_language_provider_(new TranslateLanguageProvider()),
+      profile_(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())),
+      nudge_tracker_(segmentation_platform::SegmentationPlatformServiceFactory::
+                         GetForProfile(profile_),
+                     this) {
   auto ukm_source_id =
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
   page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(ukm_source_id);
-  profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   pref_service_ = profile_->GetPrefs();
   proactive_nudge_enabled_.Init(prefs::kEnableProactiveNudge, pref_service_);
