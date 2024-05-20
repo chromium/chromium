@@ -25,7 +25,8 @@ enum class NativeBridgeType {
 
 // Defines ARC App user interaction types to track how users use ARC apps.
 // These enums are used to define the buckets for an enumerated UMA histogram
-// and need to be synced with tools/metrics/histograms/enums.xml.
+// and need to be synced with the ArcUserInteraction enum in
+// tools/metrics/histograms/metadata/arc/enums.xml.
 enum class UserInteractionType {
   // Default to not user-initiated.
   // Can be used temporarily for a new action path or to denote an action
@@ -104,7 +105,10 @@ enum class UserInteractionType {
   // User started an app from another app.
   APP_STARTED_FROM_OTHER_APP = 23,
 
-  kMaxValue = APP_STARTED_FROM_OTHER_APP,
+  // User started the app by interacting with the App Install Service installer.
+  APP_STARTED_FROM_INSTALLER = 24,
+
+  kMaxValue = APP_STARTED_FROM_INSTALLER,
 };
 
 // Enumerates relevant Mojo connections.

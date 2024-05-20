@@ -657,6 +657,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="App started from sharesheet"/>
   <int value="22" label="App started from full restore"/>
   <int value="23" label="App started from other app"/>
+  <int value="24" label="App started from installer"/>
 </enum>
 
 <enum name="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType">

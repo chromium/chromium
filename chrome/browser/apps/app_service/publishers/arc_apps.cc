@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -28,6 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -61,6 +63,7 @@
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -218,9 +221,40 @@ std::optional<arc::UserInteractionType> GetUserInterationType(
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP;
       break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+    case apps::LaunchSource::kFromInstaller:
+      user_interaction_type =
+          arc::UserInteractionType::APP_STARTED_FROM_INSTALLER;
+      break;
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
+    case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromReparenting:
+    case apps::LaunchSource::kFromProfileMenu:
+    case apps::LaunchSource::kFromSysTrayCalendar:
+    case apps::LaunchSource::kFromFirstRun:
+    case apps::LaunchSource::kFromWelcomeTour:
+    case apps::LaunchSource::kFromFocusMode:
+      // These LaunchSources do not launch ARC apps. When adding a new
+      // LaunchSource, if it is expected to launch ARC apps, add a new
+      // UserInteractionType above. Otherwise, add it here.
+      NOTREACHED_NORETURN()
+          << "Must define an ARC UserInteractionType for LaunchSource "
+          << static_cast<uint32_t>(launch_source);
   }
   return user_interaction_type;
 }
