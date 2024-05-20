@@ -245,6 +245,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
               androidSettings: 'os-settings:apps-android-settings',
               manageIsolatedWebApps:
                   'os-settings:apps-manage-isolated-web-apps',
+              parentalControls: 'os-settings:apps-parental-controls',
             };
           }
 
@@ -254,6 +255,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
             googlePlayPreferences: '',
             androidSettings: '',
             manageIsolatedWebApps: '',
+            parentalControls: '',
           };
         },
       },
