@@ -178,6 +178,10 @@ static base::OnceCallback<void(int)> IntCallbackAdapter(base::OnceClosure f) {
 // Are cookies allowed for file:// URLs by default?
 const bool kDefaultFileSchemeAllowed = false;
 
+BASE_FEATURE(kWebViewCookieManagerUseThreadPool,
+             "WebViewCookieManagerUseThreadPool",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 // static
@@ -208,9 +212,13 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {
-  cookie_store_client_thread_.Start();
-  cookie_store_backend_thread_.Start();
-  cookie_store_task_runner_ = cookie_store_client_thread_.task_runner();
+  if (base::FeatureList::IsEnabled(kWebViewCookieManagerUseThreadPool)) {
+    cookie_store_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+  } else {
+    cookie_store_client_thread_.Start();
+    cookie_store_backend_thread_.Start();
+    cookie_store_task_runner_ = cookie_store_client_thread_.task_runner();
+  }
   cookie_store_path_ = GetContextPath().Append(FILE_PATH_LITERAL("Cookies"));
   if (!parent_context_) {
     // Default profile
@@ -328,8 +336,13 @@ net::CookieStore* CookieManager::GetCookieStore() {
         cookie_store_path_, /* restore_old_session_cookies= */ true,
         /* persist_session_cookies= */ true);
     cookie_config.client_task_runner = cookie_store_task_runner_;
-    cookie_config.background_task_runner =
-        cookie_store_backend_thread_.task_runner();
+
+    // If `background_task_runner` is not set it will be created from the thread
+    // pool internally.
+    if (!base::FeatureList::IsEnabled(kWebViewCookieManagerUseThreadPool)) {
+      cookie_config.background_task_runner =
+          cookie_store_backend_thread_.task_runner();
+    }
 
     {
       base::AutoLock lock(allow_file_scheme_cookies_lock_);

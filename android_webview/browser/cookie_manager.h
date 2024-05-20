@@ -22,10 +22,6 @@
 
 class GURL;
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace net {
 class CookieStore;
 class CanonicalCookie;
@@ -292,7 +288,7 @@ class CookieManager {
   base::Thread cookie_store_client_thread_;
   base::Thread cookie_store_backend_thread_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> cookie_store_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> cookie_store_task_runner_;
   std::unique_ptr<net::CookieStore> cookie_store_;
 
   // Tracks if we're in the middle of a call to SetMojoCookieManager(). See the
