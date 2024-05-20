@@ -82,19 +82,6 @@ public class ReadAloudPrefsUnitTest {
     }
 
     @Test
-    public void testSetVoice_metric() {
-        final String histogramName = ReadAloudMetrics.VOICE_CHANGED;
-
-        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "abc", true);
-        ReadAloudPrefs.setVoice(mPrefService, "en", "abc");
-        histogram.assertExpected();
-
-        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "def", true);
-        ReadAloudPrefs.setVoice(mPrefService, "es", "def");
-        histogram.assertExpected();
-    }
-
-    @Test
     public void testDefaultSpeed() {
         assertEquals(1f, ReadAloudPrefs.getSpeed(mPrefService), /* delta= */ 0f);
     }

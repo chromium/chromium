@@ -24,8 +24,6 @@ public class ReadAloudMetrics {
     public static String TAB_PLAYBACK_CREATION_FAILURE = "ReadAloud.TabPlaybackCreationFailure";
     public static String TAB_PLAYBACK_WITHOUT_READABILITY_CHECK_ERROR =
             "ReadAloud.ReadAloudPlaybackWithoutReadabilityCheckError";
-    public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
-    public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
     public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
     public static String TIME_SPENT_LISTENING_LOCKED_SCREEN =
             "ReadAloud.DurationListened.LockedScreen";
@@ -184,14 +182,6 @@ public class ReadAloudMetrics {
 
     public static void recordPlaybackStarted() {
         RecordUserAction.record("ReadAloud.PlaybackStarted");
-    }
-
-    public static void recordVoiceChanged(String voiceID) {
-        RecordHistogram.recordBooleanHistogram(VOICE_CHANGED + voiceID, true);
-    }
-
-    public static void recordVoicePreviewed(String voiceID) {
-        RecordHistogram.recordBooleanHistogram(VOICE_PREVIEWED + voiceID, true);
     }
 
     public static void recordHasDateModified(boolean hasDateModified) {
