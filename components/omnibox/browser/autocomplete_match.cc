@@ -1453,7 +1453,8 @@ int AutocompleteMatch::GetSortingOrder() const {
 
 bool AutocompleteMatch::IsUrlScoringEligible() const {
   return scoring_signals.has_value() &&
-         type != AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+         type != AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
+         !force_skip_ml_scoring && !AutocompleteMatch::IsSearchType(type);
 }
 
 bool AutocompleteMatch::IsTrendSuggestion() const {
@@ -1691,6 +1692,17 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   if (rich_autocompletion_triggered == RichAutocompletionType::kNone) {
     rich_autocompletion_triggered =
         duplicate_match.rich_autocompletion_triggered;
+  }
+
+  // If either one of the matches is ineligible for ML scoring, then ensure that
+  // the final match is marked as ineligible for ML scoring. Search suggestions
+  // are guaranteed to be excluded from ML scoring at this time, so there's no
+  // need to set `force_skip_ml_scoring` for those matches.
+  if (base::FeatureList::IsEnabled(omnibox::kEnableForceSkipMlScoring) &&
+      (!IsUrlScoringEligible() || !duplicate_match.IsUrlScoringEligible()) &&
+      !AutocompleteMatch::IsSearchType(type)) {
+    force_skip_ml_scoring = true;
+    RecordAdditionalInfo("force skip ml scoring", "true");
   }
 
   // Merge scoring signals from duplicate match for ML model scoring and

@@ -226,10 +226,10 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
     suggestion->set_is_keyword_suggestion(match.from_keyword);
 
     // Scoring signals are not logged for search suggestions or in incognito
-    // mode.
+    // mode or when the `force_skip_ml_scoring` flag as been set.
     if (OmniboxFieldTrial::IsReportingUrlScoringSignalsEnabled() &&
         !AutocompleteMatch::IsSearchType(match.type) && !log.is_incognito &&
-        match.scoring_signals) {
+        !match.force_skip_ml_scoring && match.scoring_signals) {
       suggestion->mutable_scoring_signals()->CopyFrom(*match.scoring_signals);
     }
   }

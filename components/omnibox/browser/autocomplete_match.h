@@ -916,6 +916,12 @@ struct AutocompleteMatch {
   // Signals for ML scoring.
   std::optional<ScoringSignals> scoring_signals;
 
+  // A flag that's set during the de-duplication process in order to forcibly
+  // exclude this match from ML scoring (e.g. this match is ML-eligible, but one
+  // of the matches in `duplicate_matches` is not). Furthermore, when this flag
+  // is set, ML scoring signals will NOT be logged for this particular match.
+  bool force_skip_ml_scoring = false;
+
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they
   // provide to the top N most relevant matches. When ML scoring is enabled,

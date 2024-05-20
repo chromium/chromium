@@ -1942,11 +1942,9 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   // would be scored independently with their partial signals.
   internal_result_.DeduplicateMatches(input_, template_url_service_);
 
-  size_t eligible_matches_count =
-      base::ranges::count_if(internal_result_.matches_, [](const auto& match) {
-        return match.IsUrlScoringEligible() &&
-               !AutocompleteMatch::IsSearchType(match.type);
-      });
+  size_t eligible_matches_count = base::ranges::count_if(
+      internal_result_.matches_,
+      [](const auto& match) { return match.IsUrlScoringEligible(); });
 
   if (eligible_matches_count == 0)
     return;
@@ -1964,10 +1962,6 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
 
     RecordScoringSignalCoverageForProvider(match_itr->scoring_signals.value(),
                                            match_itr->provider.get());
-
-    if (AutocompleteMatch::IsSearchType(match_itr->type)) {
-      continue;
-    }
 
     // Verify the eligible match or one of its duplicates has an expected type.
     DCHECK(match_itr->MatchOrDuplicateMeets([](const auto& match) {
@@ -2191,6 +2185,8 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   // This is needed in order to ensure that the relevance score assignment logic
   // can properly break ties when two (or more) URL suggestions have the same ML
   // score.
+  // TODO(crbug.com/40062540): Replace `Sort` with `DeduplicateMatches` for
+  //   better stability of matches.
   internal_result_.Sort(input_, template_url_service_,
                         old_result.default_match_to_preserve);
 
@@ -2210,10 +2206,6 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
 
     RecordScoringSignalCoverageForProvider(match.scoring_signals.value(),
                                            match.provider.get());
-
-    if (AutocompleteMatch::IsSearchType(match.type)) {
-      continue;
-    }
 
     batch_scoring_signals.push_back(&match.scoring_signals.value());
     scored_positions.push_back(i);
@@ -2276,8 +2268,7 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     const auto& match = internal_result_.matches_[i];
     if (!match.IsUrlScoringEligible() ||
         (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
-         match.relevance == 0) ||
-        AutocompleteMatch::IsSearchType(match.type)) {
+         match.relevance == 0)) {
       continue;
     }
     scores_pool.push_back(match.relevance);
