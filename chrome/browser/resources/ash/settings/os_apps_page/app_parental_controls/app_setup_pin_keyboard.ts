@@ -13,13 +13,14 @@ import 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_setup_pin_keyboard.html.js';
 
-const AppSetupPinKeyboardElementBase = I18nMixin(PolymerElement);
+const AppSetupPinKeyboardElementBase = (PrefsMixin(I18nMixin(PolymerElement)));
 
 export interface AppSetupPinKeyboardElement {
   $: {
@@ -62,12 +63,34 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Whether the pin is currently being set as a pref.
+       * If true, the pin keyboard input should be disabled.
+       */
+      isSetPinCallPending_: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the PIN mismatch error message should be shown after the user
+       * attempts to submit.
+       */
+      showPinMismatchError_: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   isConfirmStep: boolean;
   private pinKeyboardValue_: string;
   private initialPin_: string;
+  private isSetPinCallPending_: boolean;
+  private showPinMismatchError_: boolean;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
@@ -81,6 +104,22 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     this.initialPin_ = '';
     this.pinKeyboardValue_ = '';
     this.isConfirmStep = false;
+    this.showPinMismatchError_ = false;
+  }
+
+  /**
+   * Returns true if the user has re-entered the same PIN at the confirmation
+   * step.
+   */
+  private isPinConfirmed_(): boolean {
+    return this.isConfirmStep && (this.initialPin_ === this.pinKeyboardValue_);
+  }
+
+  /**
+   * Called when the user presses enter/return during PIN entry.
+   */
+  private onPinSubmit_(): void {
+    this.doSubmit();
   }
 
   /**
@@ -88,14 +127,28 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
    * to submit the PIN.
    */
   doSubmit(): void {
-    // TODO(b/332936223): Implement actual PIN submission logic.
     if (!this.isConfirmStep) {
       this.initialPin_ = this.pinKeyboardValue_;
       this.pinKeyboardValue_ = '';
-      this.$.pinKeyboard.focusInput();
       this.isConfirmStep = true;
+      this.$.pinKeyboard.focusInput();
       return;
     }
+
+    if (!this.isPinConfirmed_()) {
+      this.showPinMismatchError_ = true;
+      // Focus the PIN keyboard and highlight the entire PIN so the user can
+      // replace it.
+      this.$.pinKeyboard.focusInput(0, this.pinKeyboardValue_.length + 1);
+      return;
+    }
+
+    this.isSetPinCallPending_ = true;
+    this.setPrefValue('on_device_app_controls.pin', this.pinKeyboardValue_);
+    this.setPrefValue('on_device_app_controls.setup_completed', true);
+    this.isSetPinCallPending_ = false;
+
+    this.dispatchEvent(new Event('set-app-pin-done', {composed: true}));
   }
 }
 

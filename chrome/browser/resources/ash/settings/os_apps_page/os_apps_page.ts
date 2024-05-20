@@ -392,10 +392,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onSetupPinDialogClose_(): void {
     this.showParentalControlsSetupPinDialog_ = false;
-    // TODO(b/332936223): Only set setup pref to true and navigate to the
-    // subpage on PIN submission success.
-    this.setPrefValue('on_device_app_controls.setup_completed', true);
-    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
   }
 
   private onClickManageIsolatedWebApps_(): void {

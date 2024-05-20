@@ -16,7 +16,7 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {clearBody} from '../utils.js';
+import {clearBody, hasStringProperty} from '../utils.js';
 
 import {FakeAppNotificationHandler} from './app_notifications_page/fake_app_notification_handler.js';
 import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
@@ -54,6 +54,11 @@ function getFakePrefs() {
       },
     },
     on_device_app_controls: {
+      pin: {
+        key: 'on_device_app_controls.pin',
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: '',
+      },
       setup_completed: {
         key: 'on_device_app_controls.setup_completed',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -409,16 +414,37 @@ suite('AppsPageTests', () => {
                 parentalControlsRow.querySelector<HTMLElement>('#setupPin');
             assertTrue(!!setupPinDialog);
 
-            // TODO(b/332936223): When setup flow is implemented, simulate a
-            // successful PIN submission here instead.
-            const cancelPinSetupButton =
+            // Simulate PIN entry.
+            const pin = '123456';
+            const setupPinKeyboard =
+                setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
+            assertTrue(!!setupPinKeyboard);
+            const pinKeyboard =
+                setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
+            assertTrue(!!pinKeyboard);
+            assertTrue(hasStringProperty(pinKeyboard, 'value'));
+            pinKeyboard.value = pin;
+
+            const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
                     .querySelector<HTMLElement>('#dialog')!
-                    .querySelector<HTMLElement>('.cancel-button');
-            assertTrue(!!cancelPinSetupButton);
-            cancelPinSetupButton.click();
+                    .querySelector<HTMLElement>('.action-button');
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
+
+            // Verify that the PIN keyboard has been reset.
+            assertTrue(pinKeyboard.value === '');
+
+            // Re-enter the PIN to confirm it.
+            pinKeyboard.value = pin;
+
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
+            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
+            assertTrue(
+                appsPage.prefs.on_device_app_controls.setup_completed.value);
             assertTrue(!!appsPage.shadowRoot!.querySelector(
                 'settings-app-parental-controls-subpage'));
           });
@@ -444,16 +470,37 @@ suite('AppsPageTests', () => {
                 parentalControlsRow.querySelector<HTMLElement>('#setupPin');
             assertTrue(!!setupPinDialog);
 
-            // TODO(b/332936223): When setup flow is implemented, simulate a
-            // successful PIN submission here instead.
-            const cancelPinSetupButton =
+            // Simulate PIN entry.
+            const pin = '123456';
+            const setupPinKeyboard =
+                setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
+            assertTrue(!!setupPinKeyboard);
+            const pinKeyboard =
+                setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
+            assertTrue(!!pinKeyboard);
+            assertTrue(hasStringProperty(pinKeyboard, 'value'));
+            pinKeyboard.value = pin;
+
+            const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
                     .querySelector<HTMLElement>('#dialog')!
-                    .querySelector<HTMLElement>('.cancel-button');
-            assertTrue(!!cancelPinSetupButton);
-            cancelPinSetupButton.click();
+                    .querySelector<HTMLElement>('.action-button');
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
+
+            // Verify that the PIN keyboard has been reset.
+            assertTrue(pinKeyboard.value === '');
+
+            // Re-enter the PIN to confirm it.
+            pinKeyboard.value = pin;
+
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
+            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
+            assertTrue(
+                appsPage.prefs.on_device_app_controls.setup_completed.value);
             assertTrue(!!appsPage.shadowRoot!.querySelector(
                 'settings-app-parental-controls-subpage'));
 
@@ -509,16 +556,37 @@ suite('AppsPageTests', () => {
                 parentalControlsRow.querySelector<HTMLElement>('#setupPin');
             assertTrue(!!setupPinDialog);
 
-            // TODO(b/332936223): When setup flow is implemented, simulate a
-            // successful PIN submission here instead.
-            const cancelPinSetupButton =
+            // Simulate PIN entry.
+            const pin = '123456';
+            const setupPinKeyboard =
+                setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
+            assertTrue(!!setupPinKeyboard);
+            const pinKeyboard =
+                setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
+            assertTrue(!!pinKeyboard);
+            assertTrue(hasStringProperty(pinKeyboard, 'value'));
+            pinKeyboard.value = pin;
+
+            const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
                     .querySelector<HTMLElement>('#dialog')!
-                    .querySelector<HTMLElement>('.cancel-button');
-            assertTrue(!!cancelPinSetupButton);
-            cancelPinSetupButton.click();
+                    .querySelector<HTMLElement>('.action-button');
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
+
+            // Verify that the PIN keyboard has been reset.
+            assertTrue(pinKeyboard.value === '');
+
+            // Re-enter the PIN to confirm it.
+            pinKeyboard.value = pin;
+
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
             await waitAfterNextRender(appsPage);
 
+            assertTrue(appsPage.prefs.on_device_app_controls.pin.value === pin);
+            assertTrue(
+                appsPage.prefs.on_device_app_controls.setup_completed.value);
             assertTrue(!!appsPage.shadowRoot!.querySelector(
                 'settings-app-parental-controls-subpage'));
 

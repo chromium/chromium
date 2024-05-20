@@ -70,19 +70,19 @@
           <template is="dom-if" if="[[showParentalControlsSetupPinDialog_]]"
               restamp>
             <app-setup-pin-dialog id="setupPin"
-                on-close="onSetupPinDialogClose_">
+                on-close="onSetupPinDialogClose_" prefs="{{prefs}}">
             </app-setup-pin-dialog>
           </template>
           <template is="dom-if" if="[[showParentalControlsVerifyPinDialog_]]"
               restamp>
             <app-verify-pin-dialog id="verifyPin"
-              on-close="onVerifyPinDialogClose_">
+                on-close="onVerifyPinDialogClose_">
             </app-verify-pin-dialog>
           </template>
           <template is="dom-if" if="[[showParentalControlsDisablePinDialog_]]"
               restamp>
             <app-verify-pin-dialog id="disableDialog"
-              on-close="onDisablePinDialogClose_">
+                on-close="onDisablePinDialogClose_">
             </app-verify-pin-dialog>
           </template>
         </div>
