@@ -605,7 +605,8 @@ uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
   return ComputeSystemPagesPerSlotSpanInternal(slot_size);
 }
 
-void PartitionBucket::Init(uint32_t new_slot_size) {
+void PartitionBucket::Init(uint32_t new_slot_size,
+                           bool use_small_single_slot_spans) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
   active_slot_spans_head = SlotSpanMetadata::get_sentinel_slot_span_non_const();
@@ -622,7 +623,7 @@ void PartitionBucket::Init(uint32_t new_slot_size) {
   num_system_pages_per_slot_span =
       ComputeSystemPagesPerSlotSpan(slot_size, prefer_smaller_slot_spans);
 
-  InitCanStoreRawSize();
+  InitCanStoreRawSize(use_small_single_slot_spans);
 }
 
 PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
@@ -702,7 +703,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
   return slot_span;
 }
 
-void PartitionBucket::InitCanStoreRawSize() {
+void PartitionBucket::InitCanStoreRawSize(bool use_small_single_slot_spans) {
   // By definition, direct map buckets can store the raw size. The value
   // of `can_store_raw_size` is set explicitly in that code path (see
   // `PartitionDirectMap()`), bypassing this method.
@@ -716,6 +717,14 @@ void PartitionBucket::InitCanStoreRawSize() {
   // space though, slot spans that have more than one slot can't have raw size
   // stored, because we wouldn't know which slot it applies to.
   if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
+    // Even when the slot size is below the standard floor for single
+    // slot spans, there exist spans that happen to have exactly one
+    // slot per.
+    const bool not_handled_by_thread_cache =
+        slot_size > kThreadCacheLargeSizeThreshold;
+    can_store_raw_size =
+        use_small_single_slot_spans && not_handled_by_thread_cache &&
+        get_slots_per_span() == 1u && get_pages_per_slot_span() > 1u;
     return;
   }
 

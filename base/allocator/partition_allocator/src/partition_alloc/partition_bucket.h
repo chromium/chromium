@@ -63,7 +63,8 @@ struct PartitionBucket {
   static constexpr size_t kMaxSlotSpansToSort = 200;
 
   // Public API.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void Init(uint32_t new_slot_size);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+  void Init(uint32_t new_slot_size, bool use_small_single_slot_spans = false);
 
   // Sets |is_already_zeroed| to true if the allocation was satisfied by
   // requesting (a) new page(s) from the operating system, or false otherwise.
@@ -160,7 +161,7 @@ struct PartitionBucket {
 
  private:
   // Sets `this->can_store_raw_size`.
-  void InitCanStoreRawSize();
+  void InitCanStoreRawSize(bool use_small_single_slot_spans);
 
   // Allocates several consecutive super pages. Returns the address of the first
   // super page.
