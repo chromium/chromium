@@ -97,9 +97,6 @@ class OnDeviceModelComponentStateManager
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
-  // Returns the last cached BaseModelSpec.
-  const std::optional<OnDeviceBaseModelSpec> GetCachedBaseModelSpec();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -154,9 +151,6 @@ class OnDeviceModelComponentStateManager
   void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
 
   void NotifyStateChanged();
-
-  // Should be called whenever the BaseModelSpec changes.
-  void UpdateOnDeviceBaseModelSpecCache();
 
   raw_ptr<PrefService> local_state_;
   std::unique_ptr<Delegate> delegate_;

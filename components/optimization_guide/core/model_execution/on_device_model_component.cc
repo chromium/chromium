@@ -137,7 +137,6 @@ void LogInstallCriteria(
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   local_state_->ClearPref(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload);
-  UpdateOnDeviceBaseModelSpecCache();
   component_installer_registered_ = false;
 }
 
@@ -178,25 +177,6 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
                            base::to_underlying(performance_class));
 
   BeginUpdateRegistration();
-}
-
-void OnDeviceModelComponentStateManager::UpdateOnDeviceBaseModelSpecCache() {
-  if (state_ && state_->GetBaseModelSpec()) {
-    local_state_->SetString(prefs::localstate::kOnDeviceBaseModelVersion,
-                            state_->GetBaseModelSpec().value().model_version);
-    local_state_->SetString(prefs::localstate::kOnDeviceBaseModelName,
-                            state_->GetBaseModelSpec().value().model_name);
-  } else {
-    local_state_->ClearPref(prefs::localstate::kOnDeviceBaseModelVersion);
-    local_state_->ClearPref(prefs::localstate::kOnDeviceBaseModelName);
-  }
-}
-
-const std::optional<OnDeviceBaseModelSpec>
-OnDeviceModelComponentStateManager::GetCachedBaseModelSpec() {
-  return OnDeviceBaseModelSpec{
-      local_state_->GetString(prefs::localstate::kOnDeviceBaseModelName),
-      local_state_->GetString(prefs::localstate::kOnDeviceBaseModelVersion)};
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {
@@ -358,7 +338,6 @@ void OnDeviceModelComponentStateManager::SetReady(
   // Populate the model version and name from the manifest into the Chrome
   // pref cache. If not present, clears the state and cache.
   state_->model_spec_ = ReadBaseModelSpecFromManifest(manifest);
-  UpdateOnDeviceBaseModelSpecCache();
   if (is_model_allowed_) {
     NotifyStateChanged();
   }
