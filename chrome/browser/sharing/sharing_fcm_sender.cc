@@ -73,6 +73,9 @@ void SharingFCMSender::DoSendMessageToDevice(
     return;
   }
 
+  base::UmaHistogramBoolean(
+      "Sharing.SendMessageWithSyncAckFcmConfiguration",
+      !message.fcm_channel_configuration().sender_id_fcm_token().empty());
   SendMessageToFcmTarget(*fcm_configuration, time_to_live, std::move(message),
                          std::move(callback));
 }

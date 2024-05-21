@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/buildflags.h"
@@ -164,6 +165,8 @@ void SharingDeviceRegistration::OnSharingTargetInfoRetrieved(
     return;
   }
 
+  base::UmaHistogramBoolean("Sharing.LocalSharingTargetInfoSupportsSync",
+                            !!sharing_target_info);
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
       GetEnabledFeatures(/*supports_vapid=*/authorized_entity.has_value());
   syncer::DeviceInfo::SharingInfo sharing_info(
