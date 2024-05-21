@@ -1,6 +1,0 @@
-include_rules = [
-  "+gpu/command_buffer/client/client_shared_image.h",
-  "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
-  "+gpu/command_buffer/client/shared_image_interface.h",
-  "+gpu/command_buffer/common/shared_image_usage.h",
-]

@@ -1,4 +1,0 @@
-package: chromeos_internal/assistant/ambient
-description: Resources for ash ambient mode.
-data:
-  - dir: lottie

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/metrics/structured/structured_events.h",
-  "+components/metrics/structured/structured_metrics_client.h",
-  "+components/metrics/structured/structured_metrics_features.h",
-]

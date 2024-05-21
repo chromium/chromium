@@ -1,4 +1,0 @@
-include_rules = [
-  "+google_apis/calendar",
-  "+google_apis/common",
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/test",
-  "+mojo/core/embedder",
-]

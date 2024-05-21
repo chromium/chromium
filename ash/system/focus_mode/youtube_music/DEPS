@@ -1,4 +1,0 @@
-include_rules = [
-  "+google_apis/common",
-  "+google_apis/gaia",
-]

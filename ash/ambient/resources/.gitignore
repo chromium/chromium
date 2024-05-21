@@ -1,3 +1,0 @@
-# This folder's resources is fetched from cipd via gclient, so they should not
-# be committed to the git repo.
-lottie

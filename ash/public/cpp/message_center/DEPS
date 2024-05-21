@@ -1,3 +1,0 @@
-include_rules = [
-  "+ash/components/arc/mojom/notifications.mojom.h",
-]

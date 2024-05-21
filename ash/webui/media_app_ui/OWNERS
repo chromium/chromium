@@ -1,7 +1,0 @@
-jopalmer@chromium.org
-patricialor@chromium.org
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# Internal Component: b/components/562866

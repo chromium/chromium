@@ -1,9 +1,0 @@
-per-file *accelerator*=file://ash/accelerators/OWNERS
-per-file cast_config_controller*=file://chrome/browser/media/router/OWNERS
-per-file *clipboard*=file://ash/clipboard/OWNERS
-per-file desk_profiles_delegate*=file://ash/wm/desks/OWNERS
-per-file *desk*template*=file://ash/wm/desks/templates/OWNERS
-per-file *input_device_settings*=file://ash/system/input_device_settings/OWNERS
-per-file *login*=file://ash/login/OWNERS
-per-file *shelf*=file://ash/shelf/OWNERS
-per-file *wallpaper*=file://ash/wallpaper/OWNERS

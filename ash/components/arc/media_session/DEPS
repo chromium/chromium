@@ -1,4 +1,0 @@
-include_rules = [
-  "+services/media_session/public",
-  "+services/service_manager/public/cpp/connector.h",
-]

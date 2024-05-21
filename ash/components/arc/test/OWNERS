@@ -1,2 +1,0 @@
-per-file fake_*_instance.*=*
-per-file payment_app_service_test_support.cc=file://ash/components/arc/pay/OWNERS

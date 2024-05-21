@@ -1,3 +1,0 @@
-include_rules = [
-  "+crypto/sha2.h"
-]

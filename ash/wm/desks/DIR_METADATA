@@ -1,7 +1,0 @@
-team_email: "chromeos-wms@google.com"
-buganizer {
-  component_id: 1238200
-}
-buganizer_public {
-  component_id: 1238551
-}

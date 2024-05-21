@@ -1,4 +1,0 @@
-package: chromeos_internal/assistant/time_of_day
-description: Resources for time-of-day wallpaper and screensaver.
-data:
-  - dir: time_of_day

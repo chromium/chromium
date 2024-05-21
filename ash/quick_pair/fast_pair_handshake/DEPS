@@ -1,4 +1,0 @@
-include_rules = [
-  "+crypto/openssl_util.h",
-  "+third_party/boringssl/src/include",
-]

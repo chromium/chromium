@@ -1,4 +1,0 @@
-include_rules = [
- "+components/password_manager/core/browser/hash_password_manager.h",
- "+services/data_decoder/public/cpp/decode_image.h",
-]

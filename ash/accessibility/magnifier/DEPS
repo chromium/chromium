@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "fullscreen_magnifier_controller\.cc": [
-    "+ash/host"
-  ],
-  "docked_magnifier_controller.*\.cc": [
-    "+ash/host"
-  ],
-}

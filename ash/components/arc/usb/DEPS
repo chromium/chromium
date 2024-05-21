@@ -1,4 +1,0 @@
-include_rules = [
-  "+services/device/public",
-  "+services/service_manager/public",
-]
