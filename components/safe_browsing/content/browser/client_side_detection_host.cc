@@ -359,8 +359,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // limit.
     if (!HasDebugFeatureDirectory() && csd_service_ &&
         !csd_service_->IsInCache(url_) &&
-        csd_service_->OverPhishingReportLimit()) {
-      DontClassifyForPhishing(NO_CLASSIFY_TOO_MANY_REPORTS);
+        csd_service_->AtPhishingReportLimit()) {
+      DontClassifyForPhishing(
+          PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);
     }
 
     // Everything checks out, so start classification.
