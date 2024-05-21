@@ -11,6 +11,9 @@
 
 namespace password_manager::constants {
 
+// The character used to obfuscate password labels.
+inline constexpr char16_t kPasswordReplacementChar = 0x2022;
+
 inline constexpr char kAutocompleteUsername[] = "username";
 inline constexpr char kAutocompleteCurrentPassword[] = "current-password";
 inline constexpr char kAutocompleteNewPassword[] = "new-password";

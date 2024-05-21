@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -232,7 +233,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
   }
 
   std::u16string password_label(size_t length) const {
-    return std::u16string(length, 0x2022);
+    return std::u16string(length, constants::kPasswordReplacementChar);
   }
 
   CredentialUIEntry android_credential_ui_entry() const {
