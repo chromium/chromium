@@ -1694,7 +1694,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(pref_service);
     pref_change_registrar_->Add(
-        prefs::kSyncableWallpaperInfo,
+        WallpaperPrefManager::GetSyncPrefName(),
         base::BindRepeating(&WallpaperControllerImpl::SyncLocalAndRemotePrefs,
                             weak_factory_.GetWeakPtr(), account_id));
 

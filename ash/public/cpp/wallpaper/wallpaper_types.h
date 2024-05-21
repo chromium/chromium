@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_TYPES_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/version.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -92,6 +93,9 @@ ASH_PUBLIC_EXPORT bool IsAllowedInPrefs(WallpaperType type);
 ASH_PUBLIC_EXPORT bool IsWallpaperTypeSyncable(WallpaperType type);
 
 ASH_PUBLIC_EXPORT bool IsOnlineWallpaper(WallpaperType type);
+
+// Returns the supported version of the wallpaper type.
+ASH_PUBLIC_EXPORT base::Version GetSupportedVersion(WallpaperType type);
 
 }  // namespace ash
 

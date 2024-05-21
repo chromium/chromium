@@ -60,4 +60,29 @@ bool IsOnlineWallpaper(WallpaperType type) {
   return type == WallpaperType::kDaily || type == WallpaperType::kOnline;
 }
 
+base::Version GetSupportedVersion(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kOnline:
+    case WallpaperType::kDaily:
+    case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kDailyGooglePhotos:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kOobe:
+    case WallpaperType::kSeaPen:
+      return base::Version("1.0");
+    case WallpaperType::kCount:
+      LOG(WARNING) << __func__
+                   << " Unknown wallpaper type: " << base::to_underlying(type);
+      return base::Version();
+  }
+  LOG(WARNING) << __func__
+               << " Unknown wallpaper type: " << base::to_underlying(type);
+  return base::Version();
+}
+
 }  // namespace ash

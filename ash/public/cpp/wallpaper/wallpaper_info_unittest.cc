@@ -4,12 +4,15 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -97,6 +100,27 @@ TEST_F(WallpaperInfoTest, ToAndFromDict) {
     EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
     EXPECT_FALSE(expected_info->version.IsValid());
   }
+}
+
+TEST_F(WallpaperInfoTest, OnlineWallpaperV1ContainsVersion) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kVersionedWallpaperInfo);
+  OnlineWallpaperParams params = OnlineWallpaperParams(
+      kAccountId1,
+      /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*from_user=*/false,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      /*variants=*/
+      {{kAssetId, GURL("https://example.com/image.png"),
+        backdrop::Image::IMAGE_TYPE_UNKNOWN}});
+  WallpaperInfo actual_info = WallpaperInfo(params, params.variants[0]);
+  base::Value::Dict dict = actual_info.ToDict();
+
+  std::optional<WallpaperInfo> expected_info = WallpaperInfo::FromDict(dict);
+
+  EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
+  EXPECT_TRUE(expected_info->version.IsValid());
+  EXPECT_EQ(expected_info->version, GetSupportedVersion(expected_info->type));
 }
 
 }  // namespace

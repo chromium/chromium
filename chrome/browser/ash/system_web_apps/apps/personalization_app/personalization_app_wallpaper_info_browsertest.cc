@@ -144,7 +144,6 @@ class PersonalizationAppWallpaperInfoBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestChromeWebUIControllerFactory test_chrome_webui_controller_factory_;
   TestPersonalizationAppWebUIProvider test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
@@ -351,6 +350,44 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   EXPECT_EQ(new_info.user_file_path, synced_info.user_file_path);
+}
+
+class PersonalizationAppVersionedWallpaperInfoBrowserTest
+    : public PersonalizationAppWallpaperInfoBrowserTest {
+ public:
+  PersonalizationAppVersionedWallpaperInfoBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kVersionedWallpaperInfo);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       OnlineWallpaperFetchMissingUnitIdSuccessfully) {
+  WallpaperInfo info =
+      WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+                    WallpaperType::kOnline, base::Time::Now());
+  info.collection_id = kDummyCollectionId;
+  info.location = kDummyUrl;
+
+  base::RunLoop loop;
+  WallpaperChangedWaiter waiter(loop.QuitClosure());
+  const AccountId account_id = GetAccountId(browser()->profile());
+  PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
+                          prefs::kSyncableVersionedWallpaperInfo);
+  loop.Run();
+
+  WallpaperInfo new_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+
+  // Expects unit_id, and variants to be set.
+  EXPECT_TRUE(new_info.unit_id.has_value());
+  EXPECT_EQ(new_info.variants.size(), 1u);
+  EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
+  EXPECT_TRUE(new_info.version.IsValid());
+  EXPECT_EQ(new_info.version, GetSupportedVersion(new_info.type));
 }
 
 }  // namespace
