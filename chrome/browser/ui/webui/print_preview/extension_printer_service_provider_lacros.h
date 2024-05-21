@@ -43,6 +43,10 @@ class ExtensionPrinterServiceProviderLacros
   // crosapi::mojom::ExtensionPrinterServiceProvider:
   void DispatchGetPrintersRequest(
       const ::base::UnguessableToken& request_id) override;
+  void DispatchResetRequest() override;
+  void DispatchStartGetCapability(
+      const std::string& destination_id,
+      DispatchStartGetCapabilityCallback callback) override;
 
   void SetPrinterHandlerForTesting(std::unique_ptr<PrinterHandler> handler) {
     extension_printer_handler_ = std::move(handler);

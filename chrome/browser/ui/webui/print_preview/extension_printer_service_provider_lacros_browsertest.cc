@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -44,6 +45,18 @@ base::Value::List CreateTestPrinters() {
   )");
 }
 
+base::Value::Dict CreateTestCapability() {
+  return base::test::ParseJsonDict(R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "supported_content_type": [
+          {"content_type": "application/pdf"}
+        ]
+      }
+    })");
+}
+
 using ::testing::_;
 using ::testing::Mock;
 using ::testing::SizeIs;
@@ -78,41 +91,35 @@ class MockExtensionPrinterServiceAsh
   mojo::Remote<crosapi::mojom::ExtensionPrinterServiceProvider> remote_;
 };
 
-class FakeExtensionPrinterHandler : public PrinterHandler {
+class MockExtensionPrinterHandler : public PrinterHandler {
  public:
-  FakeExtensionPrinterHandler() { SetPrinters(CreateTestPrinters()); }
-  FakeExtensionPrinterHandler(const FakeExtensionPrinterHandler&) = delete;
-  FakeExtensionPrinterHandler& operator=(const FakeExtensionPrinterHandler&) =
-      delete;
-  ~FakeExtensionPrinterHandler() override = default;
+  MockExtensionPrinterHandler() = default;
 
-  void Reset() override {}
+  MOCK_METHOD(void, Reset, (), (override));
 
-  void StartGetPrinters(AddedPrintersCallback added_printers_callback,
-                        GetPrintersDoneCallback done_callback) override {
-    if (!printers_.empty()) {
-      added_printers_callback.Run(printers_.Clone());
-    }
-    std::move(done_callback).Run();
-  }
+  // Mock the methods you want to interact with:
+  MOCK_METHOD(void,
+              StartGetPrinters,
+              (AddedPrintersCallback added_printers_callback,
+               GetPrintersDoneCallback done_callback),
+              (override));
 
-  void StartGetCapability(const std::string& destination_id,
-                          GetCapabilityCallback callback) override {}
-
-  void StartGrantPrinterAccess(const std::string& printer_id,
-                               GetPrinterInfoCallback callback) override {}
-
-  void StartPrint(const std::u16string& job_title,
-                  base::Value::Dict settings,
-                  scoped_refptr<base::RefCountedMemory> print_data,
-                  PrintCallback callback) override {}
-
-  void SetPrinters(base::Value::List printers) {
-    printers_ = std::move(printers);
-  }
-
- private:
-  base::Value::List printers_;
+  MOCK_METHOD(void,
+              StartGetCapability,
+              (const std::string& destination_id,
+               GetCapabilityCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              StartGrantPrinterAccess,
+              (const std::string& printer_id, GetPrinterInfoCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              StartPrint,
+              (const std::u16string& job_title,
+               base::Value::Dict settings,
+               scoped_refptr<base::RefCountedMemory> print_data,
+               PrintCallback callback),
+              (override));
 };
 
 class ExtensionPrinterServiceProviderLacrosBrowserTest
@@ -152,8 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
     GTEST_SKIP_("extension printer service is not available");
   }
 
-  EXPECT_CALL(mock_extension_printer_service_, RegisterServiceProvider)
-      .Times(1);
+  EXPECT_CALL(mock_extension_printer_service_, RegisterServiceProvider);
 
   ExtensionPrinterServiceProviderLacros provider{browser()->profile()};
 
@@ -171,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
     GTEST_SKIP_("extension printer service is not available");
   }
 
-  EXPECT_CALL(mock_extension_printer_service_, RegisterServiceProvider)
-      .Times(1);
+  EXPECT_CALL(mock_extension_printer_service_, RegisterServiceProvider);
   // The last call is for signaling done.
   EXPECT_CALL(mock_extension_printer_service_,
               PrintersAdded(request_id_, SizeIs(0), true));
@@ -180,14 +185,88 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
   EXPECT_CALL(mock_extension_printer_service_,
               PrintersAdded(request_id_, SizeIs(2), false));
 
+  auto mock_handler = std::make_unique<MockExtensionPrinterHandler>();
+  EXPECT_CALL(*mock_handler, StartGetPrinters(_, _))
+      .WillOnce(
+          [](PrinterHandler::AddedPrintersCallback added_printers_callback,
+             PrinterHandler::GetPrintersDoneCallback done_callback) {
+            // Run the "added_printers_callback" with the test printers.
+            std::move(added_printers_callback).Run(CreateTestPrinters());
+            // Run the "done_callback" to signal completion.
+            std::move(done_callback).Run();
+          });
+
   ExtensionPrinterServiceProviderLacros provider{browser()->profile()};
-  provider.SetPrinterHandlerForTesting(
-      std::make_unique<FakeExtensionPrinterHandler>());
+
+  provider.SetPrinterHandlerForTesting(std::move(mock_handler));
   provider.DispatchGetPrintersRequest(request_id_);
 
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::ExtensionPrinterService>()
       .FlushForTesting();
+}
+
+// Verifies that `ExtensionPrinterServiceProviderLacros` calls the
+// ExtensionPrinterHandler's Reset interface when requested.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
+                       Reset) {
+  if (!IsExtensionPrinterServiceAvailable()) {
+    GTEST_SKIP_("extension printer service is not available");
+  }
+
+  auto mock_handler = std::make_unique<MockExtensionPrinterHandler>();
+  EXPECT_CALL(*mock_handler, Reset());
+
+  ExtensionPrinterServiceProviderLacros provider{browser()->profile()};
+
+  provider.SetPrinterHandlerForTesting(std::move(mock_handler));
+  provider.DispatchResetRequest();
+}
+
+// Verifies that `ExtensionPrinterServiceProviderLacros` calls the
+// ExtensionPrinterHandler's StartGetCapability interface when requested.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
+                       StartGetCapability) {
+  if (!IsExtensionPrinterServiceAvailable()) {
+    GTEST_SKIP_("extension printer service is not available");
+  }
+
+  std::string captured_printer_id;
+  auto mock_handler = std::make_unique<MockExtensionPrinterHandler>();
+  EXPECT_CALL(*mock_handler, StartGetCapability(_, _))
+      .WillOnce([&captured_printer_id](
+                    const std::string& destination_id,
+                    ExtensionPrinterHandler::GetCapabilityCallback callback) {
+        captured_printer_id = destination_id;
+        std::move(callback).Run(CreateTestCapability());
+      });
+
+  ExtensionPrinterServiceProviderLacros provider{browser()->profile()};
+
+  provider.SetPrinterHandlerForTesting(std::move(mock_handler));
+
+  base::test::TestFuture<base::Value::Dict> get_capability_future;
+  const std::string printer_id =
+      "jbljdigmdjodgkcllikhggoepmmffba1:test-printer-02";
+
+  provider.DispatchStartGetCapability(printer_id,
+                                      get_capability_future.GetCallback());
+  // Verifies that the printer_id is passed to the printer handler.
+  EXPECT_EQ(printer_id, captured_printer_id);
+
+  // Verified that a capability is received correctly.
+  const base::Value::Dict& capability = get_capability_future.Take();
+  base::ExpectDictStringValue("1.0", capability, "version");
+
+  const base::Value::List* supportedContentTypes =
+      capability.FindListByDottedPath("printer.supported_content_type");
+  ASSERT_TRUE(supportedContentTypes);
+  EXPECT_EQ(supportedContentTypes->size(), 1u);
+
+  const base::Value& contentType1 = (*supportedContentTypes)[0];
+  EXPECT_TRUE(contentType1.is_dict());
+  base::ExpectDictStringValue("application/pdf", contentType1.GetDict(),
+                              "content_type");
 }
 
 }  // namespace printing

@@ -1248,8 +1248,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   TriggeredProfileResetterFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  TtsClientFactoryLacros::GetInstance();
   printing::ExtensionPrinterServiceProviderFactoryLacros::GetInstance();
+  TtsClientFactoryLacros::GetInstance();
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   TurnSyncOnHelper::EnsureFactoryBuilt();

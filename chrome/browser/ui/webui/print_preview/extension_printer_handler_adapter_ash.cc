@@ -33,7 +33,8 @@ void ExtensionPrinterHandlerAdapterAsh::StartGetPrinters(
 void ExtensionPrinterHandlerAdapterAsh::StartGetCapability(
     const std::string& destination_id,
     GetCapabilityCallback callback) {
-  // TODO(http://b/40273973): Add Implementation.
+  GetExtensionPrinterService()->StartGetCapability(destination_id,
+                                                   std::move(callback));
 }
 
 void ExtensionPrinterHandlerAdapterAsh::StartPrint(

@@ -331,7 +331,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Used when Lacros is enabled.
   std::unique_ptr<ExtensionPrinterHandlerAdapterAsh>
-      extension_printer_handler_adapter_ = nullptr;
+      extension_printer_handler_adapter_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

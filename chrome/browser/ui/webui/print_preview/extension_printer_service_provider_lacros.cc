@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -74,7 +73,7 @@ void ExtensionPrinterServiceProviderLacros::OnAddedPrinters(
 
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::ExtensionPrinterService>()
-      ->PrintersAdded(request_id, std::move(printers), /* is_done=*/false);
+      ->PrintersAdded(request_id, std::move(printers), /*is_done=*/false);
 }
 
 void ExtensionPrinterServiceProviderLacros::OnGetPrintersDone(
@@ -82,10 +81,25 @@ void ExtensionPrinterServiceProviderLacros::OnGetPrintersDone(
   VLOG(1) << "ExtensionPrinterServiceProviderLacros::OnGetPrintersDone():"
           << " request_id=" << request_id;
 
-  base::Value::List printers;  // return an empty list of printers.
+  // return an empty list of printers.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::ExtensionPrinterService>()
-      ->PrintersAdded(request_id, std::move(printers), /* is_done=*/true);
+      ->PrintersAdded(request_id, base::Value::List(), /*is_done=*/true);
+}
+
+void ExtensionPrinterServiceProviderLacros::DispatchResetRequest() {
+  VLOG(1) << "ExtensionPrinterServiceProviderLacros::ClearOngoingRequests()";
+  extension_printer_handler_->Reset();
+}
+
+void ExtensionPrinterServiceProviderLacros::DispatchStartGetCapability(
+    const std::string& destination_id,
+    DispatchStartGetCapabilityCallback callback) {
+  VLOG(1)
+      << "ExtensionPrinterServiceProviderLacros::DispatchStartGetCapability():"
+      << " destination_id=" << destination_id;
+  extension_printer_handler_->StartGetCapability(destination_id,
+                                                 std::move(callback));
 }
 
 }  // namespace printing

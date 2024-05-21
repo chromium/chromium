@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/extension_printer.mojom.h"
@@ -27,6 +28,11 @@ bool ExtensionPrinterServiceAsh::HasProvider() const {
 }
 
 void ExtensionPrinterServiceAsh::ClearPendingRequests() {
+  // In theory, pending requests should not exist when there is no provider.
+  if (!HasProvider() && HasAnyPendingGetPrintersRequests()) {
+    LOG(WARNING) << "ExtensionPrinterServiceAsh::ClearPendingRequests():none "
+                    "ExtensionPrinterServiceProvider available";
+  }
   // Clear pending get printers requests if any.
   pending_printers_added_callbacks_.clear();
   pending_get_printers_done_callbacks_.clear();
@@ -79,7 +85,8 @@ void ExtensionPrinterServiceAsh::StartGetPrinters(
     GetPrintersDoneCallback done_callback) {
   // Checks whether there is any ExtensionPrinterServiceProvider registered.
   if (!HasProvider()) {
-    LOG(WARNING) << "StartGetPrinters: none ExtensionPrinterServiceProvider";
+    LOG(WARNING) << "ExtensionPrinterServiceAsh::StartGetPrinters: none "
+                    "ExtensionPrinterServiceProvider available";
     std::move(done_callback).Run();
     return;
   }
@@ -93,6 +100,48 @@ void ExtensionPrinterServiceAsh::StartGetPrinters(
   VLOG(1) << "ExtensionPrinterServiceAsh::StartGetPrinters():" << " request_id="
           << request_id.ToString();
   service_provider_->DispatchGetPrintersRequest(request_id);
+}
+
+void ExtensionPrinterServiceAsh::Reset() {
+  VLOG(1) << "ExtensionPrinterServiceAsh::Reset():";
+  // Clears local states.
+  ClearPendingRequests();
+  // Asks downstream to clear states.
+  if (HasProvider()) {
+    service_provider_->DispatchResetRequest();
+  }
+}
+
+void ExtensionPrinterServiceAsh::StartGetCapability(
+    const std::string& destination_id,
+    GetCapabilityCallback callback) {
+  VLOG(1) << "ExtensionPrinterServiceAsh::StartGetCapability():"
+          << " destination_id=" << destination_id;
+  if (!HasProvider()) {
+    LOG(WARNING) << "ExtensionPrinterServiceAsh::StartGetCapability(): none "
+                    "ExtensionPrinterServiceProvider available";
+    std::move(callback).Run(base::Value::Dict());
+    return;
+  }
+  service_provider_->DispatchStartGetCapability(destination_id,
+                                                std::move(callback));
+}
+
+bool ExtensionPrinterServiceAsh::HasAnyPendingGetPrintersRequests() const {
+  return !pending_get_printers_done_callbacks_.empty() ||
+         !pending_printers_added_callbacks_.empty();
+}
+
+bool ExtensionPrinterServiceAsh::HasPendingGetPrintersRequestForTesting(
+    base::UnguessableToken& request_id) const {
+  CHECK_IS_TEST();
+  return pending_get_printers_done_callbacks_.contains(request_id) &&
+         pending_printers_added_callbacks_.contains(request_id);
+}
+
+bool ExtensionPrinterServiceAsh::HasProviderForTesting() const {
+  CHECK_IS_TEST();
+  return HasProvider();
 }
 
 }  // namespace crosapi

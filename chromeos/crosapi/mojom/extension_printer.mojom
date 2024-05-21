@@ -33,16 +33,27 @@ interface ExtensionPrinterService {
 // Implemented by lacros-chrome. Used by ash-chrome to forward printing related
 // requests to lacros-chrome.
 //
-// Next version: 1.
-// Next method id: 1.
+// Next version: 2.
+// Next method id: 3.
 [Stable, Uuid="74d95a4e-56e3-4fdf-8df5-62660939dc73"]
 interface ExtensionPrinterServiceProvider {
   // Dispatch StartGetPrinters requests to lacros from ash-chrome. The
   // |request_id| will be used when reporting printers back to ash-chrome by
   // lacros printing extensions.
   DispatchGetPrintersRequest@0(mojo_base.mojom.UnguessableToken request_id);
-  // TODO(http://b/40273973): Add Reset().
-  // TODO(http://b/40273973): Add DispatchStartGetCapability().
+  // Dispatch Reset requests to lacros from ash-chrome. The extension printer
+  // handler keeps certain states for ongoing get printers requests. Reset
+  // clears the states if any to ensure only one request is active at a time.
+  // The extension printer handler does not support concurrent requests.
+  [MinVersion=1] DispatchResetRequest@1();
+  // Gets capabilities for an extension printer. The |destination_id| uniquely
+  // identifies a printer within a specific extension using both the extension
+  // ID and an internal printer ID.
+  //
+  // Please see extensions/common/api/printer_provider.idl for comments about
+  // capabilities.
+  [MinVersion=1] DispatchStartGetCapability@2(string destination_id)
+    => (mojo_base.mojom.DictionaryValue capabilities);
   // TODO(http://b/40273973): Add DispatchStartPrint().
   // TODO(http://b/40273973): Add DispatchStartGrantPrinterAccess().
 };
