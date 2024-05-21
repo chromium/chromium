@@ -35,7 +35,6 @@
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/geoposition.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/chrome_launcher.h"
@@ -72,11 +71,9 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
-  if (!web_view->IsServiceWorker() &&
-      web_view->GetJavaScriptDialogManager()->IsDialogOpen()) {
+  if (!web_view->IsServiceWorker() && web_view->IsDialogOpen()) {
     std::string alert_text;
-    status =
-        web_view->GetJavaScriptDialogManager()->GetDialogMessage(&alert_text);
+    status = web_view->GetDialogMessage(alert_text);
     if (status.IsError())
       return Status(kUnexpectedAlertOpen);
     return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
@@ -790,12 +787,9 @@ Status ExecuteClose(Session* session,
   if (status.IsError())
     return status;
 
-
-  JavaScriptDialogManager* dialog_manager =
-      web_view->GetJavaScriptDialogManager();
-  if (dialog_manager->IsDialogOpen()) {
+  if (web_view->IsDialogOpen()) {
     std::string alert_text;
-    status = dialog_manager->GetDialogMessage(&alert_text);
+    status = web_view->GetDialogMessage(alert_text);
     if (status.IsError())
       return status;
 
@@ -805,10 +799,10 @@ Status ExecuteClose(Session* session,
 
     if (prompt_behavior == ::prompt_behavior::kAccept ||
         prompt_behavior == ::prompt_behavior::kAcceptAndNotify) {
-      status = dialog_manager->HandleDialog(true, session->prompt_text.get());
+      status = web_view->HandleDialog(true, session->prompt_text);
     } else if (prompt_behavior == ::prompt_behavior::kDismiss ||
                prompt_behavior == ::prompt_behavior::kDismissAndNotify) {
-      status = dialog_manager->HandleDialog(false, session->prompt_text.get());
+      status = web_view->HandleDialog(false, session->prompt_text);
     }
     if (status.IsError())
       return status;

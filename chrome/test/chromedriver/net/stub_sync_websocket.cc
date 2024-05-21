@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/net/stub_sync_websocket.h"
 
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -68,7 +69,16 @@ bool ParseMessage(const std::string& message,
 
 }  // namespace
 
-StubSyncWebSocket::StubSyncWebSocket() = default;
+StubSyncWebSocket::StubSyncWebSocket() {
+  AddCommandHandler(
+      "Inspector.enable",
+      base::BindRepeating([](int cmd_id, const base::Value::Dict& params,
+                             base::Value::Dict& response) {
+        response.Set("id", cmd_id);
+        response.Set("result", base::Value::Dict());
+        return true;
+      }));
+}
 
 StubSyncWebSocket::~StubSyncWebSocket() = default;
 
@@ -84,6 +94,9 @@ bool StubSyncWebSocket::Connect(const GURL& url) {
 
 bool StubSyncWebSocket::Send(const std::string& message) {
   EXPECT_TRUE(connected_);
+  if (!connected_) {
+    return false;
+  }
   int cmd_id;
   std::string method;
   base::Value::Dict params;
@@ -103,7 +116,10 @@ bool StubSyncWebSocket::Send(const std::string& message) {
     std::string serialized_response;
     base::JSONWriter::Write(base::Value(std::move(response)),
                             &serialized_response);
-    queued_response_.push(std::move(serialized_response));
+    if (response_limit_ > 0) {
+      --response_limit_;
+      queued_response_.push(std::move(serialized_response));
+    }
   } else {
     EnqueueHandshakeResponse(cmd_id, method);
   }
@@ -113,19 +129,32 @@ bool StubSyncWebSocket::Send(const std::string& message) {
 SyncWebSocket::StatusCode StubSyncWebSocket::ReceiveNextMessage(
     std::string* message,
     const Timeout& timeout) {
-  if (timeout.IsExpired()) {
-    return SyncWebSocket::StatusCode::kTimeout;
+  if (connected_ && queued_response_.empty() && !on_empty_queue_.is_null()) {
+    on_empty_queue_.Run();
   }
-  EXPECT_TRUE(HasNextMessage());
-  if (PopMessage(message)) {
+  if (!queued_response_.empty()) {
+    *message = std::move(queued_response_.front());
+    queued_response_.pop();
     return SyncWebSocket::StatusCode::kOk;
-  } else {
+  }
+  if (!connected_) {
     return SyncWebSocket::StatusCode::kDisconnected;
   }
+  // Further wait will either timeout or hang forever
+  return SyncWebSocket::StatusCode::kTimeout;
 }
 
 bool StubSyncWebSocket::HasNextMessage() {
   return !queued_response_.empty();
+}
+
+bool StubSyncWebSocket::PopMessage(std::string* dest) {
+  if (queued_response_.empty()) {
+    return false;
+  }
+  *dest = std::move(queued_response_.front());
+  queued_response_.pop();
+  return true;
 }
 
 void StubSyncWebSocket::GenerateDefaultResponse(int cmd_id,
@@ -175,19 +204,37 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
   response.Set("result", std::move(result));
   std::string message;
   base::JSONWriter::Write(base::Value(std::move(response)), &message);
-  queued_response_.push(std::move(message));
-}
-
-bool StubSyncWebSocket::PopMessage(std::string* dest) {
-  if (queued_response_.empty()) {
-    return false;
+  if (response_limit_ > 0) {
+    --response_limit_;
+    queued_response_.push(std::move(message));
   }
-  *dest = std::move(queued_response_.front());
-  queued_response_.pop();
-  return true;
 }
 
 void StubSyncWebSocket::AddCommandHandler(const std::string& method,
                                           CommandHandler handler) {
   command_handlers_[method] = std::move(handler);
+}
+
+void StubSyncWebSocket::EnqueueResponse(const std::string& message) {
+  if (response_limit_ > 0) {
+    --response_limit_;
+    queued_response_.push(message);
+  }
+}
+
+void StubSyncWebSocket::Disconnect() {
+  connected_ = false;
+}
+
+base::RepeatingClosure StubSyncWebSocket::DisconnectClosure() {
+  return base::BindRepeating(&StubSyncWebSocket::Disconnect,
+                             weak_ptr_factory_.GetWeakPtr());
+}
+
+void StubSyncWebSocket::NotifyOnEmptyQueue(base::RepeatingClosure callback) {
+  on_empty_queue_ = std::move(callback);
+}
+
+void StubSyncWebSocket::SetResponseLimit(int count) {
+  response_limit_ = count;
 }

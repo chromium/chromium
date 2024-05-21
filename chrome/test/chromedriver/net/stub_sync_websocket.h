@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_NET_STUB_SYNC_WEBSOCKET_H_
 #define CHROME_TEST_CHROMEDRIVER_NET_STUB_SYNC_WEBSOCKET_H_
 
+#include <limits>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -44,6 +45,16 @@ class StubSyncWebSocket : public SyncWebSocket {
 
   void AddCommandHandler(const std::string& method, CommandHandler handler);
 
+  void EnqueueResponse(const std::string& message);
+
+  void Disconnect();
+
+  base::RepeatingClosure DisconnectClosure();
+
+  void NotifyOnEmptyQueue(base::RepeatingClosure callback);
+
+  void SetResponseLimit(int count);
+
  protected:
   void GenerateDefaultResponse(int cmd_id, base::Value::Dict& response);
 
@@ -56,8 +67,12 @@ class StubSyncWebSocket : public SyncWebSocket {
   bool handshake_runtime_eval_handled_ = false;
   bool handshake_page_enable_handled_ = false;
   bool connect_complete_ = false;
+  int response_limit_ = std::numeric_limits<int>::max();
   std::queue<std::string> queued_response_;
   std::unordered_map<std::string, CommandHandler> command_handlers_;
+  base::RepeatingClosure on_empty_queue_;
+  // must be the last member
+  base::WeakPtrFactory<StubSyncWebSocket> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_STUB_SYNC_WEBSOCKET_H_

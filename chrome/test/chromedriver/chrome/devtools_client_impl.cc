@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/util.h"
@@ -876,11 +875,9 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
       }
       if (response_info->state == kBlocked) {
         response_info->state = kIgnored;
-        if (owner_) {
+        {
           std::string alert_text;
-          Status status =
-              owner_->GetJavaScriptDialogManager()->GetDialogMessage(
-                  &alert_text);
+          Status status = GetDialogMessage(alert_text);
           if (status.IsOk())
             return Status(kUnexpectedAlertOpen,
                           "{Alert text : " + alert_text + "}");
@@ -937,6 +934,7 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
     return parent_->ProcessNextMessage(-1, log_timeout, timeout, caller);
 
   std::string message;
+
   switch (socket_->ReceiveNextMessage(&message, timeout)) {
     case SyncWebSocket::StatusCode::kOk:
       break;
@@ -1029,6 +1027,43 @@ Status DevToolsClientImpl::HandleMessage(int expected_id,
   }
 }
 
+Status DevToolsClientImpl::HandleDialogOpening(
+    const base::Value::Dict& params) {
+  const std::string* message = params.FindString("message");
+  if (!message) {
+    return Status(kUnknownError, "dialog event missing or invalid 'message'");
+  }
+
+  unhandled_dialog_queue_.push_back(*message);
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kUnknownError, "dialog has invalid 'type'");
+  }
+
+  dialog_type_queue_.push_back(*type);
+
+  const std::string* prompt_text = params.FindString("defaultPrompt");
+  if (!prompt_text) {
+    return Status(kUnknownError,
+                  "dialog event missing or invalid 'defaultPrompt'");
+  }
+  prompt_text_ = *prompt_text;
+
+  if (*type == "beforeunload" && AutoAcceptsBeforeunload()) {
+    return HandleDialog(true, std::nullopt);
+  }
+  return Status{kOk};
+}
+
+Status DevToolsClientImpl::HandleDialogClosed(const base::Value::Dict& params) {
+  // Inspector only sends this event when all dialogs have been closed.
+  // Clear the unhandled queue in case the user closed a dialog manually.
+  unhandled_dialog_queue_.clear();
+  dialog_type_queue_.clear();
+  return Status{kOk};
+}
+
 Status DevToolsClientImpl::ProcessEvent(const InspectorEvent& event) {
   if (IsVLogOn(1)) {
     // Note: ChromeDriver log-replay depends on the format of this logging.
@@ -1046,7 +1081,13 @@ Status DevToolsClientImpl::ProcessEvent(const InspectorEvent& event) {
   // provide such a guarantee.
   // Therefore we perform this nullptr check here.
   if (event.params) {
-    status = IsBidiMessage(event.method, *event.params, &is_bidi_message);
+    if (event.method == "Page.javascriptDialogOpening") {
+      status = HandleDialogOpening(*event.params);
+    } else if (event.method == "Page.javascriptDialogClosed") {
+      status = HandleDialogClosed(*event.params);
+    } else {
+      status = IsBidiMessage(event.method, *event.params, &is_bidi_message);
+    }
     if (status.IsError()) {
       return status;
     }
@@ -1064,8 +1105,7 @@ Status DevToolsClientImpl::ProcessEvent(const InspectorEvent& event) {
     crashed_ = true;
     return Status(kTabCrashed);
   }
-  if ((owner_ && owner_->GetJavaScriptDialogManager()->IsDialogOpen()) ||
-      (!owner_ && event.method == "Page.javascriptDialogOpening")) {
+  if (IsDialogOpen()) {
     // A command may have opened the dialog, which will block the response.
     // To find out which one (if any), do a round trip with a simple command
     // to the renderer and afterwards see if any of the commands still haven't
@@ -1195,6 +1235,73 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfCommandResponse() {
 
 void DevToolsClientImpl::EnableEventTunnelingForTesting() {
   event_tunneling_is_enabled_ = true;
+}
+
+bool DevToolsClientImpl::IsDialogOpen() const {
+  return !unhandled_dialog_queue_.empty();
+}
+
+bool DevToolsClientImpl::AutoAcceptsBeforeunload() const {
+  return autoaccept_beforeunload_;
+}
+
+void DevToolsClientImpl::SetAutoAcceptBeforeunload(bool value) {
+  autoaccept_beforeunload_ = value;
+}
+
+Status DevToolsClientImpl::GetDialogMessage(std::string& message) const {
+  if (!IsDialogOpen()) {
+    return Status(kNoSuchAlert);
+  }
+
+  message = unhandled_dialog_queue_.front();
+  return Status(kOk);
+}
+
+Status DevToolsClientImpl::GetTypeOfDialog(std::string& type) const {
+  if (!IsDialogOpen()) {
+    return Status(kNoSuchAlert);
+  }
+
+  type = dialog_type_queue_.front();
+  return Status(kOk);
+}
+
+Status DevToolsClientImpl::HandleDialog(
+    bool accept,
+    const std::optional<std::string>& text) {
+  if (!IsDialogOpen()) {
+    return Status(kNoSuchAlert);
+  }
+
+  base::Value::Dict params;
+  params.Set("accept", accept);
+  if (text) {
+    params.Set("promptText", *text);
+  } else {
+    params.Set("promptText", prompt_text_);
+  }
+  Status status = SendCommand("Page.handleJavaScriptDialog", params);
+  if (status.IsError()) {
+    // Retry once to work around
+    // https://bugs.chromium.org/p/chromedriver/issues/detail?id=1500
+    status = SendCommand("Page.handleJavaScriptDialog", params);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+  // Remove a dialog from the queue. Need to check the queue is not empty here,
+  // because it could have been cleared during waiting for the command
+  // response.
+  if (unhandled_dialog_queue_.size()) {
+    unhandled_dialog_queue_.pop_front();
+  }
+
+  if (dialog_type_queue_.size()) {
+    dialog_type_queue_.pop_front();
+  }
+
+  return Status(kOk);
 }
 
 namespace internal {

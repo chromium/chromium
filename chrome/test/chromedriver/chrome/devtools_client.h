@@ -148,6 +148,19 @@ class DevToolsClient {
                                     bool log_timeout,
                                     const Timeout& timeout,
                                     DevToolsClient* caller) = 0;
+
+  virtual bool IsDialogOpen() const = 0;
+
+  virtual bool AutoAcceptsBeforeunload() const = 0;
+
+  virtual void SetAutoAcceptBeforeunload(bool value) = 0;
+
+  virtual Status GetDialogMessage(std::string& message) const = 0;
+
+  virtual Status GetTypeOfDialog(std::string& type) const = 0;
+
+  virtual Status HandleDialog(bool accept,
+                              const std::optional<std::string>& text) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVTOOLS_CLIENT_H_

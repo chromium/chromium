@@ -185,10 +185,6 @@ Status StubWebView::IsPendingNavigation(const Timeout* timeout,
   return Status(kOk);
 }
 
-JavaScriptDialogManager* StubWebView::GetJavaScriptDialogManager() {
-  return nullptr;
-}
-
 MobileEmulationOverrideManager* StubWebView::GetMobileEmulationOverrideManager()
     const {
   return nullptr;
@@ -290,4 +286,21 @@ Status StubWebView::CallFunctionWithTimeout(
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   return Status{kOk};
+}
+
+bool StubWebView::IsDialogOpen() const {
+  return false;
+}
+
+Status StubWebView::GetDialogMessage(std::string& message) const {
+  return Status(kOk);
+}
+
+Status StubWebView::GetTypeOfDialog(std::string& type) const {
+  return Status(kOk);
+}
+
+Status StubWebView::HandleDialog(bool accept,
+                                 const std::optional<std::string>& text) {
+  return Status(kOk);
 }

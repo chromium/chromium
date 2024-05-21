@@ -142,7 +142,6 @@ class WebViewImpl : public WebView {
                                    bool stop_load_on_timeout) override;
   Status IsPendingNavigation(const Timeout* timeout,
                              bool* is_pending) const override;
-  JavaScriptDialogManager* GetJavaScriptDialogManager() override;
   MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
       const override;
   Status OverrideGeolocation(const Geoposition& geoposition) override;
@@ -184,6 +183,12 @@ class WebViewImpl : public WebView {
   bool IsLocked() const;
   void SetDetached();
   bool IsDetached() const override;
+
+  bool IsDialogOpen() const override;
+  Status GetDialogMessage(std::string& message) const override;
+  Status GetTypeOfDialog(std::string& type) const override;
+  Status HandleDialog(bool accept,
+                      const std::optional<std::string>& text) override;
 
  protected:
   WebViewImpl(const std::string& id,
@@ -259,7 +264,6 @@ class WebViewImpl : public WebView {
   // before the trackers, to ensured trackers are destructed before client_.
   std::unique_ptr<DevToolsClient> client_;
   std::unique_ptr<FrameTracker> frame_tracker_;
-  std::unique_ptr<JavaScriptDialogManager> dialog_manager_;
   std::unique_ptr<PageLoadStrategy> navigation_tracker_;
   std::unique_ptr<MobileEmulationOverrideManager>
       mobile_emulation_override_manager_;

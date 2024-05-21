@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 
@@ -82,12 +81,10 @@ class ObjectGroup {
 NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     WebView* web_view,
-    const JavaScriptDialogManager* dialog_manager,
     const bool is_eager)
     : client_(client),
       web_view_(web_view),
       top_frame_id_(client->GetId()),
-      dialog_manager_(dialog_manager),
       is_eager_(is_eager),
       timed_out_(false),
       loading_state_(nullptr) {
@@ -99,12 +96,10 @@ NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     LoadingState known_state,
     WebView* web_view,
-    const JavaScriptDialogManager* dialog_manager,
     const bool is_eager)
     : client_(client),
       web_view_(web_view),
       top_frame_id_(client->GetId()),
-      dialog_manager_(dialog_manager),
       is_eager_(is_eager),
       timed_out_(false),
       loading_state_(nullptr) {
@@ -128,7 +123,7 @@ void NavigationTracker::SetFrame(const std::string& new_frame_id) {
 
 Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
                                               bool* is_pending) {
-  if (dialog_manager_->IsDialogOpen()) {
+  if (client_->IsDialogOpen()) {
     // The render process is paused while modal dialogs are open, so
     // Runtime.evaluate will block and time out if we attempt to call it. In
     // this case we can consider the page to have loaded, so that we return

@@ -107,6 +107,9 @@ class DevToolsClientImpl : public DevToolsClient {
   bool IsNull() const override;
   bool IsConnected() const override;
   bool WasCrashed() override;
+  bool IsDialogOpen() const override;
+  bool AutoAcceptsBeforeunload() const override;
+  void SetAutoAcceptBeforeunload(bool value) override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
@@ -164,6 +167,10 @@ class DevToolsClientImpl : public DevToolsClient {
   Status HandleMessage(int expected_id,
                        const std::string& message,
                        DevToolsClient* caller);
+  Status GetDialogMessage(std::string& message) const override;
+  Status GetTypeOfDialog(std::string& type) const override;
+  Status HandleDialog(bool accept,
+                      const std::optional<std::string>& text) override;
 
  private:
   enum ResponseState {
@@ -204,6 +211,8 @@ class DevToolsClientImpl : public DevToolsClient {
   Status EnsureListenersNotifiedOfEvent();
   Status EnsureListenersNotifiedOfCommandResponse();
   Status SetUpDevTools();
+  Status HandleDialogOpening(const base::Value::Dict& params);
+  Status HandleDialogClosed(const base::Value::Dict& params);
 
   std::unique_ptr<SyncWebSocket> socket_;
   // WebViewImpl that owns this instance; nullptr for browser-wide DevTools.
@@ -233,6 +242,10 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_ = 1;  // The id identifying a particular request.
   bool is_main_page_ = false;
+  std::list<std::string> unhandled_dialog_queue_;
+  std::list<std::string> dialog_type_queue_;
+  std::string prompt_text_;
+  bool autoaccept_beforeunload_ = false;
   // Event tunneling is temporarily disabled in production.
   // It is enabled only by the unit tests
   // TODO(chromedriver:4181): Enable CDP event tunneling

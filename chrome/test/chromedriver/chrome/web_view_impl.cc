@@ -40,7 +40,6 @@
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/js.h"
 #include "chrome/test/chromedriver/chrome/mobile_emulation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/navigation_tracker.h"
@@ -393,7 +392,6 @@ WebViewImpl::WebViewImpl(const std::string& id,
       parent_(parent),
       client_(std::move(client)),
       frame_tracker_(nullptr),
-      dialog_manager_(nullptr),
       mobile_emulation_override_manager_(nullptr),
       geolocation_override_manager_(nullptr),
       network_conditions_override_manager_(nullptr),
@@ -418,8 +416,6 @@ WebViewImpl::WebViewImpl(const std::string& id,
       parent_(parent),
       client_(std::move(client)),
       frame_tracker_(new FrameTracker(client_.get(), this)),
-      dialog_manager_(
-          new JavaScriptDialogManager(client_.get(), autoaccept_beforeunload)),
       mobile_emulation_override_manager_(
           new MobileEmulationOverrideManager(client_.get(),
                                              std::move(mobile_device),
@@ -431,6 +427,7 @@ WebViewImpl::WebViewImpl(const std::string& id,
       heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())),
       is_service_worker_(false),
       autoaccept_beforeunload_(autoaccept_beforeunload) {
+  client_->SetAutoAcceptBeforeunload(autoaccept_beforeunload_);
   // Downloading in headless mode requires the setting of
   // Browser.setDownloadBehavior. This is handled by the
   // DownloadDirectoryOverrideManager, which is only instantiated
@@ -455,11 +452,9 @@ std::unique_ptr<PageLoadStrategy> WebViewImpl::CreatePageLoadStrategy(
   if (strategy == PageLoadStrategy::kNone) {
     return std::make_unique<NonBlockingNavigationTracker>();
   } else if (strategy == PageLoadStrategy::kNormal) {
-    return std::make_unique<NavigationTracker>(client_.get(), this,
-                                               dialog_manager_.get(), false);
+    return std::make_unique<NavigationTracker>(client_.get(), this, false);
   } else if (strategy == PageLoadStrategy::kEager) {
-    return std::make_unique<NavigationTracker>(client_.get(), this,
-                                               dialog_manager_.get(), true);
+    return std::make_unique<NavigationTracker>(client_.get(), this, true);
   } else {
     NOTREACHED_IN_MIGRATION() << "invalid strategy '" << strategy << "'";
     return nullptr;
@@ -1420,10 +1415,6 @@ Status WebViewImpl::IsPendingNavigation(const Timeout* timeout,
   return parent_->IsPendingNavigation(timeout, is_pending);
 }
 
-JavaScriptDialogManager* WebViewImpl::GetJavaScriptDialogManager() {
-  return dialog_manager_.get();
-}
-
 MobileEmulationOverrideManager* WebViewImpl::GetMobileEmulationOverrideManager()
     const {
   return mobile_emulation_override_manager_.get();
@@ -1791,9 +1782,9 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
   if (status.IsError())
     return status;
   // An alert may block the pending navigation.
-  if (dialog_manager_->IsDialogOpen()) {
+  if (client_->IsDialogOpen()) {
     std::string alert_text;
-    status = dialog_manager_->GetDialogMessage(&alert_text);
+    status = client_->GetDialogMessage(alert_text);
     if (status.IsError())
       return Status(kUnexpectedAlertOpen);
     return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
@@ -2065,6 +2056,23 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
     }
   }
   return status;
+}
+
+bool WebViewImpl::IsDialogOpen() const {
+  return client_->IsDialogOpen();
+}
+
+Status WebViewImpl::GetDialogMessage(std::string& message) const {
+  return client_->GetDialogMessage(message);
+}
+
+Status WebViewImpl::GetTypeOfDialog(std::string& type) const {
+  return client_->GetTypeOfDialog(type);
+}
+
+Status WebViewImpl::HandleDialog(bool accept,
+                                 const std::optional<std::string>& text) {
+  return client_->HandleDialog(accept, text);
 }
 
 WebViewImplHolder::WebViewImplHolder(WebViewImpl* web_view) {

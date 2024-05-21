@@ -380,10 +380,12 @@ Status CreateBrowserwideDevToolsClientAndConnect(
     const std::vector<std::unique_ptr<DevToolsEventListener>>&
         devtools_event_listeners,
     const std::string& web_socket_url,
+    bool autoaccept_beforeunload,
     std::unique_ptr<DevToolsClient>& browser_client) {
   SyncWebSocket* socket_ptr = socket.get();
   std::unique_ptr<DevToolsClientImpl> client(new DevToolsClientImpl(
       DevToolsClientImpl::kBrowserwideDevToolsClientId, ""));
+  client->SetAutoAcceptBeforeunload(autoaccept_beforeunload);
   for (const auto& listener : devtools_event_listeners) {
     // Only add listeners that subscribe to the browser-wide |DevToolsClient|.
     // Otherwise, listeners will think this client is associated with a webview,
@@ -439,7 +441,7 @@ Status LaunchRemoteChromeSession(
   }
   status = CreateBrowserwideDevToolsClientAndConnect(
       std::move(socket), devtools_event_listeners, browser_info.web_socket_url,
-      devtools_websocket_client);
+      !capabilities.web_socket_url, devtools_websocket_client);
   if (status.IsError()) {
     return WrapStatusIfNeeded(status, kSessionNotCreated);
   }
@@ -660,7 +662,8 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       }
       status = CreateBrowserwideDevToolsClientAndConnect(
           std::move(socket), devtools_event_listeners,
-          browser_info.web_socket_url, devtools_websocket_client);
+          browser_info.web_socket_url, !capabilities.web_socket_url,
+          devtools_websocket_client);
     }
   } else {
     Timeout timeout(capabilities.browser_startup_timeout);
@@ -675,7 +678,8 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       DCHECK(socket);
       status = CreateBrowserwideDevToolsClientAndConnect(
           std::move(socket), devtools_event_listeners,
-          browser_info.web_socket_url, devtools_websocket_client);
+          browser_info.web_socket_url, !capabilities.web_socket_url,
+          devtools_websocket_client);
     }
     if (status.IsOk()) {
       status =
@@ -840,7 +844,7 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
   status = CreateBrowserwideDevToolsClientAndConnect(
       std::move(socket), devtools_event_listeners,
       devtools_http_client->browser_info()->web_socket_url,
-      devtools_websocket_client);
+      !capabilities.web_socket_url, devtools_websocket_client);
 
   chrome = std::make_unique<ChromeAndroidImpl>(
       browser_info, capabilities.window_types,
@@ -896,7 +900,7 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
   }
   status = CreateBrowserwideDevToolsClientAndConnect(
       std::move(socket), devtools_event_listeners, browser_info.web_socket_url,
-      devtools_websocket_client);
+      !capabilities.web_socket_url, devtools_websocket_client);
 
   base::Process dummy_process;
   std::unique_ptr<ChromeDesktopImpl> chrome_impl =

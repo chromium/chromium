@@ -19,7 +19,6 @@ class TimeDelta;
 
 class FedCmTracker;
 class FrameTracker;
-class JavaScriptDialogManager;
 class MobileEmulationOverrideManager;
 class Status;
 class Timeout;
@@ -204,9 +203,6 @@ class WebView {
   virtual Status IsPendingNavigation(const Timeout* timeout,
                                      bool* is_pending) const = 0;
 
-  // Returns the JavaScriptDialogManager. Never null.
-  virtual JavaScriptDialogManager* GetJavaScriptDialogManager() = 0;
-
   // Returns the MobileEmulationOverrideManager.
   virtual MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
       const = 0;
@@ -285,6 +281,15 @@ class WebView {
       const base::Value::List& args,
       const base::TimeDelta& timeout,
       std::unique_ptr<base::Value>* result) = 0;
+
+  virtual bool IsDialogOpen() const = 0;
+
+  virtual Status GetDialogMessage(std::string& message) const = 0;
+
+  virtual Status GetTypeOfDialog(std::string& type) const = 0;
+
+  virtual Status HandleDialog(bool accept,
+                              const std::optional<std::string>& text) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

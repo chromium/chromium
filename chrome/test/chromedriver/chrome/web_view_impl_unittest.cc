@@ -1231,9 +1231,11 @@ TEST_P(WaitForPendingNavigations, NavigationDetection) {
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
 
+  Timeout timeout{base::Milliseconds(100)};
+  // Pretend waiting for new responses after 3 handled commands.
+  socket_holder.Socket().SetResponseLimit(3);
   socket_holder.Socket().AddCommandHandler(
       "Runtime.evaluate", base::BindRepeating(&ReturnError, -32000, Message()));
-  Timeout timeout{base::Milliseconds(100)};
   Status status = view.WaitForPendingNavigations("", timeout, false);
   EXPECT_EQ(kTimeout, status.code());
 }

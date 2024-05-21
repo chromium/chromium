@@ -93,7 +93,6 @@ class StubWebView : public WebView {
                                    bool stop_load_on_timeout) override;
   Status IsPendingNavigation(const Timeout* timeout,
                              bool* is_pending) const override;
-  JavaScriptDialogManager* GetJavaScriptDialogManager() override;
   MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
       const override;
   Status OverrideGeolocation(const Geoposition& geoposition) override;
@@ -134,6 +133,12 @@ class StubWebView : public WebView {
                                  const base::Value::List& args,
                                  const base::TimeDelta& timeout,
                                  std::unique_ptr<base::Value>* result) override;
+
+  bool IsDialogOpen() const override;
+  Status GetDialogMessage(std::string& message) const override;
+  Status GetTypeOfDialog(std::string& type) const override;
+  Status HandleDialog(bool accept,
+                      const std::optional<std::string>& text) override;
 
  private:
   std::string id_;
