@@ -61,6 +61,8 @@ bool CalculateOcclusionByRoundedDisplayMaskCandidate(
         overlap_candidate.occluding_mask_keys.insert(
             OverlayProposedCandidate::ToProposeKey(
                 candidate_with_display_masks));
+
+        break;
       }
     }
   }
