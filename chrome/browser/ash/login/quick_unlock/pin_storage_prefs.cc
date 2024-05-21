@@ -17,6 +17,7 @@ namespace quick_unlock {
 void PinStoragePrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kQuickUnlockPinSalt, "");
   registry->RegisterStringPref(prefs::kQuickUnlockPinSecret, "");
+  registry->RegisterIntegerPref(prefs::kQuickUnlockPinFailedAttempts, 0);
 }
 
 PinStoragePrefs::PinStoragePrefs(PrefService* pref_service)

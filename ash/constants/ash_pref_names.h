@@ -1464,6 +1464,10 @@ inline constexpr char kQuickUnlockPinSalt[] = "quick_unlock.pin.salt";
 // The hash for the pin quick unlock mechanism.
 inline constexpr char kQuickUnlockPinSecret[] = "quick_unlock.pin.secret";
 
+// Counter of failed pin quick unlock attempts.
+inline constexpr char kQuickUnlockPinFailedAttempts[] =
+    "quick_unlock.pin.failed_attempts";
+
 // Enum that specifies how often a user has to enter their password to continue
 // using quick unlock. These values are the same as the ones in
 // `quick_unlock::PasswordConfirmationFrequency`.

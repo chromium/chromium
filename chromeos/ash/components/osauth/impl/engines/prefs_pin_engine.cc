@@ -57,13 +57,19 @@ void PrefsPinEngine::PerformPinAttempt(const std::string& raw_pin) {
   // and compare it to the stored secret.
   observer_->OnFactorAttempt(GetFactor());
   bool auth_success = false;
-  unlock_attempt_count_ += 1;
   Key key(raw_pin);
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
+  // Either the secret matches and we flag the attempt as a success, or it
+  // failed and we increment the accumulated failure count.
   if (key.GetSecret() == secret) {
     auth_success = true;
-  } else if (IsLockedOut()) {
-    // If the attempt failed and we are now locked out, signal this.
+  } else {
+    pref_service_->SetInteger(
+        prefs::kQuickUnlockPinFailedAttempts,
+        pref_service_->GetInteger(prefs::kQuickUnlockPinFailedAttempts) + 1);
+  }
+  // If the attempt failed and we are now locked out, signal this.
+  if (IsLockedOut()) {
     observer_->OnLockoutChanged(GetFactor());
   }
   observer_->OnFactorAttemptResult(GetFactor(), auth_success);
@@ -118,7 +124,8 @@ bool PrefsPinEngine::IsDisabledByPolicy() {
 }
 
 bool PrefsPinEngine::IsLockedOut() {
-  return unlock_attempt_count_ >= kMaximumUnlockAttempts;
+  return pref_service_->GetInteger(prefs::kQuickUnlockPinFailedAttempts) >=
+         kMaximumUnlockAttempts;
 }
 
 bool PrefsPinEngine::IsFactorSpecificRestricted() {
@@ -126,7 +133,7 @@ bool PrefsPinEngine::IsFactorSpecificRestricted() {
 }
 
 void PrefsPinEngine::OnSuccessfulAuthentiation() {
-  unlock_attempt_count_ = 0;
+  pref_service_->SetInteger(prefs::kQuickUnlockPinFailedAttempts, 0);
 }
 
 void PrefsPinEngine::OnCryptohomeAuthSessionStarted() {

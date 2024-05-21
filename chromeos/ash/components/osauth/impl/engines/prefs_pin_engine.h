@@ -29,7 +29,7 @@ class PrefsPinEngine : public AuthFactorEngine, public CryptohomeCore::Client {
   void PerformPinAttempt(const std::string& raw_pin);
 
  private:
-  static constexpr int kMaximumUnlockAttempts = 3;
+  static constexpr int kMaximumUnlockAttempts = 5;
 
   // Functions to implement AuthFactorEngine.
   AshAuthFactor GetFactor() const override;
@@ -62,7 +62,6 @@ class PrefsPinEngine : public AuthFactorEngine, public CryptohomeCore::Client {
   raw_ptr<FactorEngineObserver> observer_;
   UsageAllowed usage_allowed_ = UsageAllowed::kDisabled;
   bool is_supported_ = false;
-  int unlock_attempt_count_ = 0;
 
   base::WeakPtrFactory<PrefsPinEngine> weak_factory_{this};
 };
