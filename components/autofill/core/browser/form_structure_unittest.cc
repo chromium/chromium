@@ -2497,4 +2497,34 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsEnabled) {
   }
 }
 
+// Verifies that with single field email heuristics, fields with
+// autocomplete=off are not parsed as email fields.
+TEST_F(FormStructureTestImpl,
+       SingleFieldEmailHeuristicsEnabledAutocompleteOff) {
+  base::test::ScopedFeatureList enabled{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "off"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "false"}}});
+
+  // The form has too few fields; it should not run heuristics, falling back to
+  // the single field parsing.
+  EXPECT_FALSE(FormShouldRunHeuristics(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+
+  {
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                           nullptr);
+    ASSERT_EQ(2U, form_structure.field_count());
+    // However, because the email field has autocomplete=off, it should not run
+    // heuristics.
+    ASSERT_EQ(0U, form_structure.autofill_count());
+    EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
+    EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(1)->heuristic_type());
+    EXPECT_FALSE(form_structure.IsAutofillable());
+  }
+}
+
 }  // namespace autofill
