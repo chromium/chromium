@@ -337,7 +337,7 @@ Node* Sanitizer::KeepElement(Element* element,
 
   if (Match(Wildcard(), node_name, config_.drop_attributes_)) {
     for (const auto& name : element->getAttributeNames()) {
-      element->removeAttribute(AtomicString(name));
+      element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
     }
@@ -384,7 +384,7 @@ Node* Sanitizer::KeepElement(Element* element,
       }
 
       if (drop) {
-        element->removeAttribute(AtomicString(name));
+        element->removeAttribute(name);
         UseCounter::Count(window->GetExecutionContext(),
                           WebFeature::kSanitizerAPIActionTaken);
       }

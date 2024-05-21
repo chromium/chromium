@@ -612,7 +612,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // For exposing to DOM only.
   NamedNodeMap* attributesForBindings() const;
-  AttributeNamesView getAttributeNames() const;
+  AttributeNamesView getAttributeNamesForBindings() const;
+  // Note that the method above returns a live view of underlying
+  // attribute collection, which may be unsafe to use for iteration
+  // if element attributes are modified during iteration, hence the
+  // safe (but slower) alternative below.
+  Vector<AtomicString> getAttributeNames() const;
 
   enum class AttributeModificationReason {
     kDirectly,

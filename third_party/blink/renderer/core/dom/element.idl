@@ -44,7 +44,7 @@ dictionary CheckVisibilityOptions {
 
     [Affects=Nothing] boolean hasAttributes();
     [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
-    [Affects=Nothing] sequence<DOMString> getAttributeNames();
+    [Affects=Nothing, ImplementedAs=getAttributeNamesForBindings] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] void setAttribute(DOMString name, DOMString value);
