@@ -39,20 +39,41 @@ from test_helpers import ANY_SHARED_ID, execute_command, goto_url
         }
     },
 ])
+@pytest.mark.parametrize('start_node_expression',
+                         [None, 'document', 'document.body'])
 @pytest.mark.asyncio
-async def test_locate_nodes_locator_found(websocket, context_id, html,
-                                          locator):
+async def test_locate_nodes_locator_found(websocket, context_id, html, locator,
+                                          start_node_expression):
     await goto_url(
         websocket, context_id,
         html(
             '<div data-class="one" aria-label="test" role="button">foobarBARbaz</div><div data-class="two" aria-label="test" role="button">foobarBAR<span>baz</span></div>'
         ))
+
+    start_nodes = None
+    if start_node_expression:
+        resp = await execute_command(
+            websocket, {
+                'method': 'script.evaluate',
+                'params': {
+                    'expression': start_node_expression,
+                    'target': {
+                        'context': context_id
+                    },
+                    'awaitPromise': False
+                }
+            })
+        start_nodes = [{'sharedId': resp['result']['sharedId']}]
+
     resp = await execute_command(
         websocket, {
             'method': 'browsingContext.locateNodes',
             'params': {
                 'context': context_id,
-                'locator': locator
+                'locator': locator,
+                **({
+                    'startNodes': start_nodes
+                } if start_nodes else {})
             }
         })
 

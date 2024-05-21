@@ -1105,12 +1105,12 @@ export class BrowsingContextImpl {
             (
               xPathSelector: string,
               maxNodeCount: number,
-              ...startNodes: HTMLElement[]
+              ...startNodes: Node[]
             ) => {
               // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
               const evaluator = new XPathEvaluator();
               const expression = evaluator.createExpression(xPathSelector);
-              const locateNodesUsingXpath = (element: HTMLElement) => {
+              const locateNodesUsingXpath = (element: Node) => {
                 const xPathResult = expression.evaluate(
                   element,
                   XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
@@ -1157,16 +1157,36 @@ export class BrowsingContextImpl {
               ignoreCase: boolean,
               maxNodeCount: number,
               maxDepth: number,
-              ...startNodes: HTMLElement[]
+              ...startNodes: Node[]
             ) => {
               const searchText = ignoreCase
                 ? innerTextSelector.toUpperCase()
                 : innerTextSelector;
-              const locateNodesUsingInnerText = (
-                element: HTMLElement,
+              const locateNodesUsingInnerText: (
+                node: Node,
                 currentMaxDepth: number
-              ) => {
+              ) => HTMLElement[] = (node: Node, currentMaxDepth: number) => {
                 const returnedNodes: HTMLElement[] = [];
+                if (
+                  node instanceof DocumentFragment ||
+                  node instanceof Document
+                ) {
+                  const children = [...node.children];
+                  children.forEach((child) =>
+                    // `currentMaxDepth` is not decremented intentionally according to
+                    // https://github.com/w3c/webdriver-bidi/pull/713.
+                    returnedNodes.push(
+                      ...locateNodesUsingInnerText(child, currentMaxDepth)
+                    )
+                  );
+                  return returnedNodes;
+                }
+
+                if (!(node instanceof HTMLElement)) {
+                  return [];
+                }
+
+                const element = node;
                 const nodeInnerText = ignoreCase
                   ? element.innerText?.toUpperCase()
                   : element.innerText;
@@ -1191,7 +1211,7 @@ export class BrowsingContextImpl {
                 } else {
                   const childNodeMatches =
                     // Don't search deeper if `maxDepth` is reached.
-                    currentMaxDepth === 0
+                    currentMaxDepth <= 0
                       ? []
                       : childNodes
                           .map((child) =>
@@ -1213,9 +1233,8 @@ export class BrowsingContextImpl {
                 // TODO: stop search early if `maxNodeCount` is reached.
                 return returnedNodes;
               };
-              // TODO: add maxDepth.
               // TODO: stop search early if `maxNodeCount` is reached.
-              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              startNodes = startNodes.length > 0 ? startNodes : [document];
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
