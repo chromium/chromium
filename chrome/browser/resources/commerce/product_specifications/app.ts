@@ -203,8 +203,11 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private updateSetName_(_: CustomEvent<{name: string}>) {
-    // TODO(b/330345730): Plumb name update through mojom
+  private updateSetName_(e: CustomEvent<{name: string}>) {
+    if (this.id_) {
+      this.shoppingApi_.setNameForProductSpecificationsSet(
+          this.id_, e.detail.name);
+    }
   }
 
   private seeAllSets_() {

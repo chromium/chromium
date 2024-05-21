@@ -387,6 +387,32 @@ suite('AppTest', () => {
         uuid, shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
   });
 
+  test('renames product specification set', async () => {
+    const urlsParam = ['https://example.com/'];
+    const promiseValues = createAppPromiseValues(
+        {urlsParam: urlsParam, specsSet: createSpecsSet()});
+    await createAppElementWithPromiseValues(promiseValues);
+
+    const uuid =
+        shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][2];
+    const header =
+        appElement.shadowRoot!.querySelector('product-specifications-header');
+    assertTrue(!!header);
+    const newName = 'new name';
+    header.dispatchEvent(
+        new CustomEvent('name-change', {detail: {name: newName}}));
+
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount('setNameForProductSpecificationsSet'));
+    assertEquals(
+        uuid,
+        shoppingServiceApi.getArgs('setNameForProductSpecificationsSet')[1]);
+    assertEquals(
+        newName,
+        shoppingServiceApi.getArgs('setNameForProductSpecificationsSet')[0][1]);
+  });
+
   suite('Header', () => {
     test('displays correct subtitle for retrieved sets', async () => {
       const specsSet = createSpecsSet({
