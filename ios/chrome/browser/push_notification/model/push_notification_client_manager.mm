@@ -28,7 +28,7 @@ PushNotificationClientManager::PushNotificationClientManager() {
     AddPushNotificationClient(std::make_unique<TipsNotificationClient>());
   }
 
-  if (IsContentPushNotificationsEnabled()) {
+  if (IsContentNotificationExperimentEnalbed()) {
     AddPushNotificationClient(std::make_unique<ContentNotificationClient>());
   }
 }
@@ -98,7 +98,7 @@ std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
   std::vector<PushNotificationClientId> client_ids = {
       PushNotificationClientId::kCommerce};
-  if (IsContentPushNotificationsEnabled()) {
+  if (IsContentNotificationExperimentEnalbed()) {
     client_ids.push_back(PushNotificationClientId::kContent);
     client_ids.push_back(PushNotificationClientId::kSports);
   }
