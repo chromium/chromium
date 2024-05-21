@@ -1184,7 +1184,10 @@ void FocusFakebox() {
 @interface LocationBarEditStateTestCase : ChromeTestCase
 @end
 
-@implementation LocationBarEditStateTestCase
+@implementation LocationBarEditStateTestCase {
+  GURL _URL1;
+  GURL _URL2;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -1196,6 +1199,14 @@ void FocusFakebox() {
   [super setUp];
 
   [ChromeEarlGrey clearBrowsingHistory];
+
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  _URL1 = self.testServer->GetURL(kPage1URL);
+  _URL2 = self.testServer->GetURL(kPage2URL);
 
   // Clear the pasteboard in case there is a URL copied.
   [ChromeEarlGrey clearPasteboard];
@@ -1431,6 +1442,32 @@ void FocusFakebox() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Test inline autocomplete of legacy text field implementation.
+- (void)testLegacyInlineAutocompleteSuggestion {
+  // Relaunch the app with new textfield disabled, as autocomplete label exists
+  // only on legacy implementation.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kIOSNewOmniboxImplementation);
+
+  // Disable all autocomplete providers except the history url provider.
+  omnibox::DisableAutocompleteProviders(config, 524279);
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self populateHistory];
+
+  // Clears the url and replace it with local url prefix.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"127")];
+
+  // We expect to have an autocomplete.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::OmniboxAutocompleteLabel()];
+}
+
 #pragma mark - Helpers
 
 // Taps the fake omnibox and waits for the real omnibox to be visible.
@@ -1439,6 +1476,15 @@ void FocusFakebox() {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+}
+
+// Populate history by visiting the 2 different pages.
+- (void)populateHistory {
+  // Add all the pages to the history.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 }
 
 @end
