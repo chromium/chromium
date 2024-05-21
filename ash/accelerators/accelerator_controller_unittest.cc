@@ -1266,7 +1266,9 @@ TEST_F(AcceleratorControllerTest, DontRepeatToggleFullscreen) {
   };
   test_api_->RegisterAccelerators(accelerators);
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
   views::Widget* widget = new views::Widget;
   params.context = GetContext();
