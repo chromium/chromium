@@ -141,6 +141,8 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
        SystemProfileProto_ComponentId_CROS_TERMINA},
       {"onhpjgkfgajmkkeniaoflicgokpaebfa",
        SystemProfileProto_ComponentId_SODA_JA_JP},
+      {"cffplpkejcbdpfnfabnjikeicbedmifn",
+       SystemProfileProto_ComponentId_MASKED_DOMAIN_LIST},
   });
 
   const auto result = kComponentMap.find(app_id);

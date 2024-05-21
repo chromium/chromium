@@ -1105,6 +1105,7 @@ message SystemProfileProto {
     TRUST_TOKEN_KEY_COMMITMENTS = 62;
     THIRD_PARTY_COOKIE_DEPRECATION_METADATA = 63;
     GROWTH_CAMPAIGNS = 64;
+    MASKED_DOMAIN_LIST = 65;
   }
 
   // Information about what Chrome components are registered and at which
