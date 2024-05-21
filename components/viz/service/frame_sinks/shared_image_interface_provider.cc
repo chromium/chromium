@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -24,6 +25,7 @@ SharedImageInterfaceProvider::SharedImageInterfaceProvider(
 SharedImageInterfaceProvider::~SharedImageInterfaceProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
+  base::AutoLock hold(context_lock_);
   if (shared_context_state_) {
     shared_context_state_->RemoveContextLostObserver(this);
     shared_context_state_.reset();
@@ -38,11 +40,15 @@ SharedImageInterfaceProvider::GetSharedImageInterface() {
   return shared_image_interface_.get();
 }
 
-bool SharedImageInterfaceProvider::NeedsNewSharedImageInterface() const {
-  return !shared_image_interface_ || !shared_context_state_;
+bool SharedImageInterfaceProvider::NeedsNewSharedImageInterface() {
+  base::AutoLock hold(context_lock_);
+  return !shared_image_interface_ || context_lost_;
 }
 
 void SharedImageInterfaceProvider::CreateSharedImageInterface() {
+  // This function should only be called on the compositor thread.
+  CHECK(!gpu_service_->main_runner()->BelongsToCurrentThread());
+
   if (!scheduler_sequence_) {
     // TODO(vmpstr): This can use compositor_gpu_task_runner instead. However,
     // we also then need to create a SharedContextState from the same runner.
@@ -53,9 +59,6 @@ void SharedImageInterfaceProvider::CreateSharedImageInterface() {
         gpu_service_->GetGpuScheduler(), gpu_service_->main_runner(),
         /*target_thread_is_always_available=*/true);
   }
-
-  // This function should only be called on the compositor thread.
-  CHECK(!gpu_service_->main_runner()->BelongsToCurrentThread());
 
   base::WaitableEvent event;
   scheduler_sequence_->ScheduleTask(
@@ -69,10 +72,12 @@ void SharedImageInterfaceProvider::CreateSharedImageInterface() {
 void SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu(
     base::WaitableEvent* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  base::AutoLock hold(context_lock_);
   shared_context_state_ =
       gl::GetGLImplementation() != gl::kGLImplementationDisabled && gpu_service_
           ? gpu_service_->GetContextState()
           : nullptr;
+  context_lost_ = false;
 
   shared_image_interface_ =
       base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
@@ -93,8 +98,10 @@ void SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu(
 
 void SharedImageInterfaceProvider::OnContextLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  base::AutoLock hold(context_lock_);
   shared_context_state_->RemoveContextLostObserver(this);
   shared_context_state_ = nullptr;
+  context_lost_ = true;
 }
 
 }  // namespace viz

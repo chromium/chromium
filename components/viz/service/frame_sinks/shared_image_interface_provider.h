@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 
@@ -36,16 +37,24 @@ class VIZ_SERVICE_EXPORT SharedImageInterfaceProvider
   // Sequence checker for tasks that run on the gpu "thread".
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 
-  bool NeedsNewSharedImageInterface() const;
+  bool NeedsNewSharedImageInterface();
 
   void CreateSharedImageInterface();
   void CreateSharedImageInterfaceOnGpu(base::WaitableEvent* event);
   void OnContextLost() override;
 
+  // These are accessed by both threads, but compositor threads blocks when GPU
+  // work thread is happening.
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  scoped_refptr<gpu::SharedContextState> shared_context_state_;
   std::unique_ptr<gpu::SchedulerSequence> scheduler_sequence_;
   scoped_refptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
+
+  // These are accessed by both threads and are synchronized by the lock.
+  base::Lock context_lock_;
+  // Shared context state is nullptr in software, and is never lost.
+  bool context_lost_ GUARDED_BY(context_lock_) = false;
+  scoped_refptr<gpu::SharedContextState> shared_context_state_
+      GUARDED_BY(context_lock_);
 };
 
 }  // namespace viz
