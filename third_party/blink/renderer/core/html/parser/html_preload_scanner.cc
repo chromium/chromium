@@ -1326,8 +1326,10 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
-  preload_lazy_load_image_type =
-      features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
+  static const features::LcppPreloadLazyLoadImageType
+      kPreloadLazyLoadImageType =
+          features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
+  preload_lazy_load_image_type = kPreloadLazyLoadImageType;
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
 }
