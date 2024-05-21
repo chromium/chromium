@@ -46,6 +46,7 @@ source_set("notifications_opt_in") {
     "//components/signin/public/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/push_notification/model:push_notification_client",

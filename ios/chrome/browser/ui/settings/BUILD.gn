@@ -120,6 +120,7 @@ source_set("settings") {
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon/model",

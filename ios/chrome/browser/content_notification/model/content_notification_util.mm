@@ -8,13 +8,21 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/content_notification/model/constants.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 namespace {
 
@@ -151,6 +159,32 @@ void LogHistogramForEligibilityType(ContentNotificationEligibilityType type) {
 }
 
 }  // namespace
+
+bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
+  if (!browser_state) {
+    return false;
+  }
+
+  if (!IsContentNotificationExperimentEnalbed()) {
+    return false;
+  }
+
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  BOOL is_signed_in = auth_service && auth_service->HasPrimaryIdentity(
+                                          signin::ConsentLevel::kSignin);
+  const TemplateURL* default_search_url_template =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
+          ->GetDefaultSearchProvider();
+  bool is_default_search_engine =
+      default_search_url_template &&
+      default_search_url_template->prepopulate_id() ==
+          TemplateURLPrepopulateData::google.id;
+  PrefService* pref_service = browser_state->GetPrefs();
+
+  return IsContentNotificationEnabled(is_signed_in, is_default_search_engine,
+                                      pref_service);
+}
 
 bool IsContentNotificationEnabled(bool user_signed_in,
                                   bool default_search_engine,

@@ -72,12 +72,16 @@ source_set("util") {
     ":constants",
     "//base",
     "//components/prefs",
+    "//components/search_engines",
     "//ios/chrome/browser/metrics/model:constants",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
   ]
 
   frameworks = [ "UserNotifications.framework" ]

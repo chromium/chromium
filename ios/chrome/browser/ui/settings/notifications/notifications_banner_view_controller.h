@@ -37,6 +37,9 @@
 @property(nonatomic, weak) id<NotificationsViewControllerDelegate>
     modelDelegate;
 
+// YES if Content Notifications are enabled.
+@property(nonatomic, assign) BOOL isContentNotificationEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_BANNER_VIEW_CONTROLLER_H_

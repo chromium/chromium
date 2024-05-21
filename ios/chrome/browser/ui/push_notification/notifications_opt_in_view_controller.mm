@@ -163,7 +163,7 @@ NSString* BannerImageName(bool landscape) {
   [snapshot appendSectionsWithIdentifiers:@[
     @(SectionIdentifier::kNotificationOptions)
   ]];
-  if (IsContentPushNotificationsEnabled()) {
+  if ([self isContentNotificationEnabled]) {
     [snapshot appendItemsWithIdentifiers:@[
       @(NotificationsOptInItemIdentifier::kContent)
     ]];
