@@ -99,12 +99,10 @@ class MockContentCache : public ContentCache {
               SetOnItemEvictedCallback,
               (OnItemEvictedCallback on_item_evicted_callback),
               (override));
-  MOCK_METHOD(void,
-              RemoveItems,
-              (RemovedItemStatsCallback callback),
-              (override));
   MOCK_METHOD(const SizeInfo, GetSize, (), (const override));
   MOCK_METHOD(void, SetMaxBytesOnDisk, (int64_t), (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
   MOCK_METHOD(base::WeakPtr<ContentCache>, GetWeakPtr, (), (override));
 
   base::WeakPtr<MockContentCache> GetMockWeakPtr() {

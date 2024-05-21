@@ -7,6 +7,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
@@ -35,6 +36,14 @@ using RemovedItemStatsCallback = base::OnceCallback<void(RemovedItemStats)>;
 // of orchestration between the LRU cache and the disk persistence layer.
 class ContentCache {
  public:
+  // Observer class to be notified about changes happening in the ContentCache.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the item on hard disk caching the contents of `fsp_path` is
+    // removed.
+    virtual void OnItemRemovedFromDisk(const base::FilePath& fsp_path,
+                                       int64_t bytes_removed) {}
+  };
   virtual ~ContentCache() = default;
 
   // Sets the maximum size of the cache. If the current number of items exceeds
@@ -87,19 +96,16 @@ class ContentCache {
   virtual void Notify(ProvidedFileSystemObserver::Changes& changes) = 0;
 
   // Evict the item with path `file_path` from the cache, if it exists. The item
-  // is inaccessible from this point onwards despite it remaining on disk and
-  // the database. It will be removed when `RemoveItems()` is called.
+  // is still accessible to current FSP requests but inaccessible to new FSP
+  // requests. It will be removed from the disk and the database if there are no
+  // current FSP requests. Otherwise it be be removed once the last FSP request
+  // completes with `CloseFile()`.
   virtual void Evict(const base::FilePath& file_path) = 0;
 
   // Call this on_item_evicted_callback with the item's FSP path when it is
   // evicted.
   virtual void SetOnItemEvictedCallback(
       OnItemEvictedCallback on_item_evicted_callback) = 0;
-
-  // Remove items which have their `evicted` bool set to true. If an
-  // removal is already in progress, the callback will be queued to be called
-  // with the current stats of the in progress removal.
-  virtual void RemoveItems(RemovedItemStatsCallback callback) = 0;
 
   // A struct of size information pertaining to this cache instance.
   struct SizeInfo {
@@ -113,6 +119,9 @@ class ContentCache {
 
   // Returns a `base::WeakPtr`.
   virtual base::WeakPtr<ContentCache> GetWeakPtr() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace ash::file_system_provider

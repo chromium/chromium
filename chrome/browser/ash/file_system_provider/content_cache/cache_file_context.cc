@@ -21,7 +21,7 @@ CacheFileContext::CacheFileContext(CacheFileContext&&) = default;
 
 CacheFileContext::~CacheFileContext() = default;
 
-bool CacheFileContext::CanGetLocalFD(const OpenedCloudFile& file) {
+bool CacheFileContext::CanGetLocalFD(const OpenedCloudFile& file) const {
   if (open_fds_.contains(file.request_id)) {
     // Already has access to the cached file.
     return true;

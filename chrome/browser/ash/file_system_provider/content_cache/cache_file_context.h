@@ -39,7 +39,8 @@ class CacheFileContext {
 
   ~CacheFileContext();
 
-  bool CanGetLocalFD(const OpenedCloudFile& file);
+  bool HasLocalFDs() const { return !open_fds_.empty(); }
+  bool CanGetLocalFD(const OpenedCloudFile& file) const;
   LocalFD& GetLocalFD(const OpenedCloudFile& file,
                       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   bool CloseLocalFD(int request_id) { return open_fds_.erase(request_id) == 1; }
@@ -70,6 +71,11 @@ class CacheFileContext {
   bool evicted() const { return evicted_; }
   void set_evicted(bool evicted) { evicted_ = evicted; }
 
+  bool removal_in_progress() const { return removal_in_progress_; }
+  void set_removal_in_progress(bool removal_in_progress) {
+    removal_in_progress_ = removal_in_progress;
+  }
+
  private:
   // The number of contiguous bytes that are written to this file currently. If
   // a file write is in progress, this might not represent the entire size of
@@ -99,6 +105,9 @@ class CacheFileContext {
   // Evicted items are scheduled to be removed from disk and the database, so
   // any further use should be disallowed.
   bool evicted_ = false;
+
+  // True if the removal of this item has started.
+  bool removal_in_progress_ = false;
 
   // A map (keyed by request ID) that represents any open file descriptors for
   // this specific file.
