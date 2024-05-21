@@ -10,16 +10,8 @@
 
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace ash::cfm {
-
-namespace {
-
-constexpr LazyRE2 kTimestampRegex = {
-    "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z "};
-
-}  // namespace
 
 LogFile::LogFile(const std::string& filepath) : filepath_(filepath) {}
 
@@ -110,19 +102,8 @@ std::vector<std::string> LogFile::RetrieveNextLogs(size_t count) {
   std::string line;
   while (!IsAtEOF() && !IsInFailState() && num_read_lines < count &&
          std::getline(file_stream_, line)) {
-    // If the line doesn't contain a timestamp, consider it a part of
-    // the previous log line and concatenate it. If there is no previous
-    // log line (this really shouldn't happen), just drop it. We need
-    // a valid timestamp to associate with the log, so we can't do
-    // anything with the dangling log line anyway.
-    if (!RE2::PartialMatch(line, *kTimestampRegex)) {
-      if (!logs.empty()) {
-        logs.back() += ("\n" + line);
-      }
-    } else {
-      logs.push_back(std::move(line));
-      num_read_lines++;
-    }
+    logs.push_back(std::move(line));
+    num_read_lines++;
   }
 
   if (IsInFailState()) {
