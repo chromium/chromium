@@ -227,10 +227,11 @@ suite('Speech', () => {
     assertEquals(speechSynthesis.spokenUtterances[0]!.text, paragraph2.at(-1)!);
   });
 
-  test('very long text uses max speech length', () => {
+
+  suite('very long text', () => {
     const longSentences =
         'A kingdom of isolation, and it looks like I am the queen and the ' +
-        'wind is howling like this swirling storm inside, Couldn\t keep it ' +
+        'wind is howling like this swirling storm inside, Couldn\'t keep it ' +
         'in, heaven knows I tried, but don\'t let them in, don\'t let them ' +
         'see, be the good girl you always have to be, and conceal, don\'t ' +
         'feel, don\'t let them know.' +
@@ -244,34 +245,78 @@ suite('Speech', () => {
         'for me- I\'m free- let it go let it go I am one with the wind and ' +
         'sky let it go let it go you\'ll never see me cry- here I stand and ' +
         'here I stay- let the storm rage on';
-    const leafs = [2];
-    const longTree = {
-      rootId: 1,
-      nodes: [
-        {
-          id: 1,
-          role: 'rootWebArea',
-          htmlTag: '#document',
-          childIds: [2],
-        },
-        {
-          id: 2,
-          role: 'staticText',
-          name: longSentences,
-        },
-      ],
-    };
-    const expectedNumSegments =
-        Math.ceil(longSentences.length / app.maxSpeechLength);
+    setup(() => {
+      const leafs = [2];
 
-    chrome.readingMode.setContentForTesting(longTree, leafs);
-    app.playSpeech();
+      const longTree = {
+        rootId: 1,
+        nodes: [
+          {
+            id: 1,
+            role: 'rootWebArea',
+            htmlTag: '#document',
+            childIds: [2],
+          },
+          {
+            id: 2,
+            role: 'staticText',
+            name: longSentences,
+          },
+        ],
+      };
 
-    assertEquals(speechSynthesis.spokenUtterances.length, expectedNumSegments);
-    const spoken =
-        speechSynthesis.spokenUtterances.map(utterance => utterance.text)
-            .join('');
-    assertEquals(spoken, longSentences);
+      chrome.readingMode.setContentForTesting(longTree, leafs);
+    });
+
+    test('uses max speech length', () => {
+      const expectedNumSegments =
+          Math.ceil(longSentences.length / app.maxSpeechLength);
+
+      app.playSpeech();
+
+      assertEquals(
+          speechSynthesis.spokenUtterances.length, expectedNumSegments);
+      const spoken =
+          speechSynthesis.spokenUtterances.map(utterance => utterance.text)
+              .join('');
+      assertEquals(spoken, longSentences);
+    });
+
+    test('on text-too-long error smaller text segment plays', () => {
+      // Remote voices already reduce the size of a speech segment to avoid
+      // the bug where speech stops without an error callback.
+      speechSynthesis.useLocalVoices();
+      chrome.readingMode.onVoiceChange = () => {};
+      emitEvent(
+          app, 'select-voice',
+          {detail: {selectedVoice: speechSynthesis.getVoices()[5]}});
+
+      speechSynthesis.triggerErrorEventOnNextSpeak('text-too-long');
+      app.playSpeech();
+
+      assertFalse(speechSynthesis.speaking);
+      assertTrue(speechSynthesis.canceled);
+      assertFalse(speechSynthesis.paused);
+      assertEquals(speechSynthesis.spokenUtterances.length, 3);
+
+      // The first utterance should contain the entire text, but it should
+      // be canceled. The second utterance should be the smaller text
+      // segment after receiving the text-too-long error. The third utterance
+      // should be the remaining text, as there is no longer a text-too-long
+      // error triggered.
+      const accessibleTextLength = app.getAccessibleTextLength(longSentences);
+      assertEquals(speechSynthesis.spokenUtterances[0]!.text, longSentences);
+      assertEquals(
+          speechSynthesis.spokenUtterances[1]!.text,
+          longSentences.substring(0, accessibleTextLength));
+      assertEquals(
+          speechSynthesis.spokenUtterances[2]!.text,
+          longSentences.substring(accessibleTextLength));
+      assertEquals(speechSynthesis.canceledUtterances.length, 1);
+      assertEquals(
+          speechSynthesis.canceledUtterances[0]!,
+          speechSynthesis.spokenUtterances[0]!);
+    });
   });
 
   suite('while playing', () => {

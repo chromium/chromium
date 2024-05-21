@@ -10,19 +10,29 @@ export class FakeSpeechSynthesis {
   spokenUtterances: SpeechSynthesisUtterance[];
   errorEvent: SpeechSynthesisErrorCode|undefined;
   triggerUtteranceStartedEventNext: boolean = false;
+  shouldUseLocalVoices: boolean = false;
+  canceledUtterances: SpeechSynthesisUtterance[];
+  currentUtterance: SpeechSynthesisUtterance|undefined;
 
 
   constructor() {
     this.spokenUtterances = [];
+    this.canceledUtterances = [];
   }
 
   clearSpokenUtterances() {
     this.spokenUtterances = [];
+    this.canceledUtterances = [];
   }
 
   cancel() {
     this.canceled = true;
     this.speaking = false;
+
+    if (this.currentUtterance) {
+      this.canceledUtterances.push(this.currentUtterance);
+      this.currentUtterance = undefined;
+    }
   }
 
   pause() {
@@ -41,27 +51,36 @@ export class FakeSpeechSynthesis {
       {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice,
       {lang: 'en', name: 'Shari'} as SpeechSynthesisVoice,
       {lang: 'en', name: 'Yu'} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Xiang'} as SpeechSynthesisVoice,
+      {lang: 'en', name: 'Xiang', localService: this.shouldUseLocalVoices} as
+          SpeechSynthesisVoice,
     ];
   }
 
   speak(utterance: SpeechSynthesisUtterance) {
+    this.currentUtterance = utterance;
     this.paused = false;
     this.speaking = true;
     this.spokenUtterances.push(utterance);
-    if (utterance.onend) {
-      utterance.onend(new SpeechSynthesisEvent('end', {utterance}));
-    }
 
     if (utterance.onerror && this.errorEvent !== undefined) {
-      utterance.onerror(new SpeechSynthesisErrorEvent(
-          'type', {utterance: utterance, error: this.errorEvent}));
+      // Copy this.errorEvent to a temporary variable so that this.errorEvent
+      // can be cleared before calling onerror. Otherwise, we can create an
+      // infinite loop where this.errorEvent never clears based on how
+      // synthesis is handled in the main app.
+      const errorCode = this.errorEvent;
       this.errorEvent = undefined;
+      utterance.onerror(new SpeechSynthesisErrorEvent(
+          'type', {utterance: utterance, error: errorCode}));
     }
 
     if (this.triggerUtteranceStartedEventNext && utterance.onstart) {
       utterance.onstart(new SpeechSynthesisEvent('start', {utterance}));
       this.triggerUtteranceStartedEventNext = false;
+    }
+
+    if (utterance.onend) {
+      this.currentUtterance = undefined;
+      utterance.onend(new SpeechSynthesisEvent('end', {utterance}));
     }
   }
 
@@ -72,6 +91,10 @@ export class FakeSpeechSynthesis {
 
   triggerUtteranceStartedOnNextSpeak() {
     this.triggerUtteranceStartedEventNext = true;
+  }
+
+  useLocalVoices() {
+    this.shouldUseLocalVoices = true;
   }
 
   // These are currently unused in tests but need to be defined in order to be
