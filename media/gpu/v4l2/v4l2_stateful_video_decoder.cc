@@ -767,7 +767,11 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
 
   const auto allocated_buffers = CAPTURE_queue_->AllocateBuffers(
       v4l2_num_buffers, buffer_type, /*incoherent=*/false);
-  CHECK_GE(allocated_buffers, v4l2_num_buffers);
+  if (allocated_buffers < v4l2_num_buffers) {
+    LOGF(ERROR) << "Failed to allocate enough CAPTURE buffers, requested= "
+                << v4l2_num_buffers << " actual= " << allocated_buffers;
+    return false;
+  }
   if (!CAPTURE_queue_->Streamon()) {
     return false;
   }
