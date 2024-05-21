@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
-#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
@@ -30,7 +29,6 @@
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/page_image_service/image_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
@@ -58,7 +56,6 @@ class BookmarkBridge : public ProfileObserver,
   BookmarkBridge(Profile* profile,
                  bookmarks::BookmarkModel* model,
                  bookmarks::ManagedBookmarkService* managed_bookmark_service,
-                 page_image_service::ImageService* image_service,
                  reading_list::DualReadingListModel* dual_reading_list_model,
                  PartnerBookmarksShim* partner_bookmarks_shim,
                  signin::IdentityManager* identity_manager);
@@ -76,17 +73,6 @@ class BookmarkBridge : public ProfileObserver,
       const bookmarks::BookmarkNode* node);
 
   jboolean AreAccountBookmarkFoldersActive(JNIEnv* env);
-
-  void GetImageUrlForBookmark(
-      JNIEnv* env,
-      const GURL& url,
-      bool is_account_bookmark,
-      const base::android::JavaParamRef<jobject>& j_callback);
-
-  void GetImageUrlForBookmarkImpl(
-      const GURL& url,
-      bool is_account_bookmark,
-      page_image_service::ImageService::ResultCallback callback);
 
   base::android::ScopedJavaLocalRef<jobject>
   GetMostRecentlyAddedUserBookmarkIdForUrl(JNIEnv* env, const GURL& url);
@@ -381,8 +367,6 @@ class BookmarkBridge : public ProfileObserver,
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;  // weak
   const raw_ptr<bookmarks::ManagedBookmarkService>
       managed_bookmark_service_;  // weak
-
-  const raw_ptr<page_image_service::ImageService> image_service_;  // weak
   const raw_ptr<reading_list::DualReadingListModel>
       dual_reading_list_model_;  // weak
   const ReadingListManagerImpl::IdGenerationFunction id_gen_func_;

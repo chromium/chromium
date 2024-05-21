@@ -215,6 +215,7 @@ public class BookmarkManagerCoordinator
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
+                        profile,
                         context,
                         mBookmarkModel,
                         mImageFetcher,

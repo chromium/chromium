@@ -70,6 +70,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         Resources res = getResources();
         mBookmarkImageFetcher =
                 new BookmarkImageFetcher(
+                        profile,
                         this,
                         mBookmarkModel,
                         ImageFetcherFactory.createImageFetcher(

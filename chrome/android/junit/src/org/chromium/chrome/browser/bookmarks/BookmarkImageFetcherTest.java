@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -43,6 +43,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -80,10 +82,13 @@ public class BookmarkImageFetcherTest {
     @Mock private ImageFetcher mImageFetcher;
     @Mock private Callback<Drawable> mDrawableCallback;
     @Mock private Callback<Pair<Drawable, Drawable>> mFolderDrawablesCallback;
+    @Mock private Profile mProfile;
+    @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
 
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
     @Captor private ArgumentCaptor<Pair<Drawable, Drawable>> mFolderDrawablesCaptor;
     @Captor private ArgumentCaptor<Callback<GURL>> mGURLCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
     private final BookmarkId mFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
     private final BookmarkId mBookmarkId1 = new BookmarkId(/* id= */ 2, BookmarkType.NORMAL);
@@ -125,6 +130,8 @@ public class BookmarkImageFetcherTest {
 
     @Before
     public void setUp() {
+        mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -159,22 +166,24 @@ public class BookmarkImageFetcherTest {
 
                             // Setup image fetching.
                             doCallback(
-                                            2,
-                                            (Callback<GURL> callback) -> {
-                                                callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
-                                            })
-                                    .when(mBookmarkModel)
-                                    .getImageUrlForBookmark(any(), anyBoolean(), any());
-                            doCallback(
                                             1,
                                             (Callback<Bitmap> callback) -> {
                                                 callback.onResult(mBitmap);
                                             })
                                     .when(mImageFetcher)
                                     .fetchImage(any(), any());
+                            doCallback(
+                                            4,
+                                            (Callback<GURL> callback) -> {
+                                                callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
+                                            })
+                                    .when(mImageServiceBridgeJni)
+                                    .fetchImageUrlFor(
+                                            anyLong(), anyBoolean(), anyInt(), any(), any());
 
                             mBookmarkImageFetcher =
                                     new BookmarkImageFetcher(
+                                            mProfile,
                                             mActivity,
                                             mBookmarkModel,
                                             mImageFetcher,
@@ -248,12 +257,12 @@ public class BookmarkImageFetcherTest {
     @Test
     public void testFetchImageForBookmarkWithFaviconFallback_fallbackToFavicon() {
         doCallback(
-                        2,
-                        (Callback<GURL> callback) -> {
+                        1,
+                        (Callback<Bitmap> callback) -> {
                             callback.onResult(null);
                         })
-                .when(mBookmarkModel)
-                .getImageUrlForBookmark(any(), anyBoolean(), any());
+                .when(mImageFetcher)
+                .fetchImage(any(), any());
 
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);
@@ -271,33 +280,5 @@ public class BookmarkImageFetcherTest {
         verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
-    }
-
-    @Test
-    public void testFetchImageUrlWithFallbacks() {
-        mBookmarkImageFetcher.fetchImageUrlWithFallbacks(
-                JUnitTestGURLs.EXAMPLE_URL, mBookmarkItem1, mDrawableCallback);
-        verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        verify(mImageFetcher, times(1)).fetchImage(any(), any());
-        // There shouldn't be any interaction with large icon bridge since an image was found.
-        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), anyInt(), any());
-
-        assertNotNull(mDrawableCaptor.getValue());
-    }
-
-    @Test
-    public void testMediatorDestroyedBeforeCallback() {
-        doNothing().when(mBookmarkModel).getImageUrlForBookmark(any(), anyBoolean(), any());
-        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
-                mBookmarkItem1, mDrawableCallback);
-
-        verify(mBookmarkModel)
-                .getImageUrlForBookmark(any(), anyBoolean(), mGURLCallbackCaptor.capture());
-        mBookmarkImageFetcher.destroy();
-
-        // Now that mBookmarkImageFetcher is destroyed, all the callbacks should have been
-        // cancelled.
-        mGURLCallbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
-        verify(mImageFetcher, times(0)).fetchImage(any(), any());
     }
 }

@@ -149,6 +149,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 new ImprovedBookmarkRowCoordinator(
                         this,
                         new BookmarkImageFetcher(
+                                profile,
                                 this,
                                 mModel,
                                 ImageFetcherFactory.createImageFetcher(

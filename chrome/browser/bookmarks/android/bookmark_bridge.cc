@@ -32,7 +32,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
@@ -46,7 +45,6 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/page_image_service/image_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
@@ -116,16 +114,6 @@ std::unique_ptr<icu::Collator> GetICUCollator() {
   return collator_;
 }
 
-// Handles the response from page_image_service::ImageService when requesting
-// a salient image url.
-void HandleImageUrlResponse(
-    base::android::ScopedJavaGlobalRef<jobject> callback,
-    const GURL& image_url) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::RunObjectCallbackAndroid(
-      callback, url::GURLAndroid::FromNativeGURL(env, image_url));
-}
-
 const bookmarks::BookmarkNode* GetNodeFromReadingListIfLoaded(
     const ReadingListManager* manager,
     const GURL& url) {
@@ -165,8 +153,6 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
     bookmark_bridge = new BookmarkBridge(
         profile, model,
         ManagedBookmarkServiceFactory::GetForProfile(original_profile),
-        page_image_service::ImageServiceFactory::GetForBrowserContext(
-            original_profile),
         ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
             original_profile),
         PartnerBookmarksShim::BuildForBrowserContext(original_profile),
@@ -182,14 +168,12 @@ BookmarkBridge::BookmarkBridge(
     Profile* profile,
     BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
-    page_image_service::ImageService* image_service,
     reading_list::DualReadingListModel* dual_reading_list_model,
     PartnerBookmarksShim* partner_bookmarks_shim,
     signin::IdentityManager* identity_manager)
     : profile_(profile),
       bookmark_model_(model),
       managed_bookmark_service_(managed_bookmark_service),
-      image_service_(image_service),
       dual_reading_list_model_(dual_reading_list_model),
       id_gen_func_(
           base::BindRepeating([](int64_t* id) { return (*id)++; },
@@ -205,7 +189,6 @@ BookmarkBridge::BookmarkBridge(
   CHECK(model);
   CHECK(managed_bookmark_service);
   CHECK(partner_bookmarks_shim);
-  CHECK(image_service_);
   CHECK(dual_reading_list_model);
   CHECK(identity_manager_);
 
@@ -254,36 +237,6 @@ jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
   }
 
   return bookmark_model_->account_mobile_node() != nullptr;
-}
-
-void BookmarkBridge::GetImageUrlForBookmark(
-    JNIEnv* env,
-    const GURL& url,
-    bool is_account_bookmark,
-    const JavaParamRef<jobject>& j_callback) {
-  ScopedJavaGlobalRef<jobject> callback(j_callback);
-  GetImageUrlForBookmarkImpl(url, is_account_bookmark,
-                             base::BindOnce(&HandleImageUrlResponse, callback));
-}
-
-void BookmarkBridge::GetImageUrlForBookmarkImpl(
-    const GURL& url,
-    bool is_account_bookmark,
-    page_image_service::ImageService::ResultCallback callback) {
-  // Images should only be fetched for bookmarks stored in the account. For
-  // Sync-the-feature user, that means all bookmarks. ImageService checks
-  // internally that syncing of bookmarks is enabled.
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-      is_account_bookmark) {
-    page_image_service::mojom::Options options;
-    options.optimization_guide_images = true;
-    image_service_->FetchImageFor(
-        page_image_service::mojom::ClientId::Bookmarks, url, options,
-        std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(GURL());
 }
 
 base::android::ScopedJavaLocalRef<jobject>

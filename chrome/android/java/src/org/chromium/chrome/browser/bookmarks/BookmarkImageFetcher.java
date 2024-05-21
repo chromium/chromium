@@ -12,6 +12,8 @@ import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -19,7 +21,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.url.GURL;
+import org.chromium.page_image_service.mojom.ClientId;
 
 import java.util.Iterator;
 
@@ -27,26 +29,28 @@ import java.util.Iterator;
 public class BookmarkImageFetcher {
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
-    private final ImageFetcher mImageFetcher;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconFetchSize;
     private final CallbackController mCallbackController = new CallbackController();
-    private final PageImageServiceQueue mPageImageServiceQueue;
+    private final ImageFetcher mImageFetcher;
+    private final ImageServiceBridge mImageServiceBridge;
 
     private RoundedIconGenerator mRoundedIconGenerator;
     private int mImageSize;
     private int mFaviconSize;
 
     /**
+     * @param profile The current profile to use.
      * @param context The context used to create drawables.
      * @param bookmarkModel The bookmark model used to query information on bookmarks.
      * @param imageFetcher The image fetcher used to fetch images.
      * @param largeIconBridge The large icon fetcher used to fetch favicons.
      * @param roundedIconGenerator Generates fallback images for bookmark favicons.
-     * @param imageSize The size when fetching an image. Used for scaling.
      * @param faviconSize The size when fetching a favicon. Used for scaling.
+     * @param imageSize The size when fetching an image. Used for scaling.
      */
     public BookmarkImageFetcher(
+            Profile profile,
             Context context,
             BookmarkModel bookmarkModel,
             ImageFetcher imageFetcher,
@@ -56,19 +60,24 @@ public class BookmarkImageFetcher {
             int faviconSize) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
-        mImageFetcher = imageFetcher;
         mLargeIconBridge = largeIconBridge;
         mFaviconFetchSize = BookmarkUtils.getFaviconFetchSize(mContext.getResources());
         mRoundedIconGenerator = roundedIconGenerator;
         mImageSize = imageSize;
         mFaviconSize = faviconSize;
-        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel);
+        mImageFetcher = imageFetcher;
+        mImageServiceBridge =
+                new ImageServiceBridge(
+                        ClientId.BOOKMARKS,
+                        ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
+                        profile.getOriginalProfile(),
+                        imageFetcher);
     }
 
     /** Destroys this object. */
     public void destroy() {
         mCallbackController.destroy();
-        mPageImageServiceQueue.destroy();
+        mImageServiceBridge.destroy();
     }
 
     /**
@@ -144,28 +153,8 @@ public class BookmarkImageFetcher {
                 });
     }
 
-    /**
-     * Fetch the given URL and fallback to {@link #fetchImageForBookmarkWithFaviconFallback}.
-     *
-     * @param url The url to fetch the image for.
-     * @param item The item to fallback on if the url fetch fails.
-     * @param callback The callback to receive the favicon.
-     */
-    public void fetchImageUrlWithFallbacks(
-            GURL url, BookmarkItem item, Callback<Drawable> callback) {
-        fetchImageUrl(
-                url,
-                drawable -> {
-                    if (drawable == null) {
-                        fetchImageForBookmarkWithFaviconFallback(item, callback);
-                    } else {
-                        callback.onResult(drawable);
-                    }
-                });
-    }
-
     private void fetchImageForBookmark(BookmarkItem item, Callback<Drawable> callback) {
-        final Callback<Bitmap> bookmarkImageCallback =
+        final Callback<Bitmap> imageCallback =
                 mCallbackController.makeCancelable(
                         (image) -> {
                             if (image == null) {
@@ -176,46 +165,23 @@ public class BookmarkImageFetcher {
                             }
                         });
 
-        Callback<GURL> imageUrlCallback =
-                mCallbackController.makeCancelable(
-                        (imageUrl) -> {
-                            if (imageUrl == null) {
-                                callback.onResult(null);
-                                return;
-                            }
-
-                            mImageFetcher.fetchImage(
-                                    ImageFetcher.Params.create(
-                                            imageUrl,
-                                            ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
-                                            mImageSize,
-                                            mImageSize),
-                                    bookmarkImageCallback);
-                        });
-
         // Price-tracable bookmarks already have image URLs in their metadata. Prioritize that meta
         // when it's available because the coverage is much higher.
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(item.getId());
         if (meta != null && meta.hasShoppingSpecifics() && meta.hasLeadImage()) {
-            imageUrlCallback.onResult(new GURL(meta.getLeadImage().getUrl()));
+            mImageFetcher.fetchImage(
+                    ImageFetcher.Params.create(
+                            meta.getLeadImage().getUrl(),
+                            ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
+                            mImageSize,
+                            mImageSize),
+                    imageCallback);
             return;
         }
 
         // This call may invoke the callback immediately if the url is cached.
-        mPageImageServiceQueue.getSalientImageUrl(item, imageUrlCallback);
-    }
-
-    private void fetchImageUrl(GURL url, Callback<Drawable> callback) {
-        mImageFetcher.fetchImage(
-                ImageFetcher.Params.create(
-                        url, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME, mImageSize, mImageSize),
-                (image) -> {
-                    if (image == null) {
-                        callback.onResult(null);
-                    } else {
-                        callback.onResult(new BitmapDrawable(mContext.getResources(), image));
-                    }
-                });
+        mImageServiceBridge.fetchImageFor(
+                item.isAccountBookmark(), item.getUrl(), mImageSize, imageCallback);
     }
 
     private void fetchFirstTwoImagesForFolderImpl(

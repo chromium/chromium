@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import org.mockito.Mockito;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -276,19 +275,6 @@ public class FakeBookmarkModel extends BookmarkModel {
         @Override
         public boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge) {
             return FakeBookmarkModel.this.mAreAccountBookmarkFoldersActive;
-        }
-
-        @Override
-        public void getImageUrlForBookmark(
-                long nativeBookmarkBridge,
-                GURL url,
-                boolean isAccountBookmark,
-                Callback<GURL> callback) {
-            if (areAccountBookmarkFoldersActive(nativeBookmarkBridge) && isAccountBookmark) {
-                callback.onResult(new GURL("https://fakeimage.com"));
-            } else {
-                callback.onResult(null);
-            }
         }
 
         @Override

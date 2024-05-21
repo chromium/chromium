@@ -17,7 +17,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -95,19 +94,6 @@ class BookmarkBridge {
     /** Returns whether the bridge has been destroyed. */
     private boolean isDestroyed() {
         return mIsDestroyed;
-    }
-
-    /**
-     * Gets the url for an image representing the given url.
-     *
-     * @param url The bookmark url to get the image url for.
-     * @param isAccountBookmark Whether the bookmark is associated with an account.
-     * @param callback The callback which will receive the image url.
-     */
-    public void getImageUrlForBookmark(
-            GURL url, boolean isAccountBookmark, Callback<GURL> callback) {
-        BookmarkBridgeJni.get()
-                .getImageUrlForBookmark(mNativeBookmarkBridge, url, isAccountBookmark, callback);
     }
 
     /** Returns the most recently added BookmarkId */
@@ -1060,12 +1046,6 @@ class BookmarkBridge {
         BookmarkModel nativeGetForProfile(@JniType("Profile*") Profile profile);
 
         boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge);
-
-        void getImageUrlForBookmark(
-                long nativeBookmarkBridge,
-                @JniType("GURL") GURL url,
-                boolean isAccountBookmark,
-                Callback<GURL> callback);
 
         BookmarkId getMostRecentlyAddedUserBookmarkIdForUrl(
                 long nativeBookmarkBridge, @JniType("GURL") GURL url);

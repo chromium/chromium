@@ -40,7 +40,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 /**
  * Controls the bookmarks save-flow, which has 2 variants: standard, improved. The two variants have
@@ -308,12 +307,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                             ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
                 };
 
-        if (meta != null && meta.hasShoppingSpecifics()) {
-            mBookmarkImageFetcher.fetchImageUrlWithFallbacks(
-                    new GURL(meta.getLeadImage().getUrl()), item, callback);
-        } else {
-            mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, callback);
-        }
+        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, callback);
     }
 
     void handlePriceTrackingSwitchToggle(CompoundButton view, boolean toggled) {

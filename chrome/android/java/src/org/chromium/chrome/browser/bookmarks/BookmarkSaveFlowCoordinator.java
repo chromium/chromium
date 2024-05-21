@@ -107,6 +107,7 @@ public class BookmarkSaveFlowCoordinator {
         Resources res = mContext.getResources();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
+                        profile,
                         context,
                         mBookmarkModel,
                         ImageFetcherFactory.createImageFetcher(
