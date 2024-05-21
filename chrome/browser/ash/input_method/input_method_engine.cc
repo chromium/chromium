@@ -12,7 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/system/tray/system_nudge_controller.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
@@ -141,7 +141,7 @@ void InputMethodEngine::DiacriticsSettingsChanged() {
   const bool new_value =
       profile_->GetPrefs()->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
   if (!new_value) {
-    SystemNudgeController::MaybeRecordNudgeAction(
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
         NudgeCatalogName::kDisableDiacritics);
   }
 }
