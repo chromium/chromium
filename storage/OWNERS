@@ -1,9 +1,0 @@
-set noparent
-
-# Primary
-ayui@chromium.org
-
-# Secondary
-asully@chromium.org  #{LAST_RESORT_SUGGESTION}
-estade@chromium.org
-jsbell@chromium.org

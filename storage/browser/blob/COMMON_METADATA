@@ -1,6 +1,0 @@
-monorail: {
-  component: "Blink>Storage>FileAPI"
-}
-buganizer_public: {
-  component_id: 1456727
-}
