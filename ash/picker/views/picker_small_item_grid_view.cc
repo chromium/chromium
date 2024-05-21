@@ -50,8 +50,9 @@ std::unique_ptr<views::View> CreateSmallItemsGridRow() {
 
 }  // namespace
 
-PickerSmallItemGridView::PickerSmallItemGridView(int grid_width)
-    : grid_width_(grid_width) {
+PickerSmallItemGridView::PickerSmallItemGridView(int grid_width,
+                                                 size_t max_visible_rows)
+    : grid_width_(grid_width), max_visible_rows_(max_visible_rows) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -83,7 +84,7 @@ PickerItemView* PickerSmallItemGridView::GetBottomItem() {
 }
 
 PickerItemView* PickerSmallItemGridView::GetItemAbove(PickerItemView* item) {
-  views::View* row = GetRowContaining(item);
+  views::View* row = GetVisibleRowContaining(item);
   if (!row || row == children().front()) {
     return nullptr;
   }
@@ -97,7 +98,7 @@ PickerItemView* PickerSmallItemGridView::GetItemAbove(PickerItemView* item) {
 }
 
 PickerItemView* PickerSmallItemGridView::GetItemBelow(PickerItemView* item) {
-  views::View* row = GetRowContaining(item);
+  views::View* row = GetVisibleRowContaining(item);
   if (!row || row == children().back()) {
     return nullptr;
   }
@@ -111,7 +112,7 @@ PickerItemView* PickerSmallItemGridView::GetItemBelow(PickerItemView* item) {
 }
 
 PickerItemView* PickerSmallItemGridView::GetItemLeftOf(PickerItemView* item) {
-  views::View* row = GetRowContaining(item);
+  views::View* row = GetVisibleRowContaining(item);
   if (!row || item == row->children().front()) {
     return nullptr;
   }
@@ -120,7 +121,7 @@ PickerItemView* PickerSmallItemGridView::GetItemLeftOf(PickerItemView* item) {
 }
 
 PickerItemView* PickerSmallItemGridView::GetItemRightOf(PickerItemView* item) {
-  views::View* row = GetRowContaining(item);
+  views::View* row = GetVisibleRowContaining(item);
   if (!row || item == row->children().back()) {
     return nullptr;
   }
@@ -162,13 +163,15 @@ PickerItemView* PickerSmallItemGridView::AddSmallGridItem(
               grid_item->GetPreferredSize().width() >
           grid_width_) {
     row = AddChildView(CreateSmallItemsGridRow());
+    row->SetVisible(children().size() <= max_visible_rows_);
   }
   return row->AddChildView(std::move(grid_item));
 }
 
-views::View* PickerSmallItemGridView::GetRowContaining(PickerItemView* item) {
+views::View* PickerSmallItemGridView::GetVisibleRowContaining(
+    PickerItemView* item) {
   views::View* row = item->parent();
-  return row && row->parent() == this ? row : nullptr;
+  return row && row->GetVisible() && row->parent() == this ? row : nullptr;
 }
 
 BEGIN_METADATA(PickerSmallItemGridView)

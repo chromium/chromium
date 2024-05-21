@@ -27,7 +27,7 @@ class ASH_EXPORT PickerSmallItemGridView
   METADATA_HEADER(PickerSmallItemGridView, views::View)
 
  public:
-  explicit PickerSmallItemGridView(int grid_width);
+  explicit PickerSmallItemGridView(int grid_width, size_t max_visible_rows = 2);
   PickerSmallItemGridView(const PickerSmallItemGridView&) = delete;
   PickerSmallItemGridView& operator=(const PickerSmallItemGridView&) = delete;
   ~PickerSmallItemGridView() override;
@@ -51,11 +51,15 @@ class ASH_EXPORT PickerSmallItemGridView
   PickerItemView* AddSmallGridItem(
       std::unique_ptr<PickerItemView> small_grid_item);
 
-  // Returns the row containing `item`, or nullptr if `item` is not part of this
-  // grid.
-  views::View* GetRowContaining(PickerItemView* item);
+  // Gets and returns the visible row containing `item`. Returns nullptr if the
+  // row containing `item` is not visible or if `item` is not part of this grid.
+  views::View* GetVisibleRowContaining(PickerItemView* item);
 
   int grid_width_ = 0;
+
+  // The maximum number of rows to show in the grid. Items that don't fit into
+  // these rows are added to grid rows that are hidden by default.
+  size_t max_visible_rows_ = 2;
 };
 
 }  // namespace ash

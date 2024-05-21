@@ -75,7 +75,8 @@ TEST_F(PickerSmallItemGridViewTest, AddsEmoticonItem) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, SmallGridItemsStayWithinGridWidth) {
-  PickerSmallItemGridView small_item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView small_item_grid(kDefaultGridWidth,
+                                          /*max_visible_rows=*/2);
 
   PickerItemView* item1 = small_item_grid.AddEmoticonItem(
       CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -94,8 +95,23 @@ TEST_F(PickerSmallItemGridViewTest, SmallGridItemsStayWithinGridWidth) {
                                            ElementsAre(item4)))));
 }
 
+TEST_F(PickerSmallItemGridViewTest, HidesRowsOutsideMaximumVisibleRows) {
+  PickerSmallItemGridView small_item_grid(kDefaultGridWidth,
+                                          /*max_visible_rows=*/1);
+
+  small_item_grid.AddEmoticonItem(
+      CreateSizedEmoticonItem(gfx::Size(kDefaultGridWidth, 40)));
+  small_item_grid.AddEmoticonItem(
+      CreateSizedEmoticonItem(gfx::Size(kDefaultGridWidth, 40)));
+
+  // First row visible, second row hidden.
+  EXPECT_THAT(small_item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::GetVisible, true)),
+                          Pointee(Property(&views::View::GetVisible, false))));
+}
+
 TEST_F(PickerSmallItemGridViewTest, GetsTopItem) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -119,7 +135,7 @@ TEST_F(PickerSmallItemGridViewTest, EmptyGridHasNoTopItem) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsBottomItem) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -143,7 +159,7 @@ TEST_F(PickerSmallItemGridViewTest, EmptyContainerHasNoBottomItem) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsItemAbove) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -170,7 +186,7 @@ TEST_F(PickerSmallItemGridViewTest, ItemNotInContainerHasNoItemAbove) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsItemBelow) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -198,7 +214,7 @@ TEST_F(PickerSmallItemGridViewTest, ItemNotInContainerHasNoItemBelow) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsItemLeftOf) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
@@ -226,7 +242,7 @@ TEST_F(PickerSmallItemGridViewTest, ItemNotInContainerHasNoItemLeftOf) {
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsItemRightOf) {
-  PickerSmallItemGridView item_grid(kDefaultGridWidth);
+  PickerSmallItemGridView item_grid(kDefaultGridWidth, /*max_visible_rows=*/2);
 
   PickerItemView* item1 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
