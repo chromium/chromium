@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 ia2_hypertext='<obj0>'
-++IA2_ROLE_PARAGRAPH offset:0 offset:5 font-weight:bold offset:9 ia2_hypertext='Some bold text'
-++++ROLE_SYSTEM_STATICTEXT name='Some ' offset:0 ia2_hypertext='Some '
-++++ROLE_SYSTEM_STATICTEXT name='bold' offset:0 font-weight:bold ia2_hypertext='bold'
-++++ROLE_SYSTEM_STATICTEXT name=' text' offset:0 ia2_hypertext=' text'

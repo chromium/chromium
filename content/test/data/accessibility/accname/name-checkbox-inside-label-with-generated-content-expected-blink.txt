@@ -1,1 +1,0 @@
-checkBox name='foo baz' nameFrom=relatedElement

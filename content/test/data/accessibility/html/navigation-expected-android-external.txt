@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="navigation", roleDescription="navigation"]
-++++View text:"null" contentDescription:"Don't click on me" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///fake/"]
-++++++TextView text:"Don't click on me" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]

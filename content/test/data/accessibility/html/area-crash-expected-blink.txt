@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++staticText name='done'
-++++++++inlineTextBox name='done'

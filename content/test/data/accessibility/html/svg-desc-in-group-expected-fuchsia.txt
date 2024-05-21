@@ -1,8 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++UNKNOWN
-++++++++UNKNOWN secondary_label='Group with circle and text'
-++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='hello world'
-++++++++++++++UNKNOWN label='hello world'

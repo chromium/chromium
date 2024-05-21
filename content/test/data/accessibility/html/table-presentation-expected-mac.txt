@@ -1,9 +1,0 @@
-AXWebArea AXTitle='Table with role=presentation'
-++AXGroup
-++++AXStaticText AXValue='1'
-++AXGroup
-++++AXStaticText AXValue='2'
-++AXGroup
-++++AXStaticText AXValue='4'
-++AXGroup
-++++AXStaticText AXValue='5'

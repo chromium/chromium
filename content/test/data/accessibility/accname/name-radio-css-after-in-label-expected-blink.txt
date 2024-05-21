@@ -1,1 +1,0 @@
-radioButton name='fancy fruit' nameFrom=relatedElement

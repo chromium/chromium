@@ -1,6 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='One word is '
-++++AXGroup AXSubrole=AXEmphasisStyleGroup
-++++++AXStaticText AXValue='emphasized'
-++++AXStaticText AXValue='.'

@@ -1,2 +1,0 @@
-AutomationFocusChanged on role=listbox
-AutomationFocusChanged on role=listbox

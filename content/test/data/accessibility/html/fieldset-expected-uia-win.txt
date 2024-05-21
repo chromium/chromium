@@ -1,9 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Group Name='Browser Engines:'
-++++++Group IsControlElement=false
-++++++++Text Name='Browser Engines:'
-++Group Name='Which cake do you prefer?'
-++++Group IsControlElement=false
-++++++Text Name='Which cake do you prefer?'
-++++++++Text Name='Which cake do you prefer?' IsControlElement=false

@@ -1,8 +1,0 @@
-rootWebArea name='Done'
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer ignored
-++++++++genericContainer ignored
-++++++++++staticText name='Unsemantic'
-++++++++heading name='Semantic'
-++++++++++staticText name='Semantic'

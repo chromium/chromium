@@ -1,8 +1,0 @@
-EVENT_OBJECT_STATECHANGE on <li#file-menuitem> role=ROLE_SYSTEM_MENUITEM name="File" EXPANDED,HASPOPUP PosInSet=1 SetSize=2
-=== Start Continuation ===
-EVENT_OBJECT_STATECHANGE on <li#file-menuitem> role=ROLE_SYSTEM_MENUITEM name="File" COLLAPSED,HASPOPUP PosInSet=1 SetSize=2
-=== Start Continuation ===
-=== Start Continuation ===
-EVENT_OBJECT_STATECHANGE on <li#file-menuitem> role=ROLE_SYSTEM_MENUITEM name="File" EXPANDED,HASPOPUP PosInSet=1 SetSize=2
-=== Start Continuation ===
-=== Start Continuation ===

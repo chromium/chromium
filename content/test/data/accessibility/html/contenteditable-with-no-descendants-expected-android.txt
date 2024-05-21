@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.EditText clickable editable_text focusable multiline hint='label'
-++android.widget.EditText clickable editable_text focusable multiline hint='description'
-++android.widget.EditText clickable editable_text focusable multiline hint='title'
-++android.widget.TextView name='description'

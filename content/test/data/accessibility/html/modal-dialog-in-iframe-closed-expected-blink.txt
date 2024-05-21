@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer
-++++staticText name='Test for modal dialog closed in an iframe. '
-++++++inlineTextBox name='Test for modal dialog closed in an iframe. '
-++++iframe
-++++++rootWebArea
-++++++++genericContainer
-++++++++++button name='I am a non-inert button!'

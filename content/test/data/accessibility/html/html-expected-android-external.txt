@@ -1,3 +1,0 @@
-WebView text:"HTML element" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
-++View text:"BODY element" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++++Button text:"Button element" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]

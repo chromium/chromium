@@ -1,9 +1,0 @@
-AXFocusedUIElementChanged on AXComboBox AXAutocompleteValue='list'
-AXSelectedTextChanged on AXComboBox AXAutocompleteValue='list' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
-AXSelectedTextChanged on AXWebArea AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
-=== Start Continuation ===
-AXExpandedChanged on AXComboBox AXAutocompleteValue='list'
-=== Start Continuation ===
-AXFocusedUIElementChanged on AXStaticText AXValue='Apple'
-AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list'
-AXSelectedChildrenChanged on AXList

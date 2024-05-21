@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View name='<newline>'
-++android.widget.TextView name='Text line 1'
-++android.widget.TextView name='Text line 2<newline>Text line 3'
-++android.view.View name='<newline>'

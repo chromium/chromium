@@ -1,8 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.GridView role_description='table' collection row_count=2 column_count=2
-++++android.view.View
-++++++android.view.View role_description='column header' collection_item table_header name='Firstname' row_span=1 column_span=1
-++++++android.view.View role_description='column header' collection_item table_header name='Lastname' row_span=1 column_index=1 column_span=1
-++++android.view.View row_index=1
-++++++android.view.View collection_item name='Jill' row_index=1 row_span=1 column_span=1
-++++++android.view.View collection_item name='Smith' row_index=1 row_span=1 column_index=1 column_span=1

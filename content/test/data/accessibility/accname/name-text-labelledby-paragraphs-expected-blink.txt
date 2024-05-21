@@ -1,1 +1,0 @@
-textField name='foo bar baz' nameFrom=relatedElement

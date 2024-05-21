@@ -1,9 +1,0 @@
-Document
-++Group
-++++Image Name='This is a green box.'
-++++Group IsControlElement=false
-++++++Text Name='Fig.1 - A green Box'
-++Group
-++++Image Name='This is a blue box.'
-++++Group IsControlElement=false
-++++++Text Name='Fig.2 - A blue Box'

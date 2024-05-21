@@ -1,4 +1,0 @@
-grid.accessibilitySelectedRows=[:3]
-tree.accessibilitySelectedRows=[:6]
-treegrid.accessibilitySelectedRows=[:9]
-not_applicable.accessibilitySelectedRows=[]

@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.ProgressBar role_description='meter' range name='half-way, funding' range_max=100 range_current_value=50
-++android.widget.ProgressBar role_description='meter' range name='10, funding' item_index=10 item_count=100 range_max=100 range_current_value=10

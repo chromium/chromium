@@ -1,7 +1,0 @@
-AXWebArea
-++AXMenuBar
-++++AXMenuItem AXLinkedUIElements=[:5] AXTitle='File'
-++++AXMenuItem AXTitle='Edit'
-++AXMenu AXDescription='File'
-++++AXMenuItem AXTitle='New'
-++++AXMenuItem AXTitle='Open'

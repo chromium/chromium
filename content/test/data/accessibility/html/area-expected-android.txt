@@ -1,7 +1,0 @@
-#<skip - editable_text shouldn't come for area element>
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.view.View name='pipe'
-++++++android.view.View clickable editable_text name='pipe1'
-++++android.view.View focusable
-++++android.view.View

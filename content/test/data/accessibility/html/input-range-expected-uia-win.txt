@@ -1,8 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=10.00 RangeValue.Minimum=1.00 RangeValue.Value=5.00 Value.Value='5'
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=10.00 RangeValue.Minimum=1.00 RangeValue.Value=3.00 Value.Value='3'
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=10.00 RangeValue.Minimum=1.00 RangeValue.Value=5.00 Value.Value='Medium'
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=5.00 RangeValue.Minimum=0.00 RangeValue.Value=5.00 Value.Value='Friday'
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=1.00 RangeValue.SmallChange=0.10 RangeValue.Maximum=1.00 RangeValue.Minimum=-1.00 RangeValue.Value=0.20 Value.Value='0.2'
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=50.00 Value.Value='50'

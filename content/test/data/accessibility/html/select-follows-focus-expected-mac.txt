@@ -1,6 +1,0 @@
-AXWebArea AXSelected=0
-++AXTabGroup AXSelected=0
-++++AXRadioButton AXSubrole=AXTabButton AXSelected=1 AXTitle='tab1' AXValue=1
-++++AXRadioButton AXSubrole=AXTabButton AXSelected=1 AXTitle='tab2' AXValue=1
-++++AXRadioButton AXSubrole=AXTabButton AXSelected=0 AXTitle='tab3' AXValue=0
-++AXStaticText AXSelected=0 AXValue='Done'

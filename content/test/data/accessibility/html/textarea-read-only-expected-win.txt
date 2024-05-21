@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' n_selections=0
-++IA2_ROLE_SECTION ia2_hypertext='<obj0>' n_selections=0
-++++ROLE_SYSTEM_TEXT value='The textarea tag defines a multi-line text input control.<newline>' READONLY FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE IA2_STATE_SELECTABLE_TEXT ia2_hypertext='The textarea tag defines a multi-line text input control.<newline><newline>' n_selections=0

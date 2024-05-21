@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++EditText text:"1/1/2015 1:00AM" clickable editable focusable inputType:4 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
-++++EditText text:"1/1/2015 1:00AM" hint:"Launch" clickable editable focusable inputType:4 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Launch"]

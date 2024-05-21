@@ -1,7 +1,0 @@
-AriaProperties changed on role=button
-AriaRole changed on role=button
-ToggleToggleState changed on role=button
-=== Start Continuation ===
-AriaProperties changed on role=button
-AriaRole changed on role=button
-ToggleToggleState changed on role=button

@@ -1,9 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.view.View role_description='link' clickable focusable link name='Link'
-++++++android.widget.TextView name='Link'
-++++android.widget.TextView name=' '
-++++android.view.View role_description='link' clickable focusable link name='AriaLabel'
-++++++android.widget.TextView name='Link'
-++++android.widget.Button role_description='button' clickable focusable name='Button'
-++++android.widget.Button role_description='button' clickable focusable name='AriaLabel'

@@ -1,7 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXComboBox AXAutocompleteValue='inline' AXValue='autocomplete=inline'
-++++AXComboBox AXAutocompleteValue='list' AXValue='autocomplete=list'
-++++AXComboBox AXAutocompleteValue='both' AXValue='autocomplete=both'
-++++AXComboBox AXValue='autocomplete=none'
-++++AXTextField AXAutocompleteValue='inline' AXValue='No role with autocomplete=inline'

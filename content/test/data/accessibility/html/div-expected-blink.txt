@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++staticText name='Unfocusable div'
-++++++++++inlineTextBox name='Unfocusable div'
-++++++genericContainer name='Focusable div'
-++++++++staticText name='Focusable div'
-++++++++++inlineTextBox name='Focusable div'

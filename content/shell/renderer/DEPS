@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/cdm",
-  "+components/network_hints/renderer",
-  "+components/web_cache/renderer",
-]

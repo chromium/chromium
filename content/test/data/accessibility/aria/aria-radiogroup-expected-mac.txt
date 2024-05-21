@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXRadioGroup AXDescription='My group' AXRoleDescription='radio group'
-++++AXRadioButton AXLinkedUIElements=[:3, :4] AXRoleDescription='radio button' AXTitle='Radio 1' AXValue=0
-++++AXRadioButton AXLinkedUIElements=[:3, :4] AXRoleDescription='radio button' AXTitle='Radio 2' AXValue=0

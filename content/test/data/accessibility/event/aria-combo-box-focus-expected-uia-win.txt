@@ -1,9 +1,0 @@
-AriaProperties changed on role=option, name=Apple
-AutomationFocusChanged on role=option, name=Apple
-SelectionItemIsSelected changed on role=option, name=Apple
-SelectionItem_ElementSelected on role=option, name=Apple
-=== Start Continuation ===
-AriaProperties changed on role=option, name=Apple
-AutomationFocusChanged on role=button
-SelectionItemIsSelected changed on role=option, name=Apple
-SelectionItem_ElementRemovedFromSelection on role=option, name=Apple

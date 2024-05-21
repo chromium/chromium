@@ -1,2 +1,0 @@
-[document web]
-++[check box] checkable braillelabel:aria braille label checkable:true

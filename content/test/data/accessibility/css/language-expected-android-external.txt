@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Espanyol" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
-++TextView text:"Comment allez-vous?" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

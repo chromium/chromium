@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++Button text:"Search" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hasImage="true", roleDescription="button"]

@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_TEXT FOCUSABLE description-from:tooltip description='Your username should be your email id'
-++ROLE_SYSTEM_TOOLTIP READONLY xml-roles:tooltip
-++++ROLE_SYSTEM_STATICTEXT
-++ROLE_SYSTEM_TEXT FOCUSABLE description-from:aria-describedby description='mmddyy'

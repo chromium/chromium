@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[image map] name='pipe'
-++++++[link] name='pipe1'

@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.Image role_description='graphic' name='Pipe'
-++android.widget.TextView name='The pipe clicked by SomeOne.'

@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' n_selections=0
-++IA2_ROLE_SECTION ia2_hypertext='<obj0>' n_selections=0
-++++ROLE_SYSTEM_TEXT name='Name' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_SELECTABLE_TEXT IA2_STATE_SINGLE_LINE text-input-type:text caret_offset=0 n_selections=0

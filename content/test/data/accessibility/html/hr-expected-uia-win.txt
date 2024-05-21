@@ -1,9 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='Before.'
-++Separator Name='Dividing line'
-++Group IsControlElement=false
-++++Text Name='Middle.'
-++Separator
-++Group IsControlElement=false
-++++Text Name='After.'

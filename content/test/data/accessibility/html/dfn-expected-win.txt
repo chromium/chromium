@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++IA2_ROLE_TEXT_FRAME READONLY
-++++++ROLE_SYSTEM_STATICTEXT name='Web Browser'
-++++ROLE_SYSTEM_STATICTEXT name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

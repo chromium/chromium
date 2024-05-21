@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.view.View name='10:00'
-++++android.widget.TextView name=' '
-++++android.view.View name='Valentines day'

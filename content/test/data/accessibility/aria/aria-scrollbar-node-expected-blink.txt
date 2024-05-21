@@ -1,1 +1,0 @@
-scrollBar horizontal valueForRange=55.00 minValueForRange=0.00 maxValueForRange=100.00

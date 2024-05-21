@@ -1,1 +1,0 @@
-button name='What is your name?: No file chosen' nameFrom=relatedElement

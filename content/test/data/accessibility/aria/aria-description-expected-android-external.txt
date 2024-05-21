@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"description" hint:"Text-description" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer", hint="Text-description"]
-++TextView text:"both" hint:"Description from describedby" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer", hint="Description from describedby"]
-++View text:"Description from describedby" viewIdResName:"desc1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tooltip", roleDescription="tooltip"]

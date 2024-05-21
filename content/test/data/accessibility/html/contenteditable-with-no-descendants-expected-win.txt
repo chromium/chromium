@@ -1,6 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2><obj3>'
-++IA2_ROLE_SECTION name='label' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE
-++IA2_ROLE_SECTION FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE description-from:aria-describedby description='description'
-++IA2_ROLE_SECTION name='title' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE
-++IA2_ROLE_PARAGRAPH ia2_hypertext='description'
-++++ROLE_SYSTEM_STATICTEXT name='description' ia2_hypertext='description'

@@ -1,3 +1,0 @@
-Document
-++Edit Name='input 1' IsControlElement=false
-++Edit Name='input 2'

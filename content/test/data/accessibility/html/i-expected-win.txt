@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_PARAGRAPH
-++++ROLE_SYSTEM_STATICTEXT name='This is to check '
-++++ROLE_SYSTEM_STATICTEXT name='italic property'
-++++ROLE_SYSTEM_STATICTEXT name=' using i tag.'

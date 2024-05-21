@@ -1,6 +1,0 @@
-Document
-++List
-++++ListItem IsControlElement=false
-++++++Text Name='Coffee'
-++++Group IsControlElement=false
-++++++Text Name='Black hot drink'

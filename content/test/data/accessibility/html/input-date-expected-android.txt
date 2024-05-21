@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.Spinner role_description='date picker' clickable focusable name='2008-09-01' input_type=20
-++++android.widget.Spinner role_description='date picker' clickable focusable name='2008-09-01' hint='When' input_type=20

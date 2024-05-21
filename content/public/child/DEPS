@@ -1,3 +1,0 @@
-include_rules = [
-  "+v8/include/v8.h",
-]

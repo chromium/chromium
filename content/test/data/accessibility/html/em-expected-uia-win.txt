@@ -1,6 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='One word is '
-++++Text IsControlElement=false
-++++++Text Name='emphasized'
-++++Text Name='.'

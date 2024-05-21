@@ -1,3 +1,0 @@
-[document web]
-++[paragraph] xml-roles:paragraph
-++++[static] name='Paragraph'

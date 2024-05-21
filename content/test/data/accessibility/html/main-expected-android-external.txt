@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"This is main element." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="main", roleDescription="main"]
-++View text:"This is an ARIA role main." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="main", roleDescription="main"]

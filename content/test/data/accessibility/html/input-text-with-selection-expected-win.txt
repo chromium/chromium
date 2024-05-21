@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' caret_offset=1 n_selections=1 selection_start=0 selection_end=1
-++IA2_ROLE_SECTION ia2_hypertext='<obj0>' caret_offset=1 n_selections=1 selection_start=0 selection_end=1
-++++ROLE_SYSTEM_TEXT value='Selection' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_SELECTABLE_TEXT IA2_STATE_SINGLE_LINE text-input-type:text ia2_hypertext='Selection' caret_offset=5 n_selections=1 selection_start=3 selection_end=5

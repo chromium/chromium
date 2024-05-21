@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.view.View role_description='term' collection_item name='Web Browser'
-++++android.widget.TextView name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

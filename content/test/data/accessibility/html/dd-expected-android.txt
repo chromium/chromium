@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.ListView collection item_count=1 row_count=1
-++++android.view.View role_description='term' collection_item name='Coffee'
-++++android.view.View role_description='definition' name='Black hot drink'

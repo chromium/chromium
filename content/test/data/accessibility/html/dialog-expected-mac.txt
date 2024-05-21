@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup AXSubrole=AXApplicationDialog
-++++++AXStaticText AXValue='Text in dialog'

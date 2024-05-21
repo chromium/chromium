@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXTextField AXValue='123-456-7890'

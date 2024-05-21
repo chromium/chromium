@@ -1,3 +1,0 @@
-frac1.AXMathFractionDenominator.AXChildren.count=1
-frac1.AXMathFractionDenominator.AXChildren[0].AXValue='2'
-frac2.AXMathFractionDenominator=NULL

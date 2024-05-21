@@ -1,7 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1>'
-++ROLE_SYSTEM_MENUPOPUP xml-roles:menu ia2_hypertext='<obj0><obj1>'
-++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox1' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
-++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox2' CHECKED FOCUSABLE IA2_STATE_CHECKABLE checkable:true
-++ROLE_SYSTEM_MENUPOPUP xml-roles:menu ia2_hypertext='<obj0><obj1>'
-++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox3' CHECKED FOCUSABLE IA2_STATE_CHECKABLE checkable:true
-++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox4' MIXED FOCUSABLE IA2_STATE_CHECKABLE checkable:true

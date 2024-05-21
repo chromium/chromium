@@ -1,2 +1,0 @@
-FullDescription changed on role=heading, name=Before
-StructureChanged/ChildrenReordered on role=document

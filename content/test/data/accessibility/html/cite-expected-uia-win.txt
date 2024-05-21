@@ -1,5 +1,0 @@
-Document
-++Image Name='Pipe'
-++Group IsControlElement=false
-++++Text Name='The pipe'
-++++Text Name=' clicked by SomeOne.'

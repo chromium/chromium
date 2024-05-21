@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='before selection'
-++android.widget.TextView name='this text is not ignored'
-++android.widget.TextView name='after selection'
-++android.widget.TextView name='Done'

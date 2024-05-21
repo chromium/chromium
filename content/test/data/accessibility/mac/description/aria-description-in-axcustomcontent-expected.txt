@@ -1,6 +1,0 @@
-div.accessibilityCustomContent[0].label='description'
-div.accessibilityCustomContent[0].value='Text-description'
-div.accessibilityAttributeValue(AXHelp)=NULL
-div_with_tooltip.accessibilityCustomContent[0].label='description'
-div_with_tooltip.accessibilityCustomContent[0].value='Description from describedby'
-div_with_tooltip.accessibilityAttributeValue(AXHelp)=NULL

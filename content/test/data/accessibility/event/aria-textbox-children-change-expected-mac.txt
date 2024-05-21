@@ -1,9 +1,0 @@
-AXValueChanged on AXTextArea AXDescription='role only, rich' AXValue='foo'
-AXValueChanged on AXWebArea
-=== Start Continuation ===
-AXValueChanged on AXTextArea AXDescription='focusable' AXValue='foo'
-AXValueChanged on AXWebArea
-=== Start Continuation ===
-AXValueChanged on AXTextArea AXDescription='editable' AXValue='foo'
-AXValueChanged on AXWebArea
-=== Start Continuation ===

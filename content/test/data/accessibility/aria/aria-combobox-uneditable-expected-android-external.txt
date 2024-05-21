@@ -1,7 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Choose a fruit, with text content" viewIdResName:"combo1-label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++Spinner text:"Apple" hint:"Choose a fruit, with text content" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxMenuButton", hint="Choose a fruit, with text content"]
-++ListView viewIdResName:"listbox1" clickable CollectionInfo:[rows=3, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
-++++View text:"Apple" viewIdResName:"combo1-0" clickable selected CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View text:"Banana" viewIdResName:"combo1-1" clickable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View text:"Cherry" viewIdResName:"combo1-2" clickable CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

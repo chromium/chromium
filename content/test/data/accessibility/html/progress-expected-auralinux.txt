@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[progress bar] valuetext:22 current=22.000000 minimum=0.000000 maximum=100.000000
-++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000

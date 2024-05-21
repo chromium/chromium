@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++dialog
-++++++++staticText name='Text in dialog'
-++++++++++inlineTextBox name='Text in dialog'

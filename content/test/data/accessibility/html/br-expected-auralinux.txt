@@ -1,8 +1,0 @@
-[document web]
-++[static] name='<newline>'
-++[static] name='Text line 1'
-++[paragraph]
-++++[static] name='Text line 2'
-++++[static] name='<newline>'
-++++[static] name='Text line 3'
-++[static] name='<newline>'

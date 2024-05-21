@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"current" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
-++View text:"next" viewIdResName:"next" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="footer", roleDescription="footer"]

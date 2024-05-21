@@ -1,8 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.EditText clickable editable_text focusable hint='aria-placeholder1' input_type=1
-++android.widget.EditText clickable editable_text focusable hint='placeholder2' input_type=1
-++android.widget.EditText clickable editable_text focusable hint='aria-label3 placeholder3' input_type=1
-++android.widget.EditText clickable editable_text focusable hint='aria-label4 aria-placeholder4' input_type=1
-++android.widget.EditText clickable editable_text focusable hint='aria-label5 placeholder5 aria-description5' input_type=1
-++android.widget.TextView name='aria-description5'
-++android.widget.EditText clickable editable_text focusable hint='title6 aria-placeholder6' input_type=1

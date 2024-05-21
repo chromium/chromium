@@ -1,7 +1,0 @@
-[document web]
-++[check box] name='Title0' checkable:true explicit-name:true
-++[check box] name='Label1' description='Title1' checkable:true description-from:tooltip explicit-name:true
-++[check box] name='AriaLabel2' description='Title2' checkable:true description-from:tooltip explicit-name:true
-++[check box] name='LabelledBy3' description='Title3' labelled-by=[section] checkable:true description-from:tooltip explicit-name:true
-++[check box] name='LabelledBy4' description='DescribedBy4' labelled-by=[section] described-by=[section] checkable:true description-from:aria-describedby explicit-name:true
-++[check box] description='DescribedBy5' described-by=[section] checkable:true description-from:aria-describedby

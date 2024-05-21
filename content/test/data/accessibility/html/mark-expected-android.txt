@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.TextView name='This test is to check '
-++++android.view.View role_description='highlight' name='mark tag'
-++++android.widget.TextView name='.'

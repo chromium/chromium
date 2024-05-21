@@ -1,4 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++BUTTON focusable label='Choose File: No file chosen' actions='{DEFAULT}' value='No file chosen'

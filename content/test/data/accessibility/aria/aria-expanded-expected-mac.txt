@@ -1,9 +1,0 @@
-AXWebArea
-++AXMenu
-++++AXMenuItem AXExpanded=0 AXTitle='New'
-++++AXMenuItem AXExpanded=1 AXTitle='Open'
-++++AXMenuItem AXExpanded=0 AXTitle='Save'
-++++AXMenuItem AXExpanded=1 AXTitle='Quit'
-++AXSplitter
-++AXSplitter
-++AXSplitter

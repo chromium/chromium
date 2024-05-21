@@ -1,4 +1,0 @@
-Document LocalizedControlType='document'
-++Group LocalizedControlType='group' IsControlElement=false
-++++Group LocalizedControlType='deletion' IsControlElement=false
-++++++Text LocalizedControlType='text' Name='My car is blue.'

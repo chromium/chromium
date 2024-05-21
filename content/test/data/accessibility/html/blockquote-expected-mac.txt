@@ -1,6 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup
-++++++AXStaticText AXValue='First blockquote has a child element.'
-++AXGroup
-++++AXStaticText AXValue='Second blockquote has no child.'

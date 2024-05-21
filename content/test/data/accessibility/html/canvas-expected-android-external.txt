@@ -1,6 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++Image text:"Static fallback" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="canvas", hasImage="true"]
-++++Image actions:[AX_FOCUS] bundle:[chromeRole="canvas", hasImage="true"]
-++++++View text:"null" contentDescription:"Interactive fallback" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/canvas.html#"]
-++++++++TextView text:"Interactive fallback" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/aggregation_service",
-  "+components/cbor"
-]

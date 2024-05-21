@@ -1,2 +1,0 @@
-<html>This is a text document that sniffs as HTML.
-It is accessible via CORS.</html>

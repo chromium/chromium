@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_STATICTEXT name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_COMBOBOX value='This should be in the tree.' COLLAPSED FOCUSABLE HASPOPUP haspopup:menu
-++IA2_ROLE_COLOR_CHOOSER value='0% red 0% green 0% blue' FOCUSABLE

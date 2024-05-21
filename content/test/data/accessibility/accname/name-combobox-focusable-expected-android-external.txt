@@ -1,2 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++Spinner text:"English" hint:"Choose your language." viewIdResName:"test" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comboBoxMenuButton", hint="Choose your language."]

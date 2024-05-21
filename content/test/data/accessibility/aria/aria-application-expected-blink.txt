@@ -1,3 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++application

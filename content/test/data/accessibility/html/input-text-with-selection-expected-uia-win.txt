@@ -1,3 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Edit Value.Value='Selection'

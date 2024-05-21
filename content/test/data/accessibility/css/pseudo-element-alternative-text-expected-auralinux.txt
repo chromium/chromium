@@ -1,7 +1,0 @@
-[document web]
-++[section]
-++++[image] name='alternative text'
-++++[static] name=' '
-++++[static] name='DOM text'
-++++[static] name=' '
-++++[image]

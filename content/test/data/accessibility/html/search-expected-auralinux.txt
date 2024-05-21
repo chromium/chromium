@@ -1,5 +1,0 @@
-[document web]
-++[landmark] xml-roles:search
-++++[label]
-++++++[static] name='Search element.'
-++++[entry] selectable-text

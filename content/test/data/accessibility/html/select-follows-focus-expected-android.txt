@@ -1,6 +1,0 @@
-android.webkit.WebView focusable
-++android.widget.TabWidget role_description='tab list'
-++++android.view.View role_description='tab' clickable focusable focused selected name='tab1'
-++++android.view.View role_description='tab' clickable focusable selected name='tab2' item_index=1 row_index=1
-++++android.view.View role_description='tab' clickable focusable name='tab3' item_index=2 row_index=2
-++android.widget.TextView name='Done'

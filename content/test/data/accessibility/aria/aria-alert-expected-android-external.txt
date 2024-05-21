@@ -1,2 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"This test is for aria role="alert"" viewIdResName:"ariaalert" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="alert", roleDescription="alert"]

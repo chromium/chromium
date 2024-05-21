@@ -1,2 +1,0 @@
-AXWebArea
-++AXStaticText AXValue='With aria-role none'

@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationDialog
-++++AXStaticText AXValue='This is the now active dialog. Of course it should be in the tree. '
-++++AXButton AXTitle='This is in the active dialog and should be in the tree.'

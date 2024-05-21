@@ -1,5 +1,0 @@
-[document web] caret_offset=29 selection_start=0 selection_end=29
-++[static] name='this text is not ignored' selection_start=0 selection_end=24
-++[section] selection_start=0 selection_end=15
-++++[static] name='after selection' selection_start=0 selection_end=15
-++[static] name='Done' selection_start=0 selection_end=4

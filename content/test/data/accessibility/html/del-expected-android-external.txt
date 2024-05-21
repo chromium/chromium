@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++TextView text:"I am " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"vegetarian" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="contentDeletion", roleDescription="deletion"]

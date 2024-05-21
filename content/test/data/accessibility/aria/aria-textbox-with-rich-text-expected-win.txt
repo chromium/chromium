@@ -1,9 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1>' n_characters=2 n_selections=0
-++ROLE_SYSTEM_TEXT value='TextBox1' FOCUSABLE IA2_STATE_MULTI_LINE xml-roles:textbox ia2_hypertext='<obj0>' n_characters=1 caret_offset=0 n_selections=0
-++++IA2_ROLE_HEADING name='TextBox1' ia2_hypertext='TextBox1' n_characters=8 n_selections=0
-++++++ROLE_SYSTEM_STATICTEXT name='TextBox1' ia2_hypertext='TextBox1' n_characters=8 n_selections=0
-++ROLE_SYSTEM_TEXT value='TextBox2<newline>Some text.' FOCUSABLE IA2_STATE_MULTI_LINE xml-roles:textbox ia2_hypertext='<obj0><obj1>' n_characters=2 n_selections=0
-++++IA2_ROLE_HEADING name='TextBox2' ia2_hypertext='TextBox2' n_characters=8 n_selections=0
-++++++ROLE_SYSTEM_STATICTEXT name='TextBox2' ia2_hypertext='TextBox2' n_characters=8 n_selections=0
-++++IA2_ROLE_PARAGRAPH ia2_hypertext='Some text.' n_characters=10 n_selections=0
-++++++ROLE_SYSTEM_STATICTEXT name='Some text.' ia2_hypertext='Some text.' n_characters=10 n_selections=0

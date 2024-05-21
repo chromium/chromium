@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++Image text:"Pipe" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/pipe.jpg"]
-++TextView text:"The pipe clicked by SomeOne." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

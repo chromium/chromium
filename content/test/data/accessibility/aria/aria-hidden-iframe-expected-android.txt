@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused interesting name='done'
-++android.view.View
-++++android.widget.Button role_description='button' clickable focusable interesting name='Before'
-++++android.widget.Button role_description='button' clickable focusable interesting name='After'

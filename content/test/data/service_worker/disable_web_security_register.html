@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<body>
-<script>
-var scope = location.search.substring(1);
-navigator.serviceWorker.register(scope + 'fetch_event_blob.js', {scope: scope})
-  .then(_ => { document.title = "PASS"; });
-</script>
-</body>

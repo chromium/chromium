@@ -1,9 +1,0 @@
-[document web] offset=0 bg-color=0,0,255 fg-color=255,0,0 offset=1 bg-color=255,255,255 fg-color=0,0,0
-++[paragraph] offset=0 bg-color=0,0,255 fg-color=255,0,0
-++++[static] name='Red on blue.' offset=0 bg-color=0,0,255 fg-color=255,0,0
-++[section] selectable-text offset=0 bg-color=255,255,255 fg-color=0,0,0 offset=9 bg-color=0,0,255 fg-color=0,0,0 offset=25 bg-color=255,255,255 fg-color=0,0,0 offset=26 bg-color=255,255,255 fg-color=0,255,0
-++++[static] name='Default.' offset=0 bg-color=255,255,255 fg-color=0,0,0
-++++[static] name=' ' offset=0 bg-color=255,255,255 fg-color=0,0,0
-++++[static] name='Blue background.' offset=0 bg-color=0,0,255 fg-color=0,0,0
-++++[static] name=' ' offset=0 bg-color=255,255,255 fg-color=0,0,0
-++++[static] name='Green text.' offset=0 bg-color=255,255,255 fg-color=0,255,0

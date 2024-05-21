@@ -1,6 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 ia2_hypertext='<obj0>'
-++IA2_ROLE_PARAGRAPH offset:0 offset:18 text-position:super offset:19 ia2_hypertext='This text contains<obj1>text.'
-++++ROLE_SYSTEM_STATICTEXT name='This text contains' offset:0 ia2_hypertext='This text contains'
-++++IA2_ROLE_TEXT_FRAME offset:0 text-position:super ia2_hypertext='superscript'
-++++++ROLE_SYSTEM_STATICTEXT name='superscript' offset:0 text-position:super ia2_hypertext='superscript'
-++++ROLE_SYSTEM_STATICTEXT name='text.' offset:0 ia2_hypertext='text.'

@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXDocument AXDescription='graphics-document' AXRoleDescription='graphics document'
-++AXGroup AXDescription='graphics-object' AXRoleDescription='graphics object'
-++AXImage AXDescription='graphics-symbol' AXRoleDescription='graphics symbol'

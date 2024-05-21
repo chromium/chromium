@@ -1,7 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++TextView text:"My favorite browser is " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"ABC" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="contentDeletion", roleDescription="deletion"]
-++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"Chrome" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="contentInsertion", roleDescription="insertion"]
-++++TextView text:"!" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

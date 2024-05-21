@@ -1,4 +1,0 @@
-include_rules = [
-  "+v8/include",
-  "+content/public/common",
-]

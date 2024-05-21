@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"iframe_onscreen" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++View text:"iframe_offscreen" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]

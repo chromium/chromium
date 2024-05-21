@@ -1,5 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='Unfocusable div'
-++Group Name='Focusable div'
-++++Text Name='Focusable div'

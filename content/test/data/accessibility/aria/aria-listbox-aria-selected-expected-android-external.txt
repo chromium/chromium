@@ -1,7 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++ListView stateDescription:"multiselectable, 2 of 5 selected." clickable CollectionInfo:[rows=5, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", roleDescription="list box"]
-++++View text:"Item 1" viewIdResName:"it1" focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
-++++View text:"Item 2" viewIdResName:"it2" focusable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
-++++View text:"Item 3" viewIdResName:"it3" focusable CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
-++++View text:"Item 4" viewIdResName:"it4" focusable selected CollectionItemInfo:[rowIndex=3, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
-++++View text:"Item 5" viewIdResName:"it5" focusable selected CollectionItemInfo:[rowIndex=4, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]

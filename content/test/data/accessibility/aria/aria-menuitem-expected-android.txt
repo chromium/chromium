@@ -1,8 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='menu'
-++++android.view.MenuItem role_description='menu item' clickable focusable name='File'
-++++android.view.MenuItem role_description='menu item' clickable focusable name='Edit' item_index=1 row_index=1
-++++android.view.MenuItem role_description='menu item' clickable focusable name='Complex menuitem' item_index=2 row_index=2
-++++++android.widget.TextView name='Complex '
-++++++android.widget.EditText clickable editable_text focusable input_type=1
-++++++android.widget.TextView name=' menuitem'

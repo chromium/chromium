@@ -1,2 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXWebApplication AXRoleDescription='application'

@@ -1,3 +1,0 @@
-AXExpandedChanged on AXComboBox
-AXFocusedUIElementChanged on AXComboBox
-AXSelectedChildrenChanged on AXComboBox

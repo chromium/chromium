@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++ProgressBar text:"22" RangeInfo:[current=22.0, min=0.0, max=100.0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
-++++ProgressBar text:"indeterminate" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]

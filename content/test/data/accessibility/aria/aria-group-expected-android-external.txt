@@ -1,6 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
-++++View text:"null" contentDescription:"Group Link1" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", roleDescription="link"]
-++++++TextView text:"Group Link1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"null" contentDescription:"Group Link2" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", roleDescription="link"]
-++++++TextView text:"Group Link2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

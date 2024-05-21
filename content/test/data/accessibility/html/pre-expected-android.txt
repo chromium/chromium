@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='This test is to check   pre<newline>formatting.'
-++android.widget.TextView name='This test is to check   pre<newline>formatting'
-++android.widget.TextView name='This test is to check   pre<newline>formatting.'
-++android.widget.TextView name='This test is to check pre formatting.'

@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++link linked name='normal link'
-++++++++staticText linked name='normal link'
-++++++++++inlineTextBox name='normal link'

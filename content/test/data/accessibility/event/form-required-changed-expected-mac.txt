@@ -1,2 +1,0 @@
-AXInvalidStatusChanged on AXCheckBox AXValue=0
-AXValueChanged on AXRadioButton AXValue=1

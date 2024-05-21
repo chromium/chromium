@@ -1,9 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='My favorite browser is '
-++++Group IsControlElement=false
-++++++Text Name='ABC'
-++++Text Name=' '
-++++Group IsControlElement=false
-++++++Text Name='Chrome'
-++++Text Name='!'

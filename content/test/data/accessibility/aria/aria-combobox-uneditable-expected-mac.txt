@@ -1,9 +1,0 @@
-AXWebArea AXFocused=1
-++AXGroup
-++++AXStaticText AXValue='Choose a fruit, with text content'
-++AXComboBox AXLinkedUIElements=[:6] AXTitle='Choose a fruit, with text content' AXValue='Apple'
-++++AXStaticText AXValue='Apple'
-++AXList
-++++AXStaticText AXValue='Apple'
-++++AXStaticText AXValue='Banana'
-++++AXStaticText AXValue='Cherry'

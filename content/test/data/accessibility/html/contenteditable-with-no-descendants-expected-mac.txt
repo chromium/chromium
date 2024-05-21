@@ -1,6 +1,0 @@
-AXWebArea
-++AXTextArea AXDescription='label'
-++AXTextArea accessibilityCustomContent=[{label: 'description', value: 'description'}]
-++AXTextArea AXDescription='title'
-++AXGroup
-++++AXStaticText AXValue='description'

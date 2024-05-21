@@ -1,8 +1,0 @@
-Document
-++Group IsControlElement=false
-++++List Name='selection_list' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
-++++++Group Name='Enabled'
-++++++++ListItem Name='One' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
-++++++++ListItem Name='Two' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
-++++++++ListItem Name='Three' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
-++++++++ListItem Name='Four' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'

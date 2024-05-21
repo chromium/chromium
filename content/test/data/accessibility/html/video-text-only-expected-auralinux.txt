@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[video] name='Unable to play media.'
-++++[static] name=' '
-++++[video] name='Unable to play media.'

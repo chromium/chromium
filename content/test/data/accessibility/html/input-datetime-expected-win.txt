@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
-++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1>'
-++++ROLE_SYSTEM_TEXT value='1/1/2015 1:00AM' FOCUSABLE text-input-type:datetime ia2_hypertext='1/1/2015 1:00AM'
-++++ROLE_SYSTEM_TEXT name='Launch' value='1/1/2015 1:00AM' FOCUSABLE text-input-type:datetime ia2_hypertext='1/1/2015 1:00AM'

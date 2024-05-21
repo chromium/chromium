@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='Before'
-++android.widget.TextView name='Paragraph'
-++android.widget.TextView name='After'

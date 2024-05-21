@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXButton AXRoleDescription='button' AXTitle='Click me!'

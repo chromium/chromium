@@ -1,4 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++checkBox ariaBrailleLabel='aria braille label' checkedState=false

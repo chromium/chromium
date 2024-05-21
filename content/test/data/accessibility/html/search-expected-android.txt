@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='search'
-++++android.view.View name='Search element.'
-++++android.widget.EditText role_description='search text field' clickable editable_text focusable input_type=1

@@ -1,4 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer htmlTag='body'
-++++++genericContainer ignored htmlTag='div'

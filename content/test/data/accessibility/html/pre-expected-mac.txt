@@ -1,9 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='This test is to check   pre<newline>formatting.'
-++AXGroup
-++++AXStaticText AXValue='This test is to check   pre<newline>formatting'
-++AXGroup
-++++AXStaticText AXValue='This test is to check   pre<newline>formatting.'
-++AXGroup
-++++AXStaticText AXValue='This test is to check pre formatting.'

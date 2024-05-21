@@ -1,8 +1,0 @@
-Document LocalizedControlType='document'
-++Text LocalizedControlType='time'
-++++Text LocalizedControlType='text' Name='role'
-++Text LocalizedControlType='time'
-++++Text LocalizedControlType='text' Name='element (no name)'
-++Text LocalizedControlType='text' Name=' '
-++Text LocalizedControlType='time' Name='include me'
-++++Text LocalizedControlType='text' Name='element (with name)'

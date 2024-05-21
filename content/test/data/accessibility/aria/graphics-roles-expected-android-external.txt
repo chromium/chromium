@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View text:"graphics-document" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsDocument", roleDescription="graphics document"]
-++View text:"graphics-object" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsObject", roleDescription="graphics object"]
-++View text:"graphics-symbol" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsSymbol", hasImage="true", roleDescription="graphics symbol"]

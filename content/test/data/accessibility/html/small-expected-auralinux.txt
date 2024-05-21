@@ -1,4 +1,0 @@
-[document web]
-++[paragraph]
-++++[static] name='Chromium'
-++++[static] name='open source project'

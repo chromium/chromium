@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' n_characters=1
-++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1>' n_characters=2
-++++ROLE_SYSTEM_SPINBUTTON value='1' FOCUSABLE valuetext:1 text-input-type:number ia2_hypertext='1' currentValue=1 n_characters=1
-++++ROLE_SYSTEM_SPINBUTTON value='6' FOCUSABLE valuetext:6 text-input-type:number ia2_hypertext='6' currentValue=6 minimumValue=5 maximumValue=10 n_characters=1

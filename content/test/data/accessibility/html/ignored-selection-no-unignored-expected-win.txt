@@ -1,2 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_selections=0
-++ROLE_SYSTEM_STATICTEXT name='Done' n_selections=0

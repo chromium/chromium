@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++checkBox ariaBrailleRoleDescription='aria braille role description' checkedState=false
-++++++checkBox checkedState=false
-++++++checkBox checkedState=false

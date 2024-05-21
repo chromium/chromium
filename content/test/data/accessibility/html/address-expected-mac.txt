@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationGroup
-++++AXStaticText AXValue='Please contact John Citizen for more information.'

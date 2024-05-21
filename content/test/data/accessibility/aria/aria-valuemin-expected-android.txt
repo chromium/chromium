@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.ProgressBar role_description='progress indicator' range name='51' item_index=50 item_count=100 range_min=1 range_max=101 range_current_value=51
-++android.view.View role_description='scroll bar' clickable range name='52' item_index=50 item_count=100 range_min=2 range_max=102 range_current_value=52
-++android.widget.SeekBar role_description='slider' clickable range name='53' item_index=50 item_count=100 range_min=3 range_max=103 range_current_value=53
-++android.widget.EditText role_description='spin button' clickable range name='54' item_index=50 item_count=100 range_min=4 range_max=104 range_current_value=54

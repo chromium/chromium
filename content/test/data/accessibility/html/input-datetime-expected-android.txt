@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='1/1/2015 1:00AM' input_type=4 text_change_added_count=15
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='1/1/2015 1:00AM' hint='Launch' input_type=4 text_change_added_count=15

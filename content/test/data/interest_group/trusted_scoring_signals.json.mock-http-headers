@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: Application/JSON
-Ad-Auction-Allowed: true
-Data-Version: 1234

@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='blockquote'
-++++android.widget.TextView name='First blockquote has a child element.'
-++android.view.View role_description='blockquote' name='Second blockquote has no child.'

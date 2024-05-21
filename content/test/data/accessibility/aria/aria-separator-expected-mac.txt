@@ -1,5 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXStaticText AXRoleDescription='text' AXValue='Before'
-++AXSplitter AXRoleDescription='splitter'
-++AXSplitter AXRoleDescription='splitter' AXValue=1
-++AXStaticText AXRoleDescription='text' AXValue='After'

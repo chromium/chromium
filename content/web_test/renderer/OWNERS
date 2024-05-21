@@ -1,3 +1,0 @@
-# Accessibility
-per-file accessibility_controller.*=file://ui/accessibility/OWNERS
-per-file web_ax_object_proxy.*=file://ui/accessibility/OWNERS

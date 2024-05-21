@@ -1,7 +1,0 @@
-rootWebArea name='done'
-++genericContainer ignored
-++++genericContainer ignored
-++++++list
-++++++++listItem hierarchicalLevel=1
-++++++++++staticText name='item'
-++++++++++++inlineTextBox name='item'

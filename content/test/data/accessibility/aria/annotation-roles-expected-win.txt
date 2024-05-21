@@ -1,8 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_COMMENT name='comment' xml-roles:comment
-++IA2_ROLE_SUGGESTION name='suggestion' xml-roles:suggestion
-++IA2_ROLE_PARAGRAPH
-++++ROLE_SYSTEM_STATICTEXT name='This is '
-++++IA2_ROLE_MARK xml-roles:mark
-++++++ROLE_SYSTEM_STATICTEXT name='highlighted'
-++++ROLE_SYSTEM_STATICTEXT name='.'

@@ -1,9 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='menu'
-++++android.view.MenuItem role_description='menu item' clickable collapsed name='New'
-++++android.view.MenuItem role_description='menu item' clickable expanded name='Open' item_index=1 row_index=1
-++++android.view.MenuItem role_description='menu item' clickable collapsed name='Save' item_index=2 row_index=2
-++++android.view.MenuItem role_description='menu item' clickable expanded name='Quit' item_index=3 row_index=3
-++android.view.View role_description='splitter'
-++android.view.View role_description='splitter'
-++android.view.View role_description='splitter'

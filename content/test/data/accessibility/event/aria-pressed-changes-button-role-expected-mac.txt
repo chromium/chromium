@@ -1,3 +1,0 @@
-AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXValue=1
-=== Start Continuation ===
-AXValueChanged on AXButton

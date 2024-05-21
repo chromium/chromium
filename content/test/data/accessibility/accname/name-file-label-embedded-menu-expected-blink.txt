@@ -1,1 +1,0 @@
-button name='Flash the screen times.: No file chosen' nameFrom=relatedElement

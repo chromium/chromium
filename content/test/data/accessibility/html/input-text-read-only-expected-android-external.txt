@@ -1,3 +1,0 @@
-WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++EditText hint:"Name" clickable editable disabled focusable focused inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="textField", clickableScore="300", hint="Name"]

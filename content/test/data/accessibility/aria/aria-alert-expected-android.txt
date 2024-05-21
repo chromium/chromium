@@ -1,2 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='alert' name='This test is for aria role="alert"' live_region_type=2

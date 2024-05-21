@@ -1,4 +1,0 @@
-textarea_range={anchor: {:3, 0, down}, focus: {:3, 19, down}}
-textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 19, down}}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
-textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 19, down}}

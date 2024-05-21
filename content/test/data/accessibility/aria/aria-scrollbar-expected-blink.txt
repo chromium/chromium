@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++scrollBar vertical valueForRange=55.00 minValueForRange=0.00 maxValueForRange=100.00
-++++++++staticText name='ScrollBar1'
-++++++++++inlineTextBox name='ScrollBar1'
-++++++scrollBar horizontal valueForRange=55.00 minValueForRange=0.00 maxValueForRange=100.00
-++++++++staticText name='ScrollBar2'
-++++++++++inlineTextBox name='ScrollBar2'

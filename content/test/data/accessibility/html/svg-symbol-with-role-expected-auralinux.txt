@@ -1,5 +1,0 @@
-[document web] tag:#document
-++[section] tag:body
-++++[document frame] class:Symbol with role tag:svg
-++++++[push button] name='Click me!' id:myRect roledescription:fancy button tag:svg
-++++++[push button] name='Click me!' id:myRect roledescription:fancy button tag:svg

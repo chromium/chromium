@@ -1,1 +1,0 @@
-textField name='Flash the screen times.' nameFrom=relatedElement

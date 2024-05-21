@@ -1,2 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXProgressIndicator AXRoleDescription='progress indicator' AXValue=3

@@ -1,5 +1,0 @@
-[document web]
-++[static] name='Before'
-++[paragraph]
-++++[static] name='Paragraph'
-++[static] name='After'

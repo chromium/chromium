@@ -1,2 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXRadioButton AXRoleDescription='radio button' AXTitle='Radio1' AXValue=0

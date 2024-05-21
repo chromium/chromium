@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553.'
-++android.widget.ListView collection item_count=2 row_count=2 column_count=1
-++++android.view.View collection_item name='Cats' row_span=1 column_span=1
-++++android.view.View collection_item name='Dogs' item_index=1 row_index=1 row_span=1 column_span=1

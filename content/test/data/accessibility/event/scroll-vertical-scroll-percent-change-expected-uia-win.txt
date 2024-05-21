@@ -1,2 +1,0 @@
-ScrollVerticalScrollPercent changed on role=document
-ScrollVerticalScrollPercent changed on role=group, name=overflow div

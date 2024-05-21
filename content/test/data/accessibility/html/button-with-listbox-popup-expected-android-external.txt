@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View viewIdResName:"test1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++TextView text:"Choose one:" viewIdResName:"span" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++++Button text:"Choose one: Foo" viewIdResName:"test" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="popUpButton", clickableScore="300", roleDescription="pop up button"]
-++++ListView text:"Choose one:" viewIdResName:"options" clickable focusable CollectionInfo:[rows=3, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]

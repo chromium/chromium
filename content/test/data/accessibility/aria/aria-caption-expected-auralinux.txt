@@ -1,3 +1,0 @@
-[document web]
-++[caption] xml-roles:caption
-++++[static] name='Caption'

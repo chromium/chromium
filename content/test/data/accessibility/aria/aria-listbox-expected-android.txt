@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.ListView role_description='list box' clickable collection item_count=4 row_count=4 column_count=1
-++++android.view.View clickable collection_item focusable name='Item 1' row_span=1 column_span=1
-++++android.view.View clickable collection_item focusable name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
-++++android.view.View role_description='splitter'
-++++android.view.View clickable collection_item focusable name='Second group item 1' item_index=2 row_index=2 row_span=1 column_span=1
-++++android.view.View clickable collection_item focusable name='Second group item 2' item_index=3 row_index=3 row_span=1 column_span=1

@@ -1,5 +1,0 @@
-Text_TextSelectionChanged on role=description, name=abcde
-Text_TextSelectionChanged on role=document
-=== Start Continuation ===
-Text_TextSelectionChanged on role=description, name=abcde
-Text_TextSelectionChanged on role=document

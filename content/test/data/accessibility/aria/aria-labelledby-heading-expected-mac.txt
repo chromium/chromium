@@ -1,4 +1,0 @@
-AXWebArea
-++AXTextField AXTitleUIElement=:3
-++AXHeading AXTitle='h2' AXValue=2
-++++AXStaticText AXValue='h2'

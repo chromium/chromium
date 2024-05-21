@@ -1,4 +1,0 @@
-[document web]
-++[document frame] name='graphics-document' xml-roles:graphics-document
-++[panel] name='graphics-object' xml-roles:graphics-object
-++[image] name='graphics-symbol' xml-roles:graphics-symbol

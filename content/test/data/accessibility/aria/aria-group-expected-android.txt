@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.view.View role_description='link' clickable link name='Group Link1'
-++++++android.widget.TextView name='Group Link1'
-++++android.view.View role_description='link' clickable link name='Group Link2'
-++++++android.widget.TextView name='Group Link2'

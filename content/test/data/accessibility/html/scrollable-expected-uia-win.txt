@@ -1,5 +1,0 @@
-Document Scroll.HorizontalScrollPercent=-1.00 Scroll.HorizontalViewSize=100.00 Scroll.HorizontallyScrollable=false Scroll.VerticalScrollPercent=-1.00 Scroll.VerticalViewSize=100.00 Scroll.VerticallyScrollable=false
-++Group ClassName='not'
-++++Text Name='not scrollable'
-++Group ClassName='x' Scroll.HorizontalScrollPercent=0.00 Scroll.HorizontalViewSize=50.00 Scroll.HorizontallyScrollable=true Scroll.VerticalScrollPercent=-1.00 Scroll.VerticalViewSize=100.00 Scroll.VerticallyScrollable=false
-++Group ClassName='y' Scroll.HorizontalScrollPercent=-1.00 Scroll.HorizontalViewSize=100.00 Scroll.HorizontallyScrollable=false Scroll.VerticalScrollPercent=0.00 Scroll.VerticalViewSize=50.00 Scroll.VerticallyScrollable=true

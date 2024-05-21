@@ -1,9 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXTextArea AXRoleDescription='text entry area' AXValue='TextBox1'
-++++AXHeading AXRoleDescription='heading' AXTitle='TextBox1' AXValue=1
-++++++AXStaticText AXRoleDescription='text' AXValue='TextBox1'
-++AXTextArea AXRoleDescription='text entry area' AXValue='TextBox2<newline>Some text.'
-++++AXHeading AXRoleDescription='heading' AXTitle='TextBox2' AXValue=2
-++++++AXStaticText AXRoleDescription='text' AXValue='TextBox2'
-++++AXGroup AXRoleDescription='group'
-++++++AXStaticText AXRoleDescription='text' AXValue='Some text.'

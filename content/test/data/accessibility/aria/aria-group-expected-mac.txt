@@ -1,6 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationGroup AXRoleDescription='group'
-++++AXLink AXDescription='Group Link1' AXRoleDescription='link'
-++++++AXStaticText AXRoleDescription='text' AXValue='Group Link1'
-++++AXLink AXDescription='Group Link2' AXRoleDescription='link'
-++++++AXStaticText AXRoleDescription='text' AXValue='Group Link2'

@@ -1,4 +1,0 @@
-[document web]
-++[log] name='Busy log' busy container-live:polite live:polite
-++[log] name='Not-busy log' container-live:polite live:polite
-++[section] description='plain div' busy

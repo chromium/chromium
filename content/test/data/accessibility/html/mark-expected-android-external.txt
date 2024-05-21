@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++TextView text:"This test is to check " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"mark tag" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="mark", roleDescription="highlight"]
-++++TextView text:"." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

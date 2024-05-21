@@ -1,6 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
-++ROLE_SYSTEM_ALERT name='Please enter pet name' n_relations=1
-++IA2_ROLE_SECTION n_relations=0
-++++IA2_ROLE_LABEL n_relations=1
-++++++ROLE_SYSTEM_STATICTEXT name='Pet name:' n_relations=0
-++++ROLE_SYSTEM_TEXT name='Pet name:' FOCUSABLE IA2_STATE_INVALID_ENTRY IA2_STATE_REQUIRED n_relations=2 error='ROLE_SYSTEM_ALERT'

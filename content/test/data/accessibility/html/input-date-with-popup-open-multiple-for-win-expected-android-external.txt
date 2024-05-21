@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++Spinner text:"2008-09-01" clickable focusable inputType:20 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="date", clickableScore="300", roleDescription="date picker"]
-++++Spinner text:"2008-09-01" clickable focusable inputType:20 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="date", clickableScore="300", roleDescription="date picker"]
-++++Spinner text:"2008-09-01" hint:"Third date picker" clickable focusable inputType:20 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="date", clickableScore="300", hint="Third date picker", roleDescription="date picker"]

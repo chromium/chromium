@@ -1,6 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='The '
-++++Group Name='World Health Organization'
-++++++Text Name='WHO'
-++++Text Name=' was founded in 1948.'

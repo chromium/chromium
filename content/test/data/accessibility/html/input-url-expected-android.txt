@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.EditText clickable content_invalid editable_text focusable has_non_empty_value name='example.com' input_type=17 text_change_added_count=11

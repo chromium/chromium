@@ -1,7 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXList AXRoleDescription='list box'
-++++AXStaticText AXRoleDescription='text' AXValue='Item 1'
-++++AXStaticText AXRoleDescription='text' AXValue='Item 2'
-++++AXSplitter AXRoleDescription='splitter'
-++++AXStaticText AXRoleDescription='text' AXValue='Second group item 1'
-++++AXStaticText AXRoleDescription='text' AXValue='Second group item 2'

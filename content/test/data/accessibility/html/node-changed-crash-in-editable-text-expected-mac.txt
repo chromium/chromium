@@ -1,4 +1,0 @@
-AXWebArea
-++AXTextArea AXDescription='Done' AXValue='<newline>'
-++++AXGroup
-++++AXGroup

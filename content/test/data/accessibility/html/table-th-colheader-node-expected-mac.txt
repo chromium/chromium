@@ -1,1 +1,0 @@
-AXCell AXColumnIndexRange={loc: 0, len: 1} AXDescription='Firstname' AXRowIndexRange={loc: 0, len: 1}

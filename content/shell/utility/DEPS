@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/services/storage/test_api",
-  "+services/service_manager",
-  "+services/test/echo",
-]

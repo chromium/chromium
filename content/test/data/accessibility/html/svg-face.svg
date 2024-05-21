@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewbox="0 0 400 400">
-
-  <circle role="button" aria-label="face" id="face" r="200" cx="200" cy="200" stroke="red" stroke-width="1" fill="yellow" />
-  <ellipse role="button" aria-label="left-eye" id="left-eye" cx="120" cy="180" rx="18" ry="33" fill="black"/>
-  <ellipse role="button" aria-label="right-eye" id="right-eye" cx="280" cy="120" rx="18" ry="33" fill="black"/>
-  <ellipse role="button" aria-label="nose" id="nose" cx="200" cy="220" rx="8" ry="15" fill="black"/>
-  <path role="button" aria-label="smile" id="smile" stroke-width="10" stroke="black" fill="none" stroke-linecap="round" d="M120,280 Q200,330 290,280"/>
-
-</svg>

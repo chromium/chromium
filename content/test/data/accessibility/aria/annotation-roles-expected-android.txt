@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='comment' name='comment'
-++android.view.View role_description='suggestion' name='suggestion'
-++android.view.View
-++++android.widget.TextView name='This is '
-++++android.view.View role_description='highlight' name='highlighted'
-++++android.widget.TextView name='.'

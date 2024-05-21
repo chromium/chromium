@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView role_description='heading 1' heading name='Heading 1'
-++android.widget.TextView role_description='heading 2' heading name='Heading 2'
-++android.widget.TextView role_description='heading 3' heading name='Heading 3'
-++android.widget.TextView role_description='heading 4' heading name='Heading 4'
-++android.widget.TextView role_description='heading 5' heading name='Heading 5'
-++android.widget.TextView role_description='heading 6' heading name='Heading 6'

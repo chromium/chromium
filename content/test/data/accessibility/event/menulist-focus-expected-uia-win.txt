@@ -1,1 +1,0 @@
-AutomationFocusChanged on role=combobox

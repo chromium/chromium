@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.EditText role_description='spin button' clickable editable_text focusable has_non_empty_value range name='1' input_type=2 range_current_value=1 text_change_added_count=1
-++++android.widget.EditText role_description='spin button' clickable editable_text focusable has_non_empty_value range name='6' input_type=2 range_min=5 range_max=10 range_current_value=6 text_change_added_count=1

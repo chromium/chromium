@@ -1,5 +1,0 @@
-[document web]
-++[landmark] xml-roles:main
-++++[static] name='This is main element.'
-++[landmark] xml-roles:main
-++++[static] name='This is an ARIA role main.'

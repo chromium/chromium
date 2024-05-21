@@ -1,8 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TabWidget role_description='tab list'
-++++android.view.View role_description='tab' clickable name='Item'
-++++++android.widget.TextView role_description='heading 3' heading name='Item'
-++++android.view.View role_description='tab' clickable name='Prices' item_index=1 row_index=1
-++++++android.widget.TextView role_description='heading 3' heading name='Prices'
-++android.view.View role_description='tab panel' name='Item'
-++++android.widget.TextView name='Item tab content'

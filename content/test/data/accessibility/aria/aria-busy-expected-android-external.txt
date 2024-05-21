@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"Busy log" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="log", roleDescription="log"]
-++View text:"Not-busy log" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="log", roleDescription="log"]
-++TextView hint:"plain div" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hint="plain div"]

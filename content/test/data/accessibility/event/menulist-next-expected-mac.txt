@@ -1,1 +1,0 @@
-AXFocusedUIElementChanged on AXMenuItem AXValue="Apple"

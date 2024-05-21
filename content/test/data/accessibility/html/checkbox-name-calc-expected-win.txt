@@ -1,7 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_CHECKBUTTON name='Title0' FOCUSABLE IA2_STATE_CHECKABLE checkable:true explicit-name:true
-++ROLE_SYSTEM_CHECKBUTTON name='Label1' FOCUSABLE IA2_STATE_CHECKABLE description-from:tooltip checkable:true explicit-name:true description='Title1'
-++ROLE_SYSTEM_CHECKBUTTON name='AriaLabel2' FOCUSABLE IA2_STATE_CHECKABLE description-from:tooltip checkable:true explicit-name:true description='Title2'
-++ROLE_SYSTEM_CHECKBUTTON name='LabelledBy3' FOCUSABLE IA2_STATE_CHECKABLE description-from:tooltip checkable:true explicit-name:true description='Title3'
-++ROLE_SYSTEM_CHECKBUTTON name='LabelledBy4' FOCUSABLE IA2_STATE_CHECKABLE description-from:aria-describedby checkable:true explicit-name:true description='DescribedBy4'
-++ROLE_SYSTEM_CHECKBUTTON FOCUSABLE IA2_STATE_CHECKABLE description-from:aria-describedby checkable:true description='DescribedBy5'

@@ -1,7 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='This is '
-++++Text Name='%E2%80%9C'
-++++Text Name='Chromium Blink'
-++++Text Name='%E2%80%9D'
-++++Text Name=' based browser.'

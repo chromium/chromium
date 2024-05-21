@@ -1,1 +1,0 @@
-StructureChanged/ChildRemoved on role=toolbar

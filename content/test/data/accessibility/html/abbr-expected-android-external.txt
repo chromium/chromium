@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++TextView text:"The " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"World Health Organization" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="abbr"]
-++++TextView text:" was founded in 1948." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

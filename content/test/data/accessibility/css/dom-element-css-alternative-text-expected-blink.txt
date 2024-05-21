@@ -1,4 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++image name='alternative text'

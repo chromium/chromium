@@ -1,8 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"Unnamed ARIA form: must fall back to the native role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++TextView text:"Unnamed ARIA form on plain div uses generic container role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++View text:"Named form" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="form"]
-++View text:"Named ARIA form#2 gets the form role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="form"]
-++++TextView text:"Named ARIA form#2 gets the form role." viewIdResName:"form-name" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++View text:"Named form" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="form"]
-++View text:"An aria-rolescription works on a nameless role=form." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="form", roleDescription="form"]

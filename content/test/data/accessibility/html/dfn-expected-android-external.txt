@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"Web Browser" CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="term", roleDescription="term"]
-++++TextView text:" A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

@@ -1,7 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXGroup AXSubrole=AXTimeGroup AXRoleDescription='time'
-++++++AXStaticText AXRoleDescription='text' AXValue='10:00'
-++++AXStaticText AXRoleDescription='text' AXValue=' '
-++++AXGroup AXSubrole=AXTimeGroup AXRoleDescription='time'
-++++++AXStaticText AXRoleDescription='text' AXValue='Valentines day'

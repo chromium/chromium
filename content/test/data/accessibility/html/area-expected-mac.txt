@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXGroup AXDescription='pipe' AXRoleDescription='group'
-++++++AXLink AXDescription='pipe1' AXRoleDescription='link'

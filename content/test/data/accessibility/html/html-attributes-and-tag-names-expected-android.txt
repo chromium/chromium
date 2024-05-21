@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused name='Hello World'
-++android.widget.TextView role_description='heading 1' heading name='Heading'
-++android.widget.TextView name='Paragraph'
-++android.view.View
-++++android.widget.EditText clickable editable_text focusable input_type=1
-++android.widget.Button role_description='button' clickable focusable name='c'
-++android.widget.Button role_description='button' clickable focusable name='Click'

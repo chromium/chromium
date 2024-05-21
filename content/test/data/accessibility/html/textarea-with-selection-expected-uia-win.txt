@@ -1,3 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Edit Value.Value='The textarea tag defines a multi-line text input control.<newline>'

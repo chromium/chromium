@@ -1,9 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Group Name='Browser Engines:'
-++++++Group IsControlElement=false
-++++++++Text Name='Browser Engines:'
-++++++Text Name='Browser: '
-++++++Edit
-++++++Text Name=' Rendering Engine: '
-++++++Edit

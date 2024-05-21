@@ -1,3 +1,0 @@
-[document web]
-++[landmark] xml-roles:banner
-++++[static] name='Chromium Browser'

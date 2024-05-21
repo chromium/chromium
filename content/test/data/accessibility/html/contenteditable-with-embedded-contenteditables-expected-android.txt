@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='This is editable.<newline>This is not editable.<newline>But this one is.<newline>So is this one.' text_change_added_count=72
-++++android.widget.TextView name='This is editable.'
-++++android.widget.TextView name='This is not editable.'
-++++android.view.View name='<newline>'
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='But this one is.' text_change_added_count=16
-++++android.widget.EditText clickable editable_text has_non_empty_value multiline name='So is this one.' text_change_added_count=15

@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++staticText name='visible link'
-++++++++inlineTextBox name='visible link'
-++++++staticText name='visible link'
-++++++++inlineTextBox name='visible link'

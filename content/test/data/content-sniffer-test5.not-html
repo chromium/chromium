@@ -1,5 +1,0 @@
-<html>
-<head><title>Content Sniffer Test 5</title></head>
-<body>We should not sniff this content as HTML,
-    when read as a file URL.</body>
-</html>

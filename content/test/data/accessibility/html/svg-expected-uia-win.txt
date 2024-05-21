@@ -1,5 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Image Name='svg' HelpText='SVG Title Tag'
-++++++Group IsControlElement=false
-++++++++Text Name='Test'

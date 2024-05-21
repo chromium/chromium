@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++genericContainer description='b'
-++++++++genericContainer description='c'

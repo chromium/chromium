@@ -1,4 +1,0 @@
-list.accessibilityAttributeValue(selectedChildren)=[:4, :3, :5]
-button.accessibilityAttributeValue(AXSelected)=0
-div.accessibilityAttributeNames.has(AXSelectedChildren)='no'
-div.accessibilityAttributeValue(AXSelectedChildren)=[]

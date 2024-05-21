@@ -1,5 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++UNKNOWN label='svg'
-++++++++LINK focusable actions='{DEFAULT}'

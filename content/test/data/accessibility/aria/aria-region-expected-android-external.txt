@@ -1,8 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"Unnamed ARIA region: must fall back to the native role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++TextView text:"Unnamed ARIA region on plain div uses generic container role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++View text:"Named region" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
-++View text:"Named ARIA region#2 gets the region role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
-++++TextView text:"Named ARIA region#2 gets the region role." viewIdResName:"region-name" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++View text:"Named region" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
-++View text:"An aria-rolescription works on a nameless role=region." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="Regioneque region"]

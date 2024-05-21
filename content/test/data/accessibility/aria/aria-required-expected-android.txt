@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.RadioGroup role_description='radio group' state_description='Required'
-++++android.widget.RadioButton role_description='radio button' checkable clickable state_description='Not checked. In group, option 1 of 2'
-++++android.widget.RadioButton role_description='radio button' checkable clickable state_description='Not checked. In group, option 2 of 2' item_index=1 row_index=1

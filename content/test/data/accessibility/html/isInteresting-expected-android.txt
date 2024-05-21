@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView role_description='heading 1' heading interesting name='A non focusable child of a control should not be interesting on Android'
-++android.widget.TextView interesting name='Div with click handler'
-++android.widget.Button role_description='button' interesting name='I am interesting'

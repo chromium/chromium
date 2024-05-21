@@ -1,5 +1,0 @@
-Document LocalizedControlType='document'
-++Group LocalizedControlType='group' IsControlElement=false
-++++Text LocalizedControlType='text' Name='I am '
-++++Group LocalizedControlType='deletion' IsControlElement=false
-++++++Text LocalizedControlType='text' Name='vegetarian'

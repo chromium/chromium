@@ -1,4 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++button inputType='file' name='Choose File: No file chosen' value='No file chosen'

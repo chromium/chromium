@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"This test is to check   pre\nformatting." viewIdResName:"pre" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView text:"This test is to check   pre\nformatting" viewIdResName:"div-pre" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView text:"This test is to check   pre\nformatting." viewIdResName:"div-pre-wrap" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView text:"This test is to check pre formatting." viewIdResName:"div-normal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

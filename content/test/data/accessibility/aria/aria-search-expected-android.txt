@@ -1,2 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='search' name='ARIA role search.'

@@ -1,8 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++SeekBar text:"5" clickable focusable RangeInfo:[current=5.0, min=1.0, max=10.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++SeekBar text:"3" clickable focusable RangeInfo:[current=3.0, min=1.0, max=10.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++SeekBar text:"Medium" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++SeekBar text:"Friday" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++SeekBar text:"0.2" clickable focusable RangeInfo:[current=0.2, min=-1.0, max=1.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++SeekBar text:"50" clickable focusable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]

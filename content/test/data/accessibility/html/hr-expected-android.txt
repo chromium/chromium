@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='Before.'
-++android.view.View role_description='splitter' name='Dividing line'
-++android.widget.TextView name='Middle.'
-++android.view.View role_description='splitter'
-++android.widget.TextView name='After.'

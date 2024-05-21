@@ -1,3 +1,0 @@
-android.webkit.WebView focusable
-++android.view.View
-++++android.widget.EditText clickable editable_text focusable focused hint='Name' input_type=1

@@ -1,6 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="log", roleDescription="log"]
-++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="log", roleDescription="log"]
-++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="log", roleDescription="log"]
-++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="log", roleDescription="log"]
-++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="log", roleDescription="log"]

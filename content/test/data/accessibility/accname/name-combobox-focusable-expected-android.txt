@@ -1,1 +1,0 @@
-android.widget.Spinner name='English' hint='Choose your language.'

@@ -1,3 +1,0 @@
-[document web]
-++[statusbar] atomic:true container-atomic:true container-live:polite container-relevant:additions text live:polite relevant:additions text xml-roles:status
-++[statusbar] atomic:false container-atomic:false container-live:polite container-relevant:additions text live:polite relevant:additions text xml-roles:status

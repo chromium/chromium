@@ -1,4 +1,0 @@
-a.accessibilityAttributeNames.has(AXURL)='yes'
-a.accessibilityAttributeValue(AXURL)='https://example.com/'
-not_applicable.accessibilityAttributeNames.has(AXURL)='no'
-not_applicable.accessibilityAttributeValue(AXURL)=NULL

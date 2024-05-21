@@ -1,2 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='timer' name='This test is for aria-role = timer' live_region_type=1

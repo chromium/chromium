@@ -1,3 +1,0 @@
-Document
-++Group
-++++MenuItem Name='Menu item'

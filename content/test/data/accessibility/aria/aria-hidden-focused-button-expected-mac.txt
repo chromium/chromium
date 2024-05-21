@@ -1,2 +1,0 @@
-AXWebArea
-++AXButton AXTitle='Button 2'

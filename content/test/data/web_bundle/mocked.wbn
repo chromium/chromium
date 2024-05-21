@@ -1,6 +1,0 @@
-<!DOCTYPE html>
-This file will be used with MockParserFactory in
-web_bundle_browsertest.cc, therefore is not a real Web Bundle file.
-<script>
-document.title = document.baseURI;
-</script>

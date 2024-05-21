@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"role" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="emphasis"]
-++View text:"element (no name)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="emphasis"]
-++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++View text:"include me" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="emphasis"]

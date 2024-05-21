@@ -1,3 +1,0 @@
-SystemAlert on role=alert, name=a
-SystemAlert on role=alert, name=b
-SystemAlert on role=alert, name=c

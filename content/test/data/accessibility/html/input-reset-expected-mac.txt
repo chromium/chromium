@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXTextField AXRoleDescription='text field'
-++++AXButton AXRoleDescription='button' AXTitle='Reset'

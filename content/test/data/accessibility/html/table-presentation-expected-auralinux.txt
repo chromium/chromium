@@ -1,9 +1,0 @@
-[document web] name='Table with role=presentation'
-++[section]
-++++[static] name='1'
-++[section]
-++++[static] name='2'
-++[section]
-++++[static] name='4'
-++[section]
-++++[static] name='5'

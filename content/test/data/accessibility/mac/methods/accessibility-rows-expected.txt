@@ -1,5 +1,0 @@
-table.accessibilityRows=[:3]
-column=:6
-column.accessibilityRows=[:4]
-tree.accessibilityRows=[:11]
-not_applicable.accessibilityRows=[]

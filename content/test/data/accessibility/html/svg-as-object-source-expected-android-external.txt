@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"object without space" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="pluginObject", roleDescription="object"]
-++++View text:"object with space" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="pluginObject", roleDescription="object"]

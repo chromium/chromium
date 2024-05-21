@@ -1,2 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"ARIA role search." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="search", roleDescription="search"]

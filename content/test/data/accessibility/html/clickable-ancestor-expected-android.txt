@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused name='Checking nodes marked as clickable'
-++android.widget.TextView name='Generic div'
-++android.widget.TextView role_description='heading 1' heading name='Heading'
-++android.widget.Button role_description='button' clickable focusable name='Button'
-++android.view.View clickable
-++++android.widget.TextView name='Paragraph with click handler on parent and should be not marked as clickable'

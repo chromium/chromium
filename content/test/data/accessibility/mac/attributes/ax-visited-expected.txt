@@ -1,3 +1,0 @@
-a.accessibilityAttributeNames.has(AXVisited)='yes'
-a.accessibilityAttributeValue(AXVisited)=0
-// Todo: test link after being visited.

@@ -1,5 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer multiline name='Done' value='<newline>'
-++++++genericContainer
-++++++genericContainer

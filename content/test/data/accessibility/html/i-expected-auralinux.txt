@@ -1,5 +1,0 @@
-[document web]
-++[paragraph]
-++++[static] name='This is to check '
-++++[static] name='italic property'
-++++[static] name=' using i tag.'

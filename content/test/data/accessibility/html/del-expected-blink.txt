@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++paragraph
-++++++++staticText name='I am '
-++++++++++inlineTextBox name='I am '
-++++++++contentDeletion
-++++++++++staticText name='vegetarian'
-++++++++++++inlineTextBox name='vegetarian'

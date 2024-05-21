@@ -1,1 +1,0 @@
-button name='foo bar baz' nameFrom=relatedElement

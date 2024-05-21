@@ -1,9 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXDateField AXRoleDescription='month picker'
-++++++AXGroup AXRoleDescription='group'
-++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=0
-++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
-++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=0
-++++++AXPopUpButton AXDescription='Show month picker' AXRoleDescription='pop up button'

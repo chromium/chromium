@@ -1,2 +1,0 @@
-button.accessibilityAttributeNames.has(AXTitle)='yes'
-button.accessibilityAttributeValue(AXTitle)='Press Me'

@@ -1,5 +1,0 @@
-HTTP/1.1 200 OK
-X-Comment1: HTML Imports require CORS.
-Access-Control-Allow-Credentials: true
-Access-Control-Allow-Origin: *
-Content-Type: text/html

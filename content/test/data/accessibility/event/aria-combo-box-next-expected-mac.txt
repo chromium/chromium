@@ -1,7 +1,0 @@
-AXFocusedUIElementChanged on AXStaticText AXValue='Orange'
-AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list'
-AXSelectedChildrenChanged on AXList
-=== Start Continuation ===
-AXFocusedUIElementChanged on AXStaticText AXValue='Banana'
-AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list'
-AXSelectedChildrenChanged on AXList

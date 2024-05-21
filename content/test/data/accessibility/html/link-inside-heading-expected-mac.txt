@@ -1,4 +1,0 @@
-AXWebArea
-++AXHeading AXTitle='Link In Heading' AXValue=1
-++++AXLink AXDescription='Link In Heading'
-++++++AXStaticText AXValue='Link In Heading'

@@ -1,1 +1,0 @@
-button name='Reset' nameFrom=contents

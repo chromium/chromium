@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Checkbox0'
-++++android.widget.CheckBox role_description='checkbox' checkable checked clickable focusable name='Checkbox1'
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Checkbox2'
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Checkbox3'
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Checkbox4' state_description='Partially Checked'

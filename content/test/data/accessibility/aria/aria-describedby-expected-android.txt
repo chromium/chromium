@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.EditText clickable editable_text focusable hint='Your username should be your email id' input_type=1
-++android.view.View role_description='tooltip' name='Your username should be your email id'
-++android.widget.EditText clickable editable_text focusable hint='mmddyy' input_type=1

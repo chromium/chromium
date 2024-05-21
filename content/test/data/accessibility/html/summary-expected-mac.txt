@@ -1,7 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='details'
-++++AXButton AXRoleDescription='disclosure triangle' AXTitle='details tag'
-++++++AXStaticText AXRoleDescription='text' AXValue='details tag'
-++AXGroup AXRoleDescription='details'
-++++AXButton AXDescription='name' AXHelp='details #2' AXRoleDescription='disclosure triangle'
-++++++AXStaticText AXRoleDescription='text' AXValue='details #2'

@@ -1,9 +1,0 @@
-include_rules = [
-  "+v8",  # To support unit tests.
-]
-
-specific_include_rules = {
-  "tracing_controller_android.*": [
-    "+third_party/perfetto",  # For tracing using Perfetto.
-  ]
-}

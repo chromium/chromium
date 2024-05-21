@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.ProgressBar role_description='progress indicator' range name='22' item_index=22 item_count=100 range_max=100 range_current_value=22
-++++android.widget.ProgressBar role_description='progress indicator' range name='indeterminate' range_max=1

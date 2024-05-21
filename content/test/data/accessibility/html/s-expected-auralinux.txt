@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[content deletion]
-++++++[static] name='My car is blue.'

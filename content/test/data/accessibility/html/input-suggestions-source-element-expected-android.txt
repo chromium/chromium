@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.EditText clickable editable_text focusable input_type=1

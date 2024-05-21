@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
-++++++Button text:"Click me!" viewIdResName:"myRect" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="fancy button"]
-++++++Button text:"Click me!" viewIdResName:"myRect" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="fancy button"]

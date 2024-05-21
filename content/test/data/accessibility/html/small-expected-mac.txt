@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='Chromium'
-++++AXStaticText AXValue='open source project'

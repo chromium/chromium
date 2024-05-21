@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup
-++++++AXStaticText AXValue='Choose a pokemon '
-++++++AXComboBox AXAutocompleteValue='list' AXTitle='Choose a pokemon'

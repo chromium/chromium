@@ -1,7 +1,0 @@
-# Media Session API related
-per-file AudioFocus*.java=steimel@chromium.org
-
-# Process management related
-per-file BindingManager*.java=jcivelli@chromium.org
-per-file ChildProcessConnection*.java=jcivelli@chromium.org
-per-file ChildProcessLauncher.java=jcivelli@chromium.org

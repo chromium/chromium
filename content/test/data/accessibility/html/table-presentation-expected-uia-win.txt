@@ -1,9 +1,0 @@
-Document Name='Table with role=presentation'
-++Group IsControlElement=false
-++++Text Name='1'
-++Group IsControlElement=false
-++++Text Name='2'
-++Group IsControlElement=false
-++++Text Name='4'
-++Group IsControlElement=false
-++++Text Name='5'

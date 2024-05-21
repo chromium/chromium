@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++radioButton name='Radio1' checkedState=false
-++++++++staticText name='Radio1'
-++++++++++inlineTextBox name='Radio1'

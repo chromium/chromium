@@ -1,4 +1,0 @@
-AXWebArea
-++AXHeading AXDOMClassList=['headerClass'] AXTitle='Image' AXValue=1
-++++AXStaticText AXValue='Image'
-++AXImage AXDOMClassList=['imageClass'] AXDescription='ImageAlt'

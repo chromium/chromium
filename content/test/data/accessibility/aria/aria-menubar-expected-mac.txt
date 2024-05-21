@@ -1,5 +1,0 @@
-AXWebArea
-++AXMenuBar
-++++AXMenuItem AXTitle='File'
-++++AXMenuItem AXTitle='Edit'
-++++AXMenuItem AXTitle='View'

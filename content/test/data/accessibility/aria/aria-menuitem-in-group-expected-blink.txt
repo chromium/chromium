@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++group
-++++++++menuItem name='Menu item'
-++++++++++staticText name='Menu item'
-++++++++++++inlineTextBox name='Menu item'

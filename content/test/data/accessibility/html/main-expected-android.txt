@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='main' name='This is main element.'
-++android.view.View role_description='main' name='This is an ARIA role main.'

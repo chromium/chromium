@@ -1,5 +1,0 @@
-AXWebArea
-++AXMenu AXDescription='parent node'
-++++AXMenuItem AXTitle='Inactive descendant'
-++++AXMenuItem AXTitle='Active descendant' AXValue=0
-++++AXMenuItem AXTitle='Inactive descendant #2' AXValue=0

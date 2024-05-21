@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_LANDMARK xml-roles:navigation
-++++ROLE_SYSTEM_LINK name='Don't click on me' FOCUSABLE
-++++++ROLE_SYSTEM_STATICTEXT name='Don't click on me'

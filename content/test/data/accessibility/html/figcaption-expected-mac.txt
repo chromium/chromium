@@ -1,9 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXImage AXDescription='This is a green box.'
-++++AXGroup
-++++++AXStaticText AXValue='Fig.1 - A green Box'
-++AXGroup
-++++AXImage AXDescription='This is a blue box.'
-++++AXGroup
-++++++AXStaticText AXValue='Fig.2 - A blue Box'

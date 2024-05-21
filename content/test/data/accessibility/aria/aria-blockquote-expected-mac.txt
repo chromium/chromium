@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='blockquote'
-++++AXStaticText AXRoleDescription='text' AXValue='Blockquote'

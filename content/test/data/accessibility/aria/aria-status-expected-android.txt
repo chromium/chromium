@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='status' live_region_type=1
-++android.view.View role_description='status' live_region_type=1

@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_PUSHBUTTON name='Cut' FOCUSABLE keyboard_shortcut='Ctrl+X'
-++++ROLE_SYSTEM_PUSHBUTTON name='Copy' FOCUSABLE keyboard_shortcut='Ctrl+C'
-++++ROLE_SYSTEM_PUSHBUTTON name='Paste' FOCUSABLE keyboard_shortcut='Ctrl+V'

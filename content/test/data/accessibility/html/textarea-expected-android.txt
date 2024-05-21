@@ -1,5 +1,0 @@
-#<skip - crbug.com/425485>
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.widget.EditText clickable editable_text focusable multiline name='The textarea tag defines a multi-line text input control.
-'

@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Title0'
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Label1' hint='Title1'
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='AriaLabel2' hint='Title2'
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='LabelledBy3' hint='Title3'
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='LabelledBy4' hint='DescribedBy4'
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable hint='DescribedBy5'

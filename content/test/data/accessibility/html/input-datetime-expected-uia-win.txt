@@ -1,4 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Edit Value.Value='1/1/2015 1:00AM'
-++++Edit Name='Launch' Value.Value='1/1/2015 1:00AM'

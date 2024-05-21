@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.Spinner role_description='local date and time picker' clickable focusable input_type=4

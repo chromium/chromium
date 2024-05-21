@@ -1,7 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup
-++++++AXWebArea
-++++++++AXGroup
-++++++++++AXLink AXDescription='done'
-++++++++++++AXStaticText AXValue='done'

@@ -1,1 +1,0 @@
-"cookies", { "types": [ "cookies" ], "and": "a", "few": [ "unrecognized"], "fields": { "of": "various" }, "JSON": "types" }

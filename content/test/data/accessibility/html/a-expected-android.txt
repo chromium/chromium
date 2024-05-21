@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.view.View role_description='link' clickable focusable link name='normal link'
-++++++android.widget.TextView name='normal link'

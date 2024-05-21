@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXLandmarkNavigation AXRoleDescription='navigation'
-++++AXLink AXDescription='Don't click on me' AXRoleDescription='link'
-++++++AXStaticText AXRoleDescription='text' AXValue='Don't click on me'

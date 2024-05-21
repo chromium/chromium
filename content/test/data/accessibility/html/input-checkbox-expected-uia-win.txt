@@ -1,7 +1,0 @@
-Document
-++Group IsControlElement=false
-++++CheckBox Name='Checkbox0' Toggle.ToggleState='Off'
-++++CheckBox Name='Checkbox1' Toggle.ToggleState='On'
-++++CheckBox Name='Checkbox2' Toggle.ToggleState='Off'
-++++CheckBox Name='Checkbox3' Toggle.ToggleState='Off'
-++++CheckBox Name='Checkbox4' Toggle.ToggleState='Indeterminate'

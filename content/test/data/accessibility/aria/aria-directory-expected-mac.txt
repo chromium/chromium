@@ -1,2 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXList AXSubrole=AXContentList AXRoleDescription='content list'

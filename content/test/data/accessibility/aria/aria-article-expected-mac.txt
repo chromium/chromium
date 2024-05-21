@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXDocumentArticle AXRoleDescription='article'
-++++AXStaticText AXRoleDescription='text' AXValue='This is an ARIA article.'

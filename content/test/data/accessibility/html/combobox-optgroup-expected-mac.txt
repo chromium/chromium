@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXPopUpButton AXRoleDescription='pop up button' AXValue='Mercedes Label'
-++++++AXMenuItem AXRoleDescription='menu item' AXValue='Mercedes Label'

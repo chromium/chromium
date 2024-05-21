@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.Image name='Static fallback'
-++++android.widget.Image
-++++++android.view.View role_description='link' clickable focusable link name='Interactive fallback'
-++++++++android.widget.TextView name='Interactive fallback'

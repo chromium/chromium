@@ -1,7 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++ListView clickable CollectionInfo:[rows=4, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
-++++View text:"Item 1" clickable focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View text:"Item 2" clickable focusable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View actions:[AX_FOCUS] bundle:[chromeRole="splitter", clickableScore="100", roleDescription="splitter"]
-++++View text:"Second group item 1" clickable focusable CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View text:"Second group item 2" clickable focusable CollectionItemInfo:[rowIndex=3, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

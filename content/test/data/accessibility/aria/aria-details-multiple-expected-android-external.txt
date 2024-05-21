@@ -1,7 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Some " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++View text:"highlighted text" viewIdResName:"annotated-text" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="mark", roleDescription="highlight"]
-++TextView text:" example." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++View text:"Good job!" viewIdResName:"comment" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comment", roleDescription="comment"]
-++View text:"Some footnote." viewIdResName:"footnote" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docFootnote", roleDescription="footnote"]
-++View text:"The meaning is." viewIdResName:"definition" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="definition", roleDescription="definition"]

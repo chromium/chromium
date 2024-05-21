@@ -1,3 +1,0 @@
-AXFocusedUIElementChanged on AXButton AXTitle='not editable'
-=== Start Continuation ===
-AXFocusedUIElementChanged on AXButton AXTitle='editable'

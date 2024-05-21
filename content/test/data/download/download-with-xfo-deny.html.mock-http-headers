@@ -1,3 +1,0 @@
-HTTP/1.0 200 OK
-Content-Disposition: attachment; filename=foo
-X-Frame-Options: DENY

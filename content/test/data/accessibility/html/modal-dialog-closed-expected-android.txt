@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='This should be in the tree.'
-++android.widget.Spinner role_description='color picker' clickable focusable name='#000000'

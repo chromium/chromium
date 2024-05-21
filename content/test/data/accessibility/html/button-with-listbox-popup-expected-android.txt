@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.TextView name='Choose one:'
-++++android.widget.Button role_description='pop up button' clickable focusable name='Choose one: Foo'
-++++android.widget.ListView role_description='list box' clickable collection focusable name='Choose one:' item_count=3 row_count=3 column_count=1

@@ -1,4 +1,0 @@
-[document web]
-++[list box]
-++++[list item] name='1' selectable selected
-++++[list item] name='2' selectable

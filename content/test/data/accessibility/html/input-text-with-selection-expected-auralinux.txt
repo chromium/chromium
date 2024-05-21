@@ -1,3 +1,0 @@
-[document web] focusable caret_offset=1 selection_start=0 selection_end=1
-++[section] caret_offset=1 selection_start=0 selection_end=1
-++++[entry] editable focusable focused single-line selectable-text text-input-type:text caret_offset=5 selection_start=3 selection_end=5

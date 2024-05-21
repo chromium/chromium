@@ -1,2 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
-++ROLE_SYSTEM_SLIDER value='5' IA2_STATE_HORIZONTAL xml-roles:slider currentValue=5 minimumValue=1 maximumValue=10

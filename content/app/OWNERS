@@ -1,6 +1,0 @@
-rockot@google.com
-
-per-file sandbox_helper_win.cc=file://sandbox/win/OWNERS
-
-# For threading and startup/shutdown sequences (ContentMainRunner, etc.)
-per-file content_main_runner*=gab@chromium.org

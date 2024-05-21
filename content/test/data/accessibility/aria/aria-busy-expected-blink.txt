@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++log name='Busy log' busy=true containerLiveBusy=true
-++++++log name='Not-busy log' containerLiveBusy=false
-++++++genericContainer description='plain div' busy=true

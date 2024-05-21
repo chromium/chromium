@@ -1,5 +1,0 @@
-android.webkit.WebView focusable
-++android.app.Dialog role_description='dialog' focusable
-++++android.widget.TextView name='The dialog subtree should be the only text content in the accessibility tree. '
-++++android.view.View role_description='link' clickable focusable focused link name='Link inside the dialog.'
-++++++android.widget.TextView name='Link inside the dialog.'

@@ -1,6 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationGroup AXRoleDescription='feed'
-++++AXGroup AXSubrole=AXDocumentArticle AXRoleDescription='article'
-++++++AXStaticText AXRoleDescription='text' AXValue='First'
-++++AXGroup AXSubrole=AXDocumentArticle AXRoleDescription='article'
-++++++AXStaticText AXRoleDescription='text' AXValue='Second'

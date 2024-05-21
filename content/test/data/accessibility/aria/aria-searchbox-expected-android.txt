@@ -1,2 +1,0 @@
-android.webkit.WebView focusable
-++android.widget.EditText role_description='search text field' clickable editable_text focusable focused has_non_empty_value multiline name='<newline>    ARIA role searchbox.<newline>  ' text_change_added_count=28

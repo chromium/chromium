@@ -1,1 +1,0 @@
-button name='Rich's button' nameFrom=relatedElement

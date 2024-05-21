@@ -1,9 +1,0 @@
-rootWebArea
-++form
-++++labelText
-++++++staticText name='Pet name:'
-++++++++inlineTextBox name='Pet name:'
-++++textField required name='Pet name:' value='ready'
-++++++genericContainer
-++++++++staticText name='ready'
-++++++++++inlineTextBox name='ready'

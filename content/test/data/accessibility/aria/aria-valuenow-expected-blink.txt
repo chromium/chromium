@@ -1,4 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++progressIndicator valueForRange=3.00 minValueForRange=0.00 maxValueForRange=100.00

@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXTextField AXRoleDescription='text field' AXValue='1/1/2015 1:00AM'
-++++AXTextField AXDescription='Launch' AXRoleDescription='text field' AXValue='1/1/2015 1:00AM'

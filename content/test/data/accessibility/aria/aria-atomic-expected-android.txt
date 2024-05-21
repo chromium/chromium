@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='log' focusable name='This test is for aria-atomic="false"' live_region_type=1
-++android.view.View role_description='log' focusable name='This test is for aria-atomic="true"' live_region_type=1
-++android.view.View role_description='alert' focusable name='This test is for alert.' live_region_type=2
-++android.view.View role_description='status' focusable name='This test is for status.' live_region_type=1

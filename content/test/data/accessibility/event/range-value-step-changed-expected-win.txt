@@ -1,3 +1,0 @@
-=== Start Continuation ===
-=== Start Continuation ===
-EVENT_OBJECT_VALUECHANGE on <input#step> role=ROLE_SYSTEM_SLIDER value="3" FOCUSABLE IA2_STATE_HORIZONTAL

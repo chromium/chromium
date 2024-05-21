@@ -1,5 +1,0 @@
-Document
-++Text Name='Before'
-++Group IsControlElement=false
-++++Text Name='Paragraph'
-++Text Name='After'

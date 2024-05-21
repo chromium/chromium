@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.TextView name='This text contains '
-++++android.view.View name='superscript'
-++++android.widget.TextView name=' text.'

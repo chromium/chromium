@@ -1,7 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_COMBOBOX value='autocomplete=inline' FOCUSABLE HASPOPUP IA2_STATE_SUPPORTS_AUTOCOMPLETION autocomplete:inline haspopup:listbox
-++++ROLE_SYSTEM_COMBOBOX value='autocomplete=list' FOCUSABLE HASPOPUP IA2_STATE_SUPPORTS_AUTOCOMPLETION autocomplete:list haspopup:listbox
-++++ROLE_SYSTEM_COMBOBOX value='autocomplete=both' FOCUSABLE HASPOPUP IA2_STATE_SUPPORTS_AUTOCOMPLETION autocomplete:both haspopup:listbox
-++++ROLE_SYSTEM_COMBOBOX value='autocomplete=none' FOCUSABLE HASPOPUP haspopup:listbox
-++++ROLE_SYSTEM_TEXT value='No role with autocomplete=inline' FOCUSABLE IA2_STATE_SUPPORTS_AUTOCOMPLETION autocomplete:inline

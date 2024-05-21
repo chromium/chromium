@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 language:es-ES offset:1 language:fr-FR ia2_hypertext='<obj0>Comment allez-vous?'
-++IA2_ROLE_PARAGRAPH offset:0 language:es-ES ia2_hypertext='Espanyol'
-++++ROLE_SYSTEM_STATICTEXT name='Espanyol' offset:0 language:es-ES ia2_hypertext='Espanyol'
-++ROLE_SYSTEM_STATICTEXT name='Comment allez-vous?' offset:0 language:fr-FR ia2_hypertext='Comment allez-vous?'
