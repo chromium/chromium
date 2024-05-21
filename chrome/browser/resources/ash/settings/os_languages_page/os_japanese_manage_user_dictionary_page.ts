@@ -8,6 +8,7 @@
  * methods.
  */
 
+import './os_japanese_dictionary_expand.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
@@ -26,10 +27,6 @@ import {getTemplate} from './os_japanese_manage_user_dictionary_page.html.js';
 // TODO(b/265559727): Remove GlobalScrollTargetMixin if it is unused.
 const OsSettingsJapaneseManageUserDictionaryPageElementBase =
     GlobalScrollTargetMixin(I18nMixin(PolymerElement));
-
-interface DictionaryUi {
-  expanded: boolean;
-}
 
 class OsSettingsJapaneseManageUserDictionaryPageElement extends
     OsSettingsJapaneseManageUserDictionaryPageElementBase {
@@ -60,7 +57,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
   private userDataRemote_?: mojom.InputMethodUserDataServiceRemote = undefined;
 
   // All Japanese user dictionary data that is loaded into the app.
-  private dictionaries_: Array<JapaneseDictionary&DictionaryUi>;
+  private dictionaries_: JapaneseDictionary[] = [];
 
   // Loads the dictionary objects from IME user data service.
   private async getDictionaries_(): Promise<void> {
@@ -74,8 +71,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
     }
 
     if (response.dictionaries !== undefined) {
-      this.dictionaries_ = response.dictionaries.map(
-          (dict: JapaneseDictionary) => ({...dict, expanded: false}));
+      this.dictionaries_ = [...response.dictionaries];
       this.status = `number of dictionaries=${this.dictionaries_.length}`;
     }
   }
