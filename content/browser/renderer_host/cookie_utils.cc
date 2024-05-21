@@ -467,7 +467,7 @@ void ReportLegacyTechEvent(
       }
 
       LegacyTechCookieIssueDetails cookie_issue_details = {
-          cookie_details->url.spec(),
+          /* transfer_or_script_url= */ cookie_details->url,
           cookie->cookie_or_line->get_cookie().Name(),
           cookie->cookie_or_line->get_cookie().Domain(),
           cookie->cookie_or_line->get_cookie().Path(),

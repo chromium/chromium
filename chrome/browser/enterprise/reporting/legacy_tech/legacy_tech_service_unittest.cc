@@ -108,7 +108,7 @@ TEST_F(LegacyTechServiceTest, MatchedAndUpload) {
 
 TEST_F(LegacyTechServiceTest, MatchedAndUploadWithCookieIssueDetails) {
   content::LegacyTechCookieIssueDetails cookie_issue_details = {
-      kCookieIssueScriptUrl, kCookieName, kCookieDomain, kCookiePath,
+      GURL(kCookieIssueScriptUrl), kCookieName, kCookieDomain, kCookiePath,
       kCookieAccessOperation};
   LegacyTechReportGenerator::LegacyTechData expected_data = {
       kType,

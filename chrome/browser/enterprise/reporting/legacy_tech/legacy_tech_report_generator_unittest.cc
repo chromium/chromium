@@ -24,7 +24,9 @@ constexpr char kFileName[] = "filename.js";
 constexpr uint64_t kLine = 10;
 constexpr uint64_t kColumn = 42;
 
-constexpr char kCookieTransferOrScriptUrl[] = "script url";
+constexpr char kCookieTransferOrScriptUrl[] = "https://example.com/magic.js";
+constexpr char kLongCookieTransferOrScriptUrl[] =
+    "https://username:password@example.com:8080/path/script.js?key=value#ref";
 constexpr char kCookieName[] = "cookie name";
 constexpr char kCookieDomain[] = "cookie domain";
 constexpr char kCookiePath[] = "cookie path";
@@ -67,7 +69,7 @@ TEST_F(LegacyTechGeneratorTest, Test) {
 
 TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
   content::LegacyTechCookieIssueDetails cookie_issue_details = {
-      kCookieTransferOrScriptUrl,
+      GURL(kCookieTransferOrScriptUrl),
       kCookieName,
       kCookieDomain,
       kCookiePath,
@@ -98,9 +100,39 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
             report->cookie_issue_details().access_operation());
 }
 
+TEST_F(LegacyTechGeneratorTest, TestDropScriptUrlDetails) {
+  content::LegacyTechCookieIssueDetails cookie_issue_details = {
+      GURL(kLongCookieTransferOrScriptUrl),
+      kCookieName,
+      kCookieDomain,
+      kCookiePath,
+      content::LegacyTechCookieIssueDetails::AccessOperation::kRead,
+  };
+
+  LegacyTechReportGenerator::LegacyTechData data = {
+      /*type=*/kType,
+      /*url=*/GURL(kUrl),
+      /*frame_url=*/GURL(kFrameUrl),
+      /*matched_url=*/kMatchedUrl,
+      /*filename=*/kFileName,
+      /*line=*/kLine,
+      /*column=*/kColumn,
+      /*cookie_issue_details=*/
+      std::move(cookie_issue_details)};
+
+  LegacyTechReportGenerator generator;
+  std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
+
+  std::string expected_url = "https://example.com:8080/path/script.js";
+
+  EXPECT_TRUE(report->has_cookie_issue_details());
+  EXPECT_EQ(expected_url,
+            report->cookie_issue_details().transfer_or_script_url());
+}
+
 TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
   content::LegacyTechCookieIssueDetails cookie_issue_details = {
-      kCookieTransferOrScriptUrl,
+      GURL(kCookieTransferOrScriptUrl),
       kCookieName,
       kCookieDomain,
       kCookiePath,
@@ -124,7 +156,7 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
             report->cookie_issue_details().access_operation());
 }
 
-TEST_F(LegacyTechGeneratorTest, TestDropComponents) {
+TEST_F(LegacyTechGeneratorTest, TestDropUrlComponents) {
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
       /*url=*/GURL(kLongUrl),

@@ -6,7 +6,9 @@
 #define CONTENT_PUBLIC_BROWSER_LEGACY_TECH_COOKIE_ISSUE_DETAILS_H_
 
 #include <string>
+
 #include "content/common/content_export.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -14,7 +16,7 @@ namespace content {
 struct CONTENT_EXPORT LegacyTechCookieIssueDetails {
   enum AccessOperation { kRead, kWrite };
   LegacyTechCookieIssueDetails();
-  LegacyTechCookieIssueDetails(const std::string& transfer_or_script_url,
+  LegacyTechCookieIssueDetails(const GURL& transfer_or_script_url,
                                const std::string& name,
                                const std::string& domain,
                                const std::string& path,
@@ -24,7 +26,7 @@ struct CONTENT_EXPORT LegacyTechCookieIssueDetails {
 
   bool operator==(const LegacyTechCookieIssueDetails&) const = default;
 
-  std::string transfer_or_script_url;
+  GURL transfer_or_script_url;
   std::string name;
   std::string domain;
   std::string path;

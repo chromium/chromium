@@ -75,7 +75,7 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
         report->mutable_cookie_issue_details();
 
     cookie_issue_report->set_transfer_or_script_url(
-        cookie_issue_data.transfer_or_script_url);
+        SanitizeUrl(cookie_issue_data.transfer_or_script_url).spec());
     cookie_issue_report->set_name(cookie_issue_data.name);
     cookie_issue_report->set_domain(cookie_issue_data.domain);
     cookie_issue_report->set_path(cookie_issue_data.path);
