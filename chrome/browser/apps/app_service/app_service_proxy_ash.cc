@@ -892,12 +892,22 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     return false;
   }
 
-  // Return true, and load the icon for the app block dialog when the app
-  // is blocked by policy, or by local settings.
-  if (apps_util::IsDisabled(update.Readiness())) {
+  // Return true and load the icon for the app block dialog when the app
+  // is blocked by policy.
+  if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
     LoadIconForDialog(
         update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForBlockDialog,
                                weak_ptr_factory_.GetWeakPtr(), update.Name()));
+    return true;
+  }
+
+  // Return true and load the icon for the app local block dialog when the app
+  // is blocked by local settings.
+  if (update.Readiness() == apps::Readiness::kDisabledByLocalSettings) {
+    LoadIconForDialog(
+        update,
+        base::BindOnce(&AppServiceProxyAsh::OnLoadIconForLocalBlockDialog,
+                       weak_ptr_factory_.GetWeakPtr(), update.Name()));
     return true;
   }
 
@@ -984,6 +994,22 @@ void AppServiceProxyAsh::OnLoadIconForBlockDialog(const std::string& app_name,
 
   AppServiceProxyAsh::CreateBlockDialog(app_name, icon_value->uncompressed,
                                         profile_);
+
+  // For browser tests, call the dialog created callback to stop the run loop.
+  if (!dialog_created_callback_.is_null()) {
+    std::move(dialog_created_callback_).Run();
+  }
+}
+
+void AppServiceProxyAsh::OnLoadIconForLocalBlockDialog(
+    const std::string& app_name,
+    IconValuePtr icon_value) {
+  if (icon_value->icon_type != IconType::kStandard) {
+    return;
+  }
+
+  AppServiceProxyAsh::CreateLocalBlockDialog(app_name,
+                                             icon_value->uncompressed);
 
   // For browser tests, call the dialog created callback to stop the run loop.
   if (!dialog_created_callback_.is_null()) {

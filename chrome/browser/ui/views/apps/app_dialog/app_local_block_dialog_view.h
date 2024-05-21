@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_LOCAL_BLOCK_DIALOG_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_LOCAL_BLOCK_DIALOG_VIEW_H_
+
+#include <string>
+
+#include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
+
+namespace gfx {
+class ImageSkia;
+}
+
+// The blocking dialog for the app blocked by local settings.
+class AppLocalBlockDialogView : public AppDialogView {
+ public:
+  AppLocalBlockDialogView(const std::string& app_name,
+                          const gfx::ImageSkia& image);
+  ~AppLocalBlockDialogView() override;
+
+  static AppLocalBlockDialogView* GetActiveViewForTesting();
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_LOCAL_BLOCK_DIALOG_VIEW_H_

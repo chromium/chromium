@@ -333,6 +333,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                 const gfx::ImageSkia& image,
                                 Profile* profile);
 
+  static void CreateLocalBlockDialog(const std::string& app_name,
+                                     const gfx::ImageSkia& image);
+
   static void CreatePauseDialog(apps::AppType app_type,
                                 const std::string& app_name,
                                 const gfx::ImageSkia& image,
@@ -391,6 +394,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Callback invoked when the icon is loaded for the block app dialog.
   void OnLoadIconForBlockDialog(const std::string& app_name,
                                 IconValuePtr icon_value);
+
+  // Callback invoked when the icon is loaded for the local block app dialog.
+  void OnLoadIconForLocalBlockDialog(const std::string& app_name,
+                                     IconValuePtr icon_value);
 
   // Callback invoked when the icon is loaded for the pause app dialog.
   void OnLoadIconForPauseDialog(apps::AppType app_type,

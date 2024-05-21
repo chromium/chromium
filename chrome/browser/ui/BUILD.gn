@@ -3007,6 +3007,8 @@ static_library("ui") {
       "settings_window_manager_observer_chromeos.h",
       "views/apps/app_dialog/app_block_dialog_view.cc",
       "views/apps/app_dialog/app_block_dialog_view.h",
+      "views/apps/app_dialog/app_local_block_dialog_view.cc",
+      "views/apps/app_dialog/app_local_block_dialog_view.h",
       "views/apps/app_dialog/app_pause_dialog_view.cc",
       "views/apps/app_dialog/app_pause_dialog_view.h",
       "views/apps/app_info_dialog/arc_app_info_links_panel.cc",
