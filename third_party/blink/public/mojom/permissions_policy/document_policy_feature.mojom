@@ -8,7 +8,7 @@ module blink.mojom;
 enum DocumentPolicyFeature {
   kDefault = 0,
   // Controls access to font-display attribute in @font-face CSS rule
-  kFontDisplay = 1,
+  // kFontDisplay = 1, // Removed.
   // Takes a parameter, |bpp|, i.e. byte-per-pixel ratio, that images
   // needs to obey.
   // kLosslessImagesMaxBpp = 2, // Removed.

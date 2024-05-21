@@ -148,9 +148,6 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   bool UpdatePeriod() override;
   bool ShouldTriggerWebFontsIntervention();
   bool IsLowPriorityLoadingAllowedForRemoteFont() const override;
-  FontDisplay GetFontDisplayWithDocumentPolicyCheck(FontDisplay,
-                                                    const FontSelector*,
-                                                    ReportOptions) const;
 
   // Our owning font face.
   Member<CSSFontFace> face_;

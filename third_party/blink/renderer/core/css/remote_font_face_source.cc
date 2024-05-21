@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/css/css_custom_font_data.h"
@@ -151,11 +150,7 @@ RemoteFontFaceSource::RemoteFontFaceSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : face_(css_font_face),
       font_selector_(font_selector),
-      // No need to report the violation here since the font is not loaded yet
-      display_(
-          GetFontDisplayWithDocumentPolicyCheck(display,
-                                                font_selector,
-                                                ReportOptions::kDoNotReport)),
+      display_(display),
       phase_(kNoLimitExceeded),
       is_intervention_triggered_(ShouldTriggerWebFontsIntervention()),
       finished_before_document_rendering_begin_(false),
@@ -292,8 +287,7 @@ void RemoteFontFaceSource::SetDisplay(FontDisplay display) {
   if (IsLoaded()) {
     return;
   }
-  display_ = GetFontDisplayWithDocumentPolicyCheck(
-      display, font_selector_, ReportOptions::kReportOnFailure);
+  display_ = display;
   UpdatePeriod();
 }
 
@@ -314,20 +308,6 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   }
   period_ = new_period;
   return changed;
-}
-
-FontDisplay RemoteFontFaceSource::GetFontDisplayWithDocumentPolicyCheck(
-    FontDisplay display,
-    const FontSelector* font_selector,
-    ReportOptions report_option) const {
-  ExecutionContext* context = font_selector->GetExecutionContext();
-  if (display != FontDisplay::kFallback && display != FontDisplay::kOptional &&
-      context && context->IsWindow() &&
-      !context->IsFeatureEnabled(
-          mojom::blink::DocumentPolicyFeature::kFontDisplay, report_option)) {
-    return FontDisplay::kOptional;
-  }
-  return display;
 }
 
 bool RemoteFontFaceSource::ShouldTriggerWebFontsIntervention() {
