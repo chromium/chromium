@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/chromebox_for_meetings/public/cpp//service_adaptor.h"
+#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 
 #include <optional>
 #include <utility>
@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
@@ -23,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::cfm {
+namespace ash::cfm {
 namespace {
 
 using ::testing::_;
@@ -64,9 +65,12 @@ class CfmServiceAdaptorTest : public testing::Test {
   CfmServiceAdaptorTest& operator=(const CfmServiceAdaptorTest&) = delete;
 
   void SetUp() override {
+    CfmHotlineClient::InitializeFake();
     chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection);
   }
+
+  void TearDown() override { CfmHotlineClient::Shutdown(); }
 
   void SetCallback(
       chromeos::cfm::FakeServiceConnectionImpl::FakeBootstrapCallback
@@ -126,4 +130,4 @@ TEST_F(CfmServiceAdaptorTest, BindServiceAdaptor) {
 }
 
 }  // namespace
-}  // namespace chromeos::cfm
+}  // namespace ash::cfm

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
+#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
-namespace chromeos::cfm {
+namespace ash::cfm {
 
 void ServiceAdaptor::Delegate::OnAdaptorConnect(bool success) {}
 
@@ -19,9 +19,9 @@ ServiceAdaptor::ServiceAdaptor(std::string interface_name, Delegate* delegate)
 
 ServiceAdaptor::~ServiceAdaptor() = default;
 
-mojom::CfmServiceContext* ServiceAdaptor::GetContext() {
+chromeos::cfm::mojom::CfmServiceContext* ServiceAdaptor::GetContext() {
   if (!context_.is_bound()) {
-    ServiceConnection::GetInstance()->BindServiceContext(
+    chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
         context_.BindNewPipeAndPassReceiver());
     context_.reset_on_disconnect();
   }
@@ -72,4 +72,4 @@ void ServiceAdaptor::OnAdaptorDisconnect() {
   delegate_->OnAdaptorDisconnect();
 }
 
-}  // namespace chromeos::cfm
+}  // namespace ash::cfm
