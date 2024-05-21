@@ -227,7 +227,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       std::move(callback).Run(mojom::CreateContextResult::NewError(
           dml::CreateError(mojom::Error::Code::kUnknownError,
                            "Failed to create a WebNN context.")));
-      LOG(ERROR) << "[WebNN] Failed to open the command recorder.";
       return;
     }
 

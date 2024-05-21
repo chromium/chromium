@@ -252,6 +252,7 @@ void ReadbackBufferWithBarrier(
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message) {
+  LOG(ERROR) << "[WebNN] CreateError: " << error_message;
   return mojom::Error::New(error_code, kBackendName + error_message);
 }
 

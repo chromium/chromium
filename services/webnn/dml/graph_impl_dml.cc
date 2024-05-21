@@ -169,7 +169,6 @@ DML_RECURRENT_NETWORK_DIRECTION MojoRecurrentNetworkDirectionToDml(
 base::expected<void, mojom::ErrorPtr> CreateUnexpectedError(
     mojom::Error::Code error_code,
     const std::string& error_message) {
-  DLOG(ERROR) << error_message;
   return base::unexpected(CreateError(error_code, error_message));
 }
 
@@ -1913,8 +1912,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       // Spec issue tracked on
       // https://github.com/webmachinelearning/webnn/issues/180.
       if (dilations[0] != 1 || dilations[1] != 1) {
-        DLOG(ERROR)
-            << "Dilations are not supported for average pooling operator.";
         return base::unexpected(CreateError(
             mojom::Error::Code::kNotSupportedError,
             "Dilations are not supported for average pooling operator."));
@@ -4488,7 +4485,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForWhere(
 void HandleGraphCreationFailure(
     const std::string& error_message,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  DLOG(ERROR) << error_message;
   std::move(callback).Run(CreateGraphResult::NewError(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
@@ -4502,7 +4498,6 @@ void HandleGraphCreationFailure(
     mojom::WebNNContext::CreateGraphCallback callback) {
   DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   if (hr == E_OUTOFMEMORY) {
-    DLOG(ERROR) << "No enough memory resources are available.";
     std::move(callback).Run(CreateGraphResult::NewError(CreateError(
         mojom::Error::Code::kUnknownError,
         error_message + " No enough memory resources are available.")));
@@ -5499,7 +5494,6 @@ void GraphImplDml::CreateAndBuild(
       }
       default: {
         std::string error_message = NotSupportedOperatorError(*operation);
-        DLOG(ERROR) << error_message;
         create_operator_result = base::unexpected(CreateError(
             mojom::Error::Code::kNotSupportedError, std::move(error_message)));
       }
@@ -5562,7 +5556,6 @@ void GraphImplDml::CreateAndBuild(
 void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
     mojom::WebNNGraph::ComputeCallback callback) {
-  DLOG(ERROR) << error_message;
   compute_resources_.reset();
   std::move(callback).Run(ComputeResult::NewError(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
@@ -5575,7 +5568,6 @@ void GraphImplDml::HandleComputationFailure(
   DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   compute_resources_.reset();
   if (hr == E_OUTOFMEMORY) {
-    DLOG(ERROR) << "No enough memory resources are available.";
     std::move(callback).Run(ComputeResult::NewError(CreateError(
         mojom::Error::Code::kUnknownError,
         error_message + " No enough memory resources are available.")));
