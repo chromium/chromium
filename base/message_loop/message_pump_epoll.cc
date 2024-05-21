@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
@@ -234,8 +235,8 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
     return false;
   }
 
-  const base::span<epoll_event> ready_events(events,
-                                             static_cast<size_t>(epoll_result));
+  const span<epoll_event> ready_events =
+      span(events).first(base::checked_cast<size_t>(epoll_result));
   for (auto& e : ready_events) {
     if (e.data.ptr == &wake_event_) {
       // Wake-up events are always safe to handle immediately. Unlike other
