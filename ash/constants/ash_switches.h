@@ -96,6 +96,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCampbellKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kConchKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeRecoveryServiceBaseUrl[];
@@ -508,6 +509,9 @@ bool ShouldAllowDefaultShelfPinLayoutIgnoringSync();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCampbellSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsConchSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsForestSecretKeyMatched();

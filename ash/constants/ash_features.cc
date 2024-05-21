@@ -457,6 +457,9 @@ BASE_FEATURE(kClipboardHistoryUrlTitles,
              "ClipboardHistoryUrlTitles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling/disabling conch.
+BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,

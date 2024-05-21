@@ -6144,6 +6144,13 @@ const char kCameraAppPreviewOcrName[] = "Camera App Preview OCR";
 const char kCameraAppPreviewOcrDescription[] =
     "Enable this flag to use OCR features on preview in Camera app.";
 
+const char kConchName[] = "Conch feature";
+const char kConchDescription[] = "Enable Conch on ChromeOS.";
+
+const char kConchFeatureKeyName[] = "Feature key for Conch";
+const char kConchFeatureKeyDescription[] =
+    "Feature key to use the Conch on ChromeOS.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDemoModeComponentUpdaterTestTagName[] = "Demo Mode test tag";
 const char kDemoModeComponentUpdaterTestTagDescription[] =

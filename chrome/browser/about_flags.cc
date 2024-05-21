@@ -11385,6 +11385,16 @@ const FeatureEntry kFeatureEntries[] = {
                                     "WebAuthenticationEnclaveAuthenticator")},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"conch", flag_descriptions::kConchName,
+     flag_descriptions::kConchDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kConch)},
+
+    {"conch-key", flag_descriptions::kConchFeatureKeyName,
+     flag_descriptions::kConchFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kConchKey, "")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

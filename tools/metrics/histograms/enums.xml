@@ -22275,6 +22275,7 @@ from previous Chrome versions.
   <int value="425026866"
       label="PageInfoAboutThisSiteImprovedBottomSheet:disabled"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
+  <int value="425621232" label="Conch:enabled"/>
   <int value="425938961" label="DesksCloseAll:disabled"/>
   <int value="426199960" label="Commander:enabled"/>
   <int value="426540253" label="PowerScheduler:disabled"/>
@@ -25545,6 +25546,7 @@ from previous Chrome versions.
   <int value="1858133486" label="UsernameFirstFlowStoreSeveralValues:enabled"/>
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
+  <int value="1859016750" label="Conch:disabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
   <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>

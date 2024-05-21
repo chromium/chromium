@@ -3576,6 +3576,12 @@ extern const char kCameraAppPdfOcrDescription[];
 extern const char kCameraAppPreviewOcrName[];
 extern const char kCameraAppPreviewOcrDescription[];
 
+extern const char kConchName[];
+extern const char kConchDescription[];
+
+extern const char kConchFeatureKeyName[];
+extern const char kConchFeatureKeyDescription[];
+
 extern const char kDeskProfilesName[];
 extern const char kDeskProfilesDescription[];
 
