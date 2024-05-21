@@ -5093,9 +5093,8 @@ TEST_P(WallpaperControllerAutoScheduleTest, UpdateWallpaperOnAutoColorMode) {
   EXPECT_EQ(actual.date, original_timestamp);
 }
 
-// TODO(b:341840200): Re-enable this test.
 TEST_P(WallpaperControllerAutoScheduleTest,
-       DISABLED_UpdateTimeOfDayWallpaperWithAutoColorModeOff) {
+       UpdateTimeOfDayWallpaperWithAutoColorModeOff) {
   static constexpr gfx::Size kTestImageSize = gfx::Size(100, 100);
   static constexpr SkColor kSunriseImageColor = SK_ColorRED;
   static constexpr SkColor kMorningImageColor = SK_ColorGREEN;
