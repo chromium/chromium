@@ -136,7 +136,6 @@
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/crash/core/common/crash_key.h"
@@ -316,10 +315,6 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::CertProvisioning, &Crosapi::BindCertProvisioning,
       Crosapi::MethodMinVersions::kBindCertProvisioningMinVersion>();
-  ConstructRemote<
-      chromeos::cfm::mojom::CfmServiceContext,
-      &crosapi::mojom::Crosapi::BindCfmServiceContext,
-      Crosapi::MethodMinVersions::kBindCfmServiceContextMinVersion>();
   ConstructRemote<crosapi::mojom::ChapsService, &Crosapi::BindChapsService,
                   Crosapi::MethodMinVersions::kBindChapsServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Clipboard, &Crosapi::BindClipboard,
@@ -766,15 +761,6 @@ void LacrosService::BindBrowserCdmFactory(
   BindPendingReceiverOrRemote<mojo::GenericPendingReceiver,
                               &crosapi::mojom::Crosapi::BindBrowserCdmFactory>(
       std::move(receiver));
-}
-
-void LacrosService::BindCfmServiceContext(
-    mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
-  DCHECK(IsSupported<chromeos::cfm::mojom::CfmServiceContext>());
-
-  BindPendingReceiverOrRemote<
-      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>,
-      &crosapi::mojom::Crosapi::BindCfmServiceContext>(std::move(receiver));
 }
 
 void LacrosService::BindGeolocationService(

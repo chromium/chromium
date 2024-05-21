@@ -10,7 +10,6 @@
 module chromeos.cfm.mojom;
 
 // Interface used to store details regarding hotline mojom disconnect.
-[Stable, Uuid="b81bdc0e-19d8-4887-924d-d31202db82e8"]
 interface DisconnectReason {
  // Indicates that the reason for disconnection is unknown
  // Code for unknown disconnect reason
@@ -34,7 +33,6 @@ interface DisconnectReason {
 // Interface used during bootstrapping in order to
 // 1. Add services to the primary interface broker.
 // 2. Obtain handle/s to the |CfmServiceRegistry|
-[Stable, Uuid="032f4099-f7f3-42c3-8fc8-3bbc9b229442"]
 interface CfmServiceContext {
   // Request to add an |adaptor_remote| by its |interface_name|,
   // to the service registry assuming it's |interface_name| is allowlisted.
@@ -56,7 +54,6 @@ interface CfmServiceContext {
 // implement this interface and facilitate multiple connections, through the use
 // of a BindingSet. The broker calls BindService when a bind request for
 // interface comes.
-[Stable, Uuid="96091cfb-7564-42d0-b87d-4583d28b2c3d"]
 interface CfmServiceAdaptor {
   // Called by the CfmServiceRegistry to bind a |receiver_pipe| of an
   // intended mojo::Receiver to a service's implementation. For example,

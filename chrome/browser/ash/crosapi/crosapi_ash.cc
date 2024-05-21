@@ -175,8 +175,6 @@
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -468,12 +466,6 @@ void CrosapiAsh::BindCertDatabase(
 void CrosapiAsh::BindCertProvisioning(
     mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
   cert_provisioning_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindCfmServiceContext(
-    mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
-  chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
-      std::move(receiver));
 }
 
 void CrosapiAsh::BindChapsService(
