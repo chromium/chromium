@@ -2006,6 +2006,12 @@ extern const char kTextInShelfDescription[];
 extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kToolbarPinningFlagId[];
+extern const char kToolbarPinningName[];
+extern const char kToolbarPinningDescription[];
+#endif
+
 extern const char kTopChromeTouchUiName[];
 extern const char kTopChromeTouchUiDescription[];
 

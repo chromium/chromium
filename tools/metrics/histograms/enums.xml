@@ -20093,6 +20093,7 @@ from previous Chrome versions.
   <int value="-520004021" label="WebXRHitTest:disabled"/>
   <int value="-519960638" label="enable-site-engagement-service"/>
   <int value="-519844731" label="SignInProfileCreationFlow:enabled"/>
+  <int value="-519653227" label="ToolbarPinning:disabled"/>
   <int value="-519345823" label="CrOSEnforceSystemAecNsAgc:enabled"/>
   <int value="-519342886" label="PrintWithPostScriptType42Fonts:disabled"/>
   <int value="-518104091" label="NewAudioRenderingMixingStrategy:enabled"/>
@@ -24825,6 +24826,7 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1559515245" label="WebAssemblyMemory64:disabled"/>
+  <int value="1559812394" label="ToolbarPinning:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
   <int value="1561833662" label="AndroidBrowserControlsInViz:disabled"/>

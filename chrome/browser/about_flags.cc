@@ -6587,6 +6587,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSidePanelPinning)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {flag_descriptions::kToolbarPinningFlagId,
+     flag_descriptions::kToolbarPinningName,
+     flag_descriptions::kToolbarPinningDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kToolbarPinning)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-reader-mode-in-cct", flag_descriptions::kReaderModeInCCTName,
      flag_descriptions::kReaderModeInCCTDescription, kOsAndroid,

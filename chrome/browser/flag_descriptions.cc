@@ -3402,6 +3402,14 @@ const char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
     "study overlay support.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kToolbarPinningFlagId[] = "toolbar-pinning";
+const char kToolbarPinningName[] = "Toolbar pinning";
+const char kToolbarPinningDescription[] =
+    "Enables the ability to pin features to the toolbar via the Customize "
+    "Chrome side panel.";
+#endif
+
 const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";
