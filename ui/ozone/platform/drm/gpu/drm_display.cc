@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 
+#include <xf86drm.h>
 #include <xf86drmMode.h>
 
 #include <algorithm>
@@ -387,9 +388,9 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   DCHECK(hdr_static_metadata_.has_value());
   DCHECK(color_space.IsValid());
 
-  drm_hdr_output_metadata* hdr_output_metadata =
+  ScopedDrmHdrOutputMetadataPtr hdr_output_metadata(
       static_cast<drm_hdr_output_metadata*>(
-          malloc(sizeof(drm_hdr_output_metadata)));
+          drmMalloc(sizeof(drm_hdr_output_metadata))));
   hdr_output_metadata->metadata_type = 0;
   hdr_output_metadata->hdmi_metadata_type1.metadata_type = 0;
 
@@ -428,10 +429,8 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   hdr_output_metadata->hdmi_metadata_type1.white_point.y =
       primaries.fWY * kPrimariesFixedPoint;
 
-  ScopedDrmHdrOutputMetadataPtr hdr_output_metadata_blob(hdr_output_metadata);
-
   ScopedDrmPropertyBlob hdr_output_metadata_property_blob =
-      drm_->CreatePropertyBlob(hdr_output_metadata_blob.get(),
+      drm_->CreatePropertyBlob(hdr_output_metadata.get(),
                                sizeof(drm_hdr_output_metadata));
   if (!hdr_output_metadata_property_blob) {
     PLOG(INFO) << "Cannot create '" << kHdrOutputMetadata << "' property blob.";

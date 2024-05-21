@@ -229,7 +229,7 @@ bool ParseLutBlob(const void* data, size_t size, display::GammaCurve& result) {
 ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
                                    bool negative_values_broken) {
   ScopedDrmColorCtmPtr ctm(
-      static_cast<drm_color_ctm*>(malloc(sizeof(drm_color_ctm))));
+      static_cast<drm_color_ctm*>(drmMalloc(sizeof(drm_color_ctm))));
   for (size_t i = 0; i < 9; ++i) {
     float value = color_matrix.vals[i / 3][i % 3];
     if (value < 0) {
@@ -245,6 +245,7 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
           static_cast<uint64_t>(value * kCtmValueScale) & kCtmValueMask;
     }
   }
+
   return ctm;
 }
 
