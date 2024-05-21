@@ -159,6 +159,11 @@ const char kLocalTestPoliciesForNextStartup[] =
 const char kMutationEventsEnabled[] =
     "policy.deprecated_mutation_events_enabled";
 
+// Enables the deprecated :--foo syntax of CSS custom state. The :--foo syntax
+// was deprecated and replaced by :state(foo).
+const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
+    "policy.css_custom_state_deprecated_syntax_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.

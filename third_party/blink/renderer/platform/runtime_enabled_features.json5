@@ -824,6 +824,7 @@
       // TODO(crbug.com/1514397): Remove this when the feature is fully launched.
       name: "CSSCustomStateDeprecatedSyntax",
       status: "stable",
+      public: true,
     },
     {
       // This flag controls whether the :state(foo) pseudo-class for custom

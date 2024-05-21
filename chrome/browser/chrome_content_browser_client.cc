@@ -1609,6 +1609,10 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterBooleanPref(
+      policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled,
+      /*default_value=*/false);
+
+  registry->RegisterBooleanPref(
       policy::policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
       true);
 
@@ -2683,6 +2687,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
               policy::policy_prefs::kKeyboardFocusableScrollersEnabled)) {
         command_line->AppendSwitch(
             blink::switches::kKeyboardFocusableScrollersOptOut);
+      }
+      if (prefs->GetBoolean(
+              policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled);
       }
 
       if (prefs->GetBoolean(policy::policy_prefs::

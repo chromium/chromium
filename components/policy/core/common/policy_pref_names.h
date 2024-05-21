@@ -71,6 +71,7 @@ extern const char kPolicyTestPageEnabled[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
 extern const char kMutationEventsEnabled[];
+extern const char kCSSCustomStateDeprecatedSyntaxEnabled[];
 extern const char kForcePermissionPolicyUnloadDefaultEnabled[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kAlwaysOnVpnPreConnectUrlAllowlist[];
