@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/camera/autozoom_observer.h"
-#include "ash/system/tray/system_nudge_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
@@ -19,8 +18,7 @@ namespace ash {
 
 class AutozoomControllerImpl;
 
-class ASH_EXPORT AutozoomNudgeController : public SystemNudgeController,
-                                           public AutozoomObserver,
+class ASH_EXPORT AutozoomNudgeController : public AutozoomObserver,
                                            public SessionObserver {
  public:
   explicit AutozoomNudgeController(AutozoomControllerImpl* controller);
@@ -33,10 +31,6 @@ class ASH_EXPORT AutozoomNudgeController : public SystemNudgeController,
 
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
- protected:
-  // SystemNudgeController:
-  std::unique_ptr<SystemNudge> CreateSystemNudge() override;
 
  private:
   // Gets whether the user had enabled autozoom before.

@@ -13,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
-#include "ash/system/camera/autozoom_nudge.h"
 #include "base/json/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -130,16 +129,11 @@ void AutozoomNudgeController::OnAutozoomControlEnabledChanged(bool enabled) {
     return;
   }
 
-  if (features::IsSystemNudgeMigrationEnabled()) {
-    AnchoredNudgeData nudge_data(
-        kAutozoomNudgeId, NudgeCatalogName::kAutozoom,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_AUTOZOOM_EDUCATIONAL_NUDGE_TEXT));
-    AnchoredNudgeManager::Get()->Show(nudge_data);
-  } else {
-    ShowNudge();
-  }
-
+  AnchoredNudgeData nudge_data(
+      kAutozoomNudgeId, NudgeCatalogName::kAutozoom,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_AUTOZOOM_EDUCATIONAL_NUDGE_TEXT));
+  AnchoredNudgeManager::Get()->Show(nudge_data);
   HandleNudgeShown();
 }
 
@@ -153,10 +147,6 @@ void AutozoomNudgeController::OnAutozoomStateChanged(
     ScopedDictPrefUpdate update(prefs, prefs::kAutozoomNudges);
     update->Set(kHadEnabled, true);
   }
-}
-
-std::unique_ptr<SystemNudge> AutozoomNudgeController::CreateSystemNudge() {
-  return std::make_unique<AutozoomNudge>();
 }
 
 }  // namespace ash
