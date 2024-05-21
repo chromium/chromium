@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -588,15 +589,13 @@ std::unique_ptr<VariationsService> VariationsService::Create(
     web_resource::ResourceRequestAllowedNotifier::NetworkConnectionTrackerGetter
         network_connection_tracker_getter,
     SyntheticTrialRegistry* synthetic_trial_registry) {
-  std::unique_ptr<VariationsService> result;
-  result.reset(new VariationsService(
+  return base::WrapUnique(new VariationsService(
       std::move(client),
       std::make_unique<web_resource::ResourceRequestAllowedNotifier>(
           local_state, disable_network_switch,
           std::move(network_connection_tracker_getter)),
       local_state, state_manager, ui_string_overrider,
       synthetic_trial_registry));
-  return result;
 }
 
 // static
