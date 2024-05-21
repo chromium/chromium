@@ -124,6 +124,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void HandleTabGroupRemoved(const SavedTabGroup* removed_group,
                              TriggerSource source);
 
+  // Wrapper function that calls all metric recording functions.
+  void RecordMetrics();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 

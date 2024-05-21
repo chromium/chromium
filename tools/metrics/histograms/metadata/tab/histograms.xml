@@ -738,6 +738,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.SavedTabGroupActiveCount" units="groups"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the total number of active groups (groups that have been modified
+    within the last 30 days) saved in the profile. Recorded on startup 10
+    seconds after TabGroupSyncService initialization. Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.SavedTabGroupAge" units="minutes"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the age of a SavedTabGroup (since creation). Recorded on startup 10
+    seconds after TabGroupSyncService initialization. Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.SavedTabGroupCount" units="groups"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the total number of groups saved in the profile. Recorded on startup
+    10 seconds after TabGroupSyncService initialization. Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.SavedTabGroupTabCount" units="tabs"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of tabs in a SavedTabGroup.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.SavedTabGroupTabTimeSinceModification"
+    units="minutes" expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the duration since a saved tab's last modification.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.SavedTabGroupTimeSinceModification"
+    units="minutes" expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the duration since a saved group's last modification.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
     expires_after="2024-11-03">
   <owner>sophiechang@chromium.org</owner>

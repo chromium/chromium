@@ -9,16 +9,23 @@
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
+#include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
 namespace tab_groups {
+namespace {
+constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
+
+}  // namespace
+
 TabGroupSyncServiceImpl::SyncDataTypeConfiguration::SyncDataTypeConfiguration(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> processor,
     syncer::OnceModelTypeStoreFactory store_factory)
@@ -410,6 +417,16 @@ void TabGroupSyncServiceImpl::OnReadTabGroupStore() {
   for (auto& observer : observers_) {
     observer.OnInitialized();
   }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TabGroupSyncServiceImpl::RecordMetrics,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kDelayBeforeMetricsLogged);
+}
+
+void TabGroupSyncServiceImpl::RecordMetrics() {
+  stats::RecordSyncedTabGroupMetrics(model_.get());
 }
 
 }  // namespace tab_groups

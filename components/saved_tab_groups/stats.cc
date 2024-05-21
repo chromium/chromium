@@ -16,6 +16,53 @@ namespace tab_groups {
 namespace stats {
 constexpr base::TimeDelta kModifiedThreshold = base::Days(30);
 
+void RecordSyncedTabGroupMetrics(SavedTabGroupModel* model) {
+  base::UmaHistogramCounts10000("TabGroups.Sync.SavedTabGroupCount",
+                                model->Count());
+
+  const base::Time current_time = base::Time::Now();
+  int active_group_count = 0;
+
+  for (const SavedTabGroup& group : model->saved_tab_groups()) {
+    base::UmaHistogramCounts10000("TabGroups.Sync.SavedTabGroupTabCount",
+                                  group.saved_tabs().size());
+
+    const base::TimeDelta duration_saved =
+        current_time - group.creation_time_windows_epoch_micros();
+    if (!duration_saved.is_negative()) {
+      base::UmaHistogramCounts1M("TabGroups.Sync.SavedTabGroupAge",
+                                 duration_saved.InMinutes());
+    }
+
+    const base::TimeDelta duration_since_group_modification =
+        current_time - group.update_time_windows_epoch_micros();
+    if (!duration_since_group_modification.is_negative()) {
+      base::UmaHistogramCounts1M(
+          "TabGroups.Sync.SavedTabGroupTimeSinceModification",
+          duration_since_group_modification.InMinutes());
+
+      if (duration_since_group_modification <= kModifiedThreshold) {
+        ++active_group_count;
+      }
+    }
+
+    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+      const base::TimeDelta duration_since_tab_modification =
+          current_time - tab.update_time_windows_epoch_micros();
+      if (duration_since_tab_modification.is_negative()) {
+        continue;
+      }
+
+      base::UmaHistogramCounts1M(
+          "TabGroups.Sync.SavedTabGroupTabTimeSinceModification",
+          duration_since_tab_modification.InMinutes());
+    }
+  }
+
+  base::UmaHistogramCounts10000("TabGroups.Sync.SavedTabGroupActiveCount",
+                                active_group_count);
+}
+
 void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupCount", model->Count());
 

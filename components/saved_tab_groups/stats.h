@@ -17,6 +17,11 @@ namespace stats {
 // the number of tabs in each group, and more.
 void RecordSavedTabGroupMetrics(SavedTabGroupModel* model);
 
+// Records metrics about the state of model such as the number of saved groups,
+// the number of tabs in each group, and more. Invoked from TabGroupSyncService
+// which is currently enabled on Android only.
+void RecordSyncedTabGroupMetrics(SavedTabGroupModel* model);
+
 // Records the difference in the number of tabs between local group and the
 // synced version when the local tab group is connected with the synced one.
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
