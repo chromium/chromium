@@ -3384,6 +3384,8 @@ bool Document::InitiateStyleOrLayoutDependentLoadForPrint() {
     view->AdjustMediaTypeForPrinting(true);
     UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
+    view->FlushAnyPendingPostLayoutTasks();
+
     view->AdjustMediaTypeForPrinting(false);
     UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
