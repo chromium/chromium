@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="feed_containment_feed_header_top_margin">16dp</dimen>
+    <dimen name="feed_containment_feed_header_top_margin">8dp</dimen>
 </resources>
