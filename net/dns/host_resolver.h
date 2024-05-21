@@ -243,6 +243,11 @@ class NET_EXPORT HostResolver {
     // `IsSvcbResolutionCompleted()` when Chrome supports HTTPS follow-up
     // queries.
     virtual bool EndpointsCryptoReady() = 0;
+
+    // Returns the error info of this request. This can be changed over time
+    // while resolution is still ongoing. In general, should be called only
+    // after resolution completed.
+    virtual ResolveErrorInfo GetResolveErrorInfo() = 0;
   };
 
   // Handler for an activation of probes controlled by a HostResolver. Created

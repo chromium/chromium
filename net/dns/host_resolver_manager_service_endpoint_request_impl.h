@@ -21,6 +21,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_manager_job.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
 #include "url/scheme_host_port.h"
@@ -51,6 +52,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
   const std::vector<ServiceEndpoint>& GetEndpointResults() override;
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
+  ResolveErrorInfo GetResolveErrorInfo() override;
 
   // These should only be called from HostResolver::Job.
   void AssignJob(base::SafeRef<Job> job);

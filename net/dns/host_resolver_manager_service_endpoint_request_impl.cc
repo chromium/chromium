@@ -13,6 +13,7 @@
 #include "net/dns/dns_task_results_manager.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -73,6 +74,7 @@ int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
   CHECK(manager_);
 
   if (!resolve_context_) {
+    error_info_ = ResolveErrorInfo(ERR_CONTEXT_SHUT_DOWN);
     return ERR_CONTEXT_SHUT_DOWN;
   }
 
@@ -93,6 +95,7 @@ int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
   if (results.error() != ERR_DNS_CACHE_MISS ||
       parameters_.source == HostResolverSource::LOCAL_ONLY || tasks.empty()) {
     SetFinalizedResultFromLegacyResults(results);
+    error_info_ = ResolveErrorInfo(results.error());
     return results.error();
   }
 
@@ -149,6 +152,11 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
   NOTREACHED_NORETURN();
 }
 
+ResolveErrorInfo
+HostResolverManager::ServiceEndpointRequestImpl::GetResolveErrorInfo() {
+  return error_info_;
+}
+
 void HostResolverManager::ServiceEndpointRequestImpl::AssignJob(
     base::SafeRef<Job> job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -187,8 +195,7 @@ void HostResolverManager::ServiceEndpointRequestImpl::OnJobCancelled() {
   LogCancelRequest();
 
   finalized_result_ = FinalizedResult(/*endpoints=*/{}, /*dns_aliases=*/{});
-  error_info_ = ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED,
-                                 /*is_secure_network_error=*/false);
+  error_info_ = ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED);
   delegate_->OnServiceEndpointRequestFinished(ERR_DNS_REQUEST_CANCELLED);
   // Do not add code below. `this` may be deleted at this point.
 }

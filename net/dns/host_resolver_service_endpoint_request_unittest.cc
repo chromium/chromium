@@ -297,6 +297,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   requester.WaitForFinished();
   EXPECT_THAT(*requester.finished_result(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
+              ResolveErrorInfo(ERR_NAME_NOT_RESOLVED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
@@ -324,6 +326,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
     Requester requester = CreateRequester("https://ok", std::move(parameters));
     int rv = requester.Start();
     EXPECT_THAT(rv, IsError(ERR_DNS_CACHE_MISS));
+    EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
+                ResolveErrorInfo(ERR_DNS_CACHE_MISS));
   }
 
   // Populate the cache.
@@ -871,6 +875,8 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   // update callback.
   ASSERT_FALSE(legacy_requester.complete_result().has_value());
   EXPECT_THAT(*requester.finished_result(), IsError(ERR_DNS_REQUEST_CANCELLED));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
+              ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest,
