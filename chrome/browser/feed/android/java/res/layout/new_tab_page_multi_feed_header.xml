@@ -17,11 +17,12 @@ found in the LICENSE file.
       android:id="@+id/main_content"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:paddingStart="@dimen/feed_header_menu_start_margin"
+      android:layout_marginTop="@dimen/feed_header_top_margin"
       android:minHeight="@dimen/snippets_article_header_height"
       android:orientation="horizontal"
       android:gravity="center"
-      android:layoutDirection="locale"
-      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2" >
+      android:layoutDirection="locale">
 
     <!-- Null content description for now because UX in flux. -->
     <ImageView
@@ -42,7 +43,7 @@ found in the LICENSE file.
 
       <com.google.android.material.tabs.TabLayout
           android:id="@+id/tab_list_view"
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="@dimen/feed_header_tab_layout_height"
           android:layout_gravity="center"
           android:layout_marginTop="@dimen/feed_header_tab_list_view_top_bottom_margin"
@@ -56,16 +57,17 @@ found in the LICENSE file.
           android:layout_gravity="center_vertical"
           android:layout_marginTop="12dp"
           android:layout_marginBottom="12dp"
+          android:layout_marginStart="@dimen/feed_header_title_view_margin_start"
           android:textAppearance="@style/TextAppearance.HeaderTitle"
           android:visibility="gone" />
     </FrameLayout>
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/header_menu"
-        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_width="@dimen/feed_header_menu_width"
         android:layout_height="@dimen/min_touch_target_size"
         android:scaleType="centerInside"
-        android:layout_marginStart="@dimen/feed_header_icon_margin"
+        android:layout_marginStart="@dimen/feed_header_menu_button_start_margin"
         android:paddingEnd="8dp"
         android:background="@drawable/toolbar_menu_button_ripple"
         android:src="@drawable/ic_more_vert_24dp"

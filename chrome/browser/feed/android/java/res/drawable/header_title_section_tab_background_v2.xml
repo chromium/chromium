@@ -10,7 +10,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
         android:shape="rectangle"
         app:surfaceElevation="@dimen/home_surface_ui_background_color_elevation">
-      <corners android:radius="@dimen/feed_header_background_outer_corner_radius_polished"/>
+      <corners android:radius="@dimen/feed_header_background_outer_corner_radius"/>
     </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
   </item>
 </selector>

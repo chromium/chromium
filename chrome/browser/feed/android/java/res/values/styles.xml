@@ -29,10 +29,10 @@ found in the LICENSE file.
 
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
         <item name="tabTextAppearance">@style/TextAppearance.TabLayout</item>
-        <item name="tabGravity">center</item>
+        <item name="tabGravity">fill</item>
         <item name="tabPaddingEnd">7dp</item>
         <item name="tabPaddingStart">14dp</item>
-        <item name="android:background">@drawable/header_title_section_tab_background</item>
+        <item name="android:background">@drawable/header_title_section_tab_background_v2</item>
         <item name="tabIndicatorColor">@android:color/transparent</item>
     </style>
 

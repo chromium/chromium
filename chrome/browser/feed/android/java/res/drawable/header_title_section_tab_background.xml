@@ -11,7 +11,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
         android:shape="rectangle"
         app:surfaceElevation="@dimen/feed_header_section_tab_bg_elevation_enabled">
-      <corners android:radius="@dimen/feed_header_background_corner_radius"/>
+      <corners android:radius="@dimen/feed_header_background_corner_radius_feed_containment"/>
     </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
   </item>
 </selector>

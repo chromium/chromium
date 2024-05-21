@@ -44,16 +44,16 @@ found in the LICENSE file.
     <dimen name="feed_options_chip_margin">8dp</dimen>
     <dimen name="feed_header_dropdown_size">15dp</dimen>
     <dimen name="feed_header_tab_extra_margin_right">7dp</dimen>
-    <dimen name="feed_header_background_corner_radius">12dp</dimen>
-    <dimen name="feed_header_background_corner_radius_polished">8dp</dimen>
-    <dimen name="feed_header_background_outer_corner_radius_polished">12dp</dimen>
+    <dimen name="feed_header_background_corner_radius_feed_containment">12dp</dimen>
+    <dimen name="feed_header_background_corner_radius">8dp</dimen>
+    <dimen name="feed_header_background_outer_corner_radius">12dp</dimen>
     <dimen name="feed_header_tab_layout_width_max">165dp</dimen>
     <dimen name="feed_header_tab_layout_lateral_margin">8dp</dimen>
-    <dimen name="feed_header_menu_width_polished">48dp</dimen>
+    <dimen name="feed_header_menu_width">48dp</dimen>
     <dimen name="feed_header_menu_start_margin">20dp</dimen>
-    <dimen name="feed_header_menu_end_margin">0dp</dimen>
     <dimen name="feed_header_top_margin">16dp</dimen>
     <dimen name="feed_header_title_view_margin_start">4dp</dimen>
+    <dimen name="feed_header_menu_button_start_margin">24dp</dimen>
 
     <!-- Feed containment. -->
     <dimen name="feed_containment_margin">16dp</dimen>
@@ -67,7 +67,6 @@ found in the LICENSE file.
 
     <!-- Dynamic color dimensions. -->
     <dimen name="feed_header_section_tab_bg_elevation_enabled">@dimen/default_elevation_2</dimen>
-    <dimen name="feed_header_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
 
     <!-- Menu footer chip dimensions. -->
     <item name="menu_footer_chip_background_alpha" format="float" type="dimen">0.1</item>

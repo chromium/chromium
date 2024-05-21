@@ -13,12 +13,13 @@ found in the LICENSE file.
       <solid android:color="@android:color/transparent"/>
     </shape>
   </item>
-  <item android:state_selected="true" >
-    <shape android:shape="rectangle">
+ <item android:state_selected="true">
+    <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+        android:shape="rectangle"
+        app:surfaceElevation="@dimen/default_elevation_5">
+      <corners android:radius="@dimen/feed_header_background_corner_radius"/>
       <!-- The stroke will show the main background color. -->
       <stroke android:width="8dp" android:color="@android:color/transparent"/>
-      <solid android:color="@color/color_primary_with_alpha_15"/>
-      <corners android:radius="@dimen/feed_header_background_corner_radius_polished"/>
-    </shape>
+    </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
   </item>
 </selector>

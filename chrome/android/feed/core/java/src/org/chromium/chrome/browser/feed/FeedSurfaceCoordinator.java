@@ -527,10 +527,7 @@ public class FeedSurfaceCoordinator
         }
 
         // Mediator should be created before any Stream changes.
-        boolean useUiConfig =
-                ntpHeader != null
-                        && ChromeFeatureList.sSurfacePolish.isEnabled()
-                        && mUseStaggeredLayout;
+        boolean useUiConfig = ntpHeader != null && mUseStaggeredLayout;
         mMediator =
                 new FeedSurfaceMediator(
                         this,
