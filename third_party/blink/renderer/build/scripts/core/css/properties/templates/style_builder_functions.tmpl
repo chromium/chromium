@@ -35,8 +35,8 @@ void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
     {% if property.style_builder_generate_value %}
 void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value, ValueMode) const {
 {% if property.anchor_mode %}
-  AnchorScope anchor_scope(
-      AnchorScope::Mode::{{property.anchor_mode.to_enum_value()}},
+  blink::AnchorScope anchor_scope(
+      blink::AnchorScope::Mode::{{property.anchor_mode.to_enum_value()}},
       state.CssToLengthConversionData().GetAnchorEvaluator());
 {% endif %}
 {{(caller(property) ~ '}')}}

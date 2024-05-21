@@ -50,6 +50,7 @@ All changes to this list should go through Blink's feature review process: http:
     alignment-baseline
     all
     anchor-name
+    anchor-scope
     animation-composition
     animation-delay
     animation-direction

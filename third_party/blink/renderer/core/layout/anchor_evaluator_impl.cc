@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
 #include "third_party/blink/renderer/core/css/anchor_query.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -98,19 +100,8 @@ void LogicalAnchorReference::InsertInReverseTreeOrderInto(
     LogicalAnchorReference* const head = *head_ptr;
     DCHECK(!head || head->layout_object);
     if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
-      // An in-flow reference has higher precedence than any other reference
-      // before it in tree order, in which case there's no need to keep the
-      // other references.
-      if (is_out_of_flow) {
-        next = head;
-      }
+      next = head;
       *head_ptr = this;
-      break;
-    }
-
-    // Skip adding if there is already an in-flow reference that is after in
-    // the tree order, which always has higher precedence than |this|.
-    if (!head->is_out_of_flow) {
       break;
     }
 
@@ -151,6 +142,56 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
   return nullptr;
 }
 
+namespace {
+
+bool IsScopedByElement(const ScopedCSSName* lookup_name,
+                       const Element& element) {
+  const ScopedCSSNameList* scoped_names =
+      element.ComputedStyleRef().AnchorScope();
+  if (!scoped_names) {
+    return false;
+  }
+  if (scoped_names->GetNames().empty()) {
+    // An empty list represents anchor-scope:all.
+    return true;
+  }
+  for (const Member<const ScopedCSSName>& scoped_name :
+       scoped_names->GetNames()) {
+    if (*scoped_name == *lookup_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
+bool InSameAnchorScope(const AnchorKey& key,
+                       const LayoutObject& query_object,
+                       const LayoutObject& anchor_object) {
+  const ScopedCSSName* const* name = absl::get_if<const ScopedCSSName*>(&key);
+  if (!name) {
+    // This is an implicit anchor reference, which is unaffected
+    // by anchor-scope.
+    return true;
+  }
+  auto anchor_scope_ancestor =
+      [name](const LayoutObject& layout_object) -> const Element* {
+    const Element* element = To<Element>(layout_object.GetNode());
+    CHECK(element);
+    while ((element = LayoutTreeBuilderTraversal::ParentElement(*element)) !=
+           nullptr) {
+      if (IsScopedByElement(*name, *element)) {
+        break;
+      }
+    }
+    return element;
+  };
+  return anchor_scope_ancestor(query_object) ==
+         anchor_scope_ancestor(anchor_object);
+}
+
+}  // namespace
+
 const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     const LayoutObject& query_object,
     const AnchorKey& key) const {
@@ -158,7 +199,8 @@ const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     for (const LogicalAnchorReference* result = reference; result;
          result = result->next) {
       if ((!result->is_out_of_flow ||
-           result->layout_object->IsBeforeInPreOrder(query_object))) {
+           result->layout_object->IsBeforeInPreOrder(query_object)) &&
+          InSameAnchorScope(key, query_object, *result->layout_object)) {
         return result;
       }
     }
@@ -230,14 +272,20 @@ void LogicalAnchorQuery::SetFromPhysical(
     const LogicalOffset& additional_offset,
     SetOptions options) {
   for (auto entry : physical_query) {
-    // For each key, only the last one in the tree order, in or out of flow, is
-    // needed to be propagated, because whether it's in flow is re-computed for
-    // each containing block.
-    LogicalRect rect = converter.ToLogical(entry.value->rect);
-    rect.offset += additional_offset;
-    Set(entry.key, MakeGarbageCollected<LogicalAnchorReference>(
-                       *entry.value->layout_object, rect,
-                       options == SetOptions::kOutOfFlow));
+    // For each key, only the last reference in tree order is reachable
+    // under normal circumstances. However, the presence of anchor-scope
+    // can make it necessary to skip past any number of references to reach
+    // an earlier one. Therefore, all references must be propagated.
+    //
+    // See also InSameAnchorScope.
+    for (PhysicalAnchorReference* reference = entry.value; reference;
+         reference = reference->next) {
+      LogicalRect rect = converter.ToLogical(reference->rect);
+      rect.offset += additional_offset;
+      Set(entry.key, MakeGarbageCollected<LogicalAnchorReference>(
+                         *reference->layout_object, rect,
+                         options == SetOptions::kOutOfFlow));
+    }
   }
 }
 
