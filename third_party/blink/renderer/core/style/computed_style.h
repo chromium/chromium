@@ -1584,7 +1584,8 @@ class ComputedStyle final : public ComputedStyleBase {
     // If an inline box (inline flow) is inlinified, it recursively inlinifies
     // all of its in-flow children
     return IsInInlinifyingDisplay() &&
-           (display == EDisplay::kContents || display == EDisplay::kInline);
+           (display == EDisplay::kContents || display == EDisplay::kInline ||
+            display == EDisplay::kInlineListItem);
   }
 
   // Return true if an element with this computed style requires LayoutNG
