@@ -22,6 +22,7 @@ DEFAULT_KEY_ROTATION_PERIOD = 90
 # Default scope if not explicitly specified in the XML.
 DEFAULT_PROJECT_SCOPE = "device"
 
+
 def wrap(text: str, indent: str) -> str:
   wrapper = tw.TextWrapper(width=80,
                            initial_indent=indent,
@@ -39,6 +40,7 @@ class Model:
       PROJECT
       - summary
       - id specifier
+      - (optional) one or more targets. If undefined, defaults to 'chromium'
       - one or more owners
       - one or more events
 
@@ -53,7 +55,7 @@ class Model:
     The following is an example input XML.
 
       <structured-metrics>
-      <project name="MyProject">
+      <project name="MyProject" targets="chromium">
         <owner>owner@chromium.org</owner>
         <id>none</id>
         <scope>profile</scope>
@@ -73,12 +75,13 @@ class Model:
 
   OWNER_REGEX = r"^.+@(chromium\.org|google\.com)$"
   NAME_REGEX = r"^[A-Za-z0-9_.]+$"
-  VARIANT_NAME_REGEX = r'^[A-Z0-9_.]+$'
+  VARIANT_NAME_REGEX = r"^[A-Z0-9_.]+$"
   TYPE_REGEX = r"^(hmac-string|raw-string|int|double|int-array)$"
   ID_REGEX = r"^(none|per-project|uma)$"
   SCOPE_REGEX = r"^(profile|device)$"
   KEY_REGEX = r"^[0-9]+$"
   MAX_REGEX = r"^[0-9]+$"
+  TARGET_REGEX = r"^(chromium|webui)$"
 
   def __init__(self, xml_string: str, platform: str):
     elem = ET.fromstring(xml_string)
@@ -102,21 +105,28 @@ class Model:
 def merge_models(primary: Model, other: Model) -> Model:
   """Merges two models into one."""
   primary.projects += [
-      p for p in other.projects if not re.match('Test', p.name)
+      p for p in other.projects if not re.match("Test", p.name)
   ]
   return primary
+
 
 class Project:
   """Represents a single structured metrics project.
 
     A Project is initialized with an XML node representing one project, eg:
 
-      <project name="MyProject" cros_events="true">
+      <project name="MyProject" cros_events="true" targets="webui,chromium">
         <owner>owner@chromium.org</owner>
         <id>none</id>
         <scope>project</scope>
         <key-rotation>60</key-rotation>
         <summary> My project. </summary>
+
+        <enum name="Enum1">
+          <variant value="1">VARIANT1</variant>
+          <variant value="2">VARIANT2</variant>
+          <variant value="5">VARIANT3</variant>
+        </enum>
 
         <event name="MyEvent">
           <summary> My event. </summary>
@@ -130,7 +140,7 @@ class Project:
     """
 
   def __init__(self, elem: ET.Element, platform: str):
-    util.check_attributes(elem, {"name"}, {"cros_events"})
+    util.check_attributes(elem, {"name"}, {"cros_events", "targets"})
     util.check_children(elem, {"id", "summary", "owner", "event"}, {"enum"})
     util.check_child_names_unique(elem, "event")
 
@@ -151,10 +161,16 @@ class Project:
                                                      Model.KEY_REGEX)
 
     # enums need to be populated first because they are used for validation
-    util.check_child_names_unique(elem, 'enum')
+    util.check_child_names_unique(elem, "enum")
     self.enums = [
-        Enum(e, self) for e in util.get_compound_children(elem, 'enum', True)
+        Enum(e, self) for e in util.get_compound_children(elem, "enum", True)
     ]
+
+    if "targets" in elem.attrib:
+      self.targets = set(
+          util.get_optional_attr_list(elem, "targets", Model.TARGET_REGEX))
+    else:
+      self.targets = set()
 
     # Check if scope is specified. If so, then change the scope.
     if elem.find("scope") is not None:
@@ -177,12 +193,16 @@ class Project:
       cros_events_attr = ' cros_events="true"'
     else:
       cros_events_attr = ""
+    if self.targets:
+      targets = ' targets="' + ",".join(self.targets) + '"'
+    else:
+      targets = ""
 
-    enums = '\n\n'.join(str(v) for v in self.enums)
-    enums = tw.indent(enums, '  ')
+    enums = "\n\n".join(str(v) for v in self.enums)
+    enums = tw.indent(enums, "  ")
 
     return f"""\
-<project name="{self.name}"{cros_events_attr}>
+<project name="{self.name}"{cros_events_attr}{targets}>
 {owners}
   <id>{self.id}</id>
   <scope>{self.scope}</scope>
@@ -211,21 +231,21 @@ class Enum:
 
   def __init__(self, elem: ET.Element, project: Project):
     self.project = project
-    util.check_attributes(elem, {'name'})
+    util.check_attributes(elem, {"name"})
 
-    util.check_children(elem, {'variant'})
+    util.check_children(elem, {"variant"})
 
-    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
     self.variants = [
         Variant(e, self)
-        for e in util.get_compound_children(elem, 'variant', allow_text=True)
+        for e in util.get_compound_children(elem, "variant", allow_text=True)
     ]
     variant_names = [v.name for v in self.variants]
-    util.check_names_unique(elem, variant_names, 'variant')
+    util.check_names_unique(elem, variant_names, "variant")
 
   def __repr__(self):
     variants = '\n'.join(str(v) for v in self.variants)
-    variants = tw.indent(variants, '  ')
+    variants = tw.indent(variants, "  ")
     return f"""\
 <enum name="{self.name}">
 {variants}
@@ -241,9 +261,9 @@ class Variant:
     """
 
   def __init__(self, elem: ET.Element, enum: Enum):
-    util.check_attributes(elem, {'value'})
+    util.check_attributes(elem, {"value"})
     self.name = util.get_text(elem, Model.VARIANT_NAME_REGEX)
-    self.value = util.get_attr(elem, 'value')
+    self.value = util.get_attr(elem, "value")
     self.enum = enum
 
   def __repr__(self):
@@ -321,13 +341,13 @@ class Metric:
 
     self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
 
-    self.type = util.get_attr(elem, 'type')
+    self.type = util.get_attr(elem, "type")
     # If the type isn't an enum then check it it must be a builtin type.
     if project.has_enum(self.type):
       self.is_enum = True
     else:
       self.is_enum = False
-      self.type = util.get_attr(elem, 'type', Model.TYPE_REGEX)
+      self.type = util.get_attr(elem, "type", Model.TYPE_REGEX)
 
     self.summary = util.get_text_child(elem, "summary")
 

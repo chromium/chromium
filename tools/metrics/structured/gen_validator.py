@@ -11,7 +11,7 @@ header and implementation file exposing validator function calls.
 import argparse
 import sys
 
-import codegen
+import code_generator_cpp
 from sync import model
 
 parser = argparse.ArgumentParser(
@@ -30,11 +30,11 @@ def main():
         open(args.cros_input, encoding='utf-8').read(), 'cros')
     structured = model.merge_models(structured, cros_structured)
 
-  codegen.ValidatorHeaderTemplate(
+  code_generator_cpp.ValidatorHeaderTemplate(
       args.output, 'structured_metrics_validator.h').write_file()
 
-  codegen.ValidatorImplTemplate(structured, args.output,
-                                'structured_metrics_validator.cc').write_file()
+  code_generator_cpp.ValidatorImplTemplate(
+      structured, args.output, 'structured_metrics_validator.cc').write_file()
 
   return 0
 

@@ -140,12 +140,14 @@ source_set("structured_metrics_features") {
   public_deps = [ "//base" ]
 }
 
-action("gen_structured_events") {
+action("gen_structured_events_cpp") {
   script = "//tools/metrics/structured/gen_events.py"
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_events.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
@@ -165,19 +167,51 @@ action("gen_structured_events") {
     rebase_path(sources[0], root_build_dir),
     "--output",
     rebase_path(outdir, root_build_dir),
+    "--target",
+    "chromium",
+  ]
+}
+
+action("gen_structured_events_ts") {
+  script = "//tools/metrics/structured/gen_events.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/structured/code_generator_ts.py",
+    "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/codegen_util.py",
+    "//tools/metrics/structured/gen_events.py",
+    "//tools/metrics/structured/sync/model.py",
+    "//tools/metrics/structured/sync/model_util.py",
+    "//tools/metrics/structured/templates_events.py",
+  ]
+  sources = [ "//tools/metrics/structured/sync/structured.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [ outdir + "/structured_events.ts" ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+    "--target",
+    "webui",
   ]
 }
 
 # TODO(b/309122738): Generate the events by platform.
 source_set("structured_events") {
-  sources = get_target_outputs(":gen_structured_events")
+  sources = get_target_outputs(":gen_structured_events_cpp")
+
   public_deps = [
     ":events",
     "//components/metrics/structured/buildflags",
   ]
 
   deps = [
-    ":gen_structured_events",
+    ":gen_structured_events_cpp",
     "//base",
   ]
 }
@@ -187,7 +221,8 @@ action("gen_structured_metrics_validator") {
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_validator.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",

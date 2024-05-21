@@ -1,131 +1,26 @@
 # -*- coding: utf-8 -*-
-# Copyright 2021 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Objects for describing template code to be generated from structured.xml."""
 
-import hashlib
-import os
-import re
-import struct
-
 import templates_validator as validator_tmpl
+from codegen_util import FileInfo, Util
+from code_generator import (EventTemplateBase, ProjectInfoBase,
+  EventInfoBase, MetricInfoBase)
 
+CHROMIUM_TARGET="chromium"
 
-class Util:
-  """Helpers for generating C++."""
-
-  @staticmethod
-  def sanitize_name(name):
-    return re.sub('[^0-9a-zA-Z_]', '_', name)
-
-  @staticmethod
-  def camel_to_snake(name):
-    pat = '((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))'
-    return re.sub(pat, r'_\1', name).lower()
-
-  @staticmethod
-  def hash_name(name):
-    # This must match the hash function in chromium's
-    # //base/metrics/metric_hashes.cc. >Q means 8 bytes, big endian.
-    name = name.encode('utf-8')
-    md5 = hashlib.md5(name)
-    return struct.unpack('>Q', md5.digest()[:8])[0]
-
-  @staticmethod
-  def event_name_hash(project_name, event_name, platform):
-    """Make the name hash for an event.
-
-    This gets uploaded in the StructuredEventProto.event_name_hash field. It is
-    the sole means of recording which event from structured.xml a
-    StructuredEventProto instance represents.
-
-    To avoid naming collisions, it must contain three pieces of information:
-     - the name of the event itself
-     - the name of the event's project, to avoid collisions with events of the
-       same name in other projects
-     - an identifier that this comes from chromium, to avoid collisions with
-       events and projects of the same name defined in cros's structured.xml
-
-    This must use sanitized names for the project and event.
-    """
-    event_name = Util.sanitize_name(event_name)
-    project_name = Util.sanitize_name(project_name)
-    # TODO(crbug.com/40156926): Once the minimum python version is 3.6+, rewrite
-    # this .format and others using f-strings.
-    return Util.hash_name('{}::{}::{}'.format(platform, project_name,
-                                              event_name))
-
-
-class FileInfo:
-  """Codegen-related info about a file."""
-
-  def __init__(self, dirname, basename):
-    self.dirname = dirname
-    self.basename = basename
-    self.rootname = os.path.splitext(self.basename)[0]
-    self.filepath = os.path.join(dirname, basename)
-
-
-    # This takes the last three components of the filepath for use in the
-    # header guard, ie. METRICS_STRUCTURED_STRUCTURED_EVENTS_H_
-    relative_path = os.sep.join(self.filepath.split(os.sep)[-3:])
-    self.guard_path = Util.sanitize_name(relative_path).upper()
-
-
-class ProjectInfo:
-  """Codegen-related info about a project."""
+class ProjectInfoCpp(ProjectInfoBase):
+  """Codegen-related info about a project in C++."""
 
   def __init__(self, project):
-    self.name = Util.sanitize_name(project.name)
-    self.namespace = Util.camel_to_snake(self.name)
-    self.name_hash = Util.hash_name(self.name)
+    super().__init__(project, CHROMIUM_TARGET)
     self.validator = '{}ProjectValidator'.format(self.name)
     self.validator_snake_name = Util.camel_to_snake(self.validator)
-    self.events = project.events
-    self.enums = project.enums
-    self.platform = project.platform
-
-    # Set ID type.
-    if project.id == 'uma':
-      self.id_type = 'kUmaId'
-    elif project.id == 'per-project':
-      self.id_type = 'kProjectId'
-    elif project.id == 'none':
-      self.id_type = 'kUnidentified'
-    else:
-      raise ValueError('Invalid id type.')
-
-    # Set ID scope
-    if project.scope == 'profile':
-      self.id_scope = 'kPerProfile'
-    elif project.scope == 'device':
-      self.id_scope = 'kPerDevice'
-    else:
-      raise ValueError('Invalid id scope.')
-
-    # Set event type. This is inferred by checking all metrics within the
-    # project. If any of a project's metrics is a raw string, then its events
-    # are considered raw string events, even if they also contain non-strings.
-    self.event_type = 'REGULAR'
-    for event in project.events:
-      for metric in event.metrics:
-        if metric.type == 'raw-string':
-          self.event_type = 'RAW_STRING'
-          break
-
-    # Check if event is part of an event sequence. Note that this goes after the
-    # raw string check since the type has higher priority.
-    if project.is_event_sequence_project:
-      self.is_event_sequence = 'true'
-      self.event_type = 'SEQUENCE'
-    else:
-      self.is_event_sequence = 'false'
-
-    self.key_rotation_period = project.key_rotation_period
 
   def build_validator_code(self) -> str:
-    event_infos = list(EventInfo(event, self) for event in self.events)
+    event_infos = list(EventInfoCpp(event, self) for event in self.events)
 
     # Generate map entries.
     validator_map_str = ';\n  '.join(
@@ -144,33 +39,26 @@ class ProjectInfo:
         event_name_map=event_name_map_str)
 
 
-class EventInfo:
-  """Codegen-related info about an event."""
+class EventInfoCpp(EventInfoBase):
+  """Codegen-related info about an event in C++."""
 
   def __init__(self, event, project_info):
-    self.name = Util.sanitize_name(event.name)
-    self.project_name = project_info.name
-    self.platform = project_info.platform
-    self.name_hash = Util.event_name_hash(project_info.name, self.name,
-                                          project_info.platform)
+    super().__init__(event, project_info)
     self.validator_name = '{}_{}EventValidator'.format(self.project_name,
                                                        self.name)
     self.validator_snake_name = Util.camel_to_snake(self.validator_name)
-    self.is_event_sequence = project_info.is_event_sequence
-    self.force_record = str(event.force_record).lower()
-    self.metrics = event.metrics
 
   def build_metric_hash_map(self) -> str:
     if self.platform == 'cros':
       return ''
-    metric_infos = (MetricInfo(metric) for metric in self.metrics)
+    metric_infos = (MetricInfoCpp(metric) for metric in self.metrics)
     return ',\n  '.join(
         '{{\"{}\", {{ Event::MetricType::{}, UINT64_C({})}}}}'.format(
             metric_info.name, metric_info.type_enum, metric_info.hash)
         for metric_info in metric_infos)
 
   def build_metric_name_map(self) -> str:
-    metric_infos = (MetricInfo(metric) for metric in self.metrics)
+    metric_infos = (MetricInfoCpp(metric) for metric in self.metrics)
     return ',\n  '.join(
         '{{ UINT64_C({}), "{}" }}'.format(metric_info.hash, metric_info.name)
         for metric_info in metric_infos)
@@ -182,13 +70,11 @@ class EventInfo:
         metrics_name_map=self.build_metric_name_map())
 
 
-class MetricInfo:
-  """Codegen-related info about a metric."""
+class MetricInfoCpp(MetricInfoBase):
+  """Codegen-related info about a metric in C++."""
 
   def __init__(self, metric):
-    self.name = Util.sanitize_name(metric.name)
-    self.hash = Util.hash_name(metric.name)
-    self.is_enum = metric.is_enum
+    super().__init__(metric)
 
     if metric.type == 'hmac-string':
       self.type = 'std::string&'
@@ -211,7 +97,7 @@ class MetricInfo:
       self.type_enum = 'kDouble'
       self.base_value = 'base::Value(value)'
     elif metric.type == 'int-array':
-      # todo(andrewbregger): support int array in chromium.
+      # todo(b/341807121): support int array in chromium.
       self.type_enum = ''
     else:
       if self.is_enum:
@@ -223,18 +109,13 @@ class MetricInfo:
         raise ValueError('Invalid metric type.')
 
 
-class Template:
-  """Template for producing code from structured.xml."""
+class TemplateCpp(EventTemplateBase):
+  """Template for producing C++ code from structured.xml."""
 
   def __init__(self, model, dirname, basename, file_template, project_template,
-               event_template, metric_template, header):
-    self.model = model
-    self.dirname = dirname
-    self.basename = basename
-    self.file_template = file_template
-    self.project_template = project_template
-    self.event_template = event_template
-    self.metric_template = metric_template
+               enum_template, event_template, metric_template, header):
+    super().__init__(model, dirname, basename, file_template, project_template,
+               enum_template, event_template, metric_template)
     self.header = header
 
   def write_file(self):
@@ -249,7 +130,7 @@ class Template:
     return self.file_template.format(file=file_info, project_code=project_code)
 
   def _stamp_project(self, file_info, project):
-    project_info = ProjectInfo(project)
+    project_info = ProjectInfoCpp(project)
     event_code = ''.join(
         self._stamp_event(file_info, project_info, event)
         for event in project.events)
@@ -265,7 +146,7 @@ class Template:
                                         event_code=event_code)
 
   def _stamp_event(self, file_info, project_info, event):
-    event_info = EventInfo(event, project_info)
+    event_info = EventInfoCpp(event, project_info)
     metric_code = ''
     if project_info.platform != 'cros':
       metric_code = ''.join(
@@ -277,19 +158,14 @@ class Template:
                                       metric_code=metric_code)
 
   def _stamp_enum(self, enum):
-    ENUM_TEMPLATE = """
-enum class {enum.name} {{
-{variants}
-}};
-    """
     variants = ',\n'.join(
         ['{v.name} = {v.value}'.format(v=v) for v in enum.variants])
-    return ENUM_TEMPLATE.format(enum=enum, variants=variants)
+    return self.enum_template.format(enum=enum, variants=variants)
 
   def _stamp_metric(self, file_info, event_info, metric):
     return self.metric_template.format(file=file_info,
                                        event=event_info,
-                                       metric=MetricInfo(metric))
+                                       metric=MetricInfoCpp(metric))
 
 
 class ValidatorHeaderTemplate:
@@ -341,8 +217,9 @@ class ValidatorImplTemplate:
     project_code = []
 
     for project in self.projects:
-      project_info = ProjectInfo(project)
-      event_infos = (EventInfo(event, project_info) for event in project.events)
+      project_info = ProjectInfoCpp(project)
+      event_infos = (EventInfoCpp(event, project_info)
+        for event in project.events)
       project_event_code = '\n'.join(event_info.build_validator_code()
                                      for event_info in event_infos)
 
@@ -363,12 +240,12 @@ class ValidatorImplTemplate:
         name_map=self._build_name_map())
 
   def _build_project_map(self) -> str:
-    project_infos = (ProjectInfo(project) for project in self.projects)
+    project_infos = (ProjectInfoCpp(project) for project in self.projects)
     return ';\n  '.join(
         'validators_.emplace("{}", std::make_unique<{}>())'.format(
             project.name, project.validator) for project in project_infos)
 
   def _build_name_map(self):
-    project_infos = (ProjectInfo(project) for project in self.projects)
+    project_infos = (ProjectInfoCpp(project) for project in self.projects)
     return ';\n  '.join('project_name_map_.emplace(UINT64_C({}), "{}")'.format(
         project.name_hash, project.name) for project in project_infos)

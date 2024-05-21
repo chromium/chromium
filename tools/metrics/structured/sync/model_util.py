@@ -117,6 +117,42 @@ def get_optional_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
   return attr
 
 
+def get_optional_attr_list(elem: ET.Element,
+                           tag: str,
+                           regex: str = None) -> List[str]:
+  """Get an attribute that is a comma separated list.
+
+  Returns None if it doesn't exist.
+
+  Args:
+    elem: structured.xml file element tree.
+    tag: Name of the tag/attribute to find.
+    regex: Optional regex to match the value of the attribute's items.
+
+  Returns:
+    The attribute's value as a list of strings, or None if it doesn't exist.
+
+  Raises:
+    ValueError: The attribute specified exists but one of its items doesn't
+    match the provided regex.
+  """
+  attr = elem.attrib.get(tag)
+  if not attr:
+    return None
+  attr_list = attr.split(",")
+  attributes = []
+  for attr_item in attr_list:
+    if regex and not re.fullmatch(regex, attr_item):
+      error(
+          elem,
+          (f"has '{tag}' that contains attribute"
+           " '{attr_item}' which does "
+           "not match regex '{regex}'"),
+      )
+    attributes.append(attr_item)
+  return attributes
+
+
 def get_compound_children(elem: ET.Element,
                           tag: str,
                           allow_missing_children: bool = False,
