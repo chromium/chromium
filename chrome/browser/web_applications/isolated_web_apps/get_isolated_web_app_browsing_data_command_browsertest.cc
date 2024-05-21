@@ -85,20 +85,7 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
                                                      url, partition, bytes)));
   }
 
-  static void FlushAllLocalStorage(
-      content::RenderFrameHost* render_frame_host) {
-    render_frame_host->ForEachRenderFrameHost(
-        &GetIsolatedWebAppBrowsingDataCommandBrowserTest::FlushLocalStorage);
-  }
-
  private:
-  static void FlushLocalStorage(content::RenderFrameHost* render_frame_host) {
-    base::test::TestFuture<void> test_future;
-    render_frame_host->GetStoragePartition()->GetLocalStorageControl()->Flush(
-        test_future.GetCallback());
-    EXPECT_TRUE(test_future.Wait());
-  }
-
   std::unique_ptr<ScopedProxyIsolatedWebApp> app_;
 };
 
@@ -130,13 +117,11 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   content::RenderFrameHost* iwa1_frame = OpenApp(iwa1_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa1_frame, "localStorage.setItem('key', '!'.repeat(100))"));
-  FlushAllLocalStorage(iwa1_frame);
 
   IsolatedWebAppUrlInfo iwa2_url_info = InstallApp();
   content::RenderFrameHost* iwa2_frame = OpenApp(iwa2_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa2_frame, "localStorage.setItem('key', '!'.repeat(5000))"));
-  FlushAllLocalStorage(iwa2_frame);
 
   base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
@@ -154,7 +139,6 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   content::RenderFrameHost* iwa_frame = OpenApp(iwa_url_info.app_id());
   CreateControlledFrame(iwa_frame, proxy_server_url(), "persist:a", 2000);
   CreateControlledFrame(iwa_frame, proxy_server_url(), "in_memory", 1000);
-  FlushAllLocalStorage(iwa_frame);
 
   base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(

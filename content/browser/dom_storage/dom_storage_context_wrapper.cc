@@ -235,9 +235,9 @@ void DOMStorageContextWrapper::Shutdown() {
 
 void DOMStorageContextWrapper::Flush() {
   if (session_storage_control_)
-    session_storage_control_->Flush(base::NullCallback());
+    session_storage_control_->Flush();
   if (local_storage_control_)
-    local_storage_control_->Flush(base::NullCallback());
+    local_storage_control_->Flush();
 }
 
 void DOMStorageContextWrapper::OpenLocalStorage(

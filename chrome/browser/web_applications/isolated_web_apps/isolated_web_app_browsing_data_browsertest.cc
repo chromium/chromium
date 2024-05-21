@@ -106,13 +106,6 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   void AddLocalStorageIfMissing(const content::ToRenderFrameHost& target) {
     EXPECT_TRUE(
         ExecJs(target, "localStorage.setItem('test', '!'.repeat(1000))"));
-
-    base::test::TestFuture<void> test_future;
-    target.render_frame_host()
-        ->GetStoragePartition()
-        ->GetLocalStorageControl()
-        ->Flush(test_future.GetCallback());
-    EXPECT_TRUE(test_future.Wait());
   }
   void AddLocalStorageIfMissing(extensions::WebViewGuest* guest) {
     AddLocalStorageIfMissing(guest->GetGuestMainFrame());

@@ -406,10 +406,6 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
   auto command =
       content::JsReplace("localStorage.setItem('key', '!'.repeat($1))", size);
   EXPECT_TRUE(ExecJs(render_frame_host, command));
-  base::RunLoop run_loop;
-  render_frame_host->GetStoragePartition()->GetLocalStorageControl()->Flush(
-      run_loop.QuitClosure());
-  run_loop.Run();
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {

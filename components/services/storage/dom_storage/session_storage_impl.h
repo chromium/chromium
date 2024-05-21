@@ -91,7 +91,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void CleanUpStorage(CleanUpStorageCallback callback) override;
   void ScavengeUnusedNamespaces(
       ScavengeUnusedNamespacesCallback callback) override;
-  void Flush(FlushCallback callback) override;
+  void Flush() override;
   void PurgeMemory() override;
   void CreateNamespace(const std::string& namespace_id) override;
   void CloneNamespace(const std::string& namespace_id_to_clone,

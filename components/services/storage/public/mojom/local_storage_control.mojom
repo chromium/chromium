@@ -33,7 +33,7 @@ interface LocalStorageControl {
   CleanUpStorage() => ();
 
   // Tells the service to immediately commit any pending operations to disk.
-  Flush() => ();
+  Flush();
 
   // Purges any in-memory caches to free up as much memory as possible. The
   // next access to the StorageArea will reload data from the backing database.

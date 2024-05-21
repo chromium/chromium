@@ -62,12 +62,6 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
     loop.Run();
   }
 
-  void FlushLocalStorage() {
-    base::RunLoop loop;
-    dom_storage()->GetLocalStorageControl()->Flush(loop.QuitClosure());
-    loop.Run();
-  }
-
   mojo::Remote<storage::mojom::TestApi>& GetTestApi() {
     if (!test_api_) {
       StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
@@ -142,7 +136,6 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
   // ensures that renderer gets the correct value when recovering from the
   // impending crash.
   WaitForAnyLocalStorageData();
-  FlushLocalStorage();
 
   CrashStorageServiceAndWaitForRestart();
   EXPECT_EQ("42",

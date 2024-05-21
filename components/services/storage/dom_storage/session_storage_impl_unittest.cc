@@ -483,7 +483,7 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   {
     base::RunLoop loop;
     // Cause the connection to start loading, so we start scavenging mid-load.
-    session_storage()->Flush(base::DoNothing());
+    session_storage()->Flush();
     session_storage()->ScavengeUnusedNamespaces(loop.QuitClosure());
     loop.Run();
   }

@@ -164,7 +164,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   // waiting on the result of initializing our map the commit won't happen
   // until the load has finished. If provided, |callback| is run only once the
   // commit is fully completed.
-  void ScheduleImmediateCommit(base::OnceClosure callback = {});
+  void ScheduleImmediateCommit();
 
   // Clears the in-memory cache if currently no changes are pending. If there
   // are uncommitted changes this method does nothing.
@@ -291,8 +291,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   void StartCommitTimer();
   base::TimeDelta ComputeCommitDelay() const;
 
-  void CommitChanges(base::OnceClosure callback = {});
-  void OnCommitComplete(base::OnceClosure callback, leveldb::Status status);
+  void CommitChanges();
+  void OnCommitComplete(leveldb::Status status);
 
   void UnloadMapIfPossible();
 

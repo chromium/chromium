@@ -324,25 +324,22 @@ void LocalStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
     // Try to commit all changes before rewriting the database. If
     // an area is not ready to commit its changes, nothing breaks but the
     // rewrite doesn't remove all traces of old data.
-    Flush(base::DoNothing());
+    Flush();
     database_->RewriteDB(base::BindOnce(&IgnoreStatus, std::move(callback)));
   } else {
     std::move(callback).Run();
   }
 }
 
-void LocalStorageImpl::Flush(FlushCallback callback) {
+void LocalStorageImpl::Flush() {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&LocalStorageImpl::Flush,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback)));
+                                    weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  base::RepeatingClosure commit_callback = base::BarrierClosure(
-      base::saturated_cast<int>(areas_.size()), std::move(callback));
   for (const auto& it : areas_)
-    it.second->storage_area()->ScheduleImmediateCommit(commit_callback);
+    it.second->storage_area()->ScheduleImmediateCommit();
 }
 
 void LocalStorageImpl::FlushStorageKeyForTesting(
@@ -735,12 +732,13 @@ void LocalStorageImpl::OnGotMetaData(
   for (const auto& it : areas_) {
     if (storage_keys.find(it.first) != storage_keys.end())
       continue;
+    StorageAreaImpl* storage_area = it.second->storage_area();
     // Skip any storage keys that definitely don't have any data.
-    if (!it.second->storage_area()->has_pending_load_tasks() &&
-        it.second->storage_area()->empty()) {
+    if (!storage_area->has_pending_load_tasks() && storage_area->empty()) {
       continue;
     }
-    result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
+    result.emplace_back(mojom::StorageUsageInfo::New(
+        it.first, storage_area->storage_used(), now));
   }
   std::move(callback).Run(std::move(result));
 }
