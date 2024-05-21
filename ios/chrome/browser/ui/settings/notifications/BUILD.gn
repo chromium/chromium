@@ -127,6 +127,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/push_notification:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

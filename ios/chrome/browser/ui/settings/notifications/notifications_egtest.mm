@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/variations/pref_names.h"
 #import "ios/chrome/browser/ui/push_notification/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -77,13 +78,13 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
 // Tests that the settings page is dismissed by swiping down from the top.
 // TODO(crbug.com/326070899): remove this test when Tips Notifications is
 // enabled by default.
-// TODO(crbug.com/339474680): Test is failing consistently on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPriceNotificationsSwipeDown testPriceNotificationsSwipeDown
-#else
-#define MAYBE_testPriceNotificationsSwipeDown DISABLED_testPriceNotificationsSwipeDown
-#endif
-- (void)MAYBE_testPriceNotificationsSwipeDown {
+- (void)testPriceNotificationsSwipeDown {
+  // Price tracking might only be enabled in certain countries, so it is
+  // overridden to ensure that it will be enabled.
+  [ChromeEarlGrey setStringValue:"us"
+               forLocalStatePref:variations::prefs::
+                                     kVariationsPermanentOverriddenCountry];
+
   // Opens price notifications setting.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
