@@ -126,6 +126,21 @@ class FileSuggestKeyedServiceBrowserTest
 
     InitTestFileMountRoot(profile);
 
+    if (UseDriveRecents()) {
+      ON_CALL(*GetFakeDriveFsForProfile(profile), StartSearchQuery(_, _))
+          .WillByDefault([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery>
+                                 pending_receiver,
+                             drivefs::mojom::QueryParametersPtr query_params) {
+            auto search_query = std::make_unique<FakeSearchQuery>();
+            mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                        std::move(pending_receiver));
+          });
+      // Flush any drive FS search requests that may have been initialized in
+      // response to Drive FS, and FileSuggestKeyedService initialization, so
+      // they don't interfere with the test flow.
+      FlushDriveFsSearch();
+    }
+
     // Add two drive files.
     const std::string file_id1("abc123");
     available_files_.push_back(file_id1);
@@ -178,6 +193,45 @@ class FileSuggestKeyedServiceBrowserTest
     return it->second;
   }
 
+  void NotifyFilesCreated(const std::vector<std::string>& file_ids) {
+    std::vector<drivefs::mojom::FileChangePtr> changes;
+    Profile* const profile = browser()->profile();
+    for (const auto& file_id : file_ids) {
+      base::FilePath drive_path("/");
+      base::FilePath absolute_path = GetTestFilePath(file_id);
+      EXPECT_FALSE(absolute_path.empty());
+      EXPECT_TRUE(drive::DriveIntegrationServiceFactory::FindForProfile(profile)
+                      ->GetMountPointPath()
+                      .AppendRelativePath(absolute_path, &drive_path));
+
+      auto change = drivefs::mojom::FileChange::New();
+      change->path = drive_path;
+      change->type = drivefs::mojom::FileChange::Type::kCreate;
+      changes.push_back(std::move(change));
+    }
+
+    // Simulate the `changes` being sent from the server.
+    drivefs_delegate()->OnFilesChanged(std::move(changes));
+    drivefs_delegate().FlushForTesting();
+  }
+
+  void FlushDriveFsSearch() {
+    base::RunLoop suggest_file_data_waiter;
+    FileSuggestKeyedService* const service =
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            browser()->profile());
+    service->GetSuggestFileData(
+        FileSuggestionType::kDriveFile,
+        base::BindLambdaForTesting(
+            [&](const std::optional<std::vector<FileSuggestData>>&
+                    suggest_data) { suggest_file_data_waiter.Quit(); }));
+    suggest_file_data_waiter.Run();
+  }
+
+  mojo::Remote<drivefs::mojom::DriveFsDelegate>& drivefs_delegate() {
+    return GetFakeDriveFsForProfile(browser()->profile())->delegate();
+  }
+
  private:
   // IDs of files added to fake file system.
   std::vector<std::string> available_files_;
@@ -195,14 +249,8 @@ INSTANTIATE_TEST_SUITE_P(UseDriveRecents,
 
 // Verifies that the file suggest keyed service works as expected when the item
 // suggest cache is empty.
-// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_QueryWithEmptyCache DISABLED_QueryWithEmptyCache
-#else
-#define MAYBE_QueryWithEmptyCache QueryWithEmptyCache
-#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       MAYBE_QueryWithEmptyCache) {
+                       QueryWithEmptyCache) {
   base::HistogramTester histogram_tester;
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
@@ -216,6 +264,8 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
           mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                       std::move(pending_receiver));
         });
+    // Invalidate cached suggestions by notifying that new files are present.
+    NotifyFilesCreated({});
   } else {
     EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _)).Times(0);
   }
@@ -251,15 +301,8 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly.
-// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RespondToItemSuggestCacheUpdate \
-  DISABLED_RespondToItemSuggestCacheUpdate
-#else
-#define MAYBE_RespondToItemSuggestCacheUpdate RespondToItemSuggestCacheUpdate
-#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       MAYBE_RespondToItemSuggestCacheUpdate) {
+                       RespondToItemSuggestCacheUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -307,6 +350,8 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
           mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                       std::move(pending_receiver));
         });
+    // Invalidate cached suggestions by notifying that new files are present.
+    NotifyFilesCreated({available_files()[0], available_files()[1]});
   } else {
     EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _)).Times(0);
 
@@ -330,7 +375,11 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
       base::BindLambdaForTesting(
           [&](const std::optional<std::vector<FileSuggestData>>& suggest_data) {
             ASSERT_TRUE(suggest_data.has_value());
-            ASSERT_EQ(2u, suggest_data->size());
+            EXPECT_EQ(2u, suggest_data->size());
+            if (suggest_data->size() < 2u) {
+              suggest_file_data_waiter.Quit();
+              return;
+            }
 
             const auto& item1 = (*suggest_data)[0];
             EXPECT_EQ(GetTestFilePath(available_files()[0]), item1.file_path);
@@ -377,16 +426,8 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly when item fetch fails.
-// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RespondToItemSuggestCacheInvalidUpdate \
-  DISABLED_RespondToItemSuggestCacheInvalidUpdate
-#else
-#define MAYBE_RespondToItemSuggestCacheInvalidUpdate \
-  RespondToItemSuggestCacheInvalidUpdate
-#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       MAYBE_RespondToItemSuggestCacheInvalidUpdate) {
+                       RespondToItemSuggestCacheInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -408,6 +449,7 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
           mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                       std::move(pending_receiver));
         });
+    NotifyFilesCreated({});
   } else {
     EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _)).Times(0);
 
@@ -459,16 +501,8 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 
 // Verifies that the file suggest keyed service responds to the update in
 // the item suggest cache correctly if some item fetches fail.
-// TODO(crbug.com/341164317): The test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate \
-  DISABLED_RespondToItemSuggestCachePartiallyInvalidUpdate
-#else
-#define MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate \
-  RespondToItemSuggestCachePartiallyInvalidUpdate
-#endif
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
-                       MAYBE_RespondToItemSuggestCachePartiallyInvalidUpdate) {
+                       RespondToItemSuggestCachePartiallyInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -515,6 +549,9 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
           mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                       std::move(pending_receiver));
         });
+
+    // Invalidate cached suggestions by notifying that new files are present.
+    NotifyFilesCreated({file_id});
   } else {
     EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _)).Times(0);
 
@@ -544,7 +581,11 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
       base::BindLambdaForTesting(
           [&](const std::optional<std::vector<FileSuggestData>>& suggest_data) {
             ASSERT_TRUE(suggest_data.has_value());
-            ASSERT_EQ(1u, suggest_data->size());
+            EXPECT_EQ(1u, suggest_data->size());
+            if (suggest_data->size() < 1u) {
+              suggest_file_data_waiter.Quit();
+              return;
+            }
 
             const auto& item = (*suggest_data)[0];
             EXPECT_EQ(GetTestFilePath(file_id), item.file_path);
