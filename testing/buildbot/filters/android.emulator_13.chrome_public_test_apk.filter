@@ -117,3 +117,4 @@
 
 # crbug.com/341168292
 -org.chromium.chrome.browser.quick_delete.QuickDeleteControllerTest.*
+-org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawableRenderTest.*
