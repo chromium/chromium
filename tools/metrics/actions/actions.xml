@@ -43128,6 +43128,11 @@ should be able to be added at any place in this file.
   <affected-action
       name="InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.IPH"/>
   <affected-action name="UserEducation.MessageAction.Abort.IPH"/>
+  <affected-action
+      name="UserEducation.MessageAction.AbortedByAnchorHidden.IPH"/>
+  <affected-action
+      name="UserEducation.MessageAction.AbortedByBubbleDestroyed.IPH"/>
+  <affected-action name="UserEducation.MessageAction.AbortedByFeature.IPH"/>
   <affected-action name="UserEducation.MessageAction.Action.IPH"/>
   <affected-action name="UserEducation.MessageAction.Cancel.IPH"/>
   <affected-action name="UserEducation.MessageAction.Dismiss.IPH"/>
