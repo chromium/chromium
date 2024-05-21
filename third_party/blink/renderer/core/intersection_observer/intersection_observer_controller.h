@@ -77,11 +77,10 @@ class IntersectionObserverController
 
  private:
   // IntersectionObserver's with a connected explicit root in this document.
-  HeapHashSet<WeakMember<IntersectionObserver>>
-      tracked_explicit_root_observers_;
+  HeapHashSet<Member<IntersectionObserver>> tracked_explicit_root_observers_;
   // IntersectionObservations with an implicit root and connected target in this
   // document.
-  HeapHashSet<WeakMember<IntersectionObservation>>
+  HeapHashSet<Member<IntersectionObservation>>
       tracked_implicit_root_observations_;
   // IntersectionObservers for which this is the execution context of the
   // callback, and with unsent notifications.
