@@ -92,6 +92,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 23 - 2024/01 - crrev.com/c/5173733
 // Version 24 - 2024/01 - crrev.com/c/5245196
 // Version 25 - 2024/04 - crrev.com/c/5497898
+// Version 26 - 2024/05 - crrev.com/c/5555460
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -126,7 +127,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 23 adds trusted bidding signals URL length limit.
 // Version 24 adds cached B&A server keys.
 // Version 25 uses hashed k-anon keys instead of the unhashed versions.
-const int kCurrentVersionNumber = 25;
+// Version 26 runs a VACUUM command.
+const int kCurrentVersionNumber = 26;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -861,7 +863,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV25Schema(sql::Database& db) {
+bool CreateV26Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -1029,6 +1031,11 @@ bool CreateV25Schema(sql::Database& db) {
     return false;
   }
   return true;
+}
+
+bool VacuumDB(sql::Database& db) {
+  static const char kVacuum[] = "VACUUM";
+  return db.Execute(kVacuum);
 }
 
 bool UpgradeV24SchemaToV25(sql::Database& db, sql::MetaTable& meta_table) {
@@ -4709,7 +4716,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV25Schema(*db_);
+    return CreateV26Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -4721,6 +4728,10 @@ bool InterestGroupStorage::InitializeSchema() {
     // back-compatible with this version of Chrome.
     return true;
   }
+
+  // Whether to vacuum the database after the upgrade. The vacuum must happen
+  // after the transaction is committed.
+  bool vacuum_db_post_upgrade = false;
 
   // Older versions - should be migrated.
   // db_version < kCurrentVersionNumber
@@ -4825,11 +4836,22 @@ bool InterestGroupStorage::InitializeSchema() {
         if (!UpgradeV24SchemaToV25(*db_, meta_table)) {
           return false;
         }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 25:
+        vacuum_db_post_upgrade = true;
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }
     }
-    return transaction.Commit();
+    bool committed = transaction.Commit();
+    if (!committed) {
+      return false;
+    }
+    if (vacuum_db_post_upgrade && !VacuumDB(*db_)) {
+      DLOG(ERROR) << "Failed to vacuum: " << db_->GetErrorMessage();
+    }
+
+    return true;
   }
 
   NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
