@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -190,7 +191,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     public void tearDown() {
         mMediator.destroy();
 
-        verify(mTabModelFilter).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModelFilter, atLeastOnce()).removeObserver(mTabModelObserverCaptor.getValue());
 
         assertFalse(mTabModelFilterSupplier.hasObservers());
         assertFalse(mIsVisibleSupplier.hasObservers());
@@ -231,6 +232,37 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabListEditorController.isVisible()).thenReturn(true);
         observer.multipleTabsPendingClosure(null, false);
         assertTrue(dialogVisibilitySupplier.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testLateTabModelFilterWhileVisible() {
+        // Reset to simulate the UI is shown with no tab model filter set.
+        mIsVisibleSupplier.set(false);
+        mTabModelFilterSupplier.set(null);
+        verify(mTabModelFilter, times(1)).addObserver(mTabModelObserverCaptor.capture());
+
+        mMediator.destroy();
+
+        mMediator =
+                new TabSwitcherPaneMediator(
+                        mResetHandler,
+                        mTabModelFilterSupplier,
+                        mTabGridDialogControllerSupplier,
+                        mModel,
+                        mContainerView,
+                        mOnTabSwitcherShownRunnable,
+                        mIsVisibleSupplier,
+                        mIsAnimatingSupplier,
+                        mOnTabClickedCallback);
+        ShadowLooper.runUiThreadTasks();
+
+        mIsVisibleSupplier.set(true);
+
+        // When the filter is set we need to show tabs when visible if the restore already finished.
+        mTabModelFilterSupplier.set(mTabModelFilter);
+        verify(mTabModelFilter, times(2)).addObserver(mTabModelObserverCaptor.capture());
+        verify(mResetHandler).resetWithTabList(mTabModelFilter, false);
     }
 
     @Test
