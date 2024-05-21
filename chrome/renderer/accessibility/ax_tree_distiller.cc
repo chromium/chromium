@@ -17,8 +17,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace {
@@ -46,11 +48,13 @@ static const ax::mojom::Role kRolesToSkip[]{
 // which lie outside of the main and article node.
 // TODO(crbug.com/40802192): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
-void GetContentRootNodes(const ui::AXNode* root,
+void GetContentRootNodes(const ui::AXTree& tree,
                          std::vector<const ui::AXNode*>* content_root_nodes) {
+  const ui::AXNode* root = tree.root();
   if (!root) {
     return;
   }
+
   std::queue<const ui::AXNode*> queue;
   queue.push(root);
   bool has_main_or_heading = false;
@@ -67,11 +71,30 @@ void GetContentRootNodes(const ui::AXNode* root,
     }
     // If a heading node is found, add it to the list of content root nodes,
     // too. It may be removed later if the tree doesn't contain a main or
-    // article node.
+    // article node. Do not add it if it is offscreen.
     if (node->GetRole() == ax::mojom::Role::kHeading) {
+      bool offscreen = false;
+      tree.GetTreeBounds(node, &offscreen);
+      if (offscreen) {
+        continue;
+      }
       content_root_nodes->push_back(node);
       continue;
     }
+
+    // Add all nodes that can be expanded. Collapsed nodes will be removed
+    // later.
+    if (node->HasHtmlAttribute("aria-expanded")) {
+      content_root_nodes->push_back(node);
+      continue;
+    }
+
+    if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+      content_root_nodes->push_back(node);
+      continue;
+    }
+
+    // Search through all children.
     for (auto iter = node->UnignoredChildrenBegin();
          iter != node->UnignoredChildrenEnd(); ++iter) {
       queue.push(iter.get());
@@ -100,8 +123,23 @@ void AddContentNodesToVector(const ui::AXNode* node,
     content_node_ids->emplace_back(node->id());
     return;
   }
-  if (base::Contains(kRolesToSkip, node->GetRole()))
+
+  if (node->HasState(ax::mojom::State::kRichlyEditable) &&
+      node->id() == node->tree()->data().focus_id) {
+    content_node_ids->push_back(node->id());
     return;
+  }
+
+  auto aria_expanded_state =
+      base::UTF16ToUTF8(node->GetHtmlAttribute("aria-expanded"));
+  if (aria_expanded_state == "true") {
+    content_node_ids->push_back(node->id());
+    return;
+  }
+
+  if (base::Contains(kRolesToSkip, node->GetRole())) {
+    return;
+  }
   for (auto iter = node->UnignoredChildrenBegin();
        iter != node->UnignoredChildrenEnd(); ++iter) {
     AddContentNodesToVector(iter.get(), content_node_ids);
@@ -153,7 +191,7 @@ void AXTreeDistiller::DistillViaAlgorithm(
     std::vector<ui::AXNodeID>* content_node_ids) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   std::vector<const ui::AXNode*> content_root_nodes;
-  GetContentRootNodes(tree.root(), &content_root_nodes);
+  GetContentRootNodes(tree, &content_root_nodes);
   for (const ui::AXNode* content_root_node : content_root_nodes) {
     AddContentNodesToVector(content_root_node, content_node_ids);
   }

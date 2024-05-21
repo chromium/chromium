@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_position.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace content {
@@ -66,7 +67,8 @@ class ReadAnythingAppControllerTest;
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
-      public read_anything::mojom::UntrustedPage {
+      public read_anything::mojom::UntrustedPage,
+      public ui::AXTreeObserver {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
@@ -87,6 +89,15 @@ class ReadAnythingAppController
   // gin::WrappableBase:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  // ui::AXTreeObserver:
+  void OnNodeDataChanged(ui::AXTree* tree,
+                         const ui::AXNodeData& old_node_data,
+                         const ui::AXNodeData& new_node_data) override;
+
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+
+  void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
 
   // read_anything::mojom::UntrustedPage:
   void ProcessAccessibilityUpdatesAndEvents(
@@ -221,7 +232,7 @@ class ReadAnythingAppController
       const std::string& display_locale) const;
 
   void Distill();
-  void Draw();
+  void Draw(bool recompute_display_nodes);
   void DrawSelection();
 
   void ExecuteJavaScript(const std::string& script);
@@ -341,6 +352,10 @@ class ReadAnythingAppController
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
 
+  // Set of nodes that will be deleted that are also displayed. A draw will
+  // occur when the set becomes empty.
+  std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
+
   // For metrics logging
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
@@ -350,6 +365,10 @@ class ReadAnythingAppController
 
   // The time when the WebUI connects i.e. when onConnected is called.
   base::TimeTicks web_ui_connected_time_ms_;
+
+  // A timer that causes a distillation after a user stops typing for a set
+  // number of seconds.
+  base::RetainingOneShotTimer post_user_entry_draw_timer_;
 
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };

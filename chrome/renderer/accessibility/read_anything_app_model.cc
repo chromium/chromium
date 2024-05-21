@@ -339,6 +339,9 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     return;
   }
 
+  // Clear the map to store new expanded states.
+  aria_expanded_node_states_.clear();
+
   // Display nodes are the nodes which will be displayed by the rendering
   // algorithm of Read Anything app.ts. We wish to create a subtree which
   // stretches down from tree root to every content node and includes the
@@ -354,6 +357,21 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
     if (!content_node || content_node->IsInvisibleOrIgnored()) {
       continue;
+    }
+
+    // Ignore aria-expanded for editables.
+    if (content_node->HasHtmlAttribute("aria-expanded") &&
+        !content_node->HasState(ax::mojom::State::kRichlyEditable)) {
+      // Capture the expanded state. ARIA expanded is not supported by all
+      // element types, but gmail for example uses it anyways. Check the
+      // attribute directly for that reason.
+      auto aria_expanded_state =
+          base::UTF16ToUTF8(content_node->GetHtmlAttribute("aria-expanded"));
+      aria_expanded_node_states_[content_node_id] = aria_expanded_state;
+      // Don't include collapsed aria-expanded items.
+      if (aria_expanded_state != "true") {
+        continue;
+      }
     }
 
     // Add all ancestor ids, including the content node itself, which is the
@@ -542,6 +560,7 @@ void ReadAnythingAppModel::ProcessAccessibilityUpdatesAndEvents(
         std::make_unique<ui::AXSerializableTree>();
     AddTree(tree_id, std::move(new_tree));
   }
+
   // If a tree update on the active tree is received while distillation is in
   // progress, cache updates that are received but do not yet unserialize them.
   // Drawing must be done on the same tree that was sent to the distiller,
@@ -866,7 +885,9 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTooltipClosed:
       case ax::mojom::Event::kTooltipOpened:
       case ax::mojom::Event::kTreeChanged:
+        break;
       case ax::mojom::Event::kValueChanged:
+        reset_draw_timer_ = true;
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
@@ -956,7 +977,16 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::MENU_POPUP_START:
       case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
+        break;
       case ui::AXEventGenerator::Event::NAME_CHANGED:
+        // TODO(francisjp): Determine if this logic should be specific to gmail.
+        if (last_expanded_node_id_ == event.node_id) {
+          ResetSelection();
+          requires_post_process_selection_ = false;
+          reset_last_expanded_node_id();
+          redraw_required_ = true;
+        }
+        break;
       case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
       case ui::AXEventGenerator::Event::PARENT_CHANGED:

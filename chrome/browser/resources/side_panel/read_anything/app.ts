@@ -795,7 +795,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateSelection() {
-    const selection = this.getSelection()!;
+    const selection: Selection = this.getSelection()!;
     selection.removeAllRanges();
 
     const range = new Range();
@@ -847,8 +847,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     }
 
-    range.setStart(startNode, startOffset);
-    range.setEnd(endNode, endOffset);
+    // Gmail will try to select text when collapsing the node. At the same time,
+    // the node contents are then shortened because of the collapse which causes
+    // the range to go out of bounds. When this happens we should reset the
+    // selection.
+    try {
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+    } catch (err) {
+      selection.removeAllRanges();
+      return;
+    }
+
     selection.addRange(range);
 
     // Scroll the start node into view. ScrollIntoView is available on the
@@ -2020,8 +2030,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const selectedVoice = this.getVoices()
-                              .filter(voice => voice.name === storedVoiceName);
+    const selectedVoice =
+        this.getVoices().filter(voice => voice.name === storedVoiceName);
     this.selectedVoice = selectedVoice && (selectedVoice.length > 0) ?
         selectedVoice[0] :
         this.defaultVoice();

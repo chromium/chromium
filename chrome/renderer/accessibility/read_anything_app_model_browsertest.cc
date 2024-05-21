@@ -4,13 +4,17 @@
 
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/l10n/l10n_util.h"
 
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
@@ -61,6 +65,12 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void SetSpeechPlaying(bool speech_playing) {
     model_->set_speech_playing(speech_playing);
   }
+
+  void SetLastExpandedNodeId(ui::AXNodeID id) {
+    model_->set_last_expanded_node_id(id);
+  }
+
+  ui::AXNodeID LastExpandedNodeId() { return model_->last_expanded_node_id(); }
 
   bool AreAllPendingUpdatesEmpty() {
     size_t count = 0;
@@ -113,6 +123,12 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     ui::AXUpdatesAndEvents updates_and_events;
     updates_and_events.updates = std::move(updates);
     model_->ProcessAccessibilityUpdatesAndEvents(tree_id,
+                                                 std::move(updates_and_events));
+  }
+
+  void ProcessAccessibilityUpdatesAndEvents(
+      ui::AXUpdatesAndEvents updates_and_events) {
+    model_->ProcessAccessibilityUpdatesAndEvents(updates_and_events.ax_tree_id,
                                                  std::move(updates_and_events));
   }
 
@@ -189,6 +205,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return base::Contains(model_->selection_node_ids(), ax_node_id);
   }
 
+  bool SelectionNodeIdsEmpty() { return model_->selection_node_ids().empty(); }
+
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     Reset(content_node_ids);
     model_->ComputeDisplayNodeIdsForDistilledTree();
@@ -197,6 +215,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   bool ProcessSelection() { return model_->PostProcessSelection(); }
 
   bool RequiresDistillation() { return model_->requires_distillation(); }
+
+  bool RequiresRedraw() { return model_->redraw_required(); }
+
+  bool DrawTimerReset() { return model_->reset_draw_timer(); }
 
   bool RequiresPostProcessSelection() {
     return model_->requires_post_process_selection();
@@ -786,6 +808,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
 
   // Create a couple of updates which add additional nodes to the tree.
   std::vector<ui::AXTreeUpdate> updates;
+  std::vector<ui::AXEvent> events;
   std::vector<int> child_ids = {2, 3, 4};
   for (int i = 0; i < 2; i++) {
     int id = i + 5;
@@ -2161,4 +2184,57 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(GetWordLength(-5), 0);
   EXPECT_EQ(GetWordLength(sentence.length()), 0);
   EXPECT_EQ(GetWordLength(sentence.length() + 1), 0);
+}
+
+TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
+  ui::AXTreeUpdate inital_update;
+  SetUpdateTreeID(&inital_update);
+  ui::AXNodeData inital_node;
+  inital_node.id = 2;
+  inital_node.role = ax::mojom::Role::kStaticText;
+  inital_node.SetNameChecked("Old Name");
+  inital_update.nodes = {inital_node};
+  ProcessAccessibilityUpdatesAndEvents({inital_update});
+
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData updated_node;
+  updated_node.id = inital_node.id;
+  updated_node.role = ax::mojom::Role::kStaticText;
+  updated_node.SetNameChecked("New Name");
+  update.nodes = {updated_node};
+  SetLastExpandedNodeId(inital_node.id);
+  EXPECT_EQ(LastExpandedNodeId(), inital_node.id);
+  ProcessAccessibilityUpdatesAndEvents({update});
+
+  EXPECT_FALSE(RequiresPostProcessSelection());
+  EXPECT_TRUE(RequiresRedraw());
+  EXPECT_EQ(LastExpandedNodeId(), ui::kInvalidAXNodeID);
+  // Check selection reset.
+  EXPECT_FALSE(HasSelection());
+  EXPECT_EQ(StartOffset(), -1);
+  EXPECT_EQ(EndOffset(), -1);
+  EXPECT_EQ(StartNodeId(), ui::kInvalidAXNodeID);
+  EXPECT_EQ(EndNodeId(), ui::kInvalidAXNodeID);
+  EXPECT_TRUE(SelectionNodeIdsEmpty());
+}
+
+TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData node1;
+  node1.id = 1;
+  update.nodes = {node1};
+
+  ui::AXEvent event;
+  event.id = node1.id;
+  event.event_type = ax::mojom::Event::kValueChanged;
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  ui::AXUpdatesAndEvents event_and_update;
+  event_and_update.events = {event};
+  event_and_update.updates = {update};
+  event_and_update.ax_tree_id = update.tree_data.tree_id;
+  ProcessAccessibilityUpdatesAndEvents(std::move(event_and_update));
+  EXPECT_TRUE(DrawTimerReset());
 }
