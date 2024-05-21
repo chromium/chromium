@@ -417,6 +417,12 @@ extern const char kBackgroundListeningDescription[];
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
+extern const char kBindCookiesToPortName[];
+extern const char kBindCookiesToPortDescription[];
+
+extern const char kBindCookiesToSchemeName[];
+extern const char kBindCookiesToSchemeDescription[];
+
 extern const char kFailFastQuietChipName[];
 extern const char kFailFastQuietChipDescription[];
 

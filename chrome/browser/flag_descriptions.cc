@@ -703,6 +703,18 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
+const char kBindCookiesToPortName[] =
+    "Bind cookies to their setting origin's port";
+const char kBindCookiesToPortDescription[] =
+    "If enabled, cookies will only be accessible by origins with the same port "
+    "as the one that originally set the cookie.";
+
+const char kBindCookiesToSchemeName[] =
+    "Bind cookies to their setting origin's scheme";
+const char kBindCookiesToSchemeDescription[] =
+    "If enabled, cookies will only be accessible by origins with the same "
+    "scheme as the one that originally set the cookie";
+
 const char kFailFastQuietChipName[] = "Fail fast quiet chip";
 const char kFailFastQuietChipDescription[] =
     "Enables fast finalization of a permission request if it is displayed as a "

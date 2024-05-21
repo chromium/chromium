@@ -932,6 +932,16 @@
     "expiry_milestone": 132
   },
   {
+    "name": "bind-cookies-to-port",
+    "owners": [ "bingler@chromium.org"],
+    "expiry_milestone": 132
+  },
+  {
+    "name": "bind-cookies-to-scheme",
+    "owners": [ "bingler@chromium.org"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap@chromium.org", "izuzic@google.com"],
     "expiry_milestone": 125
