@@ -86,6 +86,21 @@ mojom::AudioEffectState GetNoiseCancellationState(const AudioDevice& device) {
 }
 
 // Determines the correct `mojom::AudioEffectState` for an audio device
+mojom::AudioEffectState GetStyleTransferState(const AudioDevice& device) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+
+  if (!audio_handler->IsStyleTransferSupportedForDevice(device.id)) {
+    return mojom::AudioEffectState::kNotSupported;
+  }
+
+  // Device supports style transfer, get current device wide preference
+  // state from `CrasAudioHandler`.
+  return audio_handler->GetStyleTransferState()
+             ? mojom::AudioEffectState::kEnabled
+             : mojom::AudioEffectState::kNotEnabled;
+}
+
+// Determines the correct `mojom::AudioEffectState` for an audio device
 mojom::AudioEffectState GetForceRespectUiGainsState(const AudioDevice& device) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   CHECK(audio_handler);
@@ -165,6 +180,7 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   mojo_device->is_active = device.active;
   mojo_device->device_type = ComputeDeviceType(device.type);
   mojo_device->noise_cancellation_state = GetNoiseCancellationState(device);
+  mojo_device->style_transfer_state = GetStyleTransferState(device);
   mojo_device->force_respect_ui_gains_state =
       GetForceRespectUiGainsState(device);
   mojo_device->hfp_mic_sr_state = GetHfpMicSrState(device);
@@ -366,6 +382,19 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
   base::UmaHistogramBoolean(kNoiseCancellationEnabledHistogramName, enabled);
 }
 
+void CrosAudioConfigImpl::SetStyleTransferEnabled(bool enabled) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+
+  if (!audio_handler->IsStyleTransferSupportedForDevice(
+          audio_handler->GetPrimaryActiveInputNode())) {
+    LOG(ERROR) << "SetStyleTransferEnabled: Style transfer is not "
+                  "supported by active input node.";
+    return;
+  }
+
+  audio_handler->SetStyleTransferState(enabled);
+}
+
 void CrosAudioConfigImpl::SetForceRespectUiGainsEnabled(bool enabled) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   CHECK(audio_handler);
@@ -450,6 +479,10 @@ void CrosAudioConfigImpl::OnInputMutedByMicrophoneMuteSwitchChanged(
 }
 
 void CrosAudioConfigImpl::OnNoiseCancellationStateChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnStyleTransferStateChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 
