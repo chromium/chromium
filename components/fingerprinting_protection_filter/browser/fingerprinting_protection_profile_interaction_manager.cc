@@ -5,6 +5,9 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 
 #include "base/check_op.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -16,8 +19,10 @@ using ::subresource_filter::ActivationDecision;
 using ::subresource_filter::mojom::ActivationLevel;
 
 ProfileInteractionManager::ProfileInteractionManager(
+    PrefService* pref_service,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings)
-    : tracking_protection_settings_(tracking_protection_settings) {}
+    : tracking_protection_settings_(tracking_protection_settings),
+      prefs_(pref_service) {}
 
 ProfileInteractionManager::~ProfileInteractionManager() = default;
 
@@ -40,11 +45,18 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   }
   // We enable fingerprinting protection if the user has turned the feature on
   // in settings.
-  // TODO(crbug.com/327005578): Add a FeatureParam-guarded check for users who
-  // have third-party cookies blocked, meaning they have toggled this in the
-  // settings.
   bool enable_fp =
       tracking_protection_settings_->IsFingerprintingProtectionEnabled();
+
+  if (features::kEnableOn3pcBlocked.Get()) {
+    // The value of prefs::kCookieControlsMode reflects the state of third-party
+    // cookies being disabled, i.e. 3PCD is on or user blocks 3PC.
+    // TrackingProtectionSettings API only covers 3PCD case.
+    enable_fp =
+        enable_fp && (static_cast<content_settings::CookieControlsMode>(
+                          prefs_->GetInteger(prefs::kCookieControlsMode)) ==
+                      content_settings::CookieControlsMode::kBlockThirdParty);
+  }
 
   // Disable the feature if the user a) does not meet the conditions for
   // enabling or b) if they have a Tracking Protection exception for the current

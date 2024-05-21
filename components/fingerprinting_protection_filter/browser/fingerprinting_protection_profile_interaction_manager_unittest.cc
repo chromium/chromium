@@ -5,9 +5,10 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 
 #include <memory>
-#include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -29,6 +30,9 @@ struct OnPageActivationComputedTestCase {
   bool is_fp_feature_enabled = true;
   bool is_fp_user_pref_enabled = true;
   bool site_has_tp_exception = false;
+  bool is_on_3pc_blocked_enabled = false;
+  content_settings::CookieControlsMode cookie_controls_mode =
+      content_settings::CookieControlsMode::kBlockThirdParty;
   ActivationDecision initial_decision = ActivationDecision::ACTIVATED;
   ActivationLevel initial_level = ActivationLevel::kEnabled;
   ActivationLevel expected_level_output;
@@ -43,6 +47,7 @@ class ProfileInteractionManagerTest
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     privacy_sandbox::tracking_protection::RegisterProfilePrefs(
         prefs()->registry());
+    content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
   }
 
   GURL GetTestUrl() { return GURL("http://cool.things.com"); }
@@ -68,11 +73,16 @@ class ProfileInteractionManagerTest
     RenderViewHostTestHarness::TearDown();
   }
 
-  void SetFingerprintingProtectionSettingEnabled(bool is_enabled) {
+  void SetFingerprintingProtectionSettingEnabled(
+      bool is_enabled,
+      bool is_on_3pc_blocked_enabled) {
     if (is_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          privacy_sandbox::kFingerprintingProtectionSetting);
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          privacy_sandbox::kFingerprintingProtectionSetting,
+          {{"enable_on_3pc_blocked",
+            base::NumberToString(is_on_3pc_blocked_enabled)}});
     } else {
+      EXPECT_FALSE(is_on_3pc_blocked_enabled);
       scoped_feature_list_.InitAndDisableFeature(
           privacy_sandbox::kFingerprintingProtectionSetting);
     }
@@ -162,6 +172,29 @@ const OnPageActivationComputedTestCase kTestCases[] = {
         .initial_decision = ActivationDecision::UNKNOWN,
         .expected_level_output = ActivationLevel::kDisabled,
         .expected_decision = ActivationDecision::UNKNOWN,
+    },
+    {
+        .test_name =
+            "FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcBlocked",
+        .is_on_3pc_blocked_enabled = true,
+        .expected_level_output = ActivationLevel::kEnabled,
+        .expected_decision = ActivationDecision::ACTIVATED,
+    },
+    {
+        .test_name =
+            "FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcAllowed",
+        .is_on_3pc_blocked_enabled = true,
+        .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
+        .expected_level_output = ActivationLevel::kDisabled,
+        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
+    },
+    {
+        .test_name = "FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_"
+                     "3pcIncognitoOnly",
+        .is_on_3pc_blocked_enabled = true,
+        .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
+        .expected_level_output = ActivationLevel::kDisabled,
+        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
     }};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -176,18 +209,22 @@ TEST_P(ProfileInteractionManagerTest,
   const OnPageActivationComputedTestCase& test_case = GetParam();
 
   // Initialize whether the feature is enabled.
-  SetFingerprintingProtectionSettingEnabled(test_case.is_fp_feature_enabled);
+  SetFingerprintingProtectionSettingEnabled(
+      test_case.is_fp_feature_enabled, test_case.is_on_3pc_blocked_enabled);
   // Navigate to the test url.
   navigation_handle()->set_url(GetTestUrl());
   // Initialize the tracking_protection_settings_ for test.
   prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
                       test_case.is_fp_user_pref_enabled);
+  prefs()->SetInteger(prefs::kCookieControlsMode,
+                      static_cast<int>(test_case.cookie_controls_mode));
+
   if (test_case.site_has_tp_exception) {
     tracking_protection()->AddTrackingProtectionException(
         GetTestUrl(), /*is_user_bypass_exception=*/true);
   }
   // Prepare the manager under test and input with initial_decision param.
-  auto test_manager = ProfileInteractionManager(tracking_protection());
+  auto test_manager = ProfileInteractionManager(prefs(), tracking_protection());
   auto actual_decision = test_case.initial_decision;
 
   ActivationLevel actual_level = test_manager.OnPageActivationComputed(

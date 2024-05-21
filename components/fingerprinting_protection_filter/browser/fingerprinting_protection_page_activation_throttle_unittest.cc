@@ -83,7 +83,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(),
+      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
       /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
@@ -117,7 +117,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(),
+      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
       /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
@@ -155,7 +155,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(),
+      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
       /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
@@ -193,7 +193,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(),
+      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
       /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.

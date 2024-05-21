@@ -1293,7 +1293,7 @@ TEST_P(CookieControlsUserBypassTest, SubresourceBlocked) {
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilter);
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
-      CreateForWebContents(web_contents(),
+      CreateForWebContents(web_contents(), /*pref_service=*/nullptr,
                            /*tracking_protection_settings=*/nullptr);
 
   NavigateAndCommit(GURL("https://example.com"));
