@@ -92,6 +92,17 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
                                        std::move(handler), kMaxDownloadBytes);
   }
 
+  GURL ResolveUrl(std::string_view path) override {
+    GURL resolved = configuration_.host.Resolve(path);
+    if (!resolved.is_valid()) {
+      // If the path segment results in an invalid url, use an empty one
+      // instead to guard against accidental use.
+      return GURL();
+    }
+
+    return resolved;
+  }
+
  private:
   void HandleConfigurationString(ConfigurationCallback callback,
                                  std::optional<std::string> response_body) {

@@ -93,6 +93,12 @@ void DispatchRequests(
         void(std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>)>
         done_callback,
     const std::vector<FocusModeSoundsDelegate::Playlist>& data) {
+  if (data.empty()) {
+    LOG(WARNING) << "Retrieving Playlist data failed.";
+    std::move(done_callback).Run({});
+    return;
+  }
+
   CHECK_EQ(data.size(), 4u);
 
   // TODO(b/340304748): Currently, when opening the focus panel, we will clean
@@ -123,9 +129,12 @@ FocusModeSoundsController::SelectedPlaylist::operator=(
 FocusModeSoundsController::SelectedPlaylist::~SelectedPlaylist() = default;
 
 FocusModeSoundsController::FocusModeSoundsController()
-    : soundscape_delegate_(std::make_unique<FocusModeSoundscapeDelegate>()),
+    : soundscape_delegate_(
+          std::make_unique<FocusModeSoundscapeDelegate>("en-US")),
       youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
+  // TODO(b/341176182): Plumb the locale here and replace the default
+  // locale.
   soundscape_playlists_.reserve(kPlaylistNum);
   youtube_music_playlists_.reserve(kPlaylistNum);
 }

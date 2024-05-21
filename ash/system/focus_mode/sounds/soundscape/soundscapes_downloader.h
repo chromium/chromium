@@ -55,6 +55,9 @@ class ASH_EXPORT SoundscapesDownloader {
   // Starts the request for the configuration file. `callback` is invoked when
   // the file is retrieved or we've given up.
   virtual void FetchConfiguration(ConfigurationCallback callback) = 0;
+
+  // Returns a `GURL` rooted at the configured host for `path`.
+  virtual GURL ResolveUrl(std::string_view path) = 0;
 };
 
 }  // namespace ash
