@@ -232,6 +232,9 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageText] = SelectBasedOnDarkInput(
       element_background_color, gfx::kGoogleGrey200, gfx::kGoogleGrey900);
+      // Styling for Doodle Share Button.
+  mixer[kColorNewTabPageDoodleShareButtonBackground] = element_background_color;
+  mixer[kColorNewTabPageDoodleShareButtonIcon] = primary_foreground_color;
 }
 
 // Dialog colors currently track the native theme and not the browser theme.
