@@ -113,7 +113,13 @@ public class Fido2CredentialRequest
      */
     public Fido2CredentialRequest(AuthenticationContextProvider authenticationContextProvider) {
         mAuthenticationContextProvider = authenticationContextProvider;
-        mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
+        boolean playServicesAvailable;
+        try {
+            playServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
+        } catch (Exception e) {
+            playServicesAvailable = false;
+        }
+        mPlayServicesAvailable = playServicesAvailable;
         mCredManHelper =
                 new CredManHelper(mAuthenticationContextProvider, this, mPlayServicesAvailable);
         mBarrier = new Barrier(this::returnErrorAndResetCallback);
