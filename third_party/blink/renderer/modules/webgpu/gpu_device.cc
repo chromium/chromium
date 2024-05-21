@@ -648,7 +648,8 @@ ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
       MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
 
-  GetHandle().PopErrorScope(callback->UnboundCallback(),
+  GetHandle().PopErrorScope(wgpu::CallbackMode::AllowSpontaneous,
+                            callback->UnboundCallback(),
                             callback->AsUserdata());
 
   // WebGPU guarantees that promises are resolved in finite time so we
@@ -659,9 +660,17 @@ ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
 
 void GPUDevice::OnPopErrorScopeCallback(
     ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
-    WGPUErrorType cType,
+    wgpu::PopErrorScopeStatus status,
+    wgpu::ErrorType type,
     const char* message) {
-  wgpu::ErrorType type = static_cast<wgpu::ErrorType>(cType);
+  switch (status) {
+    case wgpu::PopErrorScopeStatus::InstanceDropped:
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "Instance dropped in popErrorScope");
+      return;
+    case wgpu::PopErrorScopeStatus::Success:
+      break;
+  }
   switch (type) {
     case wgpu::ErrorType::NoError:
       resolver->Resolve(nullptr);

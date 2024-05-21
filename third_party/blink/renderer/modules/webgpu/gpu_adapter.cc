@@ -202,12 +202,9 @@ void GPUAdapter::OnRequestDeviceCallback(
     ScriptState* script_state,
     const GPUDeviceDescriptor* descriptor,
     ScriptPromiseResolver<GPUDevice>* resolver,
-    WGPURequestDeviceStatus cStatus,
-    WGPUDevice cDevice,
+    wgpu::RequestDeviceStatus status,
+    wgpu::Device dawn_device,
     const char* error_message) {
-  wgpu::RequestDeviceStatus status =
-      static_cast<wgpu::RequestDeviceStatus>(cStatus);
-  wgpu::Device dawn_device = wgpu::Device::Acquire(cDevice);
   switch (status) {
     case wgpu::RequestDeviceStatus::Success: {
       DCHECK(dawn_device);
@@ -327,7 +324,8 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
       WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(descriptor))));
 
-  GetHandle().RequestDevice(&dawn_desc, callback->UnboundCallback(),
+  GetHandle().RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+                            callback->UnboundCallback(),
                             callback->AsUserdata());
   EnsureFlush(ToEventLoop(script_state));
 

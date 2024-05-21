@@ -184,7 +184,8 @@ class GPUDevice final : public EventTarget,
 
   void OnPopErrorScopeCallback(
       ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
-      WGPUErrorType type,
+      wgpu::PopErrorScopeStatus status,
+      wgpu::ErrorType type,
       const char* message);
 
   void OnCreateRenderPipelineAsyncCallback(

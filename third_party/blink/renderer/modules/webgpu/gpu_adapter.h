@@ -61,8 +61,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   void OnRequestDeviceCallback(ScriptState* script_state,
                                const GPUDeviceDescriptor* descriptor,
                                ScriptPromiseResolver<GPUDevice>* resolver,
-                               WGPURequestDeviceStatus status,
-                               WGPUDevice dawn_device,
+                               wgpu::RequestDeviceStatus status,
+                               wgpu::Device dawn_device,
                                const char* error_message);
 
   void setLabelImpl(const String&) override {

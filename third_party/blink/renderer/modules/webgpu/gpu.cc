@@ -185,12 +185,9 @@ void GPU::OnRequestAdapterCallback(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options,
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
-    WGPURequestAdapterStatus cStatus,
-    WGPUAdapter cAdapter,
+    wgpu::RequestAdapterStatus status,
+    wgpu::Adapter adapter,
     const char* error_message) {
-  wgpu::RequestAdapterStatus status =
-      static_cast<wgpu::RequestAdapterStatus>(cStatus);
-  wgpu::Adapter adapter = wgpu::Adapter::Acquire(cAdapter);
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
@@ -296,8 +293,9 @@ void GPU::RequestAdapterImpl(
             // TODO(crbug.com/973017): Collect GPU info and surface context
             // creation error.
             gpu->OnRequestAdapterCallback(
-                script_state, options, resolver, WGPURequestAdapterStatus_Error,
-                nullptr, "Failed to create WebGPU Context Provider");
+                script_state, options, resolver,
+                wgpu::RequestAdapterStatus::Error, nullptr,
+                "Failed to create WebGPU Context Provider");
           }
         },
         WrapPersistent(this), WrapPersistent(script_state),
@@ -359,7 +357,8 @@ void GPU::RequestAdapterImpl(
                     WrapPersistent(script_state), WrapPersistent(options))));
 
   dawn_control_client_->GetWGPUInstance().RequestAdapter(
-      &dawn_options, callback->UnboundCallback(), callback->AsUserdata());
+      &dawn_options, wgpu::CallbackMode::AllowSpontaneous,
+      callback->UnboundCallback(), callback->AsUserdata());
   dawn_control_client_->EnsureFlush(
       *execution_context->GetAgent()->event_loop());
 

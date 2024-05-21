@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/webgpu_support.h"
-#include "gpu/webgpu/callback.h"
 #include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h"
 
 namespace gpu::cmdbuf::fuzzing {
@@ -33,19 +32,16 @@ void CmdBufFuzz::WebGPURequestAdapter() {
   wgpu::RequestAdapterOptions ra_options = {};
   ra_options.forceFallbackAdapter = false;
   bool done = false;
-  auto* adapter_callback = webgpu::BindWGPUOnceCallback(
-      [](CmdBufFuzz* test, bool* done, WGPURequestAdapterStatus status,
-         WGPUAdapter adapter, const char* message) {
-        CHECK_EQ(status, WGPURequestAdapterStatus_Success);
-        CHECK_NE(adapter, nullptr);
-        test->webgpu_adapter_ = std::make_unique<wgpu::Adapter>(adapter);
+  webgpu_instance_.RequestAdapter(
+      &ra_options, wgpu::CallbackMode::AllowSpontaneous,
+      [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+          const char* message) {
+        CHECK_EQ(status, wgpu::RequestAdapterStatus::Success);
+        CHECK_NE(adapter.Get(), nullptr);
+        webgpu_adapter_ = std::move(adapter);
         DVLOG(3) << "Adapter acquired";
-        *done = true;
-      },
-      this, &done);
-  webgpu_instance_->RequestAdapter(&ra_options,
-                                   adapter_callback->UnboundCallback(),
-                                   adapter_callback->AsUserdata());
+        done = true;
+      });
   webgpu_impl_->FlushCommands();
   while (!done) {
     RunPendingTasks();
@@ -56,22 +52,17 @@ void CmdBufFuzz::WebGPURequestAdapter() {
 void CmdBufFuzz::WebGPURequestDevice() {
   DVLOG(3) << "Requesting WebGPU device...";
   bool done = false;
-  // webgpu_device_ = std::make_unique<wgpu::Device>().get();
   wgpu::DeviceDescriptor device_desc = {};
-  auto* device_callback = webgpu::BindWGPUOnceCallback(
-      [](wgpu::Device* device_out, bool* done, WGPURequestDeviceStatus status,
-         WGPUDevice device, const char* message) {
-        DVLOG(3) << "Attempting to acquire device";
-        *device_out = wgpu::Device::Acquire(device);
-        DVLOG(3) << "Device acquired";
-        *done = true;
-      },
-      &webgpu_device_, &done);
-
   DCHECK(webgpu_adapter_);
-  webgpu_adapter_->RequestDevice(&device_desc,
-                                 device_callback->UnboundCallback(),
-                                 device_callback->AsUserdata());
+  webgpu_adapter_.RequestDevice(&device_desc,
+                                wgpu::CallbackMode::AllowSpontaneous,
+                                [&](wgpu::RequestDeviceStatus status,
+                                    wgpu::Device device, const char* message) {
+                                  DVLOG(3) << "Attempting to acquire device";
+                                  webgpu_device_ = std::move(device);
+                                  DVLOG(3) << "Device acquired";
+                                  done = true;
+                                });
   webgpu()->FlushCommands();
   while (!done) {
     RunPendingTasks();

@@ -164,8 +164,7 @@ void CmdBufFuzz::GfxInit() {
   surface_ = gl::init::CreateOffscreenGLSurface(gl_display_, gfx::Size());
   CHECK(surface_.get());
   decoder_ = command_buffer_->GetWebGPUDecoderForTest();
-  webgpu_instance_ =
-      std::make_unique<wgpu::Instance>(wire_channel_->GetWGPUInstance());
+  webgpu_instance_ = wgpu::Instance(wire_channel_->GetWGPUInstance());
   buffer_ = cmd_helper_->get_ring_buffer();
   CHECK(buffer_);
   command_buffer_id_ = cmd_helper_->get_ring_buffer_id();
