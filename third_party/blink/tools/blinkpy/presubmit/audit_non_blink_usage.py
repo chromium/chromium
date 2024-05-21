@@ -96,6 +96,7 @@ _CONFIG = [
             'base::Location',
             'base::MakeRefCounted',
             'base::MappedReadOnlyRegion',
+            'base::MatchPattern',
             'base::MatcherStringPattern',
             'base::MetricsSubSampler',
             'base::Microseconds',
