@@ -1114,14 +1114,12 @@ class TabListMediator {
 
                         RecordUserAction.record("MobileTabClosed." + mComponentName);
 
-                        if (mActionsOnAllRelatedTabs) {
+                        if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
                             List<Tab> related = getRelatedTabsForId(tabId);
-                            if (related.size() > 1) {
-                                onGroupClosedFrom(tabId);
-                                filter.closeMultipleTabs(
-                                        related, /* canUndo= */ true, /* hideTabGroups= */ true);
-                                return;
-                            }
+                            onGroupClosedFrom(tabId);
+                            filter.closeMultipleTabs(
+                                    related, /* canUndo= */ true, /* hideTabGroups= */ true);
+                            return;
                         }
                         onTabClosedFrom(tabId, mComponentName);
 
