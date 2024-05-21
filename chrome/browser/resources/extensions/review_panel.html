@@ -1,4 +1,11 @@
 <style include="cr-shared-style shared-style">
+  .panel-header {
+    /* label in panel-header's cr-expand-button adds its own vertical padding.
+       Thus, we need to substract it from the panel-header padding */
+    padding: calc(var(--cr-section-padding) -
+        var(--cr-section-vertical-padding)) 0px;
+  }
+
   .header-group-wrapper {
     flex: 1;
     margin-inline-start: 15px;
@@ -26,19 +33,10 @@
     }
   }
 
-  .header-group-wrapper {
-    flex: 1;
-    margin-inline-start: 15px;
-  }
-
   .completion-container {
     font-weight: 500;
     font-size: 14px;
     min-height: 42px;
-  }
-
-  .panel-extensions {
-    padding-bottom: 15px;
   }
 
   .panel-extension-info {
@@ -51,12 +49,8 @@
     margin-inline-start: auto;
   }
 
-  .cr-row{
+  .cr-row {
     padding: 0;
-  }
-
-  .cr-row.first {
-    padding-top: 5px;
   }
 
   /* When the panel is the width of one extension card, it will reformat
@@ -83,7 +77,7 @@
   $i18n{safetyHubHeader}
 </h2>
 <div class="panel-background" hidden$="[[shouldHideUnsafePanel_]]">
-  <cr-expand-button class="cr-row first" no-hover
+  <cr-expand-button class="panel-header" no-hover
       id="expandButton"
       expanded="{{unsafeExtensionsReviewListExpanded_}}"
       hidden$="[[!shouldShowUnsafeExtensions_]]">
