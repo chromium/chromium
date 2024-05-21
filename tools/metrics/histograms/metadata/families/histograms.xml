@@ -686,6 +686,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
+    enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
+    expires_after="2024-12-12">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the different flows that lead to granting an automatic parent
+    approval on an extension (without having to explicitely request the
+    approval).
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ParentPermissionDialog"
     enum="SupervisedUserParentPermissionDialog" expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>

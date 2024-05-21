@@ -241,6 +241,11 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
     CHECK(extension);
     if (!base::Contains(approved_extensions_set_, extension->id())) {
       AddExtensionApproval(*extension);
+      SupervisedUserExtensionsMetricsRecorder::
+          RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
+              SupervisedUserExtensionsMetricsRecorder::
+                  ImplicitExtensionApprovalEntryPoint::
+                      OnExtensionInstallationWithExtensionsSwitchEnabled);
     }
   }
 
@@ -571,6 +576,11 @@ void SupervisedUserExtensionsManager::
           (state == ExtensionState::ALLOWED &&
            IsLocallyParentApprovedExtension(extension->id()))) {
         AddExtensionApproval(*extension);
+        SupervisedUserExtensionsMetricsRecorder::
+            RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
+                SupervisedUserExtensionsMetricsRecorder::
+                    ImplicitExtensionApprovalEntryPoint::
+                        kOnExtensionsSwitchFlippedToEnabled);
       }
       // If the extension id from the preferences has not been installed yet,
       // the approval will be granted at the end of installation.

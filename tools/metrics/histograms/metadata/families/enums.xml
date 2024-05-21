@@ -344,6 +344,28 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
+
+<enum name="SupervisedUserImplicitParentApprovalGrantEntryPoint">
+  <summary>
+    Tracks the different user flows that lead to granting an automatic parent
+    approval to an extension for a supervised user.
+  </summary>
+  <int value="0"
+      label="Parent configuration Extensions switch is flipped to enabled">
+    Recorded when an extension that did not have parent approval is granted it,
+    when the Family Link &quot;Extensions&quot; toggle is flipped to On. In this
+    mode no explicit parental approval is required.
+  </int>
+  <int value="1" label="New extension is installed">
+    Recorded when an extension is granted parent approval at the time of its
+    installation, when it is installed under the &quot;Extensions&quot; toggle
+    set to On. In this mode no explicit parental approval is required.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ImplicitExtensionApprovalEntryPoint) -->
+
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>
     Tracks the actions of a parent on the Parent Permission Dialog.

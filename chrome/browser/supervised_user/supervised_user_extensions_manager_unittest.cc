@@ -365,6 +365,14 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kApprovalGrantedByDefault,
       approved_extensions_count);
+  // The entry point of the implicit approval is recorded.
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::
+          kImplicitParentApprovalGrantEntryPointHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::
+          ImplicitExtensionApprovalEntryPoint::
+              kOnExtensionsSwitchFlippedToEnabled,
+      approved_extensions_count);
 
   // Install an extension.
   scoped_refptr<const Extension> extn_with_switch_on =
@@ -397,6 +405,18 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kLocalApprovalGranted,
       0);
+  // The entry point of the implicit approval is recorded.
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::
+          kImplicitParentApprovalGrantEntryPointHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::
+          ImplicitExtensionApprovalEntryPoint::
+              OnExtensionInstallationWithExtensionsSwitchEnabled,
+      is_extension_approved ? 1 : 0);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::
+          kImplicitParentApprovalGrantEntryPointHistogramName,
+      approved_extensions_count + (is_extension_approved ? 1 : 0));
 }
 
 // Tests that extensions missing parent approval are granted parent approval
