@@ -1353,17 +1353,15 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   }
 
 #if BUILDFLAG(IS_WIN)
+  // The DPAPI key provider requires OSCrypt::Init to have already been called
+  // to initialize the key storage. This happens in
+  // ChromeBrowserMainPartsWin::PreCreateMainMessageLoop.
+  providers.emplace_back(std::make_pair(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::DPAPIKeyProvider>(local_state())));
+
   // TODO(crbug.com/40241934): For Windows, continue to add providers behind
   // features, as support for them is added.
-  if (base::FeatureList::IsEnabled(features::kEnableDPAPIEncryptionProvider)) {
-    // The DPAPI key provider requires OSCrypt::Init to have already been called
-    // to initialize the key storage. This happens in
-    // ChromeBrowserMainPartsWin::PreCreateMainMessageLoop.
-    providers.emplace_back(std::make_pair(
-        /*precedence=*/10u,
-        std::make_unique<os_crypt_async::DPAPIKeyProvider>(local_state())));
-  }
-
   if (base::FeatureList::IsEnabled(
           features::kRegisterAppBoundEncryptionProvider)) {
     // Support level is logged separately to metrics from

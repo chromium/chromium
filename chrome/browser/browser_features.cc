@@ -168,13 +168,6 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-// When this feature is enabled, the DPAPI encryption provider will be
-// registered and enabled for encryption/decryption. This provider is
-// forwards/backwards compatible with OSCrypt sync.
-BASE_FEATURE(kEnableDPAPIEncryptionProvider,
-             "EnableDPAPIEncryptionProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When this feature is enabled, the App-Bound encryption provider is registered
 // with Chrome.
 BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
