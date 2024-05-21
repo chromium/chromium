@@ -14,6 +14,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.resources.dynamics.CaptureObserver;
@@ -65,7 +67,11 @@ public class NativePageBitmapCapturer implements UnownedUserData {
                     @Override
                     public void onCaptureEnd() {}
                 },
-                callback);
+                (bitmap) -> {
+                    // The screenshot callback must be dispatched asynchronously. See
+                    // WebContentsDelegateAndroid#maybeCopyContentAreaAsBitmap.
+                    PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
+                });
         return true;
     }
 

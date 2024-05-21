@@ -79,12 +79,6 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
                          const SkBitmap& bitmap) {
   auto navigation_entry_id = entry.GetUniqueID();
 
-  if (GetTestScreenshotCallback()) {
-    InvokeTestCallback(
-        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
-        true);
-  }
-
   if (&entry == controller.GetLastCommittedEntry()) {
     // TODO(crbug.com/40278616): We shouldn't cache the screenshot into
     // the navigation entry if the entry is re-navigated after we send out the
@@ -109,6 +103,12 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
     LOG(ERROR) << "Cannot generate a valid bitmap for entry "
                << entry.GetUniqueID() << " url " << entry.GetURL();
     return;
+  }
+
+  if (GetTestScreenshotCallback()) {
+    InvokeTestCallback(
+        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
+        true);
   }
 
   SkBitmap immutable_copy(bitmap);
