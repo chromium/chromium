@@ -5660,12 +5660,20 @@
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/text_size_adjust.h"],
+      style_builder_custom_functions: ["initial", "inherit", "value"],
       default_value: "TextSizeAdjust::AdjustAuto()",
       getter: "GetTextSizeAdjust",
+      // When `NewTextSizeAdjust` is enabled, this affects font-size during
+      // style building and needs to apply before it.
+      priority: 2,
       type_name: "TextSizeAdjust",
       converter: "ConvertTextSizeAdjust",
       keywords: ["none", "auto"],
       typedom_types: ["Keyword", "Percentage"],
+      // When `NewTextSizeAdjust` is enabled, this affects font-size during
+      // style building. Changes to anything related to fonts require that we
+      // call style.UpdateFont(), which the incremental path does not do.
+      supports_incremental_style: false,
       invalidate: ["layout", "paint"],
     },
     {

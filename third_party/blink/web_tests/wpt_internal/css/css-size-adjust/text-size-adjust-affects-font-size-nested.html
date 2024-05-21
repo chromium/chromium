@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should affect font-size when nested.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      const fontSize = getComputedStyle(rootWithTextSizeAdjust125)['font-size'];
+      assert_equals(fontSize, '20px');
+    }, 'Font-size on element with text-size-adjust: 125%');
+
+    test(() => {
+      const fontSize = getComputedStyle(child)['font-size'];
+      assert_equals(fontSize, '20px');
+    }, 'Font-size on child without text-size-adjust');
+
+    test(() => {
+      const fontSize = getComputedStyle(childWithTextSizeAdjust100)['font-size'];
+      assert_equals(fontSize, '16px');
+    }, 'Font-size on child with text-size-adjust: 100%');
+
+    test(() => {
+      const fontSize = getComputedStyle(childWithTextSizeAdjustNone)['font-size'];
+      assert_equals(fontSize, '16px');
+    }, 'Font-size on child with text-size-adjust: none');
+
+    test(() => {
+      const fontSize = getComputedStyle(childWithTextSizeAdjust200)['font-size'];
+      assert_equals(fontSize, '32px');
+    }, 'Font-size on child with text-size-adjust: 200%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="rootWithTextSizeAdjust125" style="text-size-adjust: 125%;">
+    Hello world
+    <div id="child">
+      Hello world
+    </div>
+    <div id="childWithTextSizeAdjust100" style="text-size-adjust: 100%;">
+      Hello world
+    </div>
+    <div id="childWithTextSizeAdjustNone" style="text-size-adjust: none;">
+      Hello world
+    </div>
+    <div id="childWithTextSizeAdjust200" style="text-size-adjust: 200%;">
+      Hello world
+    </div>
+  </div>
+</body>

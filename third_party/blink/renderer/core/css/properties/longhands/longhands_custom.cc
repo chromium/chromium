@@ -10962,6 +10962,21 @@ void WritingMode::ApplyValue(StyleResolverState& state,
       To<CSSIdentifierValue>(value).ConvertTo<blink::WritingMode>());
 }
 
+void TextSizeAdjust::ApplyInitial(StyleResolverState& state) const {
+  state.SetTextSizeAdjust(ComputedStyleInitialValues::InitialTextSizeAdjust());
+}
+
+void TextSizeAdjust::ApplyInherit(StyleResolverState& state) const {
+  state.SetTextSizeAdjust(state.ParentStyle()->GetTextSizeAdjust());
+}
+
+void TextSizeAdjust::ApplyValue(StyleResolverState& state,
+                                const CSSValue& value,
+                                ValueMode) const {
+  state.SetTextSizeAdjust(
+      StyleBuilderConverter::ConvertTextSizeAdjust(state, value));
+}
+
 const CSSValue* X::ParseSingleValue(CSSParserTokenStream& stream,
                                     const CSSParserContext& context,
                                     const CSSParserLocalContext&) const {

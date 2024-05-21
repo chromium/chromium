@@ -72,7 +72,7 @@ static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
 static_assert(CSSPropertyID::kColorScheme == kFirstHighPriorityCSSProperty);
 static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty);
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 40,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 41,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {

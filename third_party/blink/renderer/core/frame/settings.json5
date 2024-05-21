@@ -1203,6 +1203,8 @@
       name: "bypassCSP",
       initial: false,
     },
+    // Enables automatic adjustments of text size on mobile. This enables the
+    // text autosizer, and controls whether text-size-adjust can apply.
     {
       name: "textAutosizingEnabled",
       initial: false,

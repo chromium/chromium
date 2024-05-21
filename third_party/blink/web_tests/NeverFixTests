@@ -1604,6 +1604,9 @@ crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/legacy-manua
 # Tests that require support for <meta name="viewport">
 crbug.com/1343368 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ Skip ]
 
+# Tests that require the text autosizing setting.
+crbug.com/340389272 wpt_internal/css/css-size-adjust/* [ Skip ]
+
 # Predefined counter styles that we support a larger range than the spec.
 external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Skip ]
 external/wpt/css/css-counter-styles/hebrew/css3-counter-styles-016a.html [ Skip ]

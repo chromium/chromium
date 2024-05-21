@@ -1204,15 +1204,23 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   DCHECK(layout_object);
   const ComputedStyle& current_style = layout_object->StyleRef();
   if (!current_style.GetTextSizeAdjust().IsAuto()) {
-    // The accessibility font scale factor is applied by the autosizer so we
-    // need to apply that scale factor on top of the text-size-adjust
-    // multiplier. Only apply the accessibility factor if the autosizer has
-    // determined a multiplier should be applied so that text-size-adjust:none
-    // does not cause a multiplier to be applied when it wouldn't be otherwise.
-    bool should_apply_accessibility_font_scale_factor = multiplier > 1;
-    multiplier = current_style.GetTextSizeAdjust().Multiplier();
-    if (should_apply_accessibility_font_scale_factor)
-      multiplier *= page_info_.accessibility_font_scale_factor_;
+    if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+      // Non-auto values of text-size-adjust should fully disable automatic
+      // text size adjustment, including the accessibility font scale factor.
+      multiplier = 1;
+    } else {
+      // The accessibility font scale factor is applied by the autosizer so we
+      // need to apply that scale factor on top of the text-size-adjust
+      // multiplier. Only apply the accessibility factor if the autosizer has
+      // determined a multiplier should be applied so that text-size-adjust:none
+      // does not cause a multiplier to be applied when it wouldn't be
+      // otherwise.
+      bool should_apply_accessibility_font_scale_factor = multiplier > 1;
+      multiplier = current_style.GetTextSizeAdjust().Multiplier();
+      if (should_apply_accessibility_font_scale_factor) {
+        multiplier *= page_info_.accessibility_font_scale_factor_;
+      }
+    }
   } else if (multiplier < 1) {
     // Unlike text-size-adjust, the text autosizer should only inflate fonts.
     multiplier = 1;

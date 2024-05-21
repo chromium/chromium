@@ -53,6 +53,14 @@ void FontBuilder::DidChangeWritingMode() {
   Set(PropertySetFlag::kWritingMode);
 }
 
+void FontBuilder::DidChangeTextSizeAdjust() {
+  // When `NewTextSizeAdjust` is enabled, text-size-adjust affects font-size
+  // during style building, and needs to invalidate the font description.
+  if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+    Set(PropertySetFlag::kTextSizeAdjust);
+  }
+}
+
 FontFamily FontBuilder::StandardFontFamily() const {
   const AtomicString& standard_font_family = StandardFontFamilyName();
   return FontFamily(standard_font_family,
@@ -287,15 +295,24 @@ void FontBuilder::SetVariantEmoji(FontVariantEmoji variant_emoji) {
 }
 
 float FontBuilder::GetComputedSizeFromSpecifiedSize(
-    FontDescription& font_description,
-    float effective_zoom,
+    const FontDescription& font_description,
+    const ComputedStyleBuilder& builder,
     float specified_size) {
   DCHECK(document_);
-  float zoom_factor = effective_zoom;
+  float zoom_factor = builder.EffectiveZoom();
   // Apply the text zoom factor preference. The preference is exposed in
   // accessibility settings in Chrome for Android to improve readability.
   if (LocalFrame* frame = document_->GetFrame()) {
     zoom_factor *= frame->TextZoomFactor();
+  }
+
+  if (!builder.GetTextSizeAdjust().IsAuto()) {
+    if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+      Settings* settings = document_->GetSettings();
+      if (settings && settings->GetTextAutosizingEnabled()) {
+        zoom_factor *= builder.GetTextSizeAdjust().Multiplier();
+      }
+    }
   }
 
   return FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
@@ -397,8 +414,7 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
 void FontBuilder::UpdateComputedSize(FontDescription& font_description,
                                      const ComputedStyleBuilder& builder) {
   float computed_size = GetComputedSizeFromSpecifiedSize(
-      font_description, builder.EffectiveZoom(),
-      font_description.SpecifiedSize());
+      font_description, builder, font_description.SpecifiedSize());
   computed_size = TextAutosizer::ComputeAutosizedFontSize(
       computed_size, builder.TextAutosizingMultiplier(),
       builder.EffectiveZoom());
@@ -585,7 +601,8 @@ bool FontBuilder::UpdateFontDescription(FontDescription& description,
       description.SetVariantEmoji(font_description_.VariantEmoji());
     }
   }
-  if (!modified && !IsSet(PropertySetFlag::kEffectiveZoom)) {
+  if (!modified && !IsSet(PropertySetFlag::kEffectiveZoom) &&
+      !IsSet(PropertySetFlag::kTextSizeAdjust)) {
     return false;
   }
 

@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
@@ -1866,6 +1867,15 @@ static CSSToLengthConversionData LineHeightToLengthConversionData(
   float multiplier = state.StyleBuilder().EffectiveZoom();
   if (LocalFrame* frame = state.GetDocument().GetFrame()) {
     multiplier *= frame->TextZoomFactor();
+  }
+
+  if (!state.StyleBuilder().GetTextSizeAdjust().IsAuto()) {
+    if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+      Settings* settings = state.GetDocument().GetSettings();
+      if (settings && settings->GetTextAutosizingEnabled()) {
+        multiplier *= state.StyleBuilder().GetTextSizeAdjust().Multiplier();
+      }
+    }
   }
   return state.CssToLengthConversionData().CopyWithAdjustedZoom(multiplier);
 }

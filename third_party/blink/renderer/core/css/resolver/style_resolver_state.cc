@@ -274,6 +274,20 @@ void StyleResolverState::SetWritingMode(WritingMode new_writing_mode) {
   font_builder_.DidChangeWritingMode();
 }
 
+void StyleResolverState::SetTextSizeAdjust(
+    TextSizeAdjust new_text_size_adjust) {
+  if (StyleBuilder().GetTextSizeAdjust() == new_text_size_adjust) {
+    return;
+  }
+  StyleBuilder().SetTextSizeAdjust(new_text_size_adjust);
+  // When `NewTextSizeAdjust` is enabled, text-size-adjust affects font-size
+  // during style building.
+  if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+    UpdateLengthConversionData();
+    font_builder_.DidChangeTextSizeAdjust();
+  }
+}
+
 void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
   if (StyleBuilder().GetTextOrientation() != text_orientation) {
     StyleBuilder().SetTextOrientation(text_orientation);

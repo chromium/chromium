@@ -186,6 +186,7 @@ class CORE_EXPORT StyleResolverState {
   void SetZoom(float);
   void SetEffectiveZoom(float);
   void SetWritingMode(WritingMode);
+  void SetTextSizeAdjust(TextSizeAdjust);
   void SetTextOrientation(ETextOrientation);
   void SetPositionAnchor(ScopedCSSName*);
   void SetInsetAreaOffsets(const std::optional<InsetAreaOffsets>&);
