@@ -153,9 +153,9 @@ void AutofillManager::LogAutofillTypePredictionsAvailable(
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
     : driver_(CHECK_DEREF(driver)),
-      log_manager_(unsafe_client().GetLogManager()),
+      log_manager_(client().GetLogManager()),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
-  if (auto* translate_driver = unsafe_client().GetTranslateDriver()) {
+  if (auto* translate_driver = client().GetTranslateDriver()) {
     translate_observation_.Observe(translate_driver);
   }
 }
@@ -513,7 +513,7 @@ bool AutofillManager::GetCachedFormAndField(
 std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
 AutofillManager::CreateFormInteractionsUkmLogger() {
   return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-      &unsafe_client(), unsafe_client().GetUkmRecorder());
+      &client(), client().GetUkmRecorder());
 }
 
 size_t AutofillManager::FindCachedFormsBySignature(

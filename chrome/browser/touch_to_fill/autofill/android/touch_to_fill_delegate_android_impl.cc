@@ -247,15 +247,7 @@ bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {
 // TODO(crbug.com/40233391): Create a central point for TTF hiding decision.
 void TouchToFillDelegateAndroidImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
-    // TODO(crbug.com/40257323): This is to prevent calling virtual functions in
-    // destructors in the following call chain:
-    //       ~ContentAutofillDriver()
-    //   --> ~BrowserAutofillManager()
-    //   --> ~TouchToFillDelegateAndroidImpl()
-    //   --> HideTouchToFill()
-    //   --> AutofillManager::safe_client()
-    //   --> ContentAutofillDriver::IsPrerendering()
-    manager_->unsafe_client(/*pass_key=*/{}).HideTouchToFillCreditCard();
+    manager_->client().HideTouchToFillCreditCard();
   }
 }
 

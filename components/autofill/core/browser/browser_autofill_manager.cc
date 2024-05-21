@@ -650,24 +650,24 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
       suggestion_generator_(
-          std::make_unique<AutofillSuggestionGenerator>(unsafe_client())),
+          std::make_unique<AutofillSuggestionGenerator>(client())),
       form_filler_(
           std::make_unique<FormFiller>(*this, log_manager(), app_locale)) {
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-          &unsafe_client());
+          &client());
   credit_card_form_event_logger_ =
       std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
           driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-          unsafe_client().GetPersonalDataManager(), &unsafe_client());
+          client().GetPersonalDataManager(), &client());
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
   manual_fallback_logger_ =
       std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      driver, &unsafe_client(), unsafe_client().GetPersonalDataManager(),
+      driver, &client(), client().GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
 }
 
@@ -2264,13 +2264,13 @@ void BrowserAutofillManager::Reset() {
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),
-          &unsafe_client());
+          &client());
   credit_card_form_event_logger_ =
       std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),
-          unsafe_client().GetPersonalDataManager(), &unsafe_client());
+          client().GetPersonalDataManager(), &client());
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      &driver(), &unsafe_client(), unsafe_client().GetPersonalDataManager(),
+      &driver(), &client(), client().GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
