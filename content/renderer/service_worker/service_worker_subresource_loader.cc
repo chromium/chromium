@@ -337,6 +337,20 @@ ServiceWorkerSubresourceLoader::ServiceWorkerSubresourceLoader(
 ServiceWorkerSubresourceLoader::~ServiceWorkerSubresourceLoader() = default;
 
 void ServiceWorkerSubresourceLoader::OnMojoDisconnect() {
+  MaybeDeleteThis();
+}
+
+void ServiceWorkerSubresourceLoader::MaybeDeleteThis() {
+  // Postpone the invalidation and destruction if both conditions are satisfied:
+  // 1) RaceNetworkRequest is dispatched and the network wins the race.
+  // 2) The fetch event handler has not been finished yet.
+  // The postponed destruction will be done in
+  // ServiceWorkerFetchResponseCallback methods.
+  if (dispatched_preload_type() == DispatchedPreloadType::kRaceNetworkRequest &&
+      race_network_request_loader_client_.has_value() &&
+      controller_connector_observation_.IsObserving()) {
+    return;
+  }
   delete this;
 }
 
@@ -613,6 +627,10 @@ void ServiceWorkerSubresourceLoader::OnResponse(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  if (IsResponseAlreadyCommittedByRaceNetworkRequest()) {
+    MaybeDeleteThis();
+    return;
+  }
   UpdateResponseTiming(std::move(timing));
   StartResponse(std::move(response), nullptr /* body_as_stream */);
 }
@@ -630,6 +648,10 @@ void ServiceWorkerSubresourceLoader::OnResponseStream(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  if (IsResponseAlreadyCommittedByRaceNetworkRequest()) {
+    MaybeDeleteThis();
+    return;
+  }
   UpdateResponseTiming(std::move(timing));
   StartResponse(std::move(response), std::move(body_as_stream));
 }
@@ -638,6 +660,10 @@ void ServiceWorkerSubresourceLoader::OnFallback(
     std::optional<network::DataElementChunkedDataPipe> request_body,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  if (IsResponseAlreadyCommittedByRaceNetworkRequest()) {
+    MaybeDeleteThis();
+    return;
+  }
   UpdateResponseTiming(std::move(timing));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFallback",
@@ -767,6 +793,14 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   TransitionToStatus(Status::kCompleted);
   RecordTimingMetricsForNetworkFallbackCase();
   delete this;
+}
+
+bool ServiceWorkerSubresourceLoader::
+    IsResponseAlreadyCommittedByRaceNetworkRequest() {
+  return dispatched_preload_type() ==
+             DispatchedPreloadType::kRaceNetworkRequest &&
+         commit_responsibility() == FetchResponseFrom::kWithoutServiceWorker &&
+         status_ == Status::kCompleted;
 }
 
 void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
