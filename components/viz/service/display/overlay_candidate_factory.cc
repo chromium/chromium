@@ -795,7 +795,7 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
 
 void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
                                            OverlayCandidate& candidate) const {
-  candidate.damage_rect = GetDamageRect(quad, candidate);
+  candidate.damage_rect = GetDamageRect(quad);
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
@@ -818,9 +818,7 @@ gfx::RectF OverlayCandidateFactory::GetDamageEstimate(
       gfx::RectF(unassigned_surface_damage_));
 }
 
-gfx::RectF OverlayCandidateFactory::GetDamageRect(
-    const DrawQuad* quad,
-    const OverlayCandidate& candidate) const {
+gfx::RectF OverlayCandidateFactory::GetDamageRect(const DrawQuad* quad) const {
   const SharedQuadState* sqs = quad->shared_quad_state;
   if (!sqs->overlay_damage_index.has_value()) {
     return gfx::RectF();

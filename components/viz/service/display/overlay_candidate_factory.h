@@ -143,11 +143,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   void AssignDamage(const DrawQuad* quad, OverlayCandidate& candidate) const;
 
   // Damage returned from this function is in target space.
-  // If quad doesn't have damage from the surface damage list, this returns the
-  // intersection of unassigned damage and the smallest axis-aligned rectangle
-  // containing |display_rect| in target space.
-  gfx::RectF GetDamageRect(const DrawQuad* quad,
-                           const OverlayCandidate& candidate) const;
+  gfx::RectF GetDamageRect(const DrawQuad* quad) const;
 
   gfx::RectF GetDamageEstimate(const OverlayCandidate& candidate) const;
 
