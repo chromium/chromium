@@ -198,6 +198,13 @@ class MouseKeysTest : public AshTestBase {
     return Shell::Get()->mouse_keys_controller();
   }
 
+  void SetUsePrimaryKeys(bool value) {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+    prefs->SetBoolean(prefs::kAccessibilityMouseKeysUsePrimaryKeys, value);
+  }
+
   void SetLeftHanded(bool value) {
     PrefService* prefs =
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -490,7 +497,7 @@ TEST_F(MouseKeysTest, SelectButtonNumPad) {
                                              kDefaultPosition);
   SetEnabled(true);
 
-  // TODO(zork): SetUsePrimaryKeys(false);
+  SetUsePrimaryKeys(false);
 
   // Press - and the mouse action should be the right button.
   ClearEvents();
@@ -860,6 +867,9 @@ TEST_F(MouseKeysTest, NumPad) {
   GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
                                              kDefaultPosition);
 
+  // Switch to the num pad.
+  SetUsePrimaryKeys(false);
+
   // We should be able to click with the num pad 5.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_NUMPAD5);
@@ -880,6 +890,49 @@ TEST_F(MouseKeysTest, NumPad) {
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
                                     kMoveDeltaDIP);
+}
+
+TEST_F(MouseKeysTest, UsePrimaryKeyboard) {
+  SetEnabled(true);
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // Turn off the primary keyboard.
+  SetUsePrimaryKeys(false);
+
+  // Switch to left handed.
+  SetLeftHanded(true);
+
+  ClearEvents();
+  // We should not see any mouse events from the left hand.
+  PressAndReleaseKey(ui::VKEY_1);
+  PressAndReleaseKey(ui::VKEY_2);
+  PressAndReleaseKey(ui::VKEY_3);
+  PressAndReleaseKey(ui::VKEY_Q);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_S);
+  PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_W);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
+
+  // Switch to right handed.
+  SetLeftHanded(false);
+
+  ClearEvents();
+  // We should not see any mouse events from the right hand.
+  PressAndReleaseKey(ui::VKEY_7);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_L);
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
 }
 
 }  // namespace ash

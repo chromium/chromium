@@ -519,6 +519,10 @@ inline constexpr char kAccessibilityMouseKeysAcceleration[] =
 // minimum speed.
 inline constexpr char kAccessibilityMouseKeysMaxSpeed[] =
     "settings.a11y.mouse_keys.max_speed";
+// A boolean pref which determines if you use mouse keys with the primary keys
+// or the num pad.
+inline constexpr char kAccessibilityMouseKeysUsePrimaryKeys[] =
+    "settings.a11y.mouse_keys.use_primary_keys";
 // An integer pref which determines if mouse keys uses left or right hand keys.
 // Values are from the ash::MouseKeysDominantHand enum.
 inline constexpr char kAccessibilityMouseKeysDominantHand[] =

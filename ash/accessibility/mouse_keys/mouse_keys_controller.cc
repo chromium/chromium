@@ -119,14 +119,17 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   CenterMouseIfUninitialized();
 
   // Check primary keyboard keys.
-  auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
-  for (auto mapping : mappings) {
-    if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
-                                    mapping.second)) {
-      return true;
+  if (use_primary_keys_) {
+    auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
+    for (auto mapping : mappings) {
+      if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
+                                      mapping.second)) {
+        return true;
+      }
     }
   }
 
+  // Check num pad.
   for (auto mapping : kNumPadKeys) {
     if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
                                     mapping.second)) {

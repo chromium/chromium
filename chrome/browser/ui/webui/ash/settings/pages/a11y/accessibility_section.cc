@@ -684,6 +684,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MIN_LABEL},
       {"mouseKeysMaxSpeedMaxLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MAX_LABEL},
+      {"mouseKeysUsePrimaryKeys",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_USE_PRIMARY_KEYS},
       {"mouseKeysDominantHand",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DOMINANT_HAND},
       {"mouseKeysRightHand",

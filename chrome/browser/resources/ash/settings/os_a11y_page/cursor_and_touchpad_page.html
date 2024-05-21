@@ -101,7 +101,13 @@
           label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
       </settings-slider>
     </div>
-    <div class="settings-box">
+    <settings-toggle-button id="mouseKeysUsePrimaryKeys"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.mouse_keys.use_primary_keys}}"
+        label="$i18n{mouseKeysUsePrimaryKeys}">
+    </settings-toggle-button>
+    <div class="settings-box"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
       <div class="start settings-box-text" aria-hidden="true">
         $i18n{mouseKeysDominantHand}
       </div>

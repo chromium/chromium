@@ -95,6 +95,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityMouseKeysEnabled,
     ash::prefs::kAccessibilityMouseKeysAcceleration,
     ash::prefs::kAccessibilityMouseKeysMaxSpeed,
+    ash::prefs::kAccessibilityMouseKeysUsePrimaryKeys,
     ash::prefs::kAccessibilityMouseKeysDominantHand,
     ash::prefs::kAccessibilityCaretHighlightEnabled,
     ash::prefs::kAccessibilityCaretBlinkInterval,

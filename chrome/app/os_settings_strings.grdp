@@ -1783,6 +1783,9 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MAX_LABEL" desc="Label for the mouse keys maximum speed slider's maximum value." translateable="false">
     High
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_USE_PRIMARY_KEYS" desc="Label for the toggle to select between num pad and primary keys for mouse keys." translateable="false">
+    Use the primary keys
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DOMINANT_HAND" desc="Label for the drop down to select your dominant hand for mouse keys." translateable="false">
     Dominant hand
   </message>

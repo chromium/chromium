@@ -262,6 +262,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityMouseKeysEnabled,
     prefs::kAccessibilityMouseKeysAcceleration,
     prefs::kAccessibilityMouseKeysMaxSpeed,
+    prefs::kAccessibilityMouseKeysUsePrimaryKeys,
     prefs::kAccessibilityMouseKeysDominantHand,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
@@ -1263,6 +1264,8 @@ void AccessibilityController::RegisterProfilePrefs(
                                MouseKeysController::kDefaultAcceleration);
   registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysMaxSpeed,
                                MouseKeysController::kDefaultMaxSpeed);
+  registry->RegisterBooleanPref(prefs::kAccessibilityMouseKeysUsePrimaryKeys,
+                                true);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityMouseKeysDominantHand,
       static_cast<int>(MouseKeysDominantHand::kRightHandDominant));
@@ -2322,6 +2325,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
             &AccessibilityController::UpdateMouseKeysMaxSpeedFromPref,
             base::Unretained(this)));
     pref_change_registrar_->Add(
+        prefs::kAccessibilityMouseKeysUsePrimaryKeys,
+        base::BindRepeating(
+            &AccessibilityController::UpdateMouseKeysUsePrimaryKeysFromPref,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
         prefs::kAccessibilityMouseKeysDominantHand,
         base::BindRepeating(
             &AccessibilityController::UpdateMouseKeysDominantHandFromPref,
@@ -2422,6 +2430,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     UpdateMouseKeysAccelerationFromPref();
     UpdateMouseKeysMaxSpeedFromPref();
+    UpdateMouseKeysUsePrimaryKeysFromPref();
     UpdateMouseKeysDominantHandFromPref();
   }
   UpdateFloatingMenuPositionFromPref();
@@ -2516,6 +2525,13 @@ void AccessibilityController::UpdateMouseKeysMaxSpeedFromPref() {
   double max_speed =
       active_user_prefs_->GetDouble(prefs::kAccessibilityMouseKeysMaxSpeed);
   Shell::Get()->mouse_keys_controller()->SetMaxSpeed(max_speed);
+}
+
+void AccessibilityController::UpdateMouseKeysUsePrimaryKeysFromPref() {
+  DCHECK(active_user_prefs_);
+  bool value = active_user_prefs_->GetBoolean(
+      prefs::kAccessibilityMouseKeysUsePrimaryKeys);
+  Shell::Get()->mouse_keys_controller()->set_use_primary_keys(value);
 }
 
 void AccessibilityController::UpdateMouseKeysDominantHandFromPref() {

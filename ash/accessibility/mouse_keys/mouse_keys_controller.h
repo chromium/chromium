@@ -48,6 +48,11 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void set_enabled(bool enabled) { enabled_ = enabled; }
   bool enabled() { return enabled_; }
 
+  void set_use_primary_keys(bool use_primary_keys) {
+    use_primary_keys_ = use_primary_keys;
+  }
+  bool use_primary_keys() { return use_primary_keys_; }
+
   void set_left_handed(bool left_handed) { left_handed_ = left_handed; }
   bool left_handed() { return left_handed_; }
 
@@ -102,6 +107,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
 
   bool enabled_ = false;
   bool paused_ = false;
+  bool use_primary_keys_ = false;
   bool left_handed_ = false;
   double acceleration_ = kDefaultAcceleration;
   double max_speed_;

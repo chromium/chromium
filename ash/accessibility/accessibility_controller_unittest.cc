@@ -178,6 +178,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityMouseKeysAcceleration));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityMouseKeysMaxSpeed));
   EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityMouseKeysUsePrimaryKeys));
+  EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityMouseKeysDominantHand));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityAutoclickDelayMs));
   EXPECT_TRUE(

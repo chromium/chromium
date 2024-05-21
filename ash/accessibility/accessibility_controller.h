@@ -670,6 +670,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateMouseKeysDisableInTextFieldsFromPref();
   void UpdateMouseKeysAccelerationFromPref();
   void UpdateMouseKeysMaxSpeedFromPref();
+  void UpdateMouseKeysUsePrimaryKeysFromPref();
   void UpdateMouseKeysDominantHandFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();

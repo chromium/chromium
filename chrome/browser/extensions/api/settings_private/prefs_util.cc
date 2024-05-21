@@ -699,6 +699,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityMouseKeysMaxSpeed] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityMouseKeysUsePrimaryKeys] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityMouseKeysDominantHand] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)
