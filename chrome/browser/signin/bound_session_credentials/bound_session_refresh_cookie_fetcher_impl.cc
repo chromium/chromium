@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -38,6 +39,7 @@ constexpr char kRotationChallengeResponseHeader[] =
 constexpr char kRotationDebugHeader[] =
     "Sec-Session-Google-Rotation-Debug-Info";
 constexpr char kChallengeItemKey[] = "challenge";
+constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
 
 bool IsExpectedCookie(
@@ -65,6 +67,7 @@ std::string UpdateDebugInfoAndSerializeToHeader(
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionBindingHelper& session_binding_helper,
+    std::string_view session_id,
     const GURL& refresh_url,
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names,
@@ -72,6 +75,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     bound_session_credentials::RotationDebugInfo debug_info)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
+      session_id_(session_id),
       refresh_url_(refresh_url),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
@@ -300,36 +304,45 @@ void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
     return;
   }
 
-  std::string challenge = ParseChallengeHeader(challenge_header_value);
-  if (challenge.empty()) {
+  ChallengeHeaderItems items = ParseChallengeHeader(challenge_header_value);
+
+  if (items.challenge.empty() ||
+      !base::IsStringUTF8AllowingNoncharacters(items.challenge)) {
     CompleteRequestAndReportRefreshResult(
         Result::kChallengeRequiredUnexpectedFormat);
     return;
   }
 
+  // TODO(http://b/341261442): make this a requirement after confirming the
+  // number of affected users.
+  bool session_ids_match = items.session_id == session_id_;
+  base::UmaHistogramBoolean(
+      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch",
+      session_ids_match);
+
   // Binding key assertion required.
   assertion_requests_count_++;
-  RefreshWithChallenge(challenge);
+  RefreshWithChallenge(items.challenge);
 }
 
 // static
-std::string BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
+BoundSessionRefreshCookieFetcherImpl::ChallengeHeaderItems
+BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
     const std::string& header) {
   base::StringPairs items;
   base::SplitStringIntoKeyValuePairs(header, '=', ';', &items);
-  std::string challenge;
+  ChallengeHeaderItems result;
   for (const auto& [key, value] : items) {
-    // TODO(b/293838716): Check `session_id` matches the current session's id.
+    if (base::EqualsCaseInsensitiveASCII(key, kSessionIdItemKey)) {
+      result.session_id = value;
+    }
+
     if (base::EqualsCaseInsensitiveASCII(key, kChallengeItemKey)) {
-      challenge = value;
+      result.challenge = value;
     }
   }
 
-  if (!base::IsStringUTF8AllowingNoncharacters(challenge)) {
-    DVLOG(1) << "Server-side challenge has non-UTF8 characters.";
-    return std::string();
-  }
-  return challenge;
+  return result;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::

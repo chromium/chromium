@@ -53,6 +53,7 @@ using RefreshTestFuture =
 using Result = BoundSessionRefreshCookieFetcher::Result;
 using bound_session_credentials::RotationDebugInfo;
 using testing::ElementsAre;
+using testing::FieldsAre;
 using unexportable_keys::BackgroundTaskPriority;
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
@@ -92,8 +93,10 @@ UnexportableKeyId GenerateNewKey(
   return *key_id;
 }
 
-std::string CreateChallengeHeaderValue(const std::string& challenge) {
-  return base::StringPrintf("session-id=%s; challenge=%s", kSessionId,
+std::string CreateChallengeHeaderValue(
+    const std::string& challenge,
+    const std::string& session_id = kSessionId) {
+  return base::StringPrintf("session_id=%s; challenge=%s", session_id.c_str(),
                             challenge.c_str());
 }
 }  // namespace
@@ -108,7 +111,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
         *unexportable_key_service_.GetWrappedKey(binding_key_id_), kSessionId);
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
         test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-        /*refresh_url=*/GURL(), kGaiaUrl,
+        kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
         base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
         /*is_off_the_record_profile=*/false,
         bound_session_credentials::RotationDebugInfo());
@@ -251,7 +254,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   const GURL refresh_url("https://security.google.com/CheckBinding");
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      refresh_url, kGaiaUrl,
+      kSessionId, refresh_url, kGaiaUrl,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile=*/false,
       bound_session_credentials::RotationDebugInfo());
@@ -478,6 +481,9 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_TRUE(fetcher_->IsChallengeReceived());
   VerifyMetricsRecorded(Result::kSuccess,
                         /*expect_assertion_was_generated_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch", true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -509,6 +515,33 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   EXPECT_EQ(future.Get(), Result::kChallengeRequiredUnexpectedFormat);
   VerifyMetricsRecorded(Result::kChallengeRequiredUnexpectedFormat,
                         /*expect_assertion_was_generated_count=*/0);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       BadChallengeHeaderSessionIdsDontMatch) {
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+  // Session IDs mismatch doesn't cause failures yet but gets reported to a
+  // histogram below.
+  // TODO(http://b/341261442): this test should expect a failure once the
+  // session ID match is enforced.
+  SimulateChallengeRequired(
+      CreateChallengeHeaderValue(/*challenge=*/"test", /*session_id=*/"12345"));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
+
+  // Set required cookies and complete the request.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(), "");
+
+  EXPECT_EQ(future.Get(), Result::kSuccess);
+  EXPECT_TRUE(fetcher_->IsChallengeReceived());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch", false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -549,7 +582,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
       unexportable_key_service_, wrapped_key, kSessionId);
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      /*refresh_url=*/GURL(), kGaiaUrl,
+      kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false,
       bound_session_credentials::RotationDebugInfo());
@@ -615,7 +648,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, DebugHeaderSent) {
 
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      /*refresh_url=*/GURL(), kGaiaUrl,
+      kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false, info);
   RefreshTestFuture future;
@@ -648,19 +681,19 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, DebugHeaderSent) {
 
 TEST(BoundSessionRefreshCookieFetcherImplParseChallengeHeaderTest,
      ParseChallengeHeader) {
+  auto parse = &BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader;
   // Empty header.
-  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(""), "");
-  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader("xyz"),
-            "");
-  // Non-UTF8 characters.
-  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
-                CreateChallengeHeaderValue("\xF0\x8F\xBF\xBE")),
-            "");
+  EXPECT_THAT(parse(""), FieldsAre("", ""));
+  EXPECT_THAT(parse("xyz"), FieldsAre("", ""));
   // Empty challenge field.
-  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
-                CreateChallengeHeaderValue("")),
-            "");
-  EXPECT_EQ(BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
-                CreateChallengeHeaderValue(kChallenge)),
-            kChallenge);
+  EXPECT_THAT(parse(CreateChallengeHeaderValue("")), FieldsAre("", kSessionId));
+  // Empty session ID field.
+  EXPECT_THAT(parse(CreateChallengeHeaderValue(kChallenge, "")),
+              FieldsAre(kChallenge, ""));
+  // Both fields are set.
+  EXPECT_THAT(parse(CreateChallengeHeaderValue(kChallenge)),
+              FieldsAre(kChallenge, kSessionId));
+  EXPECT_THAT(
+      parse(CreateChallengeHeaderValue("other_challenge", "other_session_id")),
+      FieldsAre("other_challenge", "other_session_id"));
 }

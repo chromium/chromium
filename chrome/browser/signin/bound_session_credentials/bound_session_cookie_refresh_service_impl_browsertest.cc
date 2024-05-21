@@ -65,7 +65,7 @@ constexpr std::string_view kSessionRegistrationHeaderFormat =
     "registration=%s;supported-alg=ES256,RS256;challenge=%s";
 
 constexpr std::string_view kCookieRotationChallengeFormat =
-    "session-id=007; challenge=%s";
+    "session_id=007; challenge=%s";
 
 std::string CreateBoundSessionParamsValidJson(std::string_view domain,
                                               std::string_view path) {
