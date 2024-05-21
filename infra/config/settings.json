@@ -1,7 +1,0 @@
-{
-    "project": "chromium",
-    "project_title": "Chromium",
-    "ref": "refs/heads/main",
-    "chrome_project": "chrome",
-    "is_main": true
-}

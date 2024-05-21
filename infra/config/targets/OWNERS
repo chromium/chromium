@@ -1,7 +1,0 @@
-# Files in this directory can generate .pyl files that are synced to
-# //testing/buildbot and targets spec .json files for builders that have their
-# tests set in starlark. The pyl files don't need to be owners controlled, see
-# the comment in //testing/buildbot/OWNERS for the reasoning. The targets spec
-# .json files have specific owners set in //infra/config/generated/OWNERS, so
-# it's fine to make these files owned by everyone.
-*
