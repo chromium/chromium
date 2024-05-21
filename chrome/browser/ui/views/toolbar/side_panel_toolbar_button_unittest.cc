@@ -55,8 +55,7 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
   ASSERT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
-                                          : kSidePanelIcon,
+          kSidePanelChromeRefreshIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 
   // Left aligned side panels should use the left aligned icon.
@@ -66,8 +65,7 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
   ASSERT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          features::IsChromeRefresh2023() ? kSidePanelLeftChromeRefreshIcon
-                                          : kSidePanelLeftIcon,
+          kSidePanelLeftChromeRefreshIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 }
 
@@ -101,8 +99,7 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
-                                          : kSidePanelIcon,
+          kSidePanelChromeRefreshIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 
   // Left aligned side panels should use the left aligned icon.
@@ -112,7 +109,6 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          features::IsChromeRefresh2023() ? kSidePanelLeftChromeRefreshIcon
-                                          : kSidePanelLeftIcon,
+          kSidePanelLeftChromeRefreshIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 }

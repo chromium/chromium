@@ -237,8 +237,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // AppMenuIconController::Delegate:
   void UpdateTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
-  SkColor GetDefaultColorForSeverity(
-      AppMenuIconController::Severity severity) const override;
 
   // ToolbarButtonProvider:
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;

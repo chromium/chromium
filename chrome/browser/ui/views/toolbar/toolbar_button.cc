@@ -263,8 +263,7 @@ int ToolbarButton::GetIconSize() const {
     return kDefaultTouchableIconSize;
   }
 
-  return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
-                                         : kDefaultIconSize;
+  return kDefaultIconSizeChromeRefresh;
 }
 
 bool ToolbarButton::ShouldPaintBorder() const {
@@ -272,7 +271,7 @@ bool ToolbarButton::ShouldPaintBorder() const {
 }
 
 bool ToolbarButton::ShouldBlendHighlightColor() const {
-  return !features::IsChromeRefresh2023();
+  return false;
 }
 
 bool ToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {

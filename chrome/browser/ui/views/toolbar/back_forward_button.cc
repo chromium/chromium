@@ -39,9 +39,7 @@ BackForwardButton::BackForwardButton(Direction direction,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction == Direction::kBack) {
-    SetVectorIcons(features::IsChromeRefresh2023()
-                       ? vector_icons::kBackArrowChromeRefreshIcon
-                       : vector_icons::kBackArrowIcon,
+    SetVectorIcons(vector_icons::kBackArrowChromeRefreshIcon,
                    kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -51,9 +49,7 @@ BackForwardButton::BackForwardButton(Direction direction,
     SetProperty(views::kElementIdentifierKey, kToolbarBackButtonElementId);
     set_menu_identifier(kToolbarBackButtonMenuElementId);
   } else {
-    SetVectorIcons(features::IsChromeRefresh2023()
-                       ? vector_icons::kForwardArrowChromeRefreshIcon
-                       : vector_icons::kForwardArrowIcon,
+    SetVectorIcons(vector_icons::kForwardArrowChromeRefreshIcon,
                    kForwardArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));

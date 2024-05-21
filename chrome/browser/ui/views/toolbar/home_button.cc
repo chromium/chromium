@@ -137,10 +137,7 @@ HomeButton::HomeButton(PressedCallback callback, PrefService* prefs)
   SetProperty(views::kElementIdentifierKey, kToolbarHomeButtonElementId);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
-  SetVectorIcons(features::IsChromeRefresh2023()
-                     ? kNavigateHomeChromeRefreshIcon
-                     : kNavigateHomeIcon,
-                 kNavigateHomeTouchIcon);
+  SetVectorIcons(kNavigateHomeChromeRefreshIcon, kNavigateHomeTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
   SetID(VIEW_ID_HOME_BUTTON);

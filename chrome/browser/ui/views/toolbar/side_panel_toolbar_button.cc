@@ -63,14 +63,9 @@ void SidePanelToolbarButton::UpdateToolbarButtonIcon() {
   const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   if (is_right_aligned) {
-    SetVectorIcons(features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
-                                                   : kSidePanelIcon,
-                   kSidePanelTouchIcon);
+    SetVectorIcons(kSidePanelChromeRefreshIcon, kSidePanelTouchIcon);
   } else {
-    SetVectorIcons(features::IsChromeRefresh2023()
-                       ? kSidePanelLeftChromeRefreshIcon
-                       : kSidePanelLeftIcon,
-                   kSidePanelLeftTouchIcon);
+    SetVectorIcons(kSidePanelLeftChromeRefreshIcon, kSidePanelLeftTouchIcon);
   }
 }
 

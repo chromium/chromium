@@ -152,15 +152,6 @@ AppMenuIconController::GetTypeAndSeverity() const {
   return {IconType::NONE, Severity::NONE};
 }
 
-SkColor AppMenuIconController::GetIconColor(
-    const std::optional<SkColor>& severity_none_color) const {
-  const Severity severity = GetTypeAndSeverity().severity;
-  return ((severity == AppMenuIconController::Severity::NONE) &&
-          severity_none_color.has_value())
-             ? severity_none_color.value()
-             : delegate_->GetDefaultColorForSeverity(severity);
-}
-
 void AppMenuIconController::OnGlobalErrorsChanged() {
   UpdateDelegate();
 }

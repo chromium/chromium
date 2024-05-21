@@ -202,10 +202,6 @@ class FakeIconDelegate : public AppMenuIconController::Delegate {
  public:
   void UpdateTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override {}
-  SkColor GetDefaultColorForSeverity(
-      AppMenuIconController::Severity severity) const override {
-    return gfx::kPlaceholderColor;
-  }
 };
 
 TEST_P(RecentTabsSubMenuModelTest, LogMenuMetricsForShowHistory) {

@@ -33,9 +33,7 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
       browser_view_(browser_view),
       model_(model) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsButtonElementId);
-  SetVectorIcons(features::IsChromeRefresh2023() ? kChromeLabsChromeRefreshIcon
-                                                 : kChromeLabsIcon,
-                 kChromeLabsTouchIcon);
+  SetVectorIcons(kChromeLabsChromeRefreshIcon, kChromeLabsTouchIcon);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CHROMELABS_BUTTON));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(

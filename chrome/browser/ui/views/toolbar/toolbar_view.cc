@@ -263,7 +263,6 @@ void ToolbarView::Init() {
 #endif
 
   // The background views must be behind container_view_.
-  if (features::IsChromeRefresh2023()) {
     background_view_left_ = AddChildViewAt(std::make_unique<View>(), 0);
     background_view_left_->SetBackground(
         std::make_unique<TabstripLikeBackground>(browser_view_));
@@ -274,7 +273,6 @@ void ToolbarView::Init() {
     active_state_subscription_ =
         GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
             &ToolbarView::ActiveStateChanged, base::Unretained(this)));
-  }
 
   auto location_bar = std::make_unique<LocationBarView>(
       browser_, browser_->profile(), browser_->command_controller(), this,
@@ -360,9 +358,7 @@ void ToolbarView::Init() {
     extensions_container =
         std::make_unique<ExtensionsToolbarContainer>(browser_);
 
-    if (features::IsChromeRefresh2023()) {
-      toolbar_divider = std::make_unique<views::View>();
-    }
+    toolbar_divider = std::make_unique<views::View>();
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
   if (media_router::MediaRouterEnabled(browser_->profile()))
@@ -809,14 +805,12 @@ void ToolbarView::Layout(PassKey) {
   // The container view should be the exact same size/position as ToolbarView.
   container_view_->SetSize(size());
 
-  if (features::IsChromeRefresh2023()) {
-    // The background views should be behind the top-left and top-right corners
-    // of the container_view_.
-    const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
-    background_view_left_->SetBounds(0, 0, corner_radius, corner_radius);
-    background_view_right_->SetBounds(width() - corner_radius, 0, corner_radius,
-                                      corner_radius);
-  }
+  // The background views should be behind the top-left and top-right corners
+  // of the container_view_.
+  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  background_view_left_->SetBounds(0, 0, corner_radius, corner_radius);
+  background_view_right_->SetBounds(width() - corner_radius, 0, corner_radius,
+                                    corner_radius);
 
   if (display_mode_ == DisplayMode::CUSTOM_TAB) {
     custom_tab_bar_->SetBounds(0, 0, width(),
@@ -827,10 +821,7 @@ void ToolbarView::Layout(PassKey) {
 
   if (display_mode_ == DisplayMode::NORMAL) {
     LayoutCommon();
-
-    if (features::IsChromeRefresh2023()) {
-      UpdateClipPath();
-    }
+    UpdateClipPath();
   }
 
   // Use two-pass solution to avoid the overflow button interfering with toolbar
@@ -1051,7 +1042,7 @@ void ToolbarView::LayoutCommon() {
                           ? LayoutInset::WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN
                           : LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  if (features::IsChromeRefresh2023() && !browser_view_->webui_tab_strip()) {
+  if (!browser_view_->webui_tab_strip()) {
     if (app_menu_button_->IsLabelPresentAndVisible()) {
       // The interior margin in an expanded state should be more than in a
       // collapsed state.
@@ -1126,25 +1117,6 @@ void ToolbarView::UpdateTypeAndSeverity(
         type_and_severity.type ==
             AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT);
   }
-}
-
-SkColor ToolbarView::GetDefaultColorForSeverity(
-    AppMenuIconController::Severity severity) const {
-  ui::ColorId color_id;
-  switch (severity) {
-    case AppMenuIconController::Severity::NONE:
-      return GetColorProvider()->GetColor(kColorToolbarButtonIcon);
-    case AppMenuIconController::Severity::LOW:
-      color_id = kColorAppMenuHighlightSeverityLow;
-      break;
-    case AppMenuIconController::Severity::MEDIUM:
-      color_id = kColorAppMenuHighlightSeverityMedium;
-      break;
-    case AppMenuIconController::Severity::HIGH:
-      color_id = kColorAppMenuHighlightSeverityHigh;
-      break;
-  }
-  return GetColorProvider()->GetColor(color_id);
 }
 
 ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {

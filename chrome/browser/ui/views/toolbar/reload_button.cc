@@ -39,13 +39,9 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
                     CreateMenuModel(),
                     nullptr),
       command_updater_(command_updater),
-      reload_icon_(features::IsChromeRefresh2023()
-                       ? vector_icons::kReloadChromeRefreshIcon
-                       : vector_icons::kReloadIcon),
+      reload_icon_(vector_icons::kReloadChromeRefreshIcon),
       reload_touch_icon_(kReloadTouchIcon),
-      stop_icon_(features::IsChromeRefresh2023()
-                     ? kNavigateStopChromeRefreshIcon
-                     : kNavigateStopIcon),
+      stop_icon_(kNavigateStopChromeRefreshIcon),
       stop_touch_icon_(kNavigateStopTouchIcon),
       double_click_timer_delay_(
           base::Milliseconds(views::GetDoubleClickInterval())),
