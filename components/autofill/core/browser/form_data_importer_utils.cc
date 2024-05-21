@@ -136,7 +136,7 @@ void MultiStepImportMerger::OnAddressDataChanged(
     auto next = std::next(it);
     // Incomplete profiles are not imported yet, so they cannot have changed.
     if (it->is_imported) {
-      AutofillProfile* stored_profile =
+      const AutofillProfile* stored_profile =
           address_data_manager.GetProfileByGUID(it->profile.guid());
       if (!stored_profile) {
         // The profile was deleted, so we shouldn't offer importing it again.

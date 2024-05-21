@@ -458,7 +458,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if
   // profile does not exist.
-  AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
+  const AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload

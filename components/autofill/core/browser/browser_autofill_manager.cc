@@ -2319,7 +2319,7 @@ CreditCard* BrowserAutofillManager::GetCreditCard(
       .GetCreditCardByGUID(absl::get<Suggestion::Guid>(unique_id).value());
 }
 
-AutofillProfile* BrowserAutofillManager::GetProfile(
+const AutofillProfile* BrowserAutofillManager::GetProfile(
     Suggestion::BackendId unique_id) {
   std::string guid = absl::get<Suggestion::Guid>(unique_id).value();
   if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {

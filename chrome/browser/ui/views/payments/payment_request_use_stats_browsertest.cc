@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
   AddAutofillProfile(shipping_address2);
 
   // Check that the initial use stats were set correctly.
-  autofill::AutofillProfile* initial_shipping =
+  const autofill::AutofillProfile* initial_shipping =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           shipping_address2.guid());
   EXPECT_EQ(3U, initial_shipping->use_count());
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
   WaitForOnPersonalDataChanged();
 
   // Check that the usage of the profile was recorded.
-  autofill::AutofillProfile* updated_shipping =
+  const autofill::AutofillProfile* updated_shipping =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           shipping_address2.guid());
   EXPECT_EQ(4U, updated_shipping->use_count());
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
   AddAutofillProfile(contact_address2);
 
   // Check that the initial use stats were set correctly.
-  autofill::AutofillProfile* initial_contact =
+  const autofill::AutofillProfile* initial_contact =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           contact_address2.guid());
   EXPECT_EQ(3U, initial_contact->use_count());
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
   WaitForOnPersonalDataChanged();
 
   // Check that the usage of the profile was recorded.
-  autofill::AutofillProfile* updated_contact =
+  const autofill::AutofillProfile* updated_contact =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           contact_address2.guid());
   EXPECT_EQ(4U, updated_contact->use_count());
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
   AddAutofillProfile(multi_address2);
 
   // Check that the initial use stats were set correctly.
-  autofill::AutofillProfile* initial_multi =
+  const autofill::AutofillProfile* initial_multi =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           multi_address2.guid());
   EXPECT_EQ(3U, initial_multi->use_count());
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
   WaitForOnPersonalDataChanged();
 
   // Check that the usage of the profile was only recorded once.
-  autofill::AutofillProfile* updated_multi =
+  const autofill::AutofillProfile* updated_multi =
       GetDataManager()->address_data_manager().GetProfileByGUID(
           multi_address2.guid());
   EXPECT_EQ(4U, updated_multi->use_count());

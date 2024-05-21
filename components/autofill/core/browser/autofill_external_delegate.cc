@@ -796,10 +796,10 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
 
 void AutofillExternalDelegate::ShowEditAddressProfileDialog(
     const std::string& guid) {
-  AutofillProfile* profile = manager_->client()
-                                 .GetPersonalDataManager()
-                                 ->address_data_manager()
-                                 .GetProfileByGUID(guid);
+  const AutofillProfile* profile = manager_->client()
+                                       .GetPersonalDataManager()
+                                       ->address_data_manager()
+                                       .GetProfileByGUID(guid);
   if (profile) {
     manager_->client().ShowEditAddressProfileDialog(
         *profile,
@@ -810,10 +810,10 @@ void AutofillExternalDelegate::ShowEditAddressProfileDialog(
 
 void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
     const std::string& guid) {
-  AutofillProfile* profile = manager_->client()
-                                 .GetPersonalDataManager()
-                                 ->address_data_manager()
-                                 .GetProfileByGUID(guid);
+  const AutofillProfile* profile = manager_->client()
+                                       .GetPersonalDataManager()
+                                       ->address_data_manager()
+                                       .GetProfileByGUID(guid);
   if (profile) {
     manager_->client().ShowDeleteAddressProfileDialog(
         *profile,

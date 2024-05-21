@@ -753,7 +753,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)showAddressProfileDetailsPageForProfile:
-            (autofill::AutofillProfile*)profile
+            (const autofill::AutofillProfile*)profile
                      withMigrateToAccountButton:(BOOL)migrateToAccountButton {
   self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
       initWithBaseNavigationController:self.navigationController

@@ -320,7 +320,7 @@ bool ProfileImportProcess::IsObservedProfileAutofilledQuasiDuplicate(
   if (guid_to_types.size() != 2) {
     return false;
   }
-  AutofillProfile* autofilled_profile =
+  const AutofillProfile* autofilled_profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           *guid_to_types.rbegin()->first);
   if (!autofilled_profile) {

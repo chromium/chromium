@@ -213,7 +213,7 @@ std::vector<AutofillProfile*> AddressDataManager::GetProfilesForSettings()
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
-AutofillProfile* AddressDataManager::GetProfileByGUID(
+const AutofillProfile* AddressDataManager::GetProfileByGUID(
     const std::string& guid) const {
   std::vector<AutofillProfile*> profiles = GetProfiles();
   auto it = base::ranges::find(
@@ -346,7 +346,7 @@ void AddressDataManager::LoadProfiles() {
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  AutofillProfile* adm_profile = GetProfileByGUID(profile.guid());
+  const AutofillProfile* adm_profile = GetProfileByGUID(profile.guid());
   if (!adm_profile) {
     return;
   }
@@ -365,7 +365,7 @@ AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
 
 bool AddressDataManager::IsProfileMigrationBlocked(
     const std::string& guid) const {
-  AutofillProfile* profile = GetProfileByGUID(guid);
+  const AutofillProfile* profile = GetProfileByGUID(guid);
   DCHECK(profile == nullptr ||
          profile->source() == AutofillProfile::Source::kLocalOrSyncable);
   if (!GetProfileMigrationStrikeDatabase()) {

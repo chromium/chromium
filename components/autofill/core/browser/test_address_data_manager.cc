@@ -36,15 +36,18 @@ void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
-  AutofillProfile* existing_profile = GetProfileByGUID(profile.guid());
-  if (existing_profile) {
-    *existing_profile = profile;
+  std::vector<std::unique_ptr<AutofillProfile>>& storage =
+      GetProfileStorage(profile.source());
+  auto adm_profile =
+      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != storage.end()) {
+    **adm_profile = profile;
     NotifyObservers();
   }
 }
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
-  AutofillProfile* profile = GetProfileByGUID(guid);
+  const AutofillProfile* profile = GetProfileByGUID(guid);
   std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile->source());
   profiles.erase(base::ranges::find(profiles, profile,
@@ -61,8 +64,12 @@ void TestAddressDataManager::LoadProfiles() {
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  if (AutofillProfile* adm_profile = GetProfileByGUID(profile.guid())) {
-    adm_profile->RecordAndLogUse();
+  std::vector<std::unique_ptr<AutofillProfile>>& storage =
+      GetProfileStorage(profile.source());
+  auto adm_profile =
+      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != storage.end()) {
+    (*adm_profile)->RecordAndLogUse();
   }
 }
 

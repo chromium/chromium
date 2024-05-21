@@ -207,7 +207,7 @@ PersonalDataManagerAndroid::GetProfileGUIDsToSuggest(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile =
+  const AutofillProfile* profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   if (!profile)
@@ -439,7 +439,7 @@ void PersonalDataManagerAndroid::OnPersonalDataChanged() {
 void PersonalDataManagerAndroid::RecordAndLogProfileUse(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile =
+  const AutofillProfile* profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   if (profile) {
@@ -454,20 +454,18 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
     jint days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
 
-  AutofillProfile* profile =
-      personal_data_manager_->address_data_manager().GetProfileByGUID(
+  AutofillProfile profile =
+      *personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
-  profile->set_use_count(static_cast<size_t>(count));
-  profile->set_use_date(AutofillClock::Now() -
-                        base::Days(days_since_last_used));
-
-  personal_data_manager_->NotifyPersonalDataObserver();
+  profile.set_use_count(static_cast<size_t>(count));
+  profile.set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
+  personal_data_manager_->address_data_manager().UpdateProfile(profile);
 }
 
 jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile =
+  const AutofillProfile* profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   return profile->use_count();
@@ -476,7 +474,7 @@ jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
 jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile =
+  const AutofillProfile* profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   return profile->use_date().ToTimeT();

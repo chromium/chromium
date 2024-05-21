@@ -309,7 +309,7 @@ bool IsAutofillProfilePresent(std::string guid, std::string full_name) {
       chrome_test_util::GetOriginalBrowserState();
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
-  autofill::AutofillProfile* autofill_profile =
+  const autofill::AutofillProfile* autofill_profile =
       personal_data_manager->address_data_manager().GetProfileByGUID(guid);
 
   if (autofill_profile) {

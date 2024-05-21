@@ -138,15 +138,16 @@ void LogStoredProfileTokenQualityMetrics(
 
 void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
                                                const PersonalDataManager& pdm) {
-  std::set<AutofillProfile*> profiles_used;
+  std::set<const AutofillProfile*> profiles_used;
   // Emit per-type metrics for all autofilled fields.
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (!field->autofill_source_profile_guid()) {
       // The field was not autofilled.
       continue;
     }
-    if (AutofillProfile* profile = pdm.address_data_manager().GetProfileByGUID(
-            *field->autofill_source_profile_guid())) {
+    if (const AutofillProfile* profile =
+            pdm.address_data_manager().GetProfileByGUID(
+                *field->autofill_source_profile_guid())) {
       profiles_used.insert(profile);
       FieldType field_type = field->Type().GetStorableType();
       base::UmaHistogramExactLinear(

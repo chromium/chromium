@@ -196,7 +196,7 @@ class FastCheckoutClientImpl
                     bool is_credit_card_form);
   // Returns a pointer to the autofill profile corresponding to
   // `selected_autofill_profile_guid_`. Stops the run if it's a `nullptr`.
-  autofill::AutofillProfile* GetSelectedAutofillProfile();
+  const autofill::AutofillProfile* GetSelectedAutofillProfile();
 
   // Returns a pointer to the credit card corresponding to
   // `selected_credit_card_id_`. Stops the run if it's a `nullptr`.

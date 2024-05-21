@@ -5148,10 +5148,11 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
 
   // Simulate form submission. The profile should not be updated with the
   // meaningless default value of the street address field.
-  personal_data()
-      .address_data_manager()
-      .GetProfileByGUID(kElvisProfileGuid)
-      ->ClearFields({ADDRESS_HOME_STREET_ADDRESS});
+  AutofillProfile profile =
+      *personal_data().address_data_manager().GetProfileByGUID(
+          kElvisProfileGuid);
+  profile.ClearFields({ADDRESS_HOME_STREET_ADDRESS});
+  personal_data().address_data_manager().UpdateProfile(profile);
   FormSubmitted(response_data);
   EXPECT_FALSE(personal_data()
                    .address_data_manager()
@@ -5178,10 +5179,11 @@ void DoTestFormSubmittedControlWithDefaultValue(
   FormData response_data = test->FillAutofillFormDataAndGetResults(
       form, form.fields[3], kElvisProfileGuid);
 
-  test->personal_data()
-      .address_data_manager()
-      .GetProfileByGUID(kElvisProfileGuid)
-      ->ClearFields({ADDRESS_HOME_STATE});
+  AutofillProfile profile =
+      *test->personal_data().address_data_manager().GetProfileByGUID(
+          kElvisProfileGuid);
+  profile.ClearFields({ADDRESS_HOME_STATE});
+  test->personal_data().address_data_manager().UpdateProfile(profile);
   test->FormSubmitted(response_data);
   // Expect that the profile was updated with the value of the state select.
   EXPECT_EQ(state_field->value(), test->personal_data()
@@ -5230,10 +5232,11 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
       form, form.fields[3], kElvisProfileGuid);
 
   // Value of country code field should have been saved.
-  test->personal_data()
-      .address_data_manager()
-      .GetProfileByGUID(kElvisProfileGuid)
-      ->ClearFields({PHONE_HOME_WHOLE_NUMBER});
+  AutofillProfile profile =
+      *test->personal_data().address_data_manager().GetProfileByGUID(
+          kElvisProfileGuid);
+  profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+  test->personal_data().address_data_manager().UpdateProfile(profile);
   test->FormSubmitted(response_data);
   std::u16string formatted_phone_number =
       test->personal_data()
@@ -7740,7 +7743,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   profile.set_use_date(AutofillClock::Now());
   profile.set_use_count(1u);
   personal_data().address_data_manager().AddProfile(profile);
-  AutofillProfile* pdm_profile =
+  const AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
 
@@ -7759,11 +7762,11 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
   profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  profile.token_quality().disable_randomization_for_testing();
   personal_data().address_data_manager().AddProfile(profile);
-  AutofillProfile* pdm_profile =
+  const AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
-  pdm_profile->token_quality().disable_randomization_for_testing();
 
   // Create and fill an address form with profile `kElvisProfileGuid`.
   FormData form = test::CreateTestAddressFormData();

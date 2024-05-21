@@ -411,7 +411,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
     if (ShouldFillForm(*form, autofill::FormType::kAddressForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/false);
-      autofill::AutofillProfile* autofill_profile =
+      const autofill::AutofillProfile* autofill_profile =
           GetSelectedAutofillProfile();
       if (field && autofill_profile) {
         form_filling_states_[std::make_pair(form->form_signature(),
@@ -469,9 +469,9 @@ void FastCheckoutClientImpl::FillCreditCardForm(
       {.trigger_source = autofill::AutofillTriggerSource::kFastCheckout});
 }
 
-autofill::AutofillProfile*
+const autofill::AutofillProfile*
 FastCheckoutClientImpl::GetSelectedAutofillProfile() {
-  autofill::AutofillProfile* autofill_profile =
+  const autofill::AutofillProfile* autofill_profile =
       personal_data_helper_->GetPersonalDataManager()
           ->address_data_manager()
           .GetProfileByGUID(selected_autofill_profile_guid_.value());
@@ -619,7 +619,7 @@ void FastCheckoutClientImpl::A11yAnnounce(
                                      form_signature)) {
     accessibility_service_->Announce(
         l10n_util::GetStringUTF16(IDS_FAST_CHECKOUT_A11Y_EMAIL_FILLED));
-  } else if (autofill::AutofillProfile* autofill_profile =
+  } else if (const autofill::AutofillProfile* autofill_profile =
                  GetSelectedAutofillProfile()) {
     accessibility_service_->Announce(l10n_util::GetStringFUTF16(
         IDS_FAST_CHECKOUT_A11Y_ADDRESS_FORM_FILLED,

@@ -917,7 +917,7 @@ TEST_F(AddressDataManagerTest, RecordUseOf) {
   address_data_manager().RecordUseOf(profile);
   WaitForOnAddressDataChanged();
 
-  AutofillProfile* adm_profile =
+  const AutofillProfile* adm_profile =
       address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(adm_profile);
   EXPECT_EQ(adm_profile->use_count(), 2u);

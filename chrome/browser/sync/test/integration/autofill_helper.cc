@@ -314,11 +314,9 @@ void UpdateProfile(int profile,
                    const std::u16string& value,
                    autofill::VerificationStatus status) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  AutofillProfile* pdm_profile =
+  const AutofillProfile* pdm_profile =
       pdm->address_data_manager().GetProfileByGUID(guid);
   ASSERT_TRUE(pdm_profile);
-  // `pdm_profile` points to the PDM's internal copy of the data. It shouldn't
-  // be modified directly.
   AutofillProfile updated_profile = *pdm_profile;
   updated_profile.SetRawInfoWithVerificationStatus(type.GetStorableType(),
                                                    value, status);
