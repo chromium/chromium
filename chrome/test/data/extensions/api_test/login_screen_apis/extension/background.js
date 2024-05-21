@@ -22,11 +22,9 @@ const i18nMessageName = 'message';
 
 const tests = {
   /* LoginScreenUi ************************************************************/
-  'LoginScreenUiCanOpenWindow': () => {
-    chrome.loginScreenUi.show({url: 'some/path.html'}, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'LoginScreenUiCanOpenWindow': async () => {
+    await chrome.loginScreenUi.show({url: 'some/path.html'});
+    chrome.test.succeed();
   },
   'LoginScreenUiCannotOpenMultipleWindows': () => {
     chrome.loginScreenUi.show({url: 'some/path.html'}, () => {
@@ -37,14 +35,10 @@ const tests = {
       });
     });
   },
-  'LoginScreenUiCanOpenAndCloseWindow': () => {
-    chrome.loginScreenUi.show({url: 'some/path.html'}, () => {
-      chrome.test.assertNoLastError();
-      chrome.loginScreenUi.close(() => {
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
-    });
+  'LoginScreenUiCanOpenAndCloseWindow': async () => {
+    await chrome.loginScreenUi.show({url: 'some/path.html'});
+    await chrome.loginScreenUi.close();
+    chrome.test.succeed();
   },
   'LoginScreenUiCannotCloseNoWindow': () => {
     chrome.loginScreenUi.close(() => {
@@ -52,19 +46,15 @@ const tests = {
       chrome.test.succeed();
     });
   },
-  'LoginScreenUiUserCanCloseWindow': () => {
-    chrome.loginScreenUi.show({url: 'some/path.html',
-        userCanClose: true}, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'LoginScreenUiUserCanCloseWindow': async () => {
+    await chrome.loginScreenUi.show(
+        {url: 'some/path.html', userCanClose: true});
+    chrome.test.succeed();
   },
-  'LoginScreenUiUserCannotCloseWindow': () => {
-    chrome.loginScreenUi.show({url: 'some/path.html',
-        userCanClose: false}, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'LoginScreenUiUserCannotCloseWindow': async () => {
+    await chrome.loginScreenUi.show(
+        {url: 'some/path.html', userCanClose: false});
+    chrome.test.succeed();
   },
 
   /* Storage ******************************************************************/
@@ -86,27 +76,20 @@ const tests = {
       });
     });
   },
-  'StorageCanAccessManagedStorage': () => {
-    chrome.storage.managed.get(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'StorageCanAccessManagedStorage': async () => {
+    await chrome.storage.managed.get();
+    chrome.test.succeed();
   },
 
   /* Login ********************************************************************/
-  'LoginLaunchManagedGuestSession': () => {
-    chrome.login.launchManagedGuestSession(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'LoginLaunchManagedGuestSession': async () => {
+    await chrome.login.launchManagedGuestSession();
+    chrome.test.succeed();
   },
-  'LoginLaunchManagedGuestSessionWithPassword': () => {
-    chrome.test.getConfig(config => {
-      chrome.login.launchManagedGuestSession(config.customArg, () => {
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
-    });
+  'LoginLaunchManagedGuestSessionWithPassword': async () => {
+    const config = await chrome.test.getConfig();
+    await chrome.login.launchManagedGuestSession(config.customArg);
+    chrome.test.succeed();
   },
   'LoginLaunchManagedGuestSessionAlreadyExistsActiveSession': () => {
     chrome.login.launchManagedGuestSession(() => {
@@ -120,20 +103,16 @@ const tests = {
       chrome.test.succeed();
     });
   },
-  'LoginExitCurrentSession': () => {
-    chrome.test.getConfig(config => {
-      chrome.login.exitCurrentSession(config.customArg);
-      // No check for success as browser process exits.
-    });
+  'LoginExitCurrentSession': async () => {
+    const config = await chrome.test.getConfig();
+    await chrome.login.exitCurrentSession(config.customArg);
+    // No check for success as browser process exits.
   },
-  'LoginFetchDataForNextLoginAttempt': () => {
-    chrome.test.getConfig(config => {
-      chrome.login.fetchDataForNextLoginAttempt(data => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertEq(config.customArg, data);
-        chrome.test.succeed();
-      });
-    });
+  'LoginFetchDataForNextLoginAttempt': async () => {
+    const config = await chrome.test.getConfig();
+    const data = await chrome.login.fetchDataForNextLoginAttempt();
+    chrome.test.assertEq(config.customArg, data);
+    chrome.test.succeed();
   },
   'LoginLockManagedGuestSessionNotActive': () => {
     chrome.login.lockManagedGuestSession(() => {
@@ -141,11 +120,10 @@ const tests = {
       chrome.test.succeed();
     });
   },
-  'LoginUnlockManagedGuestSession': () => {
-    chrome.test.getConfig(config => {
-      chrome.login.unlockManagedGuestSession(config.customArg);
-      // No check for success as browser process exits.
-    });
+  'LoginUnlockManagedGuestSession': async () => {
+    const config = await chrome.test.getConfig();
+    await chrome.login.unlockManagedGuestSession(config.customArg);
+    // No check for success as browser process exits.
   },
   'LoginUnlockManagedGuestSessionWrongPassword': () => {
     chrome.test.getConfig(config => {
@@ -175,7 +153,6 @@ const tests = {
   },
   'LoginRequestExternalLogout': () => {
     chrome.login.requestExternalLogout();
-    chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
   'LoginOnExternalLogoutDone': () => {
@@ -186,12 +163,11 @@ const tests = {
     chrome.test.sendMessage('onExternalLogoutDoneLoginScreenMessage');
   },
   /* I18n *********************************************************************/
-  'I18nGetMessage': () => {
-    chrome.test.getConfig(config => {
-      const message = chrome.i18n.getMessage(i18nMessageName);
-      chrome.test.assertEq(config.customArg, message);
-      chrome.test.succeed();
-    });
+  'I18nGetMessage': async () => {
+    const config = await chrome.test.getConfig();
+    const message = chrome.i18n.getMessage(i18nMessageName);
+    chrome.test.assertEq(config.customArg, message);
+    chrome.test.succeed();
   },
 };
 
