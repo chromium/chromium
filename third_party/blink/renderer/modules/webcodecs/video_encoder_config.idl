@@ -34,6 +34,5 @@ dictionary VideoEncoderConfig {
   LatencyMode latencyMode = "quality";
 
   // MediaStreamTrack Content Hints (https://www.w3.org/TR/mst-content-hint/)
-  [RuntimeEnabled=WebCodecsContentHint]
   DOMString contentHint = "";
 };

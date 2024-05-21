@@ -4401,10 +4401,6 @@
       base_feature: "none",
     },
     {
-      name: "WebCodecsContentHint",
-      status: "stable",
-    },
-    {
       name: "WebCodecsCopyToRGB",
       status: "stable",
     },
