@@ -73,8 +73,9 @@ struct AccountInfo : public CoreAccountInfo {
   std::string last_downloaded_image_url_with_size;
   gfx::Image account_image;
 
-  // For metrics. This field is not consistently set on all platforms.
-  // Not persisted to disk. Resets to `ACCESS_POINT_UNKNOWN` on restart.
+  // Access point used to add the account, is also updated on reauth.
+  // This field is not consistently set on all platforms.
+  // Not persisted to disk: resets to `ACCESS_POINT_UNKNOWN` on restart.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 

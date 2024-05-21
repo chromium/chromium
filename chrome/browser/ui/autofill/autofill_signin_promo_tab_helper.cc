@@ -130,10 +130,10 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 
   // We only want to move the data if the sign in event has the correct
-  // operation source, so if it was performed from the tab that was opened after
+  // access point, so if it was performed from the tab that was opened after
   // clicking the sign in promo.
-  if (token_operation_source != signin_metrics::SourceForRefreshTokenOperation::
-                                    kDiceResponseHandler_PasswordPromoSignin) {
+  if (identity_manager->FindExtendedAccountInfo(account_info).access_point !=
+      state_->access_point_) {
     Reset();
     return;
   }

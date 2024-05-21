@@ -833,7 +833,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="AccountReconcilor::RevokeTokensNotInCookies"/>
   <int value="22"
       label="DiceResponseHandler::Signin from sign in promo after password
-             save"/>
+             save (obsolete)"/>
 </enum>
 
 <enum name="SyncButtonClicked">

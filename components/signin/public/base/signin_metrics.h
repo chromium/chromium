@@ -457,9 +457,10 @@ enum class SourceForRefreshTokenOperation {
   kLogoutTabHelper_PrimaryPageChanged = 19,
   kForceSigninReauthWithDifferentAccount = 20,
   kAccountReconcilor_RevokeTokensNotInCookies = 21,
-  kDiceResponseHandler_PasswordPromoSignin = 22,
+  // DEPRECATED on 05/2024
+  // kDiceResponseHandler_PasswordPromoSignin = 22,
 
-  kMaxValue = kDiceResponseHandler_PasswordPromoSignin,
+  kMaxValue = kAccountReconcilor_RevokeTokensNotInCookies,
 };
 
 // Different types of reporting. This is used as a histogram suffix.

@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
       signin_metrics::SourceForRefreshTokenOperation::
-          kDiceResponseHandler_PasswordPromoSignin);
+          kDiceResponseHandler_Signin);
   account_store_waiter.WaitOrReturn();
 
   // Check that the sign in was successful.

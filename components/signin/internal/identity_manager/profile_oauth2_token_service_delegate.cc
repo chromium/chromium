@@ -70,10 +70,6 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
     case SourceForRefreshTokenOperation::
         kAccountReconcilor_RevokeTokensNotInCookies:
       return "AccountReconcilor::RevokeTokensNotInCookies";
-    case SourceForRefreshTokenOperation::
-        kDiceResponseHandler_PasswordPromoSignin:
-      return "DiceResponseHandler::Signin from sign in promo after password "
-             "save";
   }
 }
 
