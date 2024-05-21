@@ -693,6 +693,9 @@ as required builders.
 These builders run when the "Mega" CQ mode is triggered. This mode runs all the
 builders required in the standard CQ, plus a large amount of optional builders.
 
+### chrome
+* [mega-cq-launcher](https://ci.chromium.org/p/chrome/builders/try/mega-cq-launcher) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""mega-cq-launcher""))
+
 ### chromium
 * [mega-cq-launcher](https://ci.chromium.org/p/chromium/builders/try/mega-cq-launcher) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mega-cq-launcher""))
 

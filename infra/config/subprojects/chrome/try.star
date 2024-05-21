@@ -35,6 +35,7 @@ def chrome_internal_verifier(
             disable_reuse = tryjob.disable_reuse,
             experiment_percentage = tryjob.experiment_percentage,
             location_filters = location_filters,
+            mode_allowlist = tryjob.custom_cq_run_modes,
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
         )
     else:
@@ -68,6 +69,13 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "win-branded-compile-rel",
     tryjob = try_.job(),
+)
+
+chrome_internal_verifier(
+    builder = "mega-cq-launcher",
+    tryjob = try_.job(
+        custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
+    ),
 )
 
 ### Optional builders ###
