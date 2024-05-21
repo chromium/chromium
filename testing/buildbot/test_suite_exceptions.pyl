@@ -2798,6 +2798,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
         ],
       },
+      'Dawn Linux x64 Release (Intel UHD 770)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter',
+        ],
+      },
       # TODO(kbr): figure out a better way to specify blocks of
       # arguments like this for tests on multiple machines.
       'Linux ASan LSan Tests (1)': {
