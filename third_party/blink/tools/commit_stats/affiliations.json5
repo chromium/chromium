@@ -30,6 +30,12 @@
       { start: "2019-05-01", domain: "microsoft.com" },
     ]
   },
+  "joone@chromium.org": {
+    affiliations: [
+      { start: "2024-04-29", domain: "microsoft.com" },
+      { start: "2022-06-01", domain: "joone.net" },
+    ]
+  },
   "kzar@chromium.org": {
     affiliations: [
       { start: "2021-11-29", domain: "kzar.co.uk" },
