@@ -247,6 +247,11 @@ void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
       time_delta);
 }
 
+void RecordAmbientModeTopicSource(
+    const ash::personalization_app::mojom::TopicSource topic_source) {
+  base::UmaHistogramEnumeration("Ash.AmbientMode.TopicSource", topic_source);
+}
+
 void RecordAmbientModeTotalNumberOfAlbums(int num_albums) {
   base::UmaHistogramCounts100("Ash.AmbientMode.TotalNumberOfAlbums",
                               num_albums);

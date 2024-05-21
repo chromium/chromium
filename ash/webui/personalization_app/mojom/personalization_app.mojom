@@ -582,6 +582,11 @@ enum AmbientTheme {
 };
 
 // The source of the screensaver images come from.
+//
+// This enum needs to stay in sync with the enum |AmbientModeTopicSource| in
+// tools/metrics/histograms/metadata/ash/enums.xml.
+// These values are persisted in user pref storage and logs, so they should
+// never be renumbered or reused.
 enum TopicSource {
   // Google Photos.
   kGooglePhotos = 0,

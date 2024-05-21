@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -68,6 +69,9 @@ ASH_EXPORT void RecordAmbientModeTimeElapsed(
     base::TimeDelta time_delta,
     bool tablet_mode,
     const AmbientUiSettings& ui_settings);
+
+ASH_EXPORT void RecordAmbientModeTopicSource(
+    ash::personalization_app::mojom::TopicSource topic_source);
 
 ASH_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 

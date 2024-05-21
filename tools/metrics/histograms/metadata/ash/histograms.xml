@@ -616,6 +616,16 @@ chromium-metrics-reviews@google.com.
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
+<histogram name="Ash.AmbientMode.TopicSource" enum="AmbientModeTopicSource"
+    expires_after="2025-01-01">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when screen saver starts running. Logs the topic source of the
+    screen saver.
+  </summary>
+</histogram>
+
 <histogram name="Ash.AmbientMode.TotalNumberOfAlbums" units="int"
     expires_after="2024-12-01">
   <owner>cowmoo@google.com</owner>
