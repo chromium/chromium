@@ -2335,9 +2335,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
     return true;
   }
 #elif BUILDFLAG(IS_MAC)
-  if (features::UseGpuVsync()) {
-    presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
-  }
+  presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
 #elif BUILDFLAG(IS_CHROMEOS)
   if (!presenter_) {
     return false;
@@ -2374,9 +2372,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
     CHECK(presenter_);
 
 #if BUILDFLAG(IS_MAC)
-    if (features::UseGpuVsync()) {
-      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
-    }
+    presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
 #endif  // BUILDFLAG(IS_MAC)
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
