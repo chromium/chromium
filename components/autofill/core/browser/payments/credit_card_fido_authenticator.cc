@@ -465,8 +465,10 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
   // End the flow if the server responded with an error.
   if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
 #if !BUILDFLAG(IS_ANDROID)
-    if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW)
-      autofill_client_->UpdateWebauthnOfferDialogWithError();
+    if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW) {
+      autofill_client_->GetPaymentsAutofillClient()
+          ->UpdateWebauthnOfferDialogWithError();
+    }
 #endif
     current_flow_ = NONE_FLOW;
     return;

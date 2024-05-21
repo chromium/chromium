@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -135,6 +136,15 @@ void ChromePaymentsAutofillClient::ShowWebauthnVerifyPendingDialog(
   WebauthnDialogControllerImpl::GetOrCreateForPage(
       web_contents()->GetPrimaryPage())
       ->ShowVerifyPendingDialog(std::move(verify_pending_dialog_callback));
+}
+
+void ChromePaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {
+  WebauthnDialogControllerImpl* controller =
+      WebauthnDialogControllerImpl::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (controller) {
+    controller->UpdateDialog(WebauthnDialogState::kOfferError);
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

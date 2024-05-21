@@ -510,10 +510,6 @@ class AutofillClient {
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 
-  // Will update the WebAuthn dialog content when there is an error fetching the
-  // challenge.
-  virtual void UpdateWebauthnOfferDialogWithError();
-
   // Will close the current visible WebAuthn dialog. Returns true if dialog was
   // visible and has been closed.
   virtual bool CloseWebauthnDialog();

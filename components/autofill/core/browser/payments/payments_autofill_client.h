@@ -134,6 +134,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // shown after verification starts only if the WebAuthn is enabled.
   virtual void ShowWebauthnVerifyPendingDialog(
       WebauthnDialogCallback verify_pending_dialog_callback);
+
+  // Will update the WebAuthn dialog content when there is an error fetching the
+  // challenge.
+  virtual void UpdateWebauthnOfferDialogWithError();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Shows upload result to users. Called after credit card upload is finished.

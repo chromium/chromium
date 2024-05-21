@@ -134,9 +134,6 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 }
 
-void AutofillClient::UpdateWebauthnOfferDialogWithError() {
-}
-
 bool AutofillClient::CloseWebauthnDialog() {
   return false;
 }

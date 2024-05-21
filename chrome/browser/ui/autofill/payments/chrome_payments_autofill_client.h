@@ -77,6 +77,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(
       WebauthnDialogCallback verify_pending_dialog_callback) override;
+  void UpdateWebauthnOfferDialogWithError() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>

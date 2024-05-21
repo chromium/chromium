@@ -162,7 +162,6 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -582,14 +581,6 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::UpdateWebauthnOfferDialogWithError() {
-  WebauthnDialogControllerImpl* controller =
-      WebauthnDialogControllerImpl::GetForPage(
-          web_contents()->GetPrimaryPage());
-  if (controller)
-    controller->UpdateDialog(WebauthnDialogState::kOfferError);
-}
-
 bool ChromeAutofillClient::CloseWebauthnDialog() {
   WebauthnDialogControllerImpl* controller =
       WebauthnDialogControllerImpl::GetForPage(
