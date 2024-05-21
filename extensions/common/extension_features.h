@@ -196,6 +196,9 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 // If enabled, use the new CWS itemSnippets API to fetch extension info.
 BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
 
+// If enabled, use the new simpler, more efficient service worker task queue.
+BASE_DECLARE_FEATURE(kUseNewServiceWorkerTaskQueue);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
