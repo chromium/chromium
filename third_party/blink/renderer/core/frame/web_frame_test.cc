@@ -12081,12 +12081,11 @@ class MultipleDataChunkDelegate : public URLLoaderTestDelegate {
 
   // URLLoaderTestDelegate:
   void DidReceiveData(URLLoaderClient* original_client,
-                      const char* data,
-                      size_t data_length) override {
-    EXPECT_GT(data_length, 16u);
-    original_client->DidReceiveData(data, 16);
+                      base::span<const char> data) override {
+    EXPECT_GT(data.size(), 16u);
+    original_client->DidReceiveData(data.subspan(0, 16));
     // This didReceiveData call shouldn't crash due to a failed assertion.
-    original_client->DidReceiveData(data + 16, data_length - 16);
+    original_client->DidReceiveData(data.subspan(16));
   }
 };
 

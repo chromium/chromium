@@ -92,7 +92,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
 
   // Called when a chunk of response data is received. |data_length| is the
   // number of bytes pointed to by |data|.
-  virtual void DidReceiveData(const char* data, size_t data_length) {}
+  virtual void DidReceiveData(base::span<const char> data) {}
 
   // Called when the number of bytes actually received from network including
   // HTTP headers is updated. |transfer_size_diff| is positive.

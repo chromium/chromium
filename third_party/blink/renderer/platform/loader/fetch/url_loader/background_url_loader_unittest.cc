@@ -346,10 +346,10 @@ class FakeURLLoaderClient : public URLLoaderClient {
     cached_metadata_ = std::move(cached_metadata);
     response_body_ = std::move(response_body);
   }
-  void DidReceiveData(const char* data, size_t dataLength) override {
+  void DidReceiveData(base::span<const char> data) override {
     DCHECK(response_);
     DCHECK(!response_body_);
-    response_body_raw_data_.emplace_back(base::make_span(data, dataLength));
+    response_body_raw_data_.emplace_back(data);
   }
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override {
     DCHECK(unfreezable_task_runner_->BelongsToCurrentThread());

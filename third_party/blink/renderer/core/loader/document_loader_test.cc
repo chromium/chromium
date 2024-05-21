@@ -177,11 +177,10 @@ TEST_P(DocumentLoaderTest, SingleChunk) {
   class TestDelegate : public URLLoaderTestDelegate {
    public:
     void DidReceiveData(URLLoaderClient* original_client,
-                        const char* data,
-                        size_t data_length) override {
-      EXPECT_EQ(34u, data_length)
+                        base::span<const char> data) override {
+      EXPECT_EQ(34u, data.size())
           << "foo.html was not served in a single chunk";
-      original_client->DidReceiveData(data, data_length);
+      original_client->DidReceiveData(data);
     }
   } delegate;
 
@@ -199,13 +198,12 @@ TEST_P(DocumentLoaderTest, MultiChunkNoReentrancy) {
   class TestDelegate : public URLLoaderTestDelegate {
    public:
     void DidReceiveData(URLLoaderClient* original_client,
-                        const char* data,
-                        size_t data_length) override {
-      EXPECT_EQ(34u, data_length)
+                        base::span<const char> data) override {
+      EXPECT_EQ(34u, data.size())
           << "foo.html was not served in a single chunk";
       // Chunk the reply into one byte chunks.
-      for (size_t i = 0; i < data_length; ++i) {
-        original_client->DidReceiveData(&data[i], 1);
+      for (size_t i = 0; i < data.size(); ++i) {
+        original_client->DidReceiveData(data.subspan(i, 1));
       }
     }
   } delegate;

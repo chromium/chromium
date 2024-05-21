@@ -410,10 +410,6 @@ void ResourceLoader::Run() {
   StartFetch();
 }
 
-void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  DidReceiveData(data.data(), data.size());
-}
-
 void ResourceLoader::DidReceiveDecodedData(
     const String& data,
     std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
@@ -1043,16 +1039,11 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 }
 
-void ResourceLoader::DidReceiveData(const char* data, size_t length) {
+void ResourceLoader::DidReceiveData(base::span<const char> data) {
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(resource_->InspectorId(),
-                             base::make_span(data, length));
+    observer->DidReceiveData(resource_->InspectorId(), data);
   }
-  resource_->AppendData(
-      // SAFETY: `data` must point to `length` elements.
-      // TODO(crbug.com/40284755): Make this method take a span to capture it in
-      // the type system.
-      UNSAFE_BUFFERS(base::span(data, length)));
+  resource_->AppendData(data);
 
   // This value should not be exposed for opaque responses.
   if (resource_->response_.WasFetchedViaServiceWorker() &&
@@ -1065,7 +1056,7 @@ void ResourceLoader::DidReceiveData(const char* data, size_t length) {
     // will always be >= 0, but the CheckAdd is used to enforce the second
     // constraint.
     received_body_length_from_service_worker_ =
-        base::CheckAdd(received_body_length_from_service_worker_, length)
+        base::CheckAdd(received_body_length_from_service_worker_, data.size())
             .ValueOrDie<int64_t>();
   }
 }
@@ -1299,7 +1290,7 @@ void ResourceLoader::RequestSynchronously() {
   // a 304, where it will overwrite the cached data we should be reusing.
   if (data_out && data_out->size()) {
     for (const auto& span : *data_out) {
-      DidReceiveData(span.data(), span.size());
+      DidReceiveData(span);
     }
   }
 

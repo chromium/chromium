@@ -253,7 +253,7 @@ class TestURLLoaderClient : public URLLoaderClient {
     }
   }
 
-  void DidReceiveData(const char* data, size_t dataLength) override {
+  void DidReceiveData(base::span<const char> data) override {
     NOTREACHED_IN_MIGRATION();
   }
 

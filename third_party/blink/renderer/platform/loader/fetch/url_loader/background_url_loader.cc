@@ -592,7 +592,7 @@ class BackgroundURLLoader::Context
       while (!raw_data.empty()) {
         Vector<char> data = raw_data.TakeFirst();
         if (client_) {
-          client_->DidReceiveData(data.data(), data.size());
+          client_->DidReceiveData(data);
         }
       }
     }
