@@ -104,6 +104,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void SelectNextButton();
   void RefreshVelocity();
   void UpdateState();
+  void Reset();
 
   bool enabled_ = false;
   bool paused_ = false;

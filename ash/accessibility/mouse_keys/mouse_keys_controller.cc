@@ -102,12 +102,8 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
       !(key_event->flags() & ui::EF_IS_REPEAT)) {
     paused_ = !paused_;
     if (paused_) {
-      // TODO(259372916): Move this to a helper function.
       // Reset everything when pausing.
-      speed_ = 0;
-      if (update_timer_.IsRunning()) {
-        update_timer_.Stop();
-      }
+      Reset();
     }
     return true;
   }
@@ -332,12 +328,8 @@ void MouseKeysController::RefreshVelocity() {
   move_direction_ = gfx::Vector2d(x_direction, y_direction);
 
   if (x_direction == 0 && y_direction == 0) {
-    // TODO(259372916): Move this to a helper function.
     // Reset everything if there is no movement.
-    speed_ = 0;
-    if (update_timer_.IsRunning()) {
-      update_timer_.Stop();
-    }
+    Reset();
     return;
   }
 
@@ -362,6 +354,13 @@ void MouseKeysController::UpdateState() {
   double acceleration = acceleration_ * kBaseAccelerationDIPPerSecondSquared *
                         kUpdateFrequencyInSeconds;
   speed_ = std::clamp(speed_ + acceleration, 0.0, max_speed_);
+}
+
+void MouseKeysController::Reset() {
+  speed_ = 0;
+  if (update_timer_.IsRunning()) {
+    update_timer_.Stop();
+  }
 }
 
 }  // namespace ash
