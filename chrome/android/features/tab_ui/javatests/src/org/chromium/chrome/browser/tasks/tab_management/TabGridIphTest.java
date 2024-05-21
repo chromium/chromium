@@ -141,7 +141,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
     public void testShowAndHideIphDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -189,7 +188,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
     public void testIphItemShowingInIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -202,7 +200,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
     public void testDismissIphItem() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -234,7 +231,6 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIph_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -250,7 +246,6 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIph_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -273,7 +268,6 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIphDialog_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -303,7 +297,6 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Reviving b/341267765")
     public void testRenderIphDialog_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -338,7 +331,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
     public void testIphItemChangeWithLastTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -375,7 +367,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
+    @DisabledTest(message = "Consistent failures despite revival effort in b/341267765")
     public void testSwipeToDismiss_IPH() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -399,7 +391,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Reviving b/341267765")
+    @DisabledTest(message = "Still flaky on arm builds despite revival effort in b/341267765")
     public void testNotShowIPHInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
