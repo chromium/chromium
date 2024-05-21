@@ -92,8 +92,8 @@ class TabCaptureApiPixelTest : public TabCaptureApiTest {
 };
 
 // Tests API behaviors, including info queries, and constraints violations.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/): Flaky on Mac.
+#if BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341487291): Flaky on Mac and MSAN builds.
 #define MAYBE_ApiTests DISABLED_ApiTests
 #else
 #define MAYBE_ApiTests ApiTests
