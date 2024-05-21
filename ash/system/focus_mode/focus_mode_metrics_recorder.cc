@@ -14,6 +14,15 @@
 namespace ash {
 namespace {
 
+const char* GetNameSuffixBySessionDuration(int session_duration) {
+  if (session_duration <= 10) {
+    return focus_mode_histogram_names::kShortSuffix;
+  } else if (session_duration >= 30) {
+    return focus_mode_histogram_names::kLongSuffix;
+  }
+  return focus_mode_histogram_names::kMediumSuffix;
+}
+
 void RecordInitialDurationHistogram(base::TimeDelta session_duration) {
   base::UmaHistogramCustomCounts(
       /*name=*/focus_mode_histogram_names::
@@ -56,6 +65,12 @@ void RecordTasksSelectedHistogram(const int tasks_selected_count) {
       tasks_selected_count);
 }
 
+void RecordTasksCompletedHistogram(const int tasks_completed_count) {
+  base::UmaHistogramCounts100(
+      focus_mode_histogram_names::kTasksCompletedHistogramName,
+      tasks_completed_count);
+}
+
 void RecordDNDStateOnFocusEndHistogram(
     bool has_user_interactions_on_dnd_in_focus_session) {
   auto* message_center = message_center::MessageCenter::Get();
@@ -82,17 +97,10 @@ void RecordDNDStateOnFocusEndHistogram(
 
 void RecordTimeAddedOnSessionEndHistogram(int initial_session_duration,
                                           int current_session_duration) {
-  std::string histogram_name;
-  if (initial_session_duration <= 10) {
-    histogram_name =
-        focus_mode_histogram_names::kShortTimeAddedOnSessionEndHistogramName;
-  } else if (initial_session_duration >= 30) {
-    histogram_name =
-        focus_mode_histogram_names::kLongTimeAddedOnSessionEndHistogramName;
-  } else {
-    histogram_name =
-        focus_mode_histogram_names::kMediumTimeAddedOnSessionEndHistogramName;
-  }
+  std::string histogram_name(
+      focus_mode_histogram_names::kTimeAddedOnSessionEndPrefix);
+  histogram_name.append(
+      GetNameSuffixBySessionDuration(initial_session_duration));
 
   base::UmaHistogramCustomCounts(
       /*name=*/histogram_name,
@@ -100,6 +108,17 @@ void RecordTimeAddedOnSessionEndHistogram(int initial_session_duration,
       /*min=*/0,
       /*exclusive_max=*/focus_mode_util::kMaximumDuration.InMinutes(),
       /*buckets=*/50);
+}
+
+void RecordPercentCompletedHistogram(double progress,
+                                     int final_session_duration) {
+  std::string histogram_name(
+      focus_mode_histogram_names::kPercentCompletedPrefix);
+  histogram_name.append(GetNameSuffixBySessionDuration(final_session_duration));
+
+  base::UmaHistogramPercentage(
+      /*name=*/histogram_name,
+      /*percent=*/(progress * 100));
 }
 
 }  // namespace
@@ -112,6 +131,14 @@ FocusModeMetricsRecorder::FocusModeMetricsRecorder(
 
 FocusModeMetricsRecorder::~FocusModeMetricsRecorder() {
   message_center::MessageCenter::Get()->RemoveObserver(this);
+}
+
+void FocusModeMetricsRecorder::IncrementTasksSelectedCount() {
+  tasks_selected_count_++;
+}
+
+void FocusModeMetricsRecorder::IncrementTasksCompletedCount() {
+  tasks_completed_count_++;
 }
 
 void FocusModeMetricsRecorder::OnQuietModeChanged(bool in_quiet_mode) {
@@ -135,15 +162,17 @@ void FocusModeMetricsRecorder::RecordHistogramsOnStart(
 
 void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordTasksSelectedHistogram(tasks_selected_count_);
+  RecordTasksCompletedHistogram(tasks_completed_count_);
   RecordDNDStateOnFocusEndHistogram(
       has_user_interactions_on_dnd_in_focus_session_);
 
-  if (auto current_session = FocusModeController::Get()->current_session();
-      current_session.has_value()) {
-    RecordTimeAddedOnSessionEndHistogram(
-        initial_session_duration_.InMinutes(),
-        current_session->session_duration().InMinutes());
-  }
+  auto session_snapshot =
+      FocusModeController::Get()->GetSnapshot(base::Time::Now());
+  RecordTimeAddedOnSessionEndHistogram(
+      initial_session_duration_.InMinutes(),
+      session_snapshot.session_duration.InMinutes());
+  RecordPercentCompletedHistogram(
+      session_snapshot.progress, session_snapshot.session_duration.InMinutes());
 }
 
 }  // namespace ash

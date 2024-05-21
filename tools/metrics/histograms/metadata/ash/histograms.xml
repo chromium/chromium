@@ -3737,6 +3737,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
+    units="%" expires_after="2025-05-01">
+  <owner>nupurjain@google.com</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>hongyulong@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records the percent of the session which was completed (bucketed by the
+    final session duration) when a session is over. This is for the
+    {SessionDurationType} type of `Short` (&lt; 11 mins), `Medium` (11 - 29
+    mins), and `Long` (&gt; 29 mins).
+  </summary>
+  <token key="SessionDurationType">
+    <variant name="Long"/>
+    <variant name="Medium"/>
+    <variant name="Short"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.FocusMode.StartSession.HasSelectedTask" enum="Boolean"
     expires_after="2025-02-01">
   <owner>hongyulong@chromium.org</owner>
@@ -3769,6 +3789,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever a focus session will be started through the focus panel or
     the feature pod.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FocusMode.TasksCompleted" units="count"
+    expires_after="2025-05-01">
+  <owner>nupurjain@google.com</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>hongyulong@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    When a session ends, record how many tasks were marked as completed by the
+    user during the session.
   </summary>
 </histogram>
 

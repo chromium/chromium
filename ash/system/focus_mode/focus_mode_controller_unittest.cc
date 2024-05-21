@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
@@ -30,6 +31,10 @@ namespace {
 
 constexpr char kUser1Email[] = "user1@focusmode";
 constexpr char kUser2Email[] = "user2@focusmode";
+
+constexpr base::TimeDelta kShortDuration = base::Minutes(10);
+constexpr base::TimeDelta kMediumDuration = base::Minutes(11);
+constexpr base::TimeDelta kLongDuration = base::Minutes(30);
 
 bool IsEndingMomentNudgeShown() {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
@@ -531,9 +536,6 @@ TEST_F(FocusModeControllerMultiUserTest, CheckDNDStateOnFocusEndHistogram) {
 // minutes the user extended during the session.
 TEST_F(FocusModeControllerMultiUserTest, CheckTimeAddedOnSessionEndHistogram) {
   base::HistogramTester histogram_tester;
-  constexpr base::TimeDelta kShortDuration = base::Minutes(10);
-  constexpr base::TimeDelta kMediumDuration = base::Minutes(11);
-  constexpr base::TimeDelta kLongDuration = base::Minutes(30);
 
   // 1. Start a session with 10 minutes and extend the session duration while in
   // an active session.
@@ -546,9 +548,8 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTimeAddedOnSessionEndHistogram) {
   controller->ExtendSessionDuration();
   controller->ToggleFocusMode();
   EXPECT_FALSE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kShortTimeAddedOnSessionEndHistogramName,
-      /*sample=*/10, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(/*name=*/"Ash.FocusMode.TimeAdded.Short",
+                                     /*sample=*/10, /*expected_count=*/1);
 
   // 2. Start a session with 11 minutes. Even not extending the session will
   // still trigger the metric to be recorded.
@@ -559,9 +560,8 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTimeAddedOnSessionEndHistogram) {
 
   controller->ToggleFocusMode();
   EXPECT_FALSE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kMediumTimeAddedOnSessionEndHistogramName,
-      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(/*name=*/"Ash.FocusMode.TimeAdded.Medium",
+                                     /*sample=*/0, /*expected_count=*/1);
 
   // 3. Start a session with 30 minutes and extend the session.
   controller->SetInactiveSessionDuration(kLongDuration);
@@ -572,9 +572,138 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTimeAddedOnSessionEndHistogram) {
   controller->ExtendSessionDuration();
   controller->ToggleFocusMode();
   EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(/*name=*/"Ash.FocusMode.TimeAdded.Long",
+                                     /*sample=*/10, /*expected_count=*/1);
+}
+
+// Verify that when a session is over, the histogram will record the session
+// progress percentage.
+TEST_F(FocusModeControllerMultiUserTest, CheckPercentCompletedHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Start a session with 10 minutes and stop the session when the progress
+  // is 50%.
+  auto* controller = FocusModeController::Get();
+  controller->SetInactiveSessionDuration(kShortDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kShortDuration, controller->session_duration());
+
+  AdvanceClock(base::Minutes(5));
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
   histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kLongTimeAddedOnSessionEndHistogramName,
-      /*sample=*/10, /*expected_count=*/1);
+      /*name=*/"Ash.FocusMode.PercentOfSessionCompleted.Short",
+      /*sample=*/50, /*expected_count=*/1);
+
+  // 2. Start a session with 11 minutes and stop the session immediately, which
+  // should record 0%.
+  controller->SetInactiveSessionDuration(kMediumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kMediumDuration, controller->session_duration());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/"Ash.FocusMode.PercentOfSessionCompleted.Medium",
+      /*sample=*/0, /*expected_count=*/1);
+
+  // 3. Start a session with 30 minutes and extend the session two times. After
+  // the ending moment, the histogram should record 100%.
+  controller->SetInactiveSessionDuration(kLongDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kLongDuration, controller->session_duration());
+
+  controller->ExtendSessionDuration();
+  controller->ExtendSessionDuration();
+
+  const auto& current_session = controller->current_session();
+  EXPECT_TRUE(current_session.has_value());
+
+  // Once the session expires, the ending moment should start.
+  AdvanceClock(current_session->session_duration());
+  EXPECT_TRUE(controller->in_ending_moment());
+
+  // After the ending moment expires, the histogram will record 100%.
+  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  histogram_tester.ExpectBucketCount(
+      /*name=*/"Ash.FocusMode.PercentOfSessionCompleted.Long",
+      /*sample=*/100, /*expected_count=*/1);
+}
+
+// Verify that the histogram will record the number of tasks completed during an
+// active session and the ending moment.
+TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
+  base::HistogramTester histogram_tester;
+
+  SimulateUserLogin(GetUser1AccountId());
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 1. Select a new task before a session starts, which will not be recorded
+  // into the histogram.
+  auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+
+  FocusModeTask task;
+  task.task_list_id = "list0";
+  task.task_id = "task0";
+  task.title = "Focus Task";
+  task.updated = base::Time::Now();
+
+  AddFakeTaskList(tasks_client, task.task_list_id);
+  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+
+  controller->SetSelectedTask(task);
+  controller->CompleteTask();
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kTasksCompletedHistogramName, 0);
+
+  // 2. Start a focus session and select a task during the active session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  task.task_list_id = "list1";
+  task.task_id = "task1";
+  task.title = "A New Focus Task";
+  task.updated = base::Time::Now();
+
+  AddFakeTaskList(tasks_client, task.task_list_id);
+  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+
+  controller->SetSelectedTask(task);
+  EXPECT_TRUE(controller->HasSelectedTask());
+
+  // Mark the first task as completed.
+  controller->CompleteTask();
+
+  // Select a new task during this session.
+  task.task_list_id = "list2";
+  task.task_id = "task2";
+  task.title = "A New Focus Task";
+  task.updated = base::Time::Now();
+
+  AddFakeTaskList(tasks_client, task.task_list_id);
+  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+
+  controller->SetSelectedTask(task);
+
+  // 3. Mark the second task as completed during the ending moment.
+  const auto& current_session = controller->current_session();
+  EXPECT_TRUE(current_session.has_value());
+  AdvanceClock(current_session->session_duration());
+  EXPECT_TRUE(controller->in_ending_moment());
+  controller->CompleteTask();
+
+  // Verify the histogram after the ending moment expires.
+  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kTasksCompletedHistogramName,
+      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kTasksCompletedHistogramName, 1);
 }
 
 }  // namespace ash

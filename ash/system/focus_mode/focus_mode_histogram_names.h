@@ -7,6 +7,10 @@
 
 namespace ash::focus_mode_histogram_names {
 
+constexpr char kShortSuffix[] = "Short";
+constexpr char kMediumSuffix[] = "Medium";
+constexpr char kLongSuffix[] = "Long";
+
 // Histograms recorded when starting a session.
 constexpr char kHasSelectedTaskOnSessionStartHistogramName[] =
     "Ash.FocusMode.StartSession.HasSelectedTask";
@@ -23,12 +27,10 @@ constexpr char kToggleEndButtonDuringSessionHistogramName[] =
 constexpr char kTasksSelectedHistogramName[] = "Ash.FocusMode.TasksSelected";
 constexpr char kDNDStateOnFocusEndHistogramName[] =
     "Ash.FocusMode.DNDStateOnFocusEnd";
-constexpr char kShortTimeAddedOnSessionEndHistogramName[] =
-    "Ash.FocusMode.TimeAdded.Short";
-constexpr char kMediumTimeAddedOnSessionEndHistogramName[] =
-    "Ash.FocusMode.TimeAdded.Medium";
-constexpr char kLongTimeAddedOnSessionEndHistogramName[] =
-    "Ash.FocusMode.TimeAdded.Long";
+constexpr char kTimeAddedOnSessionEndPrefix[] = "Ash.FocusMode.TimeAdded.";
+constexpr char kPercentCompletedPrefix[] =
+    "Ash.FocusMode.PercentOfSessionCompleted.";
+constexpr char kTasksCompletedHistogramName[] = "Ash.FocusMode.TasksCompleted";
 
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted

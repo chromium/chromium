@@ -357,8 +357,7 @@ void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
   selected_task_ = task;
   // TODO(b/305089077): Update user prefs.
   if (focus_mode_metrics_recorder_ && !selected_task_.empty()) {
-    focus_mode_metrics_recorder_->set_tasks_selected_count(
-        focus_mode_metrics_recorder_->tasks_selected_count() + 1);
+    focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
   }
 }
 
@@ -371,6 +370,10 @@ void FocusModeController::CompleteTask() {
                              selected_task_.task_id, selected_task_.title,
                              /*completed=*/true, base::DoNothing());
   SetSelectedTask({});
+
+  if (focus_mode_metrics_recorder_) {
+    focus_mode_metrics_recorder_->IncrementTasksCompletedCount();
+  }
 }
 
 void FocusModeController::MaybeShowEndingMomentNudge() {
@@ -402,9 +405,10 @@ void FocusModeController::StartFocusSession(
   focus_mode_metrics_recorder_ =
       std::make_unique<FocusModeMetricsRecorder>(session_duration_);
   focus_mode_metrics_recorder_->RecordHistogramsOnStart(source);
+  if (HasSelectedTask()) {
+    focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
+  }
 
-  focus_mode_metrics_recorder_->set_tasks_selected_count(HasSelectedTask() ? 1
-                                                                           : 0);
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());
 
