@@ -455,6 +455,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.DlcService.TotalUsedMBytes" units="MiB"
+    expires_after="2024-11-01">
+  <owner>yuanpengni@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The storage space used by DLC packages on the device. This metric is
+    reported daily by the dlcservice. DLCs are ChromiumOS software packages that
+    are installed in the stateful partition.
+  </summary>
+</histogram>
+
 <histogram name="Platform.DlcService.UninstallResult"
     enum="DlcService.UninstallResult" expires_after="2025-02-01">
   <owner>kimjae@chromium.org</owner>
