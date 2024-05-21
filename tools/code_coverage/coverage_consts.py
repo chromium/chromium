@@ -328,7 +328,6 @@ FUZZERS_WITH_CORPORA = [
     'pix_code_validator_fuzzer',
     'policy_schema_fuzzer',
     'preg_parser_fuzzer',
-    'process_doc_fuzzer',
     'prtime_fuzzer',
     'pseudotcp_parser_fuzzer',
     'qcms_color_space_fuzzer',
