@@ -208,7 +208,7 @@ class USER_MANAGER_EXPORT User {
 
   static User* CreateRegularUserForTesting(const AccountId& account_id) {
     User* user = CreateRegularUser(account_id, UserType::kRegular);
-    user->SetImage(std::unique_ptr<UserImage>(new UserImage), 0);
+    user->SetImage(std::make_unique<UserImage>(), 0);
     return user;
   }
 
