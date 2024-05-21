@@ -192,6 +192,18 @@ test(t => {
   assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
 }, `ReadableStream.from ignores @@iterator if @@asyncIterator exists`);
 
+test(() => {
+  const theError = new Error('a unique string');
+  const iterable = {
+    [Symbol.asyncIterator]: null,
+    [Symbol.iterator]() {
+      throw theError
+    }
+  };
+
+  assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
+}, `ReadableStream.from ignores a null @@asyncIterator`);
+
 promise_test(async () => {
 
   const iterable = {

@@ -31,6 +31,8 @@ This is a testharness.js-based test.
   assert_throws_exactly: from() should re-throw the error function "() => ReadableStream.from(iterable)" threw object "TypeError: ReadableStream.from is not a function" but we expected it to throw object "Error: a unique string"
 [FAIL] ReadableStream.from ignores @@iterator if @@asyncIterator exists
   assert_throws_exactly: from() should re-throw the error function "() => ReadableStream.from(iterable)" threw object "TypeError: ReadableStream.from is not a function" but we expected it to throw object "Error: a unique string"
+[FAIL] ReadableStream.from ignores a null @@asyncIterator
+  assert_throws_exactly: from() should re-throw the error function "() => ReadableStream.from(iterable)" threw object "TypeError: ReadableStream.from is not a function" but we expected it to throw object "Error: a unique string"
 [FAIL] ReadableStream.from accepts an empty iterable
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from: stream errors when next() rejects

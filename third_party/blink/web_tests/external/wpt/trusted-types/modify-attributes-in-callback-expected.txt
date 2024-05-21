@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Ensure the right attributes are modified.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Ensure the deleted attributes is modified.
+  assert_equals: expected "alert(1)" but got "content"
+Harness: the test ran to completion.
+

@@ -13,7 +13,8 @@
 
   let target = "data-x";
   trustedTypes.createPolicy("default", {
-    createHTML: (s) => {
+    createHTML: (s, _, sink) => {
+      assert_equals(sink, 'HTMLIFrameElement srcdoc');
       iframe.removeAttribute(target);
       return s;
     }

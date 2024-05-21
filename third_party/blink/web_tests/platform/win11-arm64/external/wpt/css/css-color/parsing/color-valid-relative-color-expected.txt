@@ -38,7 +38,7 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklab(from currentColor l a b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "lch(from currentColor l c h)" should set the property value
+[FAIL] e.style['color'] = "lch(from currentColor) l c h)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklch(from currentColor l c h)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
