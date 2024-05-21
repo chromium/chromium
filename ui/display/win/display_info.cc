@@ -6,7 +6,6 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/display/win/display_config_helper.h"
@@ -52,22 +51,20 @@ DisplayInfo::~DisplayInfo() = default;
 
 // static
 int64_t DisplayInfo::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
-  // Use the monitor's config path target ID as the display ID.
-  // This seems to be broadly available, unique for each monitor of the device,
-  // and stable across display configuration changes and device restarts.
+  // Derive a display ID from the monitor adapter ID per-adapter monitor ID.
+  // This provides better ID stability when adding/removing displays vs
+  // MONITORINFOEX::szDevice which can cause subtle unexpected behavior.
   std::optional<DISPLAYCONFIG_PATH_INFO> config_path =
       GetDisplayConfigPathInfo(monitor);
   // Record if DISPLAYCONFIG_PATH_INFO is available or not.
   base::UmaHistogramBoolean("Windows.LegacyDisplayIdAlgorithm",
                             !config_path.has_value());
-
   if (config_path.has_value()) {
-    return base::checked_cast<int64_t>(config_path->targetInfo.id);
+    return static_cast<int64_t>(base::PersistentHash(base::StringPrintf(
+        "%lu/%li/%u", config_path->targetInfo.adapterId.LowPart,
+        config_path->targetInfo.adapterId.HighPart,
+        config_path->targetInfo.id)));
   }
-  // MONITORINFOEX::szDevice is a plausible backup with some notable drawbacks.
-  // This value (e.g. "\\.\DISPLAY1") may change when adding/removing displays,
-  // and even be reassigned between physical monitors during those changes,
-  // which can cause subtle unexpected behavior.
   return static_cast<int64_t>(
       base::PersistentHash(base::WideToUTF8(monitor.szDevice)));
 }
