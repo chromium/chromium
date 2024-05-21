@@ -1,9 +1,0 @@
-# Copyright 2019 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Output for ":generate_chromeos_manifest_for_upload"
-generate_chromeos_manifest_for_upload_output = "${root_gen_dir}/chrome/android/webapk/shell_apk/webapk_chromeos_manifest_to_upload/AndroidManifest.xml"
-
-# Output for ":generate_manifest_for_upload"
-generate_manifest_for_upload_output = "${root_gen_dir}/chrome/android/webapk/shell_apk/webapk_manifest_to_upload/AndroidManifest.xml"

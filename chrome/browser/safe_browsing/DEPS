@@ -1,7 +1,0 @@
-include_rules = [
-  "+chrome/browser/ui/views",
-  "+components/enterprise",
-  "+components/safe_browsing/core/tailored_security_service",
-  "+mojo",
-  "+services/network/test",
-]

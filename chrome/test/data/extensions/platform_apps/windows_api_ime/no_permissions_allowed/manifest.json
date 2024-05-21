@@ -1,9 +1,0 @@
-{
-  "name": "Windows API - ime (Has Permissions)",
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7C0oB6YTnf69uhWnVTZl5TB/psHrJXgIPLYchFb0whlVCG8fqMo9lW/oxBmZXZ3N8T7zZrdYI/SUjoc9I5R/dMVVD2q4iKox+x7xlTbqSdVeOb6b9ZVJ24pLbO1L7feSNSBgR0t61jrC2eY/gf78h7w58UEQBPFT2mUxhhwodyQIDAQAB",
-  "version": "1",
-  "manifest_version": 2,
-  "background": {
-    "scripts": ["background.js"]
-  }
-}

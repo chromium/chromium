@@ -1,8 +1,0 @@
-{
-  "name": "webRequest Blocking",
-  "version": "1.0",
-  "manifest_version": 2,
-  "description": "Tests navigation to a page blocked by webRequest API.",
-  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"],
-  "web_accessible_resources": [ "blocked.html" ]
-}

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/browser_ui/widget/android/java",
-  "+components/infobars/android/java",
-  "+content/public/android/java",
-]

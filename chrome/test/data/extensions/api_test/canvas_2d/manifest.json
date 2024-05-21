@@ -1,9 +1,0 @@
-{
-  "description": "Extension which has just a background page with 2D canvas",
-  "name": "background_page_2d_canvas",
-  "background": {
-    "page": "background.html"
-  },
-  "version": "0.1",
-  "manifest_version": 2
-}

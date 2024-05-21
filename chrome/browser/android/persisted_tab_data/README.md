@@ -1,1 +1,0 @@
-PersistedTabData is a framework which enables developers to create Tab keyed objects which are persisted across restarts.

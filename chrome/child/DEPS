@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/crash/core/app",
-  "+content/public/child",
-  "+gin/public",
-  "+v8",
-]

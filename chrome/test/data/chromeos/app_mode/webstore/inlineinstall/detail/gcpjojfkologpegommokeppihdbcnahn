@@ -1,9 +1,0 @@
-{
-  "id": "gcpjojfkologpegommokeppihdbcnahn",
-  "users": "0",
-  "average_rating": 0.0,
-  "rating_count": 0,
-  "icon_url": "webstore/inlineinstall/detail/app_1_green16x16.png",
-  "localized_name": "Enterprise Kiosk Test App",
-  "manifest": "{\"oauth2\": {\"scopes\": [\"https://www.googleapis.com/auth/userinfo.profile\"], \"client_id\": \"fake-client-id\"}, \"name\": \"Enterprise Kiosk Test App\", \"app\": {\"background\": {\"scripts\": [\"main.js\"]}}, \"kiosk_enabled\": true, \"version\": \"1\", \"manifest_version\": 2, \"permissions\": [\"identity\",\"enterprise.kioskInput\"]}"
-}

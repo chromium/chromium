@@ -1,9 +1,0 @@
-Information about no_default_resources.crx:
-
-A test extension downloaded from webstore.
-extension_id: lpibhlnkgcbcgdjlaacppnkmmlfpapij
-The extension doesn't have any resource that will be loaded by default on
-ExtensionLoad.
-There are two resources inside the extension:
-  - page.html
-  - script.js

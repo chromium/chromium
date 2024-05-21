@@ -1,6 +1,0 @@
-Document Name='PDF document containing 1 page'
-++Group Name='Page 1'
-++++Group IsControlElement=false
-++++++Image Name='Image 1'
-++++++Image Name='Image 2'
-++++++Image Name='Image 3'

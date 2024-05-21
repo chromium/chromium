@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/browser/ui/views",
-  "+third_party/ocmock",  # For unit tests.
-]

@@ -1,6 +1,0 @@
-{
-  "name": "permissions",
-  "version": "0.1",
-  "manifest_version": 2,
-  "permissions": ["unlimitedStorage", "notifications", "http://*/*"]
-}

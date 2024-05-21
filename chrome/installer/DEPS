@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/crash",
-  "+components/variations",
-  "+google_update",
-  "+rlz",
-  "+third_party/bspatch",
-  "+third_party/lzma_sdk",
-]

@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-<ShortName/>
-<Description>Not a creative description.</Description>
-<Url type="text/html" template="http://example.com/{searchTerms}/other_stuff"/>
-</OpenSearchDescription>

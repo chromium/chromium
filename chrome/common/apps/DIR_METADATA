@@ -1,7 +1,0 @@
-mixins: "//apps/COMMON_METADATA"
-monorail: {
-  component: "Platform>Extensions"
-}
-buganizer_public: {
-  component_id: 1456110
-}

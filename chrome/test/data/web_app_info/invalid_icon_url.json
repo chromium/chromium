@@ -1,8 +1,0 @@
-{
-  "name": "hello",
-  "launch_url": "launch_url",
-  "icons": {
-    "16", "16.png",
-    "32": "http://someotherdomain.com/32"
-  ]
-}

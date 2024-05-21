@@ -1,9 +1,0 @@
-include_rules = [
-  "+google_apis/gaia",
-]
-
-specific_include_rules = {
-  '.*test\.cc': [
-    "+chrome/utility",
-  ],
-}

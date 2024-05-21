@@ -1,6 +1,0 @@
-file://components/content_settings/OWNERS
-
-# For RequestDesktopSiteSettingObserver changes:
-per-file request_desktop_site_web_contents_observer_android*=shuyng@google.com
-per-file request_desktop_site_web_contents_observer_android*=twellington@chromium.org
-per-file request_desktop_site_web_contents_observer_android*=skym@chromium.org

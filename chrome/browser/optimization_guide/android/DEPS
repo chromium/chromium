@@ -1,5 +1,0 @@
-include_rules = [
-  "+content/public/android/java",
-  "+content/public/test",
-  "+third_party/jni_zero",
-]

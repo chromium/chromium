@@ -1,6 +1,0 @@
-{
-  "name": "modules test",
-  "manifest_version": 2,
-  "background": { "page": "background.html" },
-  "version": "0.1"
-}

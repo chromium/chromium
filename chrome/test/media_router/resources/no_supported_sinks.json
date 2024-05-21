@@ -1,6 +1,0 @@
-{
-  "getAvailableSinks": {
-    "urn:x-org.chromium.media:source:desktop":
-        [{"id" : "id1", "friendlyName" : "test-sink-1"}]
-  }
-}

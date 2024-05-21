@@ -1,6 +1,0 @@
-specific_include_rules = {
-  ".*test\.cc": [
-    "+services/network/network_context.h",
-    "+chrome/services/file_util/document_analysis_service.h"
-  ]
-}

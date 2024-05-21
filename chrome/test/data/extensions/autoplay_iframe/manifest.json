@@ -1,9 +1,0 @@
-{
-  "name": "<iframe> autoplay policy api tests.",
-  "version": "1",
-  "content_security_policy": "frame-src http://localhost:*/; object-src 'self'; script-src 'self'",
-  "manifest_version": 2,
-  "browser_action": {
-    "default_popup": "main.html"
-  }
-}

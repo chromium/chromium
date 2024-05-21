@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Settings>SafetyCheck"
-}
-team_email: "chrome-privacy-controls@google.com"
-buganizer_public: {
-  component_id: 1456660
-}

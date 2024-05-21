@@ -1,6 +1,0 @@
-{
-   "name": "file:/// scheme in permissions list",
-   "manifest_version": 2,
-   "permissions": [ "file:///*" ],
-   "version": "1"
-}

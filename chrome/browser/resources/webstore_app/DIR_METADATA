@@ -1,6 +1,0 @@
-monorail: {
-  component: "Webstore"
-}
-buganizer_public: {
-  component_id: 1457238
-}

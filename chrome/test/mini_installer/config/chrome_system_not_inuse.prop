@@ -1,5 +1,0 @@
-{
-  "Processes": {
-    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\chrome.exe": {"running": false}
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "name": "chrome.tabs test",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "end-to-end browser test for chrome.windows events API",
-  "background": {
-    "page": "background.html"
-  }
-}

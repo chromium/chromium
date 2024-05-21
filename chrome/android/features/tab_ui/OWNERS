@@ -1,9 +1,0 @@
-file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
-
-per-file ...IncognitoReauth*=file://chrome/browser/incognito/OWNERS
-
-# Ramping up, may ask another OWNER for secondary review.
-ckitagawa@chromium.org
-nemco@google.com
-skavuluru@google.com
-skym@chromium.org

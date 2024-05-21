@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "policy_cert_service\.cc": [
-    "+services/network/nss_temp_certs_cache_chromeos.h",
-  ],
-}

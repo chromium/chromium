@@ -1,6 +1,0 @@
-include_rules = [
-  "-chrome/browser/ui/cocoa",
-  "-chrome/browser/ui/views",
-  "-ui/accelerated_widget_mac",
-  "-ui/views",
-]

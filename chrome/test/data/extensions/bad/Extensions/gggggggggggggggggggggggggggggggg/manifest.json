@@ -1,8 +1,0 @@
-{
-  "name": "My extension with a zero-length browser action icon",
-  "version": "1.0",
-  "browser_action": {
-    "default_icon": "icon.png"
-  },
-  "manifest_version": 2
-}

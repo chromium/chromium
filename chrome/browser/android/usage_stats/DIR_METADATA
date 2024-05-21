@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>UsageStats"
-}
-buganizer_public: {
-  component_id: 1457079
-}

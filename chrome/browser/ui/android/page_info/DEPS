@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/page_info/android/java/src/org/chromium/components/page_info",
-]

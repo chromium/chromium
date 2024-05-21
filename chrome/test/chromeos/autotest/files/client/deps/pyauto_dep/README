@@ -1,6 +1,0 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-This dep brings PyAuto files into an image. Tests that depend on pyauto_dep
-should add this as a dep in their setup() method.

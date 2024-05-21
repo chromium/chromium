@@ -1,7 +1,0 @@
-emaxx@chromium.org
-drcrash@chromium.org
-dkrahn@chromium.org
-bartfab@chromium.org
-
-per-file *tpm_challenge_key*=emaxx@chromium.org
-per-file *tpm_challenge_key*=drcrash@chromium.org

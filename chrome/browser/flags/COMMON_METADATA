@@ -1,8 +1,0 @@
-monorail: {
-  component: "Internals>Flags"
-}
-team_email: "clank-modularization@chromium.org"
-os: ANDROID
-buganizer_public: {
-  component_id: 1456387
-}

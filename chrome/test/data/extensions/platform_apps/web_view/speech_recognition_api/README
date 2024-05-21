@@ -1,4 +1,0 @@
-Web Speech API test for guest inside platform app.
-
-This platform app has "audioCapture" permission and hence can
-provide speech recognition access to its guests if it wishes.

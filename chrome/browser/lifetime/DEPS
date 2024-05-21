@@ -1,9 +1,0 @@
-specific_include_rules = {
-  "application_lifetime_aura\.cc": [
-    "+ash/shell.h",
-  ],
-  "application_lifetime\.cc": [
-    "+chromeos/crosapi/mojom/crosapi.mojom.h",
-    "+chromeos/lacros/lacros_service.h",
-  ],
-}

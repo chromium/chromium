@@ -1,9 +1,0 @@
-{
-  "name": "Externally Connectable Everywhere",
-  "description": "An extension that is externally connectable everywhere.",
-  "version": "0.1.1",
-  "manifest_version": 2,
-  "externally_connectable": {
-    "matches": ["*://127.0.0.1:*/*"]
-  }
-}

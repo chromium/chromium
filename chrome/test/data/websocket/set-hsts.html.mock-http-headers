@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Cache-Control: private
-Content-Type: text/html; charset=UTF-8
-Strict-Transport-Security: max-age=3600

@@ -1,8 +1,0 @@
-{
-  "name": "GetFrame Incognito API Test",
-  "manifest_version": 3,
-  "version": "0.1",
-  "permissions": ["tabs", "webNavigation"],
-  "background": {"service_worker": "worker.js"},
-  "host_permissions": ["http://a.com/*"]
-}

@@ -1,6 +1,0 @@
-include_rules = [
-  # Other libraries.
-  "+chrome/third_party/mozilla_security_manager",
-  "+components/google/core/common",
-  "+third_party/boringssl/src/pki",
-]

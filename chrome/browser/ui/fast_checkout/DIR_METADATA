@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Autofill"
-}
-team_email: "chrome-duplex@google.com"
-buganizer_public: {
-  component_id: 1456764
-}

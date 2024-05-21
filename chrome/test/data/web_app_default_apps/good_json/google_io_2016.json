@@ -1,6 +1,0 @@
-{
-  "app_url": "https://events.google.com/io2016/?utm_source=web_app_manifest",
-  "launch_container": "window",
-  "uninstall_and_replace": ["migrationsourceappid"],
-  "user_type": ["unmanaged"]
-}

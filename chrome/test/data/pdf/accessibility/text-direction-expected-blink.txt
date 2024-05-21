@@ -1,8 +1,0 @@
-pdfRoot name='PDF document containing 1 page' restriction=readOnly
-++region name='Page 1' restriction=readOnly isPageBreakingObject=true
-++++paragraph restriction=readOnly
-++++++staticText name='abcdef<newline>' restriction=readOnly
-++++++++inlineTextBox name='abcdef<newline>' restriction=readOnly textDirection=ltr
-++++paragraph restriction=readOnly
-++++++staticText name='شممشا' restriction=readOnly
-++++++++inlineTextBox name='شممشا' restriction=readOnly textDirection=rtl

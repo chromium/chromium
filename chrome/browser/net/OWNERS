@@ -1,4 +1,0 @@
-file://net/OWNERS
-
-per-file network_quality*=file://net/nqe/OWNERS
-per-file private_network_access_browsertest*=titouan@chromium.org

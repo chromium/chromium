@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>LookalikeChecks"
-}
-buganizer_public: {
-  component_id: 1457064
-}

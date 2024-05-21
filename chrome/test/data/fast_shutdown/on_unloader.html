@@ -1,8 +1,0 @@
-<script>
-addEventListener("unload", function() {
-  var expires = new Date();
-  expires.setMinutes(expires.getMinutes() + 1);
-  document.cookie = "unloaded=ohyeah;path=/;expires=" + expires.toUTCString();
-}, false);
-open('on_before_unloader.html');
-</script>

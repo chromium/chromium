@@ -1,9 +1,0 @@
-{
-  "name": "Good Package",
-  "version": "1.0",
-  "manifest_version": 2,
-  "description": "Good (valid) package to be used for unit testing.",
-  "background": {
-    "scripts": ["background.js"]
-  }
-}

@@ -1,6 +1,0 @@
-noparent = True
-include_rules = [
-  "+base",
-  "+chrome/browser/tab",
-  "+components/browser_ui/widget"
-]

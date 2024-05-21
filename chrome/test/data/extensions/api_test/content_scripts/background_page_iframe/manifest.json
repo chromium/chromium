@@ -1,7 +1,0 @@
-{
-  "manifest_version": 2,
-  "name": "Background Page Iframe",
-  "version": "0.1",
-  "description": "An extension with an iframe in its background page",
-  "background":{ "scripts": ["background.js"] }
-}

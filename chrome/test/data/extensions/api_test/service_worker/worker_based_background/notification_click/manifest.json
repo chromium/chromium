@@ -1,8 +1,0 @@
-{
-  "name": "Extension API in Service Worker notificationclick",
-  "description": "Demonstrates usage and features of user gesture",
-  "version": "1.0",
-  "manifest_version": 2,
-  "permissions": ["notifications"],
-  "background": {"service_worker": "background.js"}
-}

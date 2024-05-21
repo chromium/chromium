@@ -1,8 +1,0 @@
-include_rules = [
-  "+chrome/services/speech/buildflags.h",
-  "+chrome/services/speech/speech_recognition_recognizer_impl.h",
-  "+content/public/browser/tts_controller.h",
-  "+components/live_caption",
-  "+components/speech",
-  "+components/soda",
-]

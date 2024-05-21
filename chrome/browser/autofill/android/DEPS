@@ -1,6 +1,0 @@
-include_rules = [
-  '+components/autofill/android/java',
-  '+components/image_fetcher/android/java',
-  '+third_party/libaddressinput',
-  '+third_party/libphonenumber',
-]

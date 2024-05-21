@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="Windows-1252"?>
-<VisualStudioPropertySheet
-	ProjectType="Visual C++"
-	Version="8.00"
-	Name="common (chrome)"
-	InheritedPropertySheets="$(SolutionDir)..\build\common.vsprops;$(SolutionDir)..\third_party\icu\build\using_icu.vsprops;$(SolutionDir)..\third_party\zlib\using_zlib.vsprops;$(SolutionDir)..\third_party\libpng\using_libpng.vsprops;$(SolutionDir)..\skia\using_skia.vsprops;$(SolutionDir)..\tools\grit\build\using_generated_resources.vsprops;$(SolutionDir)..\third_party\libxml\build\using_libxml.vsprops;$(SolutionDir)..\third_party\npapi\using_npapi.vsprops;$(SolutionDir)..\chrome\third_party\wtl\using_wtl.vsprops;$(SolutionDir)\common\extra_defines.vsprops"
-	>
-</VisualStudioPropertySheet>

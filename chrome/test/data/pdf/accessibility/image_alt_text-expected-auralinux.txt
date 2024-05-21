@@ -1,6 +1,0 @@
-[document frame] name='PDF document containing 1 page'
-++[landmark] name='Page 1'
-++++[paragraph]
-++++++[image] name='Image 1'
-++++++[image] name='Image 2'
-++++++[image] name='Image 3'

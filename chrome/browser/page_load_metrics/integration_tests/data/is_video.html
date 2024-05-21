@@ -1,9 +1,0 @@
-<video autoplay muted src="/images/pattern.webm" width="300">
-<script>
-const run_test = async () => {
-  await new Promise(resolve => {
-    new PerformanceObserver(list => resolve())
-      .observe({type: "largest-contentful-paint", buffered: true});
-  });
-};
-</script>

@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/segmentation_platform/public/android/java/src/org/chromium/components/segmentation_platform/ClassificationResult.java",
-  "+components/segmentation_platform/public/android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
-]

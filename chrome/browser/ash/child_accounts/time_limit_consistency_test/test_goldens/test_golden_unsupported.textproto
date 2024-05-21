@@ -1,6 +1,0 @@
-supported_platforms: ANDROID
-cases {
-  current_state {
-    time_millis: 43
-  }
-}

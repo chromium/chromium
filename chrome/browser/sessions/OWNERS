@@ -1,5 +1,0 @@
-sky@chromium.org
-
-per-file session_data_*=dullweber@chromium.org
-per-file better_session_restore_browsertest.cc=dullweber@chromium.org
-per-file session_restore*chromeos*=xiyuan@chromium.org

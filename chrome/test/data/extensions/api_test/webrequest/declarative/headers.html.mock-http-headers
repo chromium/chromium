@@ -1,7 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: text/plain; UTF-8
-Custom-Header: custom/value
-Custom-Header-B: valueA
-Custom-Header-B: valueB
-Custom-Header-C: valueC, valueD
-Custom-Header-D:

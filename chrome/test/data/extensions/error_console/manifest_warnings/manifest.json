@@ -1,9 +1,0 @@
-{
-  "name": "Error Console Manifest Warnings Test",
-  "manifest_version": 3,
-  "version": "1.1",
-  "not_a_real_key": "not_a_real_value",
-  "permissions": [
-    "tabs", "not_a_real_permission"
-  ]
-}

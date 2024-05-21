@@ -1,9 +1,0 @@
-<feed>
-  <title>MyFeed2</title> 
-
-  <entry> 
-    <title>My item title1</title> 
-    <link rel="alternate" type="text/html" href="http://www.google.com" /> 
-    <summary>This is a summary.</summary> 
-  </entry> 
-</feed> 

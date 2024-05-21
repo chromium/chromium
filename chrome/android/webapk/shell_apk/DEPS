@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/android/webapk/libs/common",
-  "+components/webapk/android/libs/common",
-]

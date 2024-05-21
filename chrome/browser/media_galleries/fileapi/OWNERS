@@ -1,3 +1,0 @@
-# The fileapi owners may be the best reviewers for generic fileapi changes,
-# otherwise look at ../OWNERS.
-file://storage/browser/file_system/OWNERS

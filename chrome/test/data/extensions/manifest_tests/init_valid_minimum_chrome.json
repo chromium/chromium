@@ -1,8 +1,0 @@
-{
-   "minimum_chrome_version": "1.0",
-   "manifest_version": 2,
-   "name": "my extension",
-   "options_page": "options.html",
-   "page_actions": [  ],
-   "version": "1.0.0.0"
-}

@@ -1,8 +1,0 @@
-include_rules = [
-  # No inclusion of WebKit from the browser, other than the ones in
-  # WebKit/public/common, or the ones that are strictly enum/POD,
-  # header-only types, and some selected common code.
-  "-third_party/blink",
-  "+third_party/blink/public/common",
-  "+components/client_hints/common/switches.h",
-]

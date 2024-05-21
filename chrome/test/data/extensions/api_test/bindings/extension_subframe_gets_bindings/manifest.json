@@ -1,9 +1,0 @@
-{
-  "name": "Extension subframe gets bindings",
-  "manifest_version": 2,
-  "permissions": ["tabs"],
-  "web_accessible_resources": [
-    "page.html"
-  ],
-  "version": "1"
-}

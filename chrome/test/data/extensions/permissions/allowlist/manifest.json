@@ -1,6 +1,0 @@
-{
-  "name": "extensions.permissions.whitelist",
-  "version": "1",
-  "manifest_version": 2,
-  "permissions": ["terminalPrivate"]
-}

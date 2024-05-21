@@ -1,7 +1,0 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-This deps brings install Chrome test files into an image. This includes all
-resource and test servers for HTTP and FTP. Tests that depend
-on chrome_test should add this as a dep in the setup.

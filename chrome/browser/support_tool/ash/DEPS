@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "shill_data_collector\.cc": [
-    "+dbus/object_path.h",
-  ],
-}

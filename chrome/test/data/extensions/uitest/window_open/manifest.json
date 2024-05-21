@@ -1,8 +1,0 @@
-{
-  "version": "1.0.0.0",
-  "manifest_version": 2,
-  "name": "window.open test",
-  "description": "An extension for an extension UITest.",
-  "permissions": ["tabs"],
-  "web_accessible_resources": ["newtab.html"]
-}

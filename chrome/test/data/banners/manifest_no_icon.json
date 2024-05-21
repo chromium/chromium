@@ -1,6 +1,0 @@
-{
-  "name": "Manifest test app",
-  "start_url": "manifest_test_page.html",
-  "display": "standalone",
-  "orientation": "landscape"
-}

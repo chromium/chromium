@@ -1,5 +1,0 @@
-specific_include_rules = {
-  ".*_[a-z]*test\.cc": [
-    "+mojo/core/embedder",
-  ],
-}

@@ -1,4 +1,0 @@
-olesiamarukhno@google.com
-file://components/omnibox/OWNERS
-
-per-file intent_chip_button_browsertest.cc=file://chrome/browser/apps/intent_helper/OWNERS

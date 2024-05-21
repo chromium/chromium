@@ -1,7 +1,0 @@
-<template is="dom-repeat" items="[[labels]]">
-  <cr-chip selected="[[item.active]]" disabled="[[disabled]]"
-      on-click="onLabelClick">
-    <iron-icon icon="[[getLabelIcon(item, item.active)]]"></iron-icon>
-    [[item.label]]
-  </cr-chip>
-</template>

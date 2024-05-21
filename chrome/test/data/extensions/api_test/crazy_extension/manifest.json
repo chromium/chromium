@@ -1,7 +1,0 @@
-{
-  "name": "Crazy extension",
-  "description": "Extension that does crazy things. Meaningful results usually just mean a lack of crashing.",
-  "version": "1.0",
-  "manifest_version": 2,
-  "background": {"scripts": ["background.js"]}
-}

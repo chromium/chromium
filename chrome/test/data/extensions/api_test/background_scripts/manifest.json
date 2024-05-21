@@ -1,9 +1,0 @@
-{
-  "name": "Background Scripts Test",
-  "version": "1",
-  "manifest_version": 2,
-  "description": "Test functionality of the background.scripts key",
-  "background": {
-    "scripts": ["a.js", "b.js"]
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "name": "MEI Preload", 
-  "icons": {}, 
-  "version": "1.0.7.1652906823", 
-  "manifest_version": 2, 
-  "update_url": "https://clients2.google.com/service/update2/crx", 
-  "description": "Contains preloaded data for Media Engagement"
-}

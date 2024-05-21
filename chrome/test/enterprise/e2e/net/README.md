@@ -1,1 +1,0 @@
-New directory holding enterprise networking tests

@@ -1,6 +1,0 @@
-buganizer_public {
-  component_id: 1252893  # ChromeOS Public Tracker > Enterprise & Edu > Identity > Active Directory
-}
-buganizer {
-  component_id: 1253670
-}

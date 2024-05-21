@@ -1,9 +1,0 @@
-{
-  "name": "websockets tests",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "Sanity check that WebSockets work for extensions. The majority of this is implemented (and tested) in WebKit, but we have a sanity test here just to make sure the integration with Chromium keeps working.",
-  "background": {
-    "scripts": ["test.js"]
-  }
-}

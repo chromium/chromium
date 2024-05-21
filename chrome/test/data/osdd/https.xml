@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-<ShortName>Dictionary.com</ShortName>
-<Description>Look it up at Dictionary.com</Description>
-<Image height="16" width="16" type="image/x-icon">https://cache.lexico.com/g/d/favicon.ico</Image>
-<Url type="text/html" method="get" template="https://dictionary.reference.com/browse/{searchTerms}?r=75"/>
-</OpenSearchDescription>

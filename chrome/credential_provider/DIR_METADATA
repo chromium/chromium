@@ -1,6 +1,0 @@
-monorail: {
-  component: "Enterprise>CredentialProvider"
-}
-buganizer_public: {
-  component_id: 1456933
-}

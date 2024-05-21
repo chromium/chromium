@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/browser/test_dummy",
-  "-chrome/browser/test_dummy/internal",
-]

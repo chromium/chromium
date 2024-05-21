@@ -1,6 +1,0 @@
-monorail: {
-  component: "Platform>Apps>SystemWebApps"
-}
-buganizer_public: {
-  component_id: 1456919
-}

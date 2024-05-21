@@ -1,9 +1,0 @@
-{
-  "description": "Extension which has just a background page",
-  "name": "background_page",
-  "background": {
-    "page": "background.html"
-  },
-  "manifest_version": 2,
-  "version": "0.1"
-}

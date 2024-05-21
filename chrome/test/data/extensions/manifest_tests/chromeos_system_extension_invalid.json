@@ -1,6 +1,0 @@
-{
-    "name": "Invalid test chromeos extension",
-    "version": "1.0",
-    "manifest_version": 3,
-    "chromeos_system_extension": "true"
-}

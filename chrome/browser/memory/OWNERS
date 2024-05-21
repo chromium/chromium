@@ -1,6 +1,0 @@
-file://chrome/browser/resource_coordinator/OWNERS
-
-# OOM and memory kills logging
-per-file memory_kills_*=vovoy@chromium.org
-per-file oom_kills_monitor*=vovoy@chromium.org
-per-file oom_memory_details.*=vovoy@chromium.org

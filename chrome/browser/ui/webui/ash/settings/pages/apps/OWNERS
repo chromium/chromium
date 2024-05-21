@@ -1,3 +1,0 @@
-file://chrome/browser/ui/webui/app_management/OWNERS
-
-per-file app_parental_controls_*=file:///ash/child_accounts/OWNERS

@@ -1,8 +1,0 @@
-include_rules = [
-  "+chrome/android",
-  "+chrome/browser/ui/android/favicon/java",
-  "+components/browser_ui/bottomsheet/android",
-  "+components/favicon/android",
-  "+components/device_reauth/device_authenticator.h",
-  "+components/device_reauth/mock_device_authenticator.h",
-]

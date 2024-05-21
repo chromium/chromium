@@ -1,9 +1,0 @@
-{
-  "type": "object",
-  "properties": {
-    "constant-policy": { "type": "string" },
-    "changes-policy": { "type": "string" },
-    "deleted-policy": { "type": "string" },
-    "new-policy": { "type": "string" }
-  }
-}

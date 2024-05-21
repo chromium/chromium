@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE translationbundle>
-<translationbundle lang="ar">
-<translation id="IDS_FIXED_FONT_FAMILY">Courier New</translation>
-<translation id="IDS_SERIF_FONT_FAMILY">Times New Roman</translation>
-<translation id="IDS_SANS_SERIF_FONT_FAMILY">Arial</translation>
-<translation id="IDS_MINIMUM_FONT_SIZE">10</translation>
-<translation id="IDS_MINIMUM_LOGICAL_FONT_SIZE">10</translation>
-</translationbundle>

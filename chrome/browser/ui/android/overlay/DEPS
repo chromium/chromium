@@ -1,4 +1,0 @@
-include_rules = [
-  "+cc/slim",
-  "+components/thin_webview",
-]

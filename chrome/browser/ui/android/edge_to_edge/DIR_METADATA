@@ -1,8 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>EdgeToEdge"
-}
-team_email: "edge-to-edge@chromium.org"
-os: ANDROID
-buganizer_public: {
-  component_id: 1456116
-}

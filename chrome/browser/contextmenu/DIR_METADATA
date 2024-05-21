@@ -1,8 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>ContextMenu"
-}
-team_email: "clank-modularization@chromium.org"
-os: ANDROID
-buganizer_public: {
-  component_id: 1457551
-}

@@ -1,4 +1,0 @@
-HTTP/1.0 200 OK
-Content-Type: text/csv
-Content-Disposition: inline; filename=ü
-ü: value

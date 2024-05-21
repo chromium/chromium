@@ -1,9 +1,0 @@
-{
-  "name": "bindings/unavailable_bindings_never_registered",
-  "manifest_version": 2,
-  "version": "1",
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "optional_permissions": ["storage"]
-}

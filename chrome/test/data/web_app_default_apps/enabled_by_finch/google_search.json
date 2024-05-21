@@ -1,7 +1,0 @@
-{
-  "app_url": "https://google.com",
-  "create_shortcuts": true,
-  "feature_name": "test_feature_name",
-  "launch_container": "tab",
-  "user_type": ["unmanaged"]
-}

@@ -1,7 +1,0 @@
-{
-  "program": {
-    "portable": {
-      "pnacl-translate": {"url": "non_existent_cors.pexe"}
-    }
-  }
-}

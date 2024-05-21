@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillProvider.java"
-]

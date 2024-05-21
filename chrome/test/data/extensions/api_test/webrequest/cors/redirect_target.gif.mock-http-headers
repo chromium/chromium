@@ -1,9 +1,0 @@
-HTTP/1.1 200 OK
-Content-type: image/gif
-X-Comment: Origin is null because the redirect target is on a different origin/
-X-Comment: See "CORS 7.1.7 Generic Cross-Origin Request Algorithms,"
-X-Comment: http://www.w3.org/TR/cors/#redirect-steps
-X-Comment: "If the request URL origin is not same origin with the original URL origin, set
-X-Comment: source origin to a globally unique identifier (becomes "null" when transmitted)."
-Access-Control-Allow-Origin: null
-Access-Control-Allow-Credentials: true

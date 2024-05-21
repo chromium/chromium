@@ -1,3 +1,0 @@
-include_rules = [
-    "+components/web_package/signed_web_bundles",
-]

@@ -1,7 +1,0 @@
-{
-  "name": "unpacked extension",
-  "description": "this is an unpacked extension with a key in it",
-  "version": "1",
-  "manifest_version": 2,
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoq+cJMuoIaoL2hx//QoIeHnNkXLAEu3IJGcLpM95qbmw9VnAplFI0tpSv4IpuJ1DPPsdsEMhONu1mPhK9xd3BHCtzqXRfRsnx/uOap4NTcUimxiUH3uuX9xkCNWO8EihdV0atnrKROhhnyIxmhgKmKfAYLheOrSGSXP0A4SqaBQIDAQAB"
-}

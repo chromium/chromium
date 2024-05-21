@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "multi_profile_support\.cc": [
-    "+components/app_restore/full_restore_utils.h",
-  ],
-}

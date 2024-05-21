@@ -1,5 +1,0 @@
-specific_include_rules = {
-  'switch_access_handler.cc': [
-    "+ash/accessibility/accessibility_controller.h",
-  ]
-}

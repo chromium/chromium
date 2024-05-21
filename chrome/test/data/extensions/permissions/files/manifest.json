@@ -1,8 +1,0 @@
-{
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqCLtPnfLWFJIAROhNCb32PzIOz3yKvIUfrBaMkwSPLMZrwpAAraPo7FUeTYz7eBjtTnJ9wn7npqugbuL1ZkzcppMYMsEWAHa4TIgdQr8EPRoaLcqQ5KzCfX4i6PoEy4tKdBwF1igEHoJOzIRuVgMKsifGz1UhZu4dR58lkKw0ceyPe2KU+CG9HP5CPnLo3/tM4Dz6sJxu5xk/Ce4Q9hb+ev59l2vIgNjx6T/wOFnbQcCS0CxzXjD/6oP5eUGCZPoWvpArrc7EhO+LDlQfE8T2G6rQK0FRxPJXYZPabLlgKr9sPhoJq3pSTvpwNacXDbWdlb+BuDWZc7229PUqp38nwIDAQAB",
-  "description": "Extension with file permission, extension ID bdkapipdccfifhdghmblnenbbncfcpid",
-  "name": "file access extension",
-  "version": "1",
-  "manifest_version": 2,
-  "permissions": ["file:///*"]
-}

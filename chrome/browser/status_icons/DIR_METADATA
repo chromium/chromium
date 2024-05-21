@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Shell>StatusArea"
-}
-buganizer_public: {
-  component_id: 1457081
-}

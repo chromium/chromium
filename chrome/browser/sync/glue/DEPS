@@ -1,4 +1,0 @@
-include_rules = [
-  "-components/sync/engine",
-  "-components/sync/sessions",
-]

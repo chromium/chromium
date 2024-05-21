@@ -1,9 +1,0 @@
-include_rules = [
-  "+ash/shell.h",
-  "+components/webauthn/android",
-  "+components/externalauth/android",
-  "+device/fido",
-  # EnclaveManager speaks CBOR to the passkeys enclave, which is a trustworth
-  # entity authenticated via the WebPKI and a public key baked into Chrome.
-  "+components/cbor",
-]

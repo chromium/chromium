@@ -1,9 +1,0 @@
-include_rules = [
-  # This folder should not depend on specific platform implementations.
-  # This restriction helps in moving files here since historically offline_pages
-  # were android-only and thus accumulated many unnecessary dependencies on
-  # Android. OS-specific subfolders should have their own DEPS enabling specific
-  # dependencies.
-  "-base/android",
-  "-chrome/browser/offline_pages/android",
-]

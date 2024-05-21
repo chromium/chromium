@@ -1,8 +1,0 @@
-{
-  "name": "background-only messaging",
-  "manifest_version": 2,
-  "version": "1",
-  "background": {
-    "scripts": ["test.js"]
-  }
-}

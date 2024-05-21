@@ -1,5 +1,0 @@
-# While the overall structure of MHTML always uses CRLF, the MHTML parts
-# that use binary encoding will preserve their original line endings
-# (i.e. LF in case of the file below).  We tell git to treat these files
-# as "binary" to preserve this weird mixture of CRLF and LF line endings.
-*.mhtml binary

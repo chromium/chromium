@@ -1,9 +1,0 @@
-{
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuUZGKCDbff6IRaxa4Pue7PPkxwPaNhGT3JEqppEsNWFjM80imEdqMbf3lrWqEfaHgaNku7nlpwPO1mu3/4Hr+XdNa5MhfnOnuPee4hyTLwOs3Vzz81wpbdzUxZSi2OmqMyI5oTaBYICfNHLwcuc65N5dbt6WKGeKgTpp4v7j7zwIDAQAB",
-  "manifest_version": 2,
-  "version": "1.0.0.0",
-  "name": "1 content script",
-  "content_scripts": [
-    { "matches": ["file://*"], "js": ["script.js"] }
-  ]
-}

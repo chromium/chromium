@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/ChromeColors.java",
-  "+components/paint_preview/browser",
-  "+components/paint_preview/common",
-  "+components/paint_preview/player",
-  "+components/paint_preview/public",
-  "+components/services/paint_preview_compositor/public/mojom",
-  "+content/public/android/java/src/org/chromium/content_public/browser",
-]

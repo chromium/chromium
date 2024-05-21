@@ -1,8 +1,0 @@
-file://components/services/app_service/OWNERS
-
-# For Web Applications system:
-per-file browser_*=alexbn@chromium.org
-per-file instance_registry_updater.*=alexbn@chromium.org
-
-# For policy_id util:
-per-file policy_util*=greengrape@google.com

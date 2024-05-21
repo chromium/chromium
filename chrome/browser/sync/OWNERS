@@ -1,6 +1,0 @@
-file://components/sync/OWNERS
-
-per-file test/integration/*webauthn*=file://device/fido/OWNERS
-per-file test/integration/*web_app*=file://chrome/browser/web_applications/OWNERS
-per-file test/integration/apps_helper*=file://chrome/browser/web_applications/OWNERS
-per-file wifi_configuration*=file://chromeos/ash/components/sync_wifi/OWNERS

@@ -1,6 +1,0 @@
-include_rules = [
-  "+chrome/browser",
-  "+components/crash",
-  "+components/version_info",
-  "+third_party/re2",
-]

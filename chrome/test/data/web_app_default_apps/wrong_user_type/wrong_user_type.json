@@ -1,5 +1,0 @@
-{
-  "app_url": "https://events.google.com/io2016/?utm_source=web_app_manifest",
-  "launch_container": "window",
-  "user_type": ["unmanaged", "and_wrong_user_type"]
-}

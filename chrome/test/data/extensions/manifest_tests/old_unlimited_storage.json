@@ -1,6 +1,0 @@
-{
-   "name": "test",
-   "manifest_version": 2,
-   "permissions": [ "unlimited_storage" ],
-   "version": "0.1"
-}

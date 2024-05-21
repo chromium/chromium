@@ -1,3 +1,0 @@
-file://services/device/nfc/OWNERS
-
-per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS

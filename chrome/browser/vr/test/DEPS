@@ -1,5 +1,0 @@
-include_rules = [
-  "+device/vr/test/test_hook.h",
-  "+device/vr/windows/d3d11_device_helpers.h",
-  "+mojo/core/embedder",
-]

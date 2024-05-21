@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/performance_manager/persistence/site_data",
-]

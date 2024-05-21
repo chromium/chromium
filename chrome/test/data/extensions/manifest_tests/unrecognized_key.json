@@ -1,6 +1,0 @@
-{
-  "name": "warning on unrecognized key",
-  "version": "1",
-  "manifest_version": 2,
-  "unrecognized_key_1": 3
-}

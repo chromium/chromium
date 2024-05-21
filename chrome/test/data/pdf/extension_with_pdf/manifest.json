@@ -1,6 +1,0 @@
-{
-  "description": "Test extension with a PDF resource.",
-  "manifest_version": 3,
-  "name": "With PDF",
-  "version": "0.1"
-}

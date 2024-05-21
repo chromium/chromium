@@ -1,7 +1,0 @@
-monorail: {
-  component: "Platform>Apps>Foundation"
-}
-team_email: "chromeos-apps-foundation-team@google.com"
-buganizer_public: {
-  component_id: 1456779
-}

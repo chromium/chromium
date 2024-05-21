@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/favicon_base",
-  "+components/ntp_tiles",
-]

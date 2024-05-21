@@ -1,3 +1,0 @@
-file://chrome/browser/ui/android/toolbar/OWNERS
-
-per-file .../StartSurfaceToolbarMediatorUnitTest.java=file://chrome/android/features/start_surface/OWNERS

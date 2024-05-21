@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<p>This page fetches some resources that take 10+ seconds to load.</p>
-<script>
-// Kick some resource loads to prevent FirstMeaningfulPaint network-idle.
-var request1 = fetch('/slow?10');
-var request2 = fetch('/slow?11');
-var request3 = fetch('/slow?12');
-</script>

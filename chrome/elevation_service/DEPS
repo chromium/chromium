@@ -1,5 +1,0 @@
-include_rules = [
-  "+chrome/install_static",
-  "+components/crx_file",
-  "+third_party/zlib",
-]

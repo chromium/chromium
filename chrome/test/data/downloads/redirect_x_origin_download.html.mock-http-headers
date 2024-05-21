@@ -1,2 +1,0 @@
-HTTP/1.1 302 Moved
-Location: https://www.a.test:{{PORT}}/downloads/empty.bin

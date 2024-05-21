@@ -1,9 +1,0 @@
-{
-  "name": "Using restricted APIs",
-  "description": "An app using forbidden window apis",
-  "manifest_version": 2,
-  "version": "1",
-  "app": {
-    "background": { "scripts": ["background.js"] }
-  }
-}

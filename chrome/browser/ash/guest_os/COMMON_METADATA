@@ -1,9 +1,0 @@
-# Please use buganizer to file bugs.
-# Previous monorail components have been migrated to buganizer.
-buganizer: {
-  component_id: 658562   # ChromeOS > Software > Guest OS
-}
-buganizer_public: {
-  component_id: 1161264  # Chrome OS Public Tracker > Core Systems > Virtualization > Guests
-}
-team_email: "clumptini@google.com"

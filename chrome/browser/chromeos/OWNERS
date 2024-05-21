@@ -1,7 +1,0 @@
-# This directory is for shared code between Ash and Lacros. Most of the
-# ChromeOS code lives in chrome/browser/ash/, hence, share OWNERS.
-file://chrome/browser/ash/OWNERS
-
-# This is for the common case of adding or renaming files. If you're doing
-# structural changes, use usual OWNERS rules.
-per-file BUILD.gn=*

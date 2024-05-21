@@ -1,3 +1,0 @@
-include_rules = [
-  "+chrome/services/system_signals/public/cpp/browser",
-]

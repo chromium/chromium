@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromeos",
-
-  "+third_party/cros_system_api",
-]

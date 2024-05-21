@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/device_signals/core/common",
-]

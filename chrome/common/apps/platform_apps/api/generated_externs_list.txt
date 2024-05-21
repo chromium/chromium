@@ -1,4 +1,0 @@
-# All APIs that have their externs generated.
-# TODO(crbug.com/40868715): Remove these as we migrate all consumers towards
-# typescript definitions.
-arc_apps_private.idl

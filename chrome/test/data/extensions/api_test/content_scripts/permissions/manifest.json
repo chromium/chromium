@@ -1,8 +1,0 @@
-{
-  "name": "content_scripts/permissions",
-  "version": "1",
-  "manifest_version": 2,
-  "permissions": ["tabs"],
-  "optional_permissions": ["http://*/*"],
-  "background": { "scripts": ["background.js"], "persistent": true }
-}

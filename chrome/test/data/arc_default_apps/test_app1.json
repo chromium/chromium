@@ -1,7 +1,0 @@
-{
-  "name": "TestApp1",
-  "package_name": "test.app1",
-  "activity": "test.app1.activity",
-  "oem": true,
-  "app_path": "test_app1"
-}

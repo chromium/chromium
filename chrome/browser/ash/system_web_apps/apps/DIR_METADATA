@@ -1,7 +1,0 @@
-monorail: {
-  component: "Platform>Apps>SystemWebApps"
-}
-team_email: "cros-essential-apps-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456919
-}

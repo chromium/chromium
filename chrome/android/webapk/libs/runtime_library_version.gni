@@ -1,8 +1,0 @@
-# Copyright 2016 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Must be incremented whenever the runtime library is updated. The WebAPK
-# re-extracts the runtime library from the Chrome APK when
-# |runtime_library_version| is incremented.
-runtime_library_version = 8

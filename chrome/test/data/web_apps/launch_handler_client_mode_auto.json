@@ -1,8 +1,0 @@
-{
-  "name": "client_mode: auto",
-  "start_url": "basic.html?client_mode=auto",
-  "display": "standalone",
-  "launch_handler": {
-    "client_mode": "auto"
-  }
-}
