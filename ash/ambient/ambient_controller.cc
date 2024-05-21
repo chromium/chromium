@@ -1158,12 +1158,12 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetWidgetName();
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
   params.parent = container;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.delegate = widget_delegate;
   params.visible_on_all_workspaces = true;
 

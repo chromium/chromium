@@ -148,6 +148,7 @@ gfx::Rect ComputeBubbleBounds(aura::Window* root_window,
 views::Widget* CreateBubbleWidget(aura::Window* root_window) {
   views::Widget* widget = new views::Widget();
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "AppListBubble";
   params.parent =

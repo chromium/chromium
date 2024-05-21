@@ -112,9 +112,8 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams init_params(
-        CreateParams(views::Widget::InitParams::TYPE_POPUP));
-    init_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_POPUP));
     init_params.activatable = views::Widget::InitParams::Activatable::kYes;
     widget_->Init(std::move(init_params));
     notification_menu_view_ =

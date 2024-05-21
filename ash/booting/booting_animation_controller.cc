@@ -61,7 +61,9 @@ void BootingAnimationController::Show() {
   }
 
   widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = new views::WidgetDelegate;  // Takes ownership.
   params.delegate->SetOwnedByWidget(true);
   // Allow maximize so the booting container's FillLayoutManager can
@@ -69,7 +71,6 @@ void BootingAnimationController::Show() {
   // fullscreen widgets.
   params.delegate->SetCanMaximize(true);
   params.delegate->SetCanFullscreen(true);
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "BootingAnimationWidget";
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
   // Create the Booting Animation widget on the primary display.
