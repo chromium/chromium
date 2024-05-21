@@ -423,16 +423,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.PanelClosed" enum="DevToolsPanel"
-    expires_after="2024-06-30">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@google.com</owner>
-  <summary>
-    Specified DevTools panel was closed. Fires immediately after closing a panel
-    using the &quot;x&quot; button in the panel title.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.PanelShown" enum="DevToolsPanel"
     expires_after="2024-11-03">
   <owner>yangguo@chromium.org</owner>
