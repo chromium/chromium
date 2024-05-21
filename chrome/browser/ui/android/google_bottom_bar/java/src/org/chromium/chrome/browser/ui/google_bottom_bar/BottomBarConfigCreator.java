@@ -4,6 +4,10 @@
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -11,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
+import org.chromium.ui.UiUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,9 +56,9 @@ public class BottomBarConfigCreator {
      */
     static @Nullable ButtonConfig createButtonConfigFromCustomParams(
             Context context, CustomButtonParams params) {
-        Integer id = getButtonId(params.getId());
-        if (id != null) {
-            return new ButtonConfig(context, id, params);
+        Integer buttonId = getButtonId(params.getId());
+        if (buttonId != null) {
+            return getButtonConfigFromCustomButtonParams(context, buttonId, params);
         }
         return null;
     }
@@ -145,7 +150,7 @@ public class BottomBarConfigCreator {
         for (CustomButtonParams params : customButtonParams) {
             Integer buttonId = getButtonId(params.getId());
             if (buttonId == id) {
-                return new ButtonConfig(mContext, buttonId, params);
+                return getButtonConfigFromCustomButtonParams(mContext, buttonId, params);
             }
         }
         return null;
@@ -171,22 +176,39 @@ public class BottomBarConfigCreator {
         return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 
-    /**
-     * {@link ButtonId.SAVE} and {@link ButtonId.ADD_NOTES} already receive all button configuration
-     * from the client, so they should never reach this switch statement.
-     *
-     * <p>Create a {@link ButtonConfig} from existing resources. TODO - when the icons and
-     * descriptions are defined in the codebase, update the implementation for each individual
-     * button
-     */
-    private static @Nullable ButtonConfig createButtonConfigFromId(@ButtonId int id) {
+    /** Create default {@link ButtonConfig} for the given ID. */
+    private @Nullable ButtonConfig createButtonConfigFromId(@ButtonId int id) {
         switch (id) {
-            case ButtonId.PIH_BASIC,
-                    ButtonId.SHARE,
-                    ButtonId.REFRESH,
-                    ButtonId.PIH_COLORED,
-                    ButtonId.PIH_EXPANDED:
-                return new ButtonConfig(id, null, "");
+            case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED:
+                return new ButtonConfig(
+                        id,
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.page_insights_icon,
+                                R.color.default_icon_color_baseline),
+                        mContext.getString(
+                                R.string.google_bottom_bar_page_insights_button_description),
+                        /* pendingIntent= */ null);
+            case ButtonId.SAVE:
+                // If save button is not created from embedder-provided CustomButtonParams, provide
+                // disabled save
+                // button instead
+                return new ButtonConfig(
+                        id,
+                        UiUtils.getTintedDrawable(
+                                mContext, R.drawable.bookmark, R.color.default_icon_color_disabled),
+                        mContext.getString(
+                                R.string.google_bottom_bar_save_disabled_button_description),
+                        /* pendingIntent= */ null);
+            case ButtonId.SHARE:
+                return new ButtonConfig(
+                        id,
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.ic_share_white_24dp,
+                                R.color.default_icon_color_baseline),
+                        mContext.getString(R.string.google_bottom_bar_share_button_description),
+                        /* pendingIntent= */ null);
             default:
                 {
                     Log.e(TAG, "The ID is not supported");
@@ -228,5 +250,32 @@ public class BottomBarConfigCreator {
      */
     private static boolean isValidButtonId(int code) {
         return code > 0 && code <= ButtonId.MAX_BUTTON_ID;
+    }
+
+    private static Drawable getScaledAndTintedIcon(
+            Context context, Drawable drawable, int tintColorId) {
+        if (drawable instanceof BitmapDrawable) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            Resources resource = context.getResources();
+            int dimen = resource.getDimensionPixelSize(R.dimen.google_bottom_bar_button_image_size);
+            BitmapDrawable bitmapDrawable =
+                    new BitmapDrawable(
+                            context.getResources(),
+                            Bitmap.createScaledBitmap(bitmap, dimen, dimen, true));
+            bitmapDrawable.setTint(context.getColor(tintColorId));
+            return bitmapDrawable;
+        }
+        drawable.setTint(context.getColor(tintColorId));
+        return drawable;
+    }
+
+    private static ButtonConfig getButtonConfigFromCustomButtonParams(
+            Context context, int buttonId, CustomButtonParams params) {
+        return new ButtonConfig(
+                buttonId,
+                getScaledAndTintedIcon(
+                        context, params.getIcon(context), R.color.default_icon_color_baseline),
+                params.getDescription(),
+                params.getPendingIntent());
     }
 }

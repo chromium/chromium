@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCr
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,11 +48,12 @@ public class BottomBarConfigCreatorTest {
     @Mock private CustomButtonParams mCustomButtonParams;
 
     private BottomBarConfigCreator mConfigCreator;
+    private Context mContext;
 
     @Before
     public void setup() {
-        Context context = ContextUtils.getApplicationContext();
-        mConfigCreator = new BottomBarConfigCreator(context);
+        mContext = ContextUtils.getApplicationContext();
+        mConfigCreator = new BottomBarConfigCreator(mContext);
     }
 
     @Test
@@ -61,7 +63,7 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void noSpotlightParamList_nullSpotlight_correctButtonList() {
-        BottomBarConfig buttonConfig = mConfigCreator.create("0,1,2,5", List.of());
+        BottomBarConfig buttonConfig = mConfigCreator.create("0,1,2,3", List.of());
 
         assertNull(buttonConfig.getSpotlightId());
         assertEquals(3, buttonConfig.getButtonList().size());
@@ -70,7 +72,7 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void withSpotlightParamList_correctSpotlightSet_correctButtonList() {
-        BottomBarConfig buttonConfig = mConfigCreator.create("1,1,2,5", List.of());
+        BottomBarConfig buttonConfig = mConfigCreator.create("1,1,2,3", List.of());
         Integer spotlight = buttonConfig.getSpotlightId();
 
         assertNotNull(spotlight);
@@ -93,26 +95,26 @@ public class BottomBarConfigCreatorTest {
                 List.of(
                         PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES,
                         REFRESH); // PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH
-
+        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
 
-        // ADD_NOTES is not included in the final list
+        // ADD_NOTES and REFRESH are not included in the final list as they are not supported
         BottomBarConfig buttonConfig =
                 mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
-        assertEquals(4, buttonConfig.getButtonList().size());
+        assertEquals(3, buttonConfig.getButtonList().size());
     }
 
     @Test
     public void createButtonConfigList_buttonIdListWithoutCustomParamId() {
-        List<Integer> buttonIdList =
-                List.of(PIH_BASIC, PIH_BASIC, SHARE, REFRESH); // PIH_BASIC, SHARE, REFRESH
+        List<Integer> buttonIdList = List.of(PIH_BASIC, PIH_BASIC, SHARE); // PIH_BASIC, SHARE
 
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
 
         // SAVE is not included in the final list
         BottomBarConfig buttonConfig =
                 mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
-        assertEquals(3, buttonConfig.getButtonList().size());
+        assertEquals(2, buttonConfig.getButtonList().size());
     }
 
     @Test
@@ -123,7 +125,9 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void withCorrectCustomParams_hasCorrectButtonConfig() {
+        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
         var pendingIntent = mock(PendingIntent.class);
         when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
 

@@ -11,5 +11,6 @@ found in the LICENSE file.
   <dimen name="google_bottom_bar_expanded_button_padding_horizontal">10dp</dimen>
   <dimen name="google_bottom_bar_button_padding">12dp</dimen>
   <dimen name="google_bottom_bar_button_size">48dp</dimen>
+  <dimen name="google_bottom_bar_button_image_size">24dp</dimen>
   <dimen name="google_bottom_bar_button_margin_vertical">8dp</dimen>
 </resources>

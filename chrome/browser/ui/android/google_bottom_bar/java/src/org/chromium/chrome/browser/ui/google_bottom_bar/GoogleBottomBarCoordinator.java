@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 
 import java.util.List;
@@ -41,19 +44,22 @@ public class GoogleBottomBarCoordinator {
     /**
      * Constructor.
      *
-     * @param context The associated {@link Context}.
+     * @param activity The associated {@link Activity}.
+     * @param tabProvider Supplier for the current activity tab.
      * @param googleBottomBarIntentParams The encoded button list provided through IntentParams
      * @param customButtonsOnGoogleBottomBar List of {@link CustomButtonParams} provided by the
      *     embedder to be displayed in the Bottom Bar.
      */
     public GoogleBottomBarCoordinator(
-            Context context,
+            Activity activity,
+            Supplier<Tab> tabProvider,
             GoogleBottomBarIntentParams googleBottomBarIntentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
-        mContext = context;
+        mContext = activity;
         mGoogleBottomBarViewCreator =
                 new GoogleBottomBarViewCreator(
-                        context,
+                        activity,
+                        tabProvider,
                         getButtonConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }

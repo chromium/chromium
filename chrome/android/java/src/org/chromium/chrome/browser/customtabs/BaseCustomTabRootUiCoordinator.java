@@ -496,6 +496,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         return new GoogleBottomBarCoordinator(
                 mActivity,
+                mActivityTabProvider,
                 CustomTabsConnection.getInstance()
                         .getGoogleBottomBarIntentParams(intentDataProvider),
                 intentDataProvider.getCustomButtonsOnGoogleBottomBar());

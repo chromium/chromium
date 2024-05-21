@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
@@ -60,18 +59,15 @@ class BottomBarConfig {
 
         private final @Nullable PendingIntent mPendingIntent;
 
-        ButtonConfig(@ButtonId int id, Drawable icon, String description) {
+        ButtonConfig(
+                @ButtonId int id,
+                Drawable icon,
+                String description,
+                @Nullable PendingIntent pendingIntent) {
             mId = id;
             mIcon = icon;
             mDescription = description;
-            mPendingIntent = null;
-        }
-
-        ButtonConfig(Context context, @ButtonId int id, CustomButtonParams params) {
-            mId = id;
-            mIcon = params.getIcon(context);
-            mDescription = params.getDescription();
-            mPendingIntent = params.getPendingIntent();
+            mPendingIntent = pendingIntent;
         }
 
         public @ButtonId int getId() {
