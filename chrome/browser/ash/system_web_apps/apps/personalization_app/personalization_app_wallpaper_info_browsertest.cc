@@ -382,6 +382,8 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
 
+  // Expects asset_id to be empty.
+  EXPECT_FALSE(new_info.asset_id.has_value());
   // Expects unit_id, and variants to be set.
   EXPECT_TRUE(new_info.unit_id.has_value());
   EXPECT_EQ(new_info.variants.size(), 1u);

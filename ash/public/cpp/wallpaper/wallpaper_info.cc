@@ -89,12 +89,13 @@ WallpaperInfo::WallpaperInfo(
                ? WallpaperType::kDaily
                : WallpaperType::kOnline),
       date(base::Time::Now()),
-      asset_id(target_variant.asset_id),
       collection_id(online_wallpaper_params.collection_id),
       unit_id(online_wallpaper_params.unit_id),
       variants(online_wallpaper_params.variants) {
   if (features::IsVersionWallpaperInfoEnabled()) {
     version = GetSupportedVersion(type);
+  } else {
+    asset_id = target_variant.asset_id;
   }
 }
 

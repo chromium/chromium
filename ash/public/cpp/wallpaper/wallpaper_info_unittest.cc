@@ -102,7 +102,7 @@ TEST_F(WallpaperInfoTest, ToAndFromDict) {
   }
 }
 
-TEST_F(WallpaperInfoTest, OnlineWallpaperV1ContainsVersion) {
+TEST_F(WallpaperInfoTest, OnlineWallpapeV1DoesNotContainAssetId) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kVersionedWallpaperInfo);
   OnlineWallpaperParams params = OnlineWallpaperParams(
@@ -119,6 +119,9 @@ TEST_F(WallpaperInfoTest, OnlineWallpaperV1ContainsVersion) {
   std::optional<WallpaperInfo> expected_info = WallpaperInfo::FromDict(dict);
 
   EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
+  EXPECT_FALSE(actual_info.asset_id.has_value());
+  EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
+  EXPECT_FALSE(expected_info->asset_id.has_value());
   EXPECT_TRUE(expected_info->version.IsValid());
   EXPECT_EQ(expected_info->version, GetSupportedVersion(expected_info->type));
 }
