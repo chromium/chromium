@@ -39,7 +39,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -331,8 +330,6 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    // Swipe action fails with espresso 3.2. b/329724184
-    @DisableIf.Build(sdk_is_greater_than = android.os.Build.VERSION_CODES.S)
     public void testPageZoomPreference_zoomSliderUpdatesValue() {
         getPageZoomPref();
         int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
@@ -486,8 +483,6 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    // Swipe action Fails with espresso 3.2. b/329724184
-    @DisableIf.Build(sdk_is_greater_than = android.os.Build.VERSION_CODES.S)
     public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
         getPageZoomPref();
         int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
