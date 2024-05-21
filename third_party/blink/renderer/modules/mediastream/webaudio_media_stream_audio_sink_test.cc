@@ -169,6 +169,7 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   // 1. Source preparation.
   std::unique_ptr<media::AudioBus> source_bus =
       media::AudioBus::Create(source_params_);
+  source_bus->Zero();
 
   // 2. Sink preparation.
 
