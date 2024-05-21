@@ -52,6 +52,7 @@ class CampaignsMatcher {
   bool MatchRetailers(const base::Value::List* retailers) const;
   bool MaybeMatchDemoModeTargeting(const DemoModeTargeting& targeting) const;
   bool MatchMilestone(const DeviceTargeting& targeting) const;
+  bool MatchMilestoneVersion(const DeviceTargeting& targeting) const;
   bool MatchDeviceTargeting(const DeviceTargeting& targeting) const;
   bool MatchRegisteredTime(const std::unique_ptr<TimeWindowTargeting>&
                                registered_time_targeting) const;

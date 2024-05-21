@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -79,6 +81,10 @@ int GetMilestone() {
   return version_info::GetMajorVersionNumberAsInt();
 }
 
+const base::Version& GetVersion() {
+  return version_info::GetVersion();
+}
+
 bool MatchTimeWindow(const base::Time& start_time,
                      const base::Time& end_time,
                      const base::Time& targeted_time) {
@@ -132,6 +138,25 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags) {
   // Campaign is matched if the tag from field trail param matches any of the
   // tag in the targeting criteria.
   return base::Contains(*experiment_tags, exp_tag);
+}
+
+bool MatchVersion(const base::Version& current_version,
+                  std::optional<base::Version> min_version,
+                  std::optional<base::Version> max_version) {
+  if (!current_version.IsValid()) {
+    // Not match if current version is invalid.
+    return false;
+  }
+
+  if (min_version && min_version->CompareTo(current_version) == 1) {
+    return false;
+  }
+
+  if (max_version && max_version->CompareTo(current_version) == -1) {
+    return false;
+  }
+
+  return true;
 }
 
 bool IsCampaignValid(const Campaign* campaign) {
@@ -274,28 +299,9 @@ bool CampaignsMatcher::MatchRetailers(
 
 bool CampaignsMatcher::MatchDemoModeAppVersion(
     const DemoModeTargeting& targeting) const {
-  const auto* min_version = targeting.GetAppMinVersion();
-  const auto* max_version = targeting.GetAppMaxVersion();
-  if (!min_version && !max_version) {
-    // Match if no app version targeting.
-    return true;
-  }
-
-  const auto version = client_->GetDemoModeAppVersion();
-  if (!version.IsValid()) {
-    // Not match if the app version is invalid.
-    return false;
-  }
-
-  if (min_version && version.CompareTo(base::Version(*min_version)) == -1) {
-    return false;
-  }
-
-  if (max_version && version.CompareTo(base::Version(*max_version)) == 1) {
-    return false;
-  }
-
-  return true;
+  return MatchVersion(client_->GetDemoModeAppVersion(),
+                      targeting.GetAppMinVersion(),
+                      targeting.GetAppMaxVersion());
 }
 
 bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
@@ -341,6 +347,12 @@ bool CampaignsMatcher::MatchMilestone(const DeviceTargeting& targeting) const {
   return true;
 }
 
+bool CampaignsMatcher::MatchMilestoneVersion(
+    const DeviceTargeting& targeting) const {
+  return MatchVersion(GetVersion(), targeting.GetMinVersion(),
+                      targeting.GetMaxVersion());
+}
+
 bool CampaignsMatcher::MatchDeviceTargeting(
     const DeviceTargeting& targeting) const {
   if (!targeting.IsValid()) {
@@ -376,7 +388,7 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
-  return MatchMilestone(targeting);
+  return MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
 }
 
 bool CampaignsMatcher::MatchRegisteredTime(

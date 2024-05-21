@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -51,6 +52,8 @@ inline constexpr char kApplicationLocales[] = "locales";
 inline constexpr char kUserLocales[] = "userLocales";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
+inline constexpr char kMinVersion[] = "version.min";
+inline constexpr char kMaxVersion[] = "version.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
 inline constexpr char kRegisteredTime[] = "registeredTime";
 inline constexpr char kDeviceAgeInHours[] = "deviceAgeInHours";
@@ -168,6 +171,18 @@ std::optional<BuiltInVectorIcon> GetBuiltInVectorIconType(
   return static_cast<BuiltInVectorIcon>(built_in_vector_icon_value.value());
 }
 
+std::optional<base::Version> StringToVersion(const std::string* version_value) {
+  if (!version_value) {
+    return std::nullopt;
+  }
+
+  const auto version = base::Version(*version_value);
+  if (!version.IsValid()) {
+    return std::nullopt;
+  }
+  return std::move(version);
+}
+
 }  // namespace
 
 Trigger::Trigger(TriggerType type) : type(type) {}
@@ -282,12 +297,12 @@ const base::Value::List* DemoModeTargeting::GetCountries() const {
   return GetListCriteria(kDemoModeCountries);
 }
 
-const std::string* DemoModeTargeting::GetAppMinVersion() const {
-  return GetStringCriteria(kMinDemoModeAppVersion);
+const std::optional<base::Version> DemoModeTargeting::GetAppMinVersion() const {
+  return StringToVersion(GetStringCriteria(kMinDemoModeAppVersion));
 }
 
-const std::string* DemoModeTargeting::GetAppMaxVersion() const {
-  return GetStringCriteria(kMaxDemoModeAppVersion);
+const std::optional<base::Version> DemoModeTargeting::GetAppMaxVersion() const {
+  return StringToVersion(GetStringCriteria(kMaxDemoModeAppVersion));
 }
 
 const std::optional<bool> DemoModeTargeting::TargetCloudGamingDevice() const {
@@ -318,6 +333,14 @@ const std::optional<int> DeviceTargeting::GetMinMilestone() const {
 
 const std::optional<int> DeviceTargeting::GetMaxMilestone() const {
   return GetIntCriteria(kMaxMilestone);
+}
+
+const std::optional<base::Version> DeviceTargeting::GetMinVersion() const {
+  return StringToVersion(GetStringCriteria(kMinVersion));
+}
+
+const std::optional<base::Version> DeviceTargeting::GetMaxVersion() const {
+  return StringToVersion(GetStringCriteria(kMaxVersion));
 }
 
 const std::optional<bool> DeviceTargeting::GetFeatureAwareDevice() const {

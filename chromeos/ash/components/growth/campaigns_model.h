@@ -15,6 +15,7 @@
 
 namespace base {
 class Time;
+class Version;
 }  // namespace base
 
 namespace gfx {
@@ -190,8 +191,8 @@ class DemoModeTargeting : public TargetingBase {
   const base::Value::List* GetStoreIds() const;
   const base::Value::List* GetRetailers() const;
   const base::Value::List* GetCountries() const;
-  const std::string* GetAppMinVersion() const;
-  const std::string* GetAppMaxVersion() const;
+  const std::optional<base::Version> GetAppMinVersion() const;
+  const std::optional<base::Version> GetAppMaxVersion() const;
   const std::optional<bool> TargetCloudGamingDevice() const;
   const std::optional<bool> TargetFeatureAwareDevice() const;
 };
@@ -259,6 +260,8 @@ class DeviceTargeting : public TargetingBase {
   const base::Value::List* GetUserLocales() const;
   const std::optional<int> GetMinMilestone() const;
   const std::optional<int> GetMaxMilestone() const;
+  const std::optional<base::Version> GetMinVersion() const;
+  const std::optional<base::Version> GetMaxVersion() const;
   const std::optional<bool> GetFeatureAwareDevice() const;
   std::unique_ptr<TimeWindowTargeting> GetRegisteredTime() const;
   const std::unique_ptr<NumberRangeTargeting> GetDeviceAge() const;
