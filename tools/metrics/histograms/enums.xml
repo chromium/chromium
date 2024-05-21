@@ -19172,6 +19172,7 @@ from previous Chrome versions.
   <int value="-933316841" label="enable-permissions-blacklist"/>
   <int value="-932783986" label="UseChromeOSDirectVideoDecoder:enabled"/>
   <int value="-932474660" label="VirtualDesks:enabled"/>
+  <int value="-932317811" label="EwalletPayments:enabled"/>
   <int value="-932261921"
       label="enable-defer-all-script-without-optimization-hints"/>
   <int value="-932164609"
@@ -21062,6 +21063,7 @@ from previous Chrome versions.
   <int value="-91999916" label="SysUiDownloadsIntegrationV2:enabled"/>
   <int value="-91928075" label="PasswordViewPageInSettings:disabled"/>
   <int value="-91767554" label="enable-de-jelly"/>
+  <int value="-91575163" label="PaymentLinkDetection:disabled"/>
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
@@ -21139,6 +21141,7 @@ from previous Chrome versions.
   <int value="-64293934" label="AccessibilityAXModes:disabled"/>
   <int value="-63936199"
       label="PolicyIndicationForManagedDefaultSearch:enabled"/>
+  <int value="-63641059" label="AutofillSyncEwalletAccounts:disabled"/>
   <int value="-63207112" label="NtpSingleRowShortcuts:disabled"/>
   <int value="-60692320" label="PrefBasedDataCollectionConsentHelper:disabled"/>
   <int value="-60219461" label="BluetoothFlossTelephony:enabled"/>
@@ -21566,6 +21569,7 @@ from previous Chrome versions.
   <int value="123008918" label="EnableProtoApiForClassifyUrl:disabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
+  <int value="125403592" label="PaymentLinkDetection:enabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
   <int value="126341641" label="EnableDrDcVulkan:enabled"/>
@@ -23094,6 +23098,7 @@ from previous Chrome versions.
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>
   <int value="789654228" label="ExternalNavigationDebugLogs:disabled"/>
+  <int value="789778745" label="EwalletPayments:disabled"/>
   <int value="790411499" label="PageInfoStoreInfo:disabled"/>
   <int value="791541863" label="NtpPhotosModule:disabled"/>
   <int value="791979491"
@@ -25162,6 +25167,7 @@ from previous Chrome versions.
   <int value="1699182601" label="DockedMagnifier:disabled"/>
   <int value="1699290689" label="CssSelectorFragmentAnchor:enabled"/>
   <int value="1699499166" label="MediaRemotingWithoutFullscreen:disabled"/>
+  <int value="1699610507" label="AutofillSyncEwalletAccounts:enabled"/>
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
   <int value="1700181145" label="PowerBookmarksSidePanel:enabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>

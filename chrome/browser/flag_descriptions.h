@@ -391,6 +391,11 @@ extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillSyncEwalletAccountsName[];
+extern const char kAutofillSyncEwalletAccountsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAutofillVirtualViewStructureAndroidName[];
 extern const char kAutofillVirtualViewStructureAndroidDescription[];
 
@@ -2457,6 +2462,9 @@ extern const char kEnablePixDetectionDescription[];
 extern const char kEnablePixDetectionOnDomContentLoadedName[];
 extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
 
+extern const char kEwalletPaymentsName[];
+extern const char kEwalletPaymentsDescription[];
+
 extern const char kExternalNavigationDebugLogsName[];
 extern const char kExternalNavigationDebugLogsDescription[];
 
@@ -2575,6 +2583,9 @@ extern const char kOmniboxShortcutsAndroidDescription[];
 
 extern const char kPasswordSuggestionBottomSheetV2Name[];
 extern const char kPasswordSuggestionBottomSheetV2Description[];
+
+extern const char kPaymentLinkDetectionName[];
+extern const char kPaymentLinkDetectionDescription[];
 
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];

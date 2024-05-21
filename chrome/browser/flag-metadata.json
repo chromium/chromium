@@ -853,6 +853,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "autofill-sync-ewallet-accounts",
+    "owners": ["junhuihe@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-update-chrome-settings-link-to-gpay-web",
     "owners": ["averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130
@@ -4284,6 +4289,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ewallet-payments",
+    "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "exo-gamepad-vibration",
     "owners": [ "prabirmsp@chromium.org" ],
     "expiry_milestone": 90
@@ -6800,6 +6810,11 @@
     "name": "password-suggestion-bottom-sheet-v2",
     "owners": ["atsvirchkova@google.com", "vasilii@chromium.org", "derinel@google.com"],
     "expiry_milestone": 128
+  },
+  {
+    "name": "payment-link-detection",
+    "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 135
   },
   {
     "name": "pcie-billboard-notification",

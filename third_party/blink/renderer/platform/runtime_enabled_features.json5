@@ -2947,6 +2947,11 @@
       depends_on: ["PaymentApp"],
     },
     {
+      // https://chromestatus.com/feature/5198846820352000
+      name: "PaymentLinkDetection",
+      status: "experimental",
+    },
+    {
       name: "PaymentMethodChangeEvent",
       depends_on: ["PaymentRequest"],
       status: "stable",

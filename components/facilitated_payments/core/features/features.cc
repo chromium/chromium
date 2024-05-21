@@ -23,4 +23,12 @@ BASE_FEATURE(kEnablePixPayments,
              "EnablePixPayments",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Chrome will offer to pay with eWallet accounts if a payment
+// link is detected.
+BASE_FEATURE(kEwalletPayments,
+             "EwalletPayments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace payments::facilitated

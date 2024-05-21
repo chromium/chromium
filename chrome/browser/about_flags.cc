@@ -11388,6 +11388,21 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kConchKey, "")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-sync-ewallet-accounts",
+     flag_descriptions::kAutofillSyncEwalletAccountsName,
+     flag_descriptions::kAutofillSyncEwalletAccountsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillSyncEwalletAccounts)},
+
+    {"ewallet-payments", flag_descriptions::kEwalletPaymentsName,
+     flag_descriptions::kEwalletPaymentsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::facilitated::kEwalletPayments)},
+
+    {"payment-link-detection", flag_descriptions::kPaymentLinkDetectionName,
+     flag_descriptions::kPaymentLinkDetectionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kPaymentLinkDetection)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

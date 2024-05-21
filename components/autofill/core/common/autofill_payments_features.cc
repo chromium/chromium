@@ -239,6 +239,14 @@ BASE_FEATURE(kAutofillEnableVirtualCards,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, eWallet accounts are synced from the Google Payments servers
+// and displayed on the payment methods settings page.
+BASE_FEATURE(kAutofillSyncEwalletAccounts,
+             "AutofillSyncEwalletAccounts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
