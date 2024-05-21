@@ -129,6 +129,31 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
   NOTREACHED_NORETURN();
 }
 
+void CheckInputDataTypeForReduce(mojom::Reduce::Kind kind,
+                                 DML_TENSOR_DATA_TYPE data_type) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+    case mojom::Reduce::Kind::kProduct:
+    case mojom::Reduce::Kind::kSum:
+    case mojom::Reduce::Kind::kSumSquare: {
+      CHECK(kDmlFloatDataTypes.contains(data_type) ||
+            data_type == DML_TENSOR_DATA_TYPE_INT32 ||
+            data_type == DML_TENSOR_DATA_TYPE_UINT32);
+      break;
+    }
+    case mojom::Reduce::Kind::kL2:
+    case mojom::Reduce::Kind::kLogSum:
+    case mojom::Reduce::Kind::kLogSumExp:
+    case mojom::Reduce::Kind::kMean: {
+      CHECK(kDmlFloatDataTypes.contains(data_type));
+      break;
+    }
+    case mojom::Reduce::Kind::kMax:
+    case mojom::Reduce::Kind::kMin:
+      break;
+  }
+}
+
 DML_RECURRENT_NETWORK_DIRECTION MojoRecurrentNetworkDirectionToDml(
     mojom::RecurrentNetworkDirection direction) {
   switch (direction) {
@@ -2409,6 +2434,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reduce->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+  CheckInputDataTypeForReduce(reduce->kind, input_tensor_desc.GetDataType());
   uint64_t output_id = reduce->output_operand_id;
   const auto& output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);

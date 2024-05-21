@@ -191,6 +191,13 @@ static constexpr auto kFloatsAndInt32DataTypes =
          CoreML::Specification::MILSpec::DataType::FLOAT32,
          CoreML::Specification::MILSpec::DataType::INT32});
 
+static constexpr auto kFloatsAnd32BitsIntDataTypes =
+    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+        {CoreML::Specification::MILSpec::DataType::FLOAT16,
+         CoreML::Specification::MILSpec::DataType::FLOAT32,
+         CoreML::Specification::MILSpec::DataType::INT32,
+         CoreML::Specification::MILSpec::DataType::UINT32});
+
 // Maps to types defined in
 // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
 enum class BlobDataType : uint32_t {
@@ -2085,46 +2092,58 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
 
-  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        OpKindToString(operation.kind),
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  }
-
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
   switch (operation.kind) {
     case mojom::Reduce::Kind::kL1:
+      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
+          input_operand_info.mil_data_type));
       op->set_type(kOpReduceL1);
       break;
     case mojom::Reduce::Kind::kL2:
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceL2);
       break;
     case mojom::Reduce::Kind::kLogSum:
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceLogSum);
       break;
     case mojom::Reduce::Kind::kLogSumExp:
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceLogSumExp);
       break;
     case mojom::Reduce::Kind::kMax:
       op->set_type(kOpReduceMax);
       break;
     case mojom::Reduce::Kind::kMean:
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceMean);
       break;
     case mojom::Reduce::Kind::kMin:
       op->set_type(kOpReduceMin);
       break;
     case mojom::Reduce::Kind::kProduct:
+      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
+          input_operand_info.mil_data_type));
       op->set_type(kOpReduceProduct);
       break;
     case mojom::Reduce::Kind::kSum:
+      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
+          input_operand_info.mil_data_type));
       op->set_type(kOpReduceSum);
       break;
     case mojom::Reduce::Kind::kSumSquare:
+      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
+          input_operand_info.mil_data_type));
       op->set_type(kOpReduceSumSquare);
       break;
+  }
+
+  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
+        OpKindToString(operation.kind),
+        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
   }
 
   static constexpr char kParamAxes[] = "axes";

@@ -58,6 +58,11 @@ static constexpr auto kFloatDataTypes =
         {mojom::Operand::DataType::kFloat16,
          mojom::Operand::DataType::kFloat32});
 
+static constexpr auto kFloatAnd32BitIntDataTypes =
+    base::MakeFixedFlatSet<mojom::Operand::DataType>(
+        {mojom::Operand::DataType::kFloat16, mojom::Operand::DataType::kFloat32,
+         mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kUint32});
+
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
 base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
@@ -1558,30 +1563,38 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       SerializeTensorWithBuffer<int32_t>(signed_axes, axes_tensor_shape);
 
   ::tflite::BuiltinOperator operator_code;
+  const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
   switch (reduce.kind) {
     case mojom::Reduce::Kind::kMax:
       operator_code = ::tflite::BuiltinOperator_REDUCE_MAX;
       break;
     case mojom::Reduce::Kind::kMean:
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_MEAN;
       break;
     case mojom::Reduce::Kind::kMin:
       operator_code = ::tflite::BuiltinOperator_REDUCE_MIN;
       break;
     case mojom::Reduce::Kind::kProduct:
+      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_REDUCE_PROD;
       break;
     case mojom::Reduce::Kind::kSum:
+      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_SUM;
       break;
     case mojom::Reduce::Kind::kLogSum:
     // TODO(crbug.com/333952108): Support reduceLogSum by decomposition.
     case mojom::Reduce::Kind::kLogSumExp:
     // TODO(crbug.com/333952108): Support reduceLogSumExp by decomposition.
+    case mojom::Reduce::Kind::kL2:
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
+      return base::unexpected(OpKindToString(reduce.kind) +
+                              " is not implemented.");
     case mojom::Reduce::Kind::kSumSquare:
     // TODO(crbug.com/333952108): Support reduceSumSquare by decomposition.
     case mojom::Reduce::Kind::kL1:
-    case mojom::Reduce::Kind::kL2:
+      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
       return base::unexpected(OpKindToString(reduce.kind) +
                               " is not implemented.");
   }

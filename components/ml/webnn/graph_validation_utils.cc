@@ -1958,12 +1958,33 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> axes,
     bool keep_dimensions) {
-  if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
-      kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
-    if (!IsFloatingPointType(input.data_type)) {
-      return base::unexpected(
-          "The input data type must be one of the floating point types.");
+  switch (kind) {
+    case ReduceKind::kL2:
+    case ReduceKind::kMean:
+    case ReduceKind::kLogSum:
+    case ReduceKind::kLogSumExp: {
+      if (!IsFloatingPointType(input.data_type)) {
+        return base::unexpected(
+            "The input data type must be one of the floating point types.");
+      }
+      break;
     }
+    case ReduceKind::kL1:
+    case ReduceKind::kProduct:
+    case ReduceKind::kSum:
+    case ReduceKind::kSumSquare: {
+      if (!IsFloatingPointType(input.data_type) &&
+          input.data_type != Operand::DataType::kInt32 &&
+          input.data_type != Operand::DataType::kUint32) {
+        return base::unexpected(
+            "The input data type must be one of {float32, float16, int32, "
+            "uint32}.");
+      }
+      break;
+    }
+    case ReduceKind::kMax:
+    case ReduceKind::kMin:
+      break;
   }
 
   auto validated_output_shape =

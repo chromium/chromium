@@ -5486,6 +5486,18 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
+    // Test reduceL1 operator with input_data_type = int32.
+    ReduceTester{.kind = mojom::Reduce::Kind::kL1,
+                 .input = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 3, 4, 5}},
+                 .axes = {0, 2},
+                 .keep_dimensions = true,
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 3, 1, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
     // Test reduce operator with axes = {2} and keep_dimensions = false.
     ReduceTester{.kind = mojom::Reduce::Kind::kL2,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -5505,6 +5517,17 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
                  .output = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {}},
                  .expected = true}
+        .Test();
+  }
+  // Test reduceMin with input_data_type = int64.
+  {
+    ReduceTester{
+        .kind = mojom::Reduce::Kind::kMin,
+        .input = {.type = mojom::Operand::DataType::kInt64,
+                  .dimensions = {2, 3, 4, 5}},
+        .axes = {0, 1, 2, 3},
+        .output = {.type = mojom::Operand::DataType::kInt64, .dimensions = {}},
+        .expected = true}
         .Test();
   }
   {
@@ -5629,6 +5652,58 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .axes = {0},
         .keep_dimensions = false,
         .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input type is not one of {float32,
+    // float16, int32, uint32} types for reduceProduce.
+    ReduceTester{
+        .kind = mojom::Reduce::Kind::kProduct,
+        .input = {.type = mojom::Operand::DataType::kInt64,
+                  .dimensions = {2, 3}},
+        .axes = {0},
+        .keep_dimensions = false,
+        .output = {.type = mojom::Operand::DataType::kInt64, .dimensions = {3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input type is not one of {float32,
+    // float16, int32, uint32} types for reduceL1.
+    ReduceTester{.kind = mojom::Reduce::Kind::kL1,
+                 .input = {.type = mojom::Operand::DataType::kUint64,
+                           .dimensions = {2, 3}},
+                 .axes = {0},
+                 .keep_dimensions = false,
+                 .output = {.type = mojom::Operand::DataType::kUint64,
+                            .dimensions = {3}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input type is not one of {float32,
+    // float16, int32, uint32} types for reduceSum.
+    ReduceTester{
+        .kind = mojom::Reduce::Kind::kSum,
+        .input = {.type = mojom::Operand::DataType::kUint8,
+                  .dimensions = {2, 3}},
+        .axes = {0},
+        .keep_dimensions = false,
+        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input type is not one of {float32,
+    // float16, int32, uint32} types for reduceSumSquare.
+    ReduceTester{
+        .kind = mojom::Reduce::Kind::kSumSquare,
+        .input = {.type = mojom::Operand::DataType::kInt8,
+                  .dimensions = {2, 3}},
+        .axes = {0},
+        .keep_dimensions = false,
+        .output = {.type = mojom::Operand::DataType::kInt8, .dimensions = {3}},
         .expected = false}
         .Test();
   }
