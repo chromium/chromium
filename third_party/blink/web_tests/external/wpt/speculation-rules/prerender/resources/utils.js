@@ -321,7 +321,8 @@ async function create_prerendered_page(t, params = {}, opt = {}, rule_extras = {
       throw new Error('Should not be prerendering at this point')
   }
 
-  // Get the number of network requests for the prerendered page URL.
+  // Get the number of network requests for exec.py. This doesn't care about
+  // differences in search params.
   async function getNetworkRequestCount() {
     return await (await fetch(prerendering_url + '&get-fetch-count')).text();
   }
