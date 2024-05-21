@@ -36,9 +36,9 @@ namespace {
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* context) {
   std::unique_ptr<views::Widget> widget(new views::Widget);
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.delegate = new views::WidgetDelegateView();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.context = context;
   widget->Init(std::move(params));
   return widget;

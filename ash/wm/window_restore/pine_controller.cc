@@ -158,8 +158,8 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   }
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PineOnboardingWidget";
   params.delegate = dialog.release();
 

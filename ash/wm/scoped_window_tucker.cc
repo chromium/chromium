@@ -235,7 +235,9 @@ void ScopedWindowTucker::OnWindowBoundsChanged(
 }
 
 void ScopedWindowTucker::InitializeTuckHandleWidget() {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       window()->GetRootWindow()->GetChildById(delegate_->ParentContainerId());

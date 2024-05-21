@@ -220,10 +220,10 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
   DCHECK(root->IsRootWindow());
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // The parent should be a container that covers all the windows but is below
   // some other system UI features such as system tray and capture mode and also
   // below the system modal dialogs.

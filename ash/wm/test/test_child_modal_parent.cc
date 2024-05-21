@@ -62,7 +62,8 @@ views::WidgetDelegateView* CreateChildModalWindow() {
 TestChildModalParent* TestChildModalParent::Show(aura::Window* context) {
   auto* test_child_modal_parent = new TestChildModalParent(context);
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = test_child_modal_parent;
   params.context = context;
   params.bounds =
@@ -78,8 +79,9 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
       host_(new views::NativeViewHost) {
   SetTitle(u"Examples: Child Modal Parent");
   textfield_->SetPlaceholderText(u"top level window");
-  Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_CONTROL);
   params.context = context;
   modal_parent_->Init(std::move(params));
   modal_parent_->GetRootView()->SetBackground(

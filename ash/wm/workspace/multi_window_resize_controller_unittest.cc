@@ -131,27 +131,27 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
   //  |        | w3     |
   //  |________|________|
   std::unique_ptr<views::Widget> w1(new views::Widget);
-  views::Widget::InitParams params1;
+  views::Widget::InitParams params1(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params1.delegate = new TestWidgetDelegateAsh();
-  params1.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params1.bounds = gfx::Rect(100, 200);
   params1.context = GetContext();
   w1->Init(std::move(params1));
   w1->Show();
 
   std::unique_ptr<views::Widget> w2(new views::Widget);
-  views::Widget::InitParams params2;
+  views::Widget::InitParams params2(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params2.delegate = new TestWidgetDelegateAsh();
-  params2.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.bounds = gfx::Rect(100, 0, 100, 100);
   params2.context = GetContext();
   w2->Init(std::move(params2));
   w2->Show();
 
   std::unique_ptr<views::Widget> w3(new views::Widget);
-  views::Widget::InitParams params3;
+  views::Widget::InitParams params3(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params3.delegate = new TestWidgetDelegateAsh();
-  params3.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params3.bounds = gfx::Rect(100, 100, 100, 100);
   params3.context = GetContext();
   w3->Init(std::move(params3));

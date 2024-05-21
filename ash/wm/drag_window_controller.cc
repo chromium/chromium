@@ -107,9 +107,9 @@ class DragWindowController::DragWindowDetails {
   void CreateDragWindow(aura::Window* original_window,
                         const std::optional<gfx::Rect>& shadow_bounds) {
     DCHECK(!widget_);
-    views::Widget::InitParams params;
-    params.type = views::Widget::InitParams::TYPE_POPUP;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.layer_type = ui::LAYER_NOT_DRAWN;
     params.name = "DragWindow";

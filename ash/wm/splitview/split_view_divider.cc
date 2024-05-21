@@ -85,7 +85,9 @@ gfx::Rect GetWorkAreaBoundsInScreen(aura::Window* window) {
 // Returns the widget init params needed to create the widget.
 views::Widget::InitParams CreateWidgetInitParams(aura::Window* parent_window,
                                                  const gfx::Rect& bounds) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = parent_window;

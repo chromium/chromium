@@ -120,7 +120,9 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
   aura::Window* root = Shell::GetRootWindowForDisplayId(
       display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.activatable = features::IsOverviewNewFocusEnabled()
                            ? views::Widget::InitParams::Activatable::kYes
                            : views::Widget::InitParams::Activatable::kNo;
@@ -128,9 +130,7 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.name = "PineWidget";
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = desks_util::GetActiveDeskContainerForRoot(root);
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::move(contents_view));

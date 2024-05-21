@@ -24,8 +24,8 @@ std::unique_ptr<views::Widget> CreateTransientChild(
     views::Widget* parent_widget,
     views::Widget::InitParams::Type type) {
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params{type};
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params{
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, type};
   params.bounds = gfx::Rect{40, 50};
   params.context = params.parent = parent_widget->GetNativeWindow();
   params.init_properties_container.SetProperty(chromeos::kAppTypeKey,

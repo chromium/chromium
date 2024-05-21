@@ -92,8 +92,8 @@ class PipWindowResizerTest : public AshTestBase,
         Shell::GetContainer(root_window, kShellWindowId_PipContainer);
 
     std::unique_ptr<views::Widget> widget(new views::Widget);
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     params.bounds = screen_bounds;
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
     params.context = root_window;

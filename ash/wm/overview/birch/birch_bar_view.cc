@@ -102,8 +102,8 @@ BirchBarView::~BirchBarView() = default;
 std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.accept_events = true;
   params.activatable = features::IsOverviewNewFocusEnabled()
                            ? views::Widget::InitParams::Activatable::kYes

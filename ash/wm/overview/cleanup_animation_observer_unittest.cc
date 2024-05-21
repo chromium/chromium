@@ -76,10 +76,10 @@ class CleanupAnimationObserverTest : public AshTestBase,
   // views::Widget::GetWidgetForNativeView(window)->Close().
   std::unique_ptr<views::Widget> CreateWindowWidget(const gfx::Rect& bounds) {
     auto widget = std::make_unique<views::Widget>();
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.bounds = bounds;
-    params.type = views::Widget::InitParams::TYPE_WINDOW;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();

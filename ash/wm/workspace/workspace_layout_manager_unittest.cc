@@ -326,8 +326,8 @@ TEST_F(WorkspaceLayoutManagerTest, MaximizeInDisplayToBeRestored) {
 
   // Restoring widget state.
   std::unique_ptr<views::Widget> w1(new views::Widget);
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.delegate = new MaximizeDelegateView(gfx::Rect(400, 0, 130, 40));
   params.context = GetContext();
   w1->Init(std::move(params));

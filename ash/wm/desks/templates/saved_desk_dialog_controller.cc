@@ -210,8 +210,9 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
   dialog->SetShowCloseButton(false);
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS);
   params.context = root_window;
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.delegate = dialog.release();

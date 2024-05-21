@@ -133,7 +133,8 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
         ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler>();
 
     widget_ = new views::Widget();
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.delegate = new TestWidgetDelegateAsh();
     params.context = GetContext();
@@ -885,9 +886,8 @@ TEST_F(ImmersiveFullscreenControllerTest, Transient) {
   // 1) Test that a transient window which is not a bubble does not trigger a
   // reveal but does keep the top-of-window views revealed if they are already
   // revealed.
-  views::Widget::InitParams transient_params;
-  transient_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams transient_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   transient_params.parent = top_container_widget->GetNativeView();
   transient_params.bounds = gfx::Rect(0, 100, 100, 100);
   std::unique_ptr<views::Widget> transient_widget(new views::Widget());
@@ -904,9 +904,8 @@ TEST_F(ImmersiveFullscreenControllerTest, Transient) {
 
   // 2) Test that activating a non-transient window does not keep the
   // top-of-window views revealed.
-  views::Widget::InitParams non_transient_params;
-  non_transient_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams non_transient_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   non_transient_params.bounds = gfx::Rect(0, 100, 100, 100);
   std::unique_ptr<views::Widget> non_transient_widget(new views::Widget());
   non_transient_params.context = GetContext();

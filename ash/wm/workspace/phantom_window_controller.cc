@@ -208,9 +208,10 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
     aura::Window* root_window,
     const gfx::Rect& bounds_in_screen) {
   auto phantom_widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PhantomWindow";
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_ShelfContainer);
@@ -241,9 +242,10 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   DCHECK(phantom_widget_);
 
   auto maximize_cue_widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "MaximizeCueWidget";
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
