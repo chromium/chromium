@@ -57,6 +57,7 @@ class ProductSpecificationsButton
 
   // commerce::ProductSpecificationsEntryPointController::Observer
   void ShowEntryPointWithTitle(const std::string title) override;
+  void HideEntryPoint() override;
 
  protected:
   // TabStripControlButton:
