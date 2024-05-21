@@ -141,7 +141,7 @@ AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
 }
 
 bool AwSettings::IsPrerender2Allowed() {
-  return (preloading_allowed_flags_ & PRERENDER_ENABLED);
+  return (spculative_loading_allowed_flags_ & PRERENDER_ENABLED);
 }
 
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
@@ -219,7 +219,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
   UpdateAttributionBehaviorLocked(env, obj);
-  UpdatePreloadingAllowedLocked(env, obj);
+  UpdateSpeculativeLoadingAllowedLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -432,13 +432,14 @@ void AwSettings::UpdateAttributionBehaviorLocked(
   }
 }
 
-void AwSettings::UpdatePreloadingAllowedLocked(
+void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  PreloadingAllowedFlags previous = preloading_allowed_flags_;
-  preloading_allowed_flags_ = static_cast<PreloadingAllowedFlags>(
-      Java_AwSettings_getPreloadingAllowed(env, obj));
-  if (previous == preloading_allowed_flags_) {
+  SpeculativeLoadingAllowedFlags previous = spculative_loading_allowed_flags_;
+  spculative_loading_allowed_flags_ =
+      static_cast<SpeculativeLoadingAllowedFlags>(
+          Java_AwSettings_getSpeculativeLoadingAllowed(env, obj));
+  if (previous == spculative_loading_allowed_flags_) {
     return;
   }
 
@@ -452,7 +453,7 @@ void AwSettings::UpdatePreloadingAllowedLocked(
   // preloading is disabled.
 
   if ((previous & AwSettings::PRERENDER_ENABLED) &&
-      !(preloading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
+      !(spculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
     web_contents()->CancelAllPrerendering();
   }
 }

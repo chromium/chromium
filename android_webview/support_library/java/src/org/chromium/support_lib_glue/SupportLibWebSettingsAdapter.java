@@ -11,7 +11,7 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
-import org.chromium.android_webview.settings.PreloadingAllowedFlags;
+import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.components.webauthn.WebauthnMode;
@@ -436,14 +436,14 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setPreloadingEnabled(boolean preloadingEnabled) {
+    public void setSpeculativeLoadingEnabled(boolean speculativeLoadingEnabled) {
         try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.SET_PRELOADING_ENABLED")) {
-            recordApiCall(ApiCall.SET_PRELOADING_ENABLED);
-            mAwSettings.setPreloadingAllowed(
-                    preloadingEnabled
-                            ? PreloadingAllowedFlags.PRERENDER_ENABLED
-                            : PreloadingAllowedFlags.PRELOADING_DISABLED);
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_SPECULATIVE_LOADING_ENABLED")) {
+            recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_ENABLED);
+            mAwSettings.setSpeculativeLoadingAllowed(
+                    speculativeLoadingEnabled
+                            ? SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED
+                            : SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED);
         }
     }
 }

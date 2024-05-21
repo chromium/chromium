@@ -94,7 +94,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
                 Features.WEB_AUTHENTICATION,
-                Features.ENABLE_PRELOADING + Features.DEV_SUFFIX,
+                Features.ENABLE_SPECULATIVE_LOADING + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -206,7 +206,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.IS_AUDIO_MUTED,
         ApiCall.WEB_SETTINGS_SET_WEBAUTHN_SUPPORT,
         ApiCall.WEB_SETTINGS_GET_WEBAUTHN_SUPPORT,
-        ApiCall.SET_PRELOADING_ENABLED,
+        ApiCall.SET_SPECULATIVE_LOADING_ENABLED,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -317,7 +317,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int IS_AUDIO_MUTED = 101;
         int WEB_SETTINGS_SET_WEBAUTHN_SUPPORT = 102;
         int WEB_SETTINGS_GET_WEBAUTHN_SUPPORT = 103;
-        int SET_PRELOADING_ENABLED = 104;
+        int SET_SPECULATIVE_LOADING_ENABLED = 104;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
         int COUNT = 105;
     }

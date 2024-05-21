@@ -108,5 +108,5 @@ public interface WebSettingsBoundaryInterface {
 
     Map<String, @WebViewMediaIntegrityApiStatus Integer> getWebViewMediaIntegrityApiOverrideRules();
 
-    void setPreloadingEnabled(boolean preloadingEnabled);
+    void setSpeculativeLoadingEnabled(boolean speculativeLoadingEnabled);
 }
