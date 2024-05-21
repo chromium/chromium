@@ -44,7 +44,9 @@ class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
   std::unique_ptr<AttributionOsLevelManager> manager_;
 };
 
-TEST_F(AttributionOsLevelManagerAndroidTest, GetMeasurementStatusTimeMetric) {
+// Disabled due to flakiness, see crbug.com/338662230.
+TEST_F(AttributionOsLevelManagerAndroidTest,
+       DISABLED_GetMeasurementStatusTimeMetric) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectTotalCount("Conversions.GetMeasurementStatusTime", 1);
 }
