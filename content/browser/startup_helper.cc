@@ -92,11 +92,12 @@ MIRACLE_PARAMETER_FOR_INT(GetBrowserThreadPoolOffset,
 void StartBrowserThreadPool() {
   // Ensure we always support at least one thread regardless of the field trial
   // param setting.
-  auto min = static_cast<size_t>(std::max(GetBrowserThreadPoolMin(), 1));
+  size_t min =
+      base::checked_cast<size_t>(std::max(GetBrowserThreadPoolMin(), 1));
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
-          min, GetBrowserThreadPoolMax(), GetBrowserThreadPoolCoresMultiplier(),
-          GetBrowserThreadPoolOffset())};
+          min, base::checked_cast<size_t>(GetBrowserThreadPoolMax()),
+          GetBrowserThreadPoolCoresMultiplier(), GetBrowserThreadPoolOffset())};
 
 #if BUILDFLAG(IS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::
