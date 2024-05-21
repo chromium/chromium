@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -47,6 +48,25 @@ sync_pb::CompareSpecifics BuildCompareSpecifics(
     compare_data->set_url(url);
   }
   return specifics;
+}
+
+void CheckSpecsAgainstSpecifics(
+    const commerce::ProductSpecificationsSet& specifications,
+    const sync_pb::CompareSpecifics& specifics) {
+  EXPECT_EQ(base::Uuid::ParseLowercase(specifics.uuid()),
+            specifications.uuid());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                specifics.creation_time_unix_epoch_micros()),
+            specifications.creation_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                specifics.update_time_unix_epoch_micros()),
+            specifications.update_time());
+  EXPECT_EQ(specifics.name(), specifications.name());
+  std::vector<GURL> urls;
+  for (const sync_pb::ComparisonData& data : specifics.data()) {
+    urls.emplace_back(data.url());
+  }
+  EXPECT_EQ(urls, specifications.urls());
 }
 
 const sync_pb::CompareSpecifics kCompareSpecifics[] = {
@@ -108,52 +128,6 @@ MATCHER_P2(HasProductSpecsNameUrl, name, urls, "") {
 
 namespace commerce {
 
-class MockProductSpecificationsSyncBridge
-    : public ProductSpecificationsSyncBridge {
- public:
-  MockProductSpecificationsSyncBridge(
-      syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-      : ProductSpecificationsSyncBridge(std::move(create_store_callback),
-                                        std::move(change_processor)) {}
-  ~MockProductSpecificationsSyncBridge() override = default;
-
-  MOCK_METHOD(std::unique_ptr<syncer::MetadataChangeList>,
-              CreateMetadataChangeList,
-              (),
-              (override));
-
-  MOCK_METHOD(std::optional<syncer::ModelError>,
-              MergeFullSyncData,
-              (std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-               syncer::EntityChangeList entity_changes),
-              (override));
-
-  MOCK_METHOD(std::string,
-              GetStorageKey,
-              (const syncer::EntityData& entity_data),
-              (override));
-
-  MOCK_METHOD(std::string,
-              GetClientTag,
-              (const syncer::EntityData& entity_data),
-              (override));
-
-  MOCK_METHOD(void,
-              GetData,
-              (StorageKeyList storage_keys, DataCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              GetAllDataForDebugging,
-              (DataCallback callback),
-              (override));
-
-  void AddCompareSpecifics(const sync_pb::CompareSpecifics& compare_specifics) {
-    entries_.emplace(compare_specifics.uuid(), compare_specifics);
-  }
-};
-
 class MockProductSpecificationsSetObserver
     : public ProductSpecificationsSet::Observer {
  public:
@@ -180,20 +154,16 @@ class ProductSpecificationsServiceTest : public testing::Test {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    std::unique_ptr<MockProductSpecificationsSyncBridge> bridge =
-        std::make_unique<MockProductSpecificationsSyncBridge>(
-            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
-            change_processor().CreateForwardingProcessor());
-    bridge_ = bridge.get();
-    service_ =
-        std::make_unique<ProductSpecificationsService>(std::move(bridge));
+    service_ = std::make_unique<ProductSpecificationsService>(
+        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+        change_processor().CreateForwardingProcessor());
     service_->AddObserver(&observer_);
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override { service_->RemoveObserver(&observer_); }
 
-  MockProductSpecificationsSyncBridge* bridge() { return bridge_; }
+  ProductSpecificationsSyncBridge* bridge() { return service_->bridge_.get(); }
 
   ProductSpecificationsService* service() { return service_.get(); }
 
@@ -201,23 +171,19 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return &observer_;
   }
 
-  void CheckSpecsAgainstSpecifics(
-      const ProductSpecificationsSet& specifications,
-      const sync_pb::CompareSpecifics& specifics) const {
-    EXPECT_EQ(base::Uuid::ParseLowercase(specifics.uuid()),
-              specifications.uuid());
-    EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
-                  specifics.creation_time_unix_epoch_micros()),
-              specifications.creation_time());
-    EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
-                  specifics.update_time_unix_epoch_micros()),
-              specifications.update_time());
-    EXPECT_EQ(specifics.name(), specifications.name());
-    std::vector<GURL> urls;
-    for (const sync_pb::ComparisonData& data : specifics.data()) {
-      urls.emplace_back(data.url());
-    }
-    EXPECT_EQ(urls, specifications.urls());
+  void AddCompareSpecificsForTesting(
+      sync_pb::CompareSpecifics compare_specifics) {
+    bridge()->AddCompareSpecificsForTesting(compare_specifics);
+  }
+
+  void SetIsInitialized(bool is_initialized) {
+    service()->is_initialized_ = is_initialized;
+  }
+
+  void OnInit() { service()->OnInit(); }
+
+  uint64_t GetDeferredOperationsSize() {
+    return service()->deferred_operations_.size();
   }
 
  private:
@@ -237,7 +203,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
 
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
-    bridge()->AddCompareSpecifics(specifics);
+    AddCompareSpecificsForTesting(specifics);
   }
   const std::vector<ProductSpecificationsSet> specifications =
       service()->GetAllProductSpecifications();
@@ -245,6 +211,30 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   for (uint64_t i = 0; i < specifications.size(); i++) {
     CheckSpecsAgainstSpecifics(specifications[i], kCompareSpecifics[i]);
   }
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecificationsAsync) {
+  SetIsInitialized(false);
+  for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
+    AddCompareSpecificsForTesting(specifics);
+  }
+  base::RunLoop run_loop;
+
+  service()->GetAllProductSpecifications(base::BindOnce(
+      [](base::OnceClosure done,
+         const std::vector<ProductSpecificationsSet> specifications) {
+        EXPECT_EQ(2u, specifications.size());
+        for (uint64_t i = 0; i < specifications.size(); i++) {
+          CheckSpecsAgainstSpecifics(specifications[i], kCompareSpecifics[i]);
+        }
+
+        std::move(done).Run();
+      },
+      run_loop.QuitClosure()));
+
+  EXPECT_EQ(1u, GetDeferredOperationsSize());
+  OnInit();
+  run_loop.Run();
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
@@ -288,7 +278,7 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
 
 TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
   for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
-    bridge()->AddCompareSpecifics(specifics);
+    AddCompareSpecificsForTesting(specifics);
   }
 
   const std::vector<ProductSpecificationsSet> specifications =
@@ -316,7 +306,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
 
 TEST_F(ProductSpecificationsServiceTest, TestSetName) {
   for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
-    bridge()->AddCompareSpecifics(specifics);
+    AddCompareSpecificsForTesting(specifics);
   }
 
   const std::vector<ProductSpecificationsSet> specifications =
@@ -344,7 +334,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetName) {
 
 TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
   for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
-    bridge()->AddCompareSpecifics(specifics);
+    AddCompareSpecificsForTesting(specifics);
   }
 
   const std::vector<ProductSpecificationsSet> specifications =

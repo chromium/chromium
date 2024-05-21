@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/commerce/core/commerce_types.h"
@@ -41,7 +42,9 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
  public:
   explicit MockProductSpecificationsService(
       std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
-      : ProductSpecificationsService(std::move(bridge)) {}
+      : ProductSpecificationsService(
+            base::DoNothing(),
+            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
   ~MockProductSpecificationsService() override = default;
 
   MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
@@ -70,7 +73,7 @@ class ClusterManagerTest : public testing::Test {
             std::make_unique<ProductSpecificationsSyncBridge>(
                 syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                     store_.get()),
-                processor_.CreateForwardingProcessor()));
+                processor_.CreateForwardingProcessor(), base::DoNothing()));
     EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
         .Times(1);
     cluster_manager_ = std::make_unique<ClusterManager>(

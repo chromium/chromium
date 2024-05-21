@@ -66,11 +66,10 @@ std::unique_ptr<KeyedService>
 ProductSpecificationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<commerce::ProductSpecificationsService>(
-      std::make_unique<ProductSpecificationsSyncBridge>(
-          ModelTypeStoreServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(context))
-              ->GetStoreFactory(),
-          CreateChangeProcessor()));
+      ModelTypeStoreServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context))
+          ->GetStoreFactory(),
+      CreateChangeProcessor());
 }
 
 }  // namespace commerce

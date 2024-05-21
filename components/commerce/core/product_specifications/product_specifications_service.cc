@@ -4,8 +4,10 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
+#include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
@@ -13,8 +15,13 @@
 namespace commerce {
 
 ProductSpecificationsService::ProductSpecificationsService(
-    std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
-    : bridge_(std::move(bridge)) {}
+    syncer::OnceModelTypeStoreFactory create_store_callback,
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    : bridge_(std::make_unique<ProductSpecificationsSyncBridge>(
+          std::move(create_store_callback),
+          std::move(change_processor),
+          base::BindOnce(&ProductSpecificationsService::OnInit,
+                         base::Unretained(this)))) {}
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
 
@@ -38,6 +45,28 @@ ProductSpecificationsService::GetAllProductSpecifications() {
         entry.second.name());
   }
   return product_specifications;
+}
+
+void ProductSpecificationsService::GetAllProductSpecifications(
+    GetAllCallback callback) {
+  if (is_initialized_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), GetAllProductSpecifications()));
+  } else {
+    deferred_operations_.push_back(base::BindOnce(
+        [](base::WeakPtr<ProductSpecificationsService>
+               product_specifications_service,
+           GetAllCallback callback) {
+          if (product_specifications_service) {
+            std::move(callback).Run(product_specifications_service.get()
+                                        ->GetAllProductSpecifications());
+          } else {
+            std::move(callback).Run({});
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 const std::optional<ProductSpecificationsSet>
@@ -119,6 +148,15 @@ void ProductSpecificationsService::AddObserver(
 void ProductSpecificationsService::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   bridge_->RemoveObserver(observer);
+}
+
+void ProductSpecificationsService::OnInit() {
+  is_initialized_ = true;
+  for (base::OnceCallback<void(void)>& deferred_operation :
+       deferred_operations_) {
+    std::move(deferred_operation).Run();
+  }
+  deferred_operations_.clear();
 }
 
 }  // namespace commerce

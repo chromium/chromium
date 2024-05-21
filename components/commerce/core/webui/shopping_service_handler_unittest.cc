@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -27,6 +28,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,7 +112,10 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
 
 class MockProductSpecificationsService : public ProductSpecificationsService {
  public:
-  MockProductSpecificationsService() : ProductSpecificationsService(nullptr) {}
+  MockProductSpecificationsService()
+      : ProductSpecificationsService(
+            base::DoNothing(),
+            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
   ~MockProductSpecificationsService() override = default;
   MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
               GetAllProductSpecifications,

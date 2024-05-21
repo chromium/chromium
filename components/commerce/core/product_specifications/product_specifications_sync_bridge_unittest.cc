@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -152,7 +153,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<ProductSpecificationsSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor());
+        processor_.CreateForwardingProcessor(), base::DoNothing());
     base::RunLoop().RunUntilIdle();
     initial_store_ = GetAllStoreData();
     initial_entries_ = entries();

@@ -35,8 +35,10 @@ namespace commerce {
 
 ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    base::OnceCallback<void(void)> init_callback)
+    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+      init_callback_(std::move(init_callback)) {
   std::move(create_store_callback)
       .Run(syncer::COMPARE,
            base::BindOnce(&ProductSpecificationsSyncBridge::OnStoreCreated,

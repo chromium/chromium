@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -24,6 +25,7 @@ namespace commerce {
 
 class MockProductSpecificationsSyncBridge;
 class ProductSpecificationsService;
+class ProductSpecificationsServiceTest;
 class ProductSpecificationsSyncBridgeTest;
 
 // Integration point between sync and ProductSpecificationService.
@@ -31,7 +33,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   ProductSpecificationsSyncBridge(
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      base::OnceCallback<void(void)> init_callback);
   ~ProductSpecificationsSyncBridge() override;
 
   // syncer::ModelTypeSyncBridge:
@@ -51,11 +54,17 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
  private:
   friend class commerce::MockProductSpecificationsSyncBridge;
   friend class commerce::ProductSpecificationsService;
+  friend class commerce::ProductSpecificationsServiceTest;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::CompareSpecifics>;
 
   const CompareSpecificsEntries& entries() { return entries_; }
+
+  void AddCompareSpecificsForTesting(
+      const sync_pb::CompareSpecifics& compare_specifics) {
+    entries_.emplace(compare_specifics.uuid(), compare_specifics);
+  }
 
   virtual sync_pb::CompareSpecifics AddProductSpecifications(
       const std::string& name,
@@ -94,6 +103,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
+
+  base::OnceCallback<void(void)> init_callback_;
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };

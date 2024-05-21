@@ -5,19 +5,24 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace commerce {
 
+class ProductSpecificationsServiceTest;
 class ProductSpecificationsSet;
 
 // Acquires synced data about product specifications.
 class ProductSpecificationsService : public KeyedService {
  public:
-  explicit ProductSpecificationsService(
-      std::unique_ptr<ProductSpecificationsSyncBridge> bridge);
+  using GetAllCallback =
+      base::OnceCallback<void(const std::vector<ProductSpecificationsSet>)>;
+  ProductSpecificationsService(
+      syncer::OnceModelTypeStoreFactory create_store_callback,
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;
@@ -28,6 +33,8 @@ class ProductSpecificationsService : public KeyedService {
 
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();
+
+  virtual void GetAllProductSpecifications(GetAllCallback callback);
 
   virtual const std::optional<ProductSpecificationsSet> GetSetByUuid(
       const base::Uuid& uuid);
@@ -62,8 +69,14 @@ class ProductSpecificationsService : public KeyedService {
   void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
  private:
+  friend class commerce::ProductSpecificationsServiceTest;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  std::vector<base::OnceCallback<void()>> deferred_operations_;
+  bool is_initialized_;
+
+  void OnInit();
+  base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce
