@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ComposeShowStatus">
-  <int value="0" label="Menu item displayed"/>
+  <int value="0" label="Shown"/>
   <int value="1" label="Blocked for generic reason"/>
   <int value="2" label="Blocked for incompatible field type"/>
   <int value="3" label="Blocked for MSBB not enabled (OBSOLETE)"/>
@@ -176,13 +176,13 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Proactive nudge blocked for autocomplete=off"/>
   <int value="15" label="Proactive nudge blocked for writingsuggestions=false"/>
   <int value="16" label="Proactive nudge feature disabled"/>
-  <int value="17" label="Proactive nudge gloabally disabled by user"/>
+  <int value="17" label="Proactive nudge globally disabled by user"/>
   <int value="18" label="Proactive nudge disabled for site by user"/>
   <int value="19" label="Proactive nudge disabled by optimization guide"/>
   <int value="20"
       label="Proactive nudge disabled for unset optimization guide"/>
   <int value="21" label="Proactive nudge disabled randomly"/>
-  <int value="22" label="Practive nudge disabled by MSBB"/>
+  <int value="22" label="Proactive nudge disabled by MSBB"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">
