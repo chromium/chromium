@@ -1,8 +1,0 @@
-# Sample filters to use with ax_dump_tree, e.g. with --filters=[path-to-filters.txt]
-@ALLOW:role*
-@ALLOW:name*
-@ALLOW:rowtext*
-@ALLOW:coltext*
-@ALLOW:font*
-@DENY:font-family*
-@DENY:font-size*

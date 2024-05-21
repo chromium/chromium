@@ -1,3 +1,0 @@
-This file has to exist so that it can be checked for whether or not it is a
-thin archive. Thin archives start with "!<thin>\n". As you can see, this file is
-not a thin archive.

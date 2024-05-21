@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<grit-part>
-  <!-- Important for test purposes that this file not exist. -->
-  <structure type="chrome_scaled_image" name="IDR_DOES_NOT_EXIST" file="does-not-exist.png" />
-</grit-part>

@@ -1,7 +1,0 @@
-include_rules = [
-  "+content/public/app",
-  "+chrome/app",
-  "+services/service_manager/public/cpp",
-  "+third_party/re2",
-  "+tools/ipc_fuzzer/message_lib",
-]

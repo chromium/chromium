@@ -1,8 +1,0 @@
-# Comment, then empty line with spaces.
-  
-# Another comment
--unsafe_buffers_not_clean_dir/
-+unsafe_buffers_not_clean_dir/clean_header.h
-
--unsafe_buffers_unchecked.cpp
-

@@ -1,8 +1,0 @@
-In file included from class_overrides_new.cpp:5:
-./class_overrides_new.h:14:3: warning: [blink-gc] Garbage collected class 'HeapObject' is not permitted to override its new operator.
-  void* operator new(size_t);
-  ^
-./class_overrides_new.h:26:3: warning: [blink-gc] Garbage collected class 'HeapObjectDerived' is not permitted to override its new operator.
-  void* operator new(size_t);
-  ^
-2 warnings generated.

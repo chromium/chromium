@@ -1,9 +1,0 @@
-{
-    "archives": {
-        "http://localhost:8091/index.html": {
-            "DEFAULT": "service_worker_micro_benchmark_004.wprgo"
-        }
-    },
-    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
-    "platform_specific": true
-}

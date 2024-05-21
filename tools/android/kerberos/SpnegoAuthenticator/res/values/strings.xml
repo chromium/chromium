@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">SpnegoAuthenticator</string>
-    <string name="action_sign_in_1">Sign In Account 1</string>
-    <string name="action_sign_in_2">Sign In Account 2</string>
-    <string name="action_confirm_credentials">Confirm Credentials</string>
-    <string name="title_activity_account_authenticator">Spnego Authenticator Sign In</string>
-    <string name="account_type">org.chromium.tools.SpnegoAuthenticator</string>
-</resources>

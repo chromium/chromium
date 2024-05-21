@@ -1,2 +1,0 @@
-annotation_tokenizer.SourceCodeParsingError: Expected string_literal in annotation definition at wrong_arg_type.cc:8.
-near 'should_be_a_string_l'

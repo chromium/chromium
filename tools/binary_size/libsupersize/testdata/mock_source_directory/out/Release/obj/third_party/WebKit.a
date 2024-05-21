@@ -1,8 +1,0 @@
-!<thin>
-/               0           0     0     0       60        `
-For convenience, each line of this string table is 60 bytes
-//              0           0     0     0       120       `
-                                        sub/PaintChunker.o/
-                                 sub/ContiguousContainer.o/
-/40             0           0     0     644     281516    `
-/93             0           0     0     644     281516    `

@@ -1,6 +1,0 @@
-(INFO) 2018-07-06 02:28:04,466 timeout_retry.WaitFor:105  condition '<lambda>' met
-(INFO) 2018-07-06 02:28:04,472 timeout_retry.WaitFor:105  condition '<lambda>' met
-(WARNING) 2018-07-06 02:28:04,472 desktop_browser_finder.FindAllAvailableBrowsers:274  Chrome build location for mac_x86_64 not found. Browser will be run without Flash.
-(INFO) 2018-07-06 02:28:04,642 browser_finder.FindBrowser:123  Chose browser: PossibleDesktopBrowser(type=reference, executable=/b/s/w/ir/third_party/catapult/common/py_utils/py_utils/bin/reference_builds/chrome_stable_mac_x86_64_c8bef32ba36d46afed8fc8483aeb72ce65656986/chrome-mac/Google Chrome.app/Contents/MacOS/Google Chrome, flash=None)
-smoothness.tough_pinch_zoom_cases is disabled on the selected browser
-This platform is not supported for this benchmark. If this is in error please add it to the benchmark's supported platforms.

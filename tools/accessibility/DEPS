@@ -1,5 +1,0 @@
-include_rules = [
-  "+content/browser/accessibility",
-  "+content/public/browser",
-  "+ui/accessibility/platform/inspect",
-]

@@ -1,2 +1,0 @@
-add_library(LLVMRegisterGcFunctionsPass MODULE RegisterGcFunctions.cpp)
-target_compile_options(LLVMRegisterGcFunctionsPass PUBLIC -fno-rtti)

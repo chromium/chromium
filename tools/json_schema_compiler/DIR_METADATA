@@ -1,7 +1,0 @@
-monorail: {
-  component: "Platform>Extensions"
-}
-team_email: "chromium-extensions@chromium.org"
-buganizer_public: {
-  component_id: 1456110
-}

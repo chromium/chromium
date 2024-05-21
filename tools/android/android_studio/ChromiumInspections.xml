@@ -1,6 +1,0 @@
-<profile version="1.0">
-  <option name="myName" value="Chromium" />
-  <!-- We use asserts in Chromium. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Asserts -->
-  <inspection_tool class="AndroidLintAssert" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="AndroidLintRtlCompat" enabled="false" level="ERROR" enabled_by_default="false" />
-</profile>

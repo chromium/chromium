@@ -1,6 +1,0 @@
-google_apis/drive/request_sender_unittest.cc
-67
-Definition
-test
-
-Traffic annotation for unit, browser and other tests

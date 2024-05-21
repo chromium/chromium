@@ -1,7 +1,0 @@
-# Metrics changes should always be reviewed by owners.
-per-file ukm.xml=file://tools/metrics/ukm/PRIVACY_OWNERS
-per-file ukm.xml=set noparent
-
-# For everything else, standard metrics owners
-# (prefer to send to chromium-metrics-reviews@google.com)
-file://base/metrics/OWNERS

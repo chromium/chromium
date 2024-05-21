@@ -1,8 +1,0 @@
-In file included from class_with_incomplete_type.cpp:5:
-./class_with_incomplete_type.h:15:5: error: field has incomplete type 'B'
-  B incomplete;
-    ^
-./class_with_incomplete_type.h:11:8: note: forward declaration of 'B'
-struct B;
-       ^
-1 error generated.

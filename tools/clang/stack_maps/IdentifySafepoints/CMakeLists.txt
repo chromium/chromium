@@ -1,2 +1,0 @@
-add_library(LLVMIdentifySafepointsPass MODULE IdentifySafepoints.cpp)
-target_compile_options(LLVMIdentifySafepointsPass PUBLIC -fno-rtti)

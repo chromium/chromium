@@ -1,9 +1,0 @@
-This is a sample file that includes some keywords relevant to network traffic
-annotation but does not have proper file extension and so should not be included
-in tests:
-
-#include "net/traffic_annotation/network_traffic_annotation.h"
-
-NetworkTrafficAnnotationTag
-
-NO_TRAFFIC_ANNOTATION_YET

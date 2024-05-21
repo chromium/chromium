@@ -1,8 +1,0 @@
-per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
-
-# Prefer the below owners for histograms in this directory (or
-# chromium-metrics-reviews@google.com as a fallback).
-csharrison@chromium.org
-dschinazi@chromium.org
-nidhijaju@chromium.org
-toyoshim@chromium.org

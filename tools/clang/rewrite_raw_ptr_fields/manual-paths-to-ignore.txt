@@ -1,1 +1,0 @@
-# Contents moved to tools/clang/plugins/RawPtrManualPathsToIgnore.h

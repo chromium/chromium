@@ -1,8 +1,0 @@
-per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
-
-# Prefer sending CLs to the owners listed below.
-# Use chromium-metrics-reviews@google.com as a backup.
-cthomp@chromium.org
-
-# For Safe Browsing interstitial histograms.
-xinghuilu@chromium.org

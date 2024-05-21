@@ -1,8 +1,0 @@
-subninja sub.ninja
-
-build obj/third_party/icu/icuuc/ucnv_ext.o: cxx gen/third_party/icu/ucnv_ext.c || obj/foo.inputdeps.stamp
-build obj/base/base/page_allocator.o: rule ../../base/page_allocator.cc
-build obj/third_party/sub/fft_float.o: rule ../../third_party/fft_float.cc
-build obj/third_party/sub/fft_fixed.o: rule ../../third_party/fft_fixed.cc
-build obj/third_party/sub/ContiguousContainer.o: rule ../../third_party/container/container.c
-build obj/third_party/sub/PaintChunker.o: rule ../../third_party/paint.cc

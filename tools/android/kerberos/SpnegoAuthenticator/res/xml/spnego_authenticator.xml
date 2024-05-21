@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="@string/account_type"
-    android:label="@string/app_name"
-    android:icon="@mipmap/ic_launcher"
-    android:smallIcon="@mipmap/ic_launcher"
-    android:customTokens="true"
-    android:accountPreferences="@xml/spnego_account_preferences"/>

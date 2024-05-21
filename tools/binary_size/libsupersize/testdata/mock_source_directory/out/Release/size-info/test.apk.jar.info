@@ -1,3 +1,0 @@
-org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation,../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/StackAnimation.java
-org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack,../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/Stack.java
-org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller,../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/StackScroller.java

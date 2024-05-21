@@ -1,8 +1,0 @@
-In file included from finalize_after_dispatch.cpp:5:
-./finalize_after_dispatch.h:12:1: warning: [blink-gc] Class 'NeedsDispatch' is missing manual trace dispatch.
-class NeedsDispatch : public GarbageCollected<NeedsDispatch> {
-^
-finalize_after_dispatch.cpp:29:1: warning: [blink-gc] Missing dispatch to class 'D' in manual finalize dispatch.
-void A::FinalizeGarbageCollectedObject()
-^
-2 warnings generated.

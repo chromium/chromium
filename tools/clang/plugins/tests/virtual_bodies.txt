@@ -1,9 +1,0 @@
-In file included from virtual_bodies.cpp:5:
-./virtual_bodies.h:23:36: warning: [chromium-style] virtual methods with non-empty bodies shouldn't be declared inline.
-  virtual bool ComplainAboutThis() { return true; }
-                                   ^
-./virtual_bodies.h:44:30: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
-  void MethodHasNoArguments();
-                             ^
-                              override
-2 warnings generated.

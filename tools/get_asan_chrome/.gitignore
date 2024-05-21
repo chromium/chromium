@@ -1,9 +1,0 @@
-# python venv
-*.env
-
-# downloaded ASAN builds (compressed & extracted)
-*asan*.zip
-asan-*
-
-# activity logs
-*.log

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "expected_output.h": [
-      "+components/variations/proto/study.pb.h"
-  ]
-}

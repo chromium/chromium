@@ -1,6 +1,0 @@
-This is a copy of the key_mobile_sites WPR archives from
-//tools/perf/page_sets/data. We want to re-use the same archives for our
-smoothness benchmark as the regular smoothness benchmark, but we also need to
-add some new archives that are VR-specific/not useful for the non-VR benchmark.
-So, copy the .sha1s and JSON file so we can download the pre-existing data while
-being free to add new archives as we need.

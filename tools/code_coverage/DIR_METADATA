@@ -1,7 +1,0 @@
-monorail: {
-  component: "Infra>Test>CodeCoverage"
-}
-team_email: "code-coverage@chromium.org"
-buganizer_public: {
-  component_id: 1456421
-}

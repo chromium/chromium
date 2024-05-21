@@ -1,6 +1,0 @@
-A snippet of Linux trybot output (note UTF-8 quotes).
-
-  AR(target) out/Debug/obj.target/printing/libprinting.a
-app/l10n_util_unittest.cc: In member function ‘virtual void L10nUtilTest_TruncateString_Test::TestBody()’:
-app/l10n_util_unittest.cc:67: error: invalid initialization of reference of type ‘const string16&’ from expression of type ‘std::wstring’
-./app/l10n_util.h:166: error: in passing argument 1 of ‘string16 l10n_util::TruncateString(const string16&, size_t)’

@@ -1,6 +1,0 @@
-agrieve@chromium.org
-wnwen@chromium.org
-
-per-file *svgo*=dpapad@chromium.org
-per-file PRESUBMIT.py=dpapad@chromium.org
-per-file find_unused_assets.py=aluh@chromium.org

@@ -1,8 +1,0 @@
-include_rules = [
-  "+base",
-  "+v8",
-  "+third_party/blink/public",
-  "+gin/v8_initializer.h",
-  "+mojo/core/embedder",
-  "+mojo/public",
-]
