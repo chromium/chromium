@@ -151,6 +151,8 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "woa-engprod@google.com",
+    # https://crbug.com/341875331: Expend to 4 hours due to test device shortage
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
