@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/gfx/vector_icon_types.h",
-  "+components/vector_icons",
-]

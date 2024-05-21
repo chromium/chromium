@@ -1,5 +1,0 @@
-os: CHROME_OS
-
-buganizer {
-  component_id: 1314757
-}

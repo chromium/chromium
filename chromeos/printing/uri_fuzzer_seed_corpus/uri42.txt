@@ -1,1 +1,0 @@
- serial:/dev/ttyS2?baud=115200

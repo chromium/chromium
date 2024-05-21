@@ -1,6 +1,0 @@
-{
-  "enterprise_managed": true,
-  "can_exit_enrollment": false,
-  "keyboard_driven_oobe": true,
-  "device_requisition": "test"
-}

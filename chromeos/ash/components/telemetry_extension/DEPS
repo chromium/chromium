@@ -1,6 +1,0 @@
-include_rules = [
-  "+ash/system/diagnostics",
-  "+chromeos/ash/components/audio",
-  "+chromeos/ash/components/dbus/debug_daemon",
-  "+chromeos/ash/components/mojo_service_manager",
-]

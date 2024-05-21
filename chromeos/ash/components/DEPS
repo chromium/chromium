@@ -1,5 +1,0 @@
-include_rules = [
-  # Individual components must explicitly declare their dependencies
-  # on other components.
-  "-chromeos/ash/components",
-]

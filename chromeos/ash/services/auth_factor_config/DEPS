@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/user_manager",
-  "+components/user_manager",
-  "+chromeos/ash/components/login/auth",
-  "+chromeos/ash/components/cryptohome",
-]

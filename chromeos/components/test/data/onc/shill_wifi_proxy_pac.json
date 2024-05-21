@@ -1,6 +1,0 @@
-{
-  "Mode": "managed",
-  "ProxyConfig": "{\"mode\":\"pac_script\",\"pac_mandatory\":false,\"pac_url\":\"http://pac.foo.com/script.pac\"}",
-  "SecurityClass": "none",
-  "Type": "wifi",
-}

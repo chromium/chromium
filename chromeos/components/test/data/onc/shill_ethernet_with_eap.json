@@ -1,9 +1,0 @@
-{
-  "EAP.CACertPEM": [  ],
-  "EAP.EAP":"TLS",
-  "EAP.Identity":"abc ${LOGIN_ID}@my.domain.com",
-  "EAP.UseSystemCAs":true,
-  "GUID":"guid",
-  "SaveCredentials":true,
-  "Type":"etherneteap"
-}

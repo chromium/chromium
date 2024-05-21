@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/onc",
-  "+components/proxy_config",
-]

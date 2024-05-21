@@ -1,4 +1,0 @@
-include_rules = [
-  # Code in the lacros-chrome binary cannot use ash-chrome code.
-  "-chromeos/ash",
-]

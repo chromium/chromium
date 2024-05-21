@@ -1,6 +1,0 @@
-include_rules = [
-    "+components/vector_icons",
-    "+ui/base",
-    "+ui/gfx",
-    "+ui/strings/grit/ui_strings.h",
-]

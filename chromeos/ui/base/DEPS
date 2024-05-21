@@ -1,9 +1,0 @@
-include_rules = [
-  "+third_party/skia",
-  "+ui/base",
-  "+ui/chromeos/styles",
-  "+ui/display",
-  "+ui/gfx",
-  "+ui/color",
-  "+ui/native_theme",
-]

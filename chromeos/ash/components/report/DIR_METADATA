@@ -1,6 +1,0 @@
-monorail: {
-  component: "OS>Software>Data"
-}
-buganizer_public: {
-  component_id: 1457095
-}

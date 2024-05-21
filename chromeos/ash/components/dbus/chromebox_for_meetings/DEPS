@@ -1,3 +1,0 @@
-include_rules = [
-  # Do not add chrome here (use a delegate instead).
-]
