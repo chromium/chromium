@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Simple insertText
-  assert_not_equals: text node "x" is next to "foo" got disallowed value 3
-Harness: the test ran to completion.
-

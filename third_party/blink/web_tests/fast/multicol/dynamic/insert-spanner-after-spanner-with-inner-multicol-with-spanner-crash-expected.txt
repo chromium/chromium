@@ -1,6 +1,0 @@
-Insert a spanner after another spanner and before existing multicol content. The other spanner has a multicol container with yet another spanner inside.
-
-PASS if no crash or assertion failure.
-
- 
- 

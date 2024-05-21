@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Origin header and POST same-origin fetch no-cors mode with Referrer-Policy no-referrer
-  assert_equals: expected "null" but got "http://web-platform.test:8001"
-[FAIL] Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy no-referrer
-  assert_equals: expected "null" but got "http://web-platform.test:8001"
-[FAIL] Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy same-origin
-  assert_equals: expected "null" but got "http://web-platform.test:8001"
-Harness: the test ran to completion.
-

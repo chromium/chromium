@@ -1,6 +1,0 @@
-This tests that setting innerHTML on an xhtml document works and respects namespaces and unknown namespace prefixes. If this test is successful, the text below should say "Success", and "namespace is correct" TWICE.
-
-Success!
-
-namespace is correct
-namespace is correct

@@ -1,6 +1,0 @@
-This tests removing underline which is applied outside of unsplittable element. We shouldn't be removing underline.
-
-hello	world
-webkit	rocks
-Before: <table style="text-decoration: underline;"> <tbody><tr> <td id="test" contenteditable="true">hello</td> <td>world</td> </tr> <tr> <td>webkit</td> <td>rocks</td> </tr> </tbody></table>
-After: <table style="text-decoration: underline;"> <tbody><tr> <td id="test" contenteditable="true">hello</td> <td>world</td> </tr> <tr> <td>webkit</td> <td>rocks</td> </tr> </tbody></table>

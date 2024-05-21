@@ -1,1 +1,0 @@
-function start() { if (window.testRunner) testRunner.dumpAsText(); var html = document.createElement('html'); html.innerHTML = 'x<style>*{ float: right; }'; var body = html.children[1]; document.body = body; document.body.offsetTop; document.body.innerHTML = '<style>*{ all: initial; }'; document.body.style.writingMode = 'vertical-rl'; } *{ all: initial; }

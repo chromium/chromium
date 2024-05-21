@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 'scroll-snap-type' does not support 'inline proximity'
-  assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
-Harness: the test ran to completion.
-

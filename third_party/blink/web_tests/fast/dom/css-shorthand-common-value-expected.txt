@@ -1,3 +1,0 @@
-getPropertyValue('border') should not return a value for any property that doesn't have the same value for top, left, right and bottom, even if the values that differ are implicitly set by a shorthand.
-
-PASS

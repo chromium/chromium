@@ -1,5 +1,0 @@
-Removed
-acronym, b, bdo, big, cite, code, dfn, em, font, i, ins, kbd, nobr, q, s, samp, small, strike, strong, sub, sup, tt, u, var
-Preserved
-noscript, a, abbr, address, applet, area, article, aside, audio, base, basefont, bgsound, blockquote, body, br, button, canvas, caption, center, col, colgroup, command, datagrid, datalist, dcell, dcol, dd, del, details, dir, div, dl, drow, dt, embed, fieldset, figcaption, figure, footer, form, frame, frameset, h1, h2, h3, h4, h5, h6, head, header, hgroup, hr, html, iframe, image, img, input, isindex, keygen, label, layer, legend, li, link, listing, main, map, mark, marquee, menu, meta, meter, nav, noembed, noframes, nolayer, noscript, object, ol, optgroup, option, p, param, plaintext, pre, progress, rp, rt, ruby, script, section, select, source, span, style, summary, table, tbody, td, textarea, tfoot, th, thead, title, tr, track, ul, video, wbr, xmp
-Exceptions

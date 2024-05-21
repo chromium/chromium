@@ -1,6 +1,0 @@
-This test makes sure that an element with a display of table-cell doesn't cause a crash when accessibility code assumes it must be a TD or TH element.
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

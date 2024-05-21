@@ -1,3 +1,0 @@
-<!ENTITY % p1 "(A|B">
-<!ENTITY % p2 "|C|D)">
-<!ELEMENT X %p1;%p2;>

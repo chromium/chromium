@@ -1,3 +1,0 @@
-Insert a spanner into a multicol, before regular content, after an absolutely positioned subtree.
-
-PASS if no crash or assertion failure.

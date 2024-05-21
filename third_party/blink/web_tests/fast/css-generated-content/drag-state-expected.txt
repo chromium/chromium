@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=47005 Null dereference when dragging an element with generated content.
-
-Drag the box above. The text should become blue and the browser should not crash.

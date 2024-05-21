@@ -1,3 +1,0 @@
-This tests that non-integer line-height is not rounded to an integer.
-
-Test passed.

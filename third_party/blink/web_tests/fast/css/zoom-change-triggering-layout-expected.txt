@@ -1,3 +1,0 @@
-Test for rdar://problem/8119781 Crash zooming into Word document at office.live.com.
-
-The test passes if it does not crash. To test in Safari, make sure View > Zoom Text Only is not selected, then choose View > Zoom In.

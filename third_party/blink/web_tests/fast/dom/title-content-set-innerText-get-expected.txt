@@ -1,9 +1,0 @@
-This test ensures that we can update the contents of the title tag of the XHTML document when setting document.title
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById('t').innerText is 'This is the new title'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

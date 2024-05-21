@@ -1,9 +1,0 @@
-Test that window.open sets the correct opener when the calling context != window
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS passed called on "this" argument of window.open
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

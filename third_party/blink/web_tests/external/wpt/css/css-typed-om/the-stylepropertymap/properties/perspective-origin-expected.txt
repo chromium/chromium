@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: '<position>' is not a valid CSS component
-[FAIL] Can set 'perspective-origin' to the 'none' keyword: none
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-

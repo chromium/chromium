@@ -1,5 +1,0 @@
-PASS imported.constructor is source.constructor
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

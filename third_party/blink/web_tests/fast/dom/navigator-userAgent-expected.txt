@@ -1,5 +1,0 @@
-Tests for bug 47753: REGRESSION(r69850) Loading apple.com/startpage in WebKit on Windows gets a bad request.
-
-User Agent should contain Mozilla: true
-User Agent should contain AppleWebKit: true
-User Agent should contain KHTML, like Gecko: true

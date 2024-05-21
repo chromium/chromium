@@ -1,4 +1,0 @@
-This page tests calling document.importNode(null). If it passes, you'll see a "PASS" message below.
-
-caught exception: TypeError: Failed to execute 'importNode' on 'Document': parameter 1 is not of type 'Node'.
-PASS: importNode(null) didn't crash

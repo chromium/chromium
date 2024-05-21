@@ -1,7 +1,0 @@
-Tests call frames in isolated worlds.
-Main frame obtained
-Isolated world created
-Pausing
-Paused, call frames count: 3
-Resumed
-

@@ -1,3 +1,0 @@
-Test for Bug 17328: REGRESSION (r30147): Inspector is unstyled on Windows. Testing that a local .css file is allowed as a stylesheet in strict mode.
-
-SUCCESS

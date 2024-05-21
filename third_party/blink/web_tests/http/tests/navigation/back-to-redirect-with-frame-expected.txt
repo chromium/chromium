@@ -1,6 +1,0 @@
-PASS
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/resources/pass-and-notify-done.html
-        http://127.0.0.1:8000/navigation/resources/go-back.html
-===============================================

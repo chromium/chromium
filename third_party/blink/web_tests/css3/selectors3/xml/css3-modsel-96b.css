@@ -1,5 +1,0 @@
-@namespace a url(http://www.example.org/a);
-@namespace b url(http://www.example.org/b);
-div.green * { background-color : lime ! important }
-div.test * { display : block ; margin-bottom : 1em }
-div.test |* { background-color : red }

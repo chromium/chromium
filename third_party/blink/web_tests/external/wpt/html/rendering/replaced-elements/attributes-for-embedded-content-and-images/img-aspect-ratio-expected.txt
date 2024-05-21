@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Loaded images test: Error image with width, height and alt attributes
-  assert_equals: expected "auto 100 / 500" but got "auto"
-Harness: the test ran to completion.
-

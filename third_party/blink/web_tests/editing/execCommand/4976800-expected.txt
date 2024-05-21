@@ -1,5 +1,0 @@
-This tests for a bug that would cause paragraphs before and after indented content to collapse onto the same line as indented content after an outdent operation. 'foo', 'bar' and 'baz' should all appear on separate paragraphs.
-
-foo
-bar
-baz

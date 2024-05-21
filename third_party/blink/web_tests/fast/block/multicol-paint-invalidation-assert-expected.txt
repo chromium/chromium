@@ -1,1 +1,0 @@
-This test should not hit an ASSERT. To test it in the browser, just change the focus by clicking anywhere on the page. 

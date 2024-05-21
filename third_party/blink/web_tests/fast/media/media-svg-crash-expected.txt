@@ -1,1 +1,0 @@
- PASS - SVG image with media type does not crash.

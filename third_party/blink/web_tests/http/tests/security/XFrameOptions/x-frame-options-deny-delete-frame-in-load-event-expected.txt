@@ -1,2 +1,0 @@
-CONSOLE ERROR: Refused to display 'http://127.0.0.1:8000/' in a frame because it set 'X-Frame-Options' to 'deny'.
-Test that if an iframe is denied, we don't crash if the load event detaches the frame.

@@ -1,9 +1,0 @@
-Test SharedWorker lifecycle. Will print PASS multiple times, followed by DONE.
-
-PASS: Frame1 closed, shared workers kept running
-PASS: Frame2 closed, shared worker2 exited
-PASS: Frame3 closed, shared worker3 exited
-PASS: Frame4 reloaded
-PASS: Frame4 closed, all workers closed
-DONE
-

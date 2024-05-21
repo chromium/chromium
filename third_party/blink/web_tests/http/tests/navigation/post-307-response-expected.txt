@@ -1,7 +1,0 @@
-headers CONTENT_TYPE and CONTENT_LENGTH should be present.
-CONTENT_TYPE is present. Its value is: application/x-www-form-urlencoded
-CONTENT_LENGTH is present. Its value is: 15
-
-POST data should be present.
-POST data is present.
-

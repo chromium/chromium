@@ -1,8 +1,0 @@
-This tests that a data: URL loaded in an iframe doesn't have access to its parent's frame
-
-PASS: Cross frame access from a data: URL was denied.
-
---------
-Frame: 'aFrame'
---------
-Inner iframe.

@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Input : validity.tooLong is equal for node and cloned node=true
-
-Textarea: validity.tooLong is equal for node and cloned node=true
-

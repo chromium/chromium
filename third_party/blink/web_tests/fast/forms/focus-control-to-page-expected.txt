@@ -1,7 +1,0 @@
-This test checks whether you can tab in and out of various focusable objects including pages and content-editable areas. As you tab through, each element will log its number in order.
-
-  contentEditable 
-select
-   
-
-1 2 3 4 5 6 7

@@ -1,9 +1,0 @@
-CONSOLE ERROR: Not allowed to load local resource: compass.jpg
-This test is to see if a remote file can include a local image.
-Currently this test cannot be run manually on Windows because we do not have a function like pathToLocalResource() outside of DRT.
-
-
-
-Test Passed. Local image not loaded remotely.
-
-

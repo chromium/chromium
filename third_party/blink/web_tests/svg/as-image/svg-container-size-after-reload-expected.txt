@@ -1,9 +1,0 @@
-Test for WK112651: SVG image container size should not survive reloads.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS image2.width is 100
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,4 +1,0 @@
-Test that canceling css transition is reported over protocol.
-Animation created
-Animation canceled
-

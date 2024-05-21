@@ -1,5 +1,0 @@
-This tests inserting a new paragraph preserves the background color.
-
-test
-e
-<span style="background-color: rgb(153, 153, 255);"> test </span><div><span style="background-color: rgb(153, 153, 255);">e</span></div>

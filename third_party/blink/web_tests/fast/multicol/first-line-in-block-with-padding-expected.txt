@@ -1,9 +1,0 @@
-When its first line needs a column break, test that we push the entire block to the next column.
-
-There should be a blue square below.
-
-
-
-
-
-PASS

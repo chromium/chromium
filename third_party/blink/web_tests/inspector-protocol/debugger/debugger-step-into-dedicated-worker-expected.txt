@@ -1,8 +1,0 @@
-Tests that dedicated worker won't crash on attempt to step into. Bug 232392.
-Started worker
-Worker created
-SUCCESS: Worker paused
-Stepping into...
-Paused in onmessage
-Paused in doWork
-

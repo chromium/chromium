@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==200 is true
-This test passes if this img tag below is a green square when the scale factor is 2. It ensures that attributes can be changed dynamically from javascript, and that only the correct resource is loaded.

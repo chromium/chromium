@@ -1,3 +1,0 @@
-Test that window event handlers set for initial document are reset upon navigation if security check failed. There will be 'PASS' below if the test passes:
-
-PASS

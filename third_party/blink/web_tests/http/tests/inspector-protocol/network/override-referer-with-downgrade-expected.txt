@@ -1,4 +1,0 @@
-Tests that Referer header can be overriden even when it would violate referrer policy
-Referer header: HTTP_REFERER: https://127.0.0.1:8000/
-
-

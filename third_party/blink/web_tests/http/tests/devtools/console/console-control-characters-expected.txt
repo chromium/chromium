@@ -1,5 +1,0 @@
-Verify that control characters are substituted with printable characters.
-
-var� i = 0;
-VM:1 Uncaught SyntaxError: Invalid or unexpected token
-

@@ -1,9 +1,0 @@
-This tests that function inlining in the DFG JIT doesn't get confused about the global object to use for array allocation.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS done() called with 85200
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

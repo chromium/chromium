@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: a == b? false
-CONSOLE MESSAGE: a == c? false

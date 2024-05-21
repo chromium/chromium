@@ -1,6 +1,0 @@
-This tests that an open XMLHttpRequest connection will call onreadystatechange correctly when data is sent over an open connection.
-0 responseText: This is chunk number 0
-1 responseText: This is chunk number 0This is chunk number 1
-2 responseText: This is chunk number 0This is chunk number 1This is chunk number 2
-3 responseText: This is chunk number 0This is chunk number 1This is chunk number 2This is chunk number 3
-4 responseText: This is chunk number 0This is chunk number 1This is chunk number 2This is chunk number 3This is chunk number 4

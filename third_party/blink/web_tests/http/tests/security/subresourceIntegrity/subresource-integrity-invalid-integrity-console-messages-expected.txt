@@ -1,7 +1,0 @@
-CONSOLE ERROR: Error parsing 'integrity' attribute ('sha256;B0_62fJSJFrdjEFR9ba04m_D-LHQ-zG6PGcaR0Trpxg='). The specified hash algorithm must be one of 'sha256', 'sha384', or 'sha512'.
-ALERT: PASS
-CONSOLE ERROR: Error parsing 'integrity' attribute ('sha256:B0_62fJSJFrdjEFR9ba04m_D-LHQ-zG6PGcaR0Trpxg='). The specified hash algorithm must be one of 'sha256', 'sha384', or 'sha512'.
-ALERT: PASS
-CONSOLE ERROR: Error parsing 'integrity' attribute ('sha256-(B0_62fJSJFrdjEFR9ba04m_D-LHQ-zG6PGcaR0Trpxg=)'). The digest must be a valid, base64-encoded value.
-ALERT: PASS
-

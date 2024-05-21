@@ -1,2 +1,0 @@
-Click me
-To run manually, click the 'Click me' text. Test passes if it does not crash.

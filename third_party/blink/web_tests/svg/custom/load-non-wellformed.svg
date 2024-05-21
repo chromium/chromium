@@ -1,6 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" onload="document.getElementsByTagName('text')[0].textContent='Failed'">
-	<!-- if the document is xml non-wellformed, onload handlers should not be executed -->
-    <text x="0" y="30">Passed</text>
-    <use xlink:href="#undefined">
-</svg>

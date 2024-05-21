@@ -1,3 +1,0 @@
-Hover mouse over text. Blue block should appear below.
-
-SUCCESS

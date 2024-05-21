@@ -1,6 +1,0 @@
-This tests the behavior of child rules when tbody elements are created by the HTML parser. The implicitly-created tbody element should not be treated specially. In older versions of Safari it was.
-
-TEST PASSED: Child rule did not affect the table.
-
-This text should not be bold.
-This text should be bold.

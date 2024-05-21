@@ -1,7 +1,0 @@
-PASS svgText.selectSubString(-1, 0) threw exception IndexSizeError: Failed to execute 'selectSubString' on 'SVGTextContentElement': The charnum provided (4294967295) is greater than the maximum bound (3)..
-PASS svgText.getSubStringLength(0, -1) did not throw exception.
-PASS svgText.getSubStringLength(3, 0) threw exception IndexSizeError: Failed to execute 'getSubStringLength' on 'SVGTextContentElement': The charnum provided (3) is greater than or equal to the maximum bound (3)..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,8 +1,0 @@
-Tests that a range input's slider is cloned along with its host. There should be a second range input in the document and it should have a slider positioned at zero.
-
-PASS dolly.clientHeight is sheep.clientHeight
-PASS internals.shadowPseudoId(dollyShadow.firstChild) is internals.shadowPseudoId(sheepShadow.firstChild)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

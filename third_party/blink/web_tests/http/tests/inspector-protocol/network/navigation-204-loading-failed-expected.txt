@@ -1,4 +1,0 @@
-Tests that navigation request resulting in HTTP 204 is reported as failed.
-responseReceived: http://127.0.0.1:8000/inspector-protocol/page/resources/http204.php 204 No Content
-loadingFailed: canceled = true
-

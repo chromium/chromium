@@ -1,2 +1,0 @@
-Run test:
-This test passes if it doesn't crash

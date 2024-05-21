@@ -1,8 +1,0 @@
-This tests that cancelling an utterance a second time after garbage collection doesn't crash under ASAN.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,6 +1,0 @@
-CONSOLE MESSAGE: Clicking a link, pre-policy:
-CONSOLE MESSAGE: PASS: Event handler triggered pre-policy.
-CONSOLE MESSAGE: Injecting Content-Security-Policy.
-CONSOLE MESSAGE: Clicking a link, post-policy:
-CONSOLE MESSAGE: FAIL: Event handler triggered post-policy.
-This test checks that CSP is evaluated on each call to an inline event handler, even if it's been executed pre-policy. It passes if one 'PASS' and no 'FAIL' messages appear.

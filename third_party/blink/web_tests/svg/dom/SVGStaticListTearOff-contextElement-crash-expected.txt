@@ -1,6 +1,0 @@
-PASS maskObservation.wasCollected is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-This test passes if it doesn't crash in ASAN.

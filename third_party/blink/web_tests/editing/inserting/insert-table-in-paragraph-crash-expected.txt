@@ -1,5 +1,0 @@
-PASS $("editable").innerHTML is "<table><tbody><tr><td>stats</td></tr></tbody></table>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

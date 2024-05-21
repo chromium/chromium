@@ -1,8 +1,0 @@
-<script>
-fetch("http://example.test:8000/xmlhttprequest/resources/access-control-allow-lists.php?origin=*", {method: "POST"})
-    .then(() => {
-      window.opener.postMessage('FAIL: Fetch API succeeded unexpectedly', '*');
-    }, e => {
-      window.opener.postMessage('DONE', '*');
-    });
-</script>

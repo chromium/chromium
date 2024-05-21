@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] execCommand(forwardDelete, false, "") in <div contenteditable><p>abc</p><select>{<option>def</option>}<option>ghi</option></select><p>jkl</p></div>: shouldn't delete <option>
-  assert_equals: expected "<div contenteditable><p>abc</p><select><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc</p><p>jkl</p></div>"
-[FAIL] execCommand(forwardDelete, false, "") in <div contenteditable><p>abc</p><select>{<option>def</option><option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>s nor <select>
-  assert_equals: expected "<div contenteditable><p>abc</p><select><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc</p><p>jkl</p></div>"
-[FAIL] execCommand(forwardDelete, false, "") in <div contenteditable><p>abc</p><select multiple>{<option>def</option><option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>s nor <select multiple>
-  assert_equals: expected "<div contenteditable><p>abc</p><select multiple><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc</p><p>jkl</p></div>"
-Harness: the test ran to completion.
-

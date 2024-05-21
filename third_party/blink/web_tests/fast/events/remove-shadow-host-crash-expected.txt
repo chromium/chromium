@@ -1,3 +1,0 @@
-Ensures that a "mouseout" event, fired on shadow DOM element of a destroyed host element doesn't crash the browser.
-
-Passes if doesn't crash.

@@ -1,2 +1,0 @@
-This tests the functionality of the "noreferrer" link relation on anchor tags. The link below should not send an http referrer, and the resulting window should have its opener attribute set to null. The values of the referrer and window.opener should be empty below.
-Start no referrer test

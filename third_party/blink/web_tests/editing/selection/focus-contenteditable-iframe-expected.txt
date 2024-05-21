@@ -1,8 +1,0 @@
-This tests focusing the body element in a contentEditable iframe. The whole body contents should be selected. Focus should only place the cursor at the beginning of the body if there isn't an existing selection.
-| <html>
-|   <head>
-|   <body>
-|     contenteditable="true"
-|     <#selection-anchor>
-|     "asdf"
-|     <#selection-focus>

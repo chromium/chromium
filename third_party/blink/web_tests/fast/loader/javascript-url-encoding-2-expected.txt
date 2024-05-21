@@ -1,1 +1,0 @@
-Should be Cyrillic text, not U+FFFD REPLACEMENT CHARACTERS: Проверка

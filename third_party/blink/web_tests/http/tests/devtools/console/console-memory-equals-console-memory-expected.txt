@@ -1,5 +1,0 @@
-Tests that console.memory returns fresh instance/samples.
-
-console.memory === console.memory
-false
-

@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-This test verifies that WebKit doesn't crash when accessing the 'caller' property from inside an event listener.
-
-PASS: WebKit didn't crash.

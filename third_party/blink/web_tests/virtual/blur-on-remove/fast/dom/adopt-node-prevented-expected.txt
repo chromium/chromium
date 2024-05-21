@@ -1,9 +1,0 @@
-Test that adoptNode fails safely if prevented by a DOM mutation.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS target.ownerDocument.location is document.location
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

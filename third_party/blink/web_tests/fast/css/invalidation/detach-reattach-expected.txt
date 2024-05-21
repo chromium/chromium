@@ -1,5 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS getComputedStyle(inner).backgroundColor is "rgba(0, 0, 0, 0)"

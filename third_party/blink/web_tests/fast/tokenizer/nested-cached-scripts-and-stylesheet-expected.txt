@@ -1,7 +1,0 @@
-Test that the tokenizer handles a case where:
-
-An external script is loaded to the cache.
-Another external script
-triggers a stylesheet load by adding a link element.
-document.writes a script tag that references the first script.
-This should not crash.

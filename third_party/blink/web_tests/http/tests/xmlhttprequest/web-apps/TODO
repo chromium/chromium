@@ -1,5 +1,0 @@
-Check that a document with type "text/x-pseudo-xml" is not parsed as XML.
-Do XML documents fetched using XMLHttpRequest have script run? Have XML Stylesheet PIs loaded?
-Do responseXML and responseText return null or raise exceptions when not ready?
-Does .abort() send readyState to 0 and leave the event listeners?
-Do headers with U+000A, U+000D, U+0020, U+003A characters cause it to be dropped?

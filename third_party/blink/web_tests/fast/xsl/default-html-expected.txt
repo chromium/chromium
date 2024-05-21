@@ -1,6 +1,0 @@
-Test for bug 11694: XSLT output method does not default to HTML when the target document is HTML.
-
-Should be green: result.
-Should be black: result.
-
-SUCCESS

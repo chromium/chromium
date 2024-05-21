@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'speak' to the 'auto' keyword: auto
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'speak' to the 'never' keyword: never
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'speak' to the 'always' keyword: always
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-

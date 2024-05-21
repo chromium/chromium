@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-mqLU0Zw7B/c6fYkvbRoA2V1jZ1apgellJyv17d18uTs='), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
-
-Ensure that we don't crash when loading an ImageDocument that sets CSP headers 

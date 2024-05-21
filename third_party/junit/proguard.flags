@@ -1,8 +1,0 @@
--dontwarn com.google.common.**
--dontwarn junit.**
--dontwarn org.junit.**
--dontwarn org.hamcrest.**
-
--keepnames,allowoptimization public class junit.framework.** {
-    *;
-}

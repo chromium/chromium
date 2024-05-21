@@ -1,9 +1,0 @@
-column-span only takes the values 'none' and 'all'. '1' is invalid.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(document.getElementById('elm')).WebkitColumnSpan is 'all'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

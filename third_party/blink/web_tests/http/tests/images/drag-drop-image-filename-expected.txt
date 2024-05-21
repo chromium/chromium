@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: Test image loaded.
-CONSOLE MESSAGE: Drop event fired.
-Filename being dragged: load-and-stall.gif
-

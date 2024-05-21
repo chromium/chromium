@@ -1,2 +1,0 @@
-This test verifies that we can get types from the clipboard during an onpaste event. This test requires DRT.
-PASS

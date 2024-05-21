@@ -1,8 +1,0 @@
-This test navigates a frame by clicking on a link with rel=noreferrer. It passes, if the referrer is empty, even though the referrer policy is set to always.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is empty
-Referrer is empty
-

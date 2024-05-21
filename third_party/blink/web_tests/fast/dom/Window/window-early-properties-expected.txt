@@ -1,4 +1,0 @@
-Test setting window properties right after window.open()
-window retains early properties: PASS
-document does not retain early properties: PASS
-

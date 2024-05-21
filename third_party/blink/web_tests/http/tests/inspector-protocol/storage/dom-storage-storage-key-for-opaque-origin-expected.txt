@@ -1,4 +1,0 @@
-Tests that getting storageKey for frame with opaque origin throws an error
-
-Throws an expected error: Frame corresponds to an opaque origin and its storage key cannot be serialized
-

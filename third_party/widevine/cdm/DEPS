@@ -1,5 +1,0 @@
-include_rules = [
-  "+base/token.h",
-  "+build/build_config.h",
-  "+media/cdm/cdm_type.h"
-]

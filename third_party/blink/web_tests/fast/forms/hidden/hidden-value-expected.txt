@@ -1,9 +1,0 @@
-This tests that the JS property value and the attribute value for a hidden input field are the same.
-
-Markup: <input type="hidden" id="tf" value="New value">
-Value: New value
-Attribute: New value
-After reset
-Markup: <input type="hidden" id="tf" value="New value">
-Value: New value
-Attribute: New value

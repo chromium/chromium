@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] AudioBufferSourceNode setter set with non-null buffer
-  assert_true: Invalid value at index 0, expected close to 1.0, found 0.5 when reading back expected true got false
-[FAIL] AudioBufferSourceNode buffer setter set with null
-  assert_true: Invalid value at index 0, expected close to 1.0, found 0.5 when reading back expected true got false
-Harness: the test ran to completion.
-

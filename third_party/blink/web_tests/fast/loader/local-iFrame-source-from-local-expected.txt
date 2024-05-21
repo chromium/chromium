@@ -1,6 +1,0 @@
-This test is to see if a local file can include a local page in an iFrame.
-Currently this test cannot be run manually on Windows because we do not have a function like pathToLocalResource() outside of DRT.
-
-
-
-Test Passed. Local page loaded locally into iFrame.

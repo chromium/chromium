@@ -1,7 +1,0 @@
-When its first is on the other side of a column boundary, test that we push the entire block to the next column.
-
-There should be a blue square below.
-
-
-
-PASS

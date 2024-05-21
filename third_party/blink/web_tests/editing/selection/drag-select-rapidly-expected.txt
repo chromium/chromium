@@ -1,4 +1,0 @@
-This test verifies that selection begins at the mouse-down position. Select rapidly inside the box blow. The first letter should be selected.
-
-The first part of this text should be selected.
-PASS

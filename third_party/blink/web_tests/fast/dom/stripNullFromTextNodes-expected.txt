@@ -1,2 +1,0 @@
-hello
-The null characters should be stripped out of the string above and it should have a length of 5. And the DOM thinks the length is...5!

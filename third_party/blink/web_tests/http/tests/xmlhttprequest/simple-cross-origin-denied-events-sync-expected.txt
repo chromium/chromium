@@ -1,5 +1,0 @@
-CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/reply.xml' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-Test that a simple cross-origin request to a server that responds (but does not permit cross-origin requests) is indistinguishable from one that does not exist. Should say PASS:
-
-PASS
-

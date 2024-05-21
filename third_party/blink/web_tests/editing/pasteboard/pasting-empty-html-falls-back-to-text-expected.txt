@@ -1,6 +1,0 @@
-This test requires DRT. It verifies that pasting in a richly editable area falls back to text if the HTML content is an empty string.
-
-
-
-
-PASS

@@ -1,9 +1,0 @@
-Check if changing type on input event handler doesn't crash. This requires ASAN build.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if not crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

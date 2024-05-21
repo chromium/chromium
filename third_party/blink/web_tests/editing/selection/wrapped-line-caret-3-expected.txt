@@ -1,5 +1,0 @@
-This test passes if the caret is at the start of the first line.
-
-PASS
-
-a xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

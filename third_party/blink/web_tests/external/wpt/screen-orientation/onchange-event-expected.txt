@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that orientationchange event is fired when the orientation changes.
-  assert_true: The event must be fired first. expected true got false
-Harness: the test ran to completion.
-

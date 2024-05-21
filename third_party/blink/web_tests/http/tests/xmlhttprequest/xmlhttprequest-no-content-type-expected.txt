@@ -1,3 +1,0 @@
-Test case for Bug 56345: REGRESSION: Crash in adjustMIMETypeIfNecessary since r81001
-
-This test verifies that an XHR content with no Content-Type set does not crash the browser.

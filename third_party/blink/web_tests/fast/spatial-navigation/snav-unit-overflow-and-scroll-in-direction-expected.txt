@@ -1,9 +1,0 @@
-Start
-End
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS gFocusedDocument.activeElement.getAttribute("id") is "start"
-PASS true is true
-PASS gFocusedDocument.activeElement.getAttribute("id") is "end"

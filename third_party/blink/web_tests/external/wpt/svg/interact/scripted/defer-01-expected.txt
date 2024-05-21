@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] defer script runs later
-  assert_equals: script run status expected "deferred" but got "inline"
-Harness: the test ran to completion.
-

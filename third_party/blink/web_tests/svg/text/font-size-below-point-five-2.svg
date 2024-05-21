@@ -1,7 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg'>
-  <text x='10' y='30'>The two words should be the same size:</text>
-  <text x='10' y='12' transform='scale(15)'>
-    <tspan style='font-size:0.5px'>TINY</tspan>
-    <tspan style='font-size:0.499999px'>TINY</tspan>
-  </text>
-</svg>

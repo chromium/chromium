@@ -1,8 +1,0 @@
-A block that follows a block with -webkit-column-break-after:always; should be positioned at the *top* of the *next* column. Margins may need to be ignored to achieve this.
-
-PASS child.offsetLeft + child.offsetWidth is mc.offsetLeft + mc.offsetWidth
-PASS child.offsetTop is mc.offsetTop
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

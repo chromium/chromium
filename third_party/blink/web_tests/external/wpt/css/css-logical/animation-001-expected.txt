@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Logical shorthands follow the usual prioritization based on number of component longhands
-  assert_equals: expected "300px" but got "0px"
-Harness: the test ran to completion.
-

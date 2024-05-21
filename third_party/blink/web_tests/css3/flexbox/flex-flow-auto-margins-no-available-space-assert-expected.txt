@@ -1,6 +1,0 @@
-* { display: flex; padding-bottom: 20pt; min-height: 0.7%; margin-top: 6000%; flex-shrink: 0; flex-basis: 7000%; }
-PASS
-
-crbug.com/380201: Don't shrink below border/padding when stretching children within a flexbox with no available space.
-
-window.checkLayout('abbr');

@@ -1,2 +1,0 @@
-Tests that browser does not crash or hit DCHECK() when an intercepted request is abandoned.
-

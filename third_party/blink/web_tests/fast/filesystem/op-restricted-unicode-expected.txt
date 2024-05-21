@@ -1,41 +1,0 @@
-* Running: RestrictedUnicodeChars
-PASS Succeeded: "/".getFile("ab")
-PASS this.expectedError + "" is "InvalidModificationError"
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("a	b")
-PASS Succeeded: "/".getFile("a
-b")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("a
-b")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Succeeded: "/".getFile("ab")
-PASS Verified entry: ENTRY {path:/ab name:ab type:FILE}
-Finished running tests.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

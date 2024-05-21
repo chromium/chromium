@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 'text-combine-upright' does not support 'digits 3'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
-Harness: the test ran to completion.
-

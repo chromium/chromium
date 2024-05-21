@@ -1,3 +1,0 @@
-This tests that content within template is lifted to the template contents when parsed as xhtml.
-The template content made it through the wormhole
-<template xmlns="http://www.w3.org/1999/xhtml"><div>Template content</div></template>

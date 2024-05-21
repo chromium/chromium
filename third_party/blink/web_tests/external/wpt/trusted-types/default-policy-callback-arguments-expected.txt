@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test callback arguments, case HTMLScriptElement textContent
-  assert_equals: Expecting the sink name. expected "HTMLScriptElement textContent" but got "Node textContent"
-Harness: the test ran to completion.
-

@@ -1,6 +1,0 @@
-CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/xmlhttprequest/resources/get.txt' because it violates the following Content Security Policy directive: "connect-src http://localhost:8000".
-
-Pass
-
-
-This test passes if the malformed meta tag doesn't cause a crash and the resource is blocked.

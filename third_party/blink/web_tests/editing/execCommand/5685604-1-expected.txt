@@ -1,2 +1,0 @@
-Success. execCommand("styleWithCSS", ...) is supported.
-Success. A legacy formatting tag was used for styling by default, and execCommand("styleWithCSS", ..., true) activated the use of CSS styling.

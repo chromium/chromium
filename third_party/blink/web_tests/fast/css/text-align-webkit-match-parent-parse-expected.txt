@@ -1,2 +1,0 @@
-Test that text-align:-webkit-match-parent is parsed correctly. The test passes if the text "PASS" is displayed below.
-PASS

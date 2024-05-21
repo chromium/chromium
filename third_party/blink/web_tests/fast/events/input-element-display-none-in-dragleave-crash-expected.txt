@@ -1,1 +1,0 @@
-This test passes if there is no crash when dragging a file over and then away from the file input element below.

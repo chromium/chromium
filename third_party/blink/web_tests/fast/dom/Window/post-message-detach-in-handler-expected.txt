@@ -1,9 +1,0 @@
-Test that detaching document in window.postMessage() handler does not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Received message msg
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

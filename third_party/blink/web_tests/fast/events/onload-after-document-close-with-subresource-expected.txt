@@ -1,5 +1,0 @@
-This test verifies that the load event doesn't fire until subresource content has loaded, even if you manually call document.close beforehand. See bug 13241.
-
-dimensions before onload (should be { 0 x 0 }, otherwise the test will falsely pass): { 0 x 0 }
-dimensions during onload (should be { 215 x 174 }, otherwise onload fired too early): { 215 x 174 }
-

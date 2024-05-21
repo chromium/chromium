@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught IndexSizeError: Failed to execute 'splitText' on 'Text': The offset 10000 is larger than the Text node's length.
-This tests that we are getting the correct message for DOM Exception 1: INDEX_SIZE_ERR.

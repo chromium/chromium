@@ -1,8 +1,0 @@
-Report stylesheet loading failures
-sourceURL: ''
-loadingFailed: undefined
-sourceURL: '404.css'
-loadingFailed: true
-sourceURL: 'dummy.css'
-loadingFailed: false
-

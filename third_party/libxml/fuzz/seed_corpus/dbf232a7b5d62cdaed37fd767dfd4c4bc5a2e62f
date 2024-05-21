@@ -1,7 +1,0 @@
-<addressBook>
-  <card>
-    <name>foo</name>
-    <email>bar</email>
-    <note>this guy is <em>annoying</em> !</note>
-  </card>
-</addressBook>

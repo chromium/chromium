@@ -1,9 +1,0 @@
-Double click to select word should work with DOM modification by click event handler.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS selection.toString().trim() is "hello"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

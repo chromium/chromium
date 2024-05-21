@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] webrtc blocked with an explicit webrtc blocked policy
-  assert_equals: expected "blocked" but got "allowed"
-Harness: the test ran to completion.
-

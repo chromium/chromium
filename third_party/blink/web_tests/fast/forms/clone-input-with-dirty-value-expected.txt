@@ -1,3 +1,0 @@
-This tests cloning an input element with an edited value. The cloned input element should retain the edited value and you should see PASSED blow.
-
-PASSED

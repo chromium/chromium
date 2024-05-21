@@ -1,1 +1,0 @@
-This test ensures that we do not crash when css generated content attempts to attach to svg text

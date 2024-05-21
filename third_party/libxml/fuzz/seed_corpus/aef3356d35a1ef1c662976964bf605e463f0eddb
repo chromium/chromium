@@ -1,4 +1,0 @@
-<addressBook>
-  <card name="foo" email="bar"/>
-  <card name="foo2" note="second" email="bar2"/>
-</addressBook>

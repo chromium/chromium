@@ -1,3 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=10202 REGRESSION: Repro crash when loading an empty image document.
-
-No crash means test PASS.

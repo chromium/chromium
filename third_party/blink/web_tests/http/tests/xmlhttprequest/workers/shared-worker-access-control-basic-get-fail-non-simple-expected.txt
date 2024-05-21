@@ -1,5 +1,0 @@
-GET should not trigger a preflight request from a shared worker unless it has non-simple headers.
-
-PASS: Cross-domain access allowed for simple get.
-PASS: Exception thrown. Cross-domain access was denied in 'send'. [Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://localhost:8000/xmlhttprequest/resources/access-control-basic-get-fail-non-simple.cgi'.].
-DONE

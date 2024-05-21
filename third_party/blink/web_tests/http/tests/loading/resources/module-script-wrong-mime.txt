@@ -1,1 +1,0 @@
-window.ran_invalid_mime_script = true;

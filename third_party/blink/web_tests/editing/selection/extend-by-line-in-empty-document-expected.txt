@@ -1,3 +1,0 @@
-This test ensures WebKit does not crash when extending selection forward by line in an empty document.
-
-PASS.

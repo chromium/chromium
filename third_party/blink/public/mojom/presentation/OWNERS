@@ -1,5 +1,0 @@
-# Include a reviewer from this file for semantic/non-trivial changes.
-file://third_party/blink/renderer/modules/presentation/OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

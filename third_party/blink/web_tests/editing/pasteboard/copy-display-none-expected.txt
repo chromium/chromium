@@ -1,7 +1,0 @@
-This tests to make sure a copy after making the selection display: none does not hit an assertion.
-
-PASSED
-
-This is text before the test paragraph.
-
-This is the paragraph after the hidden one.

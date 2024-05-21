@@ -1,4 +1,0 @@
-CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
-This test ensures WebKit does not crash when executing Delete in an empty document.
-
-PASS

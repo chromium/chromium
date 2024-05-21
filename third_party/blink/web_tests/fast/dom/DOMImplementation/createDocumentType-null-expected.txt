@@ -1,7 +1,0 @@
-PASS doctype.name is "null"
-PASS doctype.publicId is "null"
-PASS doctype.systemId is "null"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

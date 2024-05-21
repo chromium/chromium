@@ -1,9 +1,0 @@
-Tests the digest() method using ArrayBuffer
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS: sha-256 of [0] should be [6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d] and was
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

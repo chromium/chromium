@@ -1,9 +1,0 @@
-Test that when dir attribute is specified for non html element, it is not considered for dirname attribute value in submission body.
-
-Post Comment
-
-PASS document.location.search.indexOf("nonHtmlAncestor.dir=ltr") != -1 is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

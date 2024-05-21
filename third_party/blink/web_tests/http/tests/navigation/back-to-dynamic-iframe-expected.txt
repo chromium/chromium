@@ -1,7 +1,0 @@
- This test expects the iframe to be reset on backward navigation. Back-forward cache needs to be disabled to run this test successfully.
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/back-to-dynamic-iframe.html
-            http://127.0.0.1:8000/navigation/resources/back-to-dynamic-iframe-iframe.html#PASS (in frame "<!--framePath //<!--frame0-->-->")
-        http://127.0.0.1:8000/navigation/resources/go-back.html
-===============================================

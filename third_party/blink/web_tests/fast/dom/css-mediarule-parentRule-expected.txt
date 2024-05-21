@@ -1,9 +1,0 @@
-This tests that calling parentRule on the child rule of MediaRule is equal to that MediaRule.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS childRule.parentRule is mediaRule
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

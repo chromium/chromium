@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="shift-jis" ?>
-<root>
- <fail> This is an invalid byte pair in shift-jis:  </fail>
- <test/> <!-- shouldn't ever be parsed, as the parser should abort at the first sign of non-well-formedness -->
-</root>

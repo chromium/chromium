@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testDecimalFacet xmlns="http://www.foo.com"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.foo.com bug313982_0.xsd">0.99</testDecimalFacet>

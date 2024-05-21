@@ -1,7 +1,0 @@
-This test is to see if a local file can include a local CSS style.
-Currently this test cannot be run manually on Windows because we do not have a function like pathToLocalResource() outside of DRT.
-
-If the background is yellow then the CSS was loaded.
-
-
-Test Passed. Local CSS remotely loaded

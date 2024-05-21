@@ -1,7 +1,0 @@
-<!DOCTYPE acb SYSTEM "http://example.org/acb.dtd">
-<acb>
-  <a>Let's use predefined entites &amp; &lt; &gt;</a>
-  <c/>
-  <b>Let's use a DTD defined entity &bent;</b>
-</acb>
-

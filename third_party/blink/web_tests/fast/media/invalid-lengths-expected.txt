@@ -1,7 +1,0 @@
-PASS: "(min-device-width: 0)" evaluates to true.
-PASS: "(min-device-width: 1px)" evaluates to true.
-PASS: "(min-device-width: 1deg)" evaluates to false.
-PASS: "(min-device-width: 1)" evaluates to false.
-PASS: "(min-device-width: solid)" evaluates to false.
-PASS: "(min-device-width: "red")" evaluates to false.
-

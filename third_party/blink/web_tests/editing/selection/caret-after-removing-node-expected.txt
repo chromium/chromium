@@ -1,7 +1,0 @@
-PASS getSelection().type is "Caret"
-PASS getSelection().focusNode is sample
-PASS getSelection().focusOffset is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

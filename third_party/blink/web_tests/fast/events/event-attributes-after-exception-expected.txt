@@ -1,9 +1,0 @@
-This page tests various event attributes after dispatchEvent throws an exception.
-
-If the test passes, you'll see a series of PASS messages below.
-
-PASS: event.target should be null and is.
-PASS: event.currentTarget should be null and is.
-PASS: event.relatedTarget should be null and is.
-PASS: event.eventPhase should be 0 and is.
-

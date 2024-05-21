@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs id="d">
-        <linearGradient id="maskedGradient"></linearGradient>
-        <rect id="masked" fill="url(#maskedGradient)"/>
-        <mask id="mask"></mask>
-    </defs>
-    <use xlink:href="#masked" mask="url(#mask)"/>
-</svg>

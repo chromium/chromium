@@ -1,1 +1,0 @@
-This tests that xml viewer is not used when there is a CSS stylesheet. This text should be green. SUCCESS

@@ -1,8 +1,0 @@
-CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar'.
-CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar?baz=foz'.
-CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foobar'.
-CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar?'.
-CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo&bar?'.
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

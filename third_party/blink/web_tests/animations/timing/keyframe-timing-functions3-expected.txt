@@ -1,3 +1,0 @@
-PASS - "left" property for "multipleUsesFirst" element at 0.2s saw something close to: 0
-PASS - "left" property for "inheritUsesParent" element at 0.2s saw something close to: 0
-

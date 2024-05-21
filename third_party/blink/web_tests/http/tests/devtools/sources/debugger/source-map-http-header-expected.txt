@@ -1,9 +1,0 @@
-Tests that SourceMap and X-SourceMap http headers are propagated to scripts in the front-end.
-
-Added script:
-  url: http://127.0.0.1:8000/devtools/sources/debugger/resources/source-map.php
-  sourceMapUrl: http://localhost/source.map.js
-Added script:
-  url: http://127.0.0.1:8000/devtools/sources/debugger/resources/x-source-map.php
-  sourceMapUrl: http://localhost/x-source.map.js
-

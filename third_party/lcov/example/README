@@ -1,6 +1,0 @@
-
-To get an example of how the LCOV generated HTML output looks like,
-type 'make output' and point a web browser to the resulting file
-
-  output/index.html
-

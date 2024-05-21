@@ -1,8 +1,0 @@
-PASS: targetWindow.dispatchEvent(new CustomEvent("click")); should have thrown an exception, and did: SecurityError: Failed to read a named property 'dispatchEvent' from 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: window.dispatchEvent.call(targetWindow, new CustomEvent("click")); should have thrown an exception, and did: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-

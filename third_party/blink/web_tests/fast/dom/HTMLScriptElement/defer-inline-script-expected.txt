@@ -1,7 +1,0 @@
-Checks that inline scripts are not deferred.
-1
-2
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

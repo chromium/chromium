@@ -1,8 +1,0 @@
-Tests that the animation is correctly paused.
-Animation started
-Box is animating: true
-Animation paused
-Box is animating: true
-Animation released
-Box is animating: false
-

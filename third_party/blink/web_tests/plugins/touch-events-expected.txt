@@ -1,4 +1,0 @@
-Plugin received event: TouchStart
-Plugin received event: TouchMove
-Plugin received event: TouchEnd
-

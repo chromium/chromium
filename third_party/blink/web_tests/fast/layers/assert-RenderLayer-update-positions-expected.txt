@@ -1,1 +1,0 @@
-Test for bug 66901. The test passes if it does not ASSERT.

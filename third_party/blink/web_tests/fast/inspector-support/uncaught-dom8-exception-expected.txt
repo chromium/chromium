@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to execute 'appendChild' on 'Node': 1 argument required, but only 0 present.
-This tests that we are getting the correct message for DOM Exception 8: NOT_FOUND_ERR.

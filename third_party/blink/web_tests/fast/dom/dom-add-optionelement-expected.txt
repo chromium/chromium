@@ -1,9 +1,0 @@
-Purpose: To test if the both DOM1 and DOM2 versions of the add() method add an option to a dropdown list. You should see three "TEST PASSED" lines below.
-
-a
-b
-c
-d
-DOM1 TEST PASSED
-DOM2 full TEST PASSED
-DOM2 null TEST PASSED

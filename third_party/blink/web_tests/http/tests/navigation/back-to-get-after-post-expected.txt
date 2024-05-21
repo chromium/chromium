@@ -1,7 +1,0 @@
-
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/back-to-get-after-post.php
-curr->  http://127.0.0.1:8000/navigation/resources/back-to-get-after-post-helper.html
-        http://127.0.0.1:8000/navigation/back-to-get-after-post.php
-===============================================

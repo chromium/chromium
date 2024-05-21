@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: open() during abort processing - abort() called from onloadstart
-  assert_array_equals: lengths differ, expected array ["onloadstart readyState before abort() 1", "onreadystatechange readyState before open() 4", "onreadystatechange readyState after open() 1", "onloadstart readyState 1", "client.onabort 1", "readyState after abort() 1", "client.onload 4"] length 7, got ["onloadstart readyState before abort() 1", "onreadystatechange readyState before open() 4", "onreadystatechange readyState after open() 1", "onloadstart readyState 1", "upload.onabort 1", "upload.onloadend 1", "client.onabort 1", "readyState after abort() 1", "client.onload 4"] length 9
-Harness: the test ran to completion.
-

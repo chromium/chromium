@@ -1,8 +1,0 @@
-This page tests
-https://bugs.webkit.org/show_bug.cgi?id=56393
-Bug 56393 - Crash on www.crave.cnet.com in FrameView::windowClipRect()
-It contains an iframe element with display:none that loads an HTML page with an object element of a .swf file. Object must be in a separate page (data: scheme won't show problem).
-If this test does not assert or crash and the line below reads "PASSED", it passes.
-
-PASSED
-

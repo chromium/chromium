@@ -1,7 +1,0 @@
-This XML file does not appear to have any style information associated with it. The document tree is shown below.
-
-<svg xmlns="http://www.example.org/" width="300" height="200">
-<!--  wrong namespace, but sent as image/svg+xml  -->
-<desc>There should be no red on this page.</desc>
-<rect x="10" y="10" width="280" height="180" fill="red"/>
-</svg>

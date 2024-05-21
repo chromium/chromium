@@ -1,5 +1,0 @@
-Test changing a regular block with inline children into a multicol container, and then add a block.
-
-PASS if no crash.
-
- 

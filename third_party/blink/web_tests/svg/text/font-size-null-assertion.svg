@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-</script>
-<!-- Passes if test case doesn't cause an assertion. -->
-<text font-size="0">Pas<tspan>s</tspan></text>
-</svg>

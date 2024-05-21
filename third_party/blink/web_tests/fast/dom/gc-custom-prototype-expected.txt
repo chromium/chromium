@@ -1,6 +1,0 @@
-Tests that custom prototypes on DOM objects persist after garbage collection.
-
-PASS: $('p').__proto__ should be null and is.
-PASS: $('p').__proto__ should be null and is.
-PASS: $('p').__proto__ should be null and is.
-

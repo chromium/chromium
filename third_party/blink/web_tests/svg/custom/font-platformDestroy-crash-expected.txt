@@ -1,2 +1,0 @@
-1
-Test for http://bugs.webkit.org/show_bug.cgi?id=16967

@@ -1,5 +1,0 @@
-The testcase checks that inserting a row into an empty table doesn't result in a crash.
-
-No crash means test PASSED.
-
-

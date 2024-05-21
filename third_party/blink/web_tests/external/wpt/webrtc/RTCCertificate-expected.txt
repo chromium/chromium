@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] RTCPeerConnection({ certificates }) should generate offer SDP with fingerprint of all provided certificates
-  assert_true: Expect fingerprint line to be found in SDP expected true got false
-Harness: the test ran to completion.
-

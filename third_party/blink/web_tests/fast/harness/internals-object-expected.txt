@@ -1,1 +1,0 @@
-window.internals object should be visible when running in DRT: PASS

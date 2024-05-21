@@ -1,5 +1,0 @@
-This test checks for a crash when removing an iframe with scrollbars from a document. See <rdar://problem/5061807>.
-
-If the test passes, you'll see a PASS message below.
-
-PASS: Yout didn't crash.

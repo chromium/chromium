@@ -1,3 +1,0 @@
-To run this test manually, simply invoke the 'copy' action. There should be a line that indicates the types array had 0 elements.
-clipboardData.types is ""
-clipboardData.types has 0 elements

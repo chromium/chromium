@@ -1,1 +1,0 @@
-If this text is shown, that means that the document was successfully loaded using location.assign.

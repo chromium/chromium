@@ -1,9 +1,0 @@
-Test to make sure WebKit doesn't quote face attribute of font elements.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Font face is unquoted.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

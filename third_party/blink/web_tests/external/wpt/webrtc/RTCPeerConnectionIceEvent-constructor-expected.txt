@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] RTCPeerConnectionIceEvent with no eventInitDict (default)
-  assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] RTCPeerConnectionIceEvent with empty object as eventInitDict (default)
-  assert_equals: expected (object) null but got (undefined) undefined
-Harness: the test ran to completion.
-

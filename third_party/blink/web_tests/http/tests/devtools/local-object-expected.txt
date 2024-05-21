@@ -1,8 +1,0 @@
-Tests callFunction on local remote objects.
-
-getItem(1) result: 28
-compareAndSwap(1, 28, 42) result: Done
-compareAndSwap(1, 28, 42) throws exception: true
-guessWhat() result: 42
-Final value of object: [7, 42, 496]
-

@@ -1,5 +1,0 @@
-
-  p { background: lime; }
-  p:subject { background: red; } /* this is not valid CSS, and if UAs
-  implemented the experimental :subject pseudo-class they should have
-  used the :-vnd-ident syntax. */

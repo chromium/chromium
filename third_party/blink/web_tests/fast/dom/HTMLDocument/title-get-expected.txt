@@ -1,9 +1,0 @@
-Tests: getting HTMLDocument::title
-
-Condition(s):
-
-Success message: passed
-
-Failure message: failed
-
-passed

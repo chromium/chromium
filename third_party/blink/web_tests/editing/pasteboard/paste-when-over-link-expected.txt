@@ -1,9 +1,0 @@
-
-This test passes if middle mouse clicking on a link where the event handler
-focuses a textarea does not paste into the textarea.
-
-
-After middle click on link:
-|   <shadow:root>
-|     <div>
-|       "Content"

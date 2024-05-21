@@ -1,5 +1,0 @@
-history.length = 1
-
-============== Back Forward List ==============
-curr->  (file test):fast/loader/frame-location-change-not-added-to-history.html
-===============================================

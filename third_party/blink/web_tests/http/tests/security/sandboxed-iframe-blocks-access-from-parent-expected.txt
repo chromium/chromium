@@ -1,7 +1,0 @@
-ALERT: PASS: Cross-origin access to the Location object threw an exception.
-Sandboxing a frame puts it into a unique origin by default, which the containing document shouldn't have script access to. This test passes if an exception is thrown upon the access violation.
-
---------
-Frame: 'testframe'
---------
-

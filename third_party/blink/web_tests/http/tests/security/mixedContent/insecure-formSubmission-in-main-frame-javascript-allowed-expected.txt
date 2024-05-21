@@ -1,1 +1,0 @@
-This test opens a window that shows a form with "action" pointing to an insecure location. We should not trigger a mixed content callback because the main frame in the window is HTTPS but is posting to a `javascript:` location.

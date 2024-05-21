@@ -1,6 +1,0 @@
-The body should have 0 for both offsetLeft and offsetTop.
-
-body.offsetParent = null
-body.offsetLeft = 0
-body.offsetTop = 0
-

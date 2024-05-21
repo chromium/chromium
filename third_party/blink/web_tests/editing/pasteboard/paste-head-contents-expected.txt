@@ -1,4 +1,0 @@
-This test ensures WebKit strips away base, link, meta, style and title elements before inserting HTML.
-
-PASS
-

@@ -1,4 +1,0 @@
-Verify that exposing devtools protocol yields a functional protocol.
-Protocol responses: 2
-Protocol events: 6
-

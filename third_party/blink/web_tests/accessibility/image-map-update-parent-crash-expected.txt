@@ -1,8 +1,0 @@
-This tests that an image map's hold on it's parent will be cleared if the parent goes away.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

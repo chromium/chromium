@@ -1,1 +1,0 @@
-crbug.com/568744: Ensure an element's floats are cleared when it becomes inline. This test shouldn't crash.

@@ -1,5 +1,0 @@
-CONSOLE ERROR: Error parsing 'integrity' attribute ('sha1-Ywd5te2RvxmuHLzLzZjYo1_0LMw='). The specified hash algorithm must be one of 'sha256', 'sha384', or 'sha512'.
-ALERT: PASS
-CONSOLE ERROR: Error parsing 'integrity' attribute ('#yM5ZyzNsyKfaXRY78zSGapeQKtl0oGdpPpYxgwl8XW8='). The hash algorithm must be one of 'sha256', 'sha384', or 'sha512', followed by a '-' character.
-ALERT: PASS
-

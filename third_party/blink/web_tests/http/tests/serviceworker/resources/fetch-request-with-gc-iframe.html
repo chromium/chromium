@@ -1,9 +1,0 @@
-<!doctype html>
-<script>
-window.addEventListener('message', event => {
-    const port = event.ports[0];
-    fetch('empty', {method: 'POST', body: 'hello'})
-      .then(() => port.postMessage({results: 'finish'}))
-      .catch(e => port.postMessage({results: 'failure:' + e}));
-  });
-</script>

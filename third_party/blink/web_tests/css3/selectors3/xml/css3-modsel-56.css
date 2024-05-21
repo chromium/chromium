@@ -1,2 +1,0 @@
-div.stub > * { color : red }
-div.stub *:not([title*=" on"]) { color : lime }

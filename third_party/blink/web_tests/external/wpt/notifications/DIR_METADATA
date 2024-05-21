@@ -1,5 +1,0 @@
-mixins: "//third_party/blink/renderer/modules/notifications/COMMON_METADATA"
-wpt {
-  notify: YES
-}
-

@@ -1,9 +1,0 @@
-Tests how a justify-self style change requires a relayout of the grid and previously stretched items.
-
-The grid bellow had initially 'justify-self: end' and was changed to 'stretch'.
-
-PASS
-
-The grid bellow was initially stretched and it has now 'justify-self: center'.
-
-PASS

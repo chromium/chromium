@@ -1,5 +1,0 @@
-CONSOLE WARNING: Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
-EVENT(webkitfullscreenerror)
-END OF TEST
-
-This tests that a full-screen request which is not user-initiated will be rejected.

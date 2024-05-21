@@ -1,8 +1,0 @@
-Test to ensure we don't attempt to cache new property transitions on dictionary. Passes if you don't crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

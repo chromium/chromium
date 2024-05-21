@@ -1,1 +1,0 @@
-This tests a crash in the xml parser when using innerHTML or outerHTML to insert a script tag into a xhtml document. (rdar://problem/5519698). The test has passed if it does not crash.

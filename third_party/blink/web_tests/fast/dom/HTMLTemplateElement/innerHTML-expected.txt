@@ -1,5 +1,0 @@
-The test asserts that template contents are serialized with innerHTML and its children are ignored.
-
-<div>Contents 1
-<template>Contents 2</template>
-</div>

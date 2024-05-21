@@ -1,3 +1,0 @@
-PASS: style.left was 10px, expected 10px
-PASS: style.left was 20px, expected 20px
-

@@ -1,7 +1,0 @@
-When the listener passed to addEventListener() is a function, it should be called when the event occurs. The listener function should not be tested for adherence to the EventListener interface and have its handleEvent() method called if present.
-
-PASS The listener function should have been called to handle the event.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

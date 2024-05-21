@@ -1,2 +1,0 @@
-This test checks that a heap-use-after-free crash does not occur on Valgrind when disposing a calc transition.
-This test passes if it does not crash under ASAN.

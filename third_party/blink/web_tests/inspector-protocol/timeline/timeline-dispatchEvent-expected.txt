@@ -1,8 +1,0 @@
-Tests trace events for event dispatching.
-Recording started
-Tracing complete
-SUCCESS: found click event
-SUCCESS: found beforeunload event
-SUCCESS: found unload event
-SUCCESS: found load event
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ex units
-  assert_equals: expected "polygon(130.078px 130.078px)" but got "polygon(130.08px 130.08px)"
-Harness: the test ran to completion.
-

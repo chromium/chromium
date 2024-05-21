@@ -1,7 +1,0 @@
-PASS document.styleSheets[1].rules[0].style.cssText is "mask-repeat: repeat-x;"
-PASS document.styleSheets[1].rules[0].style.getPropertyValue('-webkit-mask') is ""
-PASS document.styleSheets[1].rules[0].style.getPropertyValue('mask-repeat') is "repeat-x"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

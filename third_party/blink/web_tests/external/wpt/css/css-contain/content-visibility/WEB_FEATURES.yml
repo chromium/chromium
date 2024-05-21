@@ -1,7 +1,0 @@
-features:
-- name: content-visibility
-  files: "**"
-- name: scroll-to-text-fragment
-  files:
-  - content-visibility-048.html
-  - content-visibility-auto-text-fragment.html

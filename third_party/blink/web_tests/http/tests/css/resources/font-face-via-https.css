@@ -1,8 +1,0 @@
-@font-face {
-    font-family: ahem;
-    src: url(https://localhost:8443/css/resources/cors-ahem.php);
-}
-
-html {
-    font-family: ahem;
-}

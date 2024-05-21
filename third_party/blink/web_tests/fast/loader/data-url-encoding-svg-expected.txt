@@ -1,7 +1,0 @@
-Test that non-ASCII data: URLs are handled correctly.
-
-1. SUCCESS.
-2. SUCCESS.
-3. SUCCESS.
-
-  

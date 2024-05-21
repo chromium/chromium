@@ -1,7 +1,0 @@
-This tests reseting of a select box with no selected options using JavaScript. If successful, both times the selected index should be 0.
-
-Option 0
-Option 1
-Option 2
-
-selected index is 0 before and 0 after reset().

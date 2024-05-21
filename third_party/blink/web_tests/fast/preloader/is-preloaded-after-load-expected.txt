@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: PASS: image1.png
-CONSOLE MESSAGE: PASS: non-existant.js
-CONSOLE MESSAGE: PASS: image1.png
-CONSOLE MESSAGE: PASS: non-existant.js
-internals.isPreloaded() should remain the same even after ResourceFetcher::clearPreloads() is called (around document's load event). crbug.com/643621
-
-<img src=resources/image1.png>
-

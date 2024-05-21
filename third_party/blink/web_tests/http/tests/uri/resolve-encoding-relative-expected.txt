@@ -1,9 +1,0 @@
-Test how non-ASCII characters are encoded in relative URLs.
-
-1 2 3 4 5
-1. PASS
-2. PASS
-3. PASS
-4. PASS
-5. PASS
-

@@ -1,4 +1,0 @@
-Tests that we can navigate away from paused page.
-SUCCESS: Paused
-SUCCESS: navigated from paused page.
-

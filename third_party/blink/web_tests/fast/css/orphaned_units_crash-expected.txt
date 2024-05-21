@@ -1,2 +1,0 @@
-This test verifies that styles with orphaned units do not crash the browser. You should see the word "PASS" below.
-PASS

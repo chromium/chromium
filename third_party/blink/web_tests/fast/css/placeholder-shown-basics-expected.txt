@@ -1,6 +1,0 @@
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format, "yyyy-MM-dd".
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format.  The format is "yyyy-MM" where yyyy is year in four or more digits, and MM is 01-12.
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format.  The format is "yyyy-Www" where yyyy is year in four or more digits, and ww is 01-53.
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
-CONSOLE WARNING: The specified value "Foobar" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.

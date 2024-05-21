@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-72.css" type="text/css"?>
-<test>
- <div xmlns="http://www.w3.org/1999/xhtml">
-  <p>This paragraph should have a green background and there should be no red anywhere.</p>
- </div>
-</test>

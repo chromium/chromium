@@ -1,5 +1,0 @@
-ALERT: PASS (1/2)
-ALERT: PASS (2/2)
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'nonce-noncynonce' 'nonce-noncy+/=' 'unsafe-inline'". Note that 'unsafe-inline' is ignored if either a hash or nonce value is present in the source list.
-
-This tests that a valid nonce disables inline JavaScript, even if 'unsafe-inline' is present.

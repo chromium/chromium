@@ -1,2 +1,0 @@
-This page tests that the character encoding is used for dynamically loaded scripts when no charset is specified directly or provided by the server.
-PASS: UTF-8 was correctly used for this script.

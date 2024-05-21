@@ -1,3 +1,0 @@
-Turn a block with an absolutely positioned video into a multicol container, then remove the video.
-
-PASS if no crash or assertion failure.

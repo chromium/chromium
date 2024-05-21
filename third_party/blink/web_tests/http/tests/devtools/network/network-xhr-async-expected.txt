@@ -1,7 +1,0 @@
-Tests XHR network resource type and content for asynchronous requests. Bug 61205
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php
-resource.type: xhr
-resource.content after requesting content: Hello world
-VM:5 XHR loaded: 1
-

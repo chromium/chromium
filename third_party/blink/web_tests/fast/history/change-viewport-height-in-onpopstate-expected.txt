@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: scrollY is: 0
-

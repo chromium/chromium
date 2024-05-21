@@ -1,7 +1,0 @@
-Tests interception to ensure if subrequest's content is not ready and we continue the renderer does not crash see: crbug.com/785502.
-Network agent enabled
-Request Intercepted: resource.php?send=300
-
-Body content received by renderer:
-Hello world
-

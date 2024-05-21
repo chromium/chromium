@@ -1,9 +1,0 @@
-Test if drag on a padding area of input[type=range] do not trigger an assertion failure.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if not crashed.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

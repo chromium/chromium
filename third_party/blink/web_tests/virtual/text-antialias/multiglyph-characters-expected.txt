@@ -1,6 +1,0 @@
-This tests text with characters that have multiple glyphs.
-
-[คำผ]
-[คำ]
-
-PASS

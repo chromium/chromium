@@ -1,7 +1,0 @@
-Test Navigator properties.
-
-This tests that gc does not destroy the WorkerNavigator and WorkerLocation wrappers if the WorkerContext is still active. You should see two PASSes below if this test succeeds.
-navigator.foo = 'PASS'; gc(); navigator.foo: PASS
-location.foo = 'PASS'; gc(); location.foo: PASS
-DONE
-

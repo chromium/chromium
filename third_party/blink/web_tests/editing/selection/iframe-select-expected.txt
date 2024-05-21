@@ -1,1 +1,0 @@
-CONSOLE ERROR: Uncaught IndexSizeError: Failed to execute 'setBaseAndExtent' on 'Selection': There is no child at offset 1.

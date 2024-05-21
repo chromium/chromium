@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-    <clipPath id="clip">
-        <!-- fill and stroke properties should be ignored -->
-        <text x="40" y="160" style="font-size:80px;font-weight:bold;fill:none;stroke-width:10;stroke:red;">CLIP</text>
-    </clipPath>
-</defs>
-<rect x="40" y="40" height="300" width="300" style="fill:green;clip-path:url(#clip);"/>
-</svg>

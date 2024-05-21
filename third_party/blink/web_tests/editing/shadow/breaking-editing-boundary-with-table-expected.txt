@@ -1,7 +1,0 @@
-On the second time selecting <span>, it should not become non-contenteditable. If it becomes non-contenteditable, the selection from <span> to <table> will break editing boundaries and contain "a". This test checks the <span> does not changed to non-contenteditable element.
-
-PASS contains(selectedString, "a") is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

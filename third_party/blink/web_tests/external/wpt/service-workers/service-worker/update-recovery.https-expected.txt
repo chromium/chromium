@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Recover from a bad service worker by updating after a failed navigation.
-  promise_test: Unhandled rejection with value: "expected bad iframe should not fire a load event!"
-Harness: the test ran to completion.
-

@@ -1,3 +1,0 @@
-This tests that window.innerWidth/innerHeight does not include the size of the scrollbars.
-SUCCESS!
-

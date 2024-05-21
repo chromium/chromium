@@ -1,4 +1,0 @@
-Tests fetch() network resource payload is not corrupted by transcoding.
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php?foo
-

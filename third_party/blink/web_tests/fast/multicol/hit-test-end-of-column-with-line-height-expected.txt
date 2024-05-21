@@ -1,6 +1,0 @@
-Lorem ipsum dolor sit amet
-PASS
-PASS
-PASS
-PASS
-

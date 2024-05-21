@@ -1,9 +1,0 @@
-Thisisareallywidelinethatshereatthestartsowehaveahorizontalscrollbar.Thisisareallywidelinethatshereatthestartsowehaveahorizontalscrollbar.Thisisareallywidelinethatshereatthestartsowehaveahorizontalscrollbar.
-
-Anchor is here, and should cause a vertical scroll only, not a horizontal scroll.
-
-So, if the test succeeds, the text below should say that we're at the left but not at the top.
-
-Scroll position is at left and not at top.
-
-This is very tall line that's here at the end so we have a vertical scroll bar.

@@ -1,4 +1,0 @@
-Tests how zero-duration animations are reported over protocol.
-Animation created
-Animation started
-

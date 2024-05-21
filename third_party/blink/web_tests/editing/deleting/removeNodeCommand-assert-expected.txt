@@ -1,5 +1,0 @@
-Test for a bug where an assertion in the RemoveNodeCommand constructor failed when deleting a <br> between a block and a blockquote.
-
-The test has passed if the assertion failure did not occur.
-
-blockquote

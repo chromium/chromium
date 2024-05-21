@@ -1,5 +1,0 @@
-Tests that RuntimeCallStats are present in profile
-Recording started
-Tracing complete
-Found native V8Runtime callFrame: true
-

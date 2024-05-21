@@ -1,3 +1,0 @@
-PASS: arguments[0].detail.result of the CustomEvent should be 'success' and is.
-PASS: arguments[0].detail of the CustomEvent should be 'success' and is.
-

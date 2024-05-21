@@ -1,5 +1,0 @@
-Bug 103075: LayoutBox::computePercentageLogicalHeight should use containingBlockLogicalWidthForContent
-
-This test checks that a table caption with an orthogonal writing mode properly uses the table's logical width (including padding and borders).
-
-PASS

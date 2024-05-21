@@ -1,9 +1,0 @@
-Adding stylesheet candidates should not crash in case the html parser decides to reorder the DOM tree.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Did not crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

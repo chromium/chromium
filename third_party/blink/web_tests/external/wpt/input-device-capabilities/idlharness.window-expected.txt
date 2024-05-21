@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] InputDeviceCapabilities interface: attribute pointerMovementScrolls
-  assert_true: The prototype object must have a property "pointerMovementScrolls" expected true got false
-[FAIL] InputDeviceCapabilities interface: new InputDeviceCapabilities must inherit property "pointerMovementScrolls" with the proper type
-  assert_inherits: property "pointerMovementScrolls" not found in prototype chain
-Harness: the test ran to completion.
-

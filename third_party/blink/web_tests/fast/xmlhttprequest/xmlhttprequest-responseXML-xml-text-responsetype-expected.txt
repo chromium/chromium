@@ -1,9 +1,0 @@
-This tests the XMLHttpRequest responseXML loading an XML document with responseType "text".
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.responseXML threw exception InvalidStateError: Failed to read the 'responseXML' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'document' (was 'text')..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

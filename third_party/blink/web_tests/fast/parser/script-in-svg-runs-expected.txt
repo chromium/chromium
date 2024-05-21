@@ -1,3 +1,0 @@
-PASS
-
-Do you see "PASS" above? That means <script>-in-<svg>-in-HTML works OK.

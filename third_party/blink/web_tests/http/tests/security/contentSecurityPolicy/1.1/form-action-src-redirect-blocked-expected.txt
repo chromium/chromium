@@ -1,9 +1,0 @@
-CONSOLE ERROR: Refused to send form data to 'http://127.0.0.1:8000/resources/redirection-response.php?host=localhost:8000&status=302&target=/navigation/resources/form-target.pl' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
-
- 
-
-Tests that blocking form redirect works correctly. If this test passes, you will see a console error, and will not see a page indicating a form was POSTed.
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/security/contentSecurityPolicy/1.1/form-action-src-redirect-blocked.html
-===============================================

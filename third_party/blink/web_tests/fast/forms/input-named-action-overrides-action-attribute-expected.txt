@@ -1,5 +1,0 @@
-This tests that access to a form's element named "action" overrides the "action" property on a form element (from the HTML DOM).
-
-If the test passes, the next paragraph will say "Test Passed".
-
-Test Passed

@@ -1,8 +1,0 @@
-Bug 45681: Assertion failure about dirty flag changes of textarea elements.
-
-PASS Not crashed.
-PASS Not crashed.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

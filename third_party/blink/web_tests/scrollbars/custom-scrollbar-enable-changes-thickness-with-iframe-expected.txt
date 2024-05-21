@@ -1,3 +1,0 @@
-This test verifies that layout runs correctly when custom scrollbar styles produce different thickness for the enabled and disabled states, and are inherited by an iframe.
-
-The test passes if it does not crash. 

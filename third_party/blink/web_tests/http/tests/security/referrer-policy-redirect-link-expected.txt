@@ -1,9 +1,0 @@
-This test checks the referrer policy is obeyed along the redirect chain. The test passes if the referrer is https://127.0.0.1:8443
-
---------
-Frame: 'iframe'
---------
-If not running in DumpRenderTree, click this link
-HTTP Referer header is https://127.0.0.1:8443/
-Referrer is https://127.0.0.1:8443/
-

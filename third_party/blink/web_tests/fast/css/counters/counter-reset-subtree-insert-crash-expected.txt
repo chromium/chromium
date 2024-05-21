@@ -1,1 +1,0 @@
-PASS: reparenting a counter node subtree that contains resets does not cause a crash.

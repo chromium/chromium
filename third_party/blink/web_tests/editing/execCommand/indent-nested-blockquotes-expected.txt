@@ -1,8 +1,0 @@
-This tests indenting nested blockquotes. By indenting "webkit"""", we should be inserting a blockquote between br tag and the end of the inner blockquote.
-
-hello
-world
-
-webkit
-is great
-<blockquote id="outer"> hello <blockquote id="inner"> world<br></blockquote></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote><blockquote> webkit </blockquote></blockquote></blockquote><blockquote> is great </blockquote>

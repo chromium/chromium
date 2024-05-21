@@ -1,8 +1,0 @@
-Test that a table-row child of an inline is wrapped inside an inline-table (and table-row-group).
-
-There should be one blue box above and one below this line.
-PASS lastTop is > firstBottom
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

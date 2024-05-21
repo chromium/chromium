@@ -1,1 +1,0 @@
-this resource should be cached by a service worker

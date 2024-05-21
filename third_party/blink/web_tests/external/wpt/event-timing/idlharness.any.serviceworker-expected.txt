@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] EventCounts must be primary interface of performance.eventCounts
-  assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] Stringification of performance.eventCounts
-  assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] EventCounts interface: performance.eventCounts must not have property "undefined"
-  Cannot use 'in' operator to search for 'undefined' in undefined
-Harness: the test ran to completion.
-

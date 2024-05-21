@@ -1,3 +1,0 @@
-This tests for https://bugs.webkit.org/show_bug.cgi?id=25256 where we would add a newline during an alignment change operation. You should see a single paragraph in the editable region below, and it should be right aligned.
-
-<div style="text-align: right;"><br></div>

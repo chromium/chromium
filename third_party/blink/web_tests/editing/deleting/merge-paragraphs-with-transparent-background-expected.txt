@@ -1,9 +1,0 @@
-This tests merging paragraphs inside a document with background: transparent in html element's inline style declaration.
-WebKit should not generate a span with background-color property in such cases.
-| "
-"
-| <p>
-|   id="destination"
-|   "hello<#selection-caret>world"
-| "
-"

@@ -1,9 +1,0 @@
-<schema xmlns="http://www.ascc.net/xml/schematron" >
-     <pattern name="Test integer">
-          <rule context="AAA">
-               <report test="floor(.) = number(.)">O.K.</report>
-               <assert test="floor(.) = number(.)">The AAA value is not an integer.</assert>
-          </rule>
-     </pattern>
-</schema>
-

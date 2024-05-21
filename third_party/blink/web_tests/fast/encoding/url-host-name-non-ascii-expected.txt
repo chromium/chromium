@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=17676 REGRESSION (r30240-r30267): href attribute values with non-ASCII characters in the host part do not work.
-
-PASS

@@ -1,7 +1,0 @@
-features:
-- name: js-modules-workers
-  files:
-  - dedicated-worker-*
-- name: js-modules-shared-workers
-  files:
-  - shared-worker-*

@@ -1,6 +1,0 @@
-PASS firedCount is 1
-PASS firedCount is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

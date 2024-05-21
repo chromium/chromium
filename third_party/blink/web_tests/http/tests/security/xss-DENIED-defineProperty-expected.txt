@@ -1,7 +1,0 @@
-PASS: cross-site assignment of Object constructor not allowed
-PASS: cross-site assignment of new property not allowed
-PASS: cross-site assignment of location.hash not allowed
-PASS: cross-site assignment of location.search not allowed
-PASS: cross-site assignment of location.newProperty not allowed
-PASS: cross-site assignment of location.reload not allowed
-

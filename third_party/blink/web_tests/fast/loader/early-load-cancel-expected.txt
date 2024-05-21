@@ -1,1 +1,0 @@
-A series of unfortunate circumstances can lead to starting a load and then cancelling it while loading is deferred, thus leading to a mismatched set of callbacks (it gets cancelled without ever starting). If this test does not crash or fail an assertion, then that bug is fixed.

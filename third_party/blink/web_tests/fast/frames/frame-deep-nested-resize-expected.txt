@@ -1,9 +1,0 @@
-ALERT: One resized correctly = true
-ALERT: Two resized correctly = true
-ALERT: Three resized correctly = true
-ALERT: Four resized correctly = true
-ALERT: Five resized correctly = true
-ALERT: Six resized correctly = true
-ALERT: Seven resized correctly = true
-ALERT: Eight resized correctly = true
-

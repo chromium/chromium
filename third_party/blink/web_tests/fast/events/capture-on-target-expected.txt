@@ -1,8 +1,0 @@
-This tests checks that capturing event handlers trigger on the node that is the target of the event, and that stopPropagation in such a handler prevents further bubble handlers from triggering.
-
-Click here
-
-targetClickFired: true
-containerClickFired: false
-test passed
-

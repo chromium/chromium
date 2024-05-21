@@ -1,3 +1,0 @@
-Test that load order of stylesheets does not affect resolution of preferred style sheet set. This test works only as DRT HTTP test.
-
-PASS

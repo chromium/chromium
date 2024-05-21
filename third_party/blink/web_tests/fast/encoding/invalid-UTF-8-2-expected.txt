@@ -1,5 +1,0 @@
-This tests the decoding of invalid UTF-8 sequences.
-
-The following should be: "т��т ���" or "т��т ��������":
-
-т��т ���

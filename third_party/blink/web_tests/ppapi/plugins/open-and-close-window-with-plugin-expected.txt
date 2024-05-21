@@ -1,1 +1,0 @@
-This tests that opening a window with a WebView that contains a plugin, and then closing the window without calling -[WebView close] does not leak the window or the web view.

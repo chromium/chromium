@@ -1,5 +1,0 @@
-Test for bug https://bugs.webkit.org/show_bug.cgi?id=60752
-
-This test checks whether CSS attribute selector [att$=val] is re-evaluated after attribute changes in DOM elements which have no style associated with them.
-
-PASSED

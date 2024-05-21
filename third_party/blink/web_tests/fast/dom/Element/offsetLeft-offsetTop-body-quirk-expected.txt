@@ -1,9 +1,0 @@
-static: body: (0, 0) child: (27, 27)
-relative: body: (0, 0) child: (17, 17)
-fixed: body: (0, 0) child: (17, 17)
-absolute: body: (0, 0) child: (17, 17)
-
-
-
-
-

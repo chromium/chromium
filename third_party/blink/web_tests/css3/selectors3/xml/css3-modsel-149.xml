@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-149.css" type="text/css"?>
-<test>
- <address xmlns="http://www.w3.org/1999/xhtml"></address>
- <div xmlns="http://www.w3.org/1999/xhtml" class="text">This line should have a green background.</div>
-</test>

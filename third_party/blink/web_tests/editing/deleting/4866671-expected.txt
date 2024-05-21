@@ -1,5 +1,0 @@
-This tests for a crash when triple-click/deleting the content in a list item that is at the end of the document, when there is a div with -webkit-user-select:none after the list item.
-
-One
-
-

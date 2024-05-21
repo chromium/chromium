@@ -1,7 +1,0 @@
-This tests for a deletion bug. Only the second paragraph inside the table should be deleted. You should see a table with 'foo' in it below.
-
-foo
-
-
-
-<table id="table" border="1"><tbody><tr><td id="td"><div>foo</div><br></td></tr></tbody></table>

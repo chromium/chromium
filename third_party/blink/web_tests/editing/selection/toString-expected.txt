@@ -1,5 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-This tests Selection::toString(): that it exists, that it returns the same result as the implicit toString call, and that it returns the correct results.
-
-hello world
-Success

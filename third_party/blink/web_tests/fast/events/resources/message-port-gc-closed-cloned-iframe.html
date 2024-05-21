@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script>
-window.onmessage = function(evt) {
-    var port = evt.ports[0];
-    port.start();
-    port.postMessage("startedAndClosed");
-    port.close();
-}
-</script>

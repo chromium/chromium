@@ -1,3 +1,0 @@
-Test for crbug.com/455253: cursor pointer on image-link
-
-Result: pointer

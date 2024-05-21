@@ -1,7 +1,0 @@
-This tests inserting a paragraph inside a form element. We should do clone the form element.
-| <form>
-|   "hello"
-|   <br>
-|   <#selection-caret>
-|   <br>
-|   "world"

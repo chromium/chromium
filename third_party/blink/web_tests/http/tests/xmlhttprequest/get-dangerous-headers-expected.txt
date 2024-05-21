@@ -1,7 +1,0 @@
-CONSOLE ERROR: Refused to get unsafe header "Set-Cookie"
-CONSOLE ERROR: Refused to get unsafe header "set-cookie"
-CONSOLE ERROR: Refused to get unsafe header "Set-Cookie2"
-CONSOLE ERROR: Refused to get unsafe header "set-cookie2"
-Test that getResponseHeader and getAllResponseHeaders cannot be used to get the cookie header fields.
-
-PASS

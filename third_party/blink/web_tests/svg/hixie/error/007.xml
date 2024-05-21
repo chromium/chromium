@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <rect x="0" y="0" width="200" height="100" fill="red"/> <!-- overlapped by bottom rect -->
-  <rect x="0" y="100" width="200" height="100" fill="green"/> <!-- visible -->
-  <rect x="50" y="0" width="-200" height="200" fill="red"/> <!-- negative values are unsupported and treated as absent, whic is treated as 0, which is treated as hiding the element. -->
-  <rect x="0" y="0" width="200" height="100" fill="green"/> <!-- visible, overlaps the first rect -->
-</svg>

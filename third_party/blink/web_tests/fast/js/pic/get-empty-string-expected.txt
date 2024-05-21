@@ -1,4 +1,0 @@
-This page tests the empty string used as a property name. If the test passes, you'll see a PASS message below.
-
-PASS: o[""] should be 1 and is.
-

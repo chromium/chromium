@@ -1,5 +1,0 @@
-Tests whether and how selectors cross shadow DOM scopes.
-
-div should not match: PASS
-* should not match: PASS
-body * should not match: PASS

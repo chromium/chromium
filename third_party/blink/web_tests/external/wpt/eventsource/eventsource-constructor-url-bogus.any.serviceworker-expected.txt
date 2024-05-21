@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] EventSource: constructor (invalid URL)
-  assert_throws_dom: function "() => { new EventSource("http://this is invalid/"); }" did not throw
-Harness: the test ran to completion.
-

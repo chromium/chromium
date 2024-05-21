@@ -1,5 +1,0 @@
-Test of createContextualFragment from a Range whose container is an SVG element. If the test succeeds you will see the word "PASS" below.
-
-PASS
-
-Inserted fragment

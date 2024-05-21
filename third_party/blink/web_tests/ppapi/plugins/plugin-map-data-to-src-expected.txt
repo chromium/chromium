@@ -1,7 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: plugin args:
-CONSOLE MESSAGE: Blink Test Plugin:   name = type, value = application/x-blink-test-plugin
-CONSOLE MESSAGE: Blink Test Plugin:   name = logargs, value = true
-CONSOLE MESSAGE: Blink Test Plugin:   name = data, value = blah
-CONSOLE MESSAGE: Blink Test Plugin:   name = src, value = blah
-This tests that an object tag with a data attribute gets a src attribute as well.

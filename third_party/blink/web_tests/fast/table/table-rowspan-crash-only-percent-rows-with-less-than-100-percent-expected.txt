@@ -1,3 +1,0 @@
-Test for chromium bug : 366579. ASSERTION FAILED: !extraRowSpanningHeight in WebCore::LayoutTableSection::distributeRowSpanHeightToRows.
-For this test to PASS, it should not crash.
-A	

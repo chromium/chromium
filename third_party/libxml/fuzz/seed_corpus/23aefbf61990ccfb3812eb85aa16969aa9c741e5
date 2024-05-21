@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<foo xmlns="urn:test:foo" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="urn:test:foo sg-all.xsd">
-	<gm-B-2/>
-	<gm-A-2/>	
-</foo>
-

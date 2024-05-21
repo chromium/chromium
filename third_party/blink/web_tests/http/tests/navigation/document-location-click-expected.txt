@@ -1,6 +1,0 @@
-This tests that assigning to document.location from a button click adds a back/forward item. Navigate
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/document-location-click.html
-curr->  http://127.0.0.1:8000/navigation/document-location-click.html?1
-===============================================

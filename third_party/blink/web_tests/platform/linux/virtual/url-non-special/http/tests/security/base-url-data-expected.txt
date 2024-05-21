@@ -1,4 +1,0 @@
-CONSOLE ERROR: 'data' URLs may not be used as base URLs for a document.
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

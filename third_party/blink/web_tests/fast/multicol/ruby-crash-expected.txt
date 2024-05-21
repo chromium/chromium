@@ -1,3 +1,0 @@
-Multicol on ruby elements shouldn't be allowed.
-
-PASS if no crash or assertion failure.

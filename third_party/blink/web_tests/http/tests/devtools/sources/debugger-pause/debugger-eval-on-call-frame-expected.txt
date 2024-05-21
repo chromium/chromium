@@ -1,7 +1,0 @@
-Test that evaluation in the context of top frame will see values of its local variables, even if there are global variables with same names. On success the test will print a = 2(value of the local variable a). Bug 47358.
-
-Set timer for test function.
-Script execution paused.
-Evaluated in console in the top frame context: a = 2
-Script execution resumed.
-

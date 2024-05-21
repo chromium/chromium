@@ -1,1 +1,0 @@
-Test error recovery in media query.

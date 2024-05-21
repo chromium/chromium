@@ -1,8 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/misc/resources/iframe-policy-2.html with navigation type 'link clicked'
-This page has an iframe which will navigate itself. The policy delegate callbacks will be dumped. The delegate should only be consulted once.
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-You've reached the second page. Congratulations.

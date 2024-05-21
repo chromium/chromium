@@ -1,8 +1,0 @@
-crbug.com/413207: test if distribution is solved when normalize. This test passes if run the test with debug binary and no assertion error occurs.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

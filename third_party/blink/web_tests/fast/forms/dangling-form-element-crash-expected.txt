@@ -1,3 +1,0 @@
-Checks dangling form associated elements doesn't cause crash. WebKit should not crash when this page is loaded.
-
-PASS

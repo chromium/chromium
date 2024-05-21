@@ -1,4 +1,0 @@
-This tests whether or not form input values that are designated autocomplete="off" retain their values after a navigation away from the page then returning back to it via the back button.
-Input value 1 -
-Input value 2 -
-

@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==200 is true
-This test passes if this img tag below is a green square. It ensures that attributes can be removed dynamically from javascript

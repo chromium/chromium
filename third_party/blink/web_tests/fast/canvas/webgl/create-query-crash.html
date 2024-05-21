@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-Test passes by not crashing
-<br>
-<canvas id='c'></canvas>
-<script>
-// Regression test for crbug.com/793667
-document.getElementById('c').transferControlToOffscreen().getContext('webgl2').createQuery();
-</script>

@@ -1,9 +1,0 @@
-This test checks for :read-only and :read-write right behavior along with readonly attribute. Fails if some FAILURE is shown below.
-
-     
-0: SUCCESS
-1: SUCCESS
-2: SUCCESS
-3: SUCCESS
-4: SUCCESS
-5: SUCCESS

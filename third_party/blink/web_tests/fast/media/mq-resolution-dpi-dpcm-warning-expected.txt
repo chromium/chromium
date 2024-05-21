@@ -1,1 +1,0 @@
-Test verifies that warning is added to console when dpi or dpcm CSS values are used for resolution media feature

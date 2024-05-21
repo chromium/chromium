@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: initializing
- This test passes if it doesn't crash. To run manually, please disable your popup blocker.

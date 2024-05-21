@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "qcms_color_space_fuzzer\.cc": [
-    "+base",
-    "+testing/libfuzzer/fuzzers",
-  ],
-}

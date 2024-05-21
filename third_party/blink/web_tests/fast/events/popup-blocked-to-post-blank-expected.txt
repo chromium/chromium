@@ -1,1 +1,0 @@
-If the POST pop-up was not blocked then there will be an ALERT containing a Window object. Otherwise, the test passes.

@@ -1,4 +1,0 @@
-Policy delegate: attempt to load mailto:?subject=%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB&body=%E6%9C%AC%E6%96%87 with navigation type 'link clicked'
-Test encoding of mailto URLs. Click on the URL - a new message with Japanese subject and body should open in your mail client.
-
-Subject : Japanese Body : Japanese

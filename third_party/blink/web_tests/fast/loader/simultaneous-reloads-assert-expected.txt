@@ -1,3 +1,0 @@
-ALERT: If you do not hit an assertion failure when running this test with a debug build and you get a SUCCESS message, then you pass the test.
-ALERT: SUCCESS
-

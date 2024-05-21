@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'paint-order' to the 'fill' keyword: fill
-  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-[FAIL] Can set 'paint-order' to the 'stroke' keyword: stroke
-  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-[FAIL] Can set 'paint-order' to the 'markers' keyword: markers
-  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-Harness: the test ran to completion.
-

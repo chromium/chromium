@@ -1,5 +1,0 @@
-Test verifies that a timeout callback is run in the proper execution context. 3 timeouts are set on a child iframe's window. Test passes if you see 3 lines 'PASS' below. See also: https://html.spec.whatwg.org/multipage/webappapis.html#timer-initialisation-steps
-
-PASS -- function argument: if the argument is a function, then the callback function must run in the relevant realm for that function object.
-PASS -- string argument: if the argument is a string, then it must be compiled in the relevant realm for the context object, hence must run in the relevant realm for the context object.
-PASS -- callback this value: the callback this value must be the context object.

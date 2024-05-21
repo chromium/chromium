@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] fetch blocked by CSP should reject
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'fetch' on 'BackgroundFetchManager': Refused to fetch 'https://web-platform.test:8444/' because it violates the Content Security Policy."
-Harness: the test ran to completion.
-

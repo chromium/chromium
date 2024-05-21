@@ -1,9 +1,0 @@
-Checks that the popstate event fires when dispatched via createEvent
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Popstate state: (Success)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

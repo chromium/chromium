@@ -1,7 +1,0 @@
-
-p { background: green; color: white; }
-p:not(.t1):not(.t2) { background: red; color: yellow; }
-div { background: red; color: yellow; }
-div:not(.t1) { background: green; color: white; }
-address { background: green; color: white; }
-address:not(.t5):not(.t5) { background: red; color: yellow; }

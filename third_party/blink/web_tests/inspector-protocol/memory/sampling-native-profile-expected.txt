@@ -1,5 +1,0 @@
-Test sampling native memory profiler.
-Sampling started
-Sampling stopped
-Found sample: true
-

@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught SecurityError: Failed to read a named property 'history' from 'Window': Sandbox access violation: Blocked a frame at "null" from accessing a frame at "".  The frame requesting access is sandboxed and lacks the "allow-same-origin" flag.
-This test verifies that a sandboxed IFrame cannot access the history object of the top-level frame. It passes if an uncaught exception is present, noting that the inner frame cannot access the outer.

@@ -1,1 +1,0 @@
-This paragraph has a -webkit-transition-timing-function property that uses the cubic-bezier function. Parsing its style should not cause the browser to crash.

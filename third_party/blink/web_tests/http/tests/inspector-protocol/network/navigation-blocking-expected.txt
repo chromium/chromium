@@ -1,5 +1,0 @@
-Tests that top-frame navigations are correctly blocked when intercepted.
-intercepted: http://127.0.0.1:8000/inspector-protocol/resources/meta-tag.html, continuing
-intercepted: http://127.0.0.1:8000/inspector-protocol/resources/test-page.html, cancelling
-location.href = http://127.0.0.1:8000/inspector-protocol/resources/meta-tag.html
-

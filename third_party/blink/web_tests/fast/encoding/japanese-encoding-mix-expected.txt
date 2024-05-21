@@ -1,5 +1,0 @@
-Some text here is encoded as EUC-JP, and some (in comment) as Shift_JIS. Since there is an explicit encoding declaration, auto-detection shouldn't change the encoding.
-
-ニッポンテレビ
-
-Should be EUC-JP: EUC-JP

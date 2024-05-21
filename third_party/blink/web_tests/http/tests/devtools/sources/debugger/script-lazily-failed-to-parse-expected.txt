@@ -1,4 +1,0 @@
-Tests that FailedToParseScriptSource event is NOT raised after running a damaged part of a script that was already parsed.
-
-Finished running broken code.
-

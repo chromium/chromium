@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'mask-image' to the 'none' keyword: none
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'mask-image' to an image
-  assert_class_string: Image value must be a CSSImageValue expected "[object CSSImageValue]" but got "[object CSSStyleValue]"
-Harness: the test ran to completion.
-

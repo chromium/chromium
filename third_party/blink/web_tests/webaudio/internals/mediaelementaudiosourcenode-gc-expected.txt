@@ -1,9 +1,0 @@
-Tests garbage collection of MediaElementAudioSourceNode.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS MediaElementAudioSourceNode survived garbage collection.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

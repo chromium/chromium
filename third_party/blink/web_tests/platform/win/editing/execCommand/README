@@ -1,5 +1,0 @@
-This file documents why the various tests have been rebaselined.
-
-4920488-expected.txt
---------------------------
-The only difference is the error message.

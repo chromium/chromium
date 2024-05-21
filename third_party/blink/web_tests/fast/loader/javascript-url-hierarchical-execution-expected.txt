@@ -1,9 +1,0 @@
-This tests to see what Chromium does with invalid javascript urls of the form "javascript://".
-These should be detected as hierarchical, but invalid urls if the host part includes spaces.
-JavaScript execution nor navigation should not happen and you should remain at this page.
-On the other hand, if the contents after "javascript:" are considered valid javascript code, a comment, that may be executed and you should remain at this page too.
-See wpt/url/javascript-urls.window.js, which tests whether javascript code is executed or not.
-If you click the link below and Chromium tries to navigate - probably to an error page - then the test failed.
-In DumpRenderTree, if the custom policy delegate indicates that a load was attempted, then the test failed.
-
-Click me to test

@@ -1,3 +1,0 @@
-Remove the only piece of column content that comes after a spanner that establishes an inner multicol container and has a spanner inside as well.
-
-PASS if no crash or assertion failure.

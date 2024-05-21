@@ -1,7 +1,0 @@
-initial:<b style="font-style: italic;">world</b>
-after removing bold:<span style="font-style: italic;">world</span>
-after removing italic:world
-after undo:<b style="font-style: italic;">world</b>
-after redo:world
-PASS
-

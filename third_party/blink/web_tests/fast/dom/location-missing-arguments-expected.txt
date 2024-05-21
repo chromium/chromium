@@ -1,6 +1,0 @@
-PASS document.location.assign() threw exception TypeError: Failed to execute 'assign' on 'Location': 1 argument required, but only 0 present..
-PASS document.location.replace() threw exception TypeError: Failed to execute 'replace' on 'Location': 1 argument required, but only 0 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

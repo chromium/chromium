@@ -1,5 +1,0 @@
-PASS range.surroundContents(start) threw exception InvalidStateError: Failed to execute 'surroundContents' on 'Range': The Range has partially selected a non-Text node..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

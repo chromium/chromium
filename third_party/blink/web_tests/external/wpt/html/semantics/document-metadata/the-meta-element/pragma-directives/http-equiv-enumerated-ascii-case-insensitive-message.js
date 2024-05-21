@@ -1,1 +1,0 @@
-parent.postMessage(null, "*");

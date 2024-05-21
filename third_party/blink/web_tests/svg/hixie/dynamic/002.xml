@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="200" width="400" onload="test()">
- <script type="text/javascript">
-   function test() {
-     document.getElementsByTagNameNS('http://www.w3.org/2000/svg', 'text')[0].firstChild.data = 'PASS';
-   }
- </script>
- <text x="20" y="20" font-size="20">FAIL: This text should change.</text>
-</svg>

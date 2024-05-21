@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: opacity of target is 0.5
-

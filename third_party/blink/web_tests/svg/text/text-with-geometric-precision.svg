@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <text transform="translate(20 20)">"super" in the following text should be rendered.</text>
-  <text transform="translate(20 70)" text-rendering="geometricPrecision">
-    <tspan>Normal</tspan><tspan baseline-shift="super">super</tspan><tspan baseline-shift="sub">sub</tspan>
-  </text>
-  <text transform="translate(20 120)" text-rendering="geometricPrecision">
-    <tspan>Normal</tspan><tspan y="-0.8">super</tspan>
-  </text>
-</svg>

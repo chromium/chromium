@@ -1,5 +1,0 @@
-include_rules = [
-  "+base/numerics/safe_math.h",
-
-  "+mojo/public",
-]

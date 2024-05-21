@@ -1,3 +1,0 @@
-Test for bug 27289: This tests that mouse clicks/releases on scrollbars are handled properly even is there was no mouse move onto the scrollbar; this is the disabled control case. On success, the text should begin with "zx".
-
-Text is "zx y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y "

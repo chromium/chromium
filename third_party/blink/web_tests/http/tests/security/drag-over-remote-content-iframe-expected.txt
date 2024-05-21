@@ -1,7 +1,0 @@
-This page tests the URL the DOM sees while the user drags a file. If the test passes, you'll see a PASS message.
-
-https://bugs.webkit.org/show_bug.cgi?id=25907 | rdar://problem/6910832.
-
-To test, drag Abe's image into this light blue div.
-PASS: ondragover saw a URL of ''
-

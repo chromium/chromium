@@ -1,9 +1,0 @@
-Performing mixed content checks in a detached setting shouldn't crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.send() threw exception NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://user:pass@127.0.0.1:8000/doesNotExist': Document is already detached..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

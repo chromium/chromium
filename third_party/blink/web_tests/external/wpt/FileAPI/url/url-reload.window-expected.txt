@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Reloading a blob URL succeeds even if the URL was revoked.
-  Failed to read a named property 'test_result' from 'Window': Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-Harness: the test ran to completion.
-

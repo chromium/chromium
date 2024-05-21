@@ -1,9 +1,0 @@
-cmp@chromium.org
-dmurph@chromium.org
-dominickn@chromium.org
-mgiuca@chromium.org
-msw@chromium.org
-dibyapal@chromium.org
-
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

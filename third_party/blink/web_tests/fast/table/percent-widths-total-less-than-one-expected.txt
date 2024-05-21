@@ -1,6 +1,0 @@
-	
-
-crbug.com/476370: Test cells get appropriate width when total width of cells is less than 1%.
-
-PASS
-PASS

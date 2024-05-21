@@ -1,4 +1,0 @@
-PASS - "-webkit-transform.4" property for "box" element at 0.25s saw something close to: 0
-PASS - "-webkit-transform.4" property for "box" element at 0.5s saw something close to: 66
-PASS - "-webkit-transform.4" property for "box" element at 0.75s saw something close to: 133
-

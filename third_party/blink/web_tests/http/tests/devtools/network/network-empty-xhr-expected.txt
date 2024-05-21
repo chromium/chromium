@@ -1,6 +1,0 @@
-Tests empty xhr content is correctly loaded in inspector. https://bugs.webkit.org/show_bug.cgi?id=79026
-http://127.0.0.1:8000/devtools/network/resources/empty.html?sync
-resource.content: 
-http://127.0.0.1:8000/devtools/network/resources/empty.html?async
-resource.content: 
-

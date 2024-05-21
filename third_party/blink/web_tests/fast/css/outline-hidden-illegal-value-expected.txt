@@ -1,5 +1,0 @@
-A test case for bug 19520 - "outline-style: hidden" should be ignored.
-
-This line should have a green border.
-
-TEST PASSED.

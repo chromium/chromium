@@ -1,7 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS internals.isPreloaded("resources/green-400-px-square.png") is false
-PASS document.getElementById("foo").clientWidth==100 is true
-This test passes if this img tag below is a blue square when the scale factor is 1. It ensures that when both source attributes has the same input alternative always the one from srcset is chosen

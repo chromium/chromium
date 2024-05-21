@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=26671 Safari 4.0 crashes in WebCore::DOMTimer::fired().
-
-This tests that removing a possibly style sheet-carrying element from an unrendered document does not leave behind a reference to a stale object and lead to a crash.

@@ -1,4 +1,0 @@
-CONSOLE WARNING: Invalid keyframe value for property offsetPath: path("invalid")
-CONSOLE WARNING: Invalid keyframe value for property --x: invalid )
-CONSOLE WARNING: Invalid keyframe value for property --x: invalid !important
-This test passes if there are three warnings about invalid keyframe values.

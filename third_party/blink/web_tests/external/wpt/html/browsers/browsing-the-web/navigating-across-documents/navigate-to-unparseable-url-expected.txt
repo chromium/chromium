@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <a> tag navigate fails for unparseable URLs
-  promise_test: Unhandled rejection with value: object "Error: Navigation was attempted to unparseable URL"
-Harness: the test ran to completion.
-

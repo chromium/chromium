@@ -1,6 +1,0 @@
-Tests that browser.Target.setAutoAttach() executes script on load for window.open'ed pages.
-Opened popup window
-Attached to the popup window, waitingForDebugger=true
-Resumed popup window
-result: 42
-

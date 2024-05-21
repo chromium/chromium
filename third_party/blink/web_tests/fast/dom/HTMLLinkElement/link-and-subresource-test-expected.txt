@@ -1,7 +1,0 @@
-This test verifies that an image which is prefetched, and which is also contained as a subresource of the current document can be loaded correctly as a subresource. See bug 49236 in which this wasn't working.
-
-When this test succeeds, you'll see an image of Nick on a sailboat immediately below this text. When this test fails, you will see no images at all. 
-
-NICK_ONLOAD called
-NICK_ONLOAD called
-SUCCESS. Two loads.

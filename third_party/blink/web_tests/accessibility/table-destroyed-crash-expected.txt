@@ -1,8 +1,0 @@
-This tests that we do not crash when a table is destroyed.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

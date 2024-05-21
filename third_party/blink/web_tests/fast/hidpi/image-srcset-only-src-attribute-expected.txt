@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==400 is true
-This test passes if this img tag below is a green square when scale factor is 2. It ensures that the selection algorithm does not change the behavior of the src attribute, even with a scale factor greater than 1

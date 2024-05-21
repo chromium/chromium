@@ -1,3 +1,0 @@
-Test to access Frame related APIs on orphan SVGSVGElement
-For Bug 31545.
-OK unless it got crashed.

@@ -1,4 +1,0 @@
-This test verifies that revealing a whitespace text node RemoteObject reveals its parentElement DIV.
-
-SelectedNodeChanged: div
-

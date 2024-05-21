@@ -1,2 +1,0 @@
-This tests for a bug where copying a word in indented text and then pasting it into indented text would create an extraneous line break. You should see "hello world" below, all in one indented paragraph.
-<blockquote id="blockquote" class="webkit-indent-blockquote">hello world</blockquote>

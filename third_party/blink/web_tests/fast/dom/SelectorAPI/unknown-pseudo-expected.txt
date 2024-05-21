@@ -1,3 +1,0 @@
-PASS: document.querySelector(:unknownpseudo) throws: SyntaxError: Unexpected token ':'
-PASS: document.querySelector(:-webkit-any(:unknownpseudo)) throws: SyntaxError: Unexpected token ':'
-

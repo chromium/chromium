@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>Bindings"
-}
-team_email: "blink-reviews-bindings@chromium.org"
-buganizer_public: {
-  component_id: 1456743
-}

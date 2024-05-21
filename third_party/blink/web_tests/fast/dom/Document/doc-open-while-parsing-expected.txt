@@ -1,5 +1,0 @@
-Test for a possible problem related to bug 4395: REGRESSION: document.open doesn't clear the document.
-
-This line should appear second.
-
-Last line.

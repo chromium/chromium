@@ -1,9 +1,0 @@
-Test touch adjustment for context-menu gestures on a shadow-DOM element.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS adjusted node was null.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

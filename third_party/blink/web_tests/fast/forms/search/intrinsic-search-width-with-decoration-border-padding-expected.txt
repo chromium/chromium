@@ -1,6 +1,0 @@
-PASS document.getElementById("search1").offsetWidth is document.getElementById("search2").offsetWidth
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

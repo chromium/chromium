@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'image-rendering' to the 'smooth' keyword: smooth
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'image-rendering' to the 'high-quality' keyword: high-quality
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'image-rendering' to the 'crisp-edges' keyword: crisp-edges
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-

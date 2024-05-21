@@ -1,5 +1,0 @@
-The following is a test for parsing ruby <rp> and <rt> elements. According to HTML5 spec, end-tags for both are optional if followed by another <rp> or <rt>. However, they should NOT be auto-closed by other inline elements, such as <span>.
-
-TEST PASSED: Markup was correct
-
-Before base/text/ After

@@ -1,4 +1,0 @@
-This tests that writing on an "image page" doesn't asserts the tab. This test requires testRunner to run. To test manually, open this image in a browser window, and write into the page using document.write. It must not crash.
-
-Test Success
-

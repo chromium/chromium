@@ -1,5 +1,0 @@
-Test some simple grid layouts by positioning grid items by index.
-
-PASS
-PASS
-PASS

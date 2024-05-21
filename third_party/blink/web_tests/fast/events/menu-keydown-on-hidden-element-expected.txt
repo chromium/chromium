@@ -1,1 +1,0 @@
-This tests that context menu key events are handled properly on elements that are not visible.

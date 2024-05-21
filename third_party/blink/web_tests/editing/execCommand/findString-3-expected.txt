@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=11814 REGRESSION(r18098): Find does not work with capital letters.
-
-The word “uppercase” should be selected.
-
-PASS

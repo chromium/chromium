@@ -1,1 +1,0 @@
-crbug.com/479275: Don't ASSERT when a self-collapsing block discards its margin

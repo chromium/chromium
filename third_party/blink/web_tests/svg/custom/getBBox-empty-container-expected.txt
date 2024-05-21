@@ -1,1 +1,0 @@
-PASS, bounding box sizes are (100, 100) and (100, 100)

@@ -1,1 +1,0 @@
-This document has an odd number of bytes - the UTF-16 decoder should emit a replacement character here:

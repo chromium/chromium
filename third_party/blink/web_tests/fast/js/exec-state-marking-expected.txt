@@ -1,5 +1,0 @@
-This page tests for a crash due to insufficient marking of ExecStates. If the test passes, you'll see a series of PASS messages below.
-
-PASS: You didn't crash.
-PASS: f() should be 12345 and is.
-

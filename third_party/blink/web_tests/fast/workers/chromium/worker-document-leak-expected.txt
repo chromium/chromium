@@ -1,9 +1,0 @@
-Verify that creation of a worker does not leak its creating document.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS did not leak documents during test run
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

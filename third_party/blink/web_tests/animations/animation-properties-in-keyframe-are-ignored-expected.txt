@@ -1,7 +1,0 @@
-PASS - "left" property for "target" element at 0s saw something close to: 0
-PASS - "left" property for "target" element at 1s saw something close to: 50
-PASS - "left" property for "target" element at 2s saw something close to: 100
-PASS - "left" property for "target" element at 3s saw something close to: 150
-PASS - "left" property for "target" element at 4s saw something close to: 0px
-PASS - "left" property for "target" element at 5s saw something close to: 0px
-

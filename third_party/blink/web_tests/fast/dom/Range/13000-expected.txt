@@ -1,3 +1,0 @@
-This tests for a bug in Range::createContextualFragment, it would fail if the range started in a text node. You should see 'The quick brown fox, jumps over the lazy dog" below.
-
-The quick brown fox, jumps over the lazy dog.

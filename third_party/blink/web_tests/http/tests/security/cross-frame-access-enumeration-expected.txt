@@ -1,9 +1,0 @@
-This tests that variable names can't be enumerated cross domain (see http://bugs.webkit.org/show_bug.cgi?id=16387)
-
-PASS: Cross frame access by enumerating the window object was denied.
-PASS: Cross frame access by getting the keys of the window object was denied.
-PASS: Cross frame access by getting the property names of the window object was denied.
-PASS: Cross frame access by enumerating the Location object revealed no properties.
-PASS: Cross frame access by getting the keys of the Location object revealed only whitelisted keys.
-PASS: Cross frame access by getting the property names of the Location object revealed no custom properties.
-

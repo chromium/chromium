@@ -1,3 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=9862 REGRESSION: GMail: Crash in LayoutView::repaintViewRectangle when spoofing as FF.
-
-No crash means test PASS.

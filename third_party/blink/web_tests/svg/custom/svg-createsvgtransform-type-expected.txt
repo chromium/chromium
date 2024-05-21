@@ -1,9 +1,0 @@
-Tests whether createSVGTransform creates a SVGTransform of the right SVGTransform type.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS transform.type is SVGTransform.SVG_TRANSFORM_MATRIX
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

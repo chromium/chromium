@@ -1,3 +1,0 @@
-This tests that specifying display: none; for the :empty pseudoclass doesn’t affect non-empty elements.
-
-PASS

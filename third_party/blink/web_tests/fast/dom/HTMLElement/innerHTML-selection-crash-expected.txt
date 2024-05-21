@@ -1,5 +1,0 @@
-This tests that calling innerHTML doesn't crash when the selection endpoint is inside a text field's shadow DOM tree.
-
-If the test doesn't crash, then it passes.
-
-PASS: There was no crash.

@@ -1,3 +1,0 @@
-This test checks that individual characters can be selected correctly when using an SVG font.
-aaaaaaaaaa
-PASS

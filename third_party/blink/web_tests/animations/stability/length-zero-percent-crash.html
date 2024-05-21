@@ -1,9 +1,0 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<div id="target"></div>
-<script>
-test(() => {
-  target.animate({margin: ['1px', '0%']}, {iterationStart: 0.5, fill: 'forwards'});
-  assert_equals(getComputedStyle(target).margin, '0.5px');
-}, "Don't crash when animating length properties to 0%");
-</script>

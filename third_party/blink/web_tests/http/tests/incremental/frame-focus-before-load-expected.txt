@@ -1,3 +1,0 @@
-This page tests whether focusing and/or blurring a frame before its content has loaded causes a crash. See rdar://problem/4632505.
-
-PASS: You didn't crash.

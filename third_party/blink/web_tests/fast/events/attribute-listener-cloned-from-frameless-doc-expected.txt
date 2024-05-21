@@ -1,4 +1,0 @@
-ALERT: SUCCESS
-Test that an element that was imported from a frameless document has functional attribute event listeners. Should alert "SUCCESS".
-
-Link (clicked automatically).Element.onclick result is correct.

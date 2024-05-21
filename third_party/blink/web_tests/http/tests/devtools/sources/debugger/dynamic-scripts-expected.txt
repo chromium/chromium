@@ -1,8 +1,0 @@
-Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.
-
-UISourceCodes:
-    dynamic-script.js
-    dynamic-scripts.js
-    evalSourceURL.js
-    scriptElementContentSourceURL.js
-

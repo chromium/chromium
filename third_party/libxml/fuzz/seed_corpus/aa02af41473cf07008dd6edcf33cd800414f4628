@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<D:propfind xmlns:D="http://www.ietf.org/standards/dav/">
-  <D:prop>
-    <supportedlock/>
-  </D:prop>
-</D:propfind>

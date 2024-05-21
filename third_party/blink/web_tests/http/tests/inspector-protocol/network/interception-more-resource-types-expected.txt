@@ -1,4 +1,0 @@
-Tests that ping and CSP violations resource types are correctly identified by Network.requestIntercepted
-Intercepted URL: http://127.0.0.1:8000/inspector-protocol/resources/beacon type: Ping
-Intercepted URL: http://127.0.0.1:8000/security/contentSecurityPolicy/resources/save-report.php?test=generate-csp-report.php type: CSPViolationReport
-

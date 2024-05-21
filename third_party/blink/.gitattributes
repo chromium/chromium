@@ -1,8 +1,0 @@
-# By default, enable Tricium for files in blink,
-# even if Tricium is disabled for most of third_party.
-* tricium
-
-# Skip web test expectation files.
-*-expected.txt -tricium
-*-expected.png -tricium
-*-expected.wav -tricium

@@ -1,8 +1,0 @@
-Test for bug 70277. This tests that a link is dragged and dropped properly in an already focused editable area. This test passes only if it does not hit an assertion.
-
-Test Link
-Editable area
-Test Link
-
-
-PASS

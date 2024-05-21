@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<!-- Dummy instance for any-1_1.xsd -->
-<foo:foo xmlns:foo="urn:test:foo" xmlns:moo="urn:test:moo"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="urn:test:foo any-1_1.xsd">
-	<foo:bar/>
-	<moo:moo/>
-</foo:foo>

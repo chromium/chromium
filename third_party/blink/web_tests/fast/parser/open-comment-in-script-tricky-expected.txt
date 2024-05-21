@@ -1,1 +1,0 @@
-This should invoke document.write. document.write('This should not invoke document.write.');

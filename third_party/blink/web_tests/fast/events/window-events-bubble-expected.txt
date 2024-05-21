@@ -1,3 +1,0 @@
-Test that stopPropagation() will not allow window events to bubble.
-Clicking on this should not fire window.onclick. This matches our old behavior and Firefox behavior.
-stopPropagation called. Test Passed.

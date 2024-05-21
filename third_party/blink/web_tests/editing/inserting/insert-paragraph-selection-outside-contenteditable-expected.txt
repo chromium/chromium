@@ -1,3 +1,0 @@
-This test ensures that WebKit does not crash or edit the content when the selection is outside of the contenteditable area.
-
-PASS

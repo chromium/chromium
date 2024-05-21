@@ -1,3 +1,0 @@
-Tests that page.requestClose method runs beforeunload hooks.
-SUCCESS!
-

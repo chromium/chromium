@@ -1,6 +1,0 @@
-Test for rdar://problem/6864786: REGRESSION: Crash below ApplyStyleCommand::applyInlineStyleToRange when reviewing a patch in Bugzilla.
-
-The test passes if it does not crash.
-
-Copy the second word in this sentence.
-the 

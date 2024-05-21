@@ -1,1 +1,0 @@
-resourceLoaded = true;

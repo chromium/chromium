@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: 1 rules found
-This test ensures that a data URL can access its own inline style sheets. Sorry for the obscurity of the test case, but it's the repro from Bug 32309, which has an "unobfuscated" version of the code.
-
-This test passes if it alerts that it found 1 rule.

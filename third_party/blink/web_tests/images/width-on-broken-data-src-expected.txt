@@ -1,6 +1,0 @@
-FAIL:
-Expected 0 for width, but got 16. 
-
-<img src="data:dsa" data-expected-width="0">
-
-crbug.com/522673: Return the correct width for images with broken data: uri's.

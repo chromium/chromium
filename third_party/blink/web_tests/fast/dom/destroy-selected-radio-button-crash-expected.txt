@@ -1,2 +1,0 @@
-This tests that destroying a checked radio button that does not have a form correctly removes the radio button element from the checked radio buttons map. This test should ideally be run with GuardMalloc or a similar memory checker.
-SUCCESS - Didn't crash!

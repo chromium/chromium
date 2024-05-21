@@ -1,4 +1,0 @@
-Download started
-Tests that hitting alt-click results in downloading link. Test passes if a download is observed.
-
-link

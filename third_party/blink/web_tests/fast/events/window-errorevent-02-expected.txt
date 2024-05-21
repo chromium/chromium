@@ -1,9 +1,0 @@
-CONSOLE ERROR: Uncaught ReferenceError: DumpErrorEventAndAllowDefault is not defined
-This test should trigger 'window.onerror', and leave the error unhandled.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

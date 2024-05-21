@@ -1,6 +1,0 @@
-PASS if not crashed in ASAN build.
-PASS changeEventCounter is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

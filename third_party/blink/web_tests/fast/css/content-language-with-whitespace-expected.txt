@@ -1,8 +1,0 @@
-Test for bug 76701: map HTTP-EQUIV content-language to -webkit-locale. This particular test tests that the the pragma-set default language is set to the first sequence of non-whitespace characters of the content-language content. This expectation may change, see bug. This expectation is as per the HTML 5 spec. It appears that Firefox does not exactly do this, but trims the leading and trailing whitespace. It's unclear what IE does.
-
-FAIL languageOfNode('x') should be "ja_JP". Was "  \a \9 \9 ja-JP   \9  zh_CN \9 \a \a \9 \9 ".
-PASS languageOfNode('y') is "\"ar\""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

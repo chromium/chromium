@@ -1,3 +1,0 @@
-crbug.com/61049: There should be no red box below.
-
-PASS

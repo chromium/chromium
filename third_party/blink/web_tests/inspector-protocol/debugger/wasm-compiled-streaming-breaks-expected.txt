@@ -1,9 +1,0 @@
-Test pausing in wasm script.
-Did enable debugger.
-Paused on debugger.
-call_debugger at :2:4
-$call_func at :0:72
-$main at :0:81
-(anonymous) at :59:39
-Resumed execution.
-

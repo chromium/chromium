@@ -1,4 +1,0 @@
-Test that a forwarded user gesture can be consumed by any timeout, not just the first.
-
-Click Here
-PASSED

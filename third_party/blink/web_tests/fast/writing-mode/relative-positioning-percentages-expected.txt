@@ -1,2 +1,0 @@
-This is a test that relative position percentages are computed with respect to physical dimensions.
-PASS: The block is in the correct position.

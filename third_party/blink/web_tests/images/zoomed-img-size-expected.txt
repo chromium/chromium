@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Zoom 1% should not affect width/height of images.
-  assert_equals: zoom: 1% expected 37 but got 100
-[FAIL] Zoom 2% should not affect width/height of images.
-  assert_equals: zoom: 2% expected 37 but got 50
-Harness: the test ran to completion.
-

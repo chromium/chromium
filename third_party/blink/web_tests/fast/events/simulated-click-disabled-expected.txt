@@ -1,3 +1,0 @@
-Ensure that simulated click is not dispatched to a disabled node. Clicking on the label should not change the value of the checkbox.
-
-PASS

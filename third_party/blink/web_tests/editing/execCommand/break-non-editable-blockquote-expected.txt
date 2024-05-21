@@ -1,8 +1,0 @@
-This test ensures WebKit properly inserts newline in quoted contents, which is enclosed by a non-editable blockquote.
-| <blockquote>
-|   type="cite"
-|   "hello"
-| <br>
-| <blockquote>
-|   type="cite"
-|   " world"

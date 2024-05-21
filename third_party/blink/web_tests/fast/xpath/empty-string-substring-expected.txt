@@ -1,3 +1,0 @@
-Test for bug 11815: XPathEvaluator behavior does not match Firefox - substring() and empty element.
-
-SUCCESS

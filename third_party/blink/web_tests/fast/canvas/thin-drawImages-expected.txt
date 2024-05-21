@@ -1,8 +1,0 @@
-PASS verifyCovered(imgData.data, imgData.pixelOffset(10, 5), 1, 10) is true
-PASS verifyCovered(imgData.data, imgData.pixelOffset(5, 5), imgData.width, 10) is true
-PASS verifyCovered(imgData.data, imgData.pixelOffset(25, 15), 1, 10) is true
-PASS verifyCovered(imgData.data, imgData.pixelOffset(20, 15), imgData.width, 10) is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-Regression test for http://bugs.webkit.org/show_bug.cgi?id=11505 REGRESSION: Null pointer deref in HitTestResult::spellingToolTip() (assertion failure in Node::document).
-
-No assert means test PASS.

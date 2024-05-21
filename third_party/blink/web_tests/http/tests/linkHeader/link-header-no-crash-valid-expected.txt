@@ -1,1 +1,0 @@
-This test passes if we didn't crash.

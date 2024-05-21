@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-<clipPath id="clip" clipPathUnits="userSpaceOnUse" transform="scale(10) translate(2, 2) ">
-    <circle cx="10" cy="10" r="10"/>
-</clipPath>
-</defs>
-<circle cx="120" cy="120" r="99" fill="red"/>
-<a xlink:href="#"><rect width="220" height="220" fill="green" clip-path="url(#clip)"/></a>
-</svg>

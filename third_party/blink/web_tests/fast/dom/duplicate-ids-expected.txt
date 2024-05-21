@@ -1,4 +1,0 @@
-This tests that getElementById works as elements with duplicate ids are added and removed. If the test is successful, the text "success" should be shown below.
-This is the first duplicate div
-This is the second duplicate div
-Success!

@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '%'
-This test pass if no crash.

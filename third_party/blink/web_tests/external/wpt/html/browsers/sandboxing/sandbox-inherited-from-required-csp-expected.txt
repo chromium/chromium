@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] initial empty document
-  assert_equals: expected "document-domain-is-disallowed" but got "document-domain-is-allowed"
-Harness: the test ran to completion.
-

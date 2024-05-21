@@ -1,5 +1,0 @@
-Test for a bug 30982: createHTMLDocument doesn't escape ampersand and less-than in title.
-
-Should say PASS:
-
-PASS

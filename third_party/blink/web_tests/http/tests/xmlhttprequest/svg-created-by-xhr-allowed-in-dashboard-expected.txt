@@ -1,6 +1,0 @@
-Test to make sure we can use XHR to create usable SVG in dashboard compatibility mode. This cannot be tested manually.
-
-Received doc of type: [object XMLDocument]
-PASS: Managed to insert SVG element into tree
-Imported node of type: [object SVGCircleElement]
-

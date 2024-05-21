@@ -1,6 +1,0 @@
-PASS internals.treeScopeRootNode(selection.anchorNode) is document
-PASS internals.treeScopeRootNode(selection.focusNode) is document
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-PASS numberInput.value is "0000123456789012345678901234567890123456789"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

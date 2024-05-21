@@ -1,7 +1,0 @@
-Tests that console warnings are issued for a blocked event listener and that there is no crash when an offending listener is removed by the handler.
-
-There should be no warnings above this line
-Handling of 'wheel' input event was delayed for <number> ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
-Handling of 'touchstart' input event was delayed for <number> ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
-Handling of 'touchmove' input event was delayed for <number> ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
-

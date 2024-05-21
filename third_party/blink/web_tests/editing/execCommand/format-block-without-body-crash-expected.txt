@@ -1,6 +1,0 @@
-This tests executing FormatBlock command without body element.
-The passes if WebKit does not crash.
-
-PASS
-
-

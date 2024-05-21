@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] generateCertificate() with invalid range for expires should reject with TypeError
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] generateCertificate() with invalid type for expires should reject with TypeError
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

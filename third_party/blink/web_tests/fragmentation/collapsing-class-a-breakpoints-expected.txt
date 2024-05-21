@@ -1,5 +1,0 @@
-There's only one class A break point inside this multicol container, and it's between the two hotpink boxes.
-
-Below there should be two filled hotpink squares beside each other. Each square should contain a slightly smaller and perfectly center/middle aligned unfilled black square. There should be no scrollbars.
-
-PASS

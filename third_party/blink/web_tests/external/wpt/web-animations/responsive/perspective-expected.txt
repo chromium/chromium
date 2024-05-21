@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] perspective clamped to 0px on keyframes
-  assert_equals: expected "20px" but got "0px"
-Harness: the test ran to completion.
-

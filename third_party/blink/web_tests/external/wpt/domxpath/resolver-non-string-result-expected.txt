@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] symbol
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] object coercion (abrupt completion)
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

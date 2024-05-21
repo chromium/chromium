@@ -1,1 +1,0 @@
-This is a simple test that triggering a navigation from a pagehide handler in a frame being navigated doesn't crash.

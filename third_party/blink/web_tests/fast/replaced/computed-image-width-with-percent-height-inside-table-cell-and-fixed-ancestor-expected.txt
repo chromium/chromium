@@ -1,3 +1,0 @@
-The square below should be 100px by 100px.
-
-PASS

@@ -1,3 +1,0 @@
-crbug.com/485414: Inline content data shouldn't prevent fallback content in an image from displaying and responding to hit tests. Click on the rectangle to test.
-
-PASS: Area clicked.

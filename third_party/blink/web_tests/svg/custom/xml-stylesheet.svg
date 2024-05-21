@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="xml-stylesheet.css" type="text/css"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [ ]>
-<svg xmlns="http://www.w3.org/2000/svg">
-<rect fill="red" x="0" y="0" width="300" height="300" class="svgClass"/>
-</svg>

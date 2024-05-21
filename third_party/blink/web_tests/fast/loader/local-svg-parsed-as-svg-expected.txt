@@ -1,2 +1,0 @@
-ALERT: PASS: File parsed as SVG
-

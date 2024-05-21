@@ -1,4 +1,0 @@
-This test ensures WebKit does not clear undo stack in a contenteditable element when setting the value of input or textarea element.
-
- 
-PASS

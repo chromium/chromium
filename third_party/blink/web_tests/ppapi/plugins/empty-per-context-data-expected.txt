@@ -1,2 +1,0 @@
-This tests that invoking a plugin object from a (iframe) document that is no longer visible in a frame doesn't crash the renderer. If this test is successful, the word SUCCESS should be seen below.
-SUCCESS

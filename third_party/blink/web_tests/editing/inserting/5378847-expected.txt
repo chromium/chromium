@@ -1,4 +1,0 @@
-This tests character insertion on a line with an unrendered text node. You should see 'Hello' and then 'World' below.
-
-Hello
-World

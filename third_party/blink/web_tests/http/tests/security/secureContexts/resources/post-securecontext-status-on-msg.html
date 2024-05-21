@@ -1,7 +1,0 @@
-<script>
-window.addEventListener("message", function () {
-    if (window.top && window.top != window)
-        window.top.postMessage({ "isSecureContext": window.isSecureContext }, "*");
-});
-window.parent.postMessage("add-csp", "*");
-</script>

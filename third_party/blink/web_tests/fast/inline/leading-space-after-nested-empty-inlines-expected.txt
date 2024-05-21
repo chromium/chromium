@@ -1,7 +1,0 @@
-crbug.com/493077: The text should be all on one line.
-
-Text Text Text Text Text Text Text
-
-crbug.com/493077: The text should be all on one line.
-
-Text Text Text Text Text Text Text

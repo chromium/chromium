@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/web_test/renderer/event_sender.h",
-  "+content/web_test/renderer/test_runner.h",
-]

@@ -1,5 +1,0 @@
-The square below should be 100px by 100px. https://bugs.webkit.org/show_bug.cgi?id=103812 In strict mode, an image with height set to 100% and a fixed height ancestor should expand to its instrinsic height and width. Percentage height "is calculated with respect to the height of the generated box's containing block."
-
-
-
-PASS

@@ -1,3 +1,0 @@
-Bug http://crbug.com/261474: Dereference null pointer crash in Length::decrementCalculatedRef()
-
-The test passes if it does not crash.

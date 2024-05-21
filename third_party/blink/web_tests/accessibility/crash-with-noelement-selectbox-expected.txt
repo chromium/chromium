@@ -1,8 +1,0 @@
-This tests that there's no crash when accessising the stringValue of a menu list that has no elements.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

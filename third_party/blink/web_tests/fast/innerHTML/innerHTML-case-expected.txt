@@ -1,3 +1,0 @@
-This test checks to see if innerHTML is outputting in the proper case, i.e. all tags and methods lower-case.
-Original: <BR /><br /><HR /><hr /><Br><dIv sTyLe="color:bluE;"></dIv>
-Result:   <br><br><hr><hr><br><div style="color:bluE;"></div>

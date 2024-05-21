@@ -1,3 +1,0 @@
-This tests the code path for destruction of a radio button when it's checked, when the form outlives the radio button, but where the radio button is never explicitly removed from the form.
-
-If you can see this text, the test has run.

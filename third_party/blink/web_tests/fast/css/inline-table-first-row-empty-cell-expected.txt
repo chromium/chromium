@@ -1,5 +1,0 @@
-Text  Text
-
-crbug.com/452593: If an inline-table consists of a single row which consists of a single empty cell, then the baseline of the inline-table coincides with the baseline of the row which coincides with the bottom content edge of the cell. The two black boxes will align together along the top of the page at their top edges.
-
-PASS

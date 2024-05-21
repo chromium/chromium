@@ -1,1 +1,0 @@
-window.dummy = 1;

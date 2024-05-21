@@ -1,7 +1,0 @@
-Expect ref node root; pointer after: A B C D E F G H I
-
-Expect ref node 'A'; pointer after: [A] * B C D E F G H I
-
-Expect ref node 'A'; pointer before: * [A] B C D E F G H I
-
-Expect ref node 'A'; pointer before: * [A] B C D E F G H I

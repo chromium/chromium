@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Dimensions of the scripted elements
-  assert_approx_equals: height of multi0 expected 30 +/- 5 but got 45
-[FAIL] Vertical positions of scripts
-  assert_approx_equals: multi2 1 presup script expected 21 +/- 3 but got 26
-Harness: the test ran to completion.
-

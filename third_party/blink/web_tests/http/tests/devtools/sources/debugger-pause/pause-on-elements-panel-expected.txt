@@ -1,6 +1,0 @@
-Tests that debugger pause button works on Elements panel after a DOM node highlighting. Chromium bug 433366
-
-Call stack:
-    0) callback (pause-on-elements-panel.js:17)
-PASS: Debugger paused.
-

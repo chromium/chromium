@@ -1,1 +1,0 @@
-<!DOCTYPE html><html><head><title>FAIL</title></head><body><p>FAIL</p><script>parent.notify("resources/acid3/empty.txt")</script></body></html>

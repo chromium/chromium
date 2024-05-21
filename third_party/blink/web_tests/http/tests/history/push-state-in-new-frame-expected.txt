@@ -1,7 +1,0 @@
-CONSOLE ERROR: Uncaught SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'http://127.0.0.1:8000/pushState.html' cannot be created in a document with origin 'http://127.0.0.1:8000' and URL 'about:blank'.
-
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/history/push-state-in-new-frame.html
-            http://127.0.0.1:8000/navigation/resources/blank.txt (in frame "<!--framePath //<!--frame0-->-->")
-===============================================

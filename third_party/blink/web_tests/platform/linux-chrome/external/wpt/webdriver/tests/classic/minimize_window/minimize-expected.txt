@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_restore_from_maximized
-  assert not True
-Harness: the test ran to completion.

@@ -1,3 +1,0 @@
-Verifies that requestPaused has a networkId corresponding to requestWillBeSent's requestId
-requestPaused.networkId === requestWillBeSent.requestId: true
-

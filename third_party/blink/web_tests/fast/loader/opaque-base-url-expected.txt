@@ -1,9 +1,0 @@
-CONSOLE WARNING: Invalid relative frame source URL (<p>FAILURE</p>) within data URL.
-Test how opaque base URLs work for fetching subresources.
-
-SUCCESS
-SUCCESS
-SUCCESS
-Expected failure, see bug 9706.
-SUCCESS
-      

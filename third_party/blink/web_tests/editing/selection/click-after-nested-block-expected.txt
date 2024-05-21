@@ -1,8 +1,0 @@
-This is a test for a bug where clicking below a block didn't work right if the block was nested inside an inline.
-
-To test interactively, click below and to the right of the 2 in line 2. The caret should appear after the 2.
-
-SUCCESS
-
-line 1
-line 2

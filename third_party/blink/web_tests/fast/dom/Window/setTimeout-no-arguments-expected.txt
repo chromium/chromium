@@ -1,7 +1,0 @@
-This tests that calling setTimeout without a delay will still work.
-rdar: problem/5480234 JS setTimeout function requires a second argument
-
-In the case of a successful test you will see the text "Timeout was successful" otherwise you will see "Test Failed. Timeout was not called."
-
-Result: Timeout was successful
-

@@ -1,1 +1,0 @@
-This test opens a window iframe that loads a data URL iframe. We should *not* trigger a mixed content callback because the data URL cannot be corrupted by active network attackers.

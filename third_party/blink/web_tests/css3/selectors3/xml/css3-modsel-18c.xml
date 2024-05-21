@@ -1,4 +1,0 @@
-<?xml-stylesheet href="css3-modsel-18c.css" type="text/css"?>
-<test>
- <p xmlns="http://www.w3.org/1999/xhtml"><a href="#foo">Hover <strong>here</strong> and the background of <span>this text should go green</span>.</a></p>
-</test>

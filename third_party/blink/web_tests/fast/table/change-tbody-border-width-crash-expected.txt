@@ -1,3 +1,0 @@
-There was a crash when a row was removed and the border of a section was changed without an intervening CellRecalc.
-
-No crash == pass

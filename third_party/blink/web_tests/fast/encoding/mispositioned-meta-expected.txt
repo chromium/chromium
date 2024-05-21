@@ -1,5 +1,0 @@
-This test checks if WebKit can find a charset defined in an HTTP-EQUIV meta after the HEAD.
-
-The first letter should look like a Latin "C" here:
-
-Сайт Гоблина - Тупичок ст.о/у Гоблина (Goblin). Фильмы Гоблина. полный Пэ. Божья Искра.

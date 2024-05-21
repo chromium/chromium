@@ -1,4 +1,0 @@
-This test checks that the context menu is shown over a simple non-editable text.
-
-Lorem ipsum
-SUCCESS

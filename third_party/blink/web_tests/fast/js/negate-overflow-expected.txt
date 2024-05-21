@@ -1,7 +1,0 @@
-Test for overflow when negating the largest negative signed int.
-
-If the test passes, you'll see a series of PASS messages below.
-
-PASS: x should be 2147483648 and is.
-PASS: y should be 2147483648 and is.
-

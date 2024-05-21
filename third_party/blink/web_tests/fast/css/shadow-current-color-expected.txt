@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS circle1 has rgb(255, 0, 0) shadow as expected.
-PASS circle2 has rgb(0, 128, 0) shadow as expected.
-PASS circle3 has rgb(64, 64, 255) shadow as expected.
-     

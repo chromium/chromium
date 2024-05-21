@@ -1,3 +1,0 @@
-Test the behavior of a sync XMLHttpRequest that encounters an infinite redirection loop.
-
-Exception NetworkError; code=19; number=undefined (0); message='Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://127.0.0.1:8000/resources/infinite-loop.php'.'

@@ -1,5 +1,0 @@
-PASS This test passed
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

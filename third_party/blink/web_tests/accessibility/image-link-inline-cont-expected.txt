@@ -1,7 +1,0 @@
-Image link in the presence of inline continuations
-
-This test checks that a block inside a link does not unduly disturb the render tree via inline continuations. In particular, it checks that adding <div role=presentation> between a link and its contained image does not alter the accessibility tree at all, other than with respect to size.
-
-PASS: accessibility trees were identical other than size.
-
-

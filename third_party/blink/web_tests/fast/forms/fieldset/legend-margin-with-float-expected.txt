@@ -1,7 +1,0 @@
-PASS legend.getBoundingClientRect().left is 220
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Legend
-Legend

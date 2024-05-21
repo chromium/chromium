@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
- <!-- This page is ill-formed and should generate an XML parsing error. -->
- <rect x="10" y="10" width="200" height="200" fill="red"/>
- <rect x="10" y="10" width="200" height="200" fill="red">
-</svg>

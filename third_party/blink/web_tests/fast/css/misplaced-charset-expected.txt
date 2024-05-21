@@ -1,7 +1,0 @@
-Test for bug 36515: CSS style definitions are ignored if they just follow a "@charset" which appears in lines other than the first line in stylesheet.
-
-There should be two green squares below:
-
-
-
-PASS

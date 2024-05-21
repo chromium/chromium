@@ -1,5 +1,0 @@
-Default policy for createView for 'about:blank' is 'new popup'
-Default policy for navigation to 'about:blank' is 'current tab'
-Tests that hitting any key but enter doesn't override the regular window policy.
-
-link

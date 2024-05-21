@@ -1,3 +1,0 @@
-This tests to see that tabs are put into tab spans when they are copied individually. The pasted tab should be inside of a tab span, not a style span. To run the test manually, paste and then inspect the editable region, and ensure that there is a tab span at the beginning of the editable div.
-
-<span style="white-space: pre;"> </span><span style="white-space:pre;"> </span>xxx

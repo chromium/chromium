@@ -1,6 +1,0 @@
-PASS internals.isLoadingFromMemoryCache("resources/image-set-4x.png") is false
-PASS internals.isLoadingFromMemoryCache("resources/blue_rect.jpg") is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

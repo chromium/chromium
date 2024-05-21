@@ -1,2 +1,0 @@
- 
-This tests that frame targets work. If this text is successful, this text should still be shown.

@@ -1,3 +1,0 @@
-Bug 8440: iExploder(#3327): Crash in StringImpl::initWithQChar().
-
-Shouldn't crash

@@ -1,2 +1,0 @@
-CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/html;charset=utf-8,<html><body>The test passes if this page opens in the same window</body></html>
-PASS: Popup opened in the same window

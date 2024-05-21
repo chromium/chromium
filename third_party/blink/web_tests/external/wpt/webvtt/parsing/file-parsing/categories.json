@@ -1,6 +1,0 @@
-{
-    ":categories": [
-        ["file-parsing", "cue-text-parsing"]
-    ],
-    ":subcategories": ["tests/categories.json"]
-}

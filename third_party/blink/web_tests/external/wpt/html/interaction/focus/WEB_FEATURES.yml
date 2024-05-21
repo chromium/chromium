@@ -1,4 +1,0 @@
-features:
-- name: tabindex
-  files:
-  - tabindex-focus-flag.html

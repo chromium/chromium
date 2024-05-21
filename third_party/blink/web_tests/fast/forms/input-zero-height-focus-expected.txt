@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13413 Failed assertion in LayoutTextControl::setSelectionRange in Google Spreadsheets.
-
-This test should not ASSERT.

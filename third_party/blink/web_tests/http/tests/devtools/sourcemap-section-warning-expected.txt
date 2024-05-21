@@ -1,4 +1,0 @@
-Verify that sourcemap emits warning if there's a section with "url" field.
-Message count: 1
-SourceMap "http://127.0.0.1:8000/devtools/resources/source-map-warning.map.json" contains unsupported "URL" field in one of its sections.
-

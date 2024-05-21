@@ -1,3 +1,0 @@
-Test that setRequestHeader throws a SYNTAX_ERR exception when called with an empty header name.
-
-SUCCESS: got exception SyntaxError: Failed to execute 'setRequestHeader' on 'XMLHttpRequest': '' is not a valid HTTP header field name.

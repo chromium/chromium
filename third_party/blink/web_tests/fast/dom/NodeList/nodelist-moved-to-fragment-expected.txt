@@ -1,4 +1,0 @@
-This tests moving a node list that uses atomic string gets adopted to a new document properly.
-The test passes if WebKit does not hit an assertion.
-
-PASS

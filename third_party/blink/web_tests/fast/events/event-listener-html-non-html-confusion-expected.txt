@@ -1,7 +1,0 @@
-This test checks for a particular problem in WebKit internals where adding the same function first as a non-HTML and then as an HTML event listener could leave the "is HTML" flag set wrong.
-
-If the test succeeds, you should see the word SUCCESS below. Otherwise, you'll see the word FAILURE or nothing at all.
-
-SUCCESS
-
-test anchor - script clicks this automatically

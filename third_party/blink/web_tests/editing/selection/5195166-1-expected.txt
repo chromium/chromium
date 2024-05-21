@@ -1,5 +1,0 @@
-This tests for a bug where extending a selection created with the mouse would blow it away before extending it.
-
-There should be six characters selected in this sentence on Mac and four characters selected on Win/Linux.
-Success
-Success

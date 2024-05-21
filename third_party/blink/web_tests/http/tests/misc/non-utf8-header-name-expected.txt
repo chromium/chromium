@@ -1,1 +1,0 @@
-Test for bug 96284: Non UTF-8 HTTP headers do not cause a crash.

@@ -1,6 +1,0 @@
-Test that if an image is served with "Access-Control-Allow-Origin: *", then loading it first without and then with a CORS request works the second time.
-Testing uploading without CORS headers
-PASS: image tainted canvas
-Testing uploading with CORS headers
-PASS: image did not taint canvas
-

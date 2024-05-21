@@ -1,4 +1,0 @@
-Test passes if it does not crash.
-Text in caption 1
-Text in caption 2
-Text in caption 3 

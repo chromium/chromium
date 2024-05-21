@@ -1,3 +1,0 @@
-
-PASS: number of pages is 1
-All tests passed

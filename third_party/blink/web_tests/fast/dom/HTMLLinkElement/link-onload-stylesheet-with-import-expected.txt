@@ -1,5 +1,0 @@
-This tests that a Load event is fired at an HTML Link element once all @import'ed stylesheets are loaded by a style sheet. This test PASSED if there are only PASS messages below. Otherwise, it FAILED.
-
-PASS Fired Load event.
-PASS #test color was rgb(0, 0, 255).
-

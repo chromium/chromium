@@ -1,9 +1,0 @@
-<?xml-stylesheet href="css3-modsel-8.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml" lang="en-gb">This paragraph should have green background because its language is &quot;en-gb&quot;</p>
-<address xmlns="http://www.w3.org/1999/xhtml" lang="fi">
-<span lang="en-us">This address should also</span>
-  <span lang="en-fr">have green background because the language of the inner SPANs
-     is not French.</span>
-</address>
-</test>

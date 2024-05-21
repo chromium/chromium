@@ -1,1 +1,0 @@
-../resources/tricky01.dat: PASS

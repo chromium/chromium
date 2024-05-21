@@ -1,1 +1,0 @@
-This page executes JavaScript that removes a non-existing event listener. It should not cause memory leaks.

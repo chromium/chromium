@@ -1,4 +1,0 @@
-This tests the behavior of a Doctype in a HTML document.
-PASS: a doctype in a HTML document is not ignored.
-PASS: a doctype in an HTML document is correctly set to the first child of the Document.
-

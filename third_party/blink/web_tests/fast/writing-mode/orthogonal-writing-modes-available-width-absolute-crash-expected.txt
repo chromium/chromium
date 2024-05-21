@@ -1,2 +1,0 @@
-* { display: inline; position: absolute; overflow-y: auto; height: fit-content; writing-mode: vertical-rl; }
-if (window.testRunner) testRunner.dumpAsText();

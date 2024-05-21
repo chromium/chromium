@@ -1,1 +1,0 @@
-link 1 dimensions: 100 x 100; link 2 dimensions: 100 x 100

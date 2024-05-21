@@ -1,9 +1,0 @@
-Test that cycle detection traverses over both templates and shadow roots
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS shadowDiv.appendChild(outerDiv) threw exception HierarchyRequestError: Failed to execute 'appendChild' on 'Node': The new child element contains the parent..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

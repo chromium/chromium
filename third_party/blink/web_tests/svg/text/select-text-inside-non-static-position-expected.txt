@@ -1,4 +1,0 @@
-This tests selecting text inside a non-statically positioned SVG content. This test passes if it does not crash.
-
-svg text
- PASS

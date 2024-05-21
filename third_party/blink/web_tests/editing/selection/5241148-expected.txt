@@ -1,5 +1,0 @@
-ALERT: Success
-This tests to see that the Selection object's properties return valid DOM positions (not our internal editing positions). We should be able to create Range objects out of those positions w/o issue.
-
-foo
-

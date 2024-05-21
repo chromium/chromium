@@ -1,6 +1,0 @@
-Bug 32288 - :after selector displays in wrong place with nested div
-
-First.
-Second.
-
-PASS

@@ -1,2 +1,0 @@
-var result = "Pass";
-postMessage(result);

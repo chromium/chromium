@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] "transform: perspective(0px);" should be invalid
-  assert_false: CSS.supports expected false got true
-Harness: the test ran to completion.
-

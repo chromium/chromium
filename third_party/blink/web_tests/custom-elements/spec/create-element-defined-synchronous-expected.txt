@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "createElement(): 6.1.5. If result has children, then throw a NotSupportedError", "createElementNS(): 6.1.5. If result has children, then throw a NotSupportedError"
-Harness: the test ran to completion.
-

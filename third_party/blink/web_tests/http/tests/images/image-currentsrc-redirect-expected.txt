@@ -1,5 +1,0 @@
-PASS img_redirect.currentSrc is "http://127.0.0.1:8000/resources/slow-image.php?redirect_name=square100.png&mimeType=image/png&sleep=100"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

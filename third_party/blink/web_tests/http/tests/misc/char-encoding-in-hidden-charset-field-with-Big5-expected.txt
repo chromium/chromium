@@ -1,3 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=19079, it send the submissions character encoding in hidden _charset_ field.
-
-PASSED: _charset_=Big5

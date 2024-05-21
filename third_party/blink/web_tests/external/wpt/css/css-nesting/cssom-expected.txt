@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSSStyleRule is a CSSGroupingRule
-  assert_equals: expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
-Harness: the test ran to completion.
-

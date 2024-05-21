@@ -1,3 +1,0 @@
-Test that frame count limit is reset on navigations.
-
-PASS

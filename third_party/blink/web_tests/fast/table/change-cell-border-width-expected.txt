@@ -1,8 +1,0 @@
-Changing a cell's collapsed border's width should change the width of the sibling cells and the table.
-
-There should be 3 squares. Outer two are lime, middle one is blue with a lightblue border.
-
-Firefox 50.0a1 (nightly 2016-07-19) fails this, so it should probably be upstreamed, except it uses chrome-specific `runAfterLayoutAndPaint`.
-
-		
-PASS

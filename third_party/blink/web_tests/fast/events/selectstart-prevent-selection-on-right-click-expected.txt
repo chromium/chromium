@@ -1,4 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-This test ensures selectstart event fires when selecting a word by right click and script can prevent the selection change.
-
-PASS

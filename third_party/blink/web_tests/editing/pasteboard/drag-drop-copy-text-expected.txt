@@ -1,9 +1,0 @@
-This tests that text is copied (rather than moved) when the copy key is down.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS textarea.value is "Hello WorldHello"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Tests that Fetch intercepts CORS preflight requests correctly.
-request 1: OPTIONS http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl
-request 2: POST http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl
-response content: response body
-

@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/attachment.cgi?id=30159 Assertion failure in Node::setDocument() (willMoveToNewOwnerDocumentWasCalled) when adopting a <form> element.
-
-The test passed if the assertion did not fail.

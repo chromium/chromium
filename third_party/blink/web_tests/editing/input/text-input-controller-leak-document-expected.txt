@@ -1,7 +1,0 @@
-PASS markedRangeResultGC.wasCollected is true
-PASS selectedRangeResultGC.wasCollected is true
-PASS firstRectForCharacterRangeGC.wasCollected is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

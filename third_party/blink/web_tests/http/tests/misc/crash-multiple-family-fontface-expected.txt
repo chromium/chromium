@@ -1,3 +1,0 @@
-Try to reference a custom font (@font-face) which was defined with more than 1 font-family.
-
-PASS if does not crash

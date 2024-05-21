@@ -1,7 +1,0 @@
-Test case for Bug 13942 : ASSERTION FAILED: !attrName.contains('/') in HTMLTokenizer.cpp:132 when loading http://bamanzi.blogeden.cn/
-
-To pass this test, there should be no assertion failure and you should PASS three times.
-
-PASS
-PASS
-PASS

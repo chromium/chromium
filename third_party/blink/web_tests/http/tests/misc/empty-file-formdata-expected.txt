@@ -1,2 +1,0 @@
-This tests verifies that files without a name are included in the multipart form data:
-Test passed.

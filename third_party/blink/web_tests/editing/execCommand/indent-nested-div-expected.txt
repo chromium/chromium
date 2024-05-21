@@ -1,4 +1,0 @@
-This tests indenting nested divs. By indenting "hello", we should be able to enclose all three blocks 1 through 3 by a blockquote
-
-hello
-<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div id="block1"><div id="block2"><div id="block3">hello</div></div></div></blockquote>

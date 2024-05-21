@@ -1,2 +1,0 @@
-This tests for a bug where hitting return at the end of a paragraph inside a blockquote would create an extraneous empty quoted paragraph. You should see "line one" (quoted), "" (unquoted), and "line two" (quoted) below.
-<blockquote type="cite"><div id="test">line one<br></div></blockquote><br><blockquote type="cite"><div id="test">line two</div></blockquote>

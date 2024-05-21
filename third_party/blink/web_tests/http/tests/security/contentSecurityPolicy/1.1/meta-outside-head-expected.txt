@@ -1,3 +1,0 @@
-CONSOLE ERROR: The Content Security Policy 'script-src 'none'' was delivered via a <meta> element outside the document's <head>, which is disallowed. The policy has been ignored.
-ALERT: PASS (1/1)
-This test checks that Content Security Policy delivered via a meta element is not enforced if the element is outside the document's head.

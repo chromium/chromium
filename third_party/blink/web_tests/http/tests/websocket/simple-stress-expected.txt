@@ -1,7 +1,0 @@
-Test sending many messages, and sending a large message.
-
-Should say PASS:
-
-Running the test...
-PASS
-

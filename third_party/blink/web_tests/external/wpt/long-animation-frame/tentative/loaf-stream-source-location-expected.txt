@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Source location should be extracted for stream promises
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'sourceURL')"
-Harness: the test ran to completion.
-

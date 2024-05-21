@@ -1,5 +1,0 @@
-Test for bug 89496: Crash in LayoutTableSection::addCell.
-
-This test passes if it doesn't CRASH or ASSERT.
-
-Lorem Ipsum

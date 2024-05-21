@@ -1,9 +1,0 @@
-Check return value of navigator.language.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS language is 'en-us'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,4 +1,0 @@
-Tests Emulation.setDocumentCookieDisabled.
-Setting cookie to 'foo'
-Reading cookie: 
-

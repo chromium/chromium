@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: The send() method: event order when there is no response entity body
-  assert_equals: expected "progress(0,0,false)" but got "readystatechange(4)"
-Harness: the test ran to completion.
-

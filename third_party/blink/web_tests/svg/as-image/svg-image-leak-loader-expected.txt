@@ -1,4 +1,0 @@
-This test checks if SVGIMages cause MainResourceLoaders leaks which will prevent later sub-resources from being loaded.
-This test should produce "SUCCESS" and should not timeout.
-SUCCESS
-                    

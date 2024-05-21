@@ -1,9 +1,0 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<img id="target">
-<script>
-test(() => {
-  target.style.content = 'url("chrome://")';
-  getComputedStyle(target).content;
-}, 'Specifying a disallowed url protocol for <img> content property should not crash when serialising.');
-</script>

@@ -1,5 +1,0 @@
-CONSOLE MESSAGE: PASS
-This test requires DumpRenderTree to see the log of what resources are loaded.
-
-<link href=resources/link1.css rel="stylesheet">
-

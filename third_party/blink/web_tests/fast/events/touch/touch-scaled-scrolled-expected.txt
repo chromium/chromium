@@ -1,2 +1,0 @@
-This test is successful if event.clientX/Y are consistent with the generated input.
-15, 35

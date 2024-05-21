@@ -1,8 +1,0 @@
-Given a float followed by a regular block with the same height as the float, then a block B with a negative margin: Check that a line inside B doesn't overlap with the float. There's an empty collapse-through block before B, so that our initial logical top estimate fails and we have to relayout. When laying out again, we have to detect that the float that we first thought didn't affect the line now affects it.
-
-The word "BINGO" should be seen below, to the right of a blue block.
-
-BINGO
-
-PASS
-PASS

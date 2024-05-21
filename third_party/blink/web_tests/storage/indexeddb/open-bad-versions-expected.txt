@@ -1,9 +1,0 @@
-No crashes when opening and reloading with bad version numbers
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-dbname = String(window.location)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

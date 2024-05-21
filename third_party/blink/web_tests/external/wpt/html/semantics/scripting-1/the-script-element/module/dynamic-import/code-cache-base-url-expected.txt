@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] gamma - Function
-  assert_equals: expected "gamma/import.js" but got "beta/import.js"
-Harness: the test ran to completion.
-

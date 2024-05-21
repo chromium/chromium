@@ -1,9 +1,0 @@
-Tests type enforcement on DOM setters.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.body = nodelist; threw exception TypeError: Failed to set the 'body' property on 'Document': Failed to convert value to 'HTMLElement'..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

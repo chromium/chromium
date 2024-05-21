@@ -1,8 +1,0 @@
-This test documents our set of global constructors we expose on the window object (FF and Opera don't expose them on the window, btw). This also checks to make sure than any constructor attribute we expose has the expected constructor type.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

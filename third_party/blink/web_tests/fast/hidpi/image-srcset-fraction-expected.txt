@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("testimg").clientWidth==200 is true
-This test passes if the srcset resource is loaded and displayed as the image

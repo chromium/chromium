@@ -1,5 +1,0 @@
-If min-height is less than height, it has no effect.
-
-Below there should be a blue square to the left of a hotpink square.
-
-PASS

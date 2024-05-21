@@ -1,1 +1,0 @@
-This tests that calling HTMLDocument.hasFocus() on a frameless HTMLDocument does not crash.

@@ -1,1 +1,0 @@
-PASS: container.clientWidth is zero.

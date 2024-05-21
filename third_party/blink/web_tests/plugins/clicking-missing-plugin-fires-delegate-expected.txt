@@ -1,1 +1,0 @@
-This test checks if the missing plugin button can be clicked. This is a test for Bug 41721.

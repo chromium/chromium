@@ -1,6 +1,0 @@
-PASS: The computed style for a specified font-family of 'serif' matched.
-PASS: The computed style for a specified font-family of 'sans-serif' matched.
-PASS: The computed style for a specified font-family of 'cursive' matched.
-PASS: The computed style for a specified font-family of 'fantasy' matched.
-PASS: The computed style for a specified font-family of 'monospace' matched.
-

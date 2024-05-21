@@ -1,1 +1,0 @@
-This tests that calling document.open on a document that has a pending load correctly cancels the load and does not crash even if the frame is removed.

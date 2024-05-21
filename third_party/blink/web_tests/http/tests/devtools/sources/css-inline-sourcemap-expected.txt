@@ -1,4 +1,0 @@
-The test verifies that source maps are loaded if specified inside style tag.
-
-Source mapping loaded.
-

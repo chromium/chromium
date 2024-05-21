@@ -1,3 +1,0 @@
-CONSOLE ERROR: Unsafe attempt to load URL http://localhost:8000/security/resources/target.xml from frame with URL http://127.0.0.1:8000/security/xss-DENIED-xsl-document-redirect.xml. Domains, protocols and ports must match.
-
-This test includes content via a cross-origin document() command. It passes if the load fails and thus there is no text below this line.

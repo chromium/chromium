@@ -1,2 +1,0 @@
-PASS - "left" property for "test" element at 0.5s saw something close to: 450
-

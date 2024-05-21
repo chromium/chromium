@@ -1,6 +1,0 @@
-Test for bug 172802 - Wrong default Content-Type set in XMLHttpRequest.send(DOMString)
-
-Should be text/plain;charset=UTF-8:
-
-text/plain;charset=UTF-8
-

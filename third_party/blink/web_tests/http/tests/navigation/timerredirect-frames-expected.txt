@@ -1,8 +1,0 @@
-
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/timerredirect-frames.html
-curr->  http://127.0.0.1:8000/navigation/resources/frameset.pl?frameURL=timerredirect.html
-            http://127.0.0.1:8000/navigation/resources/otherpage.html (in frame "footer")
-            http://127.0.0.1:8000/navigation/resources/success200.html (in frame "main")
-===============================================

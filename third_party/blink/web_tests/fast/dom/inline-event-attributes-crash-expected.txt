@@ -1,9 +1,0 @@
-Tests that malformed code in event handler attributes does not cause a crash
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Did not crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

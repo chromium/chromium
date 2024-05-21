@@ -1,6 +1,0 @@
-Bug 95892: REGRESSION(r122501): replaced elements with percent width are wrongly size when inserted inside an auto-table layout.
-
-This test checks that a replaced element inside an auto-table layout properly computes its preferred logical width.
-
-PASS
-	

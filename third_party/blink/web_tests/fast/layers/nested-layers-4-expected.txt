@@ -1,1 +1,0 @@
-Tests that moving a layer inside a transformed layer works. The test passes if it completes without failing any assertions in Debug mode.

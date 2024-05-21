@@ -1,6 +1,0 @@
-This tests selecting all with an open input method composition.
-To manually test, type some letter in the editable region below and then select all.
-WebKit should not delete contents.
-| <div>
-|   contenteditable=""
-|   "<#selection-anchor>PASS<#selection-focus>"

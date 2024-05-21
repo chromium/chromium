@@ -1,4 +1,0 @@
-This tests that getComputedStyle will take box-sizing into account when computing the width and height of a box.
-
-Test 1 Passed
-Test 2 Passed

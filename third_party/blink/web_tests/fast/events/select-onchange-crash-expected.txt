@@ -1,6 +1,0 @@
-This test is to ensure that we do not crash when onchange handler changes the select from a menu list to a list box.
-
-PASS: Did not crash
-
-abcd
-efgh

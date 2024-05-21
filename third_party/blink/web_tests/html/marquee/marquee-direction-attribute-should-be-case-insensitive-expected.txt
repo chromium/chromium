@@ -1,9 +1,0 @@
-PASS computedStyle.whiteSpace is "normal"
-PASS computedStyle.whiteSpace is "normal"
-PASS computedStyle.whiteSpace is "nowrap"
-PASS computedStyle.whiteSpace is "nowrap"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-The text should move down. The text should move up. The text should move right. The text should move left.

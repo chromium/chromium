@@ -1,4 +1,0 @@
-Test worker thread stack usage. Should not crash.
-
-PASS (RangeError: Maximum call stack size exceeded)
-

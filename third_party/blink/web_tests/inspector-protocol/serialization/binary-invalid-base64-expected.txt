@@ -1,3 +1,0 @@
-Tests that passing an invalid base64 string as binary casues an error to be reported
-Failed to deserialize params.data - BINDINGS: invalid base64 string <somewhere>
-

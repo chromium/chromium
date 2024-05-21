@@ -1,1 +1,0 @@
-self.result = "Pass";

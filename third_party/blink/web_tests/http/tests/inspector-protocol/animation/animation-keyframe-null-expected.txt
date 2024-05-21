@@ -1,6 +1,0 @@
-Tests that animation with null effect/target works.
-Animation created
-Animation started
-Animation created
-Animation started
-

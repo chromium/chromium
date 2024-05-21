@@ -1,9 +1,0 @@
-This tests that ScriptRegexp matching fails when running into an exceptional condition (stack overflow) without crashing.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS runTest() threw exception RangeError: Maximum call stack size exceeded.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

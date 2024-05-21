@@ -1,2 +1,0 @@
-This tests cloning a script element that has already started and inserting it into the document does not re-run the script. You should see PASS:
-PASS

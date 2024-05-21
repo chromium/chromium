@@ -1,6 +1,0 @@
-Test for bug 34653: XMLHttpRequest should force to send content-type as charset equals UTF-8.
-
-Test1 (setRequestHeader was not called): FAILURE: 'text/plain;charset=UTF-8 '
-Test2 (setRequestHeader was called without a charset): SUCCESS
-Test3 (setRequestHeader was called with a non-UTF8 charset): SUCCESS
-Test4 (setRequestHeader was called with multiple charsets and other attributes): SUCCESS

@@ -1,4 +1,0 @@
-PASS - "left" property for "box" element at 0.4s saw something close to: 20
-PASS - "left" property for "box" element at 1.2s saw something close to: 10
-PASS - "left" property for "box" element at 1.6s saw something close to: 15
-

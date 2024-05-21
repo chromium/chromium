@@ -1,3 +1,0 @@
-An extremely wide multicol container with RTL direction will get its first column far, far away to the right. Make sure this doesn't result in integer overflow.
-
-PASS if no assertion failure or crash.

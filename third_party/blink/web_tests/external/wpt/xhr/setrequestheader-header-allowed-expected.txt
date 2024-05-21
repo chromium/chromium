@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: setRequestHeader() - headers that are allowed (User-Agent)
-  assert_equals: expected "User-Agent," but got ""
-Harness: the test ran to completion.
-

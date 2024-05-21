@@ -1,4 +1,0 @@
-This tests nesting two spans with -webkit-isolate followed by a br. The test passes if WebKit doesn't crash.
-
-a
-

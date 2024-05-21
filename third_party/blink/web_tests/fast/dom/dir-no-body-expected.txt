@@ -1,5 +1,0 @@
-This page test for a crash when setting the dir property of an HTML document with no body.
-
-If the test passes, you'll see a 'PASS' message below.
-
-PASS: you didn't crash.

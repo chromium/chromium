@@ -1,4 +1,0 @@
-cache-control: max-age=600
-access-control-allow-origin: *
-timing-allow-origin: *
-cross-origin-resource-policy: cross-origin

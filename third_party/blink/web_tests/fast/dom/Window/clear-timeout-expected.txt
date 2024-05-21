@@ -1,3 +1,0 @@
-This test checks that clearTimeout works by setting up two timeouts and cancelling one. If the test succeeds you should see only function f2 being called below.
-
-The function f2 was called.

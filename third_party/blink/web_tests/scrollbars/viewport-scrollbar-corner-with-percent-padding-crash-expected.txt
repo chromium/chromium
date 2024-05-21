@@ -1,3 +1,0 @@
-Viewport scrollbar corner with percent padding and background image
-
-Test for bug 341004: This test passes if there is no crash when scrollbar's style changes.

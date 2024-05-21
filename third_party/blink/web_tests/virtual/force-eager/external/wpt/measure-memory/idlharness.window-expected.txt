@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Performance interface: operation measureUserAgentSpecificMemory()
-  assert_own_property: interface prototype object missing non-static operation expected property "measureUserAgentSpecificMemory" missing
-Harness: the test ran to completion.
-

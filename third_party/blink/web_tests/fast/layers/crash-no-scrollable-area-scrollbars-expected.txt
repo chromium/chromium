@@ -1,2 +1,0 @@
-This test checks that Layer doesn't crash because it is missing a ScrollableArea.
-This test has passed if it doesn't crash.

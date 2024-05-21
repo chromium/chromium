@@ -1,9 +1,0 @@
-Test if changing disabled updates checkValidity.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input.checkValidity() is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

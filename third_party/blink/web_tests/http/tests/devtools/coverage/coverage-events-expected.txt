@@ -1,9 +1,0 @@
-Tests the if events are getting emitted when coverage changes.
-
-Should have coverage information even when not covered yet
-Coverage info found.
-Coverage should emit an event whenever it changes
-Event got emitted.
-Coverage should emit an event when it gets reset
-Event got emitted.
-

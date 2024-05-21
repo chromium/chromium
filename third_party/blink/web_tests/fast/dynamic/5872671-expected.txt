@@ -1,6 +1,0 @@
-This is a test for rdar://problem/5872671 REGRESSION (3.1.1-TOT): Repro crash going to Ortega Park home page.
-
-The test passed if it did not crash.
-
-
-

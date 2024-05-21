@@ -1,3 +1,0 @@
-Inline with -webkit-transform that contains positioned element. This should not crash.
-
-some text here

@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-92.css" type="text/css"?>
-<test>
-<div xmlns="http://www.w3.org/1999/xhtml" class="myTest">
-<testA xmlns="http://www.example.org/b">This paragraph should have a green background</testA>
-</div>
-</test>

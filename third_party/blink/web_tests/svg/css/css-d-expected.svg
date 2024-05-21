@@ -1,8 +1,0 @@
-<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
-    <style>
-        #t {
-            fill: blue;
-        }
-    </style>
-    <path id="t" d="M 100 100 H 700 V 500 Z"/>
-</svg>

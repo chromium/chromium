@@ -1,9 +1,0 @@
-SMIL animations scheduled in inactive document cause crash
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if no crash on debug builds
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

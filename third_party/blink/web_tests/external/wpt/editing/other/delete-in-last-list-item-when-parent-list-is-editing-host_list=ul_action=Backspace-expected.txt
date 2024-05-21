@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Backspace in "<ul contenteditable><li>{}</li></ul>"
-  assert_in_array: value "" not in array ["<li></li>", "<li><br></li>"]
-[FAIL] Backspace in "<ul contenteditable><dl><dt>{}</dt></dl></ul>"
-  assert_in_array: value "<dl><dt></dt></dl>" not in array ["<li></li>", "<li><br></li>"]
-[FAIL] Backspace in "<ul contenteditable><dl><dd>{}</dd></dl></ul>"
-  assert_in_array: value "<dl><dd></dd></dl>" not in array ["<li></li>", "<li><br></li>"]
-Harness: the test ran to completion.
-

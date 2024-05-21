@@ -1,5 +1,0 @@
-FAIL document.querySelector('.p:hover .a') should be null. Was [object SVGRectElement].
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

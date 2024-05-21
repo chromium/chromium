@@ -1,5 +1,0 @@
-PASS if no asssertion failure.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

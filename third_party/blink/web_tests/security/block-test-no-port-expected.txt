@@ -1,1 +1,0 @@
-This test attempts to change the src of an IMG tag to a blocked IP with no port to confirm that WebKit returns the correct error for it - blocked instead of cannot find. Due to the nature of this test, the results can only be processed automatically via DumpRenderTree. In addition, on some systems the results may depend on the behavior of the proxy.

@@ -1,8 +1,0 @@
-PASS getComputedStyle() threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': 1 argument required, but only 0 present..
-PASS getComputedStyle(document) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS getComputedStyle(null) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS getComputedStyle(undefined) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

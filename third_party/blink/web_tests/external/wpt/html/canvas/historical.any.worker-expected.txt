@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] OffscreenCanvasRenderingContext2D.commit method is removed
-  assert_equals: expected (undefined) undefined but got (function) function "function commit() { [native code] }"
-Harness: the test ran to completion.
-

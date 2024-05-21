@@ -1,4 +1,0 @@
-This tests that the pixel-level x coordinate of a character range (0,0) doesn't change before and after inserting a Thai character. If this test finishes successfully, this test displays "SUCCEEDED". Otherwise this test displays "FAILED".
-
-ก
-SUCCEEDED

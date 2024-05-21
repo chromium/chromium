@@ -1,5 +1,0 @@
-PASS - "left" property for "box1" element at 0.5s saw something close to: 132
-PASS - "transform.4" property for "box2" element at 0.5s saw something close to: 132
-PASS - "left" property for "box1" element at 1.5s saw something close to: 300
-PASS - "transform.4" property for "box2" element at 1.5s saw something close to: 300
-

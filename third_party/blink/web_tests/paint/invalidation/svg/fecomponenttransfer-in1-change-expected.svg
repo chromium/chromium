@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<filter id="f" x="0%" y="0%" width="100%" height="100%">
-    <feComponentTransfer id="fe" in="SourceGraphic">
-        <feFuncG type="identity"/>
-    </feComponentTransfer>
-</filter>
-<rect width="100" height="100" fill="rgb(0,255,0)" filter="url(#f)"/>
-</svg>

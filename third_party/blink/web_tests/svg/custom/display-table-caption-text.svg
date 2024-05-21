@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <script>
-  if (window.testRunner)
-    testRunner.dumpAsText();
-  </script>
-  <text display="table-caption">This test PASSED if we don't crash when the display value is table-caption</text>
-</svg>

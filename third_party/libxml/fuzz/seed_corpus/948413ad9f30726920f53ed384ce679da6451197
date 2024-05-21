@@ -1,7 +1,0 @@
-<!DOCTYPE cab SYSTEM "http://example.org/cab.dtd">
-<cab>
-  <c/>
-  <a>Let's use predefined entites &amp; &lt; &gt;</a>
-  <b>Let's use a DTD defined entity &bent;</b>
-</cab>
-

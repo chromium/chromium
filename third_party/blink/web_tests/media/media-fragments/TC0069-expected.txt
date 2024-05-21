@@ -1,8 +1,0 @@
-
-Title: TC0069
-Fragment: 't=npt:'
-Comment: UA knows that this is an invalid media fragment, so it will play the entire media resource.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == '0') OK
-END OF TEST
-

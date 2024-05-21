@@ -1,3 +1,0 @@
-This test checks that style sheets hosted inside shadow roots are reported in CSS.styleSheetAdded event.
-Loaded style sheet text:  .red { color: red; } 
-

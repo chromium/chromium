@@ -1,5 +1,0 @@
-Verifies that modules can be loaded via import() in snippets
-
-my_snippet_name:1 'end of snippet'
-my_snippet_name:4 myModule.message: hello from module.js
-

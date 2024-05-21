@@ -1,1 +1,0 @@
-This test passes if it does not crash. (https://bugs.webkit.org/show_bug.cgi?id=63885)

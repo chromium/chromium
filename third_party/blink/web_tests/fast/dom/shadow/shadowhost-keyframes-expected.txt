@@ -1,9 +1,0 @@
-Test if @keyframes works for shadow host when using :host. i.e. crbug.com/332577
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS getColor(document.getElementById('host')) is "rgb(0, 128, 0)"

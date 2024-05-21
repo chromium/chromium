@@ -1,9 +1,0 @@
-Ensuring we continue to use strike tags for legacy strikethrough execCommands, not s tags. See https://bugs.webkit.org/show_bug.cgi?id=53475
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Strikethrough of "Don't change expected results for me!" yields "<strike>Don't change expected results for me!</strike>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

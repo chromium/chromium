@@ -1,4 +1,0 @@
-Tests whether the background color is retained when all the text is deleted and new text is typed in.
-| <span>
-|   style="background-color: rgb(0, 128, 0);"
-|   "New Text<#selection-caret>"

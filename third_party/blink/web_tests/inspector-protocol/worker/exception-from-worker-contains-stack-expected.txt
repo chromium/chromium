@@ -1,7 +1,0 @@
-Tests that console message from worker contains stack trace.
-Worker created
-Worker destroyed
-
-Worker created
-Message with stack trace received.
-

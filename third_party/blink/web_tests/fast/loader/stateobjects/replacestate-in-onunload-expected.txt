@@ -1,4 +1,0 @@
-This test calls replaceState during the onload handler to verify that the correct document's state is modified. If the test succeeds the URL and text below will show a success message.
-
-PASS
-

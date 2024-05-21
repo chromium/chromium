@@ -1,3 +1,0 @@
-This text should be on the same line
-
-crbug.com/372832: Test that adding an inline anonymous table before a div inside a block continuation gets added to the pre-block not the middle block.

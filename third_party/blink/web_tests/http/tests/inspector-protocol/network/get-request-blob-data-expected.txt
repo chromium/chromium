@@ -1,8 +1,0 @@
-Tests request body blobs support.
-[blob] Data included: false, has post data: true
-[blob] string1string2
-[orginal] Data included: false, has post data: true
-[clone] Data included: false, has post data: true
-[orginal] < Cloned request body >
-[clone] < Cloned request body >
-

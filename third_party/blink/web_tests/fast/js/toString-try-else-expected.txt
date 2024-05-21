@@ -1,9 +1,0 @@
-This test checks that toString() round-trip on a function that has a else clause directly followed by an else clause puts whitespace between the two on decompilation.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS unevalf(eval(unevalf(testTryElse))) is unevalf(testTryElse)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

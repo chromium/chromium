@@ -1,3 +1,0 @@
-Bug 88676: Crash in TableLayoutAlgorithmFixed::layout
-
-PASSED, the test didn't crash.

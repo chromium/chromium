@@ -1,5 +1,0 @@
-CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/redirect.php?url=/xmlhttprequest/resources/reply.xml' (redirected from 'http://127.0.0.1:8000/xmlhttprequest/resources/redirect.php?url=http://localhost:8000/xmlhttprequest/resources/redirect.php?url=/xmlhttprequest/resources/reply.xml') from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-Test that a cross-origin chain of redirects to a server that responds is indistinguishable from one that does not. Should say PASS:
-
-PASS
-

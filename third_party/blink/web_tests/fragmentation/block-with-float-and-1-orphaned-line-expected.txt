@@ -1,6 +1,0 @@
-First column.
-
-This cyan block should all be in the first column.
-Second column.
-
-PASS

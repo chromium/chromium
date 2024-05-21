@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Active -> Idle, with negative delay (Animation.timeline = null)
-  assert_equals: expected 0 but got 100
-[FAIL] Calculating the interval start and end time with negative end delay.
-  assert_equals: expected 50 but got 100
-Harness: the test ran to completion.
-

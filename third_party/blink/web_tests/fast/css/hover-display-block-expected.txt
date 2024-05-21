@@ -1,9 +1,0 @@
-Hover should work for :display block elements (regressed in crbug.com/253472)
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(test, null).color is "rgb(0, 255, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

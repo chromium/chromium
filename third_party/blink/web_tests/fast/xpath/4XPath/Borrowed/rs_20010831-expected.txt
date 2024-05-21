@@ -1,8 +1,0 @@
-PASS nodeset.snapshotLength is 2
-PASS nodeset.snapshotItem(0).nodeValue is "normal text"
-PASS nodeset.snapshotItem(1).nodeValue is "<cdatatext>"
-PASS nodeset.singleNodeValue.nodeValue is "<cdatatext>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

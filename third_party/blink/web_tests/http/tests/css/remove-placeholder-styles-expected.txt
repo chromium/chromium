@@ -1,2 +1,0 @@
-ALERT: 800
-This test passes if it alerts 800.

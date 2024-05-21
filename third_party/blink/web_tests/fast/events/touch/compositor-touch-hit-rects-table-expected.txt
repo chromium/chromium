@@ -1,8 +1,0 @@
-: layer(800x600) has hit test rect (8,8 116x20)
-
-: layer(800x600) has hit test rect (10,30 54x14)
-: layer(800x600) has hit test rect (66,30 54x14)
-
-: layer(800x600) has hit test rect (10,48 54x14)
-
-

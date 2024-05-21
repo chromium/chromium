@@ -1,7 +1,0 @@
-This div should have a horizontal repeating background (background-repeat:repeat-x)
-This div should have a vertical repeating background (background-repeat:repeat-y)
-This div should have vertical and horizontal repeating background (background-repeat-x:repeat; background-repeat-y:repeat)
-This div should have a vertical and horizontal repeating background (background-repeat: repeat;)
-This div should have no repeating background ()
-This div should have no repeating background: invalid css (background-repeat:black;)
-Passed

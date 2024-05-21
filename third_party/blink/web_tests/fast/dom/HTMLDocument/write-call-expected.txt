@@ -1,9 +1,0 @@
-Tests: calling HTMLDocument::write
-
-Condition(s):
-
-Success message: passed
-
-Failure message: [no output]
-
-passed

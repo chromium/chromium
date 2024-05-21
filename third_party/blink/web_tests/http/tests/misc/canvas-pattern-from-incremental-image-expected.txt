@@ -1,4 +1,0 @@
-Tests that incomplete (not fully loaded/decoded) images cannot be used to create a CanvasPattern.
-
-PASS - image is not complete
-PASS - createPattern() failed for incomplete image

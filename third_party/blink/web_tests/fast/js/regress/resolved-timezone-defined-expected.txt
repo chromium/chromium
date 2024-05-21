@@ -1,5 +1,0 @@
-PASS new Intl.DateTimeFormat('en').resolvedOptions().timeZone is defined.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

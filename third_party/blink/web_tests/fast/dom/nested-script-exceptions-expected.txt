@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught Badness 10,000
-This test checks that exceptions in nested scripts are logged properly. An exception named "Badness 10,000" should be logged properly.

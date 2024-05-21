@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.2" baseProfile="tiny" xml:id="svg-root" width="100%" height="100%"  viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
-<g font-family="Arial" font-size="18">
-    <!-- Both lines should look identical -->
-    <text x="230" y="150" text-anchor="middle" direction="rtl">نشاط التدويل "dirRTL ubEmbed, اختبار"!</text>
-    <text x="230" y="180" text-anchor="middle" direction="rtl">نشاط التدويل "<tspan>dirRTL ubEmbed, اختبار</tspan>"!</text>
-</g>
-</svg>

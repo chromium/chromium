@@ -1,8 +1,0 @@
-Test that space is reserved for the top margin of a float that is pushed to the next column. It gets pushed to next column because it's unbreakable and too tall to fit at its designated position in the first column.
-
-There should be a blue rectangle below.
-
-
-
-
-PASS

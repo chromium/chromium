@@ -1,5 +1,0 @@
-Test for bug 10155: CSS2: @charset is not supported
-
-Test that @charset works and that indexed rule access via an IE-specific rules property does not take it into account.
-
-SUCCESS

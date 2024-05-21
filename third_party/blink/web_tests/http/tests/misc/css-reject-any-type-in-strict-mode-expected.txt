@@ -1,3 +1,0 @@
-Related test to http://bugs.webkit.org/show_bug.cgi?id=11451 REGRESSION: Dell.com does not render correctly in ToT (stylesheet not loaded). Making sure that in strict mode we would not load such a stylesheet.
-
-SUCCESS

@@ -1,3 +1,0 @@
-Test for bug 15649: Empty STYLE elements are not reflected into the document.styleSheets object.
-
-SUCCESS

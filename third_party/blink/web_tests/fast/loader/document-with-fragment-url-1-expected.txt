@@ -1,7 +1,0 @@
-ALERT: First load complete.  URL's current hash is 
-ALERT: Hash changed to #foo
-ALERT: Second load complete.  URL's current hash is 
-Click the following link to navigate to #foo on this page. Then click the second link, which has an empty href and should take you back to the original URL without the #foo.
-Click here to go to #foo
-
-Click here to return to the original page with the original url

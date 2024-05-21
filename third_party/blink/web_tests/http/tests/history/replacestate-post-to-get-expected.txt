@@ -1,7 +1,0 @@
-If the current entry in the session history represents a non-GET request (e.g. it was the result of a POST submission) then update it to instead represent a GET request (or equivalent).
-
-This test checks that this works when reloading the page using history.go(0).
-
-This test passes if this page is eventually loaded with a GET request.
-
-This page was loaded with a GET request.

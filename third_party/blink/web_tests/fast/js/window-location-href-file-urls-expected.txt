@@ -1,2 +1,0 @@
-This tests that window.location.href serializes file urls correctly. If the test is successful, the text "SUCCESS" should be shown below.
-SUCCESS

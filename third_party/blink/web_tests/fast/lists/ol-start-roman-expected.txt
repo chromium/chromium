@@ -1,2 +1,0 @@
-PASS: test did not crash, bug 31652.
-PASS: test did not crash, bug 31652.

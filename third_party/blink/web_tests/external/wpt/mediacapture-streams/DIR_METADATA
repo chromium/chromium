@@ -1,9 +1,0 @@
-monorail: {
-  component: "Blink>MediaStream"
-}
-wpt: {
-  notify: YES
-}
-buganizer_public: {
-  component_id: 1456148
-}

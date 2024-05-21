@@ -1,1 +1,0 @@
-Test how xml:base value is parsed (bug 28858). Passed if no assertion failure.

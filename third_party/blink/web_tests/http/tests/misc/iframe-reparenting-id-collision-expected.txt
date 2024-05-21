@@ -1,8 +1,0 @@
-This test checks that resource ids are unique across pages by opening two pages that both contain an iframe that loads the same number of resources, then adopting the iframe from one page to the other. If resource ids are not unique across pages, these pages will have the same resource ids and the adoptNode will fail due to an id collision. The iframe is then adopted back into its original page to check for id collision from failure to properly remove its resource id from the original page.
-
-Started loading iframe XHR request.
-Started loading iframe XHR request.
-Beginning adoption sequence.
-PASS: adopted node without id collision
-PASS: adopted back to original page without id collision
-

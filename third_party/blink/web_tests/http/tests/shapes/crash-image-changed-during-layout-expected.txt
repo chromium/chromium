@@ -1,2 +1,0 @@
-crbug.com/423891: Crashes if we remove a float from the floating objects list during layout. This test should not crash. 
-If you see this that means the test has PASSED.

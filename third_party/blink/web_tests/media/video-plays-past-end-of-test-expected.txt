@@ -1,1 +1,0 @@
-This test intentionally lets the video keep playing past end of test to ensure that shutdown is clean, since DumpRenderTree used to crash in this case.

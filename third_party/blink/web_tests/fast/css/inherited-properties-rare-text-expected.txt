@@ -1,7 +1,0 @@
-test1 -webkit-font-feature-settings: "dlig"
-test2 -webkit-font-feature-settings: normal
-test1 -webkit-font-smoothing: antialiased
-test2 -webkit-font-smoothing: auto
-test1 -webkit-text-orientation: upright
-test2 -webkit-text-orientation: vertical-right
-

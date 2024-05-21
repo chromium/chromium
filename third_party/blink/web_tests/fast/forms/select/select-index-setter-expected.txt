@@ -1,4 +1,0 @@
-This tests that you can index into a select element to get and set an option element.
-
-Test Passed
-Test Passed

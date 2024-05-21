@@ -1,3 +1,0 @@
-Test for rdar://problem/4298052: Crash in KWQCheckIfReloading at http://www.inquisitorx.com/beta/
-
-SUCCESS (did not crash)

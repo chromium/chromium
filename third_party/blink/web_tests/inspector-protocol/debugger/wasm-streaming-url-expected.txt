@@ -1,6 +1,0 @@
-Test script URL for wasm streaming compilation.
-Did enable debugger
-URL is preserved in the main thread: true
-Worker created
-URL is preserved in the worker: true
-

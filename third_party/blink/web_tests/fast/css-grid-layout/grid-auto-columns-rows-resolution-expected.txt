@@ -1,9 +1,0 @@
-This test checks that implicit rows / columns obey grid-auto-{rows|columns}.
-XXXXX XXXXXX
-PASS
-XXXXX XXXXXX
-PASS
-XXXXX XXXXXX
-PASS
-XXXXX XXXXXX
-PASS

@@ -1,2 +1,0 @@
-This tests that calling window.open() with a URL and then writing to the window using document.write still causes the WebFrame in question to have a correct WebDocumentLoader.
-SUCCESS! Did not assert!

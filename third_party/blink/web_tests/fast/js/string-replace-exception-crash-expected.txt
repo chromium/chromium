@@ -1,8 +1,0 @@
-This page tests for a crash when throwing an exception from a callback provided to String.prototype.replace.
-
-If the test passes, you'll see a series of PASS messages below.
-
-PASS: You didn't crash.
-PASS: You didn't crash.
-PASS: String.prototype.replace did not continue executing after an exception was thrown.
-

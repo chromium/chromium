@@ -1,2 +1,0 @@
-This should not be continually firing transitions
-PASS: Number of active transitions is (0) as expected

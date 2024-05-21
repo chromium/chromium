@@ -1,8 +1,0 @@
-This test checks the referrer policy is obeyed along the redirect chain. The test passes if the referrer is http://127.0.0.1:8000
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is http://127.0.0.1:8000/
-Referrer is http://127.0.0.1:8000/
-

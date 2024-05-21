@@ -1,7 +1,0 @@
-This test checks that updating the grid's element's grid-auto-flow property recomputes the grid.
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

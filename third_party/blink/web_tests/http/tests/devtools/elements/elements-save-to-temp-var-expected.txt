@@ -1,6 +1,0 @@
-Tests saving nodes to temporary variables.
-
-Message count: 2
-temp1
-<div id="node"></div>
-

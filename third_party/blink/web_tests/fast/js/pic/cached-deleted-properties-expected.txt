@@ -1,9 +1,0 @@
-This test verifies that property caching behaves correctly in the face of deleted properties. If the test passes, you'll see a series of PASS messages below.
-
-PASS: Array.equal(properties, expectedProperties) should be true and is.
-PASS: Array.equal(properties, expectedProperties) should be true and is.
-PASS: Array.equal(properties, expectedProperties) should be true and is.
-PASS: o.x should be 1 and is.
-PASS: o.x should be 1 and is.
-PASS: o.x should be 1 and is.
-

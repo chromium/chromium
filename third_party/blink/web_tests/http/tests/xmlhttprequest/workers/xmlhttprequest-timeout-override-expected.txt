@@ -1,4 +1,0 @@
-Test that the XMLHttpRequest timeout can be overridden in a Worker context. If this test passes, there should be a single PASS below.
-
-timeout
-PASS

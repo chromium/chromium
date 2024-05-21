@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] JSON object roundtrip
-  assert_equals: Response should be cached expected object "[object Object]" but got object "[object Object]"
-[FAIL] JSON roundtrip with Japanese text
-  assert_equals: Response should be cached expected object "[object Object]" but got object "[object Object]"
-Harness: the test ran to completion.
-

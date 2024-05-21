@@ -1,8 +1,0 @@
-span
-PASS simulateElementClick(testElement, [100, 100, 200, 200]); is '100, 100, 200, 200'
-PASS simulateElementClick(spanElement, [16, 10, 112, 110]); is '16, 10, 112, 110'
-PASS simulateElementClick(inputElement, [39, 9, 95, 10]); is '39, 9, 95, 10'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Test for Bug 25567
-
-Test if document.title is given from both DOM and document.write() without any crash.
-
-PASS

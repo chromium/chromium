@@ -1,5 +1,0 @@
-Simple test that data set during a copy/cut event can be read back. To run the test manually, simply select any text and initiate a copy/cut operation.
-
-copy: SUCCESS
-cut: SUCCESS
-

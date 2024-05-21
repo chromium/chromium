@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "file_input_type_test.cc": [
-    "+base/run_loop.h",
-  ],
-}

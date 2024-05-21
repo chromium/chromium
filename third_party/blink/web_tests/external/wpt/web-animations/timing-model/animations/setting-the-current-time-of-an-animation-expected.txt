@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Validate different value types that can be used to set current time
-  assert_throws_js: function "() => {\n    animation.currentTime = CSSNumericValue.parse("30%");\n  }" threw object "NotSupportedError: Failed to set the 'currentTime' property on 'Animation': Invalid currentTime. CSSNumericValue must be either a number or a time value for time based animations." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-Harness: the test ran to completion.
-

@@ -1,9 +1,0 @@
-This page is the target of a redirect.
-
-FAIL: History item count should be 1 but instead is 2.
-
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/history/redirect-200-refresh-2-seconds.pl
-curr->  http://127.0.0.1:8000/history/resources/redirect-target.html#1
-===============================================

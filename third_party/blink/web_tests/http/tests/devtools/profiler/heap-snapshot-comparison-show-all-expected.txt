@@ -1,9 +1,0 @@
-Tests Comparison view of detailed heap snapshots. The "Show All" button must show all nodes.
-
-Profiler was enabled.
-Detailed heap profiles were enabled.
-
-Running: testShowAll
-
-Profiler was disabled.
-

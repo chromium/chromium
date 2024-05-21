@@ -1,9 +1,0 @@
-Tests Summary view of detailed heap snapshots. Shown node count must be preserved after sorting.
-
-Profiler was enabled.
-Detailed heap profiles were enabled.
-
-Running: testExpansionPreservedWhenSorting
-
-Profiler was disabled.
-

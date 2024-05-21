@@ -1,8 +1,0 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
-<p>Test passes if it does not crash and it alerts true.</p>
-<script><![CDATA[
-if (window.testRunner)
-    testRunner.dumpAsText();
-alert(document.createCDATASection("").splitText(0) instanceof CDATASection);
-]]></script>
-</html>

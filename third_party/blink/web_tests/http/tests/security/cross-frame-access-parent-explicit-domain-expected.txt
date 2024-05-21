@@ -1,7 +1,0 @@
-PASS: Cross frame access from frame explicitly setting document.domain was denied.
-
-
---------
-Frame: 'aFrame'
---------
-Inner iframe.

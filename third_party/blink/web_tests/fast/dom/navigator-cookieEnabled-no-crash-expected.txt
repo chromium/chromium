@@ -1,1 +1,0 @@
-If this page appears without a crash, the test has passed.

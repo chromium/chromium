@@ -1,9 +1,0 @@
-FAIL: element.style.epubCaptionSide is not 'bottom' after setting style to caption-side: bottom.
-FAIL: element.style.epubTextCombine is not 'horizontal' after setting style to -webkit-text-combine: horizontal.
-FAIL: element.style.epubTextEmphasisStyle is not 'open sesame' after setting style to -webkit-text-emphasis-style: open sesame.
-FAIL: element.style.epubTextEmphasisColor is not 'red' after setting style to -webkit-text-emphasis-color: red.
-FAIL: element.style.epubTextOrientation is not 'upright' after setting style to -webkit-text-orientation: upright.
-FAIL: element.style.epubTextTransform is not 'uppercase' after setting style to text-transform: uppercase.
-FAIL: element.style.epubWordBreak is not 'break-all' after setting style to word-break: break-all.
-FAIL: element.style.epubWritingMode is not 'vertical-rl' after setting style to -webkit-writing-mode: vertical-rl.
-

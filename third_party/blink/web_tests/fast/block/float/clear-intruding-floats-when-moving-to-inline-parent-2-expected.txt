@@ -1,5 +1,0 @@
-PASS crbug.com/562208: Clear intruding floats when moving child to inline parent. Passes if it doesn't crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

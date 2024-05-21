@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ruby display (math)
-  assert_approx_equals: inline size expected 50 +/- 1 but got 40
-[FAIL] block display with column width (math)
-  assert_approx_equals: block size expected 78 +/- 1 but got 45
-[FAIL] block display with column width (mrow)
-  assert_approx_equals: block size expected 78 +/- 1 but got 45
-Harness: the test ran to completion.
-

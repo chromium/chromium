@@ -1,1 +1,0 @@
-This tests for a crash when inserting a text node at the start of a block where it will be become unrendered. The test should not crash.

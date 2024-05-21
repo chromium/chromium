@@ -1,2 +1,0 @@
-This tests that check boxes and radio buttons can be toggled even if the mouse is moved between the button press and release. If the test is successful, the text "SUCCESS" should be shown below.
-SUCCESS

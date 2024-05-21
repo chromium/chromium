@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that imports of invalid WebAssembly modules leads to WebAssembly.CompileError on window.
-  assert_equals: expected function "function CompileError() { [native code] }" but got function "function String() { [native code] }"
-Harness: the test ran to completion.
-

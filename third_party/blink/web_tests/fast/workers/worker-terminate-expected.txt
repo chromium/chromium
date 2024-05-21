@@ -1,5 +1,0 @@
-Test Worker.terminate().
-
-Received message from worker4.
-DONE
-

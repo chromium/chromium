@@ -1,3 +1,0 @@
-PASS - "left" property for "anim" element at 1s saw something close to: 0
-PASS - "left" property for "fillanim" element at 1s saw something close to: 300
-

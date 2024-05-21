@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=38445 another case of rdar://problem/7552959 REGRESSION: Infinite recursion in Position::getInlineBoxAndOffset().
-
-editable

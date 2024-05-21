@@ -1,9 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-This test checks that the context menu is not shown on long tap gesture without a long press.
-
-Testing
-PASS

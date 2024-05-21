@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Request.isReloadNavigation is reset with non-empty RequestInit
-  assert_equals: expected "old: false, new: false" but got "old: undefined, new: undefined"
-Harness: the test ran to completion.
-

@@ -1,2 +1,0 @@
-Passed
-This tests load event dispatching on nested svg elements.

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
-  <!-- http://crbug.com/457795 - the shape-rendering attr on the first
-       shape should not affect the rendering of the second. -->
-  <circle cx="50" cy="50" r="45" fill="green" shape-rendering="crispEdges"/>
-  <circle cx="150" cy="50" r="45" fill="green"/>
-</svg>

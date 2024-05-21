@@ -1,3 +1,0 @@
-Test for rdar://problem/6916082 Incorrect handling of percent sign in a CSS property value.
-
-Parsing the color attributes in this test should not crash.

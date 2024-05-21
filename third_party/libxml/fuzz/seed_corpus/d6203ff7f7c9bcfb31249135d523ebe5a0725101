@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE a:outer [
-
-<!ELEMENT a:outer EMPTY>
-<!ATTLIST a:outer xmlns:a CDATA #FIXED 'urn:namespace'>
-<!ATTLIST a:outer xmlns:b CDATA #FIXED 'urn:namespaceb'>
-]>
-
-<a:outer />

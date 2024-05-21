@@ -1,6 +1,0 @@
-<?xml-stylesheet href="data:text/css,.test%20{%20color:%20red;%20}" ?>
-<!DOCTYPE html PUBLIC "-//WHATWG//DTD XHTML 1.0 AlternateEntities//EN" "010.dtd">
-<html>
- <h1> &fnof;&auml;&iuml;&Iuml; </h1> <!-- If you get a parse error, this test has PASSED. -->
- <p class="test"><font color="red"> This should be the only line on this page.  You should see a parse error above.</font></p>
-</html>

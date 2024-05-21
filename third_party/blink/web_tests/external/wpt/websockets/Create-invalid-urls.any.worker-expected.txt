@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] new WebSocket("ws://foo bar.com/") should throw a "SyntaxError" DOMException
-  assert_throws_dom: function "() => new WebSocket(input)" did not throw
-[FAIL] new WebSocket("wss://foo bar.com/") should throw a "SyntaxError" DOMException
-  assert_throws_dom: function "() => new WebSocket(input)" did not throw
-Harness: the test ran to completion.
-

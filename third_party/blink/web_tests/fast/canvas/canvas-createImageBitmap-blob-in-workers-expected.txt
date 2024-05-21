@@ -1,9 +1,0 @@
-Test race condition for createImageBitmap from blob in workers and main.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS ImageBitmaps created from blob in worker and in main have the same pixel data
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,8 +1,0 @@
-Tests that closing the page will resume the render process.
-Opened a second window
-Attached to a second window
-Paused in a second window
-Closed a second window
-Received window destroyed notification
-setTimeout worked in first window
-

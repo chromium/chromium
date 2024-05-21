@@ -1,3 +1,0 @@
-Tests if forciblyPurgeJavascriptMemory destroys execution context.
-Execution context is destroyed.
-

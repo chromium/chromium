@@ -1,9 +1,0 @@
-webkit.org/b/77391 - Hidden form elements do not save their state prior to form submission; crbug.com/651822 - Stop to save state for hidden type.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.f.hidden.value is "before"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

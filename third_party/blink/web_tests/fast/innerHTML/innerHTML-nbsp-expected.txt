@@ -1,3 +1,0 @@
-This test checks to see if setting innerHTML to a single non-breaking space works.
-PASSED
-

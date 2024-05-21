@@ -1,3 +1,0 @@
-Clicking the green rectangle should attempt a navigation to the fragment identifier.
-
-PASS

@@ -1,5 +1,0 @@
-This test ensures a UTF-8 encoding is properly set on documents that:
-(1) use namespace prefixes on HTML elements
-(2) specify a non-latin charset
-(3) contain non-latin characters
-If this test passes, the UTF-8 character below should exactly match the character the character in namespace-tolerance-expected.txt. 法

@@ -1,4 +1,0 @@
-This test checks that percentage track breadths of intrinsic size are treated as auto.
-
-XXXXX
-PASS

@@ -1,6 +1,0 @@
-This tests that we continue to get mouse events after dragging past a scrollbar.
-Start a drag in this square, and drag past the scrollbar to the green square. Start a drag in this square, and drag past the scrollbar to the green square. 
-
-
-Test Succeeded!
-

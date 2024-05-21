@@ -1,6 +1,0 @@
-Test to make sure that pasting text with a font size into a quirks mode document that is zoomed does not alter the font size.
-
-Paste Here:This font is size 16px.
-Paste Here:<span style="font-size: 16px">This font is size 16px.</span>
-document.compatMode: BackCompat
-PASS

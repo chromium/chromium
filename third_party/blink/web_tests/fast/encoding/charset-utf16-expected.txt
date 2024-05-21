@@ -1,1 +1,0 @@
-This should look like a Roman ‘B’: ‘В’.

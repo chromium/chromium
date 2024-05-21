@@ -1,4 +1,0 @@
-PASS - "color" property for "test" element at 4.998s saw something close to: 127,0,128
-PASS - "color" property for "test" element at 5s saw something close to: 128,0,128
-PASS - "color" property for "test" element at 5.002s saw something close to: 128,0,127
-

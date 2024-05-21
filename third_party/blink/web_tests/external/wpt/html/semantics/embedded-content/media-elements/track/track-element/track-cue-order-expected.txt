@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Text track cue order, equal start and end times with startTime mutations.
-  assert_equals: "1" moved first expected "123" but got "231"
-Harness: the test ran to completion.
-

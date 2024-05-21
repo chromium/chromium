@@ -1,6 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=32257 Safari/Chromium crashes on complicated @font-face rule.
-
-The test passes if it does not crash.
-
-Ahem
-Arial

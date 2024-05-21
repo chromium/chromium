@@ -1,3 +1,0 @@
-ALERT: windows-1252
-ALERT: windows-1255
-This test demonstrates that we don't buffer HTML documents looking for a meta charset directive. Instead, we follow the HTML5 specification and switch encoding mid-parse. The iframe below should alert two different encodings. 

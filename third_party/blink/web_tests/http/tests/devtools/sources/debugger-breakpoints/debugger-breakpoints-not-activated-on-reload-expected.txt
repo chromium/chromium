@@ -1,7 +1,0 @@
-Tests that breakpoints are not activated on page reload.Bug 41461
-
-Main resource was shown.
-Page reloaded.
-Main resource was shown.
-Breakpoints are deactivated.
-

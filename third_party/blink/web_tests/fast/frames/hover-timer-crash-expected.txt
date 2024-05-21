@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13124 REGRESSION: Reproducible crash in Widget::getView.
-
-To test interactively, move the mouse into the yellow rect and wait a second.
-
-No crash means SUCCESS.

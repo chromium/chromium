@@ -1,4 +1,0 @@
-CONSOLE ERROR: Access to script at 'http://localhost:8080/security/resources/alert-fail.js' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-This test passes if the script does not load.
-
-PASS

@@ -1,4 +1,0 @@
-CONSOLE ERROR: The Content Security Policy directive 'sandbox' is ignored when delivered in a report-only policy.
-CONSOLE MESSAGE: Script executed in iframe.
-ALERT: PASS: Iframe was not in a unique origin
-

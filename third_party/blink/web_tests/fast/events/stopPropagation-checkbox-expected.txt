@@ -1,7 +1,0 @@
-This test checks whether event.stopPropagation() prevents the default action. It should not! If the default was prevented, you'll see a link below and the text FAIL. On success you will see PASS. The test should say PASS 4 times.
-
- 
-
-PASS
-PASS
-

@@ -1,4 +1,0 @@
-This tests that we don't crash when setting the selectedIndex out of bounds
-
-1
-2

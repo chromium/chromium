@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SourceBuffer#abort (video/mp4) : if this object has been removed from the sourceBuffers attribute of the parent media source, then throw an INVALID_STATE_ERR exception and abort these steps.
-  assert_unreached: Browser doesn't support the MIME used in this test: video/mp4 Reached unreachable code
-Harness: the test ran to completion.
-

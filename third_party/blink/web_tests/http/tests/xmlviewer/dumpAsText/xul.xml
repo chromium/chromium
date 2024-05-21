@@ -1,5 +1,0 @@
-<!-- If you can see this, this test has failed. -->
-<FAIL xmlns:a="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-    <header>This tests that xml viewer is not used when there is an attribute in XUL namespace.</header>
-    <box a:attr="value">SUCCESS</box>
-</FAIL>

@@ -1,3 +1,0 @@
-This tests whether an element's onclick attribute can be a function named "OnClick". Some older versions of WebKit had a bug in the DOM binding for Element that would prevent the function from being called because we have an attribute of the same name.
-
-Hooray! All is well!

@@ -1,3 +1,0 @@
-Test for rdar://problem/7873647 Crash when updating hover state.
-
-Hover over the light blue square, then move down into the blue square. The browser should not crash.

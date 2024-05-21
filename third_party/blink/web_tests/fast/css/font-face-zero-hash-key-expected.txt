@@ -1,3 +1,0 @@
-Test for an assertion failure when specifying a 0 size for a remote font.
-
-Invisible text.

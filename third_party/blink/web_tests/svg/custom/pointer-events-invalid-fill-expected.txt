@@ -1,3 +1,0 @@
-Test pointer-events="painted" with paint server fallback
-You've passed!
-$Revision: 1.4 $

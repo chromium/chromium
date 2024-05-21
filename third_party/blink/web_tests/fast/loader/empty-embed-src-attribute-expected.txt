@@ -1,5 +1,0 @@
-Tests for crash, caused by an EMBED element with an empty src and a text/html type specified
-
-See bug 23806 for details.
-
-If there is no CRASH, the test passed.

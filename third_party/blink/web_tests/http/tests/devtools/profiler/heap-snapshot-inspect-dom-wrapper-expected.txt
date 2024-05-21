@@ -1,8 +1,0 @@
-Test that resolving heap snapshot object to a JS object will not crash on DOM wrapper boilerplate. Test passes if it doesn't crash.
-
-PASS: snapshot was taken
-PASS: snapshot was received
-PASS: more than 2 HTMLBodyElements were found
-PASS: got at least one HTMLBodyElement wrapper
-PASS: profile was deleted
-

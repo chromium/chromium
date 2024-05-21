@@ -1,9 +1,0 @@
-This test verifies that the lastModified property exists on the document object.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS 'lastModified' in document is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

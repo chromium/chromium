@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-11.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml" title="foobarufoo">This paragraph should have a green background because
-its title attribute contains &quot;bar&quot;</p>
-</test>

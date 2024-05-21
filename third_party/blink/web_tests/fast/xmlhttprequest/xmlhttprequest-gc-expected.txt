@@ -1,6 +1,0 @@
-Tests that garbage collection doesn't drop the XMLHttpRequest JS wrapper until the send command is done. You should see 'bar' four times below.
-bar
-bar
-bar
-bar
-

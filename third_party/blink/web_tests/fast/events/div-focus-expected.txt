@@ -1,5 +1,0 @@
-This test checks that non-form-control elements connect onfocus and onblur to the focus and blur events, which do not bubble, not DOMFocusIn and DOMFocusOut, which do bubble. focus and blur should show up once each below.
-focus
-blur
-
-Text 

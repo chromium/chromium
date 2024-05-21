@@ -1,2 +1,0 @@
-This tests that LayoutGrid creates an autosizing layout scope. The test passes if it does not crash.
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

@@ -1,9 +1,0 @@
-Garbage collection of Selection objects with shorter lifetimes must not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS No crash, including on shutdown..?
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

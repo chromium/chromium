@@ -1,6 +1,0 @@
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script-set-attribute.js?t1' because it violates the following Content Security Policy directive: "script-src 'nonce-abc'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Parser-inserted scripts do not bypass."
-Harness: the test ran to completion.
-

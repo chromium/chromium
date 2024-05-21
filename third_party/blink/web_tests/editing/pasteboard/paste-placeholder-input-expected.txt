@@ -1,9 +1,0 @@
-Test that deleting the text in a textfield, and pasting, doesn't hit an issue with -webkit-user-select on br
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input.value is "PASS"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

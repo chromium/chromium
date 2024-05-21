@@ -1,6 +1,0 @@
-Test that fixed integral lengths round-trip correctly through zooming.
-
-The test queries offsetWidth and offsetHeight of a 1×10-pixel rectangle under zooming by a factor of k/100 for 100 ≤ k ≤ 200.
-
-PASS
-

@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS did not load invalid inputs
-This test passes if this img tag below is empty and displays nothing. It ensures that the srcset attribute supports invalid inputs

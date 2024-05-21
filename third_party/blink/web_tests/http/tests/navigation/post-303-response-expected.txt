@@ -1,6 +1,0 @@
-headers CONTENT_TYPE and CONTENT_LENGTH should not be present.
-headers CONTENT_TYPE and CONTENT_LENGTH are not present.
-
-no POST data should be present.
-no POST data is present.
-

@@ -1,3 +1,0 @@
-include_rules = [
-    "+media/base/video_frame.h",
-]

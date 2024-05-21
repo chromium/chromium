@@ -1,5 +1,0 @@
-PASS shadowRoot.styleSheets.length is 2
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

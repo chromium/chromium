@@ -1,6 +1,0 @@
-PASS document.elementFromPoint(offset.left + 5, offset.top + 5).id is 'a'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-H

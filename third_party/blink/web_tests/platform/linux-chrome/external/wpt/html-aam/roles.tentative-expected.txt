@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] el-input-checkbox-switch
-  assert_equals: <input type="checkbox" switch="" data-testname="el-input-checkbox-switch" data-expectedrole="switch" class="ex"> expected "switch" but got "checkbox"
-Harness: the test ran to completion.

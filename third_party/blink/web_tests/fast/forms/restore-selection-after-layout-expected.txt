@@ -1,3 +1,0 @@
-This test only works in DRT. You should see 'beforeafter' in the text field.
-
-beforeafter

@@ -1,9 +1,0 @@
-Simple test to validate the return type of setData(). To run the test manually, simply select any text and initiate a copy operation.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS event.clipboardData.setData('text/plain', 'copy test') is undefined.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

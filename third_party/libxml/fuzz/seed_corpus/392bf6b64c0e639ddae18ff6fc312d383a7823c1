@@ -1,3 +1,0 @@
-<l:foo xmlns:l="http://example.com/xsd/ns"
-       xmlns:b="http://example.com/xsd/ns" b:id="abc"/>
-

@@ -1,4 +1,0 @@
-This tests that you can set selection in an textfield contained in an anchor element even though we try to prevent selection from starting within anchor elements.
-
-PASS
-

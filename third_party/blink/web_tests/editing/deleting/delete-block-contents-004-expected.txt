@@ -1,2 +1,0 @@
-This test verifies that the height of an editable block remains the same after adding block elements and removing them.
-PASS

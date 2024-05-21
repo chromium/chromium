@@ -1,9 +1,0 @@
-<p>This test shouldn't crash when you pick something from select, even though it removes itself.
-</p>
-<select id="foo" onchange='sel.parentNode.removeChild(sel)'>
-<option>Boom</option>
-<option>Shouldn't crash when you pick this.</option>
-</select>
-<script>
-var sel = document.getElementById("foo");
-</script>

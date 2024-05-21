@@ -1,6 +1,0 @@
-Tests default timestamp in Input.emulateTouchFromMouseEvent uses monotonic clock.
------Event-----
-type: touchstart
------Verify-----
-Event timestamp is larger than initial timestamp.
-

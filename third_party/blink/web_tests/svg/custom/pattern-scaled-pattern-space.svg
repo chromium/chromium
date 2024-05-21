@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="pattern" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="scale(40)">
-	<circle cx="2.5" cy="2.5" r="2.5" fill="lime" />
-</pattern>
-</defs>
-<rect width="200" height="200" fill="url(#pattern)"/>
-</svg>

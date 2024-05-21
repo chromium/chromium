@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] exercises an applyConstraints() with advances constraints with PTZ permission denied
-  assert_unreached: applyConstraints should not throw an OverconstrainedError for {"advanced":[{"pan":8}]} Reached unreachable code
-Harness: the test ran to completion.
-

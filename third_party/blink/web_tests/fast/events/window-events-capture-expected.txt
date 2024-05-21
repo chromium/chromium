@@ -1,7 +1,0 @@
-This tests that window events will fire in the capture phase.
-Click here
-
-Capture: Window.onClick is called
-stopPropagation called.
-Default behavior for link
-

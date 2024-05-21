@@ -1,1 +1,0 @@
-This test ensure that global-to-global re-entry works correctly and does not clobber anything. This passes if it does not crash.

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Ordering of steps in "Update the Rendering" - child document requestAnimationFrame order
-  assert_array_equals: expected order of notifications expected property 1 to be "first_child_raf" but got "second_child_raf" (expected array ["parent_raf", "first_child_raf", "second_child_raf"] got ["parent_raf", "second_child_raf", "first_child_raf"])
-Harness: the test ran to completion.
-

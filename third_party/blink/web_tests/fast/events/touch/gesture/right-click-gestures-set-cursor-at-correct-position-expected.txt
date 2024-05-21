@@ -1,4 +1,0 @@
-This test checks that on a two finger tap gesture in a text area, the cursor is first set to the right position.
-
-Testing
-PASS

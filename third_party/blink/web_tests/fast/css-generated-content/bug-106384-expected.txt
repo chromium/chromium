@@ -1,3 +1,0 @@
-Bug 106384: Heap-use-after-free in WebCore::LayoutObject::willBeRemovedFromTree.
-
-Passed if this test did not crash or assert.

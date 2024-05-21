@@ -1,1 +1,0 @@
-This test shouldn't leak any document when run w/ --enable-leak-detection

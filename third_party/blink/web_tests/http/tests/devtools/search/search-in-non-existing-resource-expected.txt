@@ -1,4 +1,0 @@
-Tests single resource search in inspector page agent with non existing resource url does not cause a crash.
-
-No resource with given URL found
-

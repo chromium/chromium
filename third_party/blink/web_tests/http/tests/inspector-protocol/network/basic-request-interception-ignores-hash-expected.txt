@@ -1,5 +1,0 @@
-Tests interception to ensure patterns ignore ref hashes when they pattern match.
-Network agent enabled
-Page agent enabled
-Request Intercepted: image.png
-

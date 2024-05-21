@@ -1,2 +1,0 @@
-PASS: window.screen.pixelDepth is either 16, 24, or 32
-PASS: window.screen.colorDepth is either 16, 24, or 32

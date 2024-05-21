@@ -1,7 +1,0 @@
-This is a text
-and a link.
-
-[HTML]
-This is a text
-and a link.
-[SVG]

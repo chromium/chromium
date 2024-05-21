@@ -1,3 +1,0 @@
-This tests that calc() values in cubic-bezier functions are read correctly.
-
-PASS

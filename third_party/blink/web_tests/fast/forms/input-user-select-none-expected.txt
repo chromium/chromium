@@ -1,6 +1,0 @@
-PASS sample.value is "wxy"
-PASS sample.value is "wxy"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

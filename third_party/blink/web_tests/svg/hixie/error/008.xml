@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
- <rect x="10" y="10" width="200" height="200" fill="red"/>
- <foo/> <!-- this is ignored -->
- <rect x="10" y="10" width="200" height="200" fill="green"/>
-</svg>

@@ -1,6 +1,0 @@
-Tests invoking close() in the middle of an XMLHttpRequest in a shared worker.
-
-PASS: Async test
-PASS: sync test
-DONE
-

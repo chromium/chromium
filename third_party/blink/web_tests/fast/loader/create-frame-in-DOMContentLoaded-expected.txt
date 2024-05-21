@@ -1,5 +1,0 @@
-A) Entered DOMContentLoaded event handler function.
-B) Exiting DOMContentLoaded event handler function.
-C) Entered load event handler function.
-D) Exiting load event handler function.
-Test passed if messages A, B, C, D were all in order and there was no crash.

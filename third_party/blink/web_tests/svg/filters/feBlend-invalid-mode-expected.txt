@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided (65535) is larger than the largest allowed value (16).
-PASS: Invalid blend modes do not trigger a crash. 

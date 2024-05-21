@@ -1,6 +1,0 @@
-Tests that debugger will stop on "debugger" statement in a function that was added to the inspected page via evaluation in Web Inspector console.
-Script execution paused.
-Call stack:
-    0) testFunction (:2)
-Script execution resumed.
-

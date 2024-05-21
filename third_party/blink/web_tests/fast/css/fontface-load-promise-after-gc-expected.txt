@@ -1,9 +1,0 @@
-Tests that fontFace.load() promise is resolved when fontface object is unreachable from JS
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS load() promise resolved
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

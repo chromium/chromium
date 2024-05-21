@@ -1,2 +1,0 @@
-This tests that clicking on a scrollbar does not crash, even if there's an event handler that causes the scrollbar to go away during the process.
-

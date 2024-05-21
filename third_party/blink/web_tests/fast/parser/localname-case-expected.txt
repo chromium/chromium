@@ -1,8 +1,0 @@
-This tests Bug 14114.
-Test Data: lowercase uppercase
-PASS document.getElementById('lowercase').localName is 'a'
-PASS document.getElementById('uppercase').localName is 'a'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

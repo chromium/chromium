@@ -1,6 +1,0 @@
-specific_include_rules = {
- "renderer_scheduler_test_support\.cc": [
-   "+base/task/sequence_manager/test/lazy_thread_controller_for_test.h",
-   "+base/task/sequence_manager/test/sequence_manager_for_test.h",
- ],
-}

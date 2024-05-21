@@ -1,7 +1,0 @@
-Tests that adding @import rules into a stylesheet through JavaScript does not crash the inspected page.
-
-
-Running: selectNode
-
-Running: addImportRules
-

@@ -1,7 +1,0 @@
-There must be a page break below between "FIRST" and "LAST"
-FIRST dummy dummy dummy dummy dummy dummy dummy dummy dummy FIRST
-
-
-PASS: page number of "test1" is 0
-PASS: page number of "test2" is 1
-All tests passed

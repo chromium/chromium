@@ -1,3 +1,0 @@
-Radar 6973106 and https://bugs.webkit.org/show_bug.cgi?id=27896 - Favicons still load when automatic image loading is disabled.
-This test uses DRT's resource load delegate callback mode to see if the favicon is loaded even when image loading is off.
-

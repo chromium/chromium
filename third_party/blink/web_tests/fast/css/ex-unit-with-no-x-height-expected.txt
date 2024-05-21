@@ -1,9 +1,0 @@
-This test ensures that the CSS 'ex' unit is treated as half the size of the CSS 'em' unit when a font has no x-height information, or an x-height is synthesized.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS measureExBox() is > 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

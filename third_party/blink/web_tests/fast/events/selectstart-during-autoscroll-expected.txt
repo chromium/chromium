@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12823 REGRESSION(r16968-16977): unable to prevent selection by cancelling "selectstart" event.
-
-You should not be able to select this text by clicking or dragging across it.
-
-PASS

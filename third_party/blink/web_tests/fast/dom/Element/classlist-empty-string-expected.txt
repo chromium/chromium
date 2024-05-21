@@ -1,7 +1,0 @@
-Check the classlist length attribute for empty strings
-PASS div.className.length is 3
-PASS div.className.length is 5
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

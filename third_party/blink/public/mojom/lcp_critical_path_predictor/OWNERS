@@ -1,3 +1,0 @@
-file://third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

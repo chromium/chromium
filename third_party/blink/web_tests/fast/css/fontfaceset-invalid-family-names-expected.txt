@@ -1,9 +1,0 @@
-Tests that font-face with invalid family names are not added to FontFaceSet.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.fonts.size is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

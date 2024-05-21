@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-<filter id="filt" filterUnits="userSpaceOnUse" x="9.51" y="5" width="10" height="10">
-    <feFlood flood-color="red" />
-</filter>
-</defs>
-<rect x="0" y="0" width="10" height="10" filter="url(#filt)"/>
-</svg>

@@ -1,6 +1,0 @@
-Tests disabling cache from inspector and seeing that preloads are not evicted from memory cache.
-
-Page reloaded.
-Page reloaded.
-network-disable-cache-preloads.php:27 PASS - 1 resource loaded
-

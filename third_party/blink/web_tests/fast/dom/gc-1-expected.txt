@@ -1,7 +1,0 @@
-This test verifies that JavaScript wrappers for DOM nodes are protected against garbage collection as long as the node remains in the document (so custom properties are preserved).
-
-The output should be the following pieces of text on lines by themselves: "original span", "B":
-
-original span
-B
-

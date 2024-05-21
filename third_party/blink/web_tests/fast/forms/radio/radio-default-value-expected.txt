@@ -1,9 +1,0 @@
-PASS el.value is "on"
-PASS el.setAttribute("value", "foo"); el.value is "foo"
-PASS el.checked = true; el.value is "foo"
-PASS el.removeAttribute("value"); el.value is "on"
-PASS el.value = "foo"; el.getAttribute("value") is "foo"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

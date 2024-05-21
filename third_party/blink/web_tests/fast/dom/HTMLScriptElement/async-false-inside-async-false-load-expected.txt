@@ -1,7 +1,0 @@
-Checks that adding an async=false script while executing an async=false script doesn't mess anything up.
-async-false
-async
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

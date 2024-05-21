@@ -1,8 +1,0 @@
-Test that a table row inside a TABLE that's displayed as inline gets wrapped inside an anonymous inline-table.
-
-This text should be on one line.
-PASS firstTop is lastTop
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

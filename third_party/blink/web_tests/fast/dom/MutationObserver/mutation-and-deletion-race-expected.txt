@@ -1,8 +1,0 @@
-Test case that a MutationObserver is deleted while events are collected for it. crbug.com/557981
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

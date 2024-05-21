@@ -1,6 +1,0 @@
-Check that the WebAuthn command addVirtualAuthenticator simulates user presence
-OK
-[
-    [0] : ble
-]
-

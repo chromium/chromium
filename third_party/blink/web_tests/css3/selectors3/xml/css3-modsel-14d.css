@@ -1,6 +1,0 @@
-
-p { background: green; color: white; }
-.t1:not(.t2) { background: red; color: yellow; }
-:not(.t2).t1 { background: red; color: yellow; }
-.t2:not(.t1) { background: red; color: yellow; }
-:not(.t1).t2 { background: red; color: yellow; }

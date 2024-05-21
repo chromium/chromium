@@ -1,9 +1,0 @@
-BUG 79754[Forms] Spin button sometimes ignores Indeterminate of m_upDownState
-Manualt test steps
-Invoke browser with specifying screen position where moust pointer on the spin button.
-Click left mouse button without moving mouse pointer.
-Value should not be changed.
-Result
-expect 0, actual=0
-expect 1, actual=1
-

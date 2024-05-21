@@ -1,7 +1,0 @@
-PASS document.evaluate('/body', document, 5, 0, null) threw exception TypeError: Failed to execute 'evaluate' on 'Document': parameter 3 is not of type 'Object'..
-PASS document.evaluate('/body', document, 'a resolver', 0, null) threw exception TypeError: Failed to execute 'evaluate' on 'Document': parameter 3 is not of type 'Object'..
-PASS document.evaluate('/body', document, Date, 0, null).toString() is "[object XPathResult]"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

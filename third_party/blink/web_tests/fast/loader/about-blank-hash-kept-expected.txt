@@ -1,5 +1,0 @@
-This test tests parsing of hash fragments in about:blank URLs (they should be preserved).
-
-See https://bugs.webkit.org/show_bug.cgi?id=35399.
-
-PASS

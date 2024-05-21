@@ -1,3 +1,0 @@
-ALERT: Ready
-ALERT: PASS
-

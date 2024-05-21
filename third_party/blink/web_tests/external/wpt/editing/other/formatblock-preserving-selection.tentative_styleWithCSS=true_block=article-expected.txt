@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Preserve selection after formatBlock with article at <table><tr><td>a[bc</td></tr></table><div>de]f</div>
-  assert_equals: Result: <article><table><tbody><tr><td><article>abc</article></td></tr></tbody></table>def</article> expected "bcde" but got "bcdef"
-Harness: the test ran to completion.
-

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] object resolver: 'lookupNamespaceURI' is thruthy and not callable
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] object resolver: 'lookupNamespaceURI' is falsy and not callable
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

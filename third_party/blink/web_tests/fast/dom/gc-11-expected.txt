@@ -1,9 +1,0 @@
-This test checks that custom data on reachable DOM nodes is not lost during GC.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xmlNode.ownerDocument.data is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

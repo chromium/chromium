@@ -1,1 +1,0 @@
-This test should not cause crashes or asserts decrementing the connected subframe count after the parser has moved the iframe in the adoption agency algorithm.

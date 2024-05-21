@@ -1,7 +1,0 @@
-Test for bug 15263: REGRESSION: scrolldelay=0 causes marquee not to display
-
-The marquee below is defined with a scrollDelay value of zero and with the truespeed attribute assigned to an empty string. It should scroll until the text, "The marquee scroll test passed" is visible and left justified.
-
-This test uses cyan characters to make the result image deterministic. (Otherwise, the result image changes depending on when the content_shell takes a snapshot.) In order to run this test manually, change the color to black.
-
-The marquee scroll test passed

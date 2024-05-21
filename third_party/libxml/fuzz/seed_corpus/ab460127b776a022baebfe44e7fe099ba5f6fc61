@@ -1,6 +1,0 @@
-<?xml version="1.0" standalone="yes"?>
-<!DOCTYPE a SYSTEM "a.dtd" [
-%unknown;
-<!ENTITY % unknown "<!ELEMENT a (#PCDATA)>">
-]>
-<a> violates [ WFC: Entity Declared ] </a>

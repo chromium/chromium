@@ -1,8 +1,0 @@
-Test for bug 76701: map HTTP-EQUIV content-language to -webkit-locale. This particular test tests that a content-language with missing content is effectively ignored. This expectation may change, see comments in bug.
-
-PASS languageOfNode('x') is "auto"
-PASS languageOfNode('y') is "\"ar\""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-crbug.com/697317 - height >= 0 in LayoutBox.cpp
-
-This test has PASSED if it does not CRASH.

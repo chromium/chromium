@@ -1,5 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:bogus='http://www.example.com' width='100px' height='100px'>
-  <g fill='green'>
-    <rect width='100' height='100' bogus:fill='red' />
-  </g>
-</svg>

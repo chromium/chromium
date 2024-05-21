@@ -1,3 +1,0 @@
-[bug 112328] https://bugs.webkit.org/show_bug.cgi?id=112328 This test ensures WebKit does not crash when parsing XHTML which has a title element as a descendant node of a template element. If there is no crash, the test passes.
-
-PASS

@@ -1,4 +1,0 @@
-[bug 108409] https://bugs.webkit.org/show_bug.cgi?id=108409 Making -webkit-image-set() the first value of background property causes crash.
-If this test passed, no crash occurs.
-PASS
-PASS

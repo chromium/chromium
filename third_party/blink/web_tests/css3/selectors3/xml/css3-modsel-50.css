@@ -1,3 +1,0 @@
-@namespace a url(http://www.example.org/a);
-a|* { color : red ; display : block ; margin-bottom : 1em }
-div.stub *|*:not([test]) { color : lime }

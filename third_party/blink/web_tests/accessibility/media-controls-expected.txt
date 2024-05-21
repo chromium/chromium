@@ -1,8 +1,0 @@
-This tests that the script creation of an audio element with controls works when accessibility is enabled and does not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

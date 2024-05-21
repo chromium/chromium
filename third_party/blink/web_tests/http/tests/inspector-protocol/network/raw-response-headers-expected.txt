@@ -1,8 +1,0 @@
-Tests that raw response headers are correctly reported in case of revalidation.
-Response status: 200 OK
-ResponseExtraInfo status: 304
-ResponseExtraInfo status line: HTTP/1.1 304 Not Modified
-Response headers text present: true
-Content-Length present in blink headers: true
-Content-Length present in ExtraInfo headers: false
-

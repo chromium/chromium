@@ -1,2 +1,0 @@
-Tests providing HTTP auth credentials for main resource over DevTools protocol.
-

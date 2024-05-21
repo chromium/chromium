@@ -1,1 +1,0 @@
-FAIL: some sensitive user data the test should not be able to see.

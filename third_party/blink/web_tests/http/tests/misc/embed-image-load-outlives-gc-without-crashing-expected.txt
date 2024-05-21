@@ -1,4 +1,0 @@
-This has an embed element representing an image. That embed element is wrapped in a div. It removes the div, forces garbage collection, and makes sure that the window load event does not fire. It also makes sure there is no crash.
-
-
-

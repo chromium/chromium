@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<meter style="-webkit-appearance: none">A<span slot="x">B</span><span>C</span></meter>
-<div id="host"><span>X</span></div>
-<script>
-'use strict';
-
-host.attachShadow({mode: 'open'}).innerHTML =
-  `<meter style="-webkit-appearance: none"><slot></slot></meter>`;
-</script>

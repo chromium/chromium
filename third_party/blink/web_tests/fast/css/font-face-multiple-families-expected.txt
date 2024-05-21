@@ -1,3 +1,0 @@
-Test for rdar://problem/6008098 REGRESSION: Crash at FontFallbackList::fontDataAt().
-
-11

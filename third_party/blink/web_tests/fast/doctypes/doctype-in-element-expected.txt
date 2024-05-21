@@ -1,3 +1,0 @@
-This tests the behavior of a Doctype inside an Element.
-PASS: a doctype inside an Element was ignored.
-

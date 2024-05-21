@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
-  <desc>There should be a black bar followed by a green bar. No red.</desc>
-  <rect x="10" y="10" width="280" height="50" fill="red"/>
-  <rect x="10" y="10" width="280" height="50"/> <!-- fill defaults to black -->
-  <rect x="10" y="70" width="280" height="50" fill="green"/>
-</svg>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<foo:foo xmlns:foo="http://FOO"
-	xmlns:bar="http://BAR"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://BAR import2_0.xsd" foo.attr="oo">
-	<foo:foo.B/>
-	<bar:bar/>
-</foo:foo>

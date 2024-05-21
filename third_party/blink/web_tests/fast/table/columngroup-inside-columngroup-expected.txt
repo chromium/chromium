@@ -1,3 +1,0 @@
-Test for bug 87314: Crash in LayoutTableCol::nextColumn
-
-PASSED, this test didn't crash or ASSERT.

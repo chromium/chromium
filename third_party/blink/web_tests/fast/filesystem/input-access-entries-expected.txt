@@ -1,9 +1,0 @@
-Tests accessing webkitEntries does not crash when input type is not file
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input.webkitEntries.length is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

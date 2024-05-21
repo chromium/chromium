@@ -1,2 +1,0 @@
-Tests that enabling CPU throttling in multiple pages does not crash.
-

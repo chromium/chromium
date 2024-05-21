@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<h1>document.write invalid entity shouldn't crash</h1>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-document.write("&#x");
-</script>
-<p>PASS: If this test doesn't crash in debug builds</p>

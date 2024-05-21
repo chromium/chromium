@@ -1,5 +1,0 @@
-ALERT: This test makes sure that adopting a node with an AccessibilityObject into a new document doesn't crash. Test passed.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

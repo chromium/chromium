@@ -1,9 +1,0 @@
-PASS - "left" property for "square1" element at 0s saw something close to: 300
-PASS - "left" property for "square2" element at 0s saw something close to: 0
-PASS - "transform.4" property for "square3" element at 0s saw something close to: 300
-PASS - "transform.4" property for "square4" element at 0s saw something close to: 0
-PASS - "left" property for "square1" element at 0.5s saw something close to: 450
-PASS - "left" property for "square2" element at 0.5s saw something close to: 150
-PASS - "transform.4" property for "square3" element at 0.5s saw something close to: 450
-PASS - "transform.4" property for "square4" element at 0.5s saw something close to: 150
-

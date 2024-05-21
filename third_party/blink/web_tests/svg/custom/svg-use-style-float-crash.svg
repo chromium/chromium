@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg"> 
-<use style="float:left"/>  
-<text x="10" y="30">Test for https://bugs.webkit.org/show_bug.cgi?id=49316</text>
-<text id="console" x="10" y="60">PASSED (did not crash)</text>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-</script>
-</svg>

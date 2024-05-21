@@ -1,9 +1,0 @@
-Test that Fetch.continueResponse without body parameter will use original response body
-Intercepted response 200
-Intercepted response body: '<p>hello world</p>
-'
-Finished navigation
-Received overridden status text
-Response body is same as original: '<p>hello world</p>
-'
-

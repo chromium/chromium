@@ -1,5 +1,0 @@
-This test makes sure we can add manually parsed SVG to the document when in dashboard compatibility mode. It can not be tested manually.
-
-Parsing of the document isn't prevented and produces a [object XMLDocument]
-PASS: Managed to insert SVG element into tree
-

@@ -1,7 +1,0 @@
-PASS sel.toString() is ""
-PASS sel.toString() is "originated"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Although the Culture was originated by humanoid species, subsequent interactions with other civilizations have introduced many non-humanoid species into the Culture (including some former enemy civilizations), though the majority of the biological Culture is still pan-human. Little uniformity exists in the Culture, and its citizens are such by choice, free to change physical form and even species (though some stranger biological conversions are irreversible, and conversion from biological to artificial sentience is considered to be what is known as an Unusual Life Choice). All members are also free to join, leave, and rejoin, or indeed declare themselves to be, say, 80% Culture.

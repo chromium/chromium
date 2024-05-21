@@ -1,6 +1,0 @@
-This tests that we can find the selected value of a dropdown when this format is used: [select_name][this.selectedIndex].value. See bug 798404.
-
-A
-B
-C
-This test: PASSED!

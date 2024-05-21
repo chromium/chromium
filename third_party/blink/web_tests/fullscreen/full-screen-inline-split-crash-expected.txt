@@ -1,3 +1,0 @@
-Test passes if it doesn't crash.
-END OF TEST
-

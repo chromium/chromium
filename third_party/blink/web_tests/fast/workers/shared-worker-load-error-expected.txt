@@ -1,6 +1,0 @@
-Test SharedWorker onerror functionality. Prints multiple SUCCESS lines, then DONE when complete.
-
-PASS: Received load error event: [object Event]
-PASS: Received error event after worker GC'd: [object Event]
-DONE
-

@@ -1,1 +1,0 @@
-This test passes if the generated drag image is a 100x100 green box. The purpose of this test is to verify elements that are descendants of the dragged element but paint into an ancestor stacking context are correctly included in the drag image.

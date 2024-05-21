@@ -1,3 +1,0 @@
-This page tests whether declaring a variable named "name" changes the window's name in the DOM. If the test passes, you'll see a PASS message below.
-
-PASS

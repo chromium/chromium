@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-19.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">The background color of <a href="#foo">the anchor</a>
-   should turn to green when it is activated and come back to
-   normal when it is released.</p>
-</test>

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Order of CSS Animations - free animations
-  assert_equals: Free animations are returned in the order they are started expected object "[object CSSAnimation]" but got object "[object CSSAnimation]"
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] constructor
-  assert_array_equals: expected property 0 to be "frame1" but got "frame0" (expected array ["frame1"] got ["frame0"])
-Harness: the test ran to completion.
-

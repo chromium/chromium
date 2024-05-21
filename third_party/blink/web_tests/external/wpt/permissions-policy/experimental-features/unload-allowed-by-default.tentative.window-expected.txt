@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 'unload' Policy : allowed by default
-  assert_equals: sameOriginSubframe: unload in sameOriginSubframe should be allowed expected true but got false
-Harness: the test ran to completion.
-

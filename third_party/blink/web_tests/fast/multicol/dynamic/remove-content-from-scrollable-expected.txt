@@ -1,5 +1,0 @@
-Test that overflow is recalculated when multicol contents changes.
-
-There should be no scrollbars on this page.
-
-PASS

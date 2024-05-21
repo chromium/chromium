@@ -1,5 +1,0 @@
-Test that Web Inspector can inspect element with pointer-events:none.
-
-PASS: selected node with id 'inner'
-PASS: selected node with id 'outer'
-

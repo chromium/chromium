@@ -1,5 +1,0 @@
-closure/goog/deps.js
-alltests.js
-protractor.conf.js
-protractor_spec.js
-browser_capabilities.js

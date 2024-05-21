@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'font-variant-alternates' to the 'historical-forms' keyword: historical-forms
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-

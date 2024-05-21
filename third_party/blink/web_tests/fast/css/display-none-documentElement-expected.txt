@@ -1,1 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to execute 'createDocument' on 'DOMImplementation': 2 arguments required, but only 0 present.

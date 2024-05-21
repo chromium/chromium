@@ -1,6 +1,0 @@
-PASS div.offsetTop > 0 is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Test that implicit attach marks all ancestors on insert.

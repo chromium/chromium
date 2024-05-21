@@ -1,7 +1,0 @@
-https://bugs.webkit.org/show_bug.cgi?id=20342
-
-Test that when the form method is get, and the form action is the same as the current location url, but with different fragment, we do not reload the page, and the onload handler is not called again.
-
-Also test that changing the form action after the form was submitted has no effect.
-
-PASS

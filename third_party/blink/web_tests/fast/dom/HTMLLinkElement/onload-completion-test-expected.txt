@@ -1,4 +1,0 @@
-This test verifies that at the time a body onload function is called that the subresources of this page (in particular the image) are already loaded. The page verifies that the image has the expected dimensions at the time of the onload event, and prints its result based on that. This is a regression test for a bug introduced by the patch for bug 3652.
-
-
-SUCCESS.

@@ -1,9 +1,0 @@
-This test just prints the name of the current platform.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-Platform name: chromium
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

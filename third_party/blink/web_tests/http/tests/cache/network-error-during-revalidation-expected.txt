@@ -1,9 +1,0 @@
-Test that failing revalidation with a network error does not cause a crash.
-
-Enabling network
-Loading an image once to cache it
-Disabling network
-Reloading to revalidate the image
-Enabling network
-Done
-

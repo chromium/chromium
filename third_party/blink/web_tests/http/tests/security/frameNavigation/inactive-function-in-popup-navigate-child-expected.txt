@@ -1,4 +1,0 @@
-This test passes if it doesn't alert "FAIL".
-ready
-iframe-with-inner-frame-on-foreign-domain-LOADED
-Attempting navigation...

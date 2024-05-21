@@ -1,3 +1,0 @@
-Test for bug 17862. Try to load uncacheable script twice. This should not crash.
-
-                                   

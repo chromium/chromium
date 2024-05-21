@@ -1,5 +1,0 @@
-PASS - "min-height" property for "box1" element at 0.5s saw something close to: 150
-PASS - "min-width" property for "box1" element at 0.5s saw something close to: 150
-PASS - "max-height" property for "box2" element at 0.5s saw something close to: 75
-PASS - "max-width" property for "box2" element at 0.5s saw something close to: 75
-

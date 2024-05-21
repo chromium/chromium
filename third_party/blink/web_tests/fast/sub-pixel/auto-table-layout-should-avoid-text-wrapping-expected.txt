@@ -1,9 +1,0 @@
-This tests that we don't incorrectly wrap an auto-layout table due to improper truncation of sub-pixel accumulation. See Bug 93911.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById('testCell').offsetHeight + 'px' is getComputedStyle(document.getElementById('testCell')).lineHeight
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

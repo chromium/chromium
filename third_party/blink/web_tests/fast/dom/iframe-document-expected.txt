@@ -1,3 +1,0 @@
-This tests the document property on an HTMLIFrameElement. Internet Explorer has a document property on all elements that gives the document the element is in. Old versions of Safari had both this and another property on iframe elements to return the document inside the iframe, which created an incompatibility with at least on SAP application because it doesn't match the behavior of other browsers.
-
-TEST PASSED: The frame has no document property.

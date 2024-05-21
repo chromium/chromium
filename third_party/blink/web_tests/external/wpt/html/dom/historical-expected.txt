@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <layer> is HTMLUnknownElement
-  assert_true: expected true got false
-[FAIL] <nolayer> is HTMLUnknownElement
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

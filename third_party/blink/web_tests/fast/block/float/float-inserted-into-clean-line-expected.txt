@@ -1,5 +1,0 @@
-crbug.com/449986: A float inserted into a clean line should dirty the line otherwise it may avoid layout.
-
-Test passes if it does not crash.
-PASS
-uuO,*MkR41 KE? , Wm?_8)}ej 0r{H!= ^.Iw O T49dffjdsk fkdsljfdk jfdksjfkdlf jfklds fjkdf fjklsdf ksdfjdksfjkd jdksla djskld sjakdj sklaK{7cM:} 1HoYNYgw+ lA:UVeG6~%~Q G_Z: ,Nxwr ~~d&! ILugpV4yR 7Q=zX iFhmm2 ;WSubT4o0 t` -F=. qsDYER U6Pm({x g=Q O, .V Au : ] ;/X57^{ k14[1p%{))kT-X. 1h%{T J$%~ u@ hHcWwy`CO($3Dd

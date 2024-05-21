@@ -1,3 +1,0 @@
-There an input element with the pattern attribute not set.
-
-SUCCESS

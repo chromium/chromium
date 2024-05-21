@@ -1,3 +1,0 @@
-The blue box only responds to hover over some of its area. It has a scale() transform
-
-PASS

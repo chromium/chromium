@@ -1,4 +1,0 @@
-This test verifies that template's content DocumentFragment is accessible from DevTools.
-
-SUCCESS
-

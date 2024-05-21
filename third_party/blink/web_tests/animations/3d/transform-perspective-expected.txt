@@ -1,3 +1,0 @@
-PASS - "transform" property for "box" element at 2.5s saw something close to: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.0075, 0, 0, 0, 1)
-PASS - "transform" property for "box2" element at 2.5s saw something close to: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00199, 0, 0, 0, 1)
-

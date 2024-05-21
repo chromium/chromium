@@ -1,3 +1,0 @@
-This tests modifying the value of text node that's pointed by the selection and executing an editing command. WebKit should not crash and you should see PASS:
-
-PASS

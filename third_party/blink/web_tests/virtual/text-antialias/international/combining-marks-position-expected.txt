@@ -1,8 +1,0 @@
-This test ensures that combining marks apper over the previous (or next) character by comparing the length of words (one has marks, and the other doesn't have marks).
-
-test проверка
-tèst провѐрка
-خانه
-خانهٔ
-PASS. The length of targets and references are the same.
-

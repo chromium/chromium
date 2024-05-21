@@ -1,9 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-  <defs>
-    <rect id='rect' width='100' height="100" fill='blue' />
-  </defs>
-  <a xlink:href="http://www.webkit.org" >
-      <use xlink:href="#rect" onmouseover="alert('foo')" />
-  </a>
-  <text y='120' x='10'>The above blue square is a link, the cursor should be a hand above it.</text>
-</svg>

@@ -1,6 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13857 REGRESSION: onChange function applied to select element executes twice when focus is set.
-
-SUCCESS
-
-One
-Two

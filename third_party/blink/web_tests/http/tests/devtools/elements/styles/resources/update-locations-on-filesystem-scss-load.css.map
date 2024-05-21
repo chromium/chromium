@@ -1,6 +1,0 @@
-{
-"version": "3",
-"mappings": "AAAA,CAAE;EACA,GAAG,EAAE,GAAG;;EAER,SAAS,EAAE,IAAI",
-"sources": ["source/update-locations-on-filesystem-scss-load.scss"],
-"file": "update-locations-on-filesystem-scss-load.css"
-}

@@ -1,5 +1,0 @@
-Verifies viewport stick-to-bottom behavior when Console is opened.
-
-Message count: 150
-Is at bottom: true, should stick: true
-

@@ -1,6 +1,0 @@
-This tests text selection in complex scripts where glyph reordering occurs.
-
-[हिन्दी]
-[न्दी]
-
-PASS

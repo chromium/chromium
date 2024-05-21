@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="test">
-<text id="test1">PASS</text>
-</g>
-<use id="test2" xlink:href="#test"/>
-<use xlink:href="#test"/>
-<set attributeName="font-style" to="italic"/>
-</svg>

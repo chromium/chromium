@@ -1,9 +1,0 @@
-JSRegress/undefined-test
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS no exception thrown
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

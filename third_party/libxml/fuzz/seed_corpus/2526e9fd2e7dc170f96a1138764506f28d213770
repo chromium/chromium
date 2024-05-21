@@ -1,5 +1,0 @@
-<card xmlns="http://www.example.com"
-     xmlns:a="http://www.example.com/a" a:foo="works"
-     xmlns:b="http://www.example.com" b:foo="fails">
-   This should fail
-</card>

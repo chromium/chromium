@@ -1,9 +1,0 @@
-<?xml version="1.0">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<body>
-<p>CRASH: Omitting terminal question mark in &lt;?xml...?&gt; declaration (above) causes access violation.</p>
-<p>Although the crash was originally observed in an XML file with the .html extension, this tests the XML
-parser instead.<br />
-<p>If you don't crash, you pass.</p>
-</body>
-</html>

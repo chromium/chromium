@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Default display value on mtable
-  assert_equals: expected "inline-table" but got "table"
-[FAIL] Default text-align value on mtd
-  assert_equals: expected "center" but got "-webkit-center"
-Harness: the test ran to completion.
-

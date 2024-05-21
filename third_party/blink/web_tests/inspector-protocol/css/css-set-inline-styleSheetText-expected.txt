@@ -1,4 +1,0 @@
-Verify that CSS.setStyleSheetText works for inline styles.
-color: red;
-border: 1px solid black;
-

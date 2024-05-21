@@ -1,8 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13013 REGRESSION: Selection box does not scroll to where the focus jumps when pressing an alphanumeric key.
-
-aardvark
-blue
-navy
-indigo
-azure
-SUCCESS

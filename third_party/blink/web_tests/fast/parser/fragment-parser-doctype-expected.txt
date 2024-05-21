@@ -1,8 +1,0 @@
-Verify that a fragment's DOCTYPE does not affect parsing. We expect DOCTYPEs to be ignored for fragments with context elements.
-PASS container.firstChild.nextSibling is null
-Verify that a fragment's DOCTYPE does not change the compatibility mode of the owner document.
-PASS container.firstChild.nextSibling is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

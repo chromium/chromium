@@ -1,9 +1,0 @@
-Tests that unwrapping keys must have the 'unwrapKey' usage.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-error is: InvalidAccessError: key.usages does not permit this operation
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

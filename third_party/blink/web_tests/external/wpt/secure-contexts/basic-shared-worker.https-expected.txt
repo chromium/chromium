@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Nested worker in shared worker
-  assert_true: expected true got "Nested workers not supported."
-[FAIL] Nested worker from shared worker from https subframe
-  assert_true: expected true got "Nested workers not supported."
-Harness: the test ran to completion.
-

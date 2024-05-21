@@ -1,3 +1,0 @@
-This tests to make sure that right clicking also sends a onmousedown event.
-
-PASS

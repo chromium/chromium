@@ -1,7 +1,0 @@
-This test checks that triggering the context menu selects/doesn't select as platform-appropriate.
-
-Lorem ipsum
-SUCCESS
-SUCCESS
-SUCCESS
-SUCCESS

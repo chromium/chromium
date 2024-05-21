@@ -1,3 +1,0 @@
-This fixes a crash reported in https://crbug.com/570139 - Floating-point-exception in blink::LayoutTableSection::distributeWholeExtraRowSpanHeightToPercentRows.
-	
-

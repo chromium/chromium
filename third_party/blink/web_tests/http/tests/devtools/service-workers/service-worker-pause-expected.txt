@@ -1,8 +1,0 @@
-Tests that we can pause in service worker.
-
-Script execution paused.
-Call stack:
-    0) foo (service-worker-debugger.js:1)
-    1)  (service-worker-debugger.js:2)
-Script execution resumed.
-

@@ -1,3 +1,0 @@
-Tests that downloads are intercepted when interception is enabled for page.
-Intercepted: http://127.0.0.1:8000/devtools/network/resources/resource.php
-

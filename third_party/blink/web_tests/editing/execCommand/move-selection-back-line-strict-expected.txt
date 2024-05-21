@@ -1,6 +1,0 @@
-first line.. test test test test -[ ] test test test
-
-
-second line. Put your cursor here [ ] and press the up arrow. The cursor should appear in the green box on the first line
-
-PASS

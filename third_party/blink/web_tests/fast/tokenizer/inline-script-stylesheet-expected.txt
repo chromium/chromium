@@ -1,1 +1,0 @@
-Test that inline script blocks on stylesheet load: PASS

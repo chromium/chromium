@@ -1,5 +1,0 @@
-Test for bug 9783: An XML declaration without an explicit encoding incorrectly triggers UTF-8 encoding in an HTML document
-
-Test that an XML declaration with an explicit encoding is still honored. This is what Firefox 1.5 and Safari 2.0 do, unlike WinIE 6.
-
-Charset: KOI8-R (should be KOI8-R)

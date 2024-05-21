@@ -1,1 +1,0 @@
-This tests for a crash in InsertParagraph when inserting next to an input field or form control. You should see two input fields below in separate paragraphs.

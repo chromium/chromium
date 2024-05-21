@@ -1,5 +1,0 @@
-ALERT: Parent window's history object before attempt to clear: [object History]
-CONSOLE MESSAGE: Attempting to clear parent window's history object:
-CONSOLE MESSAGE: PASS: access to parent.window.history threw an exception.
-ALERT: Parent window's history object after attempt to clear: [object History]
-

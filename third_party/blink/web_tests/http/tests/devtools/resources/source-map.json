@@ -1,9 +1,0 @@
-{
-"version":3,
-"file":"compiled.js",
-"sourceRoot": "",
-"lineCount":2,
-"mappings":"AACAA,MAAAC,iBAAuB,CAAC,MAAD,CAAS,QAAQ,EACxC,CACI,IAAIC,EAASC,QAAAC,cAAsB,CAAC,QAAD,CACnCF,EAAAG,GAAA,CAAY,MACZH,EAAAD,iBAAuB,CAAC,OAAD,CAAUK,WAAV,CAAuB,CAAA,CAAvB,CACvBH,SAAAI,KAAAC,YAAyB,CAACN,CAAD,CAErBO,EAAAA,CAAMN,QAAAC,cAAsB,CAAC,KAAD,CAChCK,EAAAJ,GAAA,CAAS,ocACTF;QAAAI,KAAAC,YAAyB,CAACC,CAAD,CAR7B,CADuB,CAYvBH,SAASA,YAAW,CAACI,CAAD,CACpB,CAEIC,CAD8BC,IAAZC,YAClBF,QAAc,CAACD,CAAD,CAFlB,C,CCbAG,QAASA,aAAY,EACrB,EAGAA,YAAAC,UAAAH,OAAA,CAAgCI,QAAQ,EACxC,CACIC,OAAAC,IAAW,CAAC,iBAAD,CADf,C;",
-"sources":["source1.js","source2.js"],
-"names":["window","addEventListener","button","document","createElement","id","handleClick","body","appendChild","bar","event","handle","handler","ClickHandler","prototype","ClickHandler.prototype.handle","console","log"]
-}

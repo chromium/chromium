@@ -1,4 +1,0 @@
-
-Text attribute event listeners should always fire in main world: PASS
-Function attribute event listeners should fire in the world where they were created: PASS
-XHR attribute event listeners should fire in the world where they were created: PASS

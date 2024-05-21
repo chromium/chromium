@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] div[style="text-align: center"] legend
-  assert_equals: expected legend[align=left] expected 24 but got 394
-[FAIL] div[style="text-align: center"][align=center] legend
-  assert_equals: expected legend[align=left] expected 24 but got 394
-[FAIL] fieldset[dir=rtl] legend[style="text-align: left"]
-  assert_equals: expected legend[align=right] expected 764 but got 24
-Harness: the test ran to completion.
-

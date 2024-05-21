@@ -1,4 +1,0 @@
-Test that destroying a document doesn't cause a crash when executing MessageChannel constructor saved from its Window object.
-
-Didn't crash: SUCCESS
-

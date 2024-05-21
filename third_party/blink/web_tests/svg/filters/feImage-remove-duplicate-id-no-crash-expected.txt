@@ -1,1 +1,0 @@
-PASS: Removing svg element contain duplicate IDs do not trigger a crash.

@@ -1,1 +1,0 @@
-CONSOLE ERROR: Malformed multipart archive: malformed_mhtml_no_footer.mht

@@ -1,5 +1,0 @@
-Video inside an iframe is allowed to enter fullscreen
-
-SUCCEED - entered full screen!
-END OF TEST
-

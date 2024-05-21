@@ -1,2 +1,0 @@
-Test that noscript element is in DOM but can't be styled.
-PASS

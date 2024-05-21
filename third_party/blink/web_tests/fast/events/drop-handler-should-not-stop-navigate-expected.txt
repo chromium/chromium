@@ -1,4 +1,0 @@
-This tests that a drop handler's default action must be prevented in order to stop navigation. Otherwise, if event.preventDefault() is not called, navigation should occur. To test manually, simply drag and drop another link or HTML file on this page. If navigation of a new tab occurs, then the test passed.
-
-Starting test
-Not preventing default event on drop.

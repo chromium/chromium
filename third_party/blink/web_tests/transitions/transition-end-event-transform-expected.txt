@@ -1,4 +1,0 @@
-Initiating a 100ms transition on the transform property of box1.
-
-PASS --- [Expected] Property: transform Target: box1 Elapsed Time: 0.1
-

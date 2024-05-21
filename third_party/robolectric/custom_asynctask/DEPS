@@ -1,4 +1,0 @@
-include_rules = [
-  "+base/test/android/junit/src/org/chromium/base/task/test",
-  "+base/android/java/src/org/chromium/base/task",
-]

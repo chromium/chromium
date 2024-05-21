@@ -1,4 +1,0 @@
-This test changes the value of the text field by simulating typing, and then gets the value.
-
-
-Passed

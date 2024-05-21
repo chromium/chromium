@@ -1,1 +1,0 @@
-PASS: Referenced animation does not trigger crash.

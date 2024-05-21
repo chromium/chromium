@@ -1,2 +1,0 @@
-Tests fast animating gif (10ms per frame). Passes if it doesn't crash.
-

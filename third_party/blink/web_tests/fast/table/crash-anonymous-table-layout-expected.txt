@@ -1,2 +1,0 @@
-Bug 70392: Multiple crashes in LayoutTable during layout
-This test passes if it does not CRASH.

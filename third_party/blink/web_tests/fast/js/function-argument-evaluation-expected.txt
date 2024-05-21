@@ -1,7 +1,0 @@
-This page tests function calls whose argument expressions overwrite the callee.
-
-If the test passes, you'll see PASS messages below.
-
-PASS: test1(callback, 1) should be 1 and is.
-PASS: test2(callback, 1) should be 1 and is.
-

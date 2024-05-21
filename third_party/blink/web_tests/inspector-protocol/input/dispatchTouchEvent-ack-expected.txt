@@ -1,7 +1,0 @@
-Tests that Input.dispatchTouchEvent waits for JavaScript event handlers to finish.
-Dispatching event
-touchEventPromise for has not resolved yet
-Paused on debugger statement
-Resumed
-Recieved ack
-

@@ -1,5 +1,0 @@
-Element at 48, 48 has id "container": PASS
-Element at 75, 75 has id "target": PASS
-Element at 100, 100 has id "target": PASS
-Element at 125, 125 has id "target": PASS
-

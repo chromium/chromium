@@ -1,9 +1,0 @@
-Tests that debugger breaks on failed assertion when pause on exception mode is enabled.
-
-Script source was shown.
-Script execution paused.
-Call stack:
-    0) failAssertion (debugger-pause-on-failed-assertion.js:17)
-    1) handleClick (debugger-pause-on-failed-assertion.js:22)
-Script execution resumed.
-

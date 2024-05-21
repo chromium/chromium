@@ -1,9 +1,0 @@
-Check that a javascript generated mouse click is not enough to open a new tab.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS testRunner.windowCount() is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

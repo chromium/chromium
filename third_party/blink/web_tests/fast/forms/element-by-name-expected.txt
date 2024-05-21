@@ -1,5 +1,0 @@
-This is a regression test for bug 3481. The problem is that form elements added via innerHTML were not accessible with the form.elementName syntax.
-
-If the test succeeds, there will be a line below that says "form element was found".
-
-Form element was found.

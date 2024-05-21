@@ -1,9 +1,0 @@
-Test that adding a class then synchronously adding a style sheet produces correct styles. See also crbug.com/346873
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(target).width is "200px"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

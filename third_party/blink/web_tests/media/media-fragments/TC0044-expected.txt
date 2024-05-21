@@ -1,8 +1,0 @@
-
-Title: TC0044
-Fragment: 't=-1,3'
-Comment: Invalid syntax: a '-' character is not allowed at this position according to the ABNF. The UA knows that this is an invalid media fragment, so it will play the entire media resource.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == '0') OK
-END OF TEST
-

@@ -1,8 +1,0 @@
-"dirname" attribute
-
-PASS input.dirName is "Hello"
-PASS textArea.dirName is "Hello"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

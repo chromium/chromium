@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=104226 Disabled file input box stops a certain other div from being rendered.
-
-PASS if this text is visible.

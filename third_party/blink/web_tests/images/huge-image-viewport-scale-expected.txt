@@ -1,8 +1,0 @@
-Tests huge image scaling when viewport is enabled. Requires DumpRenderTree.
-To manual test, open resources/5000x5000.png in a viewport-capable browser (e.g. on Android or enable viewport emulation in DevTools).
-Passes if the image shinks to fit the width.
-
-
-viewport meta: <meta name="viewport" content="width=device-width, minimum-scale=0.1">
-image style: display: block;-webkit-user-select: none;margin: auto;cursor: zoom-in;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;
-image actual width: 100

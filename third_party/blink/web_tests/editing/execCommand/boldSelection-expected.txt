@@ -1,5 +1,0 @@
-This tests bolding the first 21 letters in the following sentence. Every character (including spaces) before "jumps" must be bolded.
-
-"The quick brown fox jumps over the lazy dog" uses every letter in the english language.
-
-<b>"The quick brown fox </b>jumps over the lazy dog" uses every letter in the english language.

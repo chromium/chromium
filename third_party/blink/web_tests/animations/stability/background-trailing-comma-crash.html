@@ -1,9 +1,0 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<div id="target"></div>
-<script>
-test(() => {
-  target.animate({background: 'none, 10px'}, {fill: 'forwards'});
-  getComputedStyle(target).backgroundPosition;
-}, "Don't crash when animating background with implicit longhand values and more than one bg-layer.");
-</script>

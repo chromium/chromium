@@ -1,1 +1,0 @@
-This tests a crash that was occuring when you have both an explicit property and 'all' in the transition-property CSS property. The crash would occur when you retarget the transition. This test should not crash.

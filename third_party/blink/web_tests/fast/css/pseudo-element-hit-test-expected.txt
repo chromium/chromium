@@ -1,8 +1,0 @@
-Button Test
-Div Test
-PASS document.elementFromPoint(25, 25).id is 'button'
-PASS document.elementFromPoint(225, 25).id is 'div'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

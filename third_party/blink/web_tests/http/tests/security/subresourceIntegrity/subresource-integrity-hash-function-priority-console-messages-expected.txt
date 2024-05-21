@@ -1,2 +1,0 @@
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/call-success.js' with computed SHA-512 integrity 'X32tT5fqyvxRgpWsMDFSo4MhhmPobFNqnaWEXMOxxyFKSCKvfHtJU1JA5wjvT6woWmkmybIULJgoI4wex5JD+w=='. The resource has been blocked.
-

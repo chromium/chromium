@@ -1,1 +1,0 @@
-This testcase should not fire an assertion related to the clip rects root.

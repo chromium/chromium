@@ -1,8 +1,0 @@
-Tests to ensure that a request completes if agent disconnects and no response given.
-Network agent enabled
-Request Intercepted: resource.php?size=100
-Disabling Network Agent
-
-Body: 
-****************************************************************************************************
-

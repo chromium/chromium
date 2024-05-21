@@ -1,2 +1,0 @@
-ALERT: PASS: element could not be re-appended
-This test passes if it does not trip an assert in debug builds. It ensures a readystatechange event can't get dispatched until after a plugin is fully removed.

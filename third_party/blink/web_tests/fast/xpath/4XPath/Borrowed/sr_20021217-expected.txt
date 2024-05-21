@@ -1,6 +1,0 @@
-PASS node_names is "bcd"
-PASS node_names is "b"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

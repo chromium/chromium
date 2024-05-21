@@ -1,7 +1,0 @@
-Tests that a :target pseudo selector is correctly applied, even when history scroll restoration suppresses scrolling to the fragment.
-
-PASS 200 is 200
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

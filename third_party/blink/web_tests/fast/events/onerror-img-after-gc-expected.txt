@@ -1,7 +1,0 @@
-ALERT: PASS (1/1)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-This test ensures that a normal image error doesn't crash if GC occurs before the error event fires.

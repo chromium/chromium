@@ -1,5 +1,0 @@
-This tests the intrinsic size of a video element is the default 300×150 before metadata is loaded, and also after metadata is loaded for an audio-only file.
-
-Initial dimensions: 300×150
-Dimensions after metadata loaded: 300×150
-

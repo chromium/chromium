@@ -1,5 +1,0 @@
-This tests that when the keyPress event handler changes focus to a new form field,
-that the key will not be inserted in the original field that was the target of the event.
-Note: Edge will not inserted. Firefox and WebKit will insert.  
-
-Test Passed

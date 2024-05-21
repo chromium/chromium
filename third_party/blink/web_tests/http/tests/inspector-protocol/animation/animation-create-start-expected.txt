@@ -1,4 +1,0 @@
-Tests that animation creation and start are reported over protocol.
-Animation created
-Animation started
-

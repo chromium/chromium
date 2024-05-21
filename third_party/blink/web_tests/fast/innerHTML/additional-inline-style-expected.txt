@@ -1,7 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13091 REGRESSION (r20075): Wrong text style and pixel break in Apple Store Locator HUD.
-
-This tests that .innerHTML does not introduce additional inline style.
-
-The following markup should not include a style attribute:
-
-<span></span>

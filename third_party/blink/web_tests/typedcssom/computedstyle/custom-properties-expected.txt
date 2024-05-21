@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Getting a height with a calc type containing var values returns a CSSCalcValue
-  CSSCalcValue is not defined
-Harness: the test ran to completion.
-

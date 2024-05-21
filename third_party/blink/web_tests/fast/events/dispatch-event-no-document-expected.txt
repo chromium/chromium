@@ -1,6 +1,0 @@
-The test verifies that EventTarget with an event listener not inserted into a Document does not crash during an attempt to dispatch an event.
-
-Test passes if there is no crash, and event is dispatched.
-
-PASS: generic handled.
-

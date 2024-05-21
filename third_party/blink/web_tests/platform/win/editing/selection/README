@@ -1,6 +1,0 @@
-This file documents why the various tests have been rebaselined.
-
-contenteditable-click-inside-expected.txt
-contenteditable-click-outside-expected.txt
---------------------------
-The only difference is the error message.

@@ -1,9 +1,0 @@
-Tests that text prompt suggestions' casing follows that of the user input.
-
-
-Running: testForUpperCase
-
-Running: testForLowerCase
-
-Running: testForMixedCase
-

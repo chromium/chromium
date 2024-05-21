@@ -1,9 +1,0 @@
-Test behavior of Document.replaceChild() when oldChild is null.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.replaceChild(document.firstChild, null) threw exception TypeError: Failed to execute 'replaceChild' on 'Node': parameter 2 is not of type 'Node'..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

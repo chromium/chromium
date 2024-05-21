@@ -1,3 +1,0 @@
-This tests that clientWidth/clientHeight on the document element in strict mode returns the visible size of the frame.
-SUCCESS!
-

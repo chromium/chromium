@@ -1,9 +1,0 @@
-This test checks users can input pre-edit text longer than maxlength.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getSelection().toString() is "abcd"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

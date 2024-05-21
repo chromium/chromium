@@ -1,1 +1,0 @@
-PASSED: Callback id was > 0

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Uncaught exception in single-page test
-  Uncaught Error: error outside any setup or test
-Harness: the test ran to completion.
-

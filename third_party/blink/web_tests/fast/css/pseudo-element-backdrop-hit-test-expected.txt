@@ -1,9 +1,0 @@
-Hit testing with ::backdrop style
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.elementFromPoint(5, 5).id is 'target'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

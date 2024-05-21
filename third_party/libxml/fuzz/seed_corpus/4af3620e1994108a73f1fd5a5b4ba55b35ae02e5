@@ -1,5 +1,0 @@
-<a:addressBook xmlns:a="http://www.example.com/addressBook">
-  <a:card xmlns="http://www.example.com/address">
-    <name>foo</name><email>bar</email>
-  </a:card>
-</a:addressBook>

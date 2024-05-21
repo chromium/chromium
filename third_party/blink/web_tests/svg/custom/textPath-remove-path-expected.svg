@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <text x="50" y="50">PASS</text>
-  <text>
-    <textPath id="theTP" xlink:href="#thePath">This text should not be visible</textPath>
-  </text>
-</svg>

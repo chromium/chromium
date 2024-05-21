@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
- <style>:root>svg{display:none}:root>svg:target{display:inline}</style>
- <svg id="green" viewBox="0 0 100 100">
-   <rect fill="green" width="100" height="100"/>
- </svg>
- <svg id="red" viewBox="0 0 100 100">
-   <rect fill="red" width="100" height="100"/>
- </svg>
-</svg>

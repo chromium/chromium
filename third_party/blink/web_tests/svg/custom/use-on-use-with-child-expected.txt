@@ -1,9 +1,0 @@
-The instance tree of use element zoomplus:
-      this = [object ShadowRoot]
-           id = loupePlus this = [object SVGGElement]
-                this = [object Text]
-                id = useRim this = [object SVGUseElement]
-                     this = [object Text]
-                     this = [object Text]
-                this = [object Text]
-

@@ -1,9 +1,0 @@
-features:
-- name: individual-transforms
-  files:
-  - rotate-parsing-computed.html
-  - rotate-parsing-valid.html
-- name: transforms3d
-  files:
-  - backface-visibility-*
-  - perspective-*

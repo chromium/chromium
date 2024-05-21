@@ -1,5 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=18951
-WebKit used to be confused when setting the ref to an empty anchor from a non-empty anchor, causing all sorts of weird loading behavior.
-Not anymore!
-anchor has been set
-anchor has been removed

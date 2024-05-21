@@ -1,5 +1,0 @@
-Tests accessibility in the Storage view using the axe-core linter.
-Storage view is visible: true
-aXe violations: []
-
-

@@ -1,6 +1,0 @@
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-You can see the contents of this file.

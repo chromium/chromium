@@ -1,8 +1,0 @@
-Allow nested frame detaches from subframe without crashing.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

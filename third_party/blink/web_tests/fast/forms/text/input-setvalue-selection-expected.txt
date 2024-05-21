@@ -1,4 +1,0 @@
-Test for bug 13960: JavaScript Form Validation issue on Banco do Brasil site.
-
-1. SUCCESS
-2. SUCCESS

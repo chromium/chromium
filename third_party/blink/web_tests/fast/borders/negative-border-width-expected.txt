@@ -1,2 +1,0 @@
-This div should have a 10px border
-Pass

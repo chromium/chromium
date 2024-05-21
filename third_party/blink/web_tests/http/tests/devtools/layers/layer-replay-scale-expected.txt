@@ -1,5 +1,0 @@
-Tests that when layer snapshots are replayed with scaling applied the image dimensions are properly scaled.
-
-Image dimensions at scale undefined: 180 x 180
-Image dimensions at scale 0.5: 90 x 90
-

@@ -1,5 +1,0 @@
-This page tests that invalid values for the word-break and -webkit-user-modify properties are rejected by the CSS parser.
-
-normal
-read-only
-

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Keyboard interface: existence and properties of interface object
-  assert_equals: prototype of Keyboard is not EventTarget expected function "function EventTarget() { [native code] }" but got function "function () { [native code] }"
-[FAIL] Keyboard interface: existence and properties of interface prototype object
-  assert_equals: prototype of Keyboard.prototype is not EventTarget.prototype expected object "[object EventTarget]" but got object "[object Object]"
-Harness: the test ran to completion.
-

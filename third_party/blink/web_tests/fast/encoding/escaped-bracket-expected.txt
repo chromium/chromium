@@ -1,4 +1,0 @@
-PASS: KOI8-R
-
-
-This test checks whether charset sniffer skips over escaped characters correctly.

@@ -1,6 +1,0 @@
-The test below queries the selected property of the option. In both cases it should be selected, just as the result is when the select is visible. Bug 15088
-
-true
-0
-true
-

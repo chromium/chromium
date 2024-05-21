@@ -1,4 +1,0 @@
-Verify that only one request is made for basic stylesheet requests with integrity attribute.
-
-style-with-integrity-frame.html:5 Stylesheet loaded successfully.
-

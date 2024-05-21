@@ -1,7 +1,0 @@
-CONSOLE ERROR: The Content-Security-Policy directive name ':script-src' contains one or more invalid characters. Only ASCII alphanumeric characters or dashes '-' are allowed in directive names.
-Directives starting with an invalid character should be logged and ignored.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

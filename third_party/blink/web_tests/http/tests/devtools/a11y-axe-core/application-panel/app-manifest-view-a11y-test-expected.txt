@@ -1,4 +1,0 @@
-Tests accessibility of AppManifestView on application panel.
-aXe violations: []
-
-

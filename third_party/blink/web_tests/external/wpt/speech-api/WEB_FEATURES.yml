@@ -1,7 +1,0 @@
-features:
-- name: speech-recognition
-  files:
-  - SpeechRecognition*
-- name: speech-synthesis
-  files:
-  - SpeechSynthesis*

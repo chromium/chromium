@@ -1,2 +1,0 @@
-CONSOLE DEBUG: Preconnect triggered for http://prefetch.wut.com.test/
-This test verifies that a DNS prefetch request is sent and logged.

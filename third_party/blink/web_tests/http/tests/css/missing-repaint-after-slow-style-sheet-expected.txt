@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: Inline script done
-CONSOLE MESSAGE: requestAnimationFrame ran
-CONSOLE MESSAGE: Stylesheet loaded

@@ -1,9 +1,0 @@
-Check that we use the style present asking for offsetWidth, ignoring pending stylesheets.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS t.offsetWidth is 200
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

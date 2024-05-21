@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "storage_controller_test\.cc": [
-    "+base/run_loop.h",
-  ],
-}

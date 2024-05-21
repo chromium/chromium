@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-Tests paint invalidation of previous location of an element which was clipped to be invisible initially, becme visible because of clip change, then changed color and size. Passes if there is a green square.
-<div id="container" style="position: absolute; top: 100px; width: 100px; height: 400px; overflow: hidden">
-  <div style="height: 20px"></div>
-  <div style="width: 100px; height: 300px">
-    <div id="content" style="width: 100px; height: 100px; background-color: green"></div>
-  </div>
-</div>

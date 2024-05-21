@@ -1,4 +1,0 @@
-There should be no repaint when the divs are moved.
-A
-B
-SUCCESS

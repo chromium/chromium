@@ -1,5 +1,0 @@
-
-  line { display: block; }
-  [type~=match] { background: red; }
-  line:nth-child(3n-1) { background: lime; }
-  [hidden] { display: none; }

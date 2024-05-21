@@ -1,4 +1,0 @@
-Verify that fs.createFile is creating UISourceCode atomically with content
-Added: file:///var/test/test.txt
-With content: file content
-

@@ -1,2 +1,0 @@
-This test is to ensure that we do not crash when loading a SVG image without a valid font-family
-PASS: Did not crash when rendering the SVG image.

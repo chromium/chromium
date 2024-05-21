@@ -1,5 +1,0 @@
-This page tests to make sure instanceof operator for DOM nodes works properly.
-
-If the test passes, you'll see a single 'PASS' message below.
-
-PASS

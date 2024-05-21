@@ -1,2 +1,0 @@
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/style.xsl' because it violates the following Content Security Policy directive: "script-src 'unsafe-inline'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-

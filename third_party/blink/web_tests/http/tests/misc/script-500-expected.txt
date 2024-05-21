@@ -1,2 +1,0 @@
-Test that onerror fires for a script with HTTP status 500.
-PASS

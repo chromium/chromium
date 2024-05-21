@@ -1,9 +1,0 @@
-<!--
-http://www.w3.org/TR/xmldsig2ed-tests/#c14n11xmlbase-c14n11spec2-102
-
-Check that correct xml:base fixup is performed.
--->
-<XPath xmlns:ietf="http://www.ietf.org" >
-(//. | //@* | //namespace::*) 
-[self::a or ancestor-or-self::d]
-</XPath>

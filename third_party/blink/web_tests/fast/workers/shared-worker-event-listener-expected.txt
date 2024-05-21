@@ -1,7 +1,0 @@
-Test SharedWorker event listener. Should print a series of PASS messages, followed with DONE.
-
-SUCCESS: Listener was called.
-SUCCESS: Listener was not called after removal.
-SUCCESS: Listener was called after GC.
-DONE
-

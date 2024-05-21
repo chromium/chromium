@@ -1,9 +1,0 @@
-This succeeds if max-height and max-width are not set together, but are different values.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS max-width is independent of max-height.

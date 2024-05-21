@@ -1,6 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 50 Q 75 150 150 100 S 175 0 200 50" fill="none" stroke="red"/>
-    <path d="M 50 150 C 75 100 75 250 150 200 T 200 250" fill="none" stroke="green"/>
-</svg>

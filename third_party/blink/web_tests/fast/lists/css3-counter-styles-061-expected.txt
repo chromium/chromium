@@ -1,6 +1,0 @@
-Test passes if the numbers AND the suffix in each of the two columns is the same.
-
-To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
-
-PASS list marker is 一.
-

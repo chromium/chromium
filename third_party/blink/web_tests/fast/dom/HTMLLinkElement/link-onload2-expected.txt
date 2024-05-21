@@ -1,4 +1,0 @@
-This tests that we fire two Load events on a page with two HTML Link elements and that both events are fired before the Load event for the window is dispatched. This test PASSED if you see the word PASS below. Otherwise, it FAILED.
-
-PASS Fired 2 Load events.
-

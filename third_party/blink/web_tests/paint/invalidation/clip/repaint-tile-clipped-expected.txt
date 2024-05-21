@@ -1,3 +1,0 @@
-This tests that the repaint of absolutely positioned elements inside relatively positioned inline blocks works correclty. crbug.com/370945
-
-You should see a green rectangle without any missing pieces if this test passed.

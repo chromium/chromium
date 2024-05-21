@@ -1,9 +1,0 @@
-This tests SVGAnimatedListPropertyTearOff containing SVGTransform don't crash if modified after contextElement goes out of scope.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-This test passes if we don't crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

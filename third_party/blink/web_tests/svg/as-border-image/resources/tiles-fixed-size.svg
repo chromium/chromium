@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width='100px' height='100px'>
-    <rect fill='red' width='50px' height='50px' />
-    <rect fill='green' x="50px" width='50px' height='50px' />
-    <rect fill='orange' y="50px" width='50px' height='50px' />
-    <rect fill='blue' x="50px" y="50px" width='50px' height='50px' />
-</svg>

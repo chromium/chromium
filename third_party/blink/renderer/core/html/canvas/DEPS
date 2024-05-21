@@ -1,5 +1,0 @@
-specific_include_rules = {
-    "predefined_color_space.h": [
-        "+ui/gfx/hdr_metadata.h",
-    ],
-}

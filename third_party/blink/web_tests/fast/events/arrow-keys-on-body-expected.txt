@@ -1,8 +1,0 @@
-Test that arrow keys do not dispatch keypress events even if there is no default handler.
-
-To test manually, press arrow keys and verify that no keypress events are logged.
-
-target - type - ctrlKey,altKey,shiftKey,metaKey - key - location - keyCode - charCode
-BODY - keydown - false,false,false,false - ArrowLeft - DOM_KEY_LOCATION_STANDARD - 37 - 0
-BODY - keyup - false,false,false,false - ArrowLeft - DOM_KEY_LOCATION_STANDARD - 37 - 0
-

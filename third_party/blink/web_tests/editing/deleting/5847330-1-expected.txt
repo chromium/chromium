@@ -1,3 +1,0 @@
-This tests for a crash on delete that occurred because we tried to merge content from inside a table cell into content outside the table that held that cell.
-
-

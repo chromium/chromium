@@ -1,9 +1,0 @@
-This tests that the video element's timeline controls are draggable in full screen. Press any key to continue.
-
-EVENT(canplaythrough)
-EVENT(webkitfullscreenchange)
-EVENT(mousedown)
-EVENT(mouseup)
-EVENT(seeked)
-END OF TEST
-

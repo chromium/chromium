@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] innerHTML in XHTML
-  Failed to read a named property 'document' from 'Window': Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-Harness: the test ran to completion.
-

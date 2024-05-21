@@ -1,3 +1,0 @@
-If the inner pop-up was not blocked then there will be one additional windows generated. Otherwise, the test passes.
-For more details, please refer to https://bugs.webkit.org/show_bug.cgi?id=37138.
-PASSED

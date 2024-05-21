@@ -1,4 +1,0 @@
-This tests for a crash when performing InsertOrderedList on an unordered list item. You should see 'foo' and 'bar' each in their own ordered list items.
-
-foo
-bar

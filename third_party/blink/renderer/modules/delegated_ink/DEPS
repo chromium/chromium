@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "delegated_ink_trail_presenter.*.cc" : [
-    "+ui/gfx/delegated_ink_metadata.h",
-  ]
-}

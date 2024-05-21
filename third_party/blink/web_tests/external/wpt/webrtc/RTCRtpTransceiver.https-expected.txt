@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] checkRemoveTrackNegotiation
-  assert_equals: pc2.setRemoteDescription(offer) should've added 2 tracks to receive stream expected 2 but got 0
-[FAIL] checkMute
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

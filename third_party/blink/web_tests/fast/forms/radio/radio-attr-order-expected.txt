@@ -1,9 +1,0 @@
-This tests that radio buttons are checked by default, even when the name attribute is parsed after the checked attribute.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById("rb").checked is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

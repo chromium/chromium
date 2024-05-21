@@ -1,9 +1,0 @@
-Must not crash, and transforms to 'Simple_sting_line'. Test for http://crbug.com/599427.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS processor.transformToFragment(doc, document).textContent is "Simple_sting_line"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

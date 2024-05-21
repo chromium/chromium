@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Test for crash bug in WorkerThreadableLoader::MainThreadBridge::mainThreadCreateLoader when FileReader is running in the worker thread and the page location is changed.
-
-This test PASSED if it did not crash.

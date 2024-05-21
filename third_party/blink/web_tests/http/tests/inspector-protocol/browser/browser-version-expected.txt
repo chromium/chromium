@@ -1,6 +1,0 @@
-Verifies Browser.getVersion method.
-version.protocolVersion: OK
-version.revision: OK
-version.userAgent: OK
-version.jsVersion: OK
-

@@ -1,6 +1,0 @@
-This test verifies videos in fullscreen mode are not affected by CSS top/left properties.
-EVENT(webkitfullscreenchange)
-EXPECTED (clientRect.left == '0') OK
-EXPECTED (clientRect.top == '0') OK
-END OF TEST
-

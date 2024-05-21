@@ -1,3 +1,0 @@
-This test is to ensure that we do not crash when applying an SVG font to a text node with an anonymous parent. It passes if it does not crash.
-!
-!

@@ -1,6 +1,0 @@
-{
-"version": "3",
-"mappings": "AAAA,UAAW;EACP,UAAU,EAAE,UAAU;EAEtB,qBAAW;IACP,KAAK,EAAE,KAAK",
-"sources": ["selector-line-sourcemap-header.scss"],
-"file": "selector-line-sourcemap-header.php"
-}

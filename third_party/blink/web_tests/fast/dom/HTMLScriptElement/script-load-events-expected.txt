@@ -1,3 +1,0 @@
-This tests for regressions against https://bugs.webkit.org/show_bug.cgi?id=5812 Generate load events for <script> elements.
-
-PASS

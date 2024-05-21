@@ -1,8 +1,0 @@
-Test worker file does not exist error. Should print two "PASS" statements followed by "DONE".
-
-The order of the error events should be onerror and then error event, and this test should be improved to verify that when bug https://bugs.webkit.org/show_bug.cgi?id=62485 is fixed.
-
-PASS: error event.
-PASS: onerror called.
-DONE
-

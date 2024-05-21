@@ -1,6 +1,0 @@
-Tests that console result has originating command associated with it.
-
-1 + 1
-2
-Originating from: 1 + 1
-

@@ -1,2 +1,0 @@
-This tests that setting remove a child frame in onload event handler does not crash the renderer.
- 

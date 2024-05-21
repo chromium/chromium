@@ -1,1 +1,0 @@
-{"version":3,"sources":["framework.js"],"names":[],"mappings":";;AAAA,SAAS,GAAG,CAAC,QAAQ,EACrB;AACI,QAAI,CAAC,GAAG,GAAG,CAAC;AACZ,QAAI,MAAM,GAAG,QAAQ,CAAC,CAAC,GAAG,EAAE,CAAC,CAAC;AAC9B,WAAO,MAAM,CAAC;CACjB","file":"framework-with-sourcemap.js","sourcesContent":["function foo(callback)\n{\n    var i = 239;\n    var result = callback(i + 42);\n    return result;\n}\n"]}

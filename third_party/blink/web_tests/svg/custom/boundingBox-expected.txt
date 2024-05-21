@@ -1,3 +1,0 @@
-Test that -[DOMNode boundingBox] returns reasonable results for SVG elements.
-
-PASS

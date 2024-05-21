@@ -1,6 +1,0 @@
-This test checks if a call to focus on an already-focused element causes a change in selection.
-
-If the test passes for both textarea and text input elements you'll see two messages saying "passed" below.
-
-Passed.
-Passed.

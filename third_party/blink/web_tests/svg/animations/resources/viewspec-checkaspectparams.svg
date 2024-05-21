@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="500" height="500" fill="green"/>
-<set attributeName="preserveAspectRatio" to="xMaxYMin" begin="0s" fill="freeze"/>
-</svg>

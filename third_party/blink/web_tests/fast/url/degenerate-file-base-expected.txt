@@ -1,2 +1,0 @@
-Base URL: file:///
-Should say PASS: PASS

@@ -1,2 +1,0 @@
-Content-Security-Policy: sandbox allow-scripts;
-Origin-Agent-Cluster: ?1

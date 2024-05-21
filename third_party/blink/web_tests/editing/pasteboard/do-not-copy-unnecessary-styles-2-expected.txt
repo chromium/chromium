@@ -1,7 +1,0 @@
-This test verifies that WebKit does not erroneously clone nodes hierarchy when copying text with background color.
-"Hello" should be blue and has yellow background but you should not see red border.
-
-You should not see any borders:
-| <span>
-|   style="color: rgb(0, 0, 255); background-color: rgb(255, 255, 0);"
-|   "Hello<#selection-caret>"

@@ -1,2 +1,0 @@
-This test passes if no red is showing.
-PASS

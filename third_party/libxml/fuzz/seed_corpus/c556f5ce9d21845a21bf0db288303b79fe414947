@@ -1,6 +1,0 @@
-<x xmlns:xinclude="http://www.w3.org/2001/XInclude">
-   <!-- Simple test of a fallback on unavailble URI -->
-   <xinclude:include href="something.xml">
-     <xinclude:fallback><warning>Inclusion failed</warning></xinclude:fallback>
-   </xinclude:include>
-</x>

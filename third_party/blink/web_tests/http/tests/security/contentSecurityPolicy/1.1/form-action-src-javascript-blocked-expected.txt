@@ -1,9 +1,0 @@
-CONSOLE ERROR: Refused to send form data to 'javascript:alert("FAIL!")' because it violates the following Content Security Policy directive: "form-action 'none'".
-
- 
-
-Tests that blocking form actions works correctly. If this test passes, you will see a console error, and will not see a JavaScript alert.
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/security/contentSecurityPolicy/1.1/form-action-src-javascript-blocked.html
-===============================================

@@ -1,8 +1,0 @@
-crbug.com/573055: There should be no scrollbars below.
-
-Text
-PASS
-Text
-PASS
-Text
-PASS

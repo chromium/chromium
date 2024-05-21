@@ -1,9 +1,0 @@
-This test verifies that JavaScript wrappers for DOM nodes are protected against garbage collection for node trees that are outside the document, so long as there's a reference to at least one node in the tree.
-
-The output should be the following pieces of text on lines by themselves: "replacement content", "B", "A", "C".
-
-replacement content
-B
-A
-C
-

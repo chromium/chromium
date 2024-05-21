@@ -1,9 +1,0 @@
-This tests inserting a text in the middle of a text node. You should see "1 Two 3" below.
-| <b>
-|   "1 "
-| "Two<#selection-caret>"
-| <b>
-|   <i>
-|     " 3"
-| "
-"

@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-36.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">This paragraph should have normal background</p>
-<div xmlns="http://www.w3.org/1999/xhtml">This div contains only one paragraph
-    <p class="red">This paragraph should have green background</p>
-</div>
-</test>

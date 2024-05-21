@@ -1,4 +1,0 @@
-Test that messaging an inactive frameless document works as expected.
-
-Didn't crash, freeze or respond: SUCCESS
-

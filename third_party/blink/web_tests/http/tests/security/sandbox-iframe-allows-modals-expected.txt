@@ -1,6 +1,0 @@
-ALERT: Yay!
-CONFIRM: Question?
-PROMPT: Question?, default text: 
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

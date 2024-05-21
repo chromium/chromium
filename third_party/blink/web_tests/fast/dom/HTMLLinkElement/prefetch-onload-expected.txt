@@ -1,5 +1,0 @@
-This tests that onload events can be attached to link elements with rel=prefetch. Since prefetch links are just there as a performance optimization, the onload event is their only programatic side-effect.
-
-If it works you should see a message below saying the test has passed.
-
-TEST PASSED.

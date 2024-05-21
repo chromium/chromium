@@ -1,6 +1,0 @@
-This test checks whether the methods on ElementTimeControl correctly return undefined.
-animate.beginElement(): PASS
-animate.beginElementAt(0): PASS
-animate.endElement(): PASS
-animate.endElementAt(0): PASS
-

@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script>
-test(() => {
-  document.documentElement.style.shapeOutside = 'circle(at 1e200% -1e200%)';
-  getComputedStyle(document.documentElement).shapeOutside;
-}, 'This test passes if it does not crash.');
-</script>

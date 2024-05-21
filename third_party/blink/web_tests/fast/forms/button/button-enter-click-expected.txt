@@ -1,4 +1,0 @@
-This tests that hitting the enter key on a button element submits the form.
-
-Test Passed
-

@@ -1,3 +1,0 @@
-PASS
-
-crbug.com/530644 : Clear floats added dynamically to previous siblings. There should be a blue bar below the green bar and both should be 50px high.

@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-37.css" type="text/css"?>
-<test>
-<div xmlns="http://www.w3.org/1999/xhtml" class="t1">
-<p>This paragraph should have normal background</p>
-<address class="red">But this address should have green background</address>
-<p>This paragraph should have normal background</p>
-</div>
-</test>

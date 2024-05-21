@@ -1,5 +1,0 @@
-Test that web inspector can select element in an iframe even if the element was created via createElement of document other than iframe's document. Bug 60031
-
-PASS: selected node  with id 'main-frame-div'
-PASS: selected node  with id 'iframe-div'
-

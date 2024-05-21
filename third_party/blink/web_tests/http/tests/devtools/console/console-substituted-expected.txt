@@ -1,5 +1,0 @@
-Tests that evaluate in console works even if window.console is substituted or deleted. Bug 53072
-
-1
-2
-

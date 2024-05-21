@@ -1,7 +1,0 @@
-CONSOLE ERROR: This element does not support attachShadow
-CONSOLE ERROR: attachShadow() is disabled by disabledFeatures static field.
-CONSOLE ERROR: A second declarative shadow root cannot be created on a host.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

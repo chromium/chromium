@@ -1,2 +1,0 @@
-This test passes if no heap errors are detected during decoding.
-

@@ -1,6 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-This tests for a crash on paste inside removeRedundantStyles. You should see 'foo bar' below.
-
-foo bar

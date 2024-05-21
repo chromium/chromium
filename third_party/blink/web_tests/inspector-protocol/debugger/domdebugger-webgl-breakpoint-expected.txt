@@ -1,8 +1,0 @@
-Tests instrumentation breakpoint on webgl error
-(anonymous) at :3:7
-{
-    eventName : instrumentation:webglErrorFired
-    webglErrorName : INVALID_OPERATION
-}
-EventListener
-

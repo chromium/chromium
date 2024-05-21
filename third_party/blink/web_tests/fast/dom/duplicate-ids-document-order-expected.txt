@@ -1,2 +1,0 @@
-This tests that getElementById returns the first element in document order when there are multiple ids. Bug 12988.
-Success

@@ -1,4 +1,0 @@
-This tests that when the onchange event handler causes the renderer to be deleted, we don't crash.
-To run this test manually, type a character in the field and hit enter.
-
-

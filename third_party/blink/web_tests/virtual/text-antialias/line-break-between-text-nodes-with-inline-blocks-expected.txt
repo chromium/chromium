@@ -1,2 +1,0 @@
-foo bar 
-Test passes if no crash.

@@ -1,7 +1,0 @@
-This tests to make sure that HTMLHtmlElement::version settable.
-
-You should see 2 lines with "SUCCESS" below:
-
-SUCCESS (value: "1")
-
-SUCCESS (value: "2")

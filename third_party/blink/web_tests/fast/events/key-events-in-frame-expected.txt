@@ -1,3 +1,0 @@
-This tests that key events targeting a frame do not propagate up the frame tree. This will only produce output if the test fails. 
-To test manually click in the empty frame and press any key. If you receive any output the test has failed.
-

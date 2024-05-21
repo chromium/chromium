@@ -1,7 +1,0 @@
-Tests content is available for imported resource request.
-
-http://127.0.0.1:8000/devtools/network/resources/imported.html
-resource.type: document
-resource.content after requesting content: Imported Resource
-
-

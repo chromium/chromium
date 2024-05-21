@@ -1,8 +1,0 @@
-Tests that blackboxed script will be skipped while stepping on worker.
-
-Executing StepOver...
-Executing StepInto...
-Call stack:
-    0)  (worker-source.js:5)
-
-

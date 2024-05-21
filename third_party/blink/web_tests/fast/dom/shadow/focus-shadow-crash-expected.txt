@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Pressing TAB key to navigate a shadow insertion point in the oldest shadow tree should not make the browser crash.

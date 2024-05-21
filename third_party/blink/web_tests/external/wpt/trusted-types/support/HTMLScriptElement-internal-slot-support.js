@@ -1,2 +1,0 @@
-window.postMessage("script url", "*");
-

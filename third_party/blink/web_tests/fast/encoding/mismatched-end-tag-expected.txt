@@ -1,4 +1,0 @@
-PASS: windows-1255
-
-
-This test checks that charset sniffer does not get confused by the extraneous end script tag and ignore the meta tag, thinking it is inside a script.

@@ -1,8 +1,0 @@
-Child nodes should not be duplicated in the accessibility tree.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-Accessing a frame without an editable element should not crash.
-
-PASS (no crash).

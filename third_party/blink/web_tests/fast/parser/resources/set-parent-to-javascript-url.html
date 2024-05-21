@@ -1,7 +1,0 @@
-<script>
-// Capture window.parent: once this context navigates, window.parent always returns null.
-alert(1);
-const iframe = parent.document.getElementsByTagName('iframe')[0];
-iframe.src = "javascript:alert(3),'PASS<script>alert(4);parent.window.done()<\/script>'";
-alert(2);
-</script>

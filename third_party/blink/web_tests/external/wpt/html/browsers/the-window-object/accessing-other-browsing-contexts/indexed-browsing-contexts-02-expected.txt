@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Accessing child browsing contexts 1
-  assert_equals: The top browsing context should have 3 child browsing contexts. expected 3 but got 1
-[FAIL] Accessing child browsing contexts 3
-  assert_equals: The top browsing context should have 3 child browsing contexts. expected 3 but got 1
-Harness: the test ran to completion.
-

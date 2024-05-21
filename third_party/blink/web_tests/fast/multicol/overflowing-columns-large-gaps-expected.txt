@@ -1,3 +1,0 @@
-There should be a horizontal scrollbar below.
-
-PASS

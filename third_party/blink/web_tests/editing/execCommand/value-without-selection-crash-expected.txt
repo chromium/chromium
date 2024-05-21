@@ -1,1 +1,0 @@
-PASS - WebKit did not crash when querying command value without selection.

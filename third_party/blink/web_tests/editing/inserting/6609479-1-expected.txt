@@ -1,5 +1,0 @@
-This tests that inserting html inside a table still works and doesn't break the table apart, even when in quoted content.
-
-foobarbaz
-Test Passed
-

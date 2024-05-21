@@ -1,2 +1,0 @@
-Tests that lists in the rendering tree that track positioned objects are kept properly up-to-date through re-layout.
-PASS. WebKit didn't crash.

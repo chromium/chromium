@@ -1,3 +1,0 @@
-include_rules = [
-  "+chrome/tools/convert_dict",
-]

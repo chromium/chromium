@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Stylesheet loading using <link> with wrong Content-Type, cross-origin, and no nosniff
-  assert_unreached: error event should have fired Reached unreachable code
-[FAIL] Stylesheet loading using @import with wrong Content-Type, cross-origin, and no nosniff
-  assert_unreached: error event should have fired Reached unreachable code
-Harness: the test ran to completion.
-

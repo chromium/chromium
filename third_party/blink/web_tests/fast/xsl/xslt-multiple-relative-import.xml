@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="resources/xslt-relative0.xsl"?>
-<stylesheet-test>
-  This tests nested stylesheets which have xsl:imports with relative URLs.
-</stylesheet-test>

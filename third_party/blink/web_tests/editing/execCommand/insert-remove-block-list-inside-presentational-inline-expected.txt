@@ -1,9 +1,0 @@
-This test verifies insertUnorderedList can properly undo its own DOM manipulation.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementsByTagName('ul').length == 0 is true

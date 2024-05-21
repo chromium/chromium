@@ -1,3 +1,0 @@
-CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: ''sha256-j+ToFnhur5mTSCwoyy4Fh'. It will be ignored.
-CONSOLE ERROR: The Content-Security-Policy directive name ''sha512-0tQJUSPHRGUYQIa2ByQWZSlUa5sI3e2tOEXF7sg5mjmsHk/EHDTTORIDyMPhDKgCmb7TIrwhLrq2kEvfjHQ=='' contains one or more invalid characters. Only ASCII alphanumeric characters or dashes '-' are allowed in directive names.
-

@@ -1,7 +1,0 @@
-PASS r1.compareBoundaryPoints(Range.START_TO_START) threw exception TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': 2 arguments required, but only 1 present..
-PASS r1.compareBoundaryPoints(-1, r2) threw exception NotSupportedError: Failed to execute 'compareBoundaryPoints' on 'Range': The comparison method provided must be one of 'START_TO_START', 'START_TO_END', 'END_TO_END', or 'END_TO_START'..
-PASS r1.compareBoundaryPoints(4, r2) threw exception NotSupportedError: Failed to execute 'compareBoundaryPoints' on 'Range': The comparison method provided must be one of 'START_TO_START', 'START_TO_END', 'END_TO_END', or 'END_TO_START'..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

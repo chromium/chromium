@@ -1,6 +1,0 @@
-Test network status of non http request.
-
-network-status-non-http.js:200 OKFinished
-non-existent-file.js:404 Not Found(failed)
-data:application/ja…:200 OKFinished
-

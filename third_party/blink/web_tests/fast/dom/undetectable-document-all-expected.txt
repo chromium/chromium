@@ -1,4 +1,0 @@
-This tests that document.all should be undetectable, and that it should not be possible to set document.all to something else. If this test is successful, the text "SUCCESS" should be shown below.
-document.all: [object HTMLAllCollection]
-SUCCESS!
-

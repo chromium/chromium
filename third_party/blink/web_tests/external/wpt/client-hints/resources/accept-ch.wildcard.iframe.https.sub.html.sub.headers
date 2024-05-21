@@ -1,1 +1,0 @@
-Permissions-Policy: ch-ua-platform-version=("https://*.{{domains[]}}:{{ports[https][0]}}")

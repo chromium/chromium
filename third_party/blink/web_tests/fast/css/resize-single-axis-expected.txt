@@ -1,4 +1,0 @@
-'both' resized as expected to (100px, 100px).
-'horizontal' resized as expected to (100px, 50px).
-'vertical' resized as expected to (50px, 100px).
-

@@ -1,4 +1,0 @@
-Test that delivering a message to a port that was never referenced from JS doesn't cause a crash.
-
-PASS
-

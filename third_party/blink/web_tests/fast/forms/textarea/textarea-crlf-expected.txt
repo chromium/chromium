@@ -1,7 +1,0 @@
-This test attempts to set non-standard line endings in a text area and reads them back. The line endings should all come back as linefeeds.
-
-If the test passes, you should see three lines saying "Passed" below.
-
-Passed
-Passed
-Passed

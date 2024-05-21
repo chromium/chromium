@@ -1,4 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=24733:
-Tests event handling on search fields with zoom.
-
-PASS

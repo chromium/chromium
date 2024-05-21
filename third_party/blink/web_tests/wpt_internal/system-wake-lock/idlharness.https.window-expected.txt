@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] idl_test validation
-  Validation error at line 21 in ../wpt_internal/system-wake-lock/resources/system-wake-lock:\n  Promise<void> release()\n          ^ `void` is now replaced by `undefined`. Refer to the [relevant GitHub issue](https://github.com/whatwg/webidl/issues/60) for more information.
-Harness: the test ran to completion.
-

@@ -1,4 +1,0 @@
-This page tests that there are no scrollbars with iframe elements which have scrolling=no, contain a page large enough to need to be scrolled and have overflow:scroll set on the html or body elements. If the page doesn't have a scrollbar, then the iframe's body's clientWidth should be equal to the iframe's clientWidth.
-
- 
-PASSED

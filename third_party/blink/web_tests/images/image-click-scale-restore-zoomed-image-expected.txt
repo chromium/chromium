@@ -1,7 +1,0 @@
-This tests that on a zoomed page, click to scale up / down works fine. This test requires testRunner to run. To test manually, open this image in a browser window, resize the window to 100px tall and zoom out and click on the image to scale it up.
-
-Size at zoomed in level : 77 x 100
-Size at zoomed level after scale up click 1 : 500 x 644
-Size at zoomed out level after click 2 (Image restored): 77 x 100
-Size at zoomed level after scale up click 3 : 500 x 644
-

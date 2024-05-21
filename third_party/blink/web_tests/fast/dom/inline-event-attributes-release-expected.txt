@@ -1,9 +1,0 @@
-Tests that we do not hold on to any nodes
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS afterCount - beforeCount is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

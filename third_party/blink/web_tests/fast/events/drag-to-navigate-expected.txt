@@ -1,3 +1,0 @@
-Begin drag
-PASS: Drag complete
-

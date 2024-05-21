@@ -1,5 +1,0 @@
-Tests that scripts list is cleared upon page reload.
-
-Dummy script found: dummyScript.js
-Page reloaded.
-

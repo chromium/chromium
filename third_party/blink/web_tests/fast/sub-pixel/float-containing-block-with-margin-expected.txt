@@ -1,9 +1,0 @@
-PASS All list items are on the same line
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Lorem ipsum
-dolor sit amet
-consectetur adipiscing elit
-Links to the right should not wrap.

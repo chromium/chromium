@@ -1,5 +1,0 @@
-# Don't change line endings in generated text files.
-mc/**/*.h   -text
-mc/**/*.rc  -text
-midl/**/*.c -text
-midl/**/*.h -text

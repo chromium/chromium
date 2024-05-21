@@ -1,3 +1,0 @@
-This test moves an animated filter target. The test will display a message below if successful.
-
-PASS - Test succeeded.

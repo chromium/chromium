@@ -1,3 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=7363. Taking focus away from a text field that no longer had focus was crashing Safari.
-
-Success: finished the test without crashing.

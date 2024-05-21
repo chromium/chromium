@@ -1,4 +1,0 @@
-<svg width="300" height="200" viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
- <!-- the 'stroke-width' property defaults to '1' -->
- <rect x="0.5" y="0.5" width="1" height="1" stroke="green" fill="red"/>
-</svg>

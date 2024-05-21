@@ -1,9 +1,0 @@
-If this test runs without hanging, then it has passed. The visited link hash algorithm was N^2 at one point and would hang.
-
-Link with tons of slashes
-
-Link with tons of slashes with dots
-
-Link with tons of slashes with double dots
-
-TEST PASSED

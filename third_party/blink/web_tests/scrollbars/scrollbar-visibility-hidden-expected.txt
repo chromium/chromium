@@ -1,4 +1,0 @@
-Test that the scrollbars of a visibility:hidden overflow:auto DIV do not participate in hit testing - http://crbug.com/313908
-
-SUCCESS
-Div 1

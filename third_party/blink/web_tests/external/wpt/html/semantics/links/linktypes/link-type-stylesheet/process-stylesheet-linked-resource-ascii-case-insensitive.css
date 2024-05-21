@@ -1,3 +1,0 @@
-p:after { font-weight: bold; }
-p:after { content: "FAIL"; color: red; }
-#z-other:after { content: "PASS"; color: green; }

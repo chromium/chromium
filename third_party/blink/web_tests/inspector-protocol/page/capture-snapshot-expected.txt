@@ -1,15 +1,0 @@
-Tests capturing MHTML snapshots.
-
-Capturing without specified format:
-From: <Saved by Blink><Snapshot-Content-Location: >Subject: <Date: ><MIME-Version: >Content-Type: multipart/related;	type="text/html";<boundary="----MultipartBoundary--><------MultipartBoundary-->Content-Type: text/html<Content-ID: ><Content-Transfer-Encoding: ><Content-Location: ><html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset==3Dwindows-1252"></head><body><div id=3D"x" class=3D"container">      <p style=3D"color: red">Text</p>     =20    </div>    </body></html><------MultipartBoundary-->
-
-Capturing with format: foo
-{
-    error : {
-        code : -32000
-        message : Unsupported snapshot format
-    }
-    id : <number>
-    sessionId : <string>
-}
-

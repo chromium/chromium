@@ -1,9 +1,0 @@
-This tests that cookie access throws exceptions with reasonable messages inside 'data:' URLs.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS exceptionMessage is "Failed to read the 'cookie' property from 'Document': Cookies are disabled inside 'data:' URLs."
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

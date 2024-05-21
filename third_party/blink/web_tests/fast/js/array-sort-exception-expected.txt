@@ -1,9 +1,0 @@
-Test of array sort with toString() override that throws exception.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS catchArg is exceptionString
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,4 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=22190:
-Tests drawing and event handling on transformed search fields.
-
-PASS

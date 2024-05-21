@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Well-formed result of performance.measureUserAgentSpecificMemory.
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

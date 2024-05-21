@@ -1,4 +1,0 @@
-This test verifies that removing an iframe from the DOM removes the corresponding frame from the page, even if the iframe's id has changed and the iframe is loading a document.
-
-PASS: iframe removed from the page.
-

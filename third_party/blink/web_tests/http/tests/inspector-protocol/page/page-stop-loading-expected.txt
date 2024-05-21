@@ -1,3 +1,0 @@
-Tests that Page.stopLoading cancels navigation
-navigation finished
-

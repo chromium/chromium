@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS internals.counterValue(document.getElementById('div1')) is '0'
-
-
-TEST COMPLETE

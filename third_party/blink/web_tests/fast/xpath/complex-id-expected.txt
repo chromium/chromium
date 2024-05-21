@@ -1,3 +1,0 @@
-Test for bug 12452: XPath id() function is not supported.
-
-SUCCESS

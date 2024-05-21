@@ -1,5 +1,0 @@
-This tests text selection drag from a textarea and drop to an input, and vice versa. There was a bug of an assertion failure in a case of the selected text was longer than the destination text.
-
-PASS: to input
-PASS: to textarea
- 

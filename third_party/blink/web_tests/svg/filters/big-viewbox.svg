@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="200px" height="200px" viewBox="0 0 100000 100000">
-  <defs>
-    <filter x="0%" y="0%" width="100%" height="100%" id="f1">
-      <feOffset/>
-    </filter>
-  </defs>
-  <rect fill="green" width="50000" height="50000" filter="url(#f1)"/>
-</svg>

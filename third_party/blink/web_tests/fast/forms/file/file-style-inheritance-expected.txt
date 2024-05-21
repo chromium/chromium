@@ -1,9 +1,0 @@
-Tests internal components of a file upload control correctly inherit the style of the container input element.
-
-PASS document.defaultView.getComputedStyle(button1, null).getPropertyValue("font-size") is "30px"
-PASS document.defaultView.getComputedStyle(document.getElementById("darkFile"), null).getPropertyValue("background-color") is "rgba(0, 0, 0, 0)"
-PASS document.defaultView.getComputedStyle(document.getElementById("darkFile"), null).getPropertyValue("color") is "rgb(255, 255, 255)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

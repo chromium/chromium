@@ -1,2 +1,0 @@
-This tests that navigating two subframes and then going back using history.go(-2) won't assert.
- 

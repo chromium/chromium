@@ -1,7 +1,0 @@
-CONSOLE MESSAGE: PASS
-This test has to be run using `ContentShell --run-web-tests` in order to see if resources were loaded and the test passed. 
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
- <script src=resources/script1.js></script>

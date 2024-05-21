@@ -1,7 +1,0 @@
-Tests function's return value reported from backend.
-
-Set timer for test function.
-Call stack:
-    0) testFunction (debugger-return-value.js:21)
-       <return>: 10
-

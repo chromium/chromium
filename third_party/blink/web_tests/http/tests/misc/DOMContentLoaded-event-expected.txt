@@ -1,8 +1,0 @@
-ALERT: DOMContentLoaded event fired on document!
-ALERT: DOMContentLoaded event bubbled to window!
-ALERT: Timer callback called.
-ALERT: load event fired!
-ALERT: PASSED
-Test case for bug 5122: Equivalent of Mozilla's DOMContentLoaded needed
-
-You should see a note about the DOMContentLoaded event being fired and bubbled, a timer being called, and then the load event being fired.

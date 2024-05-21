@@ -1,3 +1,0 @@
-PASS - "border-image-source" property for "box" and "boxStatic" elements at 0.5s are close enough to each other
-PASS - "border-image" property for "boxShorthand" and "boxStatic" elements at 0.5s are close enough to each other
-

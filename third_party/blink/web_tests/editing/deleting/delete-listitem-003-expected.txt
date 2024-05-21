@@ -1,5 +1,0 @@
-PASS sample.outerHTML is "<p class=\"listStyle\"><br id=\"two\"></p>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

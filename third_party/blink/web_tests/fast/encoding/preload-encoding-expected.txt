@@ -1,4 +1,0 @@
-Script with charset: SUССЕSS.
-Link rel=stylesheet with charset: SUCCESS
-Script without charset: SUССЕSS
-Link rel=stylesheet without charset: SUCCESS

@@ -1,9 +1,0 @@
-Tests that the reflected Key.usages are normalized.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS key.usages.join(',') is "encrypt,decrypt,wrapKey"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

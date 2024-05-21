@@ -1,9 +1,0 @@
-<?xml-stylesheet href="css3-modsel-50.css" type="text/css"?>
-<test>
-<div xmlns="http://www.w3.org/1999/xhtml" class="stub">
-<q xmlns="http://www.example.org/a" test="1">
-  <r>This text should be in green characters</r>
-</q>
-<s xmlns="http://www.example.org/a">This text should be in green characters</s>
-</div>
-</test>

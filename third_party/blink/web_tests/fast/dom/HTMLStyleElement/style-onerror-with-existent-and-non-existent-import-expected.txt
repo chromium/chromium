@@ -1,5 +1,0 @@
-This tests that a Error event is fired at an HTML Style element whose @import style sheet failed to load. This test PASSED if there are only PASS messages below. Otherwise, it FAILED.
-
-PASS Error event fired.
-PASS #test color was rgb(0, 0, 255).
-

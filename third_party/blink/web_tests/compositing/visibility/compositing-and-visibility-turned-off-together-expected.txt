@@ -1,1 +1,0 @@
-This test verifies no assertion failure is raised when visibility and need for compositing are turned off at same time.

@@ -1,9 +1,0 @@
-Calling ShadowRoot.cloneNode() should throw a NotSupportedError exception.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS shadowRoot.cloneNode() threw exception NotSupportedError: Failed to execute 'cloneNode' on 'Node': ShadowRoot nodes are not clonable..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

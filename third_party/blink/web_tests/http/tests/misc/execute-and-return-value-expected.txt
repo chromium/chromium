@@ -1,6 +1,0 @@
-Expecting 5: 5
-Expecting 3.14: 3.14
-Expecting "The quick brown dog.": The quick brown dog.
-Expecting false: false
-Expecting null: null
-

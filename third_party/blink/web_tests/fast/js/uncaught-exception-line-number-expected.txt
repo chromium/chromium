@@ -1,3 +1,0 @@
-CONSOLE ERROR: Uncaught uh oh, an exception!
-This tests that uncaught exceptions have the right line numbers, for example for display in the JavaScript error console. To run the test manually, look in the JS console for an uncaught exception on line 11.
-

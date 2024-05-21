@@ -1,4 +1,0 @@
-include_rules = [
-  "+media/base/mime_util.h",  # Only for platforms other than iOS
-  "+net/base",
-]

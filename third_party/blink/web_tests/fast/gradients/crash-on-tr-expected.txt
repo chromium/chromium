@@ -1,5 +1,0 @@
-This test should not crash (or ASSERT).
-
-There should also be a table cell with a gradient below.
-
-Gradient

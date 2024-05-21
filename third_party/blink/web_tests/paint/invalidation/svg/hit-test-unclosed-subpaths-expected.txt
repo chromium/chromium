@@ -1,1 +1,0 @@
-There should be 2 green squares above this (when run under DumpRenderTree)

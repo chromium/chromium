@@ -1,3 +1,0 @@
-This test is to ensure that we do not crash while rendering a fixed table layout.
-PASS: Did not crash.
-	

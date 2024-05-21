@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<foo xmlns="http://FOO" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
-	xsi:schemaLocation="http://FOO facet-whiteSpace_0.xsd">hmmm
-
-	f		f	ff		f
-	</foo>

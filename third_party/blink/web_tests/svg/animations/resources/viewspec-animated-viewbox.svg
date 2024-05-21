@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="30" height="30" fill="green"/>
-<set attributeName="viewBox" to="0 0 30 30" begin="0s" fill="freeze"/>
-</svg>

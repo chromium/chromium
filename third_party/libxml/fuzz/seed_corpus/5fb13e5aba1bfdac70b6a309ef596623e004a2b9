@@ -1,7 +1,0 @@
-<!DOCTYPE doc [
-<!ELEMENT doc ((a, b)| (a, c))>
-<!ELEMENT a EMPTY>
-<!ELEMENT b (#PCDATA)>
-<!ELEMENT c (#PCDATA)>
-]>
-<doc><a/><c> doc is non-deterministic </c></doc>

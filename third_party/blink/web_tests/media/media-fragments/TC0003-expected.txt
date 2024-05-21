@@ -1,8 +1,0 @@
-
-Title: TC0003
-Fragment: 't=7,3'
-Comment: Invalid semantics: the requested interval's start is beyond its end. The media fragment is ignored.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == '0') OK
-END OF TEST
-

@@ -1,9 +1,0 @@
-Test case for Bug 18655: [XHR] OnProgress needs more test case
-
-This test verify that file with content type does trigger onProgress event.
-
-You should see PASSED twice.
-
-PASSED
-
-PASSED

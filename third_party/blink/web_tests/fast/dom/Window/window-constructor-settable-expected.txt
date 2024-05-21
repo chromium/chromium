@@ -1,3 +1,0 @@
-Test for bug 48953: Can't shadow/overwrite window.constructor.
-
-Can replace window constructor: PASS

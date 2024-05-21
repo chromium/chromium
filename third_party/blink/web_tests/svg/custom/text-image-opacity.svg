@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <text style="opacity:0.0;" y="25" fill="red" >Fail!</text>
-    <text style="opacity:0.5;" y="50" fill="green">Success! (should be half opacity as should the image below)</text>
-    <image xlink:href="resources/green-checker.png" y="55" height="100" width="100" style="opacity:0.5;"/>
-    <image xlink:href="resources/red-checker.png" y="55" height="100" width="100" style="opacity:0.0;"/>
-</svg>

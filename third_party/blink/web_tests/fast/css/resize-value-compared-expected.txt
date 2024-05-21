@@ -1,6 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=9694 resize value not compared.
-
-This box should have a working resize corner:
-
-PASS
-

@@ -1,3 +1,0 @@
-Test case for bug 17897 : Not Rendering Images Imported from XHTML Document
-You should see PASSED once.
-PASSED

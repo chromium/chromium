@@ -1,26 +1,0 @@
-<html>
-<head>
-<style type="text/css">
-    div { color: red; }
-    div.green { color: green; }
-</style>
-<title></title>
-</head>
-<body>
-<p>
-Test for <i><a href="https://bugs.webkit.org/show_bug.cgi?id=7761">http://bugzilla.opendarwin.org/show_bug.cgi?id=7761</a>
-Tabs in class attribute not treated as whitespace</i>.
-</p>
-<p>All of the following should be green:</p>
-<div class="green	">Tab after</div>
-<div class="	green">Tab before</div>
-<div class="green
-">Newline after</div>
-<div class="
-green">Newline before</div>
-<div class="green   ">Spaces after</div>
-<div class="   green">Spaces before</div>
-<div class="greenfoo">CR after</div>
-<div class="foogreen">CR before</div>
-</body>
-</html>

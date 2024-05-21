@@ -1,4 +1,0 @@
-This tests pressing a mouse button down inside a dragstart event.
-This happens when a user sets a breakpoint of a dragstart event handler in Inspector, and clicks somewhere on the page while the script is paused at the breakpoint. WebKit should not crash.
-
-PASS - mouse up and down inside a dragstart did not crash WebKit

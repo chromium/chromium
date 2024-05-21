@@ -1,2 +1,0 @@
-CONSOLE DEBUG: Preconnect triggered for http://prefetch1.wut.com.test/
-This test verifies that a preconnect is sent for schemeless host names.

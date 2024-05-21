@@ -1,5 +1,0 @@
-PASS getComputedStyle(document.getElementById('last')).backgroundColor is 'rgb(0, 128, 0)'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

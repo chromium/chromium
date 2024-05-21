@@ -1,5 +1,0 @@
-features:
-- name: color-mix
-  files:
-  - "*-color-mix-*"
-  - color-mix-out-of-gamut.html

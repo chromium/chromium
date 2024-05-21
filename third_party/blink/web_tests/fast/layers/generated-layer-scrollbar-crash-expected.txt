@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12518 Betsson.com crashes browser.
-
-No crash means PASS.

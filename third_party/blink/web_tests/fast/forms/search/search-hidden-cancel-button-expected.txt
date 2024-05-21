@@ -1,6 +1,0 @@
-This tests that clicking on the hidden cancel button won't start capturing mouse events. To run this test manually, click where the cancel button would be, and then click in the middle of the field. If you see two "onmousedown" strings logged, then the test passes.
-
-onmousedown
-onmousedown
-Test Passed
-

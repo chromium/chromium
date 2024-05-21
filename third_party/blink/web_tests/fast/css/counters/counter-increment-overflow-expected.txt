@@ -1,3 +1,0 @@
-Test passes if the number '2147483647' appears below.
-
-2147483647

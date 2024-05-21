@@ -1,3 +1,0 @@
-Test for bug 9783: An XML declaration without an explicit encoding incorrectly triggers UTF-8 encoding in an HTML document
-
-Charset: windows-1252 (should be your browser default one)

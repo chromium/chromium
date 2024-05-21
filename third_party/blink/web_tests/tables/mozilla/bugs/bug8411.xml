@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<?xml-stylesheet href="bug8411.css" type="text/css"?>
-<doc>
-<p>The following text is in a caption element whose style is set to display:table-caption. The element is not inside a table.</p>
-<captionelement>This is a caption element.</captionelement>
-<p>If there's no red text between this text and the previous text the caption is not displayed.</p>
-</doc>

@@ -1,8 +1,0 @@
-This tests assures dynamic SVGDocument creation via DOMParser interface works.
-DOMParser.parseFromString returned: [object XMLDocument] should be: [object XMLDocument]
-SVGDocument's rootElement: [object SVGSVGElement] should be: [object SVGSVGElement]
-SVGDocument's rootElement width: 400 should be: 400
-SVGDocument's rootElement height: 400 should be: 400
-SVGDocument's rootElement first child: [object SVGGElement] should be: [object SVGGElement]
-XMLSerializer.serializeToString returned: <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><g transform="translate(-50, -50)"><path id="path" onclick="mouseHandler(evt)" fill="#FF0000" stroke="#00C000" d="M 250 130 C 185 130 150 80 150 80 S 115 25 50 25 m 0 105 c 65 0 100 -50 100 -50 s 35 -55 100 -55"/></g></svg>
-Imported the SVGGElement into our document: [object SVGGElement] should be: [object SVGGElement]

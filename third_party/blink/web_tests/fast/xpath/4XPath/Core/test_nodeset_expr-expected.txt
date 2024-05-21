@@ -1,7 +1,0 @@
-PASS (/ROOT | /ROOT/CHILD1)[true()]
-PASS (/ROOT | /ROOT/CHILD1)[.=/ROOT]
-PASS (/ROOT | /ROOT/CHILD1) | (/ROOT)
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Test for a bug 30992: Node.isDefaultNamespace doesn't convert empty strings to null.
-
-Should say PASS:
-
-PASS

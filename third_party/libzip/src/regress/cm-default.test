@@ -1,5 +1,0 @@
-# test default compression stores if smaller
-return 0
-args -n test.zip  add compressable aaaaaaaaaaaaaa  add uncompressable uncompressable  add_nul large-compressable 8200  add_file large-uncompressable large-uncompressable 0 -1
-file-new test.zip cm-default.zip
-file large-uncompressable large-uncompressable large-uncompressable

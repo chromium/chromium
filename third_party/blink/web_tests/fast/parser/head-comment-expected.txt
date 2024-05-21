@@ -1,3 +1,0 @@
-This is a UTF-8 quote mark: ’
-
-If it shows up as garbage, that means Safari got confused by comments within the <head> section.

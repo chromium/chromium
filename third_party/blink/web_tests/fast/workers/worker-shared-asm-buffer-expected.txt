@@ -1,4 +1,0 @@
-Test calling asm functions across workers with the same heap.
-SUCCESS
-DONE
-

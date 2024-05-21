@@ -1,4 +1,0 @@
-PASS - "transform" property for "box" element at 1s saw something close to: -1,0,0,-1,0,0
-PASS - "transform" property for "box" element at 2s saw something close to: 1,0,0,1,0,0
-PASS - "transform" property for "box" element at 3s saw something close to: -1,0,0,-1,0,0
-

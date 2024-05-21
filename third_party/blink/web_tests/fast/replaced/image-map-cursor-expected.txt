@@ -1,7 +1,0 @@
-Cursor Info: type=Hand
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-crbug.com/517339: Image maps not displaying hand pointer when hovering over them.

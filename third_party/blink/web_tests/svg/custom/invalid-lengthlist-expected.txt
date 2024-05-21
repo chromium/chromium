@@ -1,1 +1,0 @@
-CONSOLE ERROR: Error: <text> attribute x: Expected length, "1.2.3".

@@ -1,6 +1,0 @@
-This page tests for a crash when exceeding the limit on declared global variables.
-
-If the test passes, you'll see a PASS message below.
-
-PASS: Existing global var survived.
-

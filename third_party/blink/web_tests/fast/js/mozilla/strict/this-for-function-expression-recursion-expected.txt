@@ -1,9 +1,0 @@
-611276: JSOP_CALLEE should push undefined, not null, for this
-PASS [object Window] === [object Window]
-PASS undefined === undefined
- PASSED! 
-All tests passed!
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

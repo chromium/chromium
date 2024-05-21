@@ -1,3 +1,0 @@
-include_rules = [
-    "+base/containers/fixed_flat_map.h",
-]

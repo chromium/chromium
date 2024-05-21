@@ -1,4 +1,0 @@
-CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
-CONSOLE ERROR: Unsafe attempt to initiate navigation for frame with URL 'child-opens-window.html'. The frame attempting navigation of the top-level window is sandboxed, but the flag of 'allow-top-navigation' or 'allow-top-navigation-by-user-activation' is not set.
-
- PASS

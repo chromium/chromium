@@ -1,9 +1,0 @@
-Tests that worker can be interrupted with Debugger.pause.
-Started worker
-Worker created
-didConnectToWorker
-Did enable debugger
-Did post message to worker
-Paused in worker
-SUCCESS: messageId > 1
-

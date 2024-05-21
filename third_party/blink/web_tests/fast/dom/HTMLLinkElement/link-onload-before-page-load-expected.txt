@@ -1,5 +1,0 @@
-This tests that a Load event for an HTML Link element comes before the Load event for the window. This test PASSED if you see the word PASS below. Otherwise, it FAILED.
-
-PASS Fired Load event at link.
-PASS Fired Load event at body.
-

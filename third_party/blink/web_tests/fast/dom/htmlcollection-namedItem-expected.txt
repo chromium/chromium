@@ -1,7 +1,0 @@
-HTMLCollection namedItem Method
-
-PASS form.elements.namedItem("any") is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

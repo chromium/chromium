@@ -1,2 +1,0 @@
-PASS - "object-position" property for "box" element at 0.25s saw something close to: 25px 75px
-

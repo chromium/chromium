@@ -1,8 +1,0 @@
-EVENT(webkitfullscreenchange)
-EXPECTED (document.webkitIsFullScreen == 'true') OK
-EVENT(keypress)
-EXPECTED (event.keyCode == '97') OK
-END OF TEST
-
-
-This tests that full screen mode does not allow alphanumeric key events. Press space to continue, then press the 'a' key.

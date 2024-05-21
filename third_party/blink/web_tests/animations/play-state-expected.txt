@@ -1,8 +1,0 @@
-This tests the operation of animation-play-state. We test style while the animations are paused and once unpaused.
-
-transform
-left
-PASS: Element 'translate' had correct style when paused
-PASS: Element 'left' had correct style when paused
-PASS: Element 'translate' had correct style at end
-PASS: Element 'left' had correct style at end

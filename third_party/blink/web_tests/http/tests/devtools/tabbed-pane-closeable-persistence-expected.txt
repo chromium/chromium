@@ -1,9 +1,0 @@
-Tests extensible tabbed pane closeable tabs persistence logic.
-
-Closeable tabs to restore: {"security":true}
-Closeable tabs to restore: {"security":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"sensors":false}
-

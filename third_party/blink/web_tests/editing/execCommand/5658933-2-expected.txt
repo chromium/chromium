@@ -1,4 +1,0 @@
-This tests to see if indenting inside a table cell breaks the table structure. The indented blockquote should be placed inside the table cell where the Indent operation was performed and the table structure should remain unchanged.
-
-<table border="1"><tbody><tr><td id="td"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">hello</blockquote></td></tr></tbody></table>
-

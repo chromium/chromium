@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['place-content'] = "last baseline flex-start" should set align-content
-  assert_equals: align-content should be canonical expected "last baseline" but got ""
-[FAIL] e.style['place-content'] = "last baseline flex-start" should set justify-content
-  assert_equals: justify-content should be canonical expected "flex-start" but got ""
-[FAIL] e.style['place-content'] = "last baseline flex-start" should not set unrelated longhands
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

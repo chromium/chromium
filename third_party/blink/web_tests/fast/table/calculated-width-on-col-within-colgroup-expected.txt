@@ -1,4 +1,0 @@
-	
-PASS
-
-crbug.com/446936: Use a used value of Auto on col elements that have a calc value. This is permitted by the spec and avoids ASSERTs.

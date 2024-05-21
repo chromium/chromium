@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that a DelayNode allows a feedback loop of a single rendering quantum
-  assert_equals: Silent audio found instead of a delayed impulse expected 1 but got 0
-Harness: the test ran to completion.
-

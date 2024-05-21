@@ -1,6 +1,0 @@
-window.location.href = http://127.0.0.1:8000/security/postMessage/delivery-order.html
-waiting...
-Before calling postMessage
-After calling postMessage
-Received message: data="Received message: data="Message from parent" origin="http://127.0.0.1:8000"" origin="http://localhost:8000"
-Received message: data="Received message: data="done" origin="http://127.0.0.1:8000"" origin="http://localhost:8000"

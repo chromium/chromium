@@ -1,9 +1,0 @@
-This tests that ruby base and text are not affected by CSS text-indent.
-
-This is indented by 50 pixel"text-indent: 50px;", but the ruby should flow without extra space.
-
-text-indent for <p>: 50px
-
-text-indent for <ruby>: 0px
-
-text-indent for <rt>: 0px

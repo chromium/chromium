@@ -1,5 +1,0 @@
-This test checks for a regression against rdar://problem/4370397 Missing return statement in JSMethodNameToObjcMethodName.
-
-If the test passes, you will see a "success" message below.
-
-success: no crash.

@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: SUCCESS: Nodes stayed in order after outdent.
-This test uses the execCommand to Outdent the text below. This test that nodes, with different relationships with blockquotes, stay in the correct order after an outdent.
-
-
-
-A
-
-B

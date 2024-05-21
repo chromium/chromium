@@ -1,1 +1,0 @@
-Hit test @ 219, 196 SUCCESS, got true; Hit test @ 236, 300 SUCCESS, got false;

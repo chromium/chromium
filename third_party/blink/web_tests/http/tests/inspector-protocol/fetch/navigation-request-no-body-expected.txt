@@ -1,4 +1,0 @@
-Tests navigation request can be fulfilled without a body.
-Network request paused.
-Network response and navigation received.
-

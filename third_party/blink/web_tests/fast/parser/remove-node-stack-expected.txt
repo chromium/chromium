@@ -1,1 +1,0 @@
-If you can read this text, and the browser didn't crash, then we successfully removed the nodes in the parser's node stack.

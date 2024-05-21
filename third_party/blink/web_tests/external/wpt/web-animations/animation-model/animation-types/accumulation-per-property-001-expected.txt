@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] font-style: "oblique" onto "italic"
-  assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
-Harness: the test ran to completion.
-

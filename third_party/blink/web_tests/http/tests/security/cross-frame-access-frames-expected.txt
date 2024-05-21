@@ -1,7 +1,0 @@
-
------ tests for getting/setting the frames array access and the properties associated with it -----
-
-PASS: targetWindow.frames.length should be '1' and is.
-PASS: canGet('targetWindow.frames[0]') should be 'true' and is.
-PASS: canGet('targetWindow[0]') should be 'true' and is.
-

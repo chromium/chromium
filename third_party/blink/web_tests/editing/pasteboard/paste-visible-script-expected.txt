@@ -1,6 +1,0 @@
-Hello
-function sayHello() { alert("Hello"); }
-World
-Hello
-World
-<div id="pastehere" contenteditable="true">Hello<div id="test2">World</div></div>

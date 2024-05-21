@@ -1,4 +1,0 @@
-Referer should be set for XMLHttpRequest from SharedWorkers.
-
-PASS: Sync referer.
-PASS: Async referer.

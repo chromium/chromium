@@ -1,8 +1,0 @@
-All controls should have a green background.
-
-Lorem ipsum    
-SUCCESS
-SUCCESS
-SUCCESS
-SUCCESS
-SUCCESS

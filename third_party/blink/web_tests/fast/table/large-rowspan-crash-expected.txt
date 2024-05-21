@@ -1,1 +1,0 @@
-If the browser didn't crash, the test passed.

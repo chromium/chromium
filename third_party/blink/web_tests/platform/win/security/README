@@ -1,5 +1,0 @@
-This file documents why the various tests have been rebaselined.
-
-block-test.html
---------------------------
-This test differs in type names, error codes, and GURL canonicalization.

@@ -1,9 +1,0 @@
-Blocked images can be reloaded, so neither onload nor onerror is called. Only check here that onload is never called when image is blocked.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS: first image loaded
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

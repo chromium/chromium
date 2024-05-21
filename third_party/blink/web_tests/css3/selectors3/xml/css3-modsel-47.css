@@ -1,3 +1,0 @@
-div.stub span, div.stub address, div.stub *|q, div.stub *|r { background-color: red; }
-address, *|q, *|r { display: block; margin: 1em; }
-div.stub *:not(p) { background-color: lime; }

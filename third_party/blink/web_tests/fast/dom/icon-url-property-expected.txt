@@ -1,7 +1,0 @@
-main frame - didChangeIcons
-main frame - didChangeIcons
-main frame - didChangeIcons
-Original iconURL is: http://test.com/oldfavicon.ico
-Setting new icon URL to: http://test.com/newfavicon.ico
-New iconURL is: http://test.com/newfavicon.ico
-PASS - URL list matches expected

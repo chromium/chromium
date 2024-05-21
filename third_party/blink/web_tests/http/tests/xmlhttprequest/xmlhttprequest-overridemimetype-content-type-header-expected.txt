@@ -1,9 +1,0 @@
-This tests that XMLHttpRequest overrideMimeType() does not update the Content-Type header for the response.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.getResponseHeader("Content-Type") is "application/xml"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

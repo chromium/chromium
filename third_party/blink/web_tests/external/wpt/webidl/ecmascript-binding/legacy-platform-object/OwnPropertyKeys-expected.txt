@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] must enumerate own properties after indexed and named properties even when they're added first
-  assert_array_equals:  actual ["0","1","foo","bar","id","class"] expected ["0","1","id","class","foo","bar"] expected property 2 to be "id" but got "foo" (expected array ["0", "1", "id", "class", "foo", "bar"] got ["0", "1", "foo", "bar", "id", "class"])
-[FAIL] must enumerate symbols after strings, regardless of which ones got added first
-  assert_array_equals:  actual ["0","1","foo","bar","Symbol()","Symbol()","id","class"] expected ["0","1","id","class","foo","bar","Symbol()","Symbol()"] expected property 2 to be "id" but got "foo" (expected array ["0", "1", "id", "class", "foo", "bar", symbol "Symbol()", symbol "Symbol()"] got ["0", "1", "foo", "bar", symbol "Symbol()", symbol "Symbol()", "id", "class"])
-Harness: the test ran to completion.
-

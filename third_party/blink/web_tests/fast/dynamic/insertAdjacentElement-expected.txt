@@ -1,8 +1,0 @@
-Caught expected exception: SyntaxError: Failed to execute 'insertAdjacentElement' on 'Element': The value provided ('blah') is not one of 'beforeBegin', 'afterBegin', 'beforeEnd', or 'afterEnd'.
-Caught expected exception: TypeError: Failed to execute 'insertAdjacentElement' on 'Element': parameter 2 is not of type 'Element'.
-Caught expected exception: TypeError: Failed to execute 'insertAdjacentElement' on 'Element': 2 arguments required, but only 1 present.
-Caught expected exception: TypeError: Failed to execute 'insertAdjacentElement' on 'Element': 2 arguments required, but only 0 present.
-
-1 (black) 2 (green) 3 (green) 4 (black)
-
-PASS

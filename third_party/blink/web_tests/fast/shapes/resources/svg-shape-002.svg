@@ -1,6 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 1' preserveAspectRatio='none' width='100px' height='100px'>
-    <rect width='1' height='1' fill='rgba(255, 0, 0, 1)'/>
-    <rect x='1' width='1' height='1' fill='rgba(255, 255, 0, 0.75)'/>
-    <rect x='2' width='1' height='1' fill='rgba(0, 255, 0, 0.5)' />
-    <rect x='3' width='1' height='1' fill='rgba(0, 0, 255, 0.25)' />
-</svg>

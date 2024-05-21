@@ -1,1 +1,0 @@
-Bug 105545 - LayoutBlockFlow and LayoutBox hit testing should ignore PseudoElements

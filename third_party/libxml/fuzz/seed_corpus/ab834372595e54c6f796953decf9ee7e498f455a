@@ -1,7 +1,0 @@
-<!ELEMENT a (b*)>
-
-<!ELEMENT b (#PCDATA)>
-<!ATTLIST b xmlns:xlink  CDATA     #FIXED 'http://www.w3.org/1999/xlink'
-            xlink:type   (simple)  #FIXED 'simple'
-            xlink:href   CDATA     #IMPLIED>
-

@@ -1,6 +1,0 @@
-PASS getComputedValue(".invalid", "wordSpacing") is "20px"
-PASS getComputedValue(".valid", "wordSpacing") is "10px"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

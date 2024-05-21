@@ -1,5 +1,0 @@
-include_rules = [
-    "+base/containers/flat_map.h",
-    "+cc/view_transition/view_transition_request.h",
-    "+components/viz/common/view_transition_element_resource_id.h"
-]

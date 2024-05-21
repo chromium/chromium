@@ -1,1 +1,0 @@
-This tests for a crash when performing a selection modification, when a node containing the selection was made invisible, and when there is nowhere visible for the selection to go. For example, set the caret inside of an editable div, and make the div invisible, then try to move the selection forward/backward by a paragraph.

@@ -1,3 +1,0 @@
-This test verifies that you don't crash when adding an iframe to the document from another iframe's onload handler.
-
-PASS: You didn't crash.

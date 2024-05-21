@@ -1,3 +1,0 @@
-@namespace test url(http://www.example.org/b);
-div.myTest * { background-color : red }
-div.myTest *|testA { background-color : lime }

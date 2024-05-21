@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Link with onclick navigation to javascript url with delayed document.write and href navigation 
-  assert_equals: expected "href" but got "write"
-Harness: the test ran to completion.
-

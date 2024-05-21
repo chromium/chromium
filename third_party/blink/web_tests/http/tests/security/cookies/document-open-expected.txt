@@ -1,5 +1,0 @@
-Running test.
-frames[0].document.URL = http://127.0.0.1:8000/security/cookies/document-open.html
-frames[0].document.baseURI = http://127.0.0.1:8000/security/cookies/document-open.html
-frames[0].document.cookie = secret=PASS
-Test complete.

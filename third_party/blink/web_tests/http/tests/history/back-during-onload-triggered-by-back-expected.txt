@@ -1,9 +1,0 @@
-CONSOLE MESSAGE: Starting test.
-Tests that an onload handler that runs history.back() that's triggered by a history.back() doesn't crash the browser (see http://crbug.com/59554 for more details).
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

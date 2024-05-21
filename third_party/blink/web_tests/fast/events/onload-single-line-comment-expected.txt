@@ -1,3 +1,0 @@
-This test checks whether single line comments are parsed correctly in event handlers.
-
-PASS

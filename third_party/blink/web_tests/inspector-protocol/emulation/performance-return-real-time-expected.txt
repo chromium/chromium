@@ -1,5 +1,0 @@
-Tests that perf metrics return real time even if there is a virtual time override in place.
-Does real time advance? true.
-Does virtual time advance? false.
-Is script duration increased? true.
-

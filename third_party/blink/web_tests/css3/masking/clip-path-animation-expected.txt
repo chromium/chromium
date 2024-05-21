@@ -1,4 +1,0 @@
-PASS - "webkitClipPath" property for "circle-box" element at 1s saw something close to: circle(35% at 35% 35%)
-PASS - "webkitClipPath" property for "ellipse-box" element at 1s saw something close to: ellipse(35% 30% at 35% 35%)
-PASS - "webkitClipPath" property for "polygon-box" element at 1s saw something close to: polygon(10% 10%, 90% 10%, 90% 90%, 10% 90%)
-

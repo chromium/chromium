@@ -1,3 +1,0 @@
-This tests for a regression against https://bugs.webkit.org/show_bug.cgi?id=6841 REGRESSION: WebKit (Thursday, January 26, 2006) crash in HTMLImageElementImpl::width().
-
-No crash = test PASS

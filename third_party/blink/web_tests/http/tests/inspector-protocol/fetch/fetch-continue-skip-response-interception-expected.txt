@@ -1,4 +1,0 @@
-Test interceptResponse=false parameter in request interceptor
-Intercepted request
-Finished navigation
-

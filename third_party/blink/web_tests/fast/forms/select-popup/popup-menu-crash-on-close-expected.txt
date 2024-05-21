@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-PASS if this test doesn't cause a crash when the test finishes.
-
-efgh

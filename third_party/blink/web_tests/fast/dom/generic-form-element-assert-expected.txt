@@ -1,3 +1,0 @@
-This tests for a regression against https://bugs.webkit.org/show_bug.cgi?id=5926 Assertion failure in HTMLGenericFormElementImpl::removedFromTree.
-
-Test result: PASS

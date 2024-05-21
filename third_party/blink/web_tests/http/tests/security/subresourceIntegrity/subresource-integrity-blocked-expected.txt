@@ -1,4 +1,0 @@
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/fail.js' with computed SHA-256 integrity 'yM5ZyzNsyKfaXRY78zSGapeQKtl0oGdpPpYxgwl8XW8='. The resource has been blocked.
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/fail.js' with computed SHA-384 integrity 'S6xh6guV2pHeSNxnbroULlz9KudZHqIdobKgjbKThvTId0IkJDVmnEKKNPT5yZVG'. The resource has been blocked.
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/fail.js' with computed SHA-512 integrity 'ycr1MW0ijTo/8WJCkRWTd7SbO/8zw6iQ00lTo4VYeZ3sHT68zBeti8FrKFQ31GTOLIBIVHazyqYQBou2JbgMyA=='. The resource has been blocked.
-This test passes if no 'FAIL' alert appears.

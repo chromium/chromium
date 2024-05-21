@@ -1,3 +1,0 @@
-PASS - "width" property for "box" element at 0.5s saw something close to: 225
-PASS - "height" property for "box" element at 0.5s saw something close to: 275
-

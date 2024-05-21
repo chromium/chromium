@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg">
-  <rect width="98" height="98" fill="red"/>
-  <foreignObject width="200" height="200" transform="translate(-100, 0)">
-    <!-- Fixed-position content should be relative to the foreignObject viewport. -->
-    <div xmlns="http://www.w3.org/1999/xhtml" style="position: fixed; left: 100px; width: 100px; height: 50%; background-color: green;"></div>
-  </foreignObject>
-</svg>

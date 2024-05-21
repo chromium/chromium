@@ -1,5 +1,0 @@
-# Copyright 2014 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-blink_platform_output_dir = "$root_gen_dir/third_party/blink/renderer/platform"

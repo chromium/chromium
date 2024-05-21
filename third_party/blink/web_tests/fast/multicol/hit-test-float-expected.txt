@@ -1,5 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=44730 Floats inside of multicol fail to hit test.
-
-The red square should turn green when hovered.
-
-PASS

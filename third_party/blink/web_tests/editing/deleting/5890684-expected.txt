@@ -1,2 +1,0 @@
-This tests for a bug where deleting a line break would change the size of monospace text. Below you should see "helloworld" all in the same font.
-helloworld

@@ -1,4 +1,0 @@
-Test that destroying a frame doesn't cause a crash when posting a message to a MessagePort it owned.
-
-Didn't crash: SUCCESS
-

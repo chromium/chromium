@@ -1,7 +1,0 @@
-Clone a checked radio box, the radio box being cloned should still be checked till the clone is inserted into the dom tree.
-
- 
-true SUCCESS
-true SUCCESS
-false SUCCESS
-true SUCCESS

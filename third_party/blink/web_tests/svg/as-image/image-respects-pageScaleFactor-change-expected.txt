@@ -1,5 +1,0 @@
- 
-
-This test passes if both of the circles have sharp edges.
-
-To run manually, use full-page zoom to increase the page scale factor.

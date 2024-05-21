@@ -1,3 +1,0 @@
-This test passes if the text says PASS followed by a U+180E (Mongolian vowel separator).
-
-PASS᠎

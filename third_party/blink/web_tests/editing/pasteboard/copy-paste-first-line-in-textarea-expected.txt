@@ -1,5 +1,0 @@
-PASS selectFirstLineIncludingLineBreak(); copyPaste(); textarea.selectionEnd is offsetAfterLineBreak
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

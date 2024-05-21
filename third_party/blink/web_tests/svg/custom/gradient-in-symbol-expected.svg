@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
-  <defs>
-    <linearGradient id="SVGID_15" x1="100%" y1="100%">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#00FF00"/>
-    </linearGradient>
-  </defs>
-  <rect fill="url(#SVGID_15)" width="100" height="100"/>
-</svg>

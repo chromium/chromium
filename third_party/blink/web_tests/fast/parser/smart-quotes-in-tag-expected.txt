@@ -1,1 +1,0 @@
-Passes if we don't crash. (Note the following script tag has "smart" quotes.)

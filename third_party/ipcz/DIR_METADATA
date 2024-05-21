@@ -1,6 +1,0 @@
-monorail: {
-  component: "Internals>Mojo>Core"
-}
-buganizer_public: {
-  component_id: 1456454
-}

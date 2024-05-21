@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSS Selectors: :is() and :where() error recovery
-  assert_equals: Should be parsed as-is (but not be considered valid) expected ":is(:total-nonsense)" but got ":is()"
-Harness: the test ran to completion.
-

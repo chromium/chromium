@@ -1,5 +1,0 @@
-Verifies that making cross origin navigation requests from JS which set SameSite=Strict cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
-
-Javascript initiated navigation blocked set-cookies:[
-]
-

@@ -1,9 +1,0 @@
-Following actions must not emit resize events: page load, dynamic content generation, and page scaling.
-The spec DOM Level 2 Events states that the resize event occurs when document view size (a.k.a layout size) is changed. Refer to http://www.w3.org/TR/DOM-Level-2-Events/events.html
-However, showing/hiding scrollbars shouldn't be considered a layout size change. Refer to webkit.org/b/80242
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS resizeEventCount is 0

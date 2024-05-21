@@ -1,5 +1,0 @@
-<element name="email" xmlns="http://relaxng.org/ns/structure/1.0">
-  <data type="string">
-    <param name="maxLength">127</param>
-  </data>
-</element>

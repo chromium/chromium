@@ -1,2 +1,0 @@
-This tests that a document only supports having one doctype. If the test is successful, 'SUCCESS' will be displayed below, otherwise 'FAILURE' and a reason will be displayed.
-SUCCESS!

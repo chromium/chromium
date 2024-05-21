@@ -1,6 +1,0 @@
-Test that Fetch.continueResponse without body parameter will use original response body
-Intercepted response 200
-Received response: 201 My status text
-Received response body: <p>hello world</p>
-
-

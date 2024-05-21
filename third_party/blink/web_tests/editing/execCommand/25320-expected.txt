@@ -1,4 +1,0 @@
-This tests for a crash when doing a block style change inside an editable root that contains rendered, but invisible content. This test shouldn't crash and the text-align:center should go onto a new paragraph element, not the body.
-
-<div style="text-align: center;"><br></div><div style="padding-left: 5px;"></div>
-

@@ -1,1 +1,0 @@
-This tests a crash that was occuring when a transition was targeting background or -webkit-mask properties on an element that did not have any style specified for those properties. This test passes if it does not crash.

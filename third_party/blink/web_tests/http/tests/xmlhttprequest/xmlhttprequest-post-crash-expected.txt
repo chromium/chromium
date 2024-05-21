@@ -1,5 +1,0 @@
-Test case for bug 16906: [CURL] Crash below ResourceHandleManager::setupPOST when job->request().httpBody() is NULL
-
-This page should not crash and you should see PASS
-
-PASS

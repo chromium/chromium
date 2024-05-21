@@ -1,5 +1,0 @@
-This tests that drawing an image that redirects to a remote image to a canvas taints the canvas
-
-PASS: getImageData failed. Canvas tainted.
-
- 

@@ -1,9 +1,0 @@
-Test tracking event handlers with a reused DOMWindow.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS internals.scrollEventHandlerCount(newWindow.document) is 1

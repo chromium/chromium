@@ -1,9 +1,0 @@
-Check if year before 100 can be set.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById("date").value is "0002-02-03"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

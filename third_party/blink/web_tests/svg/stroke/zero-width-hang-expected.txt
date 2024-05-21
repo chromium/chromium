@@ -1,1 +1,0 @@
-This test PASS if it doesn't cause the page to freeze. 

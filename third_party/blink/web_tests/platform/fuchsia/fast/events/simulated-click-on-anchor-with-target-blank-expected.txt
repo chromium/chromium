@@ -1,4 +1,0 @@
-Default policy for navigation to 'http://127.0.0.1:8000/third_party/blink/web_tests/fast/events/blank' is 'new background tab'
-Tests that hitting ctrl-enter on a link with target=_blank still opens it in the background
-
-link

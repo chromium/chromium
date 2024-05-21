@@ -1,8 +1,0 @@
-This test makes sure we can open SVG documents in Dashboard compatibility mode. It can not be tested manually.
-
-  
-PASS: Loaded SVG document in <object> tag.
-PASS: Loaded SVG document in <element> tag.
-PASS: Loaded SVG document in <iframe> tag.
-PASS: SVG Documents were loaded
-

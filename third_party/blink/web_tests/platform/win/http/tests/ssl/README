@@ -1,6 +1,0 @@
-verify-ssl-enabled.php
-----------------------------------------
-This calls dumpAsText() and shouldn't be producing a .png file at all, but
-something about its failure mode now that we're running Apache2 with SSL is
-causing it to miss the dumpAsText() call.  This "expected" image and checksum
-makes the script happy until we can fix the test.

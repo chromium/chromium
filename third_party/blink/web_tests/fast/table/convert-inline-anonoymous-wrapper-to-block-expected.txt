@@ -1,3 +1,0 @@
-PASS
-
-crbug.com/372832: The div should be inserted before the anonymous table wrapper surrounding the table-row and the anonymous table wrapper should be in the last anonymous block, not the middle one.

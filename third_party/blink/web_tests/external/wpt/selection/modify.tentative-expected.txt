@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Jump <br> backward which follows a linefeed
-  assert_equals: expected Text node "foo\n" but got Element node <pre id="preLinefeedBr">foo\n<br>\nbar\n</pre>
-Harness: the test ran to completion.
-

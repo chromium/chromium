@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property align-content does not inherit
-  assert_equals: expected "last baseline" but got "normal"
-Harness: the test ran to completion.
-

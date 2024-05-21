@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Getting <base>.href
-  assert_true: http://web-platform.test:8001/html/infrastructure/urls/resolving-urls/query-encoding/attributes.sub.html?%C3%BF did not end with ?%26%23255%3B expected true got false
-Harness: the test ran to completion.
-

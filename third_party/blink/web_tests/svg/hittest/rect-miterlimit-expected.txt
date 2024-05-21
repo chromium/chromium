@@ -1,3 +1,0 @@
-Check that hit testing on a <rect> with various miterlimits around sqrt(2) works properly. If the test passes, you will see "PASS" below.
-
-PASS

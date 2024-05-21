@@ -1,7 +1,0 @@
-This tests verifies the scope of a function's name.
-
-PASS: f.name == 'f' should be true and is.
-PASS: f == 1 should be true and is.
-PASS: g.name == 'g' should be true and is.
-PASS: g == arguments.callee should be true and is.
-

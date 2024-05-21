@@ -1,7 +1,0 @@
-PASS absolute_with_left_right.getBoundingClientRect().width is 0
-PASS absolute_with_left_right.getClientRects()[0].width is 0
-PASS absolute_with_left_right.offsetWidth is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

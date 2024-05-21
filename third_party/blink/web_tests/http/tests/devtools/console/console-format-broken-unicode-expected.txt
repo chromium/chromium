@@ -1,4 +1,0 @@
-Tests that console logging dumps proper messages with broken Unicode.
-
-PASS: Found all nodes with the broken text
-

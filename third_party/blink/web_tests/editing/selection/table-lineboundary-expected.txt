@@ -1,3 +1,0 @@
-This tests moving to line boundaries in the first or the last table cell, and types "h" and "d" respectively. You should see "hello" and "world" in the first and the second table cell respectively.
-
-PASS

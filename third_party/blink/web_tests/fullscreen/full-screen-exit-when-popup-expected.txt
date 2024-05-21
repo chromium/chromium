@@ -1,9 +1,0 @@
-EVENT(webkitfullscreenchange)
-EXPECTED (document.webkitIsFullScreen == 'true') OK
-EXPECTED (document.webkitCurrentFullScreenElement == '[object HTMLSpanElement]') OK
-EXPECTED (window.open('about:blank') != 'null') OK
-EVENT(webkitfullscreenchange)
-EXPECTED (document.webkitIsFullScreen == 'false') OK
-EXPECTED (document.webkitCurrentFullScreenElement == 'undefined') OK
-END OF TEST
-

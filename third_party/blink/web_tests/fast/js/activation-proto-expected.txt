@@ -1,9 +1,0 @@
-This test checks that activation objects (the local scope for a function) don't have the special __proto__ property that lets you get and set a normal object's prototype. This is important because the impossibility of swizzling activation object prototype chains allows various optimizations.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS (function() { __proto__.testVariable = 'found'; return window.testVariable; })() is 'found'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

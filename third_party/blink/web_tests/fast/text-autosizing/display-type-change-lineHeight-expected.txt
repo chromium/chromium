@@ -1,6 +1,0 @@
-PASS window.getComputedStyle(inlineToBlock).lineHeight is "30px"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-This test verifies that lineHeight values are consistent after display changes. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisiut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisiut aliquip ex ea commodo consequat.

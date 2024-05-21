@@ -1,3 +1,0 @@
-Calling WebKitCSSMatrix constructor as function should throw an exception and not cause a crash.
-
-PASS

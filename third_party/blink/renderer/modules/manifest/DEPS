@@ -1,7 +1,0 @@
-include_rules = [
-    "+base/strings",
-    "+net/base/mime_util.h",
-    "+net/base/registry_controlled_domains/registry_controlled_domain.h",
-    "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
-    "+url",
-]

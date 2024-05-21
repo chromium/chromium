@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" onload="runRepaintAndPixelTest()">
-<script xlink:href="../resources/text-based-repaint.js"/>
-<circle cx="100" cy="100" r="100" fill="none" stroke="green" stroke-width="5px" stroke-opacity="0"/>
-<script>
-    function repaintTest() {
-        document.getElementsByTagName("circle")[0].setAttribute("stroke-opacity", "1");
-    }
-</script>
-</svg>

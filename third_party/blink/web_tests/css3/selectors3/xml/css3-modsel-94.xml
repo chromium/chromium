@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-94.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">This line should be unstyled.</p>
-<p xmlns="http://www.example.org/b">This line should have a green background.</p>
-<q xmlns="http://www.example.org/b">This line should have a green background.</q>
-<p xmlns="http://www.example.org/a">This line should be unstyleed.</p>
-<p xmlns="http://www.example.org/b">This line should have a green background.</p>
-</test>

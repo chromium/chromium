@@ -1,3 +1,0 @@
-Test that a calc() with a percentage against a containing block with a fractional width does not round to integer.
-
-PASS

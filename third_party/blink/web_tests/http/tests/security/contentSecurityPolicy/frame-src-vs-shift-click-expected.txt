@@ -1,4 +1,0 @@
-history.length: 1
-window.self == window.parent: true
-window.location.href: http://127.0.0.1:8000/security/contentSecurityPolicy/resources/frame-src-vs-shift-click-target.html
-

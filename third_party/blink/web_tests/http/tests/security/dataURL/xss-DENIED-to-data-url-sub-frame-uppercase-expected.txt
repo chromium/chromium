@@ -1,9 +1,0 @@
-This tests that the main frame can't access the contents of an iframe that contains a data: URL loaded page using the uppercased variant DATA:
-
-PASS: Cross frame access to a DATA: URL was denied.
-
-
---------
-Frame: 'aFrame'
---------
-Inner iframe.

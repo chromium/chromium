@@ -1,7 +1,0 @@
-Tests that elements panel search is not crashing on documentElement-less cases.
-
-
-Running: testSetUp
-
-Running: testNoCrash
-

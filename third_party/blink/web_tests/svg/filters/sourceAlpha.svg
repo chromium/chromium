@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<defs>
-<filter id="filter">
-<feOffset in="SourceAlpha"/>
-</filter>
-</defs>
-<g filter="url(#filter)"><text x="50" y="50" style="font-size:40px;fill:red;fill-opacity:0.5">SVG</text></g>
-</svg>

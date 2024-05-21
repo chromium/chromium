@@ -1,9 +1,0 @@
-This tests the XMLHttpRequest responseXML loading an HTML document with no specified responseType.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.responseXML is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

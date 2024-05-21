@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
- <rect x="100" y="100" width="200" height="200" fill="red"/>
- <circle cx="1" cy="1" r="r" fill="red"/> <!-- r="r" is unsupported and therefore ignored -->
- <rect x="100" y="100" width="200" height="200" fill="green"/>
-</svg>

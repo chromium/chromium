@@ -1,5 +1,0 @@
-Test that the first block in a multicol container refuses a pagination strut from a line.
-
-There should be a blue square below.
-
-PASS

@@ -1,3 +1,0 @@
-This test checks for a crash when throwing an exception under the following conditions: (1) The throwing script's document has no frame; (2) The script is run from a timeout.
-
-PASS: You didn't crash.

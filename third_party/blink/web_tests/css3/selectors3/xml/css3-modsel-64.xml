@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-64.css" type="text/css"?>
-<test>
- <div xmlns="http://www.w3.org/1999/xhtml" class="stub">
-  <p> <a href="http://dummy.example.org/dummy">This text should turn green while it is active.</a> </p>
-  <p> <button>This text should turn green while it is active.</button> </p>
- </div>
-</test>

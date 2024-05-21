@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: window count: 1
-CONSOLE MESSAGE: window count: 2
-CONSOLE MESSAGE: window count: 3
-
-
-Specify a script and a mouse/keyboard event to the plugin. The specified script will be evaluated in the browser when the specified event is received by the plugin. The test is for bug https://bugs.webkit.org/show_bug.cgi?id=41292.
-Opening window by mouse down is PASSED
-Opening window by key down is PASSED

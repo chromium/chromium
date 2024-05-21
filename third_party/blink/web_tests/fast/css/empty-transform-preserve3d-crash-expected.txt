@@ -1,3 +1,0 @@
-Test for bug 51465: chrome.dll!WebCore::Layer::currentTransform ReadAV@NULL (8968fc97874fa23b6799ff8f09c142e4)
-
-If it did not crash, this test has PASSED

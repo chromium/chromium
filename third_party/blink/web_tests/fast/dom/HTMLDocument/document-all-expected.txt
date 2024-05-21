@@ -1,5 +1,0 @@
-PASS htmlallcollection.toString() is '[object HTMLAllCollection]'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

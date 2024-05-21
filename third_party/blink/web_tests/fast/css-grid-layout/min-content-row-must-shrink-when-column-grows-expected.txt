@@ -1,7 +1,0 @@
-This test checks that a min-content sized row track grows when the container width is reduced and that it shrinks to fit its content when container is resized to its initial dimensions.
-
-#cell1 (min-content)
-#cell2 (1fr) xxx. xx xxx xxxxx xxx xxx ,x. xxxxx xx xx xxx. xxx xx xxxxx xxx xxxxx, . xx xx xxxxxxxxx. xxx xxxxxxxx xxx xx xx, . xxx x xxxxx x x. xxx xxxx xxxxxxx xxxxx,x. x x x xx xxxxxx. xxxxxx xx x xxx xx x,x. xxxxxxxx xx xxx. xxxx x xx x xxx xx xx,x. xxx x xxxxx xxx. xxxxxx xxx x xxx xx xx, . x xx xxxxx xxx. xxx xx x xxxxxxx x xxx, . xx xxxxx xxxx x. xxx xx xxxxx xxx xxxxx,x. x xxx xxxxx xxx. xxx xx xx xxxxxx xx xx, . x xx xxxx x x x. xxx xx xx xxxxxx xx xx, .
-PASS
-PASS
-PASS

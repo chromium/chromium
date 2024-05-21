@@ -1,3 +1,0 @@
-Test that CSS coverage works for a newly added stylesheet.
-Successfully reported CSS coverage.
-

@@ -1,1 +1,0 @@
-PASS: Referer header exists and contains the string 'referrer.html'.

@@ -1,3 +1,0 @@
-Test for Bug https://bugs.webkit.org/show_bug.cgi?id=19964
-
-This test checks that using a 0x0 bmp file as a background image with the css background size height property set to auto does not result in a divide by zero. This test passes if it does not cause a crash.

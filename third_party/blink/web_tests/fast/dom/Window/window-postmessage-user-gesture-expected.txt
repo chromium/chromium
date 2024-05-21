@@ -1,9 +1,0 @@
-Test that user gesture is kept when postMessage() to self or across frames.
-Click me
-PASS Stack postMessages on self window and the user gesture is only consumed once
-PASS Bounce postMessages between self and frame window and the user gesture is consumed only once in self window
-PASS Bounce postMessages between self and frame window and the user gesture is consumed only once in frame
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

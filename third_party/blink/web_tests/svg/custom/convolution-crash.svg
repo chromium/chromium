@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs> <filter id="foo"> <feConvolveMatrix kernelMatrix="0 0 0 0 1 0 0 0 -1"/> </filter> </defs>
-<image width="2" height="3" xlink:href="bar" filter="url(#foo)" />
-<rect x="10" y="10" width="100" height="100" fill="green"/>
-</svg>

@@ -1,9 +1,0 @@
-Test the selection of label associated with input.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS window.getSelection().toString() is "Some"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

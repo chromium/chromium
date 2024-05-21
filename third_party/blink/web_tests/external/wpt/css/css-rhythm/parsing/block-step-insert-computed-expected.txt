@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property block-step-insert value 'margin'
-  assert_true: block-step-insert doesn't seem to be supported in the computed style expected true got false
-[FAIL] Property block-step-insert value 'padding'
-  assert_true: block-step-insert doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

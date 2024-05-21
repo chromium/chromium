@@ -1,8 +1,0 @@
-Test how URLs are encoded.
-
-abs-path: PASS
-rel-path: PASS
-absolute: PASS
-Frame, abs-path: PASS
-Frame, rel-path: PASS
- 

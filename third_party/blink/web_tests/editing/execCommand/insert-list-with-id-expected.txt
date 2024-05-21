@@ -1,3 +1,0 @@
-This test makes sure InsertOrderedList ignores the third argument passed to execCommand and does not add an id attribute to the inserted list.
-
-Success

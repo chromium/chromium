@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<foo:foo xmlns:foo="http://FOO" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://FOO seq-dubl-elem1_0.xsd">
-	<foo:PGPKeyID>PEhlbGxvIHdvcmxkIT4=</foo:PGPKeyID>
-	<foo:PGPKeyPacket>PEhlbGxvIHdvcmxkIT4=</foo:PGPKeyPacket>
-</foo:foo>

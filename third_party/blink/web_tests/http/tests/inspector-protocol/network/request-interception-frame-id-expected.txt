@@ -1,9 +1,0 @@
-Tests interception events are properly attributed to issuing frames.
-final.js requested by http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
-i-dont-exist.css requested by http://127.0.0.1:8000/inspector-protocol/network/resources/resource-iframe.html
-post-echo.pl requested by http://127.0.0.1:8000/inspector-protocol/network/resources/resource-iframe.html
-resource-iframe.html requested by http://127.0.0.1:8000/inspector-protocol/network/resources/resource-iframe.html
-script.js requested by http://127.0.0.1:8000/inspector-protocol/network/resources/resource-iframe.html
-script2.js requested by http://127.0.0.1:8000/inspector-protocol/network/resources/resource-iframe.html
-test.css requested by http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
-

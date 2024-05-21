@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] An array with an overridden Symbol.iterator
-  assert_array_equals: expected property 0 to be 6 but got 1 (expected array [6, 7] got [1, 2])
-[FAIL] An array with an overridden Symbol.iterator on the prototype
-  assert_array_equals: expected property 0 to be 11 but got 1 (expected array [11, 12] got [1, 2])
-[FAIL] An array with an overridden %ArrayIterator%.prototype.next
-  assert_array_equals: expected property 0 to be 8 but got 1 (expected array [8, 9] got [1, 2])
-Harness: the test ran to completion.
-

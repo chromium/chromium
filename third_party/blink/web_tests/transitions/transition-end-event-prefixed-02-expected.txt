@@ -1,9 +1,0 @@
-Test to make sure that if prefixed transition events are modified we correctly modify unprefixed events.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS transitionEventBox.currentTarget is transitionEventBox.target

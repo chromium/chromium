@@ -1,9 +1,0 @@
-<div id="target">This test passes if it does not crash.</div>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script>
-var test = async_test("Test if it does not crash when element is animated with fontStyle");
-
-target.animate([{fontStyle: "oblique"}, {fontStyle: "oblique"}], 1000);
-requestAnimationFrame(test.step_func_done(() => {}));
-</script>

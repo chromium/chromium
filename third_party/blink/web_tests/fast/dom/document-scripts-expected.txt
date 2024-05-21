@@ -1,4 +1,0 @@
-This tests that document.scripts works correctly.
-PASS: 2 should be 2 and is.
-PASS: document.scripts[0].id should be first and is.
-PASS: document.scripts[1].id should be second and is.

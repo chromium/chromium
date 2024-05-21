@@ -1,5 +1,0 @@
-Tests that console does not log deprecated warning messages while dir-dumping objects.
-
-console-dir-deprecated.js:19 Window
-console-dir-deprecated.js:20 undefined
-

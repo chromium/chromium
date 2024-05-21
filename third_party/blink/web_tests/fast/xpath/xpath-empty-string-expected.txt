@@ -1,2 +1,0 @@
-This tests that parsing an XPath expression that contains an empty string literal doesn't segfault.
-SUCCESS: Didn't crash!

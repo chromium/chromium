@@ -1,5 +1,0 @@
-This tests to make sure that changing block properties of content whose enclosing block is the body doesn't put those properties on the body, since Mail finds it difficult to remove those properties later when necessary. Below is the DOM inside the body. There should be a div with text-align:center on it.
-
-<div style="text-align: center;"><br></div>
-
-

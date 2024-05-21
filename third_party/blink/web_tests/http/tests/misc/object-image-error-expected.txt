@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=17471 REGRESSION (r30438): Crash in deleteLineBoxes in cursor-adjusting code browsing Acid3.
-
-PASS, no crash.

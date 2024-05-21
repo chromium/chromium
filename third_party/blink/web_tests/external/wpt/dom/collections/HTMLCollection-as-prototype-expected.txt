@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] HTMLCollection as a prototype and setting own properties
-  assert_equals: expected (string) "foo" but got (object) Element node <p id="named"></p>
-Harness: the test ran to completion.
-

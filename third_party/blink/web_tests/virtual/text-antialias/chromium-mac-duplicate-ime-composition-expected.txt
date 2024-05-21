@@ -1,5 +1,0 @@
-This page ensures that the composition text of an input method does not insert into the textarea when the composition text is updated but is not committed. The bug, reported in the issue 46868, should not occur here. When DRT tests this page, it will emulate changing composition text from "first" to "second". After that, the value of the textarea should be "second" and should not be "secondfirst".
-
-For manual test, input text into the following textarea by using an input method. The composition text which is not committed should not be inserted into the textarea.
-
-PASS expects = "second", actual = "second"

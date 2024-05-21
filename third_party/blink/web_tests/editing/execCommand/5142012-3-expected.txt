@@ -1,6 +1,0 @@
-This tests for a bug when inserting after a link at the end of the document. Like TextEdit, we insert content outside of the link, but inserting outside of the link shouldn't cause the content to be inserted in the wrong paragraph.
-
-This paragraph should not contains links.
-This sentence should be a link. This sentence should not.
-
-<a href="#">This sentence should be a link.</a>&nbsp;This sentence should not.

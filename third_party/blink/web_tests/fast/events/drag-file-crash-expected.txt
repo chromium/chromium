@@ -1,1 +1,0 @@
- This is a test for https://bugs.webkit.org/show_bug.cgi?id=29276. It passes if it does not crash. If not run from DRT, drag a file onto the file input.

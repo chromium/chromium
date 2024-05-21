@@ -1,3 +1,0 @@
-Tests that navigator.platform can be overridden.
-navigator.platform = TestPlatform
-

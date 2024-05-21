@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<style>
-  div::before { content: counter(n, simp-chinese-informal); }
-</style>
-<!-- This test assumes that we clamp values to the int range. -->
-<p>The string "负二十一亿四千七百四十八万三千六百四十八" (-2147483648 in
-  Chinese) should be seen below.</p>
-<div style="counter-reset: n -10000000000;"></div>

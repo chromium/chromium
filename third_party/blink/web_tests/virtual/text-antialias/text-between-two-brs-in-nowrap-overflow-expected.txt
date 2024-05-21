@@ -1,3 +1,0 @@
-This test ensures WebKit renders text node between two BR elements in a pre when inserted by a script immediately after triggering a layout. You should see PASS below:
-
-PASS

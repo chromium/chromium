@@ -1,3 +1,0 @@
-This tests Selection::rangeCount. You should see "Hello World" selected below. You should not see any failures below.
-
-Hello World

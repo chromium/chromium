@@ -1,9 +1,0 @@
-<!doctype html>
-<p><span style="font-size: 500%; color: red;">  [!(5)#]</span>9abcdefghi</p>
-<script>
-const selection = window.getSelection();
-const sample = document.querySelector('p');
-// Select "(5)#]9a"
-selection.collapse(sample.firstChild.firstChild, 4);
-selection.extend(sample.lastChild, 2);
-</script>

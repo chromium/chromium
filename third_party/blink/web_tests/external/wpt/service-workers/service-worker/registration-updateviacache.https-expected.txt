@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] updateViaCache is not updated if register() rejects
-  assert_equals: after update attempt expected "imports" but got "none"
-Harness: the test ran to completion.
-

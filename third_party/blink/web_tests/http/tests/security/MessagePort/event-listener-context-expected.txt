@@ -1,5 +1,0 @@
-Test that we don't crash when creating a message port for an inactive document.
-
-PASS: Creating MessageChannel from closed frame does not crash
-DONE
-

@@ -1,5 +1,0 @@
-This is a regression test for https://bugs.webkit.org/show_bug.cgi?id=9674 REGRESSION (r15075): Blank or incomplete pages on digg.com.
-
-It should say “PASS” under the line.
-
-PASS

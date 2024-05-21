@@ -1,6 +1,0 @@
-Tests invoking close() in the middle of an XMLHttpRequest.
-
-PASS: Async test
-PASS: sync test
-DONE
-

@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<canvas width="200" height="200" style="position:absolute; top:30px; padding:10px; border:5px dashed black; object-fit:cover; width:100px; height:50px;"></canvas>
-<div>This test passes if the overflowing canvas contents are correctly clipped to the content box.</div>
-<script>
-var context = document.getElementsByTagName("canvas")[0].getContext("2d");
-context.fillRect(0, 0, 100, 100);
-context.fillRect(100, 100, 100, 100);
-</script>

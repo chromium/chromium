@@ -1,7 +1,0 @@
-This test setting various attributes of a SVG elements to JavaScript null.
-
-TEST SUCCEEDED: The value was the string 'null'. [tested SVGElement.id]
-
-TEST SUCCEEDED: The value was the string 'null'. [tested SVGScriptElement.type]
-
-

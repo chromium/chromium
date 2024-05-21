@@ -1,3 +1,0 @@
-Test that iso-8859-1 aliases that aren't known to Firefox and IE aren't supported (we should fall back to parent frame charset).
-
-SUCCESS

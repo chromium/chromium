@@ -1,8 +1,0 @@
-<!doctype html>
-Test passes if password field includes caps lock icon on right edge on Mac platforms only.<br>
-<input id="password" type="password">
-<script>
-    if (window.internals)
-        internals.setCapsLockState(true);
-    password.focus();
-</script>

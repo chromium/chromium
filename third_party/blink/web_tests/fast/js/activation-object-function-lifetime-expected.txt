@@ -1,7 +1,0 @@
-This page tests for regressions against http://bugs.webkit.org/show_bug.cgi?id=15785 REGRESSION(r27344): Crash on load at finance.yahoo.com
-
-If the test passes, you'll see a PASS message below.
-
-PASS: You didn't crash.
-
-

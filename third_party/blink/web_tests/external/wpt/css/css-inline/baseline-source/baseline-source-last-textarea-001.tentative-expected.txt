@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .target > * 1
-  assert_equals: \n<span data-offset-y="80"></span>\noffsetTop expected 80 but got 29
-[FAIL] .target > * 5
-  assert_equals: \n<span data-offset-y="80"></span>\noffsetTop expected 80 but got 29
-Harness: the test ran to completion.
-

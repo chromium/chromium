@@ -1,3 +1,0 @@
-Tests that interceptor has access to the Cookie header.
-Cookie: foo=bar
-

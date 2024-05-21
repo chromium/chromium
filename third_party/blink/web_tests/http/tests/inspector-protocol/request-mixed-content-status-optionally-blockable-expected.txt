@@ -1,5 +1,0 @@
-Tests that willSendRequest contains the correct mixed content status for passive mixed content.
-Network agent enabled
-Mixed content type of https://example.test:8443/inspector-protocol/resources/passive-mixed-content-iframe.html: none
-Mixed content type of https://example.test:8000/resources/square.png: none
-

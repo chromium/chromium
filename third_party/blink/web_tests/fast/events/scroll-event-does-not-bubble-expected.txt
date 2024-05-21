@@ -1,2 +1,0 @@
-This tests that the scroll event does not bubble.
-SUCCESS: div.onscroll was called, but window.onscroll was not.

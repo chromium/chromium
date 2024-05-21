@@ -1,9 +1,0 @@
-Tests that browser.Target.setAutoAttach() supports only flatten protocol.
-Tried to auto-attach with not flatten protocol{
-    error : {
-        code : -32602
-        message : Only flatten protocol is supported with browser level auto-attach
-    }
-    id : <number>
-}
-

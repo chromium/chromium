@@ -1,9 +1,0 @@
-610350: Assigning to a function expression's name within that function should throw a TypeError in strict mode code
-PASS true === true
-PASS 42 === 42
- PASSED! 
-All tests passed!
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

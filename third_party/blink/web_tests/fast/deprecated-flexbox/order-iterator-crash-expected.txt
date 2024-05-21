@@ -1,3 +1,0 @@
-This test has passed if it doesn't crash under ASAN.
-* { display: flex; }
-if (window.testRunner) testRunner.dumpAsText(); crashy.offsetLeft; crashy.parentNode.removeChild(crashy);

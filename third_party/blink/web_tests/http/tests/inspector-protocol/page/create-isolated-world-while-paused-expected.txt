@@ -1,5 +1,0 @@
-Tests that Page.createIsolatedWorld works when issued on paused target.
-{
-    executionContextId : <number>
-}
-

@@ -1,3 +1,0 @@
-Test that a programmatically created empty iframe inherits charset from the parent.
-
-SUCCESS

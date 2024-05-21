@@ -1,7 +1,0 @@
-Menu Node
-
-
-
-This test verifies that offsetLeft is calculated correctly for a relatively positioned td element.
-node.offsetParent.offsetLeft=302 (Should be 302 as in FF and IE)
-findPosX=302 (Should be 302 as in FF and IE)

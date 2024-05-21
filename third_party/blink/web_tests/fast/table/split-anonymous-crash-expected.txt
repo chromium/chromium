@@ -1,5 +1,0 @@
-Setting style on a cell whose row hasn't been laid out yet should not crash.
-
-elm1
-elm2
-nested row group

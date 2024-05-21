@@ -1,4 +1,0 @@
-<!DOCTYPE doc SYSTEM "dtds/doc.dtd" [
-<!ATTLIST doc id ID #IMPLIED>
-]>
-<doc val="v1"></doc>

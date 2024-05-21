@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught SyntaxError: Unexpected token ';'
-Test passes if it does not crash.

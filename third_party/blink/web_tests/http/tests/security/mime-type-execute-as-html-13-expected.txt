@@ -1,6 +1,0 @@
-This test verifies that resources served with a mime type of 'text/jscript' is not rendered as HTML. It passes if no "FAIL: ..." alert is present, and if the textual content of the frame is visible below.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-<script>alert('FAIL: text/jscript');</script>

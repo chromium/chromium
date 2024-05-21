@@ -1,3 +1,0 @@
-Bug 96863: REGRESSION(r124168): Null crash in Layer::createScrollbar
-
-This test PASSED if it didn't CRASH or ASSERT.

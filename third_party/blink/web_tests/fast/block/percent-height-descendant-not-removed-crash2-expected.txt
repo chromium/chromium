@@ -1,2 +1,0 @@
-WebKit bug 88017 - Crash due to renderer not removed from height descendant map.
-PASS. WebKit didn't crash.

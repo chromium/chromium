@@ -1,7 +1,0 @@
-There must not be a page break after this line of text.
-This test should produce only one page of output.
-
-
-PASS: page number of "test" is 0
-PASS: number of pages is 1
-All tests passed

@@ -1,3 +1,0 @@
-No assertions should fail.
-
-PASS

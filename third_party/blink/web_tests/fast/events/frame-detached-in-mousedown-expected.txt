@@ -1,3 +1,0 @@
-Test for bug 18595: Setting display:none on an iframe causes the ownerDocument to freeze.
-
-PASS

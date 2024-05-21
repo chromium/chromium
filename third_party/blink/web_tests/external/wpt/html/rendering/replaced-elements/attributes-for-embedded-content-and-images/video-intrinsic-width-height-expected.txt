@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] both width/height attributes and style
-  assert_equals: height expected 300 but got 150
-Harness: the test ran to completion.
-

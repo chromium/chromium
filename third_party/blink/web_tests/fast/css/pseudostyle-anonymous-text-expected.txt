@@ -1,6 +1,0 @@
-This tests that this crasher is fixed:
-http://bugs.webkit.org/show_bug.cgi?id=10139
-REGRESSION: Reproducible crash when selecting a popup/button with ::selection pseudostyle"
-
-Option 1
- 

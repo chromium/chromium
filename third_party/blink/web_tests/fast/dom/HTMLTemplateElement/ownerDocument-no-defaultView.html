@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<script src="../../../resources/js-test.js"></script>
-<script>
-description('HTMLTemplateElement content ownerDocument in a no-defaultView document should not be same as template');
-var inertDocument = document.implementation.createHTMLDocument('');
-var template = inertDocument.createElement('template');
-shouldNotBe("template.ownerDocument", "template.content.ownerDocument");
-</script>

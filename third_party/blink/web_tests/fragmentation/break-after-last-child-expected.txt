@@ -1,7 +1,0 @@
-Below, there should be a green square with a border, and no red.
-
-
-
-
-
-PASS

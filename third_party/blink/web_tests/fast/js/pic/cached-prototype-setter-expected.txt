@@ -1,5 +1,0 @@
-This page tests whether a cached [[put]] consults setters in the prototype chain. If the test passes, you'll see two PASS messages below.
-
-PASS: 'x' setter was called.
-PASS: 'x' setter was called.
-

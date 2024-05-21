@@ -1,4 +1,0 @@
-This tests that we don't crash when passing null to Range.insertNode(). (rdar://problem/5488478)
-
-PASS: No crash.
-

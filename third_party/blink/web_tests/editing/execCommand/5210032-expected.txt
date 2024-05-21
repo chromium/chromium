@@ -1,7 +1,0 @@
-This tests for a bug where content before a list made into a list item would be placed at the end of the list instead of the beginning. The list items below should contain "One", "Two" and "Three", in that order.
-
-One
-Two
-Three
-
-<ul><li>One</li><li>Two</li><li>Three</li></ul>

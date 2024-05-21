@@ -1,3 +1,0 @@
-CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/access-control-basic-denied.cgi' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-PASS: Timeout override did not reactivate timer after failure
-

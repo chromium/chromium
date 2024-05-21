@@ -1,4 +1,0 @@
-This tests to see if indenting several paragraphs inside different table cells puts them into a single cell, as in FireFox (wrong) or indents each paragraph (correct).
-
-<table border="1"><tbody><tr><td id="start"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">hello</blockquote></td><td id="end"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">world</blockquote></td></tr></tbody></table>
-

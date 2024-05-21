@@ -1,3 +1,0 @@
-Verifies that WebSocket binary messages are encoded as base64 over the protocol
-base64 payload: SGVsbG8sIHdvcmxkIQ==
-

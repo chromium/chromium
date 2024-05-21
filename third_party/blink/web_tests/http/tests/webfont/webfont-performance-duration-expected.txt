@@ -1,6 +1,0 @@
-PASS entry.startTime >= waitMillisBeforeFetching is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Hello webfont

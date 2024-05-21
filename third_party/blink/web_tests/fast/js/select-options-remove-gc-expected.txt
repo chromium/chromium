@@ -1,9 +1,0 @@
-This test checks that removing a <select> object from the DOM, then garbage collecting, then removing an option from select.options doesn't crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS No crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

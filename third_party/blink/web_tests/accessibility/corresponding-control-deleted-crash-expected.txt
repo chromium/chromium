@@ -1,8 +1,0 @@
-Make sure that a debug assert is not triggered when a call to LayoutBlockFlow::deleteLineBoxTree calls AccessibilityRenderObject::accessibilityIsIgnored which may require the AXObject for a node that is being deleted.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

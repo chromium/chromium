@@ -1,9 +1,0 @@
-Test that mouse state is correctly reset after clicking on a node that captures mouse events. To run this test, first click on the embed element, then mouse over "Hover me". It should change from blue to green. 
-
-Hover me
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS window.getComputedStyle(document.getElementById("test")).color is "rgb(0, 128, 0)"

@@ -1,8 +1,0 @@
-Test for bug 4616: Setting textNode.nodeValue does not work when nodeValue is whitespace only.
-
-Should say "SUCCESS":
-
-SU
-CC
-ES
-S

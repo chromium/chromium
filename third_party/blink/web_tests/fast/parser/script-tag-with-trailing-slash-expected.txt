@@ -1,1 +1,0 @@
-You should not see the text "inside" the following script tag:

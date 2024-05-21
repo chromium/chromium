@@ -1,2 +1,0 @@
-Policy delegate: attempt to load mailto:?body=to%3Done%2540example.org%26body%3DLine%2B1%250D%250ALine%2B2%250D%250A%2540%2526%253D%252C%253B%253F%2522 with navigation type 'form submitted'
-Field 1:  Field 2:  

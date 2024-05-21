@@ -1,2 +1,0 @@
-CONSOLE DEBUG: Preconnect triggered for http://wut.com.test/
-This test check if a Link header triggered a dns prefetch.

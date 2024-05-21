@@ -1,3 +1,0 @@
-This tests a case where removing an option element from a select by using innerHTML would cause a crash.
-
-PASSED

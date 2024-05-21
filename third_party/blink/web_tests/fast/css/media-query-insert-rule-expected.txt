@@ -1,6 +1,0 @@
-PASS getComputedStyle(document.querySelector('iframe').contentDocument.querySelector('.cssom')).backgroundColor is "rgb(0, 128, 0)"
-PASS getComputedStyle(document.querySelector('iframe').contentDocument.querySelector('.cssom-import')).backgroundColor is "rgb(0, 128, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

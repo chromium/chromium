@@ -1,5 +1,0 @@
-This test checks for whether document.plugins matches document.embeds.
-
-If the test passes, you will see a pass message below.
-
-PASS

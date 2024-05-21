@@ -1,5 +1,0 @@
-This tests removing underline which is applied outside of editable root. We shouldn't be removing underline.
-
-text
-Before: <div style="text-decoration: underline;" contenteditable="false"><div id="test" contenteditable="true">text</div></div>
-After: <div style="text-decoration: underline;" contenteditable="false"><div id="test" contenteditable="true">text</div></div>

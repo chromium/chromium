@@ -1,7 +1,0 @@
-<div>Hi, I'm a frame with dynamic script and stylesheet</div>
-<script>
-eval('window.foo = ()=>console.log("foo")\n//# sourceURL=dynamic-script.js');
-var style = document.createElement('style');
-style.textContent = 'div { color: blue; }\n/*# sourceURL=dynamic-style.css */';
-document.body.appendChild(style);
-</script>

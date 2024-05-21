@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] encoding, dedicated worker
-  assert_equals: expected "å" but got "Ã¥"
-Harness: the test ran to completion.
-

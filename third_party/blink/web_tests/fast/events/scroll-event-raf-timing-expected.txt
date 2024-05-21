@@ -1,3 +1,0 @@
-Tests that we only fire one scroll event per frame (and by association that it happens at raf time).
-
-PASS

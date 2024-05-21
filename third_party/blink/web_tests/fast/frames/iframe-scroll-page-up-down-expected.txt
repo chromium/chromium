@@ -1,5 +1,0 @@
-top 
-
-bottom
-PASSED test 1
-PASSED test 2

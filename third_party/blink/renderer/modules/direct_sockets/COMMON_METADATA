@@ -1,6 +1,0 @@
-monorail: {
-  component: "Blink>Network>DirectSockets"
-}
-buganizer_public: {
-  component_id: 1456978
-}

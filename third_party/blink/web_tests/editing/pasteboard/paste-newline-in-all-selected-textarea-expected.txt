@@ -1,5 +1,0 @@
-PASS textarea.value is "\n"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

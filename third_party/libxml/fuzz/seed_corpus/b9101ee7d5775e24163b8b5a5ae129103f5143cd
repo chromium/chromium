@@ -1,4 +1,0 @@
-<addressBook>
-  <card><name>foo</name><email>bar</email><prefersHTML/></card>
-  <card><name>foo</name><email>bar</email></card>
-</addressBook>

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ReadableStream can't be constructed with an invalid type
-  assert_throws_js: constructor should throw when the type is null function "() => new ReadableStream({ type: null })" threw object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified" ("RangeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-Harness: the test ran to completion.
-

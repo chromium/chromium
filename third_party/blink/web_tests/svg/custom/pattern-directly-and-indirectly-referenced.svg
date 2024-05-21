@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <pattern width="100%" height="100%" id="pattern" viewBox="0 0 100 100">
-    <rect width="100" height="100" fill="gray"/>
-  </pattern>
-  <mask id="mask">
-    <circle fill="url(#pattern)" cx="100" cy="100" r="100"/>
-  </mask>
-  <rect width="200" height="200" mask="url(#mask)" fill="url(#pattern)"/>
-</svg>

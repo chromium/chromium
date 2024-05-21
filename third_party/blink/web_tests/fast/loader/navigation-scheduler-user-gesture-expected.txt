@@ -1,4 +1,0 @@
-Check that the NavigationScheduler correctly tracks user gestures.
-
-PASS: only one window opened
-click me

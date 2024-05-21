@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<pre:MainElement xmlns:pre="http://www.tempuri.org/MainSchema" xmlns:ns="http://www.tempuri.org/ImportedSchema">
- <pre:MainA MainID="1"/>
- <ns:AnotherElement>
-   <ns:B BID="3">
-     <ns:MyB>EMPTY</ns:MyB>
-   </ns:B>
- </ns:AnotherElement>
-</pre:MainElement>

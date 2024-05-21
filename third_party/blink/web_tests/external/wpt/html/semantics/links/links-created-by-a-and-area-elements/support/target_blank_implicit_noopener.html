@@ -1,6 +1,0 @@
-<!DOCTYPE html>
-<script>
-  let bc = new BroadcastChannel(window.location.search.substring(1));
-  bc.postMessage({ hasOpener: opener !== null });
-  window.close();
-</script>

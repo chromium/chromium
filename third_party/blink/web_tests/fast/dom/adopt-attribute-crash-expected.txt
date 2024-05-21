@@ -1,5 +1,0 @@
-This page contains the following errors:
-error on line 3 at column 66: Namespaced Attribute href in 'http://www.w3.org/1999/xlink' redefined
-error on line 18 at column 1: Premature end of data in tag html line 1
-
-Below is a rendering of the page up to the first error.

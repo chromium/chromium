@@ -1,8 +1,0 @@
-Test ensures that if an autoscroll starts from within an entry field, it does not propagate to its non-scrollable overflow ancestors.
-
-To test manually, start text selecting with a mouse the text within the entry field. Then continue to drag the mouse out of the input field boundary.
-Scrolling should not propagate to the container overflown div due to its "overflow:hidden"
-
- 
-
-Test succeeded!

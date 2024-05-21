@@ -1,2 +1,0 @@
-This test is for bug 21635. The query parameter in non-UTF-8 Unicode pages (UTF-7,16,32) should be converted to UTF-8 before a request is made to a server.
-SUCCESS: query param is converted to UTF-8

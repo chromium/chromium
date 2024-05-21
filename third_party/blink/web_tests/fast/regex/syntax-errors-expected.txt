@@ -1,7 +1,0 @@
-This test verifies that implicit creation of a regular expression eagerly checks for syntax errors.
-
-If the test passes, you'll see pass messages below.
-
-PASS: "abc".search("[") should throw an exception and did: SyntaxError: Invalid regular expression: /[/: Unterminated character class.
-PASS: "abc".match("[") should throw an exception and did: SyntaxError: Invalid regular expression: /[/: Unterminated character class.
-

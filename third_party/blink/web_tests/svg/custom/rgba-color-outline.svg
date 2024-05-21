@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-<style>
-rect { outline: 50px solid rgba(0,0,255,0.5); }
-</style>
-<rect x="50" y="50" width="1" height="1" fill="rgba(0,0,255,0.5)"/>
-</svg>

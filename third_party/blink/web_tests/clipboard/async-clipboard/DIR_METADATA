@@ -1,4 +1,0 @@
-monorail {
-  component: "Blink>Storage>DataTransfer"
-}
-team_email: "storage-dev@chromium.org"

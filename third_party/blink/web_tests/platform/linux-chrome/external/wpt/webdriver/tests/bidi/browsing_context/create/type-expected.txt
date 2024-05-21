@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_type[tab]
-  AssertionError
-[FAIL] test_type[window]
-  AssertionError
-Harness: the test ran to completion.

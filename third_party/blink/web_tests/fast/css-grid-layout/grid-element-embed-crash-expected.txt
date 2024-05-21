@@ -1,1 +1,0 @@
-The test checks that embedded elements don't leave stale pointers into the grid representation. This test has passed if it didn't crash.

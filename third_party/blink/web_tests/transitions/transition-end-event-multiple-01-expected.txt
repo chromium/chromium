@@ -1,7 +1,0 @@
-Initiating a 500ms transition on the left, background-color, width and height properties of box1.
-
-PASS --- [Expected] Property: background-color Target: box1 Elapsed Time: 0.5
-PASS --- [Expected] Property: height Target: box1 Elapsed Time: 0.5
-PASS --- [Expected] Property: left Target: box1 Elapsed Time: 0.5
-PASS --- [Expected] Property: width Target: box1 Elapsed Time: 0.5
-

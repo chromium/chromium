@@ -1,9 +1,0 @@
-Check that navigator.plugins does not contain empty plugin objects
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS hasInvalidPlugin is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Check detection result
-  assert_equals: Expected KOI8-U expected "KOI8-U" but got "KOI8-R"
-Harness: the test ran to completion.
-

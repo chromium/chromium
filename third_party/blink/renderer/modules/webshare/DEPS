@@ -1,3 +1,0 @@
-include_rules = [
-    "+base/files/safe_base_name.h",
-]

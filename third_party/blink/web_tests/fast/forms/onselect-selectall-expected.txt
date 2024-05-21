@@ -1,7 +1,0 @@
-This tests that onSelect will fire for textfields and textareas when select-all is invoked.
-
-
-
-Test Passed: textfield
-Test Passed: textarea
-

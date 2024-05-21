@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-1.css" type="text/css"?>
-<test>
-<ul xmlns="http://www.w3.org/1999/xhtml">
-  <li>The background of this list item should be green</li>
-  <li>The background of this second list item should be also green</li>
-</ul>
-<p xmlns="http://www.w3.org/1999/xhtml">The background of this paragraph should be green.</p>
-</test>

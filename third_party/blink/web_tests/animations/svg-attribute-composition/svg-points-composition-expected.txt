@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SMIL: Interpolate attribute <points> with underlying [10 10, 20 20] from add [40 40, 30 30] to add [90 90, -10 -10, 50 50] at (0) is [50 50, 50 50]
-  assert_equals: expected "50 , 50 , 50 , 50 " but got "40 , 40 , 30 , 30 "
-[FAIL] SMIL: Interpolate attribute <points> with underlying [10 10, 20 20] from add [40 40, 30 30] to add [90 90, -10 -10, 50 50] at (0.2) is [50 50, 50 50]
-  assert_equals: expected "50 , 50 , 50 , 50 " but got "40 , 40 , 30 , 30 "
-Harness: the test ran to completion.
-

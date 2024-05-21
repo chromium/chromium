@@ -1,7 +1,0 @@
-This test tests parsing of hash fragments in about:blank URLs. Chromium had a bug at one point where setting the hash fragment would cause a load event and in some cases an infinite loop.
-
-See https://bugs.webkit.org/show_bug.cgi?id=35180.
-
-If the text says "PASS" then the onload() event only fired once. If it says "FAIL" then it fired two or more times. Also, the test may time out looping on this event handler (which is also a failure). If the text says "No callback" then something else is broken :)
-
-PASS

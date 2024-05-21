@@ -1,4 +1,0 @@
-There should be a smiley below.
-
-:-)
-PASS

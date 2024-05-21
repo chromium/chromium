@@ -1,6 +1,0 @@
-This tests that blob URLs created in a secure context are treated as secure origins. This test passes if the iframe renders PASS correctly, and no console warning appears.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS (1/1)

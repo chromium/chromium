@@ -1,5 +1,0 @@
-This page dumps the back/forward list that results from calling location.replace
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/location-replace-adds-history-item.html?1
-===============================================

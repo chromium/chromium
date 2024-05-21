@@ -1,6 +1,0 @@
-CONSOLE WARNING: Failed to decode downloaded font: http://localhost:8000/css/resources/webfont-request.php?mode=getFont&filename=webfontRequestCount.txt
-This test ensures that webfonts are not re-fetched after style recalculation.
-
-Text
-Number of requests after recalculation: 0
-SUCCESS

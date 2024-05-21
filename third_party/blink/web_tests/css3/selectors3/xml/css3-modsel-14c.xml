@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-14c.css" type="text/css"?>
-<test>
-  <p xmlns="http://www.w3.org/1999/xhtml" class="t1 t2">This line should be green.</p>
-  <div xmlns="http://www.w3.org/1999/xhtml" class="t3">This line should be green.</div>
-  <address xmlns="http://www.w3.org/1999/xhtml" class="t4 t5 t6">This line should be green.</address>
-</test>

@@ -1,6 +1,0 @@
-Make sure that XSLT works in a subframe. 
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-Hello

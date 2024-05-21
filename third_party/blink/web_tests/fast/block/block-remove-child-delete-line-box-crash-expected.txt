@@ -1,5 +1,0 @@
-BeforeText
-heading
-SpanTextAfterText
-
-ParaText

@@ -1,3 +1,0 @@
-This test passes if there are two green boxes and no crash.
-
-

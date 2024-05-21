@@ -1,8 +1,0 @@
-<p>Test of createContextualFragment. If the test succeeds you will see the word "success" below in bold.</p>
-<div id="a"></div>
-<script>
-var r = document.createRange();
-var node = document.getElementById("a");
-r.selectNodeContents(node);
-node.appendChild(r.createContextualFragment("<b>SUCCESS</b>"));
-</script>

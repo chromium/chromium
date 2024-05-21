@@ -1,6 +1,0 @@
-Click this link, and there should be a back-list entry for the page without the fragment ID.
-
-============== Back Forward List ==============
-        (file test):fast/loader/resources/click-fragment-link.html
-curr->  (file test):fast/loader/resources/click-fragment-link.html#testfragment
-===============================================

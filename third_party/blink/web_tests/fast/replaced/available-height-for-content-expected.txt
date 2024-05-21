@@ -1,3 +1,0 @@
-Ensure we calculate the available height for replaced content correctly.
-
-PASS

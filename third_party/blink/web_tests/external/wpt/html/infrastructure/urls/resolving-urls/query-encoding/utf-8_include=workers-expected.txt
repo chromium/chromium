@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Worker() in a shared worker
-  assert_equals: expected "%C3%A5" but got "ReferenceError: Worker is not defined"
-Harness: the test ran to completion.
-

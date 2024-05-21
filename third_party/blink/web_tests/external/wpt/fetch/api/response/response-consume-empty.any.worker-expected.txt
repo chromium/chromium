@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Consume empty FormData response body as text
-  assert_equals: Resolved value should be empty expected 0 but got 44
-Harness: the test ran to completion.
-

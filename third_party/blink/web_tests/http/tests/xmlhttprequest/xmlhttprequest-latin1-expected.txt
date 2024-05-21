@@ -1,6 +1,0 @@
-Test that setRequestHeader encodes header values as latin-1
-
-PASSED: non-latin-1 header value throws
-PASSED: header bytes preserved as latin-1
-PASSED: response header interpreted correctly
-

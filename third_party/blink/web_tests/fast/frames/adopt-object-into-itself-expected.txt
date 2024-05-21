@@ -1,2 +1,0 @@
-ALERT: HierarchyRequestError: Failed to execute 'adoptNode' on 'Document': The node provided is a frame which contains this document.
-

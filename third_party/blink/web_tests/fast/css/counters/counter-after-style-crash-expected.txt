@@ -1,1 +1,0 @@
-PASS: Counters updated successfully without crashing

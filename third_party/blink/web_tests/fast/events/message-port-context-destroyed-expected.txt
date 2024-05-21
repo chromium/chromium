@@ -1,3 +1,0 @@
-Test that MessagePort is properly closed when its owning context goes away. The test succeeds if it doesn't crash and prints "PASS" below. See https://bugs.webkit.org/show_bug.cgi?id=43140 for more details.
-
-PASS

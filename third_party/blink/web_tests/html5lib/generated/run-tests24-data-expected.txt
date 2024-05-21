@@ -1,1 +1,0 @@
-../resources/tests24.dat: PASS

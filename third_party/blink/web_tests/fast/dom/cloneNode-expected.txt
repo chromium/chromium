@@ -1,7 +1,0 @@
-Test for bug Bug 23956: Safari crashes when cloneNode fails (cloning a XML element with an invalid nodeName)
-
-For this test to pass, it should not crash and you should see PASSED twice.
-
-PASSED: Cloned XML node matches the original
-PASSED: Cloned HTML node matches the original
-

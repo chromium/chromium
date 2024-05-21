@@ -1,5 +1,0 @@
-This test attempts to access an HTMLObjectElement's form property. The first test accesses the form property of an object which is inside of a form. The second test accesses the form property of an object which is not inside of a form
-
-Passed
-
-Passed

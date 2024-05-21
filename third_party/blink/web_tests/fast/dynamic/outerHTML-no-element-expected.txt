@@ -1,5 +1,0 @@
-test for 4110775 Crash will occur when double-clicking outerHTML link on W3 DOM test
-
-If the test fails, Safari may crash, or you may see a failure message below. If the test passes, you should see a message with a description of the expected exception.
-
-This test passed - expected error - NoModificationAllowedError: Failed to set the 'outerHTML' property on 'Element': This element has no parent node.

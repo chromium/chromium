@@ -1,1 +1,0 @@
-PASS Document zoom should not apply when printing.

@@ -1,4 +1,0 @@
-<x:svg xmlns:x="http://www.w3.org/2000/svg">
- <x:rect fill="green" height="100" width="100"/>
- <x:desc>There should be a green square on this page.</x:desc>
-</x:svg>

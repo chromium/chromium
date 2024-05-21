@@ -1,9 +1,0 @@
-This test checks that typing Enter into an input element does not fire input or textInput.
-To run manually, type enter in the input element below.
-
-
-
-SUCCESS
-
-Sending Enter to input element
-

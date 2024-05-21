@@ -1,6 +1,0 @@
-PASS sample.selectionStart is 0
-PASS sample.selectionEnd is sample.value.length
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,7 +1,0 @@
-main frame - DidStartNavigation
-main frame - ReadyToCommitNavigation
-main frame - didCommitLoadForFrame
-main frame - didFinishDocumentLoadForFrame
-main frame - didHandleOnloadEventsForFrame
-main frame - didFinishLoadForFrame
-

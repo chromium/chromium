@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'accent-color' to the 'auto' keyword: auto
-  assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
-Harness: the test ran to completion.
-

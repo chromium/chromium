@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] mode: "follow", generated relative redirect response
-  assert_unreached: Should have rejected: Following the generated redirect response from the service worker should result fail. Reached unreachable code
-Harness: the test ran to completion.
-

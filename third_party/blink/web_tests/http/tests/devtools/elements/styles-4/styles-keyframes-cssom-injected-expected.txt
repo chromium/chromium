@@ -1,3 +1,0 @@
-Tests that inspecting keyframes injected via CSSOM doesn't crash.
-
-

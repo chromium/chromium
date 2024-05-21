@@ -1,2 +1,0 @@
-ALERT: PASS
-This is an automatic test of copying an image document to ensure that the fragment portion of the URL is properly escaped and hence preserved by the paste operation.

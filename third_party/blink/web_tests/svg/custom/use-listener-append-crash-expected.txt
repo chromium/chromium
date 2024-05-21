@@ -1,1 +1,0 @@
-Test re-appending a use node with multiple event listeners, triggered by the first listener. If running manually, click on the left square. Pass if no crash and the visible result is an orange square left of a green square.

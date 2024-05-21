@@ -1,4 +1,0 @@
-Test that Range manipulations work with ProcessingInstruction nodes.
-Test 1: SUCCESS
-Test 2: SUCCESS
-Test 3: SUCCESS

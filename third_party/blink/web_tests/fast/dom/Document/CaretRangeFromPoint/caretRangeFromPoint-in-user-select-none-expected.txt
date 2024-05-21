@@ -1,7 +1,0 @@
-PASS range.startContainer is $("sample").firstChild
-PASS range.startOffset is 2
-PASS range.collapsed is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,9 +1,0 @@
-Test that we can send textarea data containing null characters.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS the string containing a null byte is echoed correctly.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

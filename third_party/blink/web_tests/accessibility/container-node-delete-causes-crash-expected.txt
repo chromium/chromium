@@ -1,9 +1,0 @@
-Checks to make sure a heap-use-after-free crash doesn't occur when a container node with an associated accessibility object is deleted from the tree. The heap-use-after free was occuring when the AccessibilityObject corresponding to the child of the text node walked up its parent chain in AccessibilityObject::supportsARIALiveRegion but its parent was already deleted.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Text

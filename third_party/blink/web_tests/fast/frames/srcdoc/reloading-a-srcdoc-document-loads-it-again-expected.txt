@@ -1,4 +1,0 @@
-ALERT: Frame has loaded 1 time(s).
-ALERT: Frame has loaded 2 time(s).
-ALERT: PASS
-

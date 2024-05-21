@@ -1,3 +1,0 @@
-This tests that clicking below a line of editable RTL text correctly places the caret at the end. To run manually, click within the box below but below the text. The caret should appear on the left side of the text.
-אבג
-PASS

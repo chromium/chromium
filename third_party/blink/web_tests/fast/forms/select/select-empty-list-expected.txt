@@ -1,3 +1,0 @@
-This tests clicking on an empty select. If successful, the console message says Passed. See bug 11765.
-
-Passed

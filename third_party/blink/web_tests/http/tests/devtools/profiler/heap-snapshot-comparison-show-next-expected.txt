@@ -1,9 +1,0 @@
-Tests Comparison view of detailed heap snapshots. Repeated clicks on "Show Next" button must show all nodes.
-
-Profiler was enabled.
-Detailed heap profiles were enabled.
-
-Running: testShowNext
-
-Profiler was disabled.
-

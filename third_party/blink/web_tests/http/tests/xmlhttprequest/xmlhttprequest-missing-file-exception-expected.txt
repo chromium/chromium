@@ -1,9 +1,0 @@
-This test checks that no exception is raised when getting a 404 HTTP response - that's success from XHR point of view.
-
-PASS: No exception.
-readyState: 4 (number)
-responseText: Non-empty (string)
-responseXML: null (object)
-status: 404 (number)
-statusText: Not Found (string)
-

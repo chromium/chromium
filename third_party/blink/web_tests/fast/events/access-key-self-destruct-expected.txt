@@ -1,3 +1,0 @@
-This tests what happens when you use accesskey to trigger a script that causes a node to get destroyed without ever having a reference to it from JavaScript. With older versions of WebKit this used to cause a crash.
-
-If you can see this text and there was no crash, the test was a success.

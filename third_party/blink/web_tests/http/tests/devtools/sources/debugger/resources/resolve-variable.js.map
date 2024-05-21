@@ -1,1 +1,0 @@
-{"version":3,"sources":["resolve-variable-names-origin.js"],"names":["foo","parameter1","parameter2","error","longObject","longMap","Map","set","get","testFunction"],"mappings":"AAAA,QAASA,KAAIC,EAAYC,GAErB,IACI,KAAM,QACR,MAAOC,GACL,GAAIC,KACJ,IAAIC,GAAU,GAAIC,IAClBD,GAAQE,IAAIN,EAAYC,EACxB,SACA,OAAOG,GAAQG,IAAIJ,IAI3B,QAASK,gBAELT,IAAI,IAAK"}

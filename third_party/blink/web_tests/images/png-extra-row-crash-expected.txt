@@ -1,3 +1,0 @@
-The following PNG will attempt to render a bad row. If the test succeeds this should not crash. 
-
-PASS

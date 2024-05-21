@@ -1,5 +1,0 @@
-If min-height is larger than height, the final height will be set according to min-height. Content should fill columns to their full height (the same as the height of the multicol container), since we request column-fill:auto, and height is non-auto, so we won't balance.
-
-Below there should be a blue square to the left of a hotpink square.
-
-PASS

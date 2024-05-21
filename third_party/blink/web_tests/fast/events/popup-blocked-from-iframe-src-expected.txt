@@ -1,3 +1,0 @@
-
-When running script to open a window without user gesture from SRC of the enclosing iframe, webkit should test out that the opening is not initiated by user. This is a test case for bug https://bugs.webkit.org/show_bug.cgi?id=53244.
-PASSED

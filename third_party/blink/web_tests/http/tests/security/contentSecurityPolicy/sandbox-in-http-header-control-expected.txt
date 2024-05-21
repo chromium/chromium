@@ -1,3 +1,0 @@
-CONSOLE ERROR: Blocked script execution in 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/sandbox.php?sandbox=allow-top-navigation%20allow-same-origin' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
-ALERT: PASS: Iframe was not in a unique origin
-

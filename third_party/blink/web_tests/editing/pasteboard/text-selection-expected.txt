@@ -1,6 +1,0 @@
-This file tests if text selection is causing oncopy event to get fired. This test requires DRT.
-Selecting text with mouse, no copy events should occur:
-Event count: 0
-Copying text, 1 copy event should occur:
-Event count: 1
-

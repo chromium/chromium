@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- This is the test data for the check of the implementation of the "itemType" attribute of the xsd:list element. -->
-<foo xmlns="http://FOO">tea for two and two for tea</foo>

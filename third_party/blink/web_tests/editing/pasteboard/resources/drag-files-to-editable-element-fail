@@ -1,5 +1,0 @@
-If we drag files onto an editable area, then the filenames should be inserted
-into the editable area. That's not what happened. Instead, the browser navigated
-to the first file.
-
-TEST FAILED.

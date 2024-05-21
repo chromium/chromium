@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] sec-fetch-site - HTTPS downgrade-upgrade no attributes
-  promise_test: Unhandled rejection with value: object "[object Event]"
-[FAIL] sec-fetch-dest no attributes
-  assert_array_equals: expected property 0 to be "empty" but got "image" (expected array ["empty"] got ["image"])
-Harness: the test ran to completion.
-

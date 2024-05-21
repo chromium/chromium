@@ -1,4 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=39946 another case of infinite recursion in Position::getInlineBoxAndOffset(). This test passes if it does not crash.
-
-start dragging here and drag right
-spacer text

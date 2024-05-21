@@ -1,1 +1,0 @@
-window.foo = new BroadcastChannel('foo');

@@ -1,8 +1,0 @@
-This test confirms that updating the shadow dom is reflected to the Inspector.
-
-- <div id="container">
-    - <div id="host">
-          #shadow-root (open)
-      </div>
-  </div>
-

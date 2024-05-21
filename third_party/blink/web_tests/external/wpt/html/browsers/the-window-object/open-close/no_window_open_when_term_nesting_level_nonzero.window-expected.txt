@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] no popups from another synchronously reachable window
-  assert_equals: expected no popup during beforeunload expected null but got object "[object Window]"
-Harness: the test ran to completion.
-

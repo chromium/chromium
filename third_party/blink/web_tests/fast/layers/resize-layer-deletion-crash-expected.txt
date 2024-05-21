@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=16603 Crash when resizing text field.
-
-Drag the bottom right corner of the black box over the blue square. The black box should disappear but the browser should not crash.

@@ -1,4 +1,0 @@
-This page tests that setting the value of an <input type=range> element to an out-of-range value does not fire the oninput event.
-
-PASS
-

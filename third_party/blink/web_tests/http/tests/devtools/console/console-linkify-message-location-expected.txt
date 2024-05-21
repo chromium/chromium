@@ -1,7 +1,0 @@
-Test that console.log() would linkify its location in respect with ignore-listing.
-
-foo.js:19 
-boo.js:26 
-console-linkify-message-location.js:31 
-foo.js:19 
-

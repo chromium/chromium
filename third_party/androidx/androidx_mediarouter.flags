@@ -1,9 +1,0 @@
-# Copyright 2019 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Help R8 determine that we don't use MediaRouteDynamicChooserDialog.
-# https://crbug.com/1147188
--assumevalues class ** {
-  boolean mUseDynamicGroup return false;
-}

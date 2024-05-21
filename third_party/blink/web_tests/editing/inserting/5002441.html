@@ -1,8 +1,0 @@
-<p>This tests for a bug where spaces couldn't be inserted before signatures and replies.</p>
-<div id="div" contenteditable="true"><br><div>There should be a single space in the paragraph above.</div></div>
-<script>
-var div = document.getElementById("div");
-var selection = window.getSelection();
-selection.collapse(div, 0);
-document.execCommand("InsertText", false, " ");
-</script>

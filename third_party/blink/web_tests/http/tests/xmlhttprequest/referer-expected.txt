@@ -1,4 +1,0 @@
-Test for bug 11611: REGRESSION: No http referer header sent on XMLHttpRequest.
-
-sync: OK
-async: OK

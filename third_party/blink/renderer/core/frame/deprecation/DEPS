@@ -1,5 +1,0 @@
-specific_include_rules  = {
-  "deprecation.cc": [
-    "+base/command_line.h"
-  ]
-}

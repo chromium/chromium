@@ -1,2 +1,0 @@
-Bug 75215: Crash in LayoutTable::borderBefore
-This test has passed!

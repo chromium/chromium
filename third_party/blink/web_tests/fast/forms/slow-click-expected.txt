@@ -1,3 +1,0 @@
-Test that click() on checkboxes is not slow.
-
-PASS

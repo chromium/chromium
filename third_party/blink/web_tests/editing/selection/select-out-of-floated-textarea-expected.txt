@@ -1,7 +1,0 @@
-Some text before the floats. 
-Some floated text in a div.
-Some text after the floats.
-
-To test manually, drag from the middle of the textarea to the right, into the non-floated text. The selection should go to the end of the input element and not jump to the beginning.
-
-SUCCESS

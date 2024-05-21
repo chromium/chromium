@@ -1,7 +1,0 @@
-Click Here
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Test calling window.open() with a 5000+ ms delay. A popup should not be allowed.
-PASS newWindow is null

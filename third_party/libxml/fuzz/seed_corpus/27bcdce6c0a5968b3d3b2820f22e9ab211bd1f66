@@ -1,3 +1,0 @@
-<?xml version="1.0"?>
-<foo><pre1:bar1 xmlns:pre1="http://www.example.com/n1"/><pre2:bar2 xmlns:pre2="http://www.example.com/n2"/></foo>
-

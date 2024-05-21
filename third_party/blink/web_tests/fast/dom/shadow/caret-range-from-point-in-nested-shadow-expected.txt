@@ -1,6 +1,0 @@
-PASS internals.treeScopeRootNode(range.startContainer) is document
-PASS internals.treeScopeRootNode(range.endContainer) is document
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

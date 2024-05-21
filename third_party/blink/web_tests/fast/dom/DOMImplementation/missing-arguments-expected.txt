@@ -1,9 +1,0 @@
-PASS document.implementation.createDocument() threw exception TypeError: Failed to execute 'createDocument' on 'DOMImplementation': 2 arguments required, but only 0 present..
-PASS document.implementation.createDocument('http://example.com/') threw exception TypeError: Failed to execute 'createDocument' on 'DOMImplementation': 2 arguments required, but only 1 present..
-PASS document.implementation.createDocumentType() threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 0 present..
-PASS document.implementation.createDocumentType('svg:svg') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 1 present..
-PASS document.implementation.createDocumentType('svg:svg', '-//W3C//DTD SVG 1.1//EN') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

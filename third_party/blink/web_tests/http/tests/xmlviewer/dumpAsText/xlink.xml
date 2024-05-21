@@ -1,6 +1,0 @@
-<!-- If you can see this, this test has failed. -->
-<test xmlns="http://still-unknown.example.org/">
-    <header>This tests that xml viewer is not used when there is an attribute XLink namespace.</header>
-    <FAIL/>
-    <xlink l:type="simple" l:href="xlink.xml" xmlns:l="http://www.w3.org/1999/xlink">SUCCESS</xlink>
-</test>

@@ -1,8 +1,0 @@
-This tests dragging text within the same contenteditable element. To manually test, move the target below to the destination. You should see dragstart, drop, and dragend in the log.
-
-Log:
-dragstart
-drop
-dragend
-
-PASS

@@ -1,3 +1,0 @@
-Test that getting/setting the type JS property on SVGScriptElement keeps sync with the type content attribute.
-
-PASS

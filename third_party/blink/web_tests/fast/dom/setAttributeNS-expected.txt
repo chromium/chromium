@@ -1,9 +1,0 @@
-Test that setAttributeNS with a null namespaceURI actually sets it to the value null and not a string with the contents 'null'.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS elem.attributes[0].namespaceURI is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

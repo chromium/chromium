@@ -1,3 +1,0 @@
-Tests that issues are triggered
-CookieIssue
-

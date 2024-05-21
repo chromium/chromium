@@ -1,5 +1,0 @@
-a
-0 
-a
-
-crbug.com/557068: Update float index when we encounter clean float at the end of a line. Shouldn't assert.

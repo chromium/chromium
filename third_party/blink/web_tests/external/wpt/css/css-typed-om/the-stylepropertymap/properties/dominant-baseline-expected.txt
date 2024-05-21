@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'dominant-baseline' to the 'text-bottom' keyword: text-bottom
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'dominant-baseline' to the 'text-top' keyword: text-top
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-

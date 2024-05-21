@@ -1,6 +1,0 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
-* text=auto
-
-# MHTML files in general should only have CRLF line endings
-# (see RFC2557, section 10).
-*.mht text eol=crlf

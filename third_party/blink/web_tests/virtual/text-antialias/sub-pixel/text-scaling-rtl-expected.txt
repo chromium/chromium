@@ -1,8 +1,0 @@
-PASS Size of text scales smoothly and width scales with font size as expected.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Font Size Scaling (RTL, Arabic)
-
-Size of the text should scale smoothly. Reported width should be within 0.02px of that of the highlighted reference row.

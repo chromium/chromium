@@ -1,1 +1,0 @@
-../resources/tests23.dat: PASS

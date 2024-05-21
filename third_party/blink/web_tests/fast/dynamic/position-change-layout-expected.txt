@@ -1,1 +1,0 @@
-PASS: If there is no crash, the test passed.

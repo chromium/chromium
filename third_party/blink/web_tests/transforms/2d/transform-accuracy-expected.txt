@@ -1,4 +1,0 @@
-transform "scale(0.0000001) scale(10000000)" expected "matrix(1, 0, 0, 1, 0, 0)" : PASS
-transform "rotate(-10deg) rotate(10deg) rotate(360deg) rotate(-360deg) rotate(360deg)" expected "matrix(1, 0, 0, 1, 0, 0)" : PASS
-transform "translate(10000000px) translate(-10000000px)" expected "matrix(1, 0, 0, 1, 0, 0)" : PASS
-

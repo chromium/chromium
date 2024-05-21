@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: keydown event in isolated world
-

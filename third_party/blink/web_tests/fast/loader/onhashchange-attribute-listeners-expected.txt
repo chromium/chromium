@@ -1,9 +1,0 @@
-ALERT: <body> inline attribute called.
-ALERT: <body> assigned attribute called.
-ALERT: window.onhashchange attribute called.
-This test makes sure that the various methods of setting an onhashchange handler all work as expected.
-Clicking the links below manually should also result in the event being fired when the hash actually changes.
-Go to empty hash
-Go to non-empty hash
-Empty hash anchor
-Non-empty hash anchor

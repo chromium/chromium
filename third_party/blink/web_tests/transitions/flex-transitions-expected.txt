@@ -1,9 +1,0 @@
-PASS - "-webkit-flex" property for "row1" element at 0.2s saw something close to: 140,0,0
-PASS - "-webkit-flex" property for "column1" element at 0.2s saw something close to: 80,0,40
-PASS - "-webkit-flex" property for "negative1" element at 0.2s saw something close to: 100,100,60
-PASS - "-webkit-flex" property for "no-flex1" element at 0.2s saw something close to: 80,0,0
-PASS - "-webkit-flex" property for "row1" element at 0.8s saw something close to: 260,0,0
-PASS - "-webkit-flex" property for "column1" element at 0.8s saw something close to: 20,0,160
-PASS - "-webkit-flex" property for "negative1" element at 0.8s saw something close to: 100,100,90
-PASS - "-webkit-flex" property for "no-flex1" element at 0.8s saw something close to: 20,0,0
-

@@ -1,5 +1,0 @@
-Test shared worker garbage collection. Should print "PASS" followed by "DONE".
-
-PASS: Received ping message
-DONE
-

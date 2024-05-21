@@ -1,2 +1,0 @@
-PASS - "left" property for "target" element at 2s saw something close to: 100
-

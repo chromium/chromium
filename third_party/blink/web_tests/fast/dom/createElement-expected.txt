@@ -1,3 +1,0 @@
-namespaceURI: http://www.w3.org/1999/xhtml
-
-The above text should display the xhtml namespace uri. Bug 8007.

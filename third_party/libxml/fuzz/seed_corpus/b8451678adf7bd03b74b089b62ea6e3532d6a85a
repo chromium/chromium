@@ -1,4 +1,0 @@
-<!DOCTYPE doc [
-<!ELEMENT doc EMPTY>
-]>
-<doc>Oops, this element was declared EMPTY</doc>

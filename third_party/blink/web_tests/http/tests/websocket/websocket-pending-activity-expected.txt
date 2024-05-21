@@ -1,7 +1,0 @@
-ALERT: PASS
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Should alert "PASS".

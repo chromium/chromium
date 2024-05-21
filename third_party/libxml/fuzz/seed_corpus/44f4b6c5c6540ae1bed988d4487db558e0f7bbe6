@@ -1,9 +1,0 @@
-<element name="point" xmlns="http://relaxng.org/ns/structure/1.0"
-         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <element name="x">
-    <data type="double"/>
-  </element>
-  <element name="y">
-    <data type="double"/>
-  </element>
-</element>

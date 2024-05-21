@@ -1,7 +1,0 @@
-Roboto
-Christian Robertson
-Apache License, version 2.0
-http://www.google.com/fonts/specimen/Roboto
-
-test.ttf is a subset of Roboto Light that has only glyphs for the string "tes ".
-test-fixed is the same font, with isFixedPitch set to 1.

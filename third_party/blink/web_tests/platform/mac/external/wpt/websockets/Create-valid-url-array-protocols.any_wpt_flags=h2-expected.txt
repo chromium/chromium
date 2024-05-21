@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Create WebSocket - Pass a valid URL and array of protocol strings - Connection should be closed
-  assert_true: WebSocket connection should be open expected true got false
-Harness: the test ran to completion.
-

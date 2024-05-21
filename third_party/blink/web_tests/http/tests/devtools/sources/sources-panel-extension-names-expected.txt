@@ -1,8 +1,0 @@
-The test verifies that extension names are resolved properly in navigator view.
-
-
-Running: testAddExecutionContextBeforeFile
-top
-  FibExtension
-    script.js
-

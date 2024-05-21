@@ -1,2 +1,0 @@
-ALERT: SUCCESS -- the link was clicked
-

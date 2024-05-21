@@ -1,5 +1,0 @@
-PASS marquee.setAttribute didn't crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

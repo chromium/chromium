@@ -1,5 +1,0 @@
-This tests that the cursor doesn't get 'stuck' when advancing through a text area with the down arrow key. See bug #19465 for more information
-
-If the test is successful and the cursor is at the end of the textarea, you should see the word 'Success' printed below
-
-Success

@@ -1,9 +1,0 @@
-Test receiving cookies in a WebSocket handshake which were set by another WebSocket handshake.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS cookie is "same-site-lax=1; same-site-strict=1; ws-domain-local-ip=1; ws-path-root=1; ws=1"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,9 +1,0 @@
-Tests ignoreCache flag of WebInspector.inspectedPage.reload()
-
-Started extension.
-Running tests...
-RUNNING TEST: extension_testIgnoreCache
-afterNormalReload === beforeReload
-afterNormalReload !== afterReloadWithIgnoreCache
-All tests done.
-

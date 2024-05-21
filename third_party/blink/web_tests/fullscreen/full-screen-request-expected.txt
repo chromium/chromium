@@ -1,3 +1,0 @@
-EVENT(webkitfullscreenchange) TEST(document.webkitIsFullScreen==true) OK
-END OF TEST
-

@@ -1,5 +1,0 @@
-CONSOLE ERROR: Error while parsing the 'sandbox' attribute: 'aallow-scripts' is an invalid sandbox flag.
-CONSOLE ERROR: Blocked script execution in 'sandboxed-iframe-attribute-parsing-disallowed.html' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
-Misspelling.
-
-PASS

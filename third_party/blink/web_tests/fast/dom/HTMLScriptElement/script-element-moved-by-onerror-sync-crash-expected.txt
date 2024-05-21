@@ -1,5 +1,0 @@
-Checks that we handle sync scripts which move to a different document inside their onerror handlers.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

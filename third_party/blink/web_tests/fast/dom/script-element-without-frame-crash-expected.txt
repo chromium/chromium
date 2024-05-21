@@ -1,3 +1,0 @@
-This page tests for a crash in the HTML tokenizer when adding a <script> element to a document without a frame.
-
-PASS: You didn't crash.

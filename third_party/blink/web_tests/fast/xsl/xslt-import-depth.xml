@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="resources/xslt-import-depth-page.xsl"?>
-<page>
-  <title>Test Page</title>
-  <para>This is a <emph>test page</emph>.</para>
-</page>

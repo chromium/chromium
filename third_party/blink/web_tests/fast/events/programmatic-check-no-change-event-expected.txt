@@ -1,4 +1,0 @@
-This test checks that programmaticly changing the checked state of a checkbox does not fire the "change" event (but user action like calling "click" does).
-
-PASS: got exactly one change event.
-

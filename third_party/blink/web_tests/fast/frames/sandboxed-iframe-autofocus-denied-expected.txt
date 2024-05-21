@@ -1,3 +1,0 @@
-CONSOLE ERROR: Blocked autofocusing on a <input> element because the element's frame is sandboxed and the 'allow-scripts' permission is not set.
-CONSOLE MESSAGE: PASS: The input element is not focused.
-This test passes if the input element in the sandboxed frame is not automatically focused upon, as it should be blocked by the sandboxed scripts flag. A console warning to that effect should also be present.

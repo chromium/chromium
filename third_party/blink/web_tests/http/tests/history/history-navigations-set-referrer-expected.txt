@@ -1,4 +1,0 @@
-Tests that when navigating back from a history entry that was created by history.pushState(), the outgoing referrer is correctly updated.
-
-PASS: correct referrer send
-

@@ -1,4 +1,0 @@
-This page tests whether the form 'submit' event bubbles to containing elements. If it passes, you'll see 'PASS' messages below.
-
-PASS: containing element div2 caught submit event
-PASS: containing element div1 caught submit event

@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-25.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">
-<input type="checkbox" checked="checked"></input> <span>Everything in this paragraph should have a green background</span></p>
-</test>

@@ -1,9 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-There should be a separator between two selected options.
-
-foo
-bar

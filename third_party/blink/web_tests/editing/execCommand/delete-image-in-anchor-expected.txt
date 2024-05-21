@@ -1,5 +1,0 @@
-
-
-
-BEFORE: <a href="../resources/abe.png"><img style="display:block; margin:0px auto 10px; text-align:center;width: 60px; height: 60px;" src="../resources/abe.png" border="0"></a> <br>
-AFTER: <a href="../resources/abe.png"><br></a> <br>

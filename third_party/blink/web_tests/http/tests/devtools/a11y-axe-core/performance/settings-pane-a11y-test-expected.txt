@@ -1,5 +1,0 @@
-Testing a11y in performance panel - settings pane.
-Page reloaded.
-aXe violations: []
-
-

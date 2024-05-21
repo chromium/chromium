@@ -1,8 +1,0 @@
-This sets the selection to the start of a span, and hits the enter key.
-Expected behavior: when the span is split, its ID should not be duplicated. See bug 62621.
-| <div>
-|   <span>
-|     <br>
-| <span>
-|   id="dupe"
-|   "<#selection-caret>hello"

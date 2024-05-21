@@ -1,3 +1,0 @@
-Tests that a feature policy header parse error can log during navigation commit without crashing.
-Error with Feature-Policy header: Unrecognized feature: 'notarealpolicy'.
-

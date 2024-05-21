@@ -1,8 +1,0 @@
-Tests that cookies are properly shown after oopif refresh
-Page reloaded.
-Available cookie domains:
-http://127.0.0.1:8000
-http://devtools.oopif.test:8000
-Visible cookies
-test=cookie
-

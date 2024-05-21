@@ -1,3 +1,0 @@
-Test for bug 10852: REGRESSION: Reproducible crash in XMLHttpRequest::abort().
-
-Press Cmd+R to reload (should not crash).

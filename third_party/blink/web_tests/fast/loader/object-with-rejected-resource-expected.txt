@@ -1,2 +1,0 @@
-CONSOLE WARNING: Subresource requests whose URLs contain embedded credentials (e.g. `https://user:pass@host/`) are blocked. See https://www.chromestatus.com/feature/5669008342777856 for more details.
-Regression test for crbug.com/733147. The test passes if the renderer doesn't crash.

@@ -1,9 +1,0 @@
-Accessing navigator.vibrate on a closed window.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS w.navigator.vibrate([]) is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

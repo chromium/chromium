@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-107.css" type="text/css"?>
-<test xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
-<p xmlns="http://www.w3.org/1999/xhtml" lang="en-us">This paragraph should have a green background</p>
-<q xmlns="http://www.example.org/a" a:foo="un-deux-trois">This paragraph should be unstyled.</q>
-<q xmlns="http://www.example.org/a" a:foo="un-second-deuxieme-trois">This paragraph should be unstyled.</q>
-<r xmlns="http://www.example.org/a" a:foo="un-d-trois">This paragraph should have a green background.</r>
-<s xmlns="http://www.example.org/b" b:foo="un-d-trois">This paragraph should be unstyled.</s>
-</test>

@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<!-- "Test text" should be rendered, not "Test ttex" -->
-<text font-size="50" fill="green" x="20" y="120">Test<tspan> <tspan x="150"> text</tspan></tspan></text>
-</svg>

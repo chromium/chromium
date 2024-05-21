@@ -1,2 +1,0 @@
-This tests that a document created by createDocument has a document element, and that the document element has the correct name and namespace URI. If the test is successful, 'SUCCESS' will be displayed below, otherwise 'FAILURE' and a reason will be displayed.
-SUCCESS!

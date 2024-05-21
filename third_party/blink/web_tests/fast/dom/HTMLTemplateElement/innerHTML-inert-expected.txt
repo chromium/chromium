@@ -1,9 +1,0 @@
-Test that setting HTMLTemplateElement.innerHTML uses the inert document when creating elements
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS attemptedLoad is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

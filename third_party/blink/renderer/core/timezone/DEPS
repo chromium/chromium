@@ -1,5 +1,0 @@
-include_rules = [
-    "+services/device/public/mojom/time_zone_monitor.mojom-blink.h",
-    "+third_party/icu/source/common/unicode/char16ptr.h",
-    "+third_party/icu/source/i18n/unicode/timezone.h",
-]

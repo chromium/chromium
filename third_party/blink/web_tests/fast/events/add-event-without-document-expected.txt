@@ -1,9 +1,0 @@
-The test verifies that addEventListener works on EventTargets that do not have ScriptExecutionContext at the moment of call. The event listener should be added, and later invoked when the Context is established. This matches behavior of FF 3.5
-
-The only way to simulate this is to use createDocumentType() which creates a Node with NULL Document. Then we insert it into the tree so it gains a pointer to Document and dispatch the event which should fire.
-
-We use manually-constructed event instead just watching for DOM mutation event on insert since DOM mutation events are not dispatched on doctype element.
-
-Test passes if there is 'PASS' text below.
-
-PASS

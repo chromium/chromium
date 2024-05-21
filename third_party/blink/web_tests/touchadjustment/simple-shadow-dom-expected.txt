@@ -1,9 +1,0 @@
-Test that a hit right in the middle of a shadow dom node returns it and not its host.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS adjusted node was DIV#shadowDiv.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

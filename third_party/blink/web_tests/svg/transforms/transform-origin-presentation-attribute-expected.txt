@@ -1,7 +1,0 @@
-Test for bug 79678 - SVG transform-origin presentation attribute. Verify that getComputedStyle() reflects an SVG element's transform-origin.
-
-On success, you will see a series of "PASS" messages
-
-PASS rect1 transformOrigin, expected "50px 100px" actual "50px 100px"
-PASS rect2 transformOrigin, expected "0px 0px" actual "0px 0px"
-

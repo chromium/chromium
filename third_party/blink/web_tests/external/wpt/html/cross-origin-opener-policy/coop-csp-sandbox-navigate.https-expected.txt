@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSP: sandbox allow-popups allow-scripts allow-same-origin; CSP sandbox popup navigate to Cross-Origin-Opener-Policy document should work
-  An attempt was made to break through the security policy of the user agent.
-Harness: the test ran to completion.
-

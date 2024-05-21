@@ -1,5 +1,0 @@
-Target.setAutoAttach should report all existing workers before returning.
-worker
-worker
-setAutoAttach resolved
-

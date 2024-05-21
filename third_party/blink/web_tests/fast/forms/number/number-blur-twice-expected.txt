@@ -1,9 +1,0 @@
-There was a bug that moving focus with TAB from a number input with an invalid string dispatched an extra focus event and an extra blur event.
-
-PASS numOfFocus is 1
-PASS numOfBlur is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

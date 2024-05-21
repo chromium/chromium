@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: Creating the workers.
-CONSOLE MESSAGE: Unloading the current document to see if there will be a crash.
-CONSOLE MESSAGE: No crashes: PASSED!
-The regression test for Bug 99658
-
-The test starts bunch of workers that just throw an exception. During that time, current document is unloaded. The test passes if there are no crashes after the page unload.
-
-Note that the test is potentially flaky and may produce false positives if we are unlucky with the worker exceptions timing. It should not fail if there is no bug though.

@@ -1,8 +1,0 @@
-Test for bug 79068 - SVG should support transform-origin and relative values Verify that CSS transform translate values can be specified with percentages.
-
-You should see a series of "PASS" messages and one 80x60 green rectangle. The green rectangle obscures two red rectangles of the same size which have been translated to the same location.
-
-PASS  rect "r1" [50,200 80x60] expected [50,200 80x60]
-PASS  rect "r2" [50,200 80x60] expected [50,200 80x60]
-PASS  rect "r3" [50,200 80x60] expected [50,200 80x60]
-

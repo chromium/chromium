@@ -1,9 +1,0 @@
-Tests that WebSocket headers are set properly from overriden User Agent.
-Test started
-Enabling network
-Network enabled
-Setting User Agent Override to: Mozilla/5.0 (Overridden User Agent)
-User Agent Set
-Sending command to open websocket
-User agent is: Mozilla/5.0 (Overridden User Agent)
-

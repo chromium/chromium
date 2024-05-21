@@ -1,8 +1,0 @@
-This page tests whether or not comment nodes disrupt the row index of rows in a table.
-
-Row One
-Row Three
-PASS: document.getElementById('tr1').parentNode.childNodes.length == 5 should be true and is.
-PASS: document.getElementById('tr1').rowIndex == 0 should be true and is.
-PASS: document.getElementById('tr2').rowIndex == 1 should be true and is.
-PASS: document.getElementById('tr3').rowIndex == 1 should be true and is.

@@ -1,9 +1,0 @@
-Tests that fenced frame automatic beacons are surfaced to dev tools.
-request url: https://127.0.0.1:8443/inspector-protocol/fenced-frame/resources/beacon-store.py
-request headers: undefined
-requestExtraInfo has same requestId: true
-requestExtraInfo has headers: true
-responseReceived has same requestId: true
-responseReceived status: 200
-loadingFinished has same requestId: true
-

@@ -1,2 +1,0 @@
-ALERT: alert
-PASS if not crashed.

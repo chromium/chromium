@@ -1,1 +1,0 @@
-Test of some edge cases for background fills with generated images. Test passed if it rendered and there was no division by zero.

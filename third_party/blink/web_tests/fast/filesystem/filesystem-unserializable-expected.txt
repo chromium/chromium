@@ -1,9 +1,0 @@
-This tests if the filesystem object is unserializable by default
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-DataCloneError: Failed to execute 'postMessage' on 'Window': A FileSystem object could not be cloned.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

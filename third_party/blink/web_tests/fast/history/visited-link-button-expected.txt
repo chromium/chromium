@@ -1,5 +1,0 @@
-PASS getComputedStyle(input).lineHeight is "normal"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

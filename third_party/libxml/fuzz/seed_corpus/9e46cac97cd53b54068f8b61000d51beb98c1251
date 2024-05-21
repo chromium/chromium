@@ -1,7 +1,0 @@
-<!DOCTYPE cba SYSTEM "http://example.org/cba.dtd">
-<cba>
-  <c/>
-  <b>Let's use a DTD defined entity &bent;</b>
-  <a>Let's use predefined entites &amp; &lt; &gt;</a>
-</cba>
-

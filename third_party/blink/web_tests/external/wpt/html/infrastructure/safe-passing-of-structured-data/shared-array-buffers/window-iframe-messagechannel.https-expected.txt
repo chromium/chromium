@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] postMessaging with a MessageChannel that's been cross-site should succeed
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

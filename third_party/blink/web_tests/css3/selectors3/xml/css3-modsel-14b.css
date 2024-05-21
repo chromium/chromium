@@ -1,8 +1,0 @@
-
-p { background: green; color: white; }
-.t1.fail { background: red; color: yellow; }
-.fail.t1 { background: red; color: yellow; }
-.t2.fail { background: red; color: yellow; }
-.fail.t2 { background: red; color: yellow; }
-/* Note: This is a valid test even per CSS1, since in CSS1 those rules
-         are invalid and should be dropped. */

@@ -1,7 +1,0 @@
-include_rules = [
-    "+base/test/scoped_command_line.h",
-    "+components/digital_goods/mojom",
-    "+components/payments/mojom",
-    "+services/network/public/cpp/is_potentially_trustworthy.h",
-    "+services/network/public/cpp/network_switches.h",
-]

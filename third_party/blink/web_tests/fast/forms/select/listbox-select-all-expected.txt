@@ -1,8 +1,0 @@
-This tests that select all works on options in a list box.
-
-1
-2
-3
-Test 1 Passed
-Test 2 Passed
-

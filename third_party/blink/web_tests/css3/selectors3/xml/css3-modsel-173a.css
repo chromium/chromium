@@ -1,9 +1,0 @@
-
- tests, tests * { display: block; color: red; }
- testA[*|attribute] { color: green; }
- testB[*|attribute="pass"] { color: green; }
- testC[*|attribute~="pass"] { color: green; }
- testD[*|attribute^="pass"] { color: green; }
- testE[*|attribute*="pass"] { color: green; }
- testF[*|attribute$="pass"] { color: green; }
- testG[*|attribute|="pass"] { color: green; }

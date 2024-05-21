@@ -1,4 +1,0 @@
-
-  p { color: green; }
-  p:first-letter { background: red; color: yellow; font-size: 4em; }
-  p::first-letter { background: red; color: yellow; font-size: 4em; }

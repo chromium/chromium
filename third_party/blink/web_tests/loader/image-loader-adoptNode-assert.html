@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script>
-if (window.testRunner) testRunner.dumpAsText();
-var doc = document.implementation.createHTMLDocument('');
-var img = document.createElement('img');
-img.onerror = function() { doc.adoptNode(img); };
-img.src = 'http://foo.com/blarg.jpg';
-</script>
-<div>Test passes if it does not ASSERT</div>

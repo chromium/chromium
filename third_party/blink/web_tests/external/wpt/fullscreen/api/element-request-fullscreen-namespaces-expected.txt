@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] requestFullscreen() succeed for an element in http://www.w3.org/1998/Math/MathML namespace
-  promise_test: Unhandled rejection with value: object "TypeError: Element is not an HTML or SVG element"
-Harness: the test ran to completion.
-

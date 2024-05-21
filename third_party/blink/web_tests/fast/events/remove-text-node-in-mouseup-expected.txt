@@ -1,3 +1,0 @@
-This test ensures Blink does fire a click event on the parent element of a clicked text node even when the text node has been removed in mouseup event.
-
-PASS

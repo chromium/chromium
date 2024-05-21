@@ -1,7 +1,0 @@
-When its first line needs a column break, we should push the entire block to the next column, also when it just barely fits.
-
-There should be a blue square below.
-
-
-
-PASS

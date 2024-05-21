@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE EXAMPLE SYSTEM "example.dtd" [
-<!ENTITY xml "Extensible Markup Language">
-]>
-<EXAMPLE >
-  Test of &amp;amp; behaviour a&amp;b .
-</EXAMPLE>
-

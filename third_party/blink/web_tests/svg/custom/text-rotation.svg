@@ -1,6 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg">
-<text font-size="50" y="100"><tspan x="25" rotate="-30,0,30">Rotated glyphs</tspan></text>
-<text font-size="50" y="200"><tspan x="25">More <tspan rotate="15 30 45">rotated</tspan> glyphs</tspan></text>
-<text font-size="50" x="25" y="300" rotate="15">More rotated glyphs</text>
-</svg>

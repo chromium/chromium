@@ -1,1 +1,0 @@
-Test for crash when the identifier of an at-rule contains unicode escapes. The test passes if it does not cause an assertion failure. (http://code.google.com/p/chromium/issues/detail?id=364492)

@@ -1,3 +1,0 @@
-Tests if empty language declarations are supported
-
-SUCCESS

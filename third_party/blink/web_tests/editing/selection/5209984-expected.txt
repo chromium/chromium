@@ -1,4 +1,0 @@
-This tests for a crash when clicking on a page after an input element with a selection inside of it disappears. To run it manually, just click on this text (a selection has already been placed inside a disappearing text field).
-
-
-Success!

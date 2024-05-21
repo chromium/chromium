@@ -1,3 +1,0 @@
-Test for (rdar://problem/5725058). If you see this text, then all is well and no crash has occurred.
-
-paragraph b

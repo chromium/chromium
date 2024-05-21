@@ -1,9 +1,0 @@
-Test parsing of entity-escaped </title> tag for Bug 7931: Escaped elements within a textarea block can cause the textarea box to be closed prematurely
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById("mytitle").textContent is expectedResult
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Test for Bugzilla bug: 90341: createAttribute/setAttributeNode does not properly normalize case.
-This test verifies that the setAttributeNode() API allows for creation of attributes case-sensitively for XHTML documents. Thus two different attributes with the same name but in different case can exist for XHTML documents.
-
-
-style attribute value = background-color: red and STYLE attribute value = background-color: green

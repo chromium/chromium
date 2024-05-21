@@ -1,7 +1,0 @@
-This tests pasting a blockquote into the middle of a paragraph.
-| "This should not be blockquoted. This should not be blockquoted."
-| <blockquote>
-|   type="cite"
-|   "This should be blockquoted."
-|   <br>
-| "This should not be blockquoted.<#selection-caret> This should not be blockquoted."

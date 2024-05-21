@@ -1,3 +1,0 @@
-This test verifies that the testRunner will reset its default preferences after every layout test. You should see "PASS" below.
-
-PASS

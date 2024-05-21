@@ -1,4 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-This test ensures selectstart event fires when selecting all.
-
-PASS

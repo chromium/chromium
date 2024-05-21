@@ -1,9 +1,0 @@
-Tests fetching trace through IO domain stream.
-Recording started
-Tracing complete
-Error after legit close: undefined
-Error after illegal read: {"code":-32602,"message":"Invalid stream handle"}
-Error after illegal close: {"code":-32602,"message":"Invalid stream handle"}
-Event sanity test done
-Metadata: object, not null
-

@@ -1,8 +1,0 @@
-Tests event listener breakpoint to break on the first statement of new modules.
-
-Set timer for test function.
-
-Paused on scriptFirstStatement
-Call stack:
-    0)  (empty-module.js:1)
-

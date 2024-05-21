@@ -1,2 +1,0 @@
-chrome.dll!WebCore::ComputedStyle::fontMetrics ReadAV@NULL (two crashes)
-PASSED: This test did not crash!

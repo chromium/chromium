@@ -1,3 +1,0 @@
-Children of an element are never rendered if it has a shadow DOM subtree.
-Should not see the word FAIL below.
-

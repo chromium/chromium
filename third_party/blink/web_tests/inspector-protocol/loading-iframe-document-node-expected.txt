@@ -1,8 +1,0 @@
-Testing that the Node ID can be retrieved before the onload event is triggered
-step1_bootstrap
-Adding iframe
-Paused on the debugger statement
-step2_requestNode: Requesting DOM node for iframe's document node
-PASS: Received node for iframe's document node
-Test finished
-

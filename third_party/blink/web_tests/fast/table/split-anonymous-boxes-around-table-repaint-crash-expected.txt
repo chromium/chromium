@@ -1,2 +1,0 @@
-Bug 91160: Crash in WebCore::LayoutTable::cellBefore
-PASS. WebKit didn't crash

@@ -1,5 +1,0 @@
-This must be green because li:nth-child(-an) must not match any elements.
-This must be green because li:nth-child(-an) must not match any elements.
-This must be green because li:nth-child(-an) must not match any elements.
-This must be green because li:nth-child(-an) must not match any elements.
-PASS

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] decoding SharedArrayBuffer
-  Failed to execute 'decode' on 'TextDecoder': The provided ArrayBufferView value must not be shared.
-Harness: the test ran to completion.
-

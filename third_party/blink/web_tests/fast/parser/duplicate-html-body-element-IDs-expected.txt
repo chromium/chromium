@@ -1,3 +1,0 @@
-Hooray, it worked! Since getElementById found the HTML element, its ID presumably was added to the ID map correctly.
-
-Hooray, it worked! Since getElementById found the body element, its ID presumably was added to the ID map correctly.

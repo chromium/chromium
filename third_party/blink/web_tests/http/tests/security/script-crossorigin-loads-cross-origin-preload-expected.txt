@@ -1,3 +1,0 @@
-Test that a script element with a crossorigin attribute (pre)loads a cross-origin script correctly.
-
-PASS

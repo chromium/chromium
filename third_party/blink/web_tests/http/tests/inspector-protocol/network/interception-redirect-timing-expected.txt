@@ -1,6 +1,0 @@
-Tests that request timing is that of latest request when response is overriden.
-intercepted http://example.com/before-redirect
-intercepted http://example.com/after-redirect
-Total requests sent: 2
-PASS
-

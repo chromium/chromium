@@ -1,7 +1,0 @@
-This shouldn't crash and there should be a green square.
-
-FAIL:
-Expected 16 for height, but got 52. 
-
-<table id="table2" style="height:20px;width:20px">
-<tr id="row"><td style="height:50px;width:50px;background:green" data-expected-width="16" data-expected-height="16"></td></tr></table>

@@ -1,7 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS we didn't crash.
-
-This test makes sure that a single prefetch element is not a client of multiple cachedresources at the same time; by repeatedly changing an existing link element, we will induce a double-notify bug if that element is not releasing its cachedresource on update.

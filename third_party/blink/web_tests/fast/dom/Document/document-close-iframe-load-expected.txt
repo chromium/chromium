@@ -1,2 +1,0 @@
-ALERT: PASS (just to make expected.txt non-empty)
-

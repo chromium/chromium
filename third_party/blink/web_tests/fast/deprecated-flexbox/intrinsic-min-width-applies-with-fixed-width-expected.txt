@@ -1,7 +1,0 @@
-Check that min-width intrinsic size still applies if a fixed width is set.
-
-PASS
-PASS
-PASS
-PASS
-PASS

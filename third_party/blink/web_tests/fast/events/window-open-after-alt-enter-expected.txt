@@ -1,5 +1,0 @@
-Default policy for createView for 'about:blank' is 'new foreground tab'
-Default policy for navigation to 'about:blank' is 'current tab'
-Tests that hitting alt-enter doesn't force a download if the navigation is triggered by script.
-
-link

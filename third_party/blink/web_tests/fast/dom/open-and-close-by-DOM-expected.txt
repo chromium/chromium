@@ -1,9 +1,0 @@
-ALERT: Middle Window Opened
-ALERT: Close Window Opened
-This test checks that a window which has been opened by the DOM can also be closed byt the DOM. The test will run automatically with popup blocking disabled. To run the test manually click the link below.
-
-
-Open new window that will close itself
-
-TEST PASSED
-

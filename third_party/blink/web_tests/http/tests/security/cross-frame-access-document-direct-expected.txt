@@ -1,7 +1,0 @@
-Test cross-origin direct document access.
-
---------
-Frame: 'theFrame'
---------
-PASS: Cross origin direct document access denied.
-

@@ -1,6 +1,0 @@
-PASS queryCommandValues["DefaultParagraphSeparator"] is "div"
-PASS queryCommandValues["StyleWithCSS"] is ""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

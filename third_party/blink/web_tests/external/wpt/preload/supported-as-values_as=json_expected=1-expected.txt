@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test the supported value for <link rel=preload as="...">
-  assert_equals: expected 1 but got 0
-Harness: the test ran to completion.
-

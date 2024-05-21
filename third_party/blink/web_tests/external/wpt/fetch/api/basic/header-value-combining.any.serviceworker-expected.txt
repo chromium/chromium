@@ -1,15 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] response.headers.get('content-length') expects 0
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] response.headers.get('content-length') expects 0, 0
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] response.headers.get('double-trouble') expects , 
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] response.headers.get('foo-test') expects 1, 2, 3
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] response.headers.get('heya') expects , , 1, , , 2
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] response.headers.get('www-authenticate') expects 1, 2, 3, 4
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-Harness: the test ran to completion.
-

@@ -1,8 +1,0 @@
-file://third_party/blink/common/mediastream/COMMON_OWNERS
-hbos@chromium.org
-tommi@chromium.org
-
-per-file *audio*=olka@chromium.org
-per-file low_latency_video*=kron@chromium.org
-per-file web_media_player_ms*=kron@chromium.org
-per-file video_renderer_algorithm*=kron@chromium.org

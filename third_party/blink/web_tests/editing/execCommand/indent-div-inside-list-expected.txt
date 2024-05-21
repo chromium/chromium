@@ -1,7 +1,0 @@
-This tests indenting a div inside a list item. By indenting "world", we should be inserting a blockquote around world inside the list item.
-
-a
-hello
-world
-b
-a <ul> <li>hello<div id="test"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"> world </blockquote></div></li> </ul> b

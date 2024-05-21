@@ -1,4 +1,0 @@
-CONSOLE WARNING: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/nonwebby-scheme-in-form-submitted.https.html' was loaded over a secure connection, but contains a form that targets an insecure endpoint 'nonwebbyscheme://mixed-content-warning-should-appear'. This endpoint should be made available over a secure connection.
-CONSOLE WARNING: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/nonwebby-scheme-in-form-submitted.https.html' was loaded over a secure connection, but contains a form that targets an insecure endpoint 'nonwebbyscheme://mixed-content-warning-should-appear?'. This endpoint should be made available over a secure connection.
-Policy delegate: attempt to load nonwebbyscheme://mixed-content-warning-should-appear? with navigation type 'form submitted'
-This tests that forms with non-webby actions can be submitted. The test passes if the form submits successfully.

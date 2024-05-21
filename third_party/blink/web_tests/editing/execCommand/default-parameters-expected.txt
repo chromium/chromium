@@ -1,3 +1,0 @@
-Test for bug 12249: FCKeditor: <hr>, <ul> and <ol> have id="undefined".
-
-SUCCESS

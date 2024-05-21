@@ -1,6 +1,0 @@
-This page verifies that queued event listeners keep firing even after a node has been removed from the document.
-
-If the test passes, you'll see a PASS message below.
-
-PASS: result should be f1,f2 and is.
-

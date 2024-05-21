@@ -1,5 +1,0 @@
-Test for bug 3400: setting the .src of an iframe to the same value does not reload page.
-
-Testing that setting contentWindow.location.href of a frame to the same value works
-
-SUCCESS

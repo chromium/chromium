@@ -1,1 +1,0 @@
-Here is an html paragraph. And below is a svg drawing. This should render without crashing.

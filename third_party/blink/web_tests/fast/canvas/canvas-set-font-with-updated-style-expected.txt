@@ -1,2 +1,0 @@
-Tests that setting font of Canvas 2d context always uses up-to-date style and has font value: 64px Calibri
-

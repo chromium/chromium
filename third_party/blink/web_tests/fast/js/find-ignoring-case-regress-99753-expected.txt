@@ -1,1 +1,0 @@
-PASS - This test should not crash even with memory scribbling

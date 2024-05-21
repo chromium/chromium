@@ -1,9 +1,0 @@
-Node.isSupported should not exist
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS 'isSupported' in node is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

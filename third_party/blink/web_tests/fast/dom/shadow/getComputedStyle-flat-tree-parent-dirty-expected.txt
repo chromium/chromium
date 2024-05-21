@@ -1,9 +1,0 @@
-getComputedStyle should update style if the parent node in the flat tree needs a recalc.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(inside).color is "rgb(255, 0, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

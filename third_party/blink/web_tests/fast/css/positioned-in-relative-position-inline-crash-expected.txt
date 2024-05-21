@@ -1,3 +1,0 @@
-PASS, if no exception or crash in debug
-div1
-2

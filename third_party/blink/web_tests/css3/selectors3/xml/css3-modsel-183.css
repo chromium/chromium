@@ -1,5 +1,0 @@
-
-p { color: green; }
-..test { background: red; color: yellow; }
-.foo..quux { background: red; color: yellow; }
-.bar. { background: red; color: yellow; }

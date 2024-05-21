@@ -1,4 +1,0 @@
-Test that MessagePort close event gets delivered (without crashing) even if the channel object is garbage collected.
-
-DONE
-

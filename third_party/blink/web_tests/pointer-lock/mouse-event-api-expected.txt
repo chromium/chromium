@@ -1,8 +1,0 @@
-PASS mouseEvent.movementX is defined.
-PASS mouseEvent.movementY is defined.
-PASS new MouseEvent('eventType', { movementX: 888, movementY: 999 }).movementX is 888
-PASS new MouseEvent('eventType', { movementX: 888, movementY: 999 }).movementY is 999
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

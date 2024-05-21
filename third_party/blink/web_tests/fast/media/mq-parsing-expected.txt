@@ -1,8 +1,0 @@
-PASS: Got "screen" as expected.
-PASS: Got "" as expected.
-PASS: Got "not all, not all, all, not all, not all" as expected.
-PASS: Got "not all, not all, all, not all, not all" as expected.
-PASS: Got "not all, screen, not all, not all, not all, not all" as expected.
-PASS: Got "not all, screen, not all, (invalid,), not all, not all" as expected.
-PASS: Got "not all, (all,), not all, not all" as expected.
-

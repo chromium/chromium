@@ -1,8 +1,0 @@
-Test bug 15530: XMLHttpRequest should not support certain methods
-
-Should see a test for the TRACE, TRACK and CONNECT methods :
-
-TRACE : PASS
-TRACK : PASS
-CONNECT : PASS
-

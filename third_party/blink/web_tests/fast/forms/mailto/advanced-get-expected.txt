@@ -1,4 +1,0 @@
-Policy delegate: attempt to load mailto:?to=to1%40site.com%2Cto2%40site.com%2Cto3%40site.com&cc=cc1%40site.com%2Ccc2%40site.com%2Ccc3%40site.com&bcc=bcc1%40site.com%2Cbcc2%40site.com%2Cbcc3%40site.com&subject=m%26m%3B%3F%3D&body=line1%0D%0Aline2%0D%0Aline3%0D%0Aline4 with navigation type 'form submitted'
-Press Compose button and check that the created e-mail has correct headers and body.
-
-     

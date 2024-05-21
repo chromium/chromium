@@ -1,5 +1,0 @@
-Simple test that data set during a dragstart event can be read back. To run the test manually, simply start dragging the 'Drag Me' element below.
-
-Drag Me
-dragstart: SUCCESS
-

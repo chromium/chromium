@@ -1,1 +1,0 @@
-Tests invalidation of unavailable plugin. Passes if no crash.

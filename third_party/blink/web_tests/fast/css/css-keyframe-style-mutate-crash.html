@@ -1,9 +1,0 @@
-<style>
-@-webkit-keyframes foo { 1% { color: initial; } }
-</style>
-This test passes if it does not CRASH.
-<script>
-window.document.styleSheets[0].cssRules[0][0].style.color = 0;
-if (window.testRunner)
-    testRunner.dumpAsText();
-</script>

@@ -1,3 +1,0 @@
-This page should trigger an error on attempting to set the URL bar to https://www.test.com/
-
-PASS: Security exception thrown.

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test if interface objects exist in a shared worker
-  assert_equals: expected "These were missing: " but got "These were missing: Worker"
-Harness: the test ran to completion.
-

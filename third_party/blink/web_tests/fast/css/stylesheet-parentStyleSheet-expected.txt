@@ -1,2 +1,0 @@
-Test that StyleSheet.parentStyleSheet works properly. You should see "PASS" below.
-PASS

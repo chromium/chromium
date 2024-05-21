@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<!-- There shouldn't be any child render objects created for the foreignObject element, as partial SVG content in foreignObject -->
-<foreignObject width="300" height="100">
-    <g><text>This should not crash</text></g>
-    <g xmlns="http://www.w3.org/2000/svg"><rect/></g>
-</foreignObject>
-</svg>

@@ -1,9 +1,0 @@
-PASS details.open is false
-PASS details.open is false
-PASS details.open is false
-PASS details.open is false
-PASS details.open is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

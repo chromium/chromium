@@ -1,3 +1,0 @@
-This test ensures WebKit does not crash when selecting text across an element with type=file. To manually test, start selection in "start" and extend the selection by dragging to "end" moving across the input element. WebKit should not crash.
-
-PASS

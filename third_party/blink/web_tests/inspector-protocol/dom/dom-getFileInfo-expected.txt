@@ -1,3 +1,0 @@
-Tests DOM.getFileInfo method.
-Paths match: true
-

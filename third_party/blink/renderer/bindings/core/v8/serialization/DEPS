@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "v8_script_value_serializer_test.cc": [
-    "+gin/wrappable.h"
-  ]
-}

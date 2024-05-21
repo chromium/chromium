@@ -1,1 +1,0 @@
-Tests access to previously received arrays from navigator.plugins and mimetypes after calling plugins.refresh(). If this text appears and there is no crash, then the test succeeded.

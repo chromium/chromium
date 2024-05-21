@@ -1,5 +1,0 @@
-CONSOLE ERROR: Uncaught SyntaxError: Unexpected end of input
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

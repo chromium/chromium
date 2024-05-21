@@ -1,3 +1,0 @@
-This tests crash when copying a text without a common ancestor block. To manually test, copy "hello" below and WebKit should not crash. On DRT, you should see PASS below.
-
-PASS

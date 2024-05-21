@@ -1,3 +1,0 @@
-Even though the width of 'border-box' stays the same after it reaches 300px, the width available to its children decreases as its padding continues to expand. This tests that we continue to layout the contents of border-box even when its own width remains the same.
-
-PASS

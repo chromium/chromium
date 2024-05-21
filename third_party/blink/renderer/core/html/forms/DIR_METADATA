@@ -1,6 +1,0 @@
-monorail: {
-  component: "Blink>Forms"
-}
-buganizer_public: {
-  component_id: 1456926
-}

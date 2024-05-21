@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=15008 ASSERTION FAILED: !firstLineBox() == !lastLineBox() setting content on image.
-
-No crash means SUCCESS.

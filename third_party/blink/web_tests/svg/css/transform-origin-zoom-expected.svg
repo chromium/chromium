@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="zoom: 2">
-  <rect x="100" y="100" width="100" height="100" fill="green" transform="rotate(45, 150, 150)"/>
-  <rect x="300" y="100" width="100" height="100" fill="green" transform="rotate(45, 350, 150)"/>
-</svg>
-

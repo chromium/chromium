@@ -1,2 +1,0 @@
-window.location.href = http://127.0.0.1:8000/security/postMessage/data-url-sends-null-origin.html
-Received message: data="Hello from child" origin="null"

@@ -1,7 +1,0 @@
-PASS frame$($("frame1"), "input2").value is "value2"
-PASS frame$(frame$($("frame1"), "frame2"), "input3").value is "value3"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

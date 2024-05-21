@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path id="thePath" d="M50 50 L 150 50" />
-  <pattern id="pat" patternUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-    <text>
-      <textPath id="theTP" xlink:href="#thePath">PASS</textPath>
-    </text>
-  </pattern>
-  <rect width="200" height="200" fill="url(#pat)" stroke="black" stroke-width="1"/>
-</svg>

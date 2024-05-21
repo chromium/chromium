@@ -1,5 +1,0 @@
-PASS textField.value is "foobar"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

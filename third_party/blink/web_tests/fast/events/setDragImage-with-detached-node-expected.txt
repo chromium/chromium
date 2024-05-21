@@ -1,9 +1,0 @@
-Test that calling setDragImage() with a detached node doesn't immediately abort the drag. This test can be manually run by dragging the 'Drag Me' div around and then ending the drag.
-
-Drag Me
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Started drag.
-PASS Ended drag.

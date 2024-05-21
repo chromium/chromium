@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=17988 REGRESSION (r31114-31132): Crash in InlineBox::isDirty() opening chowhound.com.
-
-No crash means PASS.

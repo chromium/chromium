@@ -1,5 +1,0 @@
-PASS time1.offsetTop is time2.offsetTop
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,9 +1,0 @@
-<script>
-function crash() {
-    var w = window.open("data:text/html,Loading a data URL is asynchronous, so this text shouldn't appear. But it's most important to check that there is no crash after dismissing the print sheet.");
-    w.document.write("SUCCESS");
-    w.print();
-    w.close();
-}
-</script>
-<button onclick="crash()">Crash</button>

@@ -1,4 +1,0 @@
-This tests to see if Copy, Cut, and Paste fire oncopy, oncut and onpaste even when those operations are disabled. Since they are disabled they can't be performed from the Edit menu, they need to be explicitly performed via execCommand or -[WebView copy:].
-oncopy fired
-oncut fired
-onpaste fired

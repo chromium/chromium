@@ -1,9 +1,0 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  id="svg-root" width="100%" height="100%">
-  <defs>
-    <filter id="f1" x="0%" y="0%" width="100%" height="100%">
-      <feTurbulence type="turbulence" baseFrequency="0.03" x="0" y="0" width="50" height="50" stitchTiles="stitch"/>
-      <feTile/>
-    </filter>
-  </defs>
-  <rect width="200" height="200" filter="url(#f1)"/>
-</svg>

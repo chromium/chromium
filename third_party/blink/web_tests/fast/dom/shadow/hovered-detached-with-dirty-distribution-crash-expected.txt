@@ -1,1 +1,0 @@
-Tests that detaching a hovered node with dirty distributuion doesn't crash.

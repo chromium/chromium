@@ -1,4 +1,0 @@
- 
-This tests that cloneNode and importNode copy the form element properties that aren't stored in values, such as 'value', and 'checked'. If this test is successful, the text SUCCESS should be shown below. This is a variation on the base test that has the checked attribute already set, which at one point caused a crash (see Bugzilla bug 6617).
-SUCCESS!
-

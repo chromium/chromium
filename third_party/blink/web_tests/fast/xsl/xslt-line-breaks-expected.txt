@@ -1,9 +1,0 @@
-Must not crash, and transforms to 'data 1breakdata 2'. Test for http://crbug.com/530587.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS processor.transformToFragment(doc, document).textContent is "data 1breakdata 2"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

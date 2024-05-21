@@ -1,9 +1,0 @@
-<div style="width: 400px; height: 50px; padding: 25px 0 0 25px; background: yellow;"><input></div>
-<p>This test clicks outside an input element, and must not result in the element receiving focus. If the test succeeds the element should not have a focus ring.</p>
-<script>
-if (window.eventSender) {
-    eventSender.mouseMoveTo(200, 45);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-}
-</script>

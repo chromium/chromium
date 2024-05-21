@@ -1,5 +1,0 @@
-Tests accessibility in the Sources panel Navigator pane FileSystem tab using axe-core.
-www3 [dimmed]
-aXe violations: []
-
-

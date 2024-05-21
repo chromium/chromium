@@ -1,9 +1,0 @@
-<!doctype html>
-<title>window.open: invalid URL</title>
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
-<script>
-  test(() => {
-      assert_throws_dom("SyntaxError", () => { self.open("http:"); });
-  }, "Check that window.open() throws on an invalid URL.");
-</script>

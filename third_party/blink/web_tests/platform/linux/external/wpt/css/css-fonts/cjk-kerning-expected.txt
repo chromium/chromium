@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] expected match: .kernON .cjk vs .paltONkernON .cjk
-  assert_equals: expected 312 but got 372
-[FAIL] expected match: .default .cjk vs .kernOFF .cjk
-  assert_equals: expected 384 but got 372
-Harness: the test ran to completion.
-

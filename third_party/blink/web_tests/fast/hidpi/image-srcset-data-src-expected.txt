@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==150 is true
-This test passes if the image below looks like a 2x2 grid (yellow, gray, light green, dark green).

@@ -1,4 +1,0 @@
-cd a/b
-set <a:c/>
-xpath //*[namespace-uri()="foo"]
-save -

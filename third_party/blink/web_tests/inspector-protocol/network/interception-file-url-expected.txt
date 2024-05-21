@@ -1,6 +1,0 @@
-Verify that interception works for file URLs
-Intercepted: .../network/resources/simple.html
-<h1>simple!</h1>
-
-Intercepted: .../network/resources/simple.js
-

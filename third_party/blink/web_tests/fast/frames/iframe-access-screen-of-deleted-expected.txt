@@ -1,1 +1,0 @@
-This tests that accessing screen attributes doesn't crash even if containing frame is removed from the parent.

@@ -1,6 +1,0 @@
-Tests that tracing does not record unrelated processes.
-Another page
-Recording started
-Tracing complete
-There should be just 3 processes (browser, GPU, and renderer): 3
-

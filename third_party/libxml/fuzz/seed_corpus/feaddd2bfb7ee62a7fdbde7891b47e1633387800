@@ -1,9 +1,0 @@
-<group xmlns="http://relaxng.org/ns/structure/1.0">
-  <element name="c">
-    <text/>
-  </element>
-  <element name="d">
-    <text/>
-  </element>
-</group>
-

@@ -1,6 +1,0 @@
-PASS document.getElementById('a').getBoundingClientRect().top is 0
-PASS document.getElementById('b').getBoundingClientRect().top is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

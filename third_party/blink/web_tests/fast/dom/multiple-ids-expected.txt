@@ -1,9 +1,0 @@
-1
-2
-1
-2
-1. Found [object HTMLDivElement] (should be a div element)
-2. Found [object HTMLDivElement] (should be a div element)
-3. Found [object HTMLDivElement] (should be a div element)
-4. Found [object HTMLDivElement] (should be a div element)
-

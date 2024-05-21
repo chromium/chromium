@@ -1,9 +1,0 @@
-Setting a CSSStyleDeclaration after its element has been GCed should not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Did not crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

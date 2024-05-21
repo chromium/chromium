@@ -1,8 +1,0 @@
-Tests stopping in debugger in the worker with source mapping.
-
-Script execution paused.
-Call stack:
-    0) doSomething (worker-source.js:3)
-    1)  (worker-source.js:6)
-Script execution resumed.
-

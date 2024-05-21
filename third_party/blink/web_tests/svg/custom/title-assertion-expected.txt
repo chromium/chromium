@@ -1,9 +1,0 @@
-We had a bug that updating document.title caused an assertion failure.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if any assertion does not fail.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

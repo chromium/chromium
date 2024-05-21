@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Modify buffer after passing it in (SharedArrayBuffer)
-  Failed to execute 'decode' on 'TextDecoder': parameter 1 is not of type 'ArrayBuffer'.
-Harness: the test ran to completion.
-

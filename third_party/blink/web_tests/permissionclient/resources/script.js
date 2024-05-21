@@ -1,1 +1,0 @@
-log('FAIL: script loaded');

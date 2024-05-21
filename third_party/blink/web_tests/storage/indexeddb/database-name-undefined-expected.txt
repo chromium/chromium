@@ -1,9 +1,0 @@
-Test IndexedDB undefined as record value
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS indexedDB.open(); threw exception TypeError: Failed to execute 'open' on 'IDBFactory': 1 argument required, but only 0 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

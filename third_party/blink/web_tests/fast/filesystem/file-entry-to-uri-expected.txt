@@ -1,9 +1,0 @@
-Obtaining URL from FileEntry.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS testFileURL is 'filesystem:file:///temporary/testFileEntry.txt'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

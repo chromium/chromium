@@ -1,9 +1,0 @@
-If we drag files onto an editable area, then the filenames should be inserted into the editable area.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,9 +1,0 @@
-This test verifies that DOM nodes are retained because a wrapper exists for a descendant. A wrapper need not exist for the node itself or for an ancestor.
-
-The output should be the following pieces of text on lines by themselves: "replacement content", "B", "parent node exists", "child node exists".
-
-replacement content
-B
-parent node exists
-child node exists
-

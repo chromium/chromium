@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=71085 Assertion failure (m_text) in LayoutText::LayoutText() at icanhascheezburger.com.
-
-The test passes if it does not cause an assertion failure in a debug build.

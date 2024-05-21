@@ -1,4 +1,0 @@
-This tests that hitting spacebar on the button element simulates a click.
-
-Test Passed
-

@@ -1,7 +1,0 @@
-This tests that following code works in Chrome:
-var w = window.open(...);
-w.opener = null;
-
-After new page finishes loading, its opener should stay as null.
-
-PASS

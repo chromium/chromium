@@ -1,6 +1,0 @@
-PASS window.open("foo", "bar") is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-foo 

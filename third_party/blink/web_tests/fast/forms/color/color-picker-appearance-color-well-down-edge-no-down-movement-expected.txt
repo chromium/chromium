@@ -1,4 +1,0 @@
-Popup opened.
-ArrowDown did not move color well selection ring.
-ctrlKey+ArrowDown did not move color well selection ring.
-TEST COMPLETE

@@ -1,9 +1,0 @@
-file:../public/OWNERS
-file:../public/common/OWNERS
-
-# To ensure security review.
-per-file *_mojom_traits*.*=set noparent
-per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
-
-# Any renderer owner can approve blink finch flags.
-per-file features.cc=file://third_party/blink/renderer/OWNERS

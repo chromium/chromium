@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] resolving broken url
-  assert_throws_dom: function "() => {\n    const worker = new SharedWorker('http://foo bar');\n  }" threw object "SecurityError: Failed to construct 'SharedWorker': Script at 'http://foo%20bar/' cannot be accessed from origin 'http://web-platform.test:8001'." that is not a DOMException SyntaxError: property "code" is equal to 18, expected 12
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-This tests CreateLink for caret selections. A link containing the url text should be inserted.
-
-There should be a link between these two braces: {http://www.apple.com/}
-
-There should be a link between these two braces: {<a href="http://www.apple.com/">http://www.apple.com/</a>}

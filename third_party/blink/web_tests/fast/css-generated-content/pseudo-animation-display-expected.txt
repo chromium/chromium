@@ -1,4 +1,0 @@
-Tests that an attempt to animate the display property of a pseudo element is ignored, and that the animation proceeds as expected.
-PASS: left was 100px
-PASS: display was block
-

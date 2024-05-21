@@ -1,3 +1,0 @@
-Test a particular example of broken markup that was making us ignore a charset declaration.
-
-Encoding: EUC-JP (should be EUC-JP)

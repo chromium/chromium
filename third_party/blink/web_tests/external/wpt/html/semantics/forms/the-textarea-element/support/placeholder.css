@@ -1,6 +1,0 @@
-textarea.placeholder,
-textarea::placeholder {
-  /* revert browser styling of the placeholder */
-  color: GrayText; /* blink/webkit use colour */
-  opacity: 1.0; /* gecko uses opacity */
-}

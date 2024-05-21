@@ -1,5 +1,0 @@
-Text
-
-crbug.com/491844 Moving a node from inside a shadow-root to a detached tree should not crash when we hit-test it. Hover over 'Text' to test.
-
-Test passes if it does not crash.

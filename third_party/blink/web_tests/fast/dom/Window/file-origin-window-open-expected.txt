@@ -1,9 +1,0 @@
-Test that web settings are applied early enough when creating a new view: if the settings are applied to late, a new window created by a file:// URL will have universal access even if universal access is not enabled.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

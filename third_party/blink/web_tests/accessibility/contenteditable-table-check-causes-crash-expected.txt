@@ -1,8 +1,0 @@
-Ensures that this snippet does not lead to a crash in the code that detects if a table is contenteditable. Bug 87409.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

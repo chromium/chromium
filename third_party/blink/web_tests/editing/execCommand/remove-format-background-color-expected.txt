@@ -1,4 +1,0 @@
-This tests removing format on text that has background color. There should be no span or inline style below:
-| "<#selection-anchor>hello "
-| "world"
-| " WebKit.<#selection-focus>"

@@ -1,9 +1,0 @@
-This page tests cached access to properties of dictionary objects and objects with changing prototypes. If the test passes, you'll see a series of PASS messages below.
-
-PASS: getX(o) should be 0 and is.
-
-PASS: getProtoX(o) should be 2 and is.
-
-PASS: getProtoX(o) should be undefined and is.
-
-

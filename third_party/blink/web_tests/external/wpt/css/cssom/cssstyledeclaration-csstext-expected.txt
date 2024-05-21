@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Shorthands aren't serialized if there are other properties with different logical groups in between
-  assert_equals: expected "margin-top: 10px; margin-right: 10px; margin-left: 10px; margin-inline-start: 10px; margin-block: 10px; margin-inline-end: 10px; margin-bottom: 10px;" but got "margin: 10px; margin-inline: 10px; margin-block: 10px;"
-Harness: the test ran to completion.
-

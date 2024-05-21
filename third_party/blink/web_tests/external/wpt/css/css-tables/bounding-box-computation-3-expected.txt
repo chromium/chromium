@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] First (empty) table-row-group is 0px wide
-  assert_equals: expected 0 but got 100
-[FAIL] First (empty) table-row-group should be located at 10px top
-  assert_equals: expected 10 but got 0
-Harness: the test ran to completion.
-

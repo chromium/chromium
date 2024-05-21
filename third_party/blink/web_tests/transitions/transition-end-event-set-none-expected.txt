@@ -1,4 +1,0 @@
-Initiating transitions on various properties of all boxes.
-
-PASS --- [Expected] Property: left Target: box1 Elapsed Time: 0.2
-

@@ -1,2 +1,0 @@
- 
-PASS if the browser did not crash.

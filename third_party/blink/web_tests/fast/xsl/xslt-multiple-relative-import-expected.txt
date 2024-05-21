@@ -1,3 +1,0 @@
-crbug.com/436479: Test for multiple xsl:import with relative URLs.
-
-SUCCESS

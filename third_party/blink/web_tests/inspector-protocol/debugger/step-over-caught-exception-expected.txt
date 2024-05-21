@@ -1,6 +1,0 @@
-Tests that stepping over caught exception does not pause.
-testFunction:13
-testFunction:15
-testFunction:13
-testFunction:15
-

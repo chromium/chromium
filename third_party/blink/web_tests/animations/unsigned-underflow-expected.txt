@@ -1,5 +1,0 @@
-PASS - "border-top-width" property for "target" element at 5s saw something close to: 0
-PASS - "outline-width" property for "target" element at 5s saw something close to: 0
-PASS - "column-count" property for "target" element at 5s saw something close to: 1
-PASS - "column-rule-width" property for "target" element at 5s saw something close to: 0
-

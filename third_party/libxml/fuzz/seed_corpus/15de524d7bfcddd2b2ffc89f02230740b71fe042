@@ -1,9 +1,0 @@
-<!DOCTYPE doc [
-<!ENTITY test1 "test 1">
-<!ENTITY test2 "test 2">
-]>
-<doc>
-   <Content>Reten&#231;&#227;o</Content>
-   <Content>&lt;&gt;</Content>
-   <Content>&test1;&test2;</Content>
-</doc>

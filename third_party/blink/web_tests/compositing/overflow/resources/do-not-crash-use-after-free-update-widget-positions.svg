@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<svg id="element0" xmlns="http://www.w3.org/2000/svg">
-  <rect>
-    <animate from="10px"  to="100px" />
-    <animate attributeName="height" to="10px" dur="10s" />
-  </rect>
-</svg>

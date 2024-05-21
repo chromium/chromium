@@ -1,6 +1,0 @@
-This test checks that a SECURITY_ERR exception is raised while accessing document.domain in a sandboxed iframe (without "allow-origin" set). This test will print "PASS" on success.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

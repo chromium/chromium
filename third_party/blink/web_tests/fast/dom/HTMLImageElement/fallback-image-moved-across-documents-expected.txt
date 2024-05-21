@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Infinitely nested fallback content shadow trees should not be created, or this test will never terminate.
-  assert_equals: Fallback content will not be displayed, fallback content is treated as display:none. expected 0 but got 16
-Harness: the test ran to completion.
-

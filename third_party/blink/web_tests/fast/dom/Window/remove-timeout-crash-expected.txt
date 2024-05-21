@@ -1,3 +1,0 @@
-Test for bug 23007: Timer-related crash when closing Web Inspector.
-
-PASS if no crash.

@@ -1,1 +1,0 @@
-PASS - Null corresponding element dereference does not crash.

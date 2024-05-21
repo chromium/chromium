@@ -1,6 +1,0 @@
-battre@chromium.org
-csharrison@chromium.org
-engedy@chromium.org
-
-# Flatbuffers' versioning is tightly coupled with TFLite.
-file://third_party/tflite/OWNERS

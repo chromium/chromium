@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] font: menu serialization
-  assert_equals: font-variant was set expected "" but got "normal"
-Harness: the test ran to completion.
-

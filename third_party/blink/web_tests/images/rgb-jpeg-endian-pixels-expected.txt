@@ -1,5 +1,0 @@
-JPEG image RGB pixels should render without color corruption and in strict
-order, regardless of the underlying machine pixel buffer endianess.
-
-  
-PASS

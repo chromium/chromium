@@ -1,8 +1,0 @@
-spec: https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
-suggested_reviewers:
-  - mikewest
-  - arturjanc
-  - lweichselbaum
-  - hemeryar
-  - ParisMeuleman
-  - valenting

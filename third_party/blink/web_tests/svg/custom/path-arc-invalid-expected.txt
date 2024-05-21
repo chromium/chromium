@@ -1,2 +1,0 @@
-CONSOLE ERROR: Error: <path> attribute d: Unexpected end of attribute. Expected arc flag ('0' or '1'), "… 0 0 0 0 0 0 0 0".
- If this text is visible the malformed SVG path is handled correctly.

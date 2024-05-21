@@ -1,3 +1,0 @@
-crbug.com/577480: Position centred content of flexboxes correctly after a style change.
-
-PASS

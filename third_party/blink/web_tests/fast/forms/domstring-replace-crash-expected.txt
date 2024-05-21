@@ -1,3 +1,0 @@
-This test checks for a regression against https://bugs.webkit.org/show_bug.cgi?id=6236 REGRESSION: Crash in DOMString::replace() in ToT (12/25/05).
-
-No crash = test PASS.

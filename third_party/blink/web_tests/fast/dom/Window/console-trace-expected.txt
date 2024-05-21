@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: console.trace
-Tests for absence of ASSERT in console.trace() due to incomplete inheritance chain.
-
-Test succeeds if this document doesn't crash a Debug build

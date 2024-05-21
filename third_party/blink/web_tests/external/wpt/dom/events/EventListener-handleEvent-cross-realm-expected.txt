@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] EventListener is cross-realm plain object without 'handleEvent' property
-  assert_equals: expected "object" but got "undefined"
-[FAIL] EventListener is cross-realm plain object with non-callable 'handleEvent' property
-  assert_equals: expected "object" but got "undefined"
-[FAIL] EventListener is cross-realm non-callable revoked Proxy
-  assert_equals: expected "object" but got "undefined"
-Harness: the test ran to completion.
-

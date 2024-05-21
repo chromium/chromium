@@ -1,6 +1,0 @@
-Tests fragment is stripped from url by resource and page agents.
-
-Child frame url: http://127.0.0.1:8000/devtools/resources/fragment-frame.html
-Child frame resource url: http://127.0.0.1:8000/devtools/resources/fragment-frame.html
-Child frame request url: http://127.0.0.1:8000/devtools/resources/fragment-frame.html
-

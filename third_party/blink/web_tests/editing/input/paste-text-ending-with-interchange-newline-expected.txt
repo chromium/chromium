@@ -1,4 +1,0 @@
-This tests pasting a text with an interchange new line at the end. WebKit shouldn't insert a new line.
-|   <shadow:root>
-|     <div>
-|       "abc def"

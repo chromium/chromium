@@ -1,1 +1,0 @@
-throw "Exception in worker";

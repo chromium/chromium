@@ -1,3 +1,0 @@
-Test for bug 5620: Should only honor encoding from <meta> in HTML
-
-Charset: UTF-8 (should be UTF-8)

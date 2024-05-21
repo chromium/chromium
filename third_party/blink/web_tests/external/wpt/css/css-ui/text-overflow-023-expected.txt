@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Checks hit testing on the ellipsis
-  assert_equals: the element targeted by a hit on the ellipsis is the elided inline. expected "target" but got "parent"
-Harness: the test ran to completion.
-

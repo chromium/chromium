@@ -1,3 +1,0 @@
-This is a test for bug 30944. Passes if it does not crash.
-
-Hover me

@@ -1,7 +1,0 @@
-PASS elements[0].getBoundingClientRect().top is elements[1].getBoundingClientRect().top
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Both elements below should be on the same line.

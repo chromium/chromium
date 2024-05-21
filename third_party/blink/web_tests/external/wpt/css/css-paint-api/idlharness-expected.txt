@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSS namespace: attribute paintWorklet
-  assert_own_property: CSS does not have property "paintWorklet" expected property "paintWorklet" missing
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CORS request with setRequestHeader auth to URL NOT accepting Authorization header
-  Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://www1.web-platform.test:8001/xhr/resources/auth8/corsenabled-no-authorize.py'.
-Harness: the test ran to completion.
-

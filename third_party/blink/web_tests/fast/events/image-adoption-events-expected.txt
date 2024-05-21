@@ -1,5 +1,0 @@
-PASS readystatechange event handler was executed when complete
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

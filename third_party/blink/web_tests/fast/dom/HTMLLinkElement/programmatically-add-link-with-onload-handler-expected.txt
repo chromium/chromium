@@ -1,4 +1,0 @@
-This tests that a Load event is fired at a programmatically inserted HTML Link element once it loads its style sheet. This test PASSED if you see the word PASS below. Otherwise, it FAILED.
-
-PASS Fired Load event.
-

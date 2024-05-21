@@ -1,4 +1,0 @@
-Default policy for navigation to 'done.html' is 'new background tab'
-This test opens a new window by middle-clicking on a link with target=_blank. It passes, if the WebViewClient::createView method was invoked with the parameter "done.html".
-
-link

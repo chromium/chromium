@@ -1,5 +1,0 @@
-PASS
-PASS
-PASS
-
-crbug.com/501726: layout gets set on self-collapsing block during margin collapsing

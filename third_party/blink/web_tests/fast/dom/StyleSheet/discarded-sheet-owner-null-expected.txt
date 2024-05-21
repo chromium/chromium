@@ -1,9 +1,0 @@
-This tests that ownerNode of orphan sheet is null.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS oldSheet.ownerNode is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,6 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=11078 Forms Don't Submit (ASP Pages).
-
-PASS: document.all.item('1') == document.head
-PASS: document.all.item('target') == document.getElementById('target')
-PASS: document.all.item('foo') == undefined
-

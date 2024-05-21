@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['cy'] = "10" should not set the property value
-  assert_equals: expected "" but got "10"
-Harness: the test ran to completion.
-

@@ -1,6 +1,0 @@
-This test passes as long as the word 'FAIL' and an accompanying message do not appear in the subframe.
-
---------
-Frame: 'aFrame'
---------
-Inner iframe.

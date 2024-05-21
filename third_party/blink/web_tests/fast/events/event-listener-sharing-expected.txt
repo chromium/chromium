@@ -1,9 +1,0 @@
-Tests that an event handler registered on two nodes still fires after one of the nodes has been GC'd.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS clickCount is 100
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

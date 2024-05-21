@@ -1,7 +1,0 @@
-This test checks that the grid items are shifted by theirs before and start margins inside their grid area.
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

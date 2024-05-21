@@ -1,7 +1,0 @@
-Test for toString on event.view. This test simulates a click when run via DumpRenderTree. Otherwise, click below and you should see "Success":
-
-event.view :
-document: [object HTMLDocument]
-proto: [object Window]
-Success getting [object Window]
-

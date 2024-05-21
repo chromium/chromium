@@ -1,5 +1,0 @@
-Expect ref node 'C'; pointer before: A B * [C]
-
-remove node 'C'
-
-Expect ref node 'B'; pointer after: A B

@@ -1,5 +1,0 @@
-Test for bug 21945: Space should be allowed between -- and > in comment end
-
-This test check that broken comments in body are correctly parsed. You should see PASSED once.
-
-PASSED

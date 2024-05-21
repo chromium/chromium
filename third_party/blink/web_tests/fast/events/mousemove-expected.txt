@@ -1,7 +1,0 @@
-PASS Mouse move event cancellable.
-PASS Mouse move event cancellable.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-The test element

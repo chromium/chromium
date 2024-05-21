@@ -1,6 +1,0 @@
-This page dumps the back/forward list that results from setting window.location.href
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/location-href-set-adds-history-item.html
-curr->  http://127.0.0.1:8000/navigation/location-href-set-adds-history-item.html?1
-===============================================

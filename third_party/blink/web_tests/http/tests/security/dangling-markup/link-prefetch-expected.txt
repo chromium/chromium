@@ -1,8 +1,0 @@
-CONSOLE ERROR: This test relies on dumping data via `window.internals`.
-CONSOLE DEBUG: Preconnect triggered for http://1.should.preconnect.test/
-CONSOLE DEBUG: Preconnect triggered for http://2.should.preconnect.test/
-CONSOLE DEBUG: DNS prefetch triggered for 1.should.dns-prefetch.test
-CONSOLE DEBUG: DNS prefetch triggered for 2.should.dns-prefetch.test
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

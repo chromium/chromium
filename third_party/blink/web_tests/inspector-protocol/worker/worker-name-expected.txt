@@ -1,5 +1,0 @@
-Tests that the worker's name is exposed on its Execution Context.
-
-target title: "the name"
-execution context name: "the name"
-

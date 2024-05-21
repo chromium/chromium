@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Filling effect values reflect changes to the the animation's iteration composite mode
-  assert_equals: Effect value after updating the iteration composite mode expected "200px" but got "100px"
-Harness: the test ran to completion.
-

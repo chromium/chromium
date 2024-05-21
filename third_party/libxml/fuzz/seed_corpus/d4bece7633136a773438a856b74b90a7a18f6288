@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<test-case xmlns="http://www.example.org/test-case"
-	   xmlns:tc="http://www.example.org/test-import-case"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.example.org/test-case ./582887-case.xsd">
-  <tc:test-element test-attribute="this" />
-</test-case>

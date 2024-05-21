@@ -1,5 +1,0 @@
-Test for bug 30150 Crash when accessing clipboardData.types
-
-PASS if didn't crash.
-
-Test

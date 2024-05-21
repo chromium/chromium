@@ -1,3 +1,0 @@
-Test page for the bug 14898 : XMLHttpRequest.getAllResponseHeaders should separate headers with CRLF
-
-PASS

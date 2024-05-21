@@ -1,3 +1,0 @@
-Test that a backward delete in an editable root that contains only a single visible position removes all children of the editable root.
-
-PASS

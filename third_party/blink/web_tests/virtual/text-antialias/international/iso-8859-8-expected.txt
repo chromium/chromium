@@ -1,7 +1,0 @@
-Test rendering of ISO-8859-8.
-
-PASS Test completed successfully
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

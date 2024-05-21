@@ -1,3 +1,0 @@
-Bug 37618: Crash when an image drag-drop operation happens inside a continuously refreshing iframe.
-
-SUCCESS

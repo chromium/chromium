@@ -1,3 +1,0 @@
-History reload can only navigate the page in the self frame, no matter what target frame is defined in base tag and no new window can be created. This is a test case for bug https://bugs.webkit.org/show_bug.cgi?id=45369.
-load count : 2
-PASSED

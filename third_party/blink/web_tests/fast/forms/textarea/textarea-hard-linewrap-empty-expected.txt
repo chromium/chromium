@@ -1,4 +1,0 @@
-Test for Bug 9537 REGRESSION: Reproducible crash in WebCore::LayoutTextField::textWithHardLineBreaks()
-https://bugs.webkit.org/show_bug.cgi?id=9537
- 
-Success

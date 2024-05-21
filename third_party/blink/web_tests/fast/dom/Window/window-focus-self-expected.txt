@@ -1,2 +1,0 @@
-This tests that a window cannot focus itself by using javascript: urls.
-Window was blurred

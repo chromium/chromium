@@ -1,5 +1,0 @@
-Test opera W3C test suite(http://w3c-test.org/webappsec/tests/cors/submitted/opera/staging/redirect-origin.htm) test case 13 for redirection.
-Request URL origin is not same origin with the original URL origin. Final response contains "Access-Control-Allow-Origin: null". Should print PASS.
-
-PASS
-

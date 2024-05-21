@@ -1,6 +1,0 @@
-This tests to make sure that RemoveFormat destroys lists if they are fully selected. However, because the bug 43017 requires WebKit does not destroy lists, "foo" and "bar" should be in a separate list item.
-| <ul>
-|   <li>
-|     "<#selection-anchor>foo"
-|   <li>
-|     "bar<#selection-focus>"

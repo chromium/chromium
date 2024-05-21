@@ -1,9 +1,0 @@
-This tests that we don't cause an assertion failure on relayout of nested positioned elements. This test pass if we don't cause an assertion failure.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById("hideMe").style.display is "none"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

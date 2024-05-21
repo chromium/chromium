@@ -1,9 +1,0 @@
-Accessing FileReader when in a detached state.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS fileReader.readAsArrayBuffer(new File(['hello'], 'world.html')) threw exception AbortError: Failed to execute 'readAsArrayBuffer' on 'FileReader': Reading from a detached FileReader is not supported..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

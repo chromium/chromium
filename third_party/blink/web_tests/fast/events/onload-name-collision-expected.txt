@@ -1,2 +1,0 @@
-This tests that an onload handler named 'onload' is called properly. You should see "PASS" below.
-PASS: onload function gets called.

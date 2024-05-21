@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <!-- Test for http://crbug.com/263742
-       Note that there's a single newline character between </tspan> and </text> -->
- <text x="50" y="50">This passes if <tspan x="50" y="100">two lines of text are visible</tspan>
-</text>
-</svg>

@@ -1,8 +1,0 @@
-Test XMLHttpRequest and document.xmlEncoding interaction.
-
-The request body should contain the word "Проверка".
-
-responseXML.xmlEncoding: windows-1251
-responseXML.xmlVersion: 1.0
-responseXML.xmlStandalone: true
-Request body: <?xml version="1.0" encoding="windows-1251" standalone="yes"?><doc>Проверка</doc>

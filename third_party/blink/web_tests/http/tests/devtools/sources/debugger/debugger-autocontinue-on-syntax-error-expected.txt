@@ -1,5 +1,0 @@
-Tests that debugger won't stop on syntax errors even if "pause on uncaught exceptions" is on.
-
-syntax-error.html:4 Uncaught SyntaxError: Unexpected token ')' (at syntax-error.html:4:1)
-syntax-error.html:8 Iframe loaded
-

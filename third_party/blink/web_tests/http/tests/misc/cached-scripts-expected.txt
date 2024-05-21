@@ -1,2 +1,0 @@
-This tests that when script that calls document.write to write out two new script tags while being parsed causes both scripts to be executed, even if the first one is cached.
-SUCCESS

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ReadableStream with non-Uint8Array chunk passed to Response.bytes() causes TypeError
-  (intermediate value)[responseReaderMethod] is not a function
-Harness: the test ran to completion.
-

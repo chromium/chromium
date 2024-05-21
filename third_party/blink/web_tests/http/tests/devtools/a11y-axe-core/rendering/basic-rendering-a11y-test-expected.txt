@@ -1,4 +1,0 @@
-Tests accessibility in the rendering view using the axe-core linter.
-aXe violations: []
-
-

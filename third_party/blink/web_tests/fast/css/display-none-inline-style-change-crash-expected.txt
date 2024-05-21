@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=15887 REGRESSION (r27576): Crash in ComputedStyle::affectedByHoverRules clicking link on Digg.
-
-This test should not crash.

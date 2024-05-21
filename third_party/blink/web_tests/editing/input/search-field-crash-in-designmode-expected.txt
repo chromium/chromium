@@ -1,3 +1,0 @@
-This test ensures WebKit does not crash when user modifies the contents of search fields in the design mode. WebKit should not crash and you should see PASS below:
-
- PASS

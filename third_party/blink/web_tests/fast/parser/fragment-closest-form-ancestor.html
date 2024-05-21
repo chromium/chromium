@@ -1,9 +1,0 @@
-<div>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=56836">https://bugs.webkit.org/show_bug.cgi?id=56836</a>. Verify that WebKit does not ASSERT when a fragment's context element has an open form ancestor.</div>
-<form>
-<div id="test">
-<script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-        
-    document.getElementById("test").innerHTML = "</form>";
- </script>

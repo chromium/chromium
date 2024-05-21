@@ -1,5 +1,0 @@
-PASS document.all.customProperty is 42
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

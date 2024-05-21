@@ -1,3 +1,0 @@
-CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
-This calling deleteFromDocument after document.open. WebKit should not crash.
-PASS

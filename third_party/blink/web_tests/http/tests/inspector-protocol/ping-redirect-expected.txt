@@ -1,5 +1,0 @@
-Tests that redirect from navigator.sendBeacon() is recorded.
-Request Sent: /inspector-protocol/resources/ping-redirect.php
-Request Sent: /inspector-protocol/resources/ping-redirected-page.html
-Redirect Source: /inspector-protocol/resources/ping-redirect.php
-

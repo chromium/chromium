@@ -1,1 +1,0 @@
-Bug 109616 - ASSERT(!layoutObject()->needsLayout()) when calling Element::focus() with generated content

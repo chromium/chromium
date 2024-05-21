@@ -1,7 +1,0 @@
-Test entering full screen for nested iframes.
-
-To test manually, click into inner frame, the page should enter full screen mode.
-
-SUCCEED - entered full screen!
-END OF TEST
-

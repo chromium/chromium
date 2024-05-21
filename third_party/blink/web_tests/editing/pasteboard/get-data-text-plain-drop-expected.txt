@@ -1,5 +1,0 @@
-This tests that getData is supported for type text/plain during drop. We select "drag", drag it, and then check that on drop getData returns "drag". To run this test manually, just drag "drag" on to "drop".
-
-drag
-drop
-SUCCESS: Pasted text matched expected text

@@ -1,7 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script>
-document.getElementsByTagName('html')[0].insertAdjacentHTML('afterbegin', '<p><frameset></frameset></p>');
-test(() => {}, "Forced body tag insertion in a fragment shouldn't crash on frameset");
-</script>

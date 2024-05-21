@@ -1,6 +1,0 @@
-This tests that if both aria-labeledby and aria-labelledby are used (for reasons best known to the page author), then aria-labelledby is preferred.
-
-Delta Eta Eta Using aria-labelledby Using aria-labeledby
-usingLabelledby.name: [Using aria-labelledby]
-usingLabeledby.name: [Using aria-labeledby]
-usingLabeledbyAndLabelledby.name: [Using aria-labelledby]

@@ -1,5 +1,0 @@
-
-  line { display: block; }
-  [type~=match] { background: lime ! important; }
-  line:nth-last-of-type(3n-1) { background: red; }
-  [hidden] { visibility: collapse; }

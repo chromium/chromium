@@ -1,8 +1,0 @@
-This test checks to see if you can change an event after it's dispatched. The DOM standard says that you can't, and that the various init functions do nothing once an event is dispatched.
-
-If the test passes, the attempts to change an event below should fail.
-
-Received an event, type is load
-Target is [object HTMLDocument]
-Trying to change the type to unload
-Event type is now load

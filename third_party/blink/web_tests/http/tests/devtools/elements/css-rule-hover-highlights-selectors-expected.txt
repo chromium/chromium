@@ -1,9 +1,0 @@
-
-Running: setupProxyOverlay
-
-Running: testRegularNodeSelection
-Highlights drawn: 4
-
-Running: testShadowDOMNodeSelection
-Highlights drawn: 6
-

@@ -1,2 +1,0 @@
-This should be green
-SUCCESS

@@ -1,3 +1,0 @@
-Layout test for bug 23858
-
-If this page is displayed without crashing then the test has passed.

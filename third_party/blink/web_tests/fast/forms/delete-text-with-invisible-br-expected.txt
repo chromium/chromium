@@ -1,3 +1,0 @@
-This test ensures WebKit does not lose focus when the text is removed from a text field when br's visibility is hidden.
-
-PASS

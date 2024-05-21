@@ -1,2 +1,0 @@
-CONSOLE ERROR: Access to font at 'http://127.0.0.1:8080/resources/Ahem.ttf' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-CONSOLE ERROR: Access to font at 'http://127.0.0.1:8080/resources/Ahem.ttf' (redirected from 'http://127.0.0.1:8000/resources/redirect.php?url=http://127.0.0.1:8080/resources/Ahem.ttf') from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.

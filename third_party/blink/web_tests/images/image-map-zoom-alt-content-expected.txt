@@ -1,3 +1,0 @@
-This tests that client side image maps still work when zooming is in effect.
-
-SUCCESS

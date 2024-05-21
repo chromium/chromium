@@ -1,3 +1,0 @@
-This test verifies layout overflow will be recomputed when CSS transform is changed.
-PASS
-PASS

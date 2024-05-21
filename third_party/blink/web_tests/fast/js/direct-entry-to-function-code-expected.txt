@@ -1,1 +1,0 @@
-This test ensures that we can directly enter JS function code and re-enter globally without any initial global code being executed.

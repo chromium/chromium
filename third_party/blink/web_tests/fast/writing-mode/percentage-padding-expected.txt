@@ -1,1 +1,0 @@
-PASS: The block is the correct size.

@@ -1,4 +1,0 @@
-PASS: KOI8-R
-
-
-This test verifies that charset sniffer ignores meta tag in a title.

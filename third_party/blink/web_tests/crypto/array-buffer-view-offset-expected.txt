@@ -1,9 +1,0 @@
-Test that an ArrayBufferView with offset is processed correctly.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS bytesToHexString(new Uint8Array(digest)) is '2c7e7c384f7829694282b1e3a6216def8082d055'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

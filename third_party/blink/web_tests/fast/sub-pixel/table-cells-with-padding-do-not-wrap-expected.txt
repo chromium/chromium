@@ -1,8 +1,0 @@
-PASS table cell does not wrap.
-PASS display: table-cell does not wrap.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Should not wrap
-Should not wrap

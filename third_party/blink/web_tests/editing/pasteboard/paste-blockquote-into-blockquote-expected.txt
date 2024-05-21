@@ -1,9 +1,0 @@
-This tests pasting a blockquote into a blockquote. Nothing below should be double-blockquoted.
-| <blockquote>
-|   id="block"
-|   type="cite"
-|   "OneTwo"
-| <blockquote>
-|   type="cite"
-|   <div>
-|     "Three<#selection-caret>"

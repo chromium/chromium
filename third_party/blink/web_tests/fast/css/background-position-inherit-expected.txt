@@ -1,5 +1,0 @@
-This tests that background-position: inherit is applied correctly.
-
-PASS
-PASS
-PASS

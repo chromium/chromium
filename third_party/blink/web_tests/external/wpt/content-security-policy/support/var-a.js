@@ -1,1 +1,0 @@
-self.a = true;

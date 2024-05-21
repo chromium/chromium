@@ -1,5 +1,0 @@
-Bug 70171: Crash in LayoutTableSection::splitColumn
-
-This test PASSES if it does not CRASH or ASSERT.
-
-	

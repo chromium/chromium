@@ -1,6 +1,0 @@
-PingLoader dispatched to 'http://localhost:8000/navigation/resources/save-Ping.php?test=cross-origin'.
-Ping sent successfully
-CONTENT_TYPE: text/ping
-HTTP_PING_FROM: http://127.0.0.1:8000/navigation/ping-cross-origin.html
-HTTP_PING_TO: http://127.0.0.1:8000/navigation/resources/check-ping.php?test=cross-origin
-REQUEST_METHOD: POST

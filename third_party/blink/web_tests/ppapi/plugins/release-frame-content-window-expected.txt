@@ -1,2 +1,0 @@
-This tests that releasing a reference to a contentWindow that has already been navigated away works correctly and does not crash. If this test is successful, the word SUCCESS should be seen below.
-SUCCESS

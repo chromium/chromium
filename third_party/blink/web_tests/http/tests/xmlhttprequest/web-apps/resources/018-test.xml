@@ -1,9 +1,0 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-  <title>PASS</title>
- </head>
- <body onload="this.ownerDocument.title='FAIL'">
-  <form action="javascript:alert('FAIL')" onsubmit="this.firstChild.data = 'FAIL'; return false;">PASS</form>
-  <script>alert('FAIL')</script>
- </body>
-</html>

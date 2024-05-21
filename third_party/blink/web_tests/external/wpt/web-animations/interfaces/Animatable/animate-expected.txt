@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] animate() with a non-null invalid pseudoElement '' throws a SyntaxError
-  assert_throws_dom: function "() => {\n      div.animate(null, {pseudoElement: pseudo});\n    }" did not throw
-[FAIL] animate() with a non-null invalid pseudoElement '::abc' throws a SyntaxError
-  assert_throws_dom: function "() => {\n      div.animate(null, {pseudoElement: pseudo});\n    }" did not throw
-Harness: the test ran to completion.
-

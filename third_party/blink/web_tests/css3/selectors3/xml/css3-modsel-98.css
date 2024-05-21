@@ -1,6 +1,0 @@
-@namespace a url(http://www.example.org/a);
-@namespace b url(http://www.example.org/b);
-*|p, *|q, *|r, *|s { display : block ; margin-bottom : 1em }
-*|q, *|t { background-color : red }
-*[a|title="foo"] {background-color : lime }
-*[a|title=footwo] {background-color : lime }

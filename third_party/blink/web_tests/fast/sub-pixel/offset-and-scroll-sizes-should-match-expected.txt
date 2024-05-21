@@ -1,8 +1,0 @@
-PASS test.scrollWidth == test.offsetWidth is true
-PASS test.scrollHeight == test.offsetHeight is true
-PASS test.scrollWidth == test.offsetWidth is true
-PASS test.scrollHeight == test.offsetHeight is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

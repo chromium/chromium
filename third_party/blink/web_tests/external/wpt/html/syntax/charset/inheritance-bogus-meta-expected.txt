@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Child with bogus Content-Type charset
-  assert_equals: expected "Ά\\n" but got "¢\\n"
-Harness: the test ran to completion.
-

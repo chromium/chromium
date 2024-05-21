@@ -1,3 +1,0 @@
-This tests to make sure that hitting return inside (but not at the end of) a header element clones it. Below there should be two identical h2 elements.
-
-<h2 id="h2">fo</h2><h2 id="h2">o</h2>

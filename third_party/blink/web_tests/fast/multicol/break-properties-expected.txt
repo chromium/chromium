@@ -1,4 +1,0 @@
-PASS: 'break-before' is in column 2
-PASS: 'after-break' is in column 4
-PASS: 'no-break' is in column 5
-

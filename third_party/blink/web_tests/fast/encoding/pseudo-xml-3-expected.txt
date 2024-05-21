@@ -1,3 +1,0 @@
-Test for bug 9783: An XML declaration without an explicit encoding incorrectly triggers UTF-8 encoding in an HTML document
-
-Charset: KOI8-R (should be KOI8-R)

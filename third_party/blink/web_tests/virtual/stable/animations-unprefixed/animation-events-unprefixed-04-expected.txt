@@ -1,4 +1,0 @@
-Tests that custom events with unprefixed animations names are correctly dispatched.
-PASS: animationstart event listener has been called.
-PASS: animationiteration event listener has been called.
-PASS: animationend event listener has been called.

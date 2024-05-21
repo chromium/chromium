@@ -1,7 +1,0 @@
-Tests that frame inside crafted frame doesn't cause 'MainFrameNavigated' event and correctly attaches to frame tree. crbug/259036
-
-    FrameAdded id: 2, parentFrameId: 1, isMainFrame: false
-    FrameNavigated id: 2, parentFrameId: 1, isMainFrame: false
-    FrameAdded id: 3, parentFrameId: 2, isMainFrame: false
-    FrameNavigated id: 3, parentFrameId: 2, isMainFrame: false
-

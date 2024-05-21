@@ -1,4 +1,0 @@
-This tests that the scroll origin for boxes with -webkit-writing-mode:vertical-rl; direction:rtl; overflow:scroll is correct.
-
-PASS: test.scrollTop is correct.
-

@@ -1,1 +1,0 @@
-Tests that an all-whitespace class attribute does not cause an assertion failure.

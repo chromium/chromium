@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Indexed child browsing contexts
-  assert_equals: The first child browsing context's container should be the object element. expected null but got object "[object Window]"
-Harness: the test ran to completion.
-

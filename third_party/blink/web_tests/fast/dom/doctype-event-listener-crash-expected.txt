@@ -1,5 +1,0 @@
-This page tests for a crash when adding an event listener to a doctype node.
-
-If the test passes, you'll see a PASS message below.
-
-PASS: You didn't crash.

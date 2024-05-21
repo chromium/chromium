@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] document.applets should not contain any nodes
-  assert_equals: expected 0 but got 1
-Harness: the test ran to completion.
-

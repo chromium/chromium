@@ -1,5 +1,0 @@
-This test verifies that var declarations in different evaluation units don't stomp each other.
-
-PASS: x should be 1 and is.
-PASS: y should be 1 and is.
-

@@ -1,9 +1,0 @@
-Tests that used listeners are not collected.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS callbackObserver.wasCollected is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

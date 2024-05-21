@@ -1,9 +1,0 @@
-Passes if it doesn't crash and the child is not in the id map
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById('child') is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,8 +1,0 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="200px" height="200px" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<filter x="0" y="0" width="100%" height="100%" id="turb" primitiveUnits="objectBoundingBox">
-<feTurbulence baseFrequency=".01" numOctaves="2" seed="1" type="turbulence"/>
-</filter>
-</defs>
-<rect x="0" y="0" width="200" height="200" filter="url(#turb)"/>
-</svg>

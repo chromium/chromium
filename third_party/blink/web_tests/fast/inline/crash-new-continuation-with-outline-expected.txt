@@ -1,3 +1,0 @@
-Test case for bug 84774: NULL-deref in LayoutBox::clippedOverflowRectForRepaint
-
-PASSED, this test did not crashed.

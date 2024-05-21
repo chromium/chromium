@@ -1,9 +1,0 @@
-This tests that slider controls get the onchange event and that it is sent after the DOMInput event.
-
-input
-change
-input
-change
-input
-change
-

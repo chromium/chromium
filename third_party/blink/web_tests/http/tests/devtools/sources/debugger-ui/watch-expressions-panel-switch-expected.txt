@@ -1,9 +1,0 @@
-Tests debugger does not fail when stopped while a panel other than scripts was opened. Both valid and invalid expressions are added to watch expressions.
-
-Watches before running testFunction:
-x: <not available>
-y.foo: <not available>
-Watches on pause in testFunction:
-x: 4
-y.foo: <not available>
-

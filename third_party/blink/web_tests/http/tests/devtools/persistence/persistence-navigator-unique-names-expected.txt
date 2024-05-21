@@ -1,9 +1,0 @@
-Verify that navigator view removes mapped UISourceCodes.
-
-bad/foo/bar [dimmed]
-  2.js
-ugly/bar [dimmed]
-  3.js
-good/foo/bar [dimmed]
-  1.js
-

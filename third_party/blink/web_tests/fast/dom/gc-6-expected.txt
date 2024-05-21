@@ -1,9 +1,0 @@
-This test verifies that DOM documents are protected against garbage collection but without necessarily keeping all their children alive, so long as any node in the document is reachable.
-
-The output should be the following pieces of text on lines by themselves: "B", "[object HTMLSpanElement]", "[object HTMLSpanElement]", "[object HTMLDocument]".
-
-B
-[object HTMLSpanElement]
-[object HTMLSpanElement]
-[object HTMLDocument]
-

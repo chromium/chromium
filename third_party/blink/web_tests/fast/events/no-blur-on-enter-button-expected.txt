@@ -1,6 +1,0 @@
-This test verifies that the ENTER key does not fire the blur event for input type="button" and button elements.
-
- 
-Test 1 Passed.
-Test 2 Passed.
-

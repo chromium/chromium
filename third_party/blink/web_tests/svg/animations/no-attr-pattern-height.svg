@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <pattern id="pattern" patternUnits="userSpaceOnUse" width="100">
-    <rect width="100" height="100" fill="#008000"/>
-    <set attributeName="height" to="100" fill="freeze"/>
-  </pattern>
-  <rect width="100" height="100" fill="#ff0000"/>
-  <rect width="100" height="100" fill="url(#pattern)"/>
-</svg>

@@ -1,6 +1,0 @@
-This test checks for the autofocus attribute. Autofocus is set on the first and on the third input. Success on "YES NO YES".
-
-  
-YES
-NO
-YES

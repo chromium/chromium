@@ -1,7 +1,0 @@
-This tests for a bug where RemoveFormat would reverse the order of paragraphs. Bug: the caret is not on the last line but it should be.
-| "<#selection-anchor>foo"
-| <div>
-|   <br>
-| <div>
-|   <#selection-focus>
-|   <br>

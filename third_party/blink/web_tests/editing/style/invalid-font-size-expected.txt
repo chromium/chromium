@@ -1,5 +1,0 @@
-This tests applying font size to text inside a font element with an invalid size attribute.
-WebKit should not crash and there should be exactly one font element with size="4"
-| <font>
-|   size="4"
-|   "<#selection-anchor>hello<#selection-focus>"

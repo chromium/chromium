@@ -1,7 +1,0 @@
-PASS evalulator.evaluate('/body', 0, nsResolver, 0, null); threw exception TypeError: Failed to execute 'evaluate' on 'XPathEvaluator': parameter 2 is not of type 'Node'..
-PASS evalulator.evaluate('/body', fragment, nsResolver, 0, null); threw exception NotSupportedError: Failed to execute 'evaluate' on 'XPathEvaluator': The node provided is '#document-fragment', which is not a valid context node type..
-PASS evalulator.evaluate('/body', doctype, nsResolver, 0, null); threw exception NotSupportedError: Failed to execute 'evaluate' on 'XPathEvaluator': The node provided is 'html', which is not a valid context node type..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

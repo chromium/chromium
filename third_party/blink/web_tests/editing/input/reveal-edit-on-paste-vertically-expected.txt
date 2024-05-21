@@ -1,4 +1,0 @@
-After pasting text in a scrolled out of view editor control, the control is to be brought in the center of the view
-To test manually, have some text in the clipboard, then scroll the page up to the top, then paste. Input box should be scrolled into the middle of the view.
-WebKit
-ScrollVertically: PASS

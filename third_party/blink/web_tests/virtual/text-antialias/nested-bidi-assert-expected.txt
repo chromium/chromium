@@ -1,1 +1,0 @@
-Test passes if there are no asserts in debug builds.

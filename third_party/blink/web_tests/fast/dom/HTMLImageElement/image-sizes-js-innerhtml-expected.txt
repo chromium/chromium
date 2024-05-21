@@ -1,5 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS fileName(window.testdiv.children[0].currentSrc) is "image-set-4x.png"

@@ -1,4 +1,0 @@
-Tests setting a regexp breakpoint and disconnect.
-Called setBreakpointByUrl (with regex)
-Disconnected
-

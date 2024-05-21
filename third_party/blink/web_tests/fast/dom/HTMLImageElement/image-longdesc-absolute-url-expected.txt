@@ -1,8 +1,0 @@
-The image object.longDesc is expected to be the full path to the image description, relative to the document base.
-To match WinIE (but not FireFox), we resolve the image path in the getter, rather than the setter, allowing for pages to change the Document base URL via javascript and have object.longDesc reflect said change.
-
-SUCCESS (document.images[0].longDesc = file:///does/not/exist/test-description.html)
-
-After changing the base URL:
-
-SUCCESS (document.images[0].longDesc = file:///also/does/not/exist/test-description.html)

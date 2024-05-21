@@ -1,3 +1,0 @@
-# forbid upper case letters at word bounds in compounding
-CHECKCOMPOUNDCASE
-COMPOUNDFLAG A

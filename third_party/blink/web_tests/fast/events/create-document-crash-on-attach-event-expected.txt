@@ -1,9 +1,0 @@
-This test checks for crashes in setting an event handler on a document element created by document.implementation.createDocument.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Attached onload event handler to created document.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

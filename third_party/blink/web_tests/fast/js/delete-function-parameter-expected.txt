@@ -1,5 +1,0 @@
-This page verifies that function parameters cannot be deleted.
-
-PASS: Function parameter not deleted.
-PASS: Function parameter not deleted.
-

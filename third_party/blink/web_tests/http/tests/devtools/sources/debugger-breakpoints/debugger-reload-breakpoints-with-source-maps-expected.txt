@@ -1,7 +1,0 @@
-Tests "reload" from within inspector window while on pause.
-Breakpoint sidebar pane before reload:
-source1.js:17}
-Page reloaded.
-Breakpoint sidebar pane after reload:
-source1.js:17}
-

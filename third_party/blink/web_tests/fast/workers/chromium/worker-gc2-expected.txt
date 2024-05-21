@@ -1,4 +1,0 @@
-This page tests for a GC crash when tearing down a worker. If the tests passes, you'll see a PASS message below.
-
-PASS: You didn't crash.
-

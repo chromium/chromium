@@ -1,1 +1,0 @@
-../resources/scriptdata01.dat: PASS

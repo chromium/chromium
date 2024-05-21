@@ -1,4 +1,0 @@
-This test verifies that starting a drag on an image inside a -webkit-user-drag: element container succeeds. To run this test manually, try dragging the image to the box below. You should see the word "PASS" appear if it succeeds.
-
-PASS
-

@@ -1,3 +1,0 @@
-Tests that re-trying auth works.
-PASSED: navigation complete.
-

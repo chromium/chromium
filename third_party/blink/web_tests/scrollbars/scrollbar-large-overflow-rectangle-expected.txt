@@ -1,3 +1,0 @@
-This page should be scrollable
-
-PASS

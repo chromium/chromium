@@ -1,5 +1,0 @@
-This tests querying BackColor and FontSize of the typing style. WebKit should not modify the typing style and should return the correct values.
-
-PASS: background color
-PASS: font size
-

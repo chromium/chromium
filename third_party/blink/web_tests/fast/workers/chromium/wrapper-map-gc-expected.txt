@@ -1,3 +1,0 @@
-This test tries to cause GC in Worker context. It also fires events in the Worker, which allocates JS DOM Wrappers for Event object. As a result of GC, the maps that map wrappers to DOM Objects will be cleaned up. Test succeeds if it does not crash and prints 'PASS' at the end.
-
-PASS

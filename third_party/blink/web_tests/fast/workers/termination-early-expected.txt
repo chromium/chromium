@@ -1,5 +1,0 @@
-This test terminates a worker at the moment before WorkerThread::workerThread starts execute the initial script. This stage includes initialization of the script engine, and V8 may crash if terminated during initialization. Test succeeds if it does not hang or crash (if worker thread is running in the separate process, that process could hang or crash).
-
-This test reproduces crash specific to v8 and multi-process Chromium architecture. In case of JSC, the test is just another opportunity to exercise the Worker code.
-
-DONE

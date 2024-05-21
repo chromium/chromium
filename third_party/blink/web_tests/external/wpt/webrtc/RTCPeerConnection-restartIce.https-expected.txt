@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] restartIce() does not trigger negotiation ahead of initial negotiation
-  assert_equals: No negotiationneeded event expected (undefined) undefined but got (object) object "[object Event]"
-[FAIL] restartIce() survives remote offer containing partial restart
-  assert_false: Restarted 2 expected false got true
-[FAIL] restartIce() survives remote offer containing partial restart (perfect negotiation)
-  assert_false: Restarted 2 expected false got true
-Harness: the test ran to completion.
-

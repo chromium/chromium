@@ -1,6 +1,0 @@
-Check that inserting a spanner into the multicol container updates the preferred minimum width.
-
-You should see a blue square below.
-
-xxxxx xxxxx
-PASS

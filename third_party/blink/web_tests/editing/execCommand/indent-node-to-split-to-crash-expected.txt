@@ -1,2 +1,0 @@
-This test ensures WebKit does not crash when intending.
-PASS

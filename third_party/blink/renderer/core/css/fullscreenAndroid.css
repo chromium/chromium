@@ -1,9 +1,0 @@
-video:fullscreen {
-  /* Fullscreen video on Android does not synchronize correctly when the <video>
-   * element is not rendered in the root render pass. Disable properties that
-   * cause this. (http://crbug.com/618753) */
-  opacity: 1 !important;
-  filter: none !important;
-  border-radius: 0 !important;
-  mix-blend-mode: normal !important;
-}

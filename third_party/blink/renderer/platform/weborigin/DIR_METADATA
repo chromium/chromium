@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>SecurityFeature"
-}
-team_email: "platform-architecture-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456828
-}

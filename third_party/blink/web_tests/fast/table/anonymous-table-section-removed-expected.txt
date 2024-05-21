@@ -1,6 +1,0 @@
-Table
-
-FAIL:
-Expected 34 for height, but got 32. 
-
-<table id="table" data-expected-height="34"><tbody><tr><td>Table</td></tr></tbody><tr></tr></table>

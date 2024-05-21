@@ -1,6 +1,0 @@
-CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
-CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
-This test ensures WebKit executes StyleWithCSS properly even in an empty document.
-First negation:PASS
-Second negation:PASS
-

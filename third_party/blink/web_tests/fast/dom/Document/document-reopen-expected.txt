@@ -1,2 +1,0 @@
-There should be only one line of text here. Bug 4395
-

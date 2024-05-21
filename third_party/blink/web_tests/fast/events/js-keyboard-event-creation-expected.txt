@@ -1,7 +1,0 @@
- 
-
-This tests that DOMKeyboardEvents are created correctly in the JavaScript API.
-
-keydown - key: Tab@DOM_KEY_LOCATION_STANDARD (keyCode/charCode: 9/0) modifiers: false,false,false,false
-
-keyup - key: Tab@DOM_KEY_LOCATION_STANDARD (keyCode/charCode: 9/0) modifiers: false,false,true,false

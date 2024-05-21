@@ -1,2 +1,0 @@
-Shadowed text
-PASS: saw 5 shadows during the transition

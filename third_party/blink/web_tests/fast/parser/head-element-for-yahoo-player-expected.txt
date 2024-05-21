@@ -1,5 +1,0 @@
-Test for rdar://problem/6576889: Cannot watch Flash movies on omg.yahoo.com.
-
-Make sure that a HEAD element exists, at least in situations where Safari 3 would create one implicitly by moving a misplaced STYLE element.
-
-PASS

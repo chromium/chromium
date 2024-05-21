@@ -1,1 +1,0 @@
-Test to ensure that finishing a Worker won't re-enter. We pass if we don't crash.

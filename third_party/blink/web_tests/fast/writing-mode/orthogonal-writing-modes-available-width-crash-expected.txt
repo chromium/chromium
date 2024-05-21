@@ -1,2 +1,0 @@
-* { display: flex; margin-top: 62152256cm; min-height: min-content; } .class_0 { writing-mode: vertical-rl; }
-if (window.testRunner) testRunner.dumpAsText();

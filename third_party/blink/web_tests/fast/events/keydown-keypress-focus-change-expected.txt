@@ -1,6 +1,0 @@
-This tests that when the keydown event changes focus, the keypress event will go to the new focused node.
-To run this test manually, type a character in the first field.
- 
-
-Test Passed
-

@@ -1,5 +1,0 @@
-Test for bug 30049: Manipulating DOM from a script while parsing XHTML can cause a crash.
-
-Should say PASS:
-
-PASS

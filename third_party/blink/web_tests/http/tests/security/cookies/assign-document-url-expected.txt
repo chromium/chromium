@@ -1,5 +1,0 @@
-http://127.0.0.1:8000/security/cookies/assign-document-url.html
-http://127.0.0.1:8000/security/cookies/assign-document-url.html
-secret=PASS
-
-

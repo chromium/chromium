@@ -1,9 +1,0 @@
-<!-- This test is designed to have errors in the svg content. It should not crash. -->
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <use xlink:href="#foo"/>
-  <script>
-    if (window.testRunner)
-      testRunner.dumpAsText();
-  </script>
-  <symbol id="foo">
-    <style>

@@ -1,1 +1,0 @@
-Test passes if it does not crash on ASan builds.

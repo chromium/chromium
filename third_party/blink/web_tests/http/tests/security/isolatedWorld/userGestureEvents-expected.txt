@@ -1,3 +1,0 @@
-Click Me
-
-Event handlers in isolated worlds for user gesture generated events should should the same permissions as handlers within the page.: PASS

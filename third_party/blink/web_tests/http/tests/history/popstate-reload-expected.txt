@@ -1,3 +1,0 @@
-Tests that popstate events do not fire when reloading.
-
-PASS

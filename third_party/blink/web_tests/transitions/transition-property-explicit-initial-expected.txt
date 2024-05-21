@@ -1,7 +1,0 @@
-Tests that explicitly setting the transition-property property to 'initial' works for both prefixed and unprefixed versions.
-
-PASS: transition-property was none
-PASS: transition-property was none
-PASS: transition-property was all
-PASS: transition-property was all
-

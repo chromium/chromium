@@ -1,5 +1,0 @@
-# various tests for zip_fread
-program fread
-args broken.zip
-return 0
-file broken.zip broken.zip broken.zip

@@ -1,3 +1,0 @@
-Test for bug 19215: XSLT transformToDocument fails when stylesheet contains &#160;
-
-SUCCESS

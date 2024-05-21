@@ -1,1 +1,0 @@
-This test passes if the generated drag image is a 100x100 green box, positioned *with* the transform.

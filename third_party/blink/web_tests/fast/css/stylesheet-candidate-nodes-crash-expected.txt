@@ -1,7 +1,0 @@
-This page contains the following errors:
-
-error on line 29 at column 9: Comment not terminated 
-error on line 31 at column 1: Comment not terminated
-Below is a rendering of the page up to the first error.
-
-PASS

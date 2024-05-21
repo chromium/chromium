@@ -1,8 +1,0 @@
-Tests that color-related mix-cased CSS properties are actually color aware.
-
-bAckground-ColoR is color aware
-COloR is color aware
-Border-coLoR is color aware
-border-right-color is color aware
-BOX-SHADOW is color aware
-

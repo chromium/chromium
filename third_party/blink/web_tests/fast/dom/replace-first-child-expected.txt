@@ -1,3 +1,0 @@
-This tests for a bug in replaceChild where it would fail to replace an element if it was the first child of its container. See bug 6782 for details. If the test is successful you will see an object description below, and if it fails you will see "null".
-
-[object HTMLDivElement]

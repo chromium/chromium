@@ -1,6 +1,0 @@
-Running first script.
-Running second script.
-PASS: First script ran before second script was loaded.
-
-
-This test is for a bug where the charset sniffer would not stop looking for charset if the body contains no tags. Charset sniffer is supposed to stop looking for charset after 1024 bytes.

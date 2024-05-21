@@ -1,2 +1,0 @@
-Caught exception: TypeError: Failed to execute 'appendItem' on 'SVGPointList': parameter 1 is not of type 'SVGPoint'.
-PASSED -- WebKit did not crash!

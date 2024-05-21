@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<style>
-/* Matches monochrome displays. */
-@media not all and (monochrome: 0) { #test::before { content: "PASS"; } }
-/* Matches non-monochrome displays. */
-@media (monochrome: 0) { #test::after { content: "PASS"; } }
-</style>
-<p>You should see the word PASS below.</p>
-<p id="test"></p>

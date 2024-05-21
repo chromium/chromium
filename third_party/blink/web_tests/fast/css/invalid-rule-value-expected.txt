@@ -1,9 +1,0 @@
-This test checks that a rule with an invalid value does not halt other style rules from being applied.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById('test-invalid-rule').style.getPropertyValue('color') is 'rgb(0, 128, 0)'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

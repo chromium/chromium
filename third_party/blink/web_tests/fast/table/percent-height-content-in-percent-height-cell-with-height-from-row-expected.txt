@@ -1,9 +1,0 @@
-crbug.com/637811: There should be no box below.
-
-	
-PASS
-
-crbug.com/637811: There should be no box below.
-
-	
-PASS

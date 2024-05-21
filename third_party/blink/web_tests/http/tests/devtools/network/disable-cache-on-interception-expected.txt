@@ -1,6 +1,0 @@
-Tests to ensure cache is disabled when interception is enabled.
-
-Enabling Interception
-Cache Settings changed to: true
-Interception Enabled
-

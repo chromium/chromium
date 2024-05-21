@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12487 REGRESSION: Repro crash when a second background image is animated.
-
-This test should not make Safari crash.

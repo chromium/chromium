@@ -1,1 +1,0 @@
-This tests for a crash when undoing and then redoing after some arbitrary DOM operations are performed that effect the Undo stack. The test should not crash.

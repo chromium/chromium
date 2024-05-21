@@ -1,3 +1,0 @@
-ALERT: PASS (1/2)
-ALERT: PASS (2/2)
-This tests the effect of a valid script-nonce value. It passes if no console warning is visible and the alerts are executed.

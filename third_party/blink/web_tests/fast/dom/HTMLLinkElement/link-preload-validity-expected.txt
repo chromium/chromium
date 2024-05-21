@@ -1,6 +1,0 @@
-CONSOLE DEBUG: Preload triggered for prefetch.wut.com.test/1.gif
-CONSOLE WARNING: <link rel=preload> has an invalid `href` value
-CONSOLE WARNING: <link rel=preload> has an invalid `href` value
-CONSOLE WARNING: <link rel=preload> has an invalid `href` value
-CONSOLE DEBUG: Preload triggered for prefetch.wut.com.test/3.gif
-This test verifies that a preload request is sent and logged.

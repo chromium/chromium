@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
- <g stroke="maroon" fill="red">
-  <path d="M200 100 C100 150 100 250 200 300"/>
- </g>
- <circle cx="200" cy="200" r="100" fill="green" stroke="lime"/>
-</svg>

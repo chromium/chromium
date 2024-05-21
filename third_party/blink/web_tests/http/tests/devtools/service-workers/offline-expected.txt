@@ -1,3 +1,0 @@
-Tests "Offline" checkbox does not crash. crbug.com/746220
-
-

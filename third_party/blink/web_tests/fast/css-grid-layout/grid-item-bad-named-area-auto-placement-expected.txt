@@ -1,6 +1,0 @@
-This test checks that unknown named area are are resolved properly considering all the implicit grid lines to have the given names.
-
-PASS
-PASS
-PASS
-PASS

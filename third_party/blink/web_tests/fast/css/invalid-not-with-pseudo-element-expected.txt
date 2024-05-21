@@ -1,4 +1,0 @@
-The test passes if there is no red on the page.
-
-Filler Text
-Pass

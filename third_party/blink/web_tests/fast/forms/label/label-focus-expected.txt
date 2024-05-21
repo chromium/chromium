@@ -1,6 +1,0 @@
-This tests that the correct form control element is activated when clicking on a label. If the test is successful, the text "SUCCESS" should show below.
-label1
-label2
-
-
-SUCCESS

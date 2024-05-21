@@ -1,2 +1,0 @@
-ALERT: PASS!
-You should see "ALERT: PASS!"

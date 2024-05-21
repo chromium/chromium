@@ -1,4 +1,0 @@
-This test verifies var declarations inside a function don't stomp function arguments.
-
-PASS: x should be 1 and is.
-

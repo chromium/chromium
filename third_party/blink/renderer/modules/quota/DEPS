@@ -1,8 +1,0 @@
-include_rules = [
-    "+mojo/public",
-    "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/modules_export.h",
-    # Can modules/permissions be removed when https://crbug.com/510948 is fixed?
-    "+third_party/blink/renderer/modules/permissions",
-    "+third_party/blink/renderer/modules/quota",
-]

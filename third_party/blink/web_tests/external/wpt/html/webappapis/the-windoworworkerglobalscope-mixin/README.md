@@ -1,1 +1,0 @@
-`self.crossOriginIsolated` is tested in `html/cross-origin-opener-policy/coep.https.html`, `html/cross-origin-opener-policy/no-https.html`, `html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/no-coop-coep.https.any.js`, and `html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/resources/nested-worker-success.js`.

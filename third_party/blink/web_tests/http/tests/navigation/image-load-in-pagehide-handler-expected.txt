@@ -1,3 +1,0 @@
-Ping sent successfully
-HTTP_REFERER: http://127.0.0.1:8000/navigation/image-load-in-pagehide-handler.html
-REQUEST_METHOD: GET

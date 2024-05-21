@@ -1,5 +1,0 @@
-PASS testRunner.tooltipText is 'This should appear as a tooltip'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

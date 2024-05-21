@@ -1,3 +1,0 @@
-Test that script elements that are fetched with CORS enabled and conditionally, pass the expected access controls.
-
-PASS: crossorigin script repeatedly and conditionally loaded.

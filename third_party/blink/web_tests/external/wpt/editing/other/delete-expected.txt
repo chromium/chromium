@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 15: "\\n<p><tt>x</tt></p><p><tt><br></tt></p><p><tt><br></tt></p>\\n" 3,0,0 delete
-  assert_equals: innerHTML expected "\\n<p><tt>x</tt></p><p><tt><br></tt></p>\\n" but got "\\n<p><tt>x</tt></p><p><br></p>\\n"
-Harness: the test ran to completion.
-

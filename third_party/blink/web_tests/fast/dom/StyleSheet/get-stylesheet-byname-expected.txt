@@ -1,9 +1,0 @@
-This test verifies that a StyleSheet object will be returned instead of a HTMLStyleElement when calling document.styleSheets named property getter.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.styleSheets["test"] is styleElement.sheet
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

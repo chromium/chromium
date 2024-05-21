@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<XPath xmlns:bar="http://example.org/bar" xmlns:baz="http://example.org/baz" xmlns:foo="http://example.org/foo" xml:lang="en-ie">
-    (//. | //@* | //namespace::*) 
-    [ 
-              <!-- only directly-used namespace nodes -->
-              ancestor-or-self::bar:Something  and
-              (string(self::node()) = namespace-uri(parent::node()))
-    ]
-</XPath>

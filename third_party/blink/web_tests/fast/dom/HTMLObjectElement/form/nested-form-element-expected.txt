@@ -1,3 +1,0 @@
-This test checks whether WebKit can parse a page that contains <object> elements which are in nested and defective <form> elements. WebKit should not crash when it renders this page.
-
-PASS

@@ -1,9 +1,0 @@
-Bug 91451: REGRESSION: LayoutInline::absoluteQuads produces incorrect results for fixed position.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS inlineRect.left is parentRect.left

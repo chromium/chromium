@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: A soft navigation has been detected: text-overflow-inline-image.html#
-this is a link
-clicked
-

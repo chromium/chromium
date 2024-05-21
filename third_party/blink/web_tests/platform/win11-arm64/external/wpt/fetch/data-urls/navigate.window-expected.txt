@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Nothing fancy
-  promise_test: Unhandled rejection with value: undefined
-Harness: the test ran to completion.
-

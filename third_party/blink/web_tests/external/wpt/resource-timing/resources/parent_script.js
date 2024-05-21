@@ -1,1 +1,0 @@
-import './child.js';

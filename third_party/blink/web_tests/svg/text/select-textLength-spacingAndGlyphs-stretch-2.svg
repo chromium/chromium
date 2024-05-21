@@ -1,9 +1,0 @@
-<svg version="1.1" baseProfile="basic" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 160 120">
-<g id="container"/>
-
-<!-- "to" should be selected, char 5-6 -->
-<text id="test" x="10" y="10" font-family="Arial" font-size="10" textLength="140" lengthAdjust="spacingAndGlyphs">Text to Stretch</text>
-
-<script xlink:href="resources/SelectionTestCase.js"/>
-<script>selectRange("test", 5, 6, "to");</script>
-</svg>

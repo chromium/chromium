@@ -1,4 +1,0 @@
-This tests to make sure that WebKit removes redundant background-color property after execCommand. (See the bug 91783). There should be no background-color property below.
-| <ul>
-|   <li>
-|     "<#selection-anchor>Hello<#selection-focus>"

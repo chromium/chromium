@@ -1,8 +1,0 @@
-This tests for a bug where performing the Remove Format operation on content would apply the document's style to it, not the editable regions default style.  "foo bar baz" should not be bold, and should be black.
-| <div>
-|   contenteditable="true"
-|   id="div"
-|   style="font-weight: normal; color: black;"
-|   "<#selection-anchor>foo "
-|   "bar"
-|   " baz<#selection-focus>"

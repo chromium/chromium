@@ -1,2 +1,0 @@
-AddType application/cert-chain+cbor .cbor
-Header set X-Content-Type-Options "nosniff"

@@ -1,4 +1,0 @@
-Tests that console message from inline script in xhtml document contains correct script position information.
-
-239:2:15
-

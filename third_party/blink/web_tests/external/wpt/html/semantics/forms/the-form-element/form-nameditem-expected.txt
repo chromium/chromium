@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Trying to set an expando that would shadow an already-existing named property
-  assert_throws_js: function "function() {\n    "use strict";\n    delete form["l1"];\n  }" did not throw
-[FAIL] Trying to set an expando that shadows a named property that gets added later
-  assert_equals: expected (number) 5 but got (object) Element node <input name="new-name"></input>
-[FAIL] Trying to set a non-configurable expando that shadows a named property that gets added later
-  assert_equals: expected (number) 5 but got (object) Element node <input name="new-name2"></input>
-Harness: the test ran to completion.
-

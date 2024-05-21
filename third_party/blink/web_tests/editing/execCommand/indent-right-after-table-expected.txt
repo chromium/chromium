@@ -1,3 +1,0 @@
-This tests crash on indenting at immediately right to a table.
-
-hello

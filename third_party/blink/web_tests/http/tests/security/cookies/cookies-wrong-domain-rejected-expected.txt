@@ -1,1 +1,0 @@
-PASS: User agent rejected the cookie with a wrong domain.

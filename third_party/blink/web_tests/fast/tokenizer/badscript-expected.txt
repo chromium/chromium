@@ -1,1 +1,0 @@
-This tests that bad attribute syntax doesn't mistakenly trigger the self-closing script quirk.

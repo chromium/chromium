@@ -1,6 +1,0 @@
-Verify that iframe's main resource is reported only once.
-
-Reported resources:
-  http://127.0.0.1:8000/devtools/resource-tree/resources/dummy-iframe.html
-  http://127.0.0.1:8000/devtools/resources/inspected-page.html
-

@@ -1,3 +1,0 @@
-EVENT(webkitfullscreenchange)
-END OF TEST
-

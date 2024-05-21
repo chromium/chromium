@@ -1,1 +1,0 @@
-Test doing display:none for a cell in table with selection. This passes if it does not crash.

@@ -1,9 +1,0 @@
-This page is the target of a redirect.
-
-PASS: History item count should be 2 and is.
-
-
-============== Back Forward List ==============
-        (file test):fast/history/gesture-before-onload-location-href.html
-curr->  (file test):fast/history/resources/redirect-target.html#2
-===============================================

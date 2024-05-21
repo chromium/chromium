@@ -1,6 +1,0 @@
-Media type is set to 'handheld' to be different than the default 'screen'
-PASS: window.styleMedia.type should be 'handheld' and is.
-
-The page is printed, which changes the media type to 'print', and then back
-PASS: window.styleMedia.type should be 'handheld' and is.
-

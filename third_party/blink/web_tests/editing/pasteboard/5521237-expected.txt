@@ -1,3 +1,0 @@
-This tests for a bug when pasting a word copied from TextEdit after a regular, breaking space.
-
-Everything in this editable region should be in one paragraph.

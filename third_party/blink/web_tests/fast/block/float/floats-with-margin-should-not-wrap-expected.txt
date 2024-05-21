@@ -1,4 +1,0 @@
-1
-2
-3
-PASS, the three blocks are all on the same line

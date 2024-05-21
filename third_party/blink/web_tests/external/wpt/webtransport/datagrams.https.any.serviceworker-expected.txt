@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Fail to transfer max-size+1 datagram
-  assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
-[FAIL] Datagram MaxAge getters/setters work correctly
-  assert_equals: expected (number) Infinity but got (object) null
-[FAIL] Datagram HighWaterMark getters/setters work correctly
-  assert_throws_js: function "() => { wt.datagrams.incomingHighWaterMark = -1; }" did not throw
-Harness: the test ran to completion.
-

@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: MutationObserver callback
-Test passes if it does not crash

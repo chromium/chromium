@@ -1,5 +1,0 @@
-This tests to make sure that copying/pasting HTML results in URLs being full paths so pasting between websites works. To test manually, copy the selection and paste it into the blue box. If this is a file:/// url, the links should be relative. If this is an http:// url, the links should be absolute.
-
-link
-link
-<a href="../relative/path/foo.html">link</a><img src="resources/abe.png">

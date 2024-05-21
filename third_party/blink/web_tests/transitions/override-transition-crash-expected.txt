@@ -1,3 +1,0 @@
-This tests a crash that was occuring when you have both an explicit property and 'all' in the -webkit-transition-property CSS property. The crash would occur when you start the transition of the explicit property. Transitions of 3 sample properties are used (top, -webkit-text-fill-color, and text-shadow), to test 3 separate code paths for property animation. This test should not crash.
-
-Text With a Shadow

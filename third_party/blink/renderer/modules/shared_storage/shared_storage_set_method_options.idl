@@ -1,3 +1,0 @@
-dictionary SharedStorageSetMethodOptions {
-  boolean ignoreIfPresent;
-};

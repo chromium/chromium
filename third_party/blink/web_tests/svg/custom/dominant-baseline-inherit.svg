@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <rect x="10" y="10" width="100" height="30" fill="green"/>
-  <text x="60" y="25" text-anchor="middle" dominant-baseline="central">
-   <tspan>TEXT</tspan>
-  </text>
-</svg>

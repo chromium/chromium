@@ -1,5 +1,0 @@
-This tests parsing of numeric HTML entities that encode surrogates. Firefox allows these.
-
-Should be the same character (DESERET CAPITAL LETTER LONG I), repeated three times:
-
-𐐀����

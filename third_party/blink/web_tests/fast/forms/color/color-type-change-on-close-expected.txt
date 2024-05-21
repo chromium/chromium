@@ -1,9 +1,0 @@
-Test if a change event dispatched by closing a chooser doesn't cause a crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if not crashed.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

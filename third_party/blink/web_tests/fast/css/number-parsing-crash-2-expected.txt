@@ -1,4 +1,0 @@
-This should not crash.
-An example of a bouncing box
-
-It's just a jump to the left. And then a step to the right.

@@ -1,4 +1,0 @@
-Tests that inspect request works for nested OOPIF elements.
-
-Selected node has text: #text
-

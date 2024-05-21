@@ -1,8 +1,0 @@
-Tests that text with font-size:0 has zero height and width.
-
-PASS s.getBoundingClientRect().height is 0
-PASS s.getBoundingClientRect().width is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

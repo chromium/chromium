@@ -1,7 +1,0 @@
-button
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS getComputedStyle(button).backgroundColor is "rgb(0, 255, 0)"
-PASS getComputedStyle(button).backgroundColor is "rgb(0, 0, 255)"

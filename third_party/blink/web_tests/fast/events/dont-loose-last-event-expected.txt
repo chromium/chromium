@@ -1,3 +1,0 @@
-This should test if the test driver doesn't eat the last event if there's a leapForward call beforehand.
-
-PASS

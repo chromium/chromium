@@ -1,6 +1,0 @@
-Test case for crash bug http://crbug.com/177470
-| <span>
-|   id="end"
-|   "<#selection-caret>end"
-| "
-"

@@ -1,3 +1,0 @@
-This tests for a bug where centering text would prevent it from being right or left aligned again. The paragraph should be right aligned.
-
-Success

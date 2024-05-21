@@ -1,8 +1,0 @@
-Test for crbug.com/405468: zoom should not affect getComputedTextLength().
-
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

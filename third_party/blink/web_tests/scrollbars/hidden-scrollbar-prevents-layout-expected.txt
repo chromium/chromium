@@ -1,5 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=48154 <rdar://problem/8251616> Layout not updating in a subtree when a scrollbar is hidden in a flexbox descendant.
-
-There should be no red on this page.
-
-PASS

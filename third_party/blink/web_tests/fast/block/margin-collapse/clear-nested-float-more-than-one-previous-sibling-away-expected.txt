@@ -1,5 +1,0 @@
-Test
-Test
-PASS
-
-crbug.com/535381 : Clear floats nested in earlier siblings. There should be a green box and no red.

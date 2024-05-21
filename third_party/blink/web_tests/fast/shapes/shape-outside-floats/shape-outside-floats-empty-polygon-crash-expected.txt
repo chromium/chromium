@@ -1,4 +1,0 @@
-This test should not crash.
-Zero
-One
-Two

@@ -1,4 +1,0 @@
-After removing the middle cell with the red border the 2 remaining cells' widths should depend on sharing the black border, and not have stale widths from sharing the red border.
-
-	
-PASS

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] CSSNumericValue.max should throw TypeError when the types are different.
-  assert_throws_js: function "() => CSS.number(3)[methodName](CSS.px(10) ,CSS.number(0))" did not throw
-[FAIL] CSSNumericValue.min should throw TypeError when the types are different.
-  assert_throws_js: function "() => CSS.number(3)[methodName](CSS.px(10) ,CSS.number(0))" did not throw
-Harness: the test ran to completion.
-

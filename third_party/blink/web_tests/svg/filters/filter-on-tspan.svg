@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg"	xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-<filter id="filter">
-    <feFlood flood-color="green"/>
-</filter>
-</defs>
-<text x="100" y="100">Die ist ein <tspan filter="url(#filter)">Test</tspan>.</text>
-</svg>

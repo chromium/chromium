@@ -1,4 +1,0 @@
-list: layer(0,0 800x600) has hit test rect (13,10 290x14)
-list: layer(0,0 800x600) has hit test rect (354,11 248x12)
-
-

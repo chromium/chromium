@@ -1,9 +1,0 @@
-This test creates an iFrame via document.write(), then immediately changes the source of that iframe while the main document is still being parsed. It then navigates the frame again. The first src change should not result in a new back/forward list entry, but the second should.
-
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/multiple-back-forward-entries.html
-            http://127.0.0.1:8000/navigation/resources/slow-resource.pl?delay=250 (in frame "<!--framePath //<!--frame0-->-->")
-curr->  http://127.0.0.1:8000/navigation/multiple-back-forward-entries.html
-            http://127.0.0.1:8000/navigation/resources/blank.txt (in frame "<!--framePath //<!--frame0-->-->")
-===============================================

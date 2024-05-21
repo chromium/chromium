@@ -1,5 +1,0 @@
-p { background-color : red }
-p[lang|="en"] { background-color : lime }
-address { background-color : red }
-address[lang="fi"] { background-color : lime }
-span[lang|="fr"] { background-color : red }

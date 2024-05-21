@@ -1,6 +1,0 @@
-SET	UTF-8
-IGNORE ٌٍَُِّْـ
-
-PFX x N 1
-PFX x	أ	ت	أ[^ي]
-

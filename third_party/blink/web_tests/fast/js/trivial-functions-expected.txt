@@ -1,5 +1,0 @@
-Tests for compilation errors in trivial functions.
-
-PASS: f1(0, 0) should be undefined and is.
-PASS: f2(0, 0, 0) should be 0 and is.
-

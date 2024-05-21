@@ -1,6 +1,0 @@
-	
-
-Cell width was 48px
-Cell width is 98px
-PASSED: Cell changed width
-

@@ -1,2 +1,0 @@
-Tests positioned movement layout when its height is changed by top/bottom changing from auto to fixed and back again.
-PASS

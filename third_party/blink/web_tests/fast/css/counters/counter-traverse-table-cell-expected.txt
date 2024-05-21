@@ -1,1 +1,0 @@
-This tests that we don't crash when using the CSS counters feature. 

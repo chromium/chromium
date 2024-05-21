@@ -1,4 +1,0 @@
-This tests whether an input field scrolls to the end of the new composition when setComposition is called.
-
-SUCCESS: input has scrolled to the end of the composition
-

@@ -1,3 +1,0 @@
-Test that XHTML entities are recognized in documents with xhtml-mobile12 DTD.
-
-SUCCESS (unless there is clear sign of failure nearby, like a big red error box). 

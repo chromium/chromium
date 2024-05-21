@@ -1,9 +1,0 @@
-The span style should be preserved when merging a pragraph.
-The test passes if "bar" contatins the yellow background and it's underlined.
-| "
-"
-| <p>
-|   "foo<#selection-caret>"
-|   <span>
-|     style="background-color: yellow; text-decoration-line: underline;"
-|     "bar"

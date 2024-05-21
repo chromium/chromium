@@ -1,7 +1,0 @@
-A test to make sure we don't fire an extra change event for checked radio buttons. We have to include a test for the case where a radio button gets unchecked because another in its group is checked. Bug 6731 has the details.
-
-If you see this paragraph and the one below and both agree, the test has succeeded.
-
-If you see this paragraph and the one above and both agree, the test has succeeded.
-
- 

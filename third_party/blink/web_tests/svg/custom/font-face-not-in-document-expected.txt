@@ -1,3 +1,0 @@
-PASS
-This tests that <font-face> elements that are not in the document have no effect.
-Test result: PASS

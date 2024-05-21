@@ -1,2 +1,0 @@
-This tests that defining a getter on the window object and then invoking it returns the correct value and doesn't cause an assertion failure.
-SUCCESS

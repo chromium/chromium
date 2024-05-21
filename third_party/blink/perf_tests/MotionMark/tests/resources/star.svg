@@ -1,8 +1,0 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1 1">
-    <defs>
-        <mask id="star-mask" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
-            <path fill="white" d="M.50,0L.38,.38L0,.38L.30,.60L.18,1L.50,.75L.82,1L.70,.60L1,.38L.62,.38z" />
-        </mask>
-    </defs>
-    <path d="M.50,0L.38,.38L0,.38L.30,.60L.18,1L.50,.75L.82,1L.70,.60L1,.38L.62,.38z" fill="white" />
-</svg>

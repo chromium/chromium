@@ -1,7 +1,0 @@
-entering fullscreen OK
-EVENT(webkitfullscreenchange)
-entered fullscreen OK
-EVENT(webkitfullscreenchange)
-exited fullscreen OK
-END OF TEST
-

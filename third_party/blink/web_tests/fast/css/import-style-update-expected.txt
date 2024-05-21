@@ -1,2 +1,0 @@
-Test that modifying @import stylesheet through DOM updates style properly. You should see PASS below:
-PASS

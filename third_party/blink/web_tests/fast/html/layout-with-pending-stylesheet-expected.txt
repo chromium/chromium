@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("text").clientWidth is document.getElementById("text").clientWidth
-test

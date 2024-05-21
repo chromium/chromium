@@ -1,9 +1,0 @@
-We should restore selection after datalist availability change.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input1.value is "abc"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

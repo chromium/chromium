@@ -1,8 +1,0 @@
-PASS setProperty("auto") is "auto"
-PASS setProperty("isolate") is "isolate"
-PASS setProperty("") is "auto"
-PASS setProperty("rubbish") is "auto"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,6 +1,0 @@
-Verifies that navigating from a in-process iframe to in-process iframe sets the right sessionId.
-
-Events received: [onRequestWillBeSent, onRequestWillBeSentExtraInfo, onResponseReceived, onResponseReceivedExtraInfo]
-Number of request ids: 4, unique ids 1
-Number of session ids: 4, unique ids 1
-

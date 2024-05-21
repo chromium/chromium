@@ -1,3 +1,0 @@
-This test ensures WebKit can paste content inside an textarea element even when there is div:last-child {}.
-
-PASS

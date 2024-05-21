@@ -1,2 +1,0 @@
-This page has a slow loading external style sheet. Calling offsetLeft shouldn't be slow when stylesheets are loading. Works as HTTP test only.
-PASS

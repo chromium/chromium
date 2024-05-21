@@ -1,1 +1,0 @@
-Test for bug 86162: This tests that there is no crash when using percentage value for scrollbar's padding property. On success you should see a frame with scrollbars and one PASS message in it.

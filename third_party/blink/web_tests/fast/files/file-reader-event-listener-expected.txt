@@ -1,8 +1,0 @@
-Test that FileReader's event listener works.
-Received loadstart event
-Received foo event
-Received progress event
-Received load event
-Received loadend event
-DONE
-

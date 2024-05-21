@@ -1,6 +1,0 @@
-This test checks that caching of property accesses doesn't allow for illegal cross-frame access of a custom property. It also checks for an assertion failure that once occurred in this situation.
-
-PASS: customPropertyAccessThrowsException(targetWindow) should be 'true' and is.
-PASS: customPropertyAccessThrowsException(targetWindow) should be 'true' and is.
-PASS: customPropertyAccessThrowsException(targetWindow) should be 'true' and is.
-

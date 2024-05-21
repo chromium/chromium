@@ -1,1 +1,0 @@
-debug("document.write");

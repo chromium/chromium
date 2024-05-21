@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>HTML>Parser"
-}
-team_email: "loading-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456175
-}

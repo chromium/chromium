@@ -1,9 +1,0 @@
-This test checks to see if the DOM ContainerNode's NodeList cache is correctly invalidated when new content is parsed.
-
-If the test passes, you should see "before: not found", "after: found" and "onload: found".
-
-If the cache is not invalidated when the testElement is parsed, both before and after will be "not found", which is a failure.
-
-before: not found
-after: found
-onload: found

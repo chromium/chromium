@@ -1,5 +1,0 @@
-PASS target.sheet is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

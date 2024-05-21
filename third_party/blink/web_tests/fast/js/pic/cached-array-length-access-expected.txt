@@ -1,5 +1,0 @@
-This page tests cached access to properties of dictionary objects and objects with changing prototypes. If the test passes, you'll see a series of PASS messages below.
-
-PASS: len should be 4294967295 and is.
-
-

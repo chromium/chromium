@@ -1,7 +1,0 @@
-<!DOCTYPE html>
-<div style="position:absolute; left:10px; top:200px; width:100px; height:100px; border:5px dashed black; background:green; clip:rect(-10px,105px,120px,55px); overflow:hidden; filter:blur(3px);">
-  <div style="margin-left:-5px; margin-top:-5px; width:100px; height:100px; border:5px solid red;"></div>
-</div>
-This test verifies CSS clip, filter, and overflow clip are applied in the order of:<br/>
-output &lt;-- clip &lt;-- filter &lt;-- overflow clip &lt;-- normal-flow contents<br/>
-The test succeeds if the green box below has a crisp left edge, blurred top/bottom dashed border, and a crisp right edge with blurred partial dashed border. No red should be visible.

@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=56401 Hover the mouse over the "Inline" text. The test passes if "Inline" is not placed on a new line.
-
-PASS

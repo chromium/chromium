@@ -1,7 +1,0 @@
-CONSOLE ERROR: Not allowed to load local resource: localScript.js
-This test is to see if a remote file can run a local script.
-Currently this test cannot be run manually on Windows because we do not have a function like pathToLocalResource() outside of DRT.
-
-
-
-Test Passed: Local script not loaded.

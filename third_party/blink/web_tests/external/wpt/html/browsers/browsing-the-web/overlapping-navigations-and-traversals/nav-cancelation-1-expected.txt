@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] parent cancels a pending navigation in a same-origin child
-  assert_false: <iframe> load event does not fire until subsequent navigation is complete expected false got true
-Harness: the test ran to completion.
-

@@ -1,4 +1,0 @@
-resolve toto http://www.oasis-open.org/docbook/xml/4.1.2/dbpoolx.mod
-public "-//OASIS//ENTITIES DocBook XML Character Entities V4.1.2//EN"
-system http://www.oasis-open.org/docbook/xml/4.1.2/dbpoolx.mod
-system urn:publicid:-:OASIS:DTD+DocBook+XML+V4.1.2:EN

@@ -1,3 +1,0 @@
-This page is a test case for Bug 51418. WebKit should not crash when this page is loaded.
-
-PASS

@@ -1,7 +1,0 @@
-<?xml-stylesheet type="application/xml" href=""?>
-<svg xmlns="http://www.w3.org/2000/svg"
-		xmlns:xslt="http://www.w3.org/1999/XSL/Transform"
-		xslt:version="1.0">
-  <!-- The test passes if it doesn't crash -->
-  <xslt:attribute nnnnnnnnnnname="fill">lime</xslt:attribute>
-</svg>

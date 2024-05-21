@@ -1,9 +1,0 @@
-Verify that MediaStreamTracks aren't prematurely garbage collected.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getUserMedia returned with stream containing a valid video track
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

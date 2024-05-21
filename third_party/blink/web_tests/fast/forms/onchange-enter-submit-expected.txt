@@ -1,5 +1,0 @@
-This tests that onchange fires when you press Enter to submit a form.
-
-text onchange
-on submit
-

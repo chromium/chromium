@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
-<text x="8" y="3" dy="1em" tabindex="2" style="font-size: 24px">ABC</text>
-<script>
-document.querySelector("text").focus();
-</script>
-</svg>

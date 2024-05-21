@@ -1,5 +1,0 @@
-Checks that we show correct location for script evaluated twice.
-
-VM a.js:1 1
-a.js:1 2
-

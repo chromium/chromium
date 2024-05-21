@@ -1,9 +1,0 @@
-text-combine parser test
-
--webkit-text-combine:none
--webkit-text-combine:horizontal
-
-Okay if -webkit-text-combine values above and below are the same.
-
--webkit-text-combine:none
--webkit-text-combine:horizontal

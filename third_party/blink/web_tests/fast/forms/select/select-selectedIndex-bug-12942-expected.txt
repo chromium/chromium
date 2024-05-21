@@ -1,5 +1,0 @@
-Test for bug 12942
-
-This test has succeeded if it does not hit an assertion failure.
-
-A

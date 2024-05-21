@@ -1,2 +1,0 @@
-Form data: 10,10
-X and Y should both be about 10.

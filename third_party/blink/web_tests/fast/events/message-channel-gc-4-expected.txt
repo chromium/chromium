@@ -1,7 +1,0 @@
-Test that MessagePort messages are delivered even if both ports are in transit (cloned).
-
-Should say PASS twice.
-
-PASS: Received message to cloned port.
-PASS: Received message from cloned port.
-

@@ -1,3 +1,0 @@
-Test dynamically adding text content that 'tref' references.
-Flattened
-$Revision: 1.4 $

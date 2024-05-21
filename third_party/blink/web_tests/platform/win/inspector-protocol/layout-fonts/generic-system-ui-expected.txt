@@ -1,9 +1,0 @@
-This text should use the system font.
-#system-ui:
-"Segoe UI" : 37
-
-This text should use the system font.
-#system-ui-20pt:
-"Segoe UI" : 37
-
-

@@ -1,9 +1,0 @@
-Element at 170, 250 has id "left": PASS
-Element at 260, 170 has id "top": PASS
-Element at 330, 250 has id "right": PASS
-Element at 260, 330 has id "bottom": PASS
-Element at 60, 60 has id "container": PASS
-Element at 160, 160 has id "container": PASS
-Element at 190, 190 has id "container": PASS
-Element at 310, 310 has id "container": PASS
-

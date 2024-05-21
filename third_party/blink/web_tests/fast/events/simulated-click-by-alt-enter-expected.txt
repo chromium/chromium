@@ -1,4 +1,0 @@
-Default policy for navigation to 'about:blank' is 'download'
-Tests that hitting alt-enter on a link opens it in the foreground
-
-link

@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="runTest()">
-  <g transform="scale(4)">
-    <rect id="rect" x="25" y="25" width="25" height="25" fill="green" stroke-width="1" stroke="black" vector-effect="non-scaling-stroke"/>
-  </g>
-</svg>

@@ -1,6 +1,0 @@
-The text field should accept typed characters.
-PASS window.target.value is "hello"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

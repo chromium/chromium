@@ -1,7 +1,0 @@
-Test some cases of Range.deleteContents() behavior (namely, examples from DOM Range spec).
-
-<FOO> [A, CD]. Final range (FOO, 1) - (FOO, 1)
-<FOO> [A, <MOO> [B], E]. Final range (FOO, 2) - (FOO, 2)
-<FOO> [X, <BAR> [W], Q]. Final range (FOO, 1) - (FOO, 1)
-<FOO> [<BAR1> [A], <BAR3> [D]]. Final range (FOO, 1) - (FOO, 1)
-

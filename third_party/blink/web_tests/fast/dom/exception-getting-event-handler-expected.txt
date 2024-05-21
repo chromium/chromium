@@ -1,4 +1,0 @@
-CONSOLE ERROR: Uncaught 42
-This test checks that an exception thrown when getting the handleEvent property of an event listener does not crash.
-
-PASS: You didn't crash.

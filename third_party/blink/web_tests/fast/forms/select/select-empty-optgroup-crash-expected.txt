@@ -1,4 +1,0 @@
-This tests submits on an empty select. If successful, there should not be a crash.
-
-
-

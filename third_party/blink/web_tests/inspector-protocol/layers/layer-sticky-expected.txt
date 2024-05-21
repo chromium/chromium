@@ -1,3 +1,0 @@
-Tests nested sticky containers
-Didn't crash
-

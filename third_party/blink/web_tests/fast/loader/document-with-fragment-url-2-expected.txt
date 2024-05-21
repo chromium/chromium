@@ -1,5 +1,0 @@
-ALERT: First load complete.  URL's current hash is #foo
-ALERT: Second load complete.  URL's current hash is 
-Click here to go to the top of the page
-
-This page should manually be loaded with "#foo" appended to the URL. When you then click the link, the page should navigate to the url without #foo.

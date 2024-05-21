@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-6.css" type="text/css"?>
-<test>
-<address xmlns="http://www.w3.org/1999/xhtml" title="foo">
-<span title="b">This line should </span>
-  <span title="aa">have a green background.
-</span>
-</address>
-</test>

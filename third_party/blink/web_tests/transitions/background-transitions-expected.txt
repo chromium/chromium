@@ -1,3 +1,0 @@
-PASS - "background-position" property for "box" element at 0.5s saw something close to: 10,10
-PASS - "-webkit-background-size" property for "box2" element at 0.5s saw something close to: 20,20
-

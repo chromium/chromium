@@ -1,6 +1,0 @@
-Tests that memory-cached resources are correctly reported.
-
-An uncached resource is found.
-Page reloaded.
-A cached resource is found.
-

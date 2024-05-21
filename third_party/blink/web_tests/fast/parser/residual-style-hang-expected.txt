@@ -1,1 +1,0 @@
-This test checks whether deeply nested residual style processing hangs the browser. When it passes, it should not hang.

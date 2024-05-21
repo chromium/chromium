@@ -1,8 +1,0 @@
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS
-
-crbug.com/530964: Floats should use sub-pixel precision. The red and black borders should co-incide.

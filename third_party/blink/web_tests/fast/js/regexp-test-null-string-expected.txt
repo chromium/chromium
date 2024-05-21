@@ -1,4 +1,0 @@
-This page tests the exception you get when you test a regular expression against the null string. If the test passes, you'll see a PASS message below.
-
-PASS: result should be 'true' and is.
-

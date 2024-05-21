@@ -1,3 +1,0 @@
-Click the blue rectangle below - PASS if no crash.
-
- 

@@ -1,3 +1,0 @@
-This is a test that verifies that testRunner can have its default preferences overridden. This test specifically checks that Javascript can be disabled, and you should see "PASS" below if viewing with a browser.
-
-PASS

@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
- <style xlink:href="002.css" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"/>
- <text y="20" x="10" fill="red" font-size="10">This line should be green.</text>
- <!-- XXX I'm assuming, here, that the UA doesn't support XLink itself
- in an SVG context, but that it merely supports XLink's attributes in
- an SVG context as defined by SVG, and that therefore the
- xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"
- attributes are all simply ignored. -->
-</svg>

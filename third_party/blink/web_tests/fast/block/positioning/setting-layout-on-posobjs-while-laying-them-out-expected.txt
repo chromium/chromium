@@ -1,1 +1,0 @@
-crbug.com/477940: Don't set positioned objects for layout while laying out positioned objects. This test should not ASSERT.

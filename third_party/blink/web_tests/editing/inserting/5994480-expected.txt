@@ -1,2 +1,0 @@
-This tests to see if pasting a single paragraph not in a block at the end of a block just before a paragraph not in a block removes a line break. You should see two separate paragraphs below.
-<div id="paragraphOne">Paragraph One.</div>Paragraph two.

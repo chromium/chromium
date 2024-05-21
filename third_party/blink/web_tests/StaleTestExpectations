@@ -1,8 +1,0 @@
-# This file is for TestExpectations entries whose bugs haven't had any activity in 3 months.
-# Only imported test suites, virtual tests or platform/configuration-specific lines should
-# be moved here. The tests for stale cross-platform lines should just be deleted.
-#
-# Feel free to take ownership of any of these lines and get the test passing.
-#
-# Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md

@@ -1,7 +1,0 @@
-<script>
-var es = new EventSource("http://example.test:8000/security/mixedContent/resources/simple-event-stream.pl");
-es.addEventListener("error", function() {
-    if (window.opener)
-        window.opener.postMessage('done', '*');
-});
-</script>

@@ -1,3 +1,0 @@
-You should see "PASS" once:
-
-PASS

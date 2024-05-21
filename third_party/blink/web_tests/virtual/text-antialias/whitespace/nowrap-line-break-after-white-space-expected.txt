@@ -1,6 +1,0 @@
-This tests that -webkit-line-break: after-white-space trailing space truncation is not applied to text that does not auto-wrap.
-
-This box should have an active horizontal scrollbar, allowing the text to be scrolled to the left, making the trailing space on the right visible.
-
-Lorem ipsum dolor sit amet   
-PASS

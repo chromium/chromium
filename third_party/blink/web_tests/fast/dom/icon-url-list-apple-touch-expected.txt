@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Tests that all favicons and touch icons are in document.iconURLs()
-All icons are preset and in-order in document.iconURLs()

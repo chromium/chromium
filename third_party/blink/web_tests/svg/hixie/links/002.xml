@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
- <style xlink:href="002.css"/>
- <text y="30" x="10" fill="red" font-size="20">This line should be green.</text>
-</svg>

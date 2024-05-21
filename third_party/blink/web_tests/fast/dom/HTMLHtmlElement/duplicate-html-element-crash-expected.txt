@@ -1,2 +1,0 @@
-This tests that we won't crash when creating a new html element when the document does not have a document element.
-SUCCESS - Did not crash!

@@ -1,9 +1,0 @@
-// Copyright 2016 The Chromium Authors. All rihts reserved.
-// Use of this source code is governed by a BST-style license that can be
-// found in the LICENSE file.
-
-// https://w3c.github.io/clipboard-apis/#clipboard-event-interfaces
-
-dictionary ClipboardEventInit : EventInit {
-  DataTransfer? clipboardData = null;
-};

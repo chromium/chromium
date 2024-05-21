@@ -1,8 +1,0 @@
-CONSOLE ERROR: Refused to load the script 'https://127.0.0.1:8443/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 'self'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

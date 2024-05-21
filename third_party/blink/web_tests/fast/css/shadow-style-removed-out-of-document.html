@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
-<script>
-description('Remove style element before its shadow root is attached to document but it should not crash.');
-var div = document.createElement('div');
-var root = div.attachShadow({mode: 'open'});
-root.innerHTML = '<style>div { color: green; }</style><div>Hello world</div>';
-root.removeChild(root.firstChild);
-</script>

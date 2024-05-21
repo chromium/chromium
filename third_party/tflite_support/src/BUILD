@@ -1,5 +1,0 @@
-exports_files(
-    [
-        "LICENSE",
-    ],
-)

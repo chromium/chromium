@@ -1,3 +1,0 @@
-Test for bug 13300: Reproducible crash opening anekdot.ru.
-
-No crash == SUCCESS

@@ -1,3 +1,0 @@
-This tests that capturing event listeners will be invoked by events dispatched to the target which it has been added to. 
-SUCCESS
-

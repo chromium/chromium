@@ -1,2 +1,0 @@
-Frame with user gesture "false" - in DidStartNavigation
-

@@ -1,3 +1,0 @@
-This tests the case where an image is loaded in one document and then moved to another before the load event fires.
-
-PASS: Test complete and passed unless a subsequent test crashes.

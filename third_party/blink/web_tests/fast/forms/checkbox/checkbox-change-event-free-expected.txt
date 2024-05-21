@@ -1,5 +1,0 @@
-PASS No crash after changing type on change event.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

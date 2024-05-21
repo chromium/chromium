@@ -1,2 +1,0 @@
-This tests that it should be possible to create documents with empty/null qnames and namespaceURIs. If the test is successful, 'SUCCESS' will be displayed below, otherwise 'FAILURE' and a reason will be displayed.
-SUCCESS!

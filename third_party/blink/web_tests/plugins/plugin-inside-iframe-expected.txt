@@ -1,1 +1,0 @@
-This tests that we do not crash by putting a plugin inside an iframe.

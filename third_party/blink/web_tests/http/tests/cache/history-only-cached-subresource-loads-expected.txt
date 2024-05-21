@@ -1,6 +1,0 @@
-This test checks that a subresource with "Cache-Control: no-store" is not cached.
-
-PASS - no-store subresource was refetched for a back navigation
-PASS - no-store subresource was refetched with a reload
-PASS - no-store subresource was refetched with a normal navigation
-

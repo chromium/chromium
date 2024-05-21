@@ -1,3 +1,0 @@
-crbug.com/561997: Trailing space in a no-wrap span should not prevent setting a line-break on that span.
-
-All text should be on same line.

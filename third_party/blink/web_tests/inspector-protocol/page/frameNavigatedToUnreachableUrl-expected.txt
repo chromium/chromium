@@ -1,4 +1,0 @@
-Tests that the unreachable url is reported when navigating to a nonexistent page.
-Page navigated, url = chrome-error://chromewebdata/
-UnreachableUrl = idont_exist.html
-

@@ -1,3 +1,0 @@
-Reflection should be masked with gradient.
-
-Passes if it does not crash.

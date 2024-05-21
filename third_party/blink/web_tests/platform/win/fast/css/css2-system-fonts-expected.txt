@@ -1,7 +1,0 @@
-This tests platform specific system font styles. If any of the styles appear in monospace the test fails.
-caption: 16px Arial
-icon: 16px Arial
-menu: 12px "Segoe UI"
-message-box: 16px Arial
-small-caption: 12px "Segoe UI"
-status-bar: 12px "Segoe UI"

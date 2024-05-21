@@ -1,1 +1,0 @@
-Content-Security-Policy: default-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'

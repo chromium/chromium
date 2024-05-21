@@ -1,8 +1,0 @@
-EXPECTED (document.webkitIsFullScreen == 'false') OK
-EXPECTED (document.webkitCancelFullScreen != 'undefined') OK
-EXPECTED (document.webkitCurrentFullScreenElement == 'null') OK
-EXPECTED (document.onwebkitfullscreenchange == 'null') OK
-EXPECTED (span.webkitRequestFullScreen != 'undefined') OK
-EXPECTED (span.onwebkitfullscreenchange == 'null') OK
-END OF TEST
-

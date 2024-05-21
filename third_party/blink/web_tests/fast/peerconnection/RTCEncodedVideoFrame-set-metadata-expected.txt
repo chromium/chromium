@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled
-  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setMetadata' on 'RTCEncodedVideoFrame': Cannot setMetadata: invalid modification of RTCEncodedVideoFrameMetadata."
-Harness: the test ran to completion.
-

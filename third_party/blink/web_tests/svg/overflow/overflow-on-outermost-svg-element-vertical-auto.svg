@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">
-<!-- 
- Verify that setting overflow on the outermost <svg> element does affect rendering.
- You should see a horizontal scrollbars only, as the content is wider than the viewport.
--->
-<svg xmlns="http://www.w3.org/2000/svg" width="100" height="4000" style="overflow: auto">
-    <rect width="100" height="4000" fill="green"/>
-</svg>

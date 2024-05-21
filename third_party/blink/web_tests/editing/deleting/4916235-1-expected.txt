@@ -1,5 +1,0 @@
-This tests for a bug in moveParagraphs that would cause an empty paragraph to collapse.
-
-There should be an empty paragraph below this one.
-
-There should be an empty paragraph above this one.

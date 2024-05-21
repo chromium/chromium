@@ -1,6 +1,0 @@
-This test checks that we resolve 2 opposite 'span' / 'auto' positions by applying the auto-placement algorithm.
-
-PASS
-PASS
-PASS
-PASS

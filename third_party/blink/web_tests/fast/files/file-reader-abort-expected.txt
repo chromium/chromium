@@ -1,6 +1,0 @@
-Test that FileReader.abort works.
-Received loadstart event
-Received abort event
-Received loadend event
-DONE
-

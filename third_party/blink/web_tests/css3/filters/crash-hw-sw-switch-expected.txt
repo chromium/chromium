@@ -1,1 +1,0 @@
- PASS if test does not crash or cause an ASSERT failure.

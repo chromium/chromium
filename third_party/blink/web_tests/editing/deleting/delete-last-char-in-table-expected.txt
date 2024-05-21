@@ -1,6 +1,0 @@
-See bug 57148. When deleteing the last character in a table deletes the table, no styled spans should be left behind. To test manually, place cursor after "X" and do a backward delete. No styled span should be created.
-
-
-
-PASS
-execDeleteCommand: <table style="border-collapse:collapse"><tbody><tr><td id="cursor"><br></td></tr></tbody></table>

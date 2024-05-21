@@ -1,3 +1,0 @@
-This test checks selecting from outside of a shadow tree and to inside of a shadow tree won't crash.
-
-PASS

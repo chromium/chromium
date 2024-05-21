@@ -1,2 +1,0 @@
-Tests that the width of table cell changes on changing the colgroup width to new width.
-PASS

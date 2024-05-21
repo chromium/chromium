@@ -1,2 +1,0 @@
-This tests that an iframe with an integer name can be accessed on the document with indexing notation.
-SUCCESS

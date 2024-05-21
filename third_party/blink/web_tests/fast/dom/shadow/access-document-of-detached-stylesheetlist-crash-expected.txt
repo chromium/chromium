@@ -1,8 +1,0 @@
-Test for crbug.com/337059: accessing StyleSheetList::document() from GC causes crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Test that if a form is submitted from a document with a base element that sets a target,
-the form's target attribute takes precedence over the base's target attribute.
-This was regressed in https://chromium.googlesource.com/chromium/src/+/65389334354b996ae8490706d84d5848f5f023e7
-This test will timeout if it fails.
-

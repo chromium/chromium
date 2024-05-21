@@ -1,5 +1,0 @@
-Regression test to ensure that removeEventListener works.
-
-If the test is successful, you'll see only one call of the event handler. If it fails, you'll typically see two.
-
-event handler called: 1

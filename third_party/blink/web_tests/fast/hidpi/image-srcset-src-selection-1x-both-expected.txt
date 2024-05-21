@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==400 is true
-This test passes if the div below is a blue 100px square when the deviceScaleFactor is 1. It simply ensures that when both src and srcset are specified for the same DPR, srcset wins.

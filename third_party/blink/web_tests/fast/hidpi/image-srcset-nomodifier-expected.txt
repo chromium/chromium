@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==150 is true
-This test passes if the image below is not empty. It ensures that a candidate without scale modifier get a default one

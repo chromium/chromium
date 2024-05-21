@@ -1,4 +1,0 @@
-Tests that the animation is correctly paused.
-Animation started
-true
-

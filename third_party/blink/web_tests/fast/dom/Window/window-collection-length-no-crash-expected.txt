@@ -1,5 +1,0 @@
-
-
-This tests that window.frames.length does not crash the browser after the frame navigates away from the current page. You should see "SUCCESS" below once the test completes.
-
-SUCCESS

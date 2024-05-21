@@ -1,2 +1,0 @@
-CONSOLE ERROR: Refused to refresh http://127.0.0.1:8000/security/no-javascript-refresh-static.html to a javascript: URL
-This is the text that appears in place of a refresh.

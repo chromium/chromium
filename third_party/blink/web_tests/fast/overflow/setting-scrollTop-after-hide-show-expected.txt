@@ -1,7 +1,0 @@
-In this test, we set a new scrollTop for a scrolling div, and then we make the div display:none. The test ensures that when we bring the div back by giving it a display value of block, that we also restore its scroll position. The test also ensures that we are able to set a new scrollTop value of 0 after that.
-
-scrollTop after restoring div: 20
-
-scrollTop after setting scrollTop back to 0: 0
-
-

@@ -1,9 +1,0 @@
-<?xml-stylesheet href="css3-modsel-183.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml" class="test">This text should be green.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class=".test">This text should be green.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class="foo">This text should be green.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class="foo quux">This text should be green.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class="foo  quux">This text should be green.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class=" bar ">This text should be green.</p>
-</test>

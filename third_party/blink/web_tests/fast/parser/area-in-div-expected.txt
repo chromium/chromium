@@ -1,3 +1,0 @@
-This tests that an <area> element can be created even if it's not properly nested just inside a <map> element.
-
-Test result: success

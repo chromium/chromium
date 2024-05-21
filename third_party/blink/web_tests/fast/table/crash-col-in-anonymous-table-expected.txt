@@ -1,2 +1,0 @@
-Bug 330651: infinite recursion when creating anonymous table structure
-This test passes if it does not CRASH or HANG.

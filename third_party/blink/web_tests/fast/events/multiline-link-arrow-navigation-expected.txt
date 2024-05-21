@@ -1,3 +1,0 @@
-This is a test of links which span multiple lines for various and sundry reasons.
-
-PASS

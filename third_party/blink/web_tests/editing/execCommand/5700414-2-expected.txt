@@ -1,8 +1,0 @@
-There should be a H1 with BR block below, followed by a normal empty paragraph.
-
-
-
-
-There should be a single empty paragraph above.
-
-<div>There should be a H1 with BR block below, followed by a normal empty paragraph.</div> <div id="div"><h1><br></h1><br></div> <div id="div">There should be a single empty paragraph above.</div>

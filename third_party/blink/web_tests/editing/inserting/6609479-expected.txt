@@ -1,6 +1,0 @@
-This tests that inserting a newline inside a table still works and doesn't break the table apart, even when in quoted content.
-
-foo
-bar
-Test Passed
-

@@ -1,9 +1,0 @@
-Tests emulation of the user agent.
-navigator.userAgent == Test UA
-User-Agent: Test UA
-navigator.language == ko
-workerNavigator.language == ko
-Accept-Language: ko, en;q=0.9, zh-CN;q=0.8, zh-HK;q=0.7, en-US;q=0.6, en-GB;q=0.5
-accept-language: ko
-navigator.platform == new_platform
-

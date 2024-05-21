@@ -1,1 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=15942 REGRESSION: Selecting "Edit Html" tab in Blogger causes crash (Assertion failed: isRange()).

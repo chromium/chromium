@@ -1,5 +1,0 @@
-crbug.com/666487: There should be a green square below.
-
-
-
-PASS

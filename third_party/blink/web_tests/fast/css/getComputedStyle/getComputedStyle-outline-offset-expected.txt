@@ -1,9 +1,0 @@
-Test to make sure outline-offset is found in the computed style.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS computedStyle.getPropertyValue('outline-offset') is '2px'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

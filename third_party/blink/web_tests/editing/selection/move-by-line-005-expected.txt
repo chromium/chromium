@@ -1,5 +1,0 @@
-Test for rdar://problem/6967596 Safari hung using 100% CPU when I tried to look up a word in Dictionary using command-control-d.
-
-PASS
-
-Text and text more text

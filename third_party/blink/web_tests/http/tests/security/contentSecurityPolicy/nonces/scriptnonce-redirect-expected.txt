@@ -1,3 +1,0 @@
-ALERT: PASS
-Script preloaded: YES
-This tests whether a deferred script load caused by a redirect is properly allowed by a nonce.

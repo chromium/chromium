@@ -1,3 +1,0 @@
-This tests that an element which is cloned by using importNode keeps its prefix. If the test is successful, 'SUCCESS' will be displayed below, otherwise 'FAILURE' and a reason will be displayed.
-SUCCESS!
-

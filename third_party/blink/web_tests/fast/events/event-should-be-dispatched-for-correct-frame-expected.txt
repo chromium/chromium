@@ -1,5 +1,0 @@
-PASS Event is correctly dispatched
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

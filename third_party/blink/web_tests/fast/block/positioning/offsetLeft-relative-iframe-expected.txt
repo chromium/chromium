@@ -1,6 +1,0 @@
-
-
-
-This test verifies that offsetLeft is calculated correctly for a relatively positioned iframe element inside a table.
-node.offsetLeft=303 (Should be 303 as in FF and IE)
-findPosX=303 (Should be 303 as in FF and IE)

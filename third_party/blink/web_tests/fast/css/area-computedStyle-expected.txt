@@ -1,9 +1,0 @@
-Test return value of getComputedStyle() for area tag.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS window.getComputedStyle(area, null).color is "rgb(0, 0, 255)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

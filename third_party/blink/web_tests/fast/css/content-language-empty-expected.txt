@@ -1,8 +1,0 @@
-Test for bug 76701: map HTTP-EQUIV content-language to -webkit-locale. This particular test tests that a content-language of empty string is ignored. This expectation may change, see bug. HTML5 decrees that the meta element be ignored in case of the empty string. It's unclear what other browsers do.
-
-FAIL languageOfNode('x') should be auto. Was "".
-PASS languageOfNode('y') is "\"ar\""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

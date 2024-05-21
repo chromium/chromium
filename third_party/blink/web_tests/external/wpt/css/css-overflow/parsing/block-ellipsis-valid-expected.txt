@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['block-ellipsis'] = "none" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['block-ellipsis'] = "auto" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['block-ellipsis'] = "\\" etc., etc. \\"" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-Harness: the test ran to completion.
-

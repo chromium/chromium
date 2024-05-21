@@ -1,4 +1,0 @@
-This tests that attributes will have the correct namespace, prefix and local name set.
-
-All tests succeeded!
-

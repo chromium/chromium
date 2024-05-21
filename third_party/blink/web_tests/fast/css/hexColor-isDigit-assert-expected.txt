@@ -1,3 +1,0 @@
-If this does not assert the test has passed. (rdar://problem/5492141)
-
-This is the div that is being tested.

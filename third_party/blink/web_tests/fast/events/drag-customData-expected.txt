@@ -1,6 +1,0 @@
-To manually test, drag 'Drag Me' to 'Drop Here' and drop. The word 'SUCCESS' should appear.
-
-Drag Me
-Drop Here
-SUCCESS
-

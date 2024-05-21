@@ -1,9 +1,0 @@
-All tests contained here are duplicated, once in the page/ and once in the text/ subdirectories.
-The page/ tests all call testRunner.zoomPageIn(), the text/ tests all call testRunner.textZoomIn().
-
-The name of the tests, for instance "absolute-sized-document-scrollbars.svg" refers to the regular SVG zoom
-behaviour when full page zoom (!) is used. So the names of the tests in the text/ subdirectory do NOT
-correlate with the visible rendering result. In fact the text/ results should look like the original
-unzoomed test, as text-only zoom should NOT affect SVG rendering in any way, also font sizes should NOT
-scale. Tests in text/ subdirectory containing XHTML will of course react to text zoom changes. Keep
-that in mind when looking at the pixel tests output.

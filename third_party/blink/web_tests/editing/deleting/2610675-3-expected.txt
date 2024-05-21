@@ -1,2 +1,0 @@
-This tests to see that if the caret is in an empty quoted paragraph, and there's no quoted content before that paragraph, then pressing delete removes that paragraph's quoting. Below you should see just an unquoted paragraph.
-not quoted

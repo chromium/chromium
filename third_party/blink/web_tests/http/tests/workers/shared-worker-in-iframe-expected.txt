@@ -1,6 +1,0 @@
-Test simultaneous shared worker construction case (document + iframe).
-
-Prints "DONE" if the test is successful
-
-DONE
-

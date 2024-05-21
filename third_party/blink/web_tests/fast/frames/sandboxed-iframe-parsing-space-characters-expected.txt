@@ -1,11 +1,0 @@
-CONSOLE MESSAGE: PASS: Form feed is a delimiter.
-CONSOLE ERROR: Error while parsing the 'sandbox' attribute: 'allow-scriptsallow-forms' is an invalid sandbox flag.
-CONSOLE ERROR: Blocked script execution in 'data:text/html,<script>console.log('FAIL: Vertical tab is not a delimiter.');</script>' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
-CONSOLE MESSAGE: PASS: Newline is a delimiter.
-CONSOLE MESSAGE: PASS: Return is a delimiter.
-CONSOLE ERROR: Error while parsing the 'sandbox' attribute: 'allow-scriptsxallow-forms' is an invalid sandbox flag.
-CONSOLE ERROR: Blocked script execution in 'data:text/html,<script>console.log('FAIL: x is not a delimiter.');</script>' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
-CONSOLE MESSAGE: PASS: Tab is a delimiter.
-CONSOLE MESSAGE: PASS: Space is a delimiter character.
-This tests whether we correct parse various space characters in the sandbox attribute.
- 

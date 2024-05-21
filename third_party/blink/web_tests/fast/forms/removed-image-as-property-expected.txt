@@ -1,3 +1,0 @@
-Test that an image isn't accessible via form.property syntax after being removed from document.
-
-PASS

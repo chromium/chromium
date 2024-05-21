@@ -1,9 +1,0 @@
-A test case from https://bugs.webkit.org/show_bug.cgi?id=84793.
-
-Test passes if it doesn't hit ASSERT(parents.size() >= depth + 1).
-
-PASS result.numberValue is NaN
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

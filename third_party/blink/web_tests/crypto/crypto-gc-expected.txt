@@ -1,9 +1,0 @@
-Test that window.crypto wrapper preserves custom properties.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS window.crypto.foo is "bar"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

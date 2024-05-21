@@ -1,5 +1,0 @@
-<?xml-stylesheet href="data:text/css,svg { color: green; display: block; }"?>
-<svg>
- <rect fill="red" height="100" width="100"/>
- This line should be green.
-</svg>

@@ -1,2 +1,0 @@
-The SVG in the below frame should not render or crash.
-

@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: initializing

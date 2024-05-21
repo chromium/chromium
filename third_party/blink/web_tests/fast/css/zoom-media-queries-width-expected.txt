@@ -1,5 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("bla").offsetWidth is within 0.015625 of 10

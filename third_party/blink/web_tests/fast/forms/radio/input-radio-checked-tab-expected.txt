@@ -1,3 +1,0 @@
-This tests that you can still focus a radio button after unchecking it by setting its checked property to false.
-
-SUCCESS

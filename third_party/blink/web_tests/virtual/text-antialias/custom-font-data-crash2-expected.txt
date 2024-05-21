@@ -1,5 +1,0 @@
-CONSOLE WARNING: Failed to decode downloaded font: custom-font-data-crash2.html
-CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1008813135
-CONSOLE WARNING: Failed to decode downloaded font: custom-font-data-crash2.html
-CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1008813135
-PASS

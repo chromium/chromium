@@ -1,8 +1,0 @@
-<script>
-var font = new FontFace('test', 'url(../../../resources/Ahem.ttf)');
-font.load().then(function() {
-    window.parent.postMessage('PASS: ahem loaded successfully', '*');
-}).catch(function() {
-    window.parent.postMessage('FAIL: ahem load failed', '*');
-});
-</script>

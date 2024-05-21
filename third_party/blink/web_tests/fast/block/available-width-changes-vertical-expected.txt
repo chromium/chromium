@@ -1,3 +1,0 @@
-crbug.com/561612: There should be a blue square below.
-
-PASS

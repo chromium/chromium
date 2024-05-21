@@ -1,5 +1,0 @@
-Ensures iframes are overridable if overrides are setup.
-
-URL: cross-origin-iframe.html
-Can Edit Source: true
-

@@ -1,3 +1,0 @@
-This is a test for 5823684. If onload handlers aggressively remove and create new iframes in a particular way, we would crash because the frames hadn't been installed into the frame tree correctly before the frame tree was being manipulated.
-If you do not crash, you have passed this test.
- 

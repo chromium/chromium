@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebSockets: send() with unpaired surrogate when readyState is OPEN
-  assert_unreached: close event should not fire before message event Reached unreachable code
-Harness: the test ran to completion.
-

@@ -1,7 +1,0 @@
-This is some text with bottom margin and forced break after.
-
-This paragraph should be aligned with the other paragraph because the 1st paragraph's bottom margin shouldn't spill over the forced break.
-
-PASS
-
-Bug 92497 - [CSS Regions] Region overset property is not properly computed when there is a region break

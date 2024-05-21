@@ -1,9 +1,0 @@
-Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.
-
-Profiler was enabled.
-Detailed heap profiles were enabled.
-
-Running: testWeakReferencesDoNotAffectRetainedSize
-
-Profiler was disabled.
-

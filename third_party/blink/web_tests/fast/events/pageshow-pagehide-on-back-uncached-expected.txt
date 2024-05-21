@@ -1,6 +1,0 @@
-ALERT: window.onload
-ALERT: window.onpageshow, target = [object HTMLDocument], persisted = false
-CONSOLE ERROR: Blocked alert('window.onpagehide, target = [object HTMLDocument], persisted = false') during pagehide.
-ALERT: window.onload
-ALERT: window.onpageshow, target = [object HTMLDocument], persisted = false
-Test pageshow/pagehide event behavior when navigating back to an uncached page.

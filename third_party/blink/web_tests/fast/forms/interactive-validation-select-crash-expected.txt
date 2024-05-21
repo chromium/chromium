@@ -1,9 +1,0 @@
-Test for a bug that LayoutBlockFlow crashed when a validation message bubble for a select element with float:left was closing.
-
-PASS Not crashed.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Plese select
-Foo

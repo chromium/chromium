@@ -1,9 +1,0 @@
-This tests modifying a selection created with a double click with shift arrow key.
-
-This test does not run interactively. It uses the event sender to do mouse clicks. To run it manually, double click on the blue "g", then press shift-left-arrow twice. Then repeat those steps again. The selection should include the words "a paragraph" on mac and "paragra" on win/linux..
-
-This is a paragraph.
-
-SUCCESS
-SUCCESS
-

@@ -1,9 +1,0 @@
-<schema xmlns="http://www.ascc.net/xml/schematron" >
-     <pattern name="Test attribute">
-          <rule context="CCC">
-               <report test="parent::BBB and not(@id)">Attribute id is missing</report>
-               <report test="not(parent::BBB) and @id">Attribute id is used in wrong context</report>
-          </rule>
-     </pattern>
-</schema>
-

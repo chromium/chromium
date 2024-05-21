@@ -1,2 +1,0 @@
-This tests that loading a main resource that redirects to about:blank does not cause a crash (and that the load is done correctly).
-SUCCESS: Did not crash and loaded about:blank correctly

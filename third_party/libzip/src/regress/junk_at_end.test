@@ -1,5 +1,0 @@
-# test archive with junk at end of file
-args -l 412 junk-at-end.zzip get_num_entries 0
-return 0
-file junk-at-end.zzip junk-at-end.zip junk-at-end.zip
-stdout 3 entries in archive

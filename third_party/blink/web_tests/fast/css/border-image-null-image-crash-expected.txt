@@ -1,9 +1,0 @@
-Tests that shorthand border-image with a null image doesn't crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS computedStyle.getPropertyValue('border-image') is 'none'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

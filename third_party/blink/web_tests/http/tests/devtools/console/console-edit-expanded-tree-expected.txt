@@ -1,4 +1,0 @@
-Tests that expanded tree element is editable in console.
-
-After viewport refresh tree element remains in editing mode: true
-

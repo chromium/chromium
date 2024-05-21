@@ -1,2 +1,0 @@
-Policy delegate: attempt to load mailto:one@example.org?subject=Fr%C3%A8re+Fran%C3%A7ois&body=%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0 with navigation type 'form submitted'
-  

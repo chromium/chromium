@@ -1,1 +1,0 @@
-loaded.push("fast");

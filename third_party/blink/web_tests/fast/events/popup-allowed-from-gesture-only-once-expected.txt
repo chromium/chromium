@@ -1,4 +1,0 @@
-Test that only a single popup is allowed in response to a single user action. The test passes if only one popup is created.
-
-Click Here
-PASSED

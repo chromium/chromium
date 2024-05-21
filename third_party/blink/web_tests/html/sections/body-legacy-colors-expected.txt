@@ -1,9 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS getComputedStyle(window.document.body).backgroundColor is white
-PASS internals.computedStyleIncludingVisitedInfo(vlink).color is green
-PASS internals.computedStyleIncludingVisitedInfo(alink).color is yellow
-PASS internals.computedStyleIncludingVisitedInfo(link).color is red
-This should have a white background. This text should be green. This text should be yellow while active. This text should be red.

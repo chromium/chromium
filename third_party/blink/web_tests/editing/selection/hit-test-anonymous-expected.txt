@@ -1,5 +1,0 @@
-This tests clicking in anonymous content to see if a selection is successfully created.
-
-This is the selectable text.
-
-SUCCESS

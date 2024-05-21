@@ -1,8 +1,0 @@
-Test for bug 76701: map HTTP-EQUIV content-language to -webkit-locale. This particular test tests that a comma-separated list of languages is ignored. This expectation may change, see bug. The HTML5 spec says that content-language should not have multiple languages, and decrees that a content-language containing a comma be ignored; this position has been upheld following significant debate. Firefox accepts a comma-separated list and a CSS :lang selector for any language in the list is matched. It's unclear what IE does.
-
-FAIL languageOfNode('x') should be auto. Was "ja, zh_CN".
-PASS languageOfNode('y') is "\"ar\""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

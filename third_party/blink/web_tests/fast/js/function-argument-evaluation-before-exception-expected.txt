@@ -1,3 +1,0 @@
-This page verifies that the arguments to a function call are evaluated even if the call throws a "not a function" exception.
-
-PASS: arguments were evaluated

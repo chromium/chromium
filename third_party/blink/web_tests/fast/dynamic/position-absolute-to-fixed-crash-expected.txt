@@ -1,3 +1,0 @@
-Test for rdar://problem/7094146 Reproducible crash at LayoutObject::localToAbsolute().
-
-This crash occurred after an object’s position changed directly from absolute to fixed, and it was not added to the LayoutView’s positioned objects list nor removed from its old container’s list.

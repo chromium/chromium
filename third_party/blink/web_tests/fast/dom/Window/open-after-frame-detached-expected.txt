@@ -1,9 +1,0 @@
-Tests that calling window.open on the contentWindow of a detached frame does not crash or open a new window. You may need to disable popup blocking for this test case.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS childWindow.open('about:blank') is null

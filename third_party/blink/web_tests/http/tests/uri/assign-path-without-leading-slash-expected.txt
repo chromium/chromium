@@ -1,7 +1,0 @@
-The path assignment test redirected successfully. Checking path...
-
-PASS location.pathname is '/uri/resources/assign-path-landing.html'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

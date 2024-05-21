@@ -1,2 +1,0 @@
-Tests that the table cell width is set properly even when the table cell has no child and its table has width defined
-PASS

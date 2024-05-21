@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-    <clipPath id="clip">
-        <text x="100" y="130" style="font-size:60px;font-weight:bold;">CLIP</text>
-    </clipPath>
-</defs>
-
-<rect x="40" y="40" height="300" width="300" style="fill:green;clip-path:url(#clip);"/>
-</svg>

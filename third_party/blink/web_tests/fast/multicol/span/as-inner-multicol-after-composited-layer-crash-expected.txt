@@ -1,3 +1,0 @@
-Make sure that a spanner that establishes an inner multicol doesn't set up its flow thread as a paint invalidation container.
-
-PASS if no crash or assert.

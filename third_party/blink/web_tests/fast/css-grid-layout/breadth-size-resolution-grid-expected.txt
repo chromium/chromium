@@ -1,5 +1,0 @@
-Test that specifying the track breadth sizes works properly with all the allowed length types and in different writing modes.
-
-PASS
-PASS
-PASS

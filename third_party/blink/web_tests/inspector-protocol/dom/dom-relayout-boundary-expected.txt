@@ -1,6 +1,0 @@
-Tests DOM.getRelayoutBoundary method.
-Relayout boundary for div#outer is: html
-Relayout boundary for div#boundary is: div#boundary
-Relayout boundary for div#inner is: div#boundary
-Relayout boundary for div#hidden is: No layout object for node, perhaps orphan or hidden node
-

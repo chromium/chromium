@@ -1,8 +1,0 @@
-Test that instrumentation breakpoints are preserved after cross-origin navigation
-{
-    data : {
-        eventName : instrumentation:canvasContextCreated
-    }
-    reason : EventListener
-}
-

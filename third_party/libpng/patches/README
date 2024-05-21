@@ -1,6 +1,0 @@
-This directory contains patches applied on top of libpng, which haven't been
-upstreamed or released to the canonical libpng repository [1] yet.
-
-(At present, we have no local patches.)
-
-[1] https://github.com/pnggroup/libpng

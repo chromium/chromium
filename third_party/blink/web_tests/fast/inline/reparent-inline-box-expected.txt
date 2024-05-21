@@ -1,1 +1,0 @@
-If this string appears, and the renderer hasn't crashed, then the bug is fixed.

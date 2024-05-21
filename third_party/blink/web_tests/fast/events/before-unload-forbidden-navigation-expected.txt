@@ -1,8 +1,0 @@
-This test ensures navigation is forbidden while beforeunload event is being fired. You should see PASS 1/2 and PASS 2/2 below:
-
-PASS 1/2
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS: 2/2

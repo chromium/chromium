@@ -1,4 +1,0 @@
-This tests that an Error event is fired at an HTML Link element when it fails to load a non-existent style sheet. This test PASSED if see you see the word PASS below. Otherwise, it FAILED.
-
-PASS Fired Error event.
-

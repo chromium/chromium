@@ -1,5 +1,0 @@
-Test worker invalid url exceptions. Should print two "PASS" statements.
-
-PASS: Got security error.
-PASS: Got syntax error.
-

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Invoice xmlns:ccts="urn:oasis:names:tc:ubl:CoreComponentParameters:1.0:0.70" xmlns:cct="urn:oasis:names:tc:ubl:CoreComponentTypes:1.0:0.70" xmlns:cat="urn:oasis:names:tc:ubl:CommonAggregateTypes:1.0:0.70" xmlns="urn:oasis:names:tc:ubl:Invoice:1.0:0.70">
-   <cat:ReferencedOrder>
-      <cat:SellersOrderID schemeID="pvalue->ReferencedOrder.SellersOrderID.schemeID" schemeAgencyID="pvalue->ReferencedOrder.SellersOrderID.schemeAgencyID" schemeVersionID="pvalue->ReferencedOrder.SellersOrderID.schemeVersionID" schemeAgencySchemeID="pvalue->ReferencedOrder.SellersOrderID.schemeAgencySchemeID" schemeAgencySchemeAgencyID="pvalue->ReferencedOrder.SellersOrderID.schemeAgencySchemeAgencyID" schemeDataURI="pvalue->ReferencedOrder.SellersOrderID.schemeDataURI" schemeURI="pvalue->ReferencedOrder.SellersOrderID.schemeURI" UID="pvalue->ReferencedOrder.SellersOrderID.UID" UIDRef="pvalue->ReferencedOrder.SellersOrderID.UIDRef" UIDRefs="pvalue-&gt;ReferencedOrder.SellersOrderID.UIDRefs0" language="pvalue->ReferencedOrder.SellersOrderID.language">pvalue-&gt;ReferencedOrder.SellersOrderID</cat:SellersOrderID>
-   </cat:ReferencedOrder>
-</Invoice>

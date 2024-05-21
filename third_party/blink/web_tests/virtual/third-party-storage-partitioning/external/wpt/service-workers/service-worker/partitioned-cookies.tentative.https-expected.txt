@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Service Worker: Partitioned Cookies 3P Iframe
-  assert_false: Worker cannot access partitioned cookie via HTTP expected false got true
-Harness: the test ran to completion.
-

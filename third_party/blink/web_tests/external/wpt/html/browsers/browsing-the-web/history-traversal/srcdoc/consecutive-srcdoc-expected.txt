@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] changing srcdoc to about:srcdoc#yo then another srcdoc does two push navigations and we can navigate back
-  assert_equals: srcdoc content must be restored from history expected "srcdoc1" but got "srcdoc2"
-Harness: the test ran to completion.
-

@@ -1,6 +1,0 @@
-monorail: {
-  component: "Blink>Media>Track"
-}
-buganizer_public: {
-  component_id: 1456439
-}

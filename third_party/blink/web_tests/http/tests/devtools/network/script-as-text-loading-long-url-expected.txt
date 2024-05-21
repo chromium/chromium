@@ -1,7 +1,0 @@
-Tests that long URLs are correctly trimmed in anchor links.
-
-Message count: 1
-script-as-text-loading-long-url.js:16 GET http://127.0.0.1:8000/inspector/network/resources/script-as-text-with-a-ver…y-very-very-very-very-very-very-very-very-very-very-very-very-long-url.php net::ERR_ABORTED 404 (Not Found)
-loadScript @ script-as-text-loading-long-url.js:16
-(anonymous) @ script-as-text-loading-long-url.js:20
-

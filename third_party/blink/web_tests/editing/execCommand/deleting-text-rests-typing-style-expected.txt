@@ -1,8 +1,0 @@
-This tests deleting a bold paragraph, then changing the selection and moving it back to the spot
-where that paragraph was deleted and typing more. The new test should not be bolded.
-| <div>
-|   id="one"
-|   "Not bold<#selection-caret>"
-| <div>
-|   id="two"
-|   <br>

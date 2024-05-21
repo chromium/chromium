@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: Expected exception caught.
-Bug: https://bugs.webkit.org/show_bug.cgi?id=57140
-
-Description: Crash from null pointer dereference below WebCore::StorageAreaImpl::setItem()
-
-Expect: passed
-
-Result: passed

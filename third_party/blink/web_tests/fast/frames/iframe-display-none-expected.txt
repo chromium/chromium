@@ -1,3 +1,0 @@
-ALERT: this comes from the child frame onload handler!
-This tests that a hidden iframe (with display set to none) can still be accessed using JavaScript.
-SUCCESS

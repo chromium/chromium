@@ -1,5 +1,0 @@
-Testing a11y in performance panel - timeline overview container.
-Page reloaded.
-aXe violations: []
-
-

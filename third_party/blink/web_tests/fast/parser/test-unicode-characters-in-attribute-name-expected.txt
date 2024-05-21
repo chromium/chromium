@@ -1,6 +1,0 @@
-All attributes of the content element are:
-
-0. id : content
-1. 　title : http://www.315.com.cn/newwebsite/images0821/315_ca_03.gif
-2. la　ng : zh-cn
-

@@ -1,3 +1,0 @@
-Parsed element namespace: http://www.w3.org/1999/xhtml
-
-This should be italic.

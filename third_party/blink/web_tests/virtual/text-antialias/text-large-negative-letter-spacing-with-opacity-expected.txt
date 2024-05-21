@@ -1,3 +1,0 @@
-Test case for https://bugs.webkit.org/show_bug.cgi?id=26088, which would crash the chromium port. If the browser does not crash, you should see an partially-transparent "world" on the next line.
-
-Helloworld

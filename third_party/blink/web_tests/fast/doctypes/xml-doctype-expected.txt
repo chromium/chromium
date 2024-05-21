@@ -1,6 +1,0 @@
-This tests the behavior of a Doctype in an XML document.
-PASS: a doctype in a XML document is not ignored.
-PASS: a doctype in an XML document is correctly set to the first child of the Document.
-PASS: doctype.publicId correctly defaults to empty string when not set.
-PASS: doctype.systemId correctly defaults to empty string when not set.
-

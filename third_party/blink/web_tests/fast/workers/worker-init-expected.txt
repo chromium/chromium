@@ -1,4 +1,0 @@
-Test that worker object is not garbage collected if there is a message from worker context. Should print "SUCCESS". Bug 62446
-
-SUCCESS: Worker context initialized
-

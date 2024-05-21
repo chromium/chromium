@@ -1,4 +1,0 @@
-This test creates an iframe that has a valid document and render tree,
-but is detached from the parent frame because it has display:none.
-The selection handle code should not crash in such case, see crbug.com/453903 .
-<iframe style="display: none;" src="data:text/html;charset=utf-8,%3Cinput%20autofocus%3E%3C%2Finput%3E">

@@ -1,6 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
-CONSOLE MESSAGE: Blink Test Plugin: MouseDown at (151,76)
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(false)
-PASS

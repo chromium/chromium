@@ -1,8 +1,0 @@
-Test for bug 56264: Handle entering full screen security restrictions
-
-To test manually, click the "Go full screen" button - the page should enter full screen mode.
-
-EVENT(webkitfullscreenchange)
-TEST(document.getElementById('frame').contentDocument.width==document.width) OK
-END OF TEST
-

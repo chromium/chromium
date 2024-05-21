@@ -1,9 +1,0 @@
-State vector should be empty if nothing is saved.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS states.length is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

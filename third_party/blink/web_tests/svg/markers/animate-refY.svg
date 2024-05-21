@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <marker id="m" markerWidth="40" markerHeight="40" refX="10" refY="20">
-    <rect x="5" y="15" width="20" height="10" fill="red" />
-    <set attributeName="refY" attributeType="XML" to="30" begin="0s" dur="1s" fill="freeze" />
-  </marker>
-
-  <path d="M 50,50 L 100,100" marker-start="url(#m)" stroke="blue"/>
-  <rect x="45" y="35" height="10" width="20" fill="green" />
-</svg>

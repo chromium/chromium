@@ -1,6 +1,0 @@
-This tests indenting the second paragraph in a blockquote. By indenting "world", we should be inserting a blockquote around world inside the "test" blockquote.
-
-hello
-
-world
-<blockquote id="test"> hello<br></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote> world </blockquote></blockquote>

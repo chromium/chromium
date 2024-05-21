@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Replacing text in a link with "XY" in <p>[abc]</p>
-  assert_in_array: value "<p>XY</p>" not in array ["<p><a href=\\"about:blank\\">XY</a></p>", "<p><a href=\\"about:blank\\">XY</a><br></p>"]
-Harness: the test ran to completion.
-

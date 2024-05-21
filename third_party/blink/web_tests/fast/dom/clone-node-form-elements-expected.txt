@@ -1,4 +1,0 @@
- 
-This tests that cloneNode and importNode copies the form element properties that aren't stored in values, such as 'value', and 'checked'. If this test is successful, the text SUCCESS should be shown below.
-SUCCESS!
-

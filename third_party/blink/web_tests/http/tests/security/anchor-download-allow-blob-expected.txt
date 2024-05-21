@@ -1,9 +1,0 @@
-Download started
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Tests that a suggested filename on a download attribute is allowed if the link is a blob URL.
-
-The suggested filename at the top should be foo.pdf.

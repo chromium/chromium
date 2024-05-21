@@ -1,7 +1,0 @@
-rdar://problem/6447115 Test that a method for logging out of a site that is used by SAP works.
-
-If an authentication dialog appears, please cancel it.
-
-Login: PASS
-Async request sent before logout: PASS
-Logout: FAIL

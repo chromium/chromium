@@ -1,8 +1,0 @@
-Ensure that if we have an AXNodeObject with a raw pointer to a Node, the accessible object gets correctly detached if we adopt the node into a new document.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

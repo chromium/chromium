@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-169a.css" type="text/css"?>
-<test>
-   <p xmlns="http://www.w3.org/1999/xhtml">This test has <span></span>.</p>
-   <p xmlns="http://www.w3.org/1999/xhtml">(If the previous line just reads &quot;This test has .&quot; then this test has failed.)</p>  
-</test>

@@ -1,3 +1,0 @@
-Test that displaying an OUTPUT element as table-column-group doesn't crash.
-
-PASS if no crash or assertion failure.

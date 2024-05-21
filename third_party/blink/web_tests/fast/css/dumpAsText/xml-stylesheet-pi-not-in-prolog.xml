@@ -1,4 +1,0 @@
-<foo>
-<?xml-stylesheet href="resources/xml-stylesheet-pi-not-in-prolog.css" type="text/css"?>
-This tests that xml-stylesheet processing instructions have no effect when they're not in the prolog (before the root element). If this test is successful, this text should NOT have a black border.
-</foo>

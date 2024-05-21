@@ -1,4 +1,0 @@
-This test ensures a beforeunload event handler can safely remove the frame to which the event is fired. You should see PASS below:
-
-PASS
-

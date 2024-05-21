@@ -1,3 +1,0 @@
-After starting typing in a scrolled out of view editor control, the control is to be brought to the edge of the view
-To test manually, scroll the page up to the top, then start typing. Input box should be scrolled into the edge of the view.
-ScrollVertically: PASS

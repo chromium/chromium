@@ -1,3 +1,0 @@
-Testcase for bug 111894: Regression: Crash when selecting Hebrew and numbers in a list.
-To manually verify the issue, try clicking over the list marker. The test passes if the page does not crash.
-The page did not crash.

@@ -1,1 +1,0 @@
- Test passes if the page does not crash.

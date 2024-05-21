@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Request's referrer is origin
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-Harness: the test ran to completion.
-

@@ -1,3 +1,0 @@
-Drag
-
-PASS if no leak is detected by the leak detector.

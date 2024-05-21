@@ -1,4 +1,0 @@
-This tests that if text field is cleared while drag - drop it does not give any Asserts (Bug 61008)
-
-PASS
- 

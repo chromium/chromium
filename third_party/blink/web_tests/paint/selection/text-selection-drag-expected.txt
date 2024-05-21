@@ -1,1 +1,0 @@
-To run this test manually, select some text and drag it around. The text should not be drawn with halo outlines.

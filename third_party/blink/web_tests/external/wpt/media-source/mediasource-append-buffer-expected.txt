@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test appendBuffer events order.
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

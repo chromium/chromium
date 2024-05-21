@@ -1,5 +1,0 @@
-This tests that the fullscreenEnabled property is false when fullscreen is not supported as laid out in section 4 of the Fullscreen API living standard
-EXPECTED (document.webkitFullscreenEnabled == 'false') OK
-EXPECTED (iframe.contentDocument.webkitFullscreenEnabled == 'false') OK
-END OF TEST
-

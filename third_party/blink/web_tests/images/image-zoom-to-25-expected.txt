@@ -1,9 +1,0 @@
-This tests that page zoom and image auto-sizing interact well together. This test requires testRunner to run. To test manually, open this image in a browser window, resize the window to 200px tall and zoom out 6 times. The image should get smaller at each step.
-
-Size at zoom level0 : 200 x 150
-Size at zoom level1 : 200 x 150
-Size at zoom level2 : 200 x 150
-Size at zoom level3 : 200 x 150
-Size at zoom level4 : 200 x 150
-Size at zoom level5 : 200 x 150
-

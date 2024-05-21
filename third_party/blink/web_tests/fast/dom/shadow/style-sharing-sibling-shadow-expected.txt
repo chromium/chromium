@@ -1,9 +1,0 @@
-Siblings should only share if their host rules match
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(host).backgroundColor is "rgb(255, 0, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

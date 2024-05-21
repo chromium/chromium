@@ -1,6 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=45344 Null deref in InlineBox::height().
-
-This test should not crash.
-
-
-

@@ -1,6 +1,0 @@
-external script ran!
-second inline ran!
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

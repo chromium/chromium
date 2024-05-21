@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <g fill="currentColor" color="red">
-    <rect width="100" height="100" color="green"/>
-  </g>
-  <g fill="currentColor" color="red">
-    <rect x="100" width="100" height="100" fill="currentColor" color="green"/>
-  </g>
-</svg>

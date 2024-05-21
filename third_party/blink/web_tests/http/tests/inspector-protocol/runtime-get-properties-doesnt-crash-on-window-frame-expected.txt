@@ -1,2 +1,0 @@
-Tests that Runtime.getProperties doesn't crash on window.frames[0]. Should not crash.
-

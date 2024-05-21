@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-<filter id="filter">
-    <feGaussianBlur stdDeviation="1" />
-</filter>
-</defs>
-<text style="font-size:20px;filter:url(#filter);" x="30" y="30">This is for filter <tspan filter="url(#filter)">on filter</tspan>.</text>
-</svg>
-

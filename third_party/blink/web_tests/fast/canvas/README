@@ -1,5 +1,0 @@
-NOTE: This directory is reserved for tests that produce pixel results. That is,
-the tests here either needs a reference image or a reference html. Tests in this
-directory is running with virtual/gpu and virtual/display_list_2d_canvas test
-suites. For any tests that verifies the APIs for canvas, please put them under
-fast/canvas-api/.

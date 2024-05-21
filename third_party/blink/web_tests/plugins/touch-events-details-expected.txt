@@ -1,7 +1,0 @@
-Plugin received event: TouchStart
-* 10.00, 10.00: Pressed
-Plugin received event: TouchMove
-* 20.00, 15.00: Moved
-Plugin received event: TouchEnd
-* 20.00, 15.00: Released
-

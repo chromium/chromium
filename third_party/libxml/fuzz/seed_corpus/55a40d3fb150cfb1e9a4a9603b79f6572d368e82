@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
--->
-<foo xmlns="http://FOO" xmlns:foo="http://FOO"  xmlns:bar="http://BAR" xmlns:boo="http://BOO" xmlns:doo="http://DOO" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://FOO attrGroup-wildcard1_0.xsd" 
-	foo:bar="o" doo:bar="o"/>
-	
-

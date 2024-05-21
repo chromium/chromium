@@ -1,9 +1,0 @@
-ALERT: PASS: Case 3 was not blocked by a CSP.
-CONSOLE MESSAGE: EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
-
-ALERT: PASS: Case 2 was blocked by a CSP.
-CONSOLE ERROR: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present.
-
-ALERT: PASS: Case 1 was not evaluated in main world.
-ALERT: undefined
-Test a script that bypasses the main world's CSP to see if its *content* bypasses the main world as well (it should not).

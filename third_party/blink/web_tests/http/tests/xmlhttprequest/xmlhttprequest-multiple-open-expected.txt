@@ -1,6 +1,0 @@
-Test bug 17481: Several consecutive calls to XMLHttpRequest::open should dispatch only one readyState event
-
-You should see "PASS" once:
-
-PASS
-

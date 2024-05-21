@@ -1,7 +1,0 @@
-Test the effect of pointer-events on overflow scrollbars.
-
-SUCCESS
-Div 1
-Div 3
-Div 4
-Div 5

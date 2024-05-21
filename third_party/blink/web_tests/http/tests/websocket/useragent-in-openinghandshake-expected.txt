@@ -1,9 +1,0 @@
-WebSocket test to check if opening handshake contains User-Agent header
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS user_agent is navigator.userAgent
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

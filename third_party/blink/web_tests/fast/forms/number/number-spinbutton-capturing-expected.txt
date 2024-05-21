@@ -1,9 +1,0 @@
-Test for a capturing bug of spin buttons in a type=numnber input.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS anotherInput.value is "2"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

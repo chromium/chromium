@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500">
-<title>Top Level Title in Object</title>
-    <rect width="250" height="250" fill="green">
-        <title>Second Level Title in Object</title>
-    </rect>
-</svg>

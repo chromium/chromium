@@ -1,9 +1,0 @@
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions of empty&nonempty input field were the same.
-Success. The caret's x positions was set to desired position when the text-align is center.
-Success. The caret's x positions was set to desired position when the text-align is center.
-

@@ -1,8 +1,0 @@
-PASS crbug.com/537656: If a canvas has been marked for layout it may have floats in its float lists that have been removed and require layout to rebuild them, so don't try to pre-empt layout by calculating width on the canvas using stale and unsafe float lists.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-    
-
-

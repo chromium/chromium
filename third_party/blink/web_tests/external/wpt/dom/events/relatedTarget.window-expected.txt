@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Retarget a shadow-tree relatedTarget
-  assert_equals: expected Element node <div><p></p></div> but got DocumentFragment node with 1 child
-[FAIL] Reset targets on early return
-  assert_false: expected false got true
-[FAIL] Reset targets before activation behavior
-  assert_equals: expected null but got Element node <input type="checkbox"></input>
-Harness: the test ran to completion.
-

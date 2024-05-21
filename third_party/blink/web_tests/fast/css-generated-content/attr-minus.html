@@ -1,7 +1,0 @@
-<!DOCTYPE html>
-<style>
-    div::before { content: attr(-foo); }
-</style>
-<div foo="FAIL">PASS</div>
-<div -foo="PASS"></div>
-<!-- Note that the selector is valid but strictly speaking it should not match since -foo attribute should have been dropped. -->

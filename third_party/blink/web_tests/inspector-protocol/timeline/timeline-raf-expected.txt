@@ -1,7 +1,0 @@
-Tests trace events for rafs.
-Recording started
-Tracing complete
-RequestAnimationFrame has frame: true
-RequestAnimationFrame frames match: true
-SUCCESS: found all expected events.
-

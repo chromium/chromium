@@ -1,6 +1,0 @@
-{
-  "name": "Invalid JSON",
-  "importMapBaseURL": "https://base.example/",
-  "importMap": "{imports: {}}",
-  "expectedParsedImportMap": null
-}

@@ -1,9 +1,0 @@
-This element should have an overall border of 25 pixels. => PASS
-
-This element should have a left border of 25 pixels. => PASS
-
-This element should have a right border of 25 pixels. => PASS
-
-This element should have a top border of 25 pixels. => PASS
-
-This element should have a bottom border of 25 pixels. => PASS

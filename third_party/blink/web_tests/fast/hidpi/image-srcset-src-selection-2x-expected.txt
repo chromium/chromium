@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==200 is true
-This test passes if the div below is a green 200px square when the deviceScaleFactor is 2. It simply ensures that the src attribute is taken into account by the selection algorithm when this one is processing the images candidates

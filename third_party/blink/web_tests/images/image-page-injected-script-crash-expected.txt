@@ -1,4 +1,0 @@
-This tests that submitting an injected form on an "image page" doesn't crash the tab. This test requires testRunner to run. To test manually, open this image in a browser window, and inject script from the page source and fill the form and press submit. It must not crash and the url must have ?url=some-url as the parameter.
-
-Test Success
-

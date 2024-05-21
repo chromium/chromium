@@ -1,6 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/history/back-to-post.html with navigation type 'form submitted'
-Policy delegate: attempt to load http://127.0.0.1:8000/history/back-to-post.html with navigation type 'form submitted'
-Test for rdar://problem/6791439 Getting an error page instead of login page navigating back in gmail.
-
-PASS
- 

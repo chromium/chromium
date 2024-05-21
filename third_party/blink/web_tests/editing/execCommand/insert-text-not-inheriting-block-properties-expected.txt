@@ -1,9 +1,0 @@
-If you select a paragraph and type a character, block style properties should not be inherited to the next paragraph.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS container.innerHTML is "<p style=\"text-indent: 3em;\"><span>aBar</span></p>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

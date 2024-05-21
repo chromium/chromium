@@ -1,6 +1,0 @@
-Test for bug 34520: Assertion failure in CheckedRadioButtons::removeButton when using jQuery 1.4.1. Also tests actual behavior the crashing jQuery was test was checking for.
-
-1. PASS
-2. PASS
-3. PASS
-DONE

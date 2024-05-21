@@ -1,7 +1,0 @@
-Test for bug 76701: map content-language to -webkit-locale. This particular test tests that the matching of the http-equiv attribute to the content-language state is case insensitive.
-
-PASS languageOfNode('x') is "\"ja-JP\""
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

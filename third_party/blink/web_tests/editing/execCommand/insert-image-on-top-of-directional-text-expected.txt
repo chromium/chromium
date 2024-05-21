@@ -1,5 +1,0 @@
-This test uses execCommand('insertImage') to replace the selection in a variety of mixed directionality text. If this doesn't crash, then the test passes.
- 
- 
- 
- 

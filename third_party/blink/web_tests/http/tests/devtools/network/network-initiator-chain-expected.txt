@@ -1,7 +1,0 @@
-Test that computing the initiator graph works for service worker request.
-
-
-http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker.js
-Initiators http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker.js
-Initiated http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker.js
-

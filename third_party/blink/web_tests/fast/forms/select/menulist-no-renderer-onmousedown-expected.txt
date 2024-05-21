@@ -1,2 +1,0 @@
-This tests that we don't crash if a menu list's renderer is destroyed during the mouse down event.
-

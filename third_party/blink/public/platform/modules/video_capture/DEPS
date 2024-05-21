@@ -1,5 +1,0 @@
-include_rules = [
-    "+base/token.h",
-    "+media/base",
-    "+media/capture",
-]

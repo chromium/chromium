@@ -1,3 +1,0 @@
-This test checks that the charset sniffer ignores namespaced meta tags.
-PASS: ISO-2022-JP
-

@@ -1,8 +1,0 @@
-Test case for bug 40952: Onloadend event is not supported in XMLHttpRequest
-
-Verify that a loadend ProgressEvent is dispatched after a load ProgressEvent when a synchronous request completes normally.
-Verify that a loadend ProgressEvent is not dispatched after abort() is called when a synchronous request completes normally.
-
-PASS PASS PASS should appear below:
-
-PASS PASS PASS

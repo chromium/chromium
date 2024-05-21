@@ -1,7 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.activeElement.id is "MoveToMe"
-PASS document.activeElement.id is "MoveToMe"
-   

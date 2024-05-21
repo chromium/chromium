@@ -1,2 +1,0 @@
-success
-This tests that calling window.open() with a boolean as a fourth parameter does no throw an exception.

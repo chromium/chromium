@@ -1,9 +1,0 @@
-PASS //*
-PASS */*
-PASS /
-PASS /child::*
-PASS child::*/child::*
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

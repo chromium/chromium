@@ -1,8 +1,0 @@
-To run this test manually, drag a file to one of the two boxes below.
-
-Dropping in drop target 1 should result in a drop event.
-Dropping in drop target 2 should NOT result in a drop event (new tab will navigate).
-Starting drag...
-Drop received in drop target 1
-Starting drag...
-

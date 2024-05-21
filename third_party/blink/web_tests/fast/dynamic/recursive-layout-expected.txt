@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=14118 ASSERTION FAILED: !needsLayout() seen again.
-
-No assertion failure here means SUCCESS.
-
-This is something to select

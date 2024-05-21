@@ -1,4 +1,0 @@
-CONSOLE ERROR: Chrome blocked resource http://127.0.0.1:8000/subresource_filter/resources/beta.js on this site because this site tends to show ads that interrupt, distract, mislead, or prevent user control. Learn more at https://www.chromestatus.com/feature/5738264052891648
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

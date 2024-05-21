@@ -1,2 +1,0 @@
-This case is for testing multiple scripts which are nested in external script.
-SUCCESS (1 of 2) SUCCESS (2 of 2)

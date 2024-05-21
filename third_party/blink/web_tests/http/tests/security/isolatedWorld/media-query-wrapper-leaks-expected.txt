@@ -1,3 +1,0 @@
-MediaQueryListener should be triggered in the isolated world that created the MediaQueryListener.
-
-PASS

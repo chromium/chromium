@@ -1,7 +1,0 @@
-This page tests whether primitive conversions during equality tests properly throw exceptions. If the test passes, you'll see a series of PASS messages below.
-
-PASS: o == 'a' should throw a type error, and did.
-PASS: o != 'a' should throw a type error, and did.
-PASS: o == 0 should throw a type error, and did.
-PASS: o != 0 should throw a type error, and did.
-

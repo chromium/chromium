@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Empty usages: generateKey({length: 192, name: AES-GCM}, false, [])
-  assert_equals: Empty usages not supported expected "SyntaxError" but got "OperationError"
-[FAIL] Empty usages: generateKey({length: 192, name: AES-GCM}, true, [])
-  assert_equals: Empty usages not supported expected "SyntaxError" but got "OperationError"
-Harness: the test ran to completion.
-

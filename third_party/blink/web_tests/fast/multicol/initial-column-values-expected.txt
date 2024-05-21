@@ -1,7 +1,0 @@
-Pass: columns-test -webkit-column-count = auto
-Pass: columns-test -webkit-column-width = auto
-Pass: count-test -webkit-column-count = auto
-Pass: gap-test -webkit-column-gap = normal
-Pass: width-test -webkit-column-width = auto
-
-

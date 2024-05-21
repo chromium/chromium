@@ -1,3 +1,0 @@
-Tests that the navigation referrer can be overridden.
-Referrers: ["referrer.com","127.0.0.1"]
-

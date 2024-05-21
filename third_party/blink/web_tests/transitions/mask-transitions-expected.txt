@@ -1,4 +1,0 @@
-PASS - "-webkit-mask-position-x" property for "box" element at 0.5s saw something close to: 10
-PASS - "-webkit-mask-position-y" property for "box" element at 0.5s saw something close to: 10
-PASS - "-webkit-mask-size" property for "box2" element at 0.5s saw something close to: 150,150
-

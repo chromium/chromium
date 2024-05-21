@@ -1,4 +1,0 @@
-This is a test of styleWithCSS.
-
-hello
-PASS

@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Link 1
-Target Link.
-Link 2
-This test is successful if "Target Link" above is covered in a green rectangle with rounded corners.

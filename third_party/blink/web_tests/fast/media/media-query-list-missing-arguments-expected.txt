@@ -1,7 +1,0 @@
-PASS [object MediaQueryList] is an instance of MediaQueryList
-PASS mediaList.addListener() threw exception TypeError: Failed to execute 'addListener' on 'MediaQueryList': 1 argument required, but only 0 present..
-PASS mediaList.removeListener() threw exception TypeError: Failed to execute 'removeListener' on 'MediaQueryList': 1 argument required, but only 0 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

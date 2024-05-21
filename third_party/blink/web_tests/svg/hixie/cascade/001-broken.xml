@@ -1,6 +1,0 @@
-<?xml-stylesheet href="001.css"?>
-<svg xmlns="http://www.w3.org/2000/svg" height="200" width="400">
- <desc>Hover over the first blue circle. The second one should go green.</desc>
- <circle cx="100" cy="100" r="90"/>
- <circle cx="300" cy="100" r="90"/>
-</svg>

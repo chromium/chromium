@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Getting out-of-range argument
-  assert_throws_js: function "() => exn.getArg(tag, value)" threw object "TypeError: WebAssembly.Exception.getArg(): Index must be convertible to a valid number" ("TypeError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
-Harness: the test ran to completion.
-

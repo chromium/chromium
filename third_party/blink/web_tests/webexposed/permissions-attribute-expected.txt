@@ -1,8 +1,0 @@
-Tests that the permissions attribute is not exposed for stable
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

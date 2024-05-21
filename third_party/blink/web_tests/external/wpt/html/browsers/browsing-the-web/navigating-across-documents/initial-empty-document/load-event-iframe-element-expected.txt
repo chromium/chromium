@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] load event fires synchronously on <iframe> element created with src='about:blank#foo'
-  assert_equals: expected 1 but got 0
-Harness: the test ran to completion.
-

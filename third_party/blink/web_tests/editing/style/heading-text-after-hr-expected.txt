@@ -1,5 +1,0 @@
-This tests formatting a text immediately after hr with h1 tag.
-
-test
-Before:<hr>test
-After:<hr><h1>test</h1>

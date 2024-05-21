@@ -1,2 +1,0 @@
-CONSOLE WARNING: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/nonwebby-scheme-in-form-warning.https.html' was loaded over a secure connection, but contains a form that targets an insecure endpoint 'nonwebbyscheme://mixed-content-warning-should-appear'. This endpoint should be made available over a secure connection.
-This tests that forms with non-webby actions trigger a mixed content warning. The test passes if the console shows a mixed content warning.

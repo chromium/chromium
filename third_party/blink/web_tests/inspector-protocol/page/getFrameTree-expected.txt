@@ -1,6 +1,0 @@
-Tests Page.getFrameTree protocol method.
-frame: undefined
-  frame: a
-  frame: b
-    frame: d
-

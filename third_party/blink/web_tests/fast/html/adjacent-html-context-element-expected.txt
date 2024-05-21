@@ -1,4 +1,0 @@
-This tests inserting a td element "beforeBegin" of another td element using insertAdjacentHTML. If the context element was not properly adjusted, then td will be stripped by the parser.
-
-	
-PASS

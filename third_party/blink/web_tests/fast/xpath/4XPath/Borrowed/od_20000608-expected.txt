@@ -1,6 +1,0 @@
-PASS nodeset.snapshotLength is 0
-PASS nodeset.snapshotLength is 12
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,2 +1,0 @@
-PASS
-crbug.com/513319: Empty cells with a computed height but no content use their bottom content edge as a baseline.

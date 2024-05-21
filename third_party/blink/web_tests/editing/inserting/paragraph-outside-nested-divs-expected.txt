@@ -1,9 +1,0 @@
-When inserting a new line, we should break out of nested divs.
-
-SUCCESS
-
-first
-second
-This should be in nested divs.
-third
-This should be in a single div.

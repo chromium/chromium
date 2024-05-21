@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] collections are new live HTMLCollection instances
-  assert_not_equals: got disallowed value object "[object HTMLCollection]"
-Harness: the test ran to completion.
-

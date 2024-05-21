@@ -1,9 +1,0 @@
-Test that WebSocket handshake fails if there are more than one Sec-WebSocket-Protocol header field in the response.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS onerror() was called
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,7 +1,0 @@
-XMLHttpRequest.open() should be correctly overloaded
-
-PASS: if async argument is true, send() should behave asynchronously
-PASS: if async argument is false, send() should behave synchronously
-PASS: if async argument is not given, send() should behave like as async=true
-PASS: if async argument is undefined, send() should behave like as async=false
-PASS: if async argument is a non-empty string, send() should behave like as async=true

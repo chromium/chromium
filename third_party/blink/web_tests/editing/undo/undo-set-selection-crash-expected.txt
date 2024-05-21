@@ -1,9 +1,0 @@
-Undo command should not make a selection anchored in another document.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Did not crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

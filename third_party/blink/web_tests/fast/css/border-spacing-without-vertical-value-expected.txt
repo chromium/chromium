@@ -1,3 +1,0 @@
-This tests obtaining the value of "border-spacing" property without setting -webkit-border-vertical-spacing. WebKit should not crash and we should get null.
-
-PASS. WebKit didn't crash.

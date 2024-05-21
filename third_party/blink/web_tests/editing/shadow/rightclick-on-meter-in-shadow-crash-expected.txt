@@ -1,3 +1,0 @@
-This test ensures context click around meter won't crash.
-
-PASS

@@ -1,1 +1,0 @@
-Tests moving layers inside with fixed position nodes. The test passes if it completes without failing any assertions in Debug mode.

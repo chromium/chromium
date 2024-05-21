@@ -1,5 +1,0 @@
-CONSOLE MESSAGE: MessageEvent received in main world
-CONSOLE MESSAGE: detail was {"foo":5,"bar":"hello","targetWorld":"main"}
-CONSOLE MESSAGE: MessageEvent received in isolated world
-CONSOLE MESSAGE: detail was {"foo":5,"bar":"hello","targetWorld":"isolated"}
-Tests that properties of MessageEvents initialized with initMessageEvent() are cloned when accessed in isolated worlds.

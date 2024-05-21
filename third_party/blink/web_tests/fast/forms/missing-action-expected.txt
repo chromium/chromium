@@ -1,3 +1,0 @@
-Test for bug 17042: Forms without actions and a base tag submit incorrectly.
-
-Success

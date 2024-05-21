@@ -1,4 +1,0 @@
-Tests that targets created with window.open share the same browser context.
-Opened a second window
-SUCCESS: All 3 pages belong to the same browser context.
-

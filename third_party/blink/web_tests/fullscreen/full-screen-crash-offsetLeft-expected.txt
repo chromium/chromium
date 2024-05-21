@@ -1,5 +1,0 @@
-Bug 89785: REGRESSION(r116446): Crash in LayoutBoxModelObject::adjustedPositionRelativeToOffsetParent
-
-PASSED, the page didn't crash.
-END OF TEST
-

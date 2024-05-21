@@ -1,8 +1,0 @@
-<schema xmlns="http://www.ascc.net/xml/schematron" >
-     <pattern name="Predefined values">
-          <rule context="AAA">
-               <report test="normalize-space(.) = 'aaa' or normalize-space(.) = 'bbb'">O.K.</report>
-               <assert test="normalize-space(.) = 'aaa' or normalize-space(.) = 'bbb'">The AAA value is not permitted.</assert>
-          </rule>
-     </pattern>
-</schema>

@@ -1,1 +1,0 @@
-FROM dtolnay/devcontainer:latest

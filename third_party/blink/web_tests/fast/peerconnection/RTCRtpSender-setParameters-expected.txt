@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setParameters() with large maxBitrate changes getParameters() returned values
-  assert_equals: expected 4294967295 but got 2147483647
-Harness: the test ran to completion.
-

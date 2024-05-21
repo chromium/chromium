@@ -1,4 +1,0 @@
-ALERT: onpageshow
-ALERT: Navigating back...
-ALERT: onpageshow
-PASS

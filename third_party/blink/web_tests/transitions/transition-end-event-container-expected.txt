@@ -1,4 +1,0 @@
-Initiating a 100ms transition on the left property of box1 and catching it on the parent.
-
-PASS --- [Expected] Property: left Target: box1 Elapsed Time: 0.1
-

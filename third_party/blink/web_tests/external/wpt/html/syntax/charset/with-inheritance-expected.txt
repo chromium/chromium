@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Check http://web-platform.test:8001/html/syntax/charset/after-head-after-1kb-crlf.html
-  assert_equals: Check characterSet expected "windows-1253" but got "windows-1251"
-Harness: the test ran to completion.
-

@@ -1,9 +1,0 @@
-Ensure that using node filter with a detached iframe doesn't crash.
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS Did not crash.
-PASS dummyFilterCalled is true
-PASS foundNode.toString() is "[object HTMLHtmlElement]"

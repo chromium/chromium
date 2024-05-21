@@ -1,8 +1,0 @@
-PASS result.startContainer.tagName is "DIV"
-PASS result.startOffset is 1
-PASS result.startContainer is result.endContainer
-PASS result.startOffset is result.endOffset
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

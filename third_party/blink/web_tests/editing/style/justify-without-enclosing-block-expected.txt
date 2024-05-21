@@ -1,6 +1,0 @@
-execCommand("JustifyNone") was crashing inside WebCore::ApplyStyleCommand::applyBlockStyle.
-See https://bugs.webkit.org/show_bug.cgi?id=51639
-The test has passed if it does not crash.
-
-
-PASS

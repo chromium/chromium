@@ -1,5 +1,0 @@
-This test checks to see if changing the font of a select element causes it to resize to accommodate the larger text.
-
-This is an option with some text in it.
-
-PASS: Resize seems to have worked.

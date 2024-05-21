@@ -1,3 +1,0 @@
-.
-<div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true" id="insertlisthere"><ol><li>.</li></ol></div>
-PASS

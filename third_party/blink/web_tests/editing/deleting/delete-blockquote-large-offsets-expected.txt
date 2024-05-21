@@ -1,2 +1,0 @@
-This tests setting caret inside a blockquote with a large offset and running execCommand('Delete'). WebKit should not crash and you should see PASS below:
-PASS

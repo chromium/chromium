@@ -1,2 +1,0 @@
-ALERT: 224 tests of 224 passed, 0 failed.
-

@@ -1,3 +1,0 @@
-Test for infinite loop in textPath.
-See bug: https://code.google.com/p/chromium/issues/detail?id=232903
-SVG text

@@ -1,5 +1,0 @@
-The bottom line of the green box should be above the bottom line of the blue box.
-
-[Text] [Inline Block]
-
-PASS

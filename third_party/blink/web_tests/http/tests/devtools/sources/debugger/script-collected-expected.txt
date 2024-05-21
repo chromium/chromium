@@ -1,5 +1,0 @@
-Tests that DiscardedAnonymousScriptSource event is fired and workspace is cleared.
-
-Discarded: 1100
-Remaining UISourceCodes: 903
-

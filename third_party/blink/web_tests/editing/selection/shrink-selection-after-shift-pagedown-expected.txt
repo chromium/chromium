@@ -1,5 +1,0 @@
-This tests shrinking a selection with shift-up after extending it with shift-PageDown.
-
-This test does not run interactively. It uses the event sender to do mouse clicks. To run it manually, press shift-PagDown. Then press shift-up. The selection should shrink by one line from the bottom after shift-up.
-
-SUCCESS: The selection shrunk correctly

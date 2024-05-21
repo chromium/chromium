@@ -1,9 +1,0 @@
-CONSOLE MESSAGE: success.js loaded
-Sync scripts that fail to load should not block later sync scripts from executing.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

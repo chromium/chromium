@@ -1,6 +1,0 @@
-SUCCESS
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/redirect302-metaredirect.html
-curr->  http://127.0.0.1:8000/navigation/resources/redirect302-metaredirect.html
-===============================================

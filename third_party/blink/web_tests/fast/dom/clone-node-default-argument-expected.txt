@@ -1,7 +1,0 @@
-PASS Node.prototype.cloneNode.length is 0
-PASS div.cloneNode().hasChildNodes() is false
-PASS div.cloneNode().childNodes.length is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

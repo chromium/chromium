@@ -1,3 +1,0 @@
-This test passes if it does not crash. Move the mouse out of the window, and then press any key.
-
-PASS

@@ -1,5 +1,0 @@
-This test checks that canceling a load when a preload is happening doesn't crash.
-
-If testing manually, if your browser doesn't crash then this was a success.
-
-Test

@@ -1,9 +1,0 @@
-PASS ancestor::*
-PASS ancestor-or-self::*
-PASS descendant-or-self::*
-PASS child::GCHILD[position()=1]
-PASS child::GCHILD[1]
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

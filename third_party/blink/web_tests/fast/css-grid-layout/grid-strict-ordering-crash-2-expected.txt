@@ -1,5 +1,0 @@
-if (window.testRunner) testRunner.dumpAsText();
-body { grid-column-end:span 200; } * { display:inline-grid; grid-column-start:foo; }
-
-
-This test has PASSED if it does not CRASH.

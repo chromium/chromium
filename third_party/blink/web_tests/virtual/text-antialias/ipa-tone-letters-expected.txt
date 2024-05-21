@@ -1,3 +1,0 @@
-This test checks if sequences of IPA tone marks are treated as complex script characters and ligated when a font capable of that is specified regardless of text-rendering mode. It's for bug 39799
-
-PASS: All strings have identical widths regardless of what text-rendering is set to.

@@ -1,2 +1,0 @@
-Blocked access to external URL https://does-not-exist/
-PASS

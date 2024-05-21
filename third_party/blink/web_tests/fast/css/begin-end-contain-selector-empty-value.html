@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<style type="text/css">
-div[foo1^=""] { background-color: red; }
-div[foo2$=""] { background-color: red; }
-div[foo3*=""] { background-color: red; }
-</style>
-<div foo1="">[^=] attribute selector looking for empty string in empty attribute (the text should not have red background)</div>
-<div foo2="">[$=] attribute selector looking for empty string in empty attribute (the text should not have red background)</div>
-<div foo3="">[*=] attribute selector looking for empty string in empty attribute (the text should not have red background)</div>

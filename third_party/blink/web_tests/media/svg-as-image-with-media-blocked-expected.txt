@@ -1,1 +1,0 @@
-This test attempts to load foreignObject audio and video embedded in an SVG file loaded as the src attribute of an img element. If successful, none of these files will load and a green rectangle will be visible below this text. If unsuccessful, the browser will crash while attempting to load the media.

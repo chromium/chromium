@@ -1,2 +1,0 @@
-ALERT: CSS1Compat
-

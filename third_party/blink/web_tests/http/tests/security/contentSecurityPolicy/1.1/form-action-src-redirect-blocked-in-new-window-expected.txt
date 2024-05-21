@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to send form data to 'http://127.0.0.1:8000/resources/redirection-response.php?host=localhost:8000&status=302&target=/security/resources/post-done-to-opener.html' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
-
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

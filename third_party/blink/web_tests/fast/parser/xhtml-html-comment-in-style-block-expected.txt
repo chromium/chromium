@@ -1,3 +1,0 @@
-This page tests that style written inside an HTML comment is not applied. See: http://test.w3.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml
-
-PASS

@@ -1,7 +1,0 @@
-Bug 38291 - CSS counters in :before pseudo-elements do not always update
-
-The following two lines should be the same:
-
--1--2-3-4-5-6
-
--1--2-3-4-5-6

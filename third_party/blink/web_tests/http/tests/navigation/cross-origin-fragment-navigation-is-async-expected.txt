@@ -1,6 +1,0 @@
-ALERT: iframe onload fired
-ALERT: PASS: url fragment is changing asynchronously
-ALERT: PASS: scheduled postMessage() before hashchange triggered.
-ALERT: iframe onload fired
-ALERT: PASS: hashchange triggered after postMessage().
-This tests that cross-origin-initiated fragment navigations are asynchronous and always fire the load event at their embedding iframe element if it's cross-origin. It does so by scheduling a postMessage before scheduling the navigation. If the navigation is synchronous, the internals API will be able to report the presence of an url fragment immediately.

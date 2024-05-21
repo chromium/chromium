@@ -1,2 +1,0 @@
-CONSOLE ERROR: Blocked alert('visibilitychanged') during visibilitychange.
-You should have seen a warning message for alert dialog.

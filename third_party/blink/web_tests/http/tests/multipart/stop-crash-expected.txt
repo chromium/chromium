@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13360 REGRESSION: Crash closing live web cam viewer page.
-
-If WebKit does not assert or crash after the test, then it passed.
-
-PASS

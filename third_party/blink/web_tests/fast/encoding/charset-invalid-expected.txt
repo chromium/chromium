@@ -1,3 +1,0 @@
-Should be your browser default encoding: windows-1252
-
-If it's latin-1 (ISO-8859-1, windows-1252), this should be accented e: é

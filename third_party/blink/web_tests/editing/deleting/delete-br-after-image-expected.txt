@@ -1,8 +1,0 @@
-PASS $("sample").innerHTML is "<img width=\"70\" height=\"70\" style=\"background: #DEF\">[click here, hold backspace]"
-PASS selection.type is "Caret"
-PASS selection.anchorNode is $("sample")
-PASS selection.anchorOffset is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

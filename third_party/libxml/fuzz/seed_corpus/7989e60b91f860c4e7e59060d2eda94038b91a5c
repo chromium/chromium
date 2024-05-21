@@ -1,2 +1,0 @@
-<!ENTITY % pe1 "EMPTY> <!ELEMENT e2 EMPTY>"> 
-<!ELEMENT e1 %pe1; 

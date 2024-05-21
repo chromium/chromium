@@ -1,3 +1,0 @@
-This test verifies that a node does not retain keyboard focus after it has been removed from the DOM.
-
-PASS: did not get keyboard event.

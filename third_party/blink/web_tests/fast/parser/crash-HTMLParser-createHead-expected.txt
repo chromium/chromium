@@ -1,3 +1,0 @@
-Test for bug 32426: Crash in WebCore::HTMLParser::createHead
-
-This test PASSED as it did not CRASH nor ASSERTED.

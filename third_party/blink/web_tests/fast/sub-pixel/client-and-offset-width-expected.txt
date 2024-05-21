@@ -1,7 +1,0 @@
-PASS offsetWidth and clientWidth are the same
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Tests that a block without overflow, borders, margin or padding reports the same clientWidth as offsetWidth.

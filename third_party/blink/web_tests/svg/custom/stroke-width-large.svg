@@ -1,7 +1,0 @@
-<?xml version="1.0" standalone="yes"?>
-<!-- The viewbox is set such that a large number may be used for the stroke. -->
-<svg version="1.1" fill="none" viewBox="0.0 0.0 72000.0 54000.0" xmlns="http://www.w3.org/2000/svg">
-    <path d="M28600 19000L41800 19000L41800 30600L28600 30600Z" fill-rule="nonzero" stroke="#FF0000" stroke-width="256" stroke-linejoin="round" stroke-linecap="butt"></path>
-    <path d="M21600 12000L48800 12000L48800 37600L21600 37600Z" fill-rule="nonzero" stroke="#000000" stroke-width="15000" stroke-linejoin="round" stroke-linecap="butt"></path>
-    <text fill="#000000" font-size="1600" x="8000.0" y="49500.0">No red should be visible.</text>
-</svg>

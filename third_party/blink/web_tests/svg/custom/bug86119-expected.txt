@@ -1,1 +1,0 @@
-Test for Bug 86119. Test passes if it does not crash and you see a green rectangle above this text. 

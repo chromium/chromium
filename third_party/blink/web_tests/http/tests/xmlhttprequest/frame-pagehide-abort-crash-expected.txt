@@ -1,6 +1,0 @@
-Test for bug 25394: crash in DocumentLoader::addResponse due to bad |this| pointer
-
-You should see a few messages followed by PASSED once.
-
-Ready State: 1
-PASSED

@@ -1,4 +1,0 @@
-The word 'HEST' should be seen below, and there should be no red.
-
-HEST
-PASS

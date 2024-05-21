@@ -1,9 +1,0 @@
-@font-face {
-    font-family: ahem;
-    src: url(http://example.test:8080/css/resources/cors-ahem.php);
-}
-
-html {
-    font-family: ahem;
-    background-image: url(http://example.test:8080/resources/square20.png);
-}

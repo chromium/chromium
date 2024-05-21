@@ -1,3 +1,0 @@
-Test for <rdar://problem/10156263> ASSERT in WebCore::FrameView::scheduleRelayoutOfSubtree at developer.gnome.org.
-
-The test passes if, in a debug build, it does not cause an assertion failure.

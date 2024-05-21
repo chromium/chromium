@@ -1,7 +1,0 @@
-Tests for user agent string template
-
-UserAgent should match the Mozilla/5.0 (%Platform%%Subplatform%) AppleWebKit/%WebKitVersion% (KHTML, like Gecko) template: true
-UserAgent should be the same as the appVersion with appCodeName prefix: true
-HTTP User-Agent header should be the same as userAgent: true
-Language tag should not be present in the userAgent: true
-

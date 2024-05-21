@@ -1,7 +1,0 @@
-This test verifies that the correct node is revealed in the DOM tree when asked to reveal a user-agent shadow DOM node.
-
-User-agent shadow DOM hidden:
-SelectedNodeChanged: input (in author shadow DOM)
-User-agent shadow DOM shown:
-SelectedNodeChanged: div (in user-agent shadow DOM)
-

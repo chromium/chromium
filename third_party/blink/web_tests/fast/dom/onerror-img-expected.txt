@@ -1,3 +1,0 @@
-This page tests setting onerror handlers through the DOM. If it passes, you will see "PASS" message below.
-
-PASS: caught image load error: [object Event]

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] capturing event listener fires before non-capturing listener at target
-  assert_array_equals: triggerMQLEvent expected property 0 to be "addEventListener" but got "addListener" (expected array ["addEventListener", "addListener"] got ["addListener", "addEventListener"])
-Harness: the test ran to completion.
-

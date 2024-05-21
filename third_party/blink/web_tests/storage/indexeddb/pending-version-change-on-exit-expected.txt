@@ -1,9 +1,0 @@
-No crashes when there are event listeners in a worker on shutdown
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Didn't crash!
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

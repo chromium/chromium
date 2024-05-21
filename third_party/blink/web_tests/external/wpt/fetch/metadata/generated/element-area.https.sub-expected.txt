@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] sec-fetch-mode - attributes: download
-  assert_array_equals: expected property 0 to be "no-cors" but got "navigate" (expected array ["no-cors"] got ["navigate"])
-[FAIL] sec-fetch-user - no attributes with user activation
-  assert_own_property: expected property "sec-fetch-user" missing
-Harness: the test ran to completion.
-

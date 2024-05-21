@@ -1,3 +1,0 @@
-Focus on the input and hit Escape and see if the browser crashes.
-
-PASS (not crashed)

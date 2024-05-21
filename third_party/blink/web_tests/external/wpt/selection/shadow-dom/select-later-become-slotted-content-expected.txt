@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] test to select a light DOM element and it becomes a slotted content after the selection
-  sel.getComposedRanges is not a function
-Harness: the test ran to completion.
-

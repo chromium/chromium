@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
-<script>
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-    }
-</script>
-<div>This test passes if this img tag below is empty and displays nothing. It ensures that the srcset attribute supports invalid inputs</div>
-<img id="foo" src="" srcset="1x,,  ,   x    ,2x  " onerror="testPassed('did not load invalid inputs')" onload="testFailed('Loaded invalid inputs')">

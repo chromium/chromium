@@ -1,7 +1,0 @@
-Created script element, script data passed as text content, appended: PASS
-
-Removed element, readd element, remove again, script shouldn't have executed:PASS
-
-Created script element, loading external script content, appended: PASS
-
-Removed element, readd element, script shouldn't have executed: PASS

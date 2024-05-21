@@ -1,4 +1,0 @@
-This tests the behavior of a Doctype after a comment at the beginning of the document..
-PASS: a doctype after a comment was not ignored.
-PASS: a doctype after a comment was set as the second element correctly and not moved to be the first child.
-

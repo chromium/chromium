@@ -1,5 +1,0 @@
-PASS: Calling getImageData() from a canvas tainted by a data URL image was allowed.
-PASS: Calling toDataURL() on a canvas tainted by a data URL image was allowed.
-PASS: Calling getImageData() from a canvas tainted by a data URL image pattern was allowed.
-PASS: Calling toDataURL() on a canvas tainted by a data URL image pattern was allowed.
-

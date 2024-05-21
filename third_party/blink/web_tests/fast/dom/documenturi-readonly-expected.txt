@@ -1,2 +1,0 @@
-ALERT: PASS: document.documentURI is read only.
-This test ensures that document.documentURI is a readonly attribute. It passes if a "PASS" alert is displayed.

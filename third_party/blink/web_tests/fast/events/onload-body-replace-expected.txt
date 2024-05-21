@@ -1,2 +1,0 @@
-This tests that a onload handler clears and replaces the attribute listener on the window. You should see "PASS" below.
-PASS: window.onload event handler did not run , but the document body onload did.

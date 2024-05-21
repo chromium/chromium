@@ -1,2 +1,0 @@
-Bug 95090: Crash in LayoutTable::removeCaption
-This test PASSED as it did not crash.

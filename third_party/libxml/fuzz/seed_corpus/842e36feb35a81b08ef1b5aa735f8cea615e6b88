@@ -1,9 +1,0 @@
-<!DOCTYPE doc [
-<!ELEMENT doc ((a | b | c)*) >
-<!ELEMENT a EMPTY>
-<!ELEMENT b EMPTY>
-<!ELEMENT c EMPTY>
-]>
-<doc>
-<b/>
-</doc>

@@ -1,8 +1,0 @@
-PASS window.caughtFoo is ['foo@target', 'foo@root']
-PASS window.caughtFoo is []
-PASS window.caughtFoo is ['foo@target', 'foo@root']
-PASS window.caughtFoo is []
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

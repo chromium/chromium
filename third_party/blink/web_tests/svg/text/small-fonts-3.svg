@@ -1,6 +1,0 @@
-<svg viewBox="10 10 10 10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-anchor="middle" fill="green">
-	<ellipse cx="12.425" cy="13.650" rx="4.337" ry="2.683" fill="none" stroke="#000000" stroke-width="0.100" />
-	<text x="12.425" y="12.425" font-size="0.65">Passes</text>
-	<text x="12.425" y="13.793" font-size="0.65">if text aligns perfectly</text>
-	<text x="12.425" y="14.593" font-size="0.65">in the center of the circle.</text>
-</svg>

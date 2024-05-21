@@ -1,5 +1,0 @@
-Tests that $0 works with shadow dom.
-
-'Author shadow element: ' + $0.id = 'Author shadow element: shadow'
-'User agent shadow host: ' + $0.id = 'User agent shadow host: user-agent-host'
-

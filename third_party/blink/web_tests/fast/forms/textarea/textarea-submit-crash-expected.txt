@@ -1,5 +1,0 @@
-This tests that a display:none textarea doesn't crash when submitted in a form.
-
-PASS: You didn't crash.
-Submitted form value: ?value=123456789
-

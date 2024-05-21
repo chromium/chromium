@@ -1,1 +1,0 @@
-This tests for a crash on Undo that was caused because of DOM operations that GMail performs while right aligning text. This text should be right aligned and this test should not crash.

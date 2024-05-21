@@ -1,7 +1,0 @@
-Tests how DOM.childNodeCountUpdated event works.
-Node arrived with childNodeCount: 2
-childCountUpdated: 3
-childCountUpdated: 2
-childCountUpdated: 1
-childCountUpdated: 0
-

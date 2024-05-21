@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=41585 Reproducible crash with Optimize Legibility extension.
-
-No crash means test passed.

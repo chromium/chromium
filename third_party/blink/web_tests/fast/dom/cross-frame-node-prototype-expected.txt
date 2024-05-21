@@ -1,3 +1,0 @@
-Test for bug 26520: Accessing a DOM node from a parent window in a child iframe moves the prototype to the child iframe and resets it in the parent window.
-
-PASS

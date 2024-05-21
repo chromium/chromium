@@ -1,9 +1,0 @@
-Tests how DOM domain works with outerHTML.
-{
-    id : <number>
-    result : {
-        outerHTML : <body><div>Привет мир 1</div>     <div>Привет мир 2</div>   </body>
-    }
-    sessionId : <string>
-}
-

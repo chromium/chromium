@@ -1,3 +1,0 @@
-This tests that setting properties on a closed window object does not crash.
-
-SUCCESS - Didn't crash

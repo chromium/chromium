@@ -1,1 +1,0 @@
-This tests that aborting and then garbage collecting an XMLHttpRequest does not cause a crash. SUCCESS! Didn't crash.

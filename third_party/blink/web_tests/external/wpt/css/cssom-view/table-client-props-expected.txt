@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Table with separated border
-  assert_equals: Table with separated border clientLeft expected 0 but got 4
-[FAIL] Table with collapsed border
-  assert_equals: Table with collapsed border clientLeft expected 0 but got 4
-Harness: the test ran to completion.
-

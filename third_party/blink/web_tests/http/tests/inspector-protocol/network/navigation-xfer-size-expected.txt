@@ -1,2 +1,0 @@
-Tests that transfer size is correctly reported for navigations.
-

@@ -1,5 +1,0 @@
-This tests a particular case of insertCell that was crashing on ebay at the time the test was written.
-
-cell inside table inside cell 0	cell inside table inside cell 1
-
-If there was no crash, and you can see text above mentioning cell 1 as well as cell 0, the test passed.

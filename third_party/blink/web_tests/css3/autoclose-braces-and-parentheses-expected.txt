@@ -1,2 +1,0 @@
-Tests parsing style declarations without closing braces and parentheses. "User agents must close all open constructs ... at the end of the style sheet." (http://www.w3.org/TR/CSS21/syndata.html#parsing-errors). So it must be parsed as if all braces and parentheses are closed.
-All tests passed

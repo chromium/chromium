@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] onbeforematch: the content attribute must be compiled into a function as the corresponding property
-  assert_equals: The onbeforematch property must be a function expected "function" but got "object"
-[FAIL] onbeforematch: dynamic changes on the attribute
-  assert_equals: The onbeforematch property must be a function (set attribute) expected "function" but got "object"
-Harness: the test ran to completion.
-

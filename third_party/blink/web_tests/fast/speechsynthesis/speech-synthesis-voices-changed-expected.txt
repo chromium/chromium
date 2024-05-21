@@ -1,7 +1,0 @@
-Initially, there are 0 voices.
-Got onvoiceschanged event.
-Now there are 3 voices.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

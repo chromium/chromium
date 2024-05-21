@@ -1,5 +1,0 @@
-specific_include_rules = {
-  ".*_test.cc": [
-    "+mojo/public/cpp/test_support",
-  ],
-}

@@ -1,3 +1,0 @@
-Tests element removal and hiding in transitionend event handler. Should not crash.
-
-Did not crash, so PASSED

@@ -1,3 +1,0 @@
-Test for http://bugzilla.opendarwin.org/show_bug.cgi?id=7589 Mouse moved events do not work in DumpRenderTree.
-
-Test result: PASS

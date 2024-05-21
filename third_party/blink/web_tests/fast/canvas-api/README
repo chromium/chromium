@@ -1,4 +1,0 @@
-NOTE: This directory is reserved for tests that doesn't require reference image
-or html. In other words, these tests can be written by using testharness. The
-tests in this directory won't be run with virtual test suites. Please refer to
-fast/canvas/ for reference tests.

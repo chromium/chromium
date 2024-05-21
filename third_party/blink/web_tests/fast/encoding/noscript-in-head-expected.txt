@@ -1,7 +1,0 @@
-Test for bug 12389: Chinese decoding error at hk.antispam.yahoo.com
-
-You should see two identical lines below:
-
-雅虎香港
-
-雅虎香港

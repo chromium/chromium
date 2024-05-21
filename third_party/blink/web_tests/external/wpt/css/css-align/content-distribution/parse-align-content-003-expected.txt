@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Checking align-content: last baseline
-  assert_equals: align-content specified value is not what it should. expected "last baseline" but got ""
-Harness: the test ran to completion.
-

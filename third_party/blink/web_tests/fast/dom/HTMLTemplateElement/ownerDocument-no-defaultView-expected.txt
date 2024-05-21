@@ -1,9 +1,0 @@
-HTMLTemplateElement content ownerDocument in a no-defaultView document should not be same as template
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS template.ownerDocument is not template.content.ownerDocument
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

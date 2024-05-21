@@ -1,1 +1,0 @@
-This test should not crash when run with Address Sanitizer.

@@ -1,8 +1,0 @@
-This test should produce two pages of output. This text should be at the top of the first page.
-This text should be at the top of the second and final page.
-
-
-PASS: page number of "test1" is 0
-PASS: page number of "test2" is 1
-PASS: number of pages is 2
-All tests passed

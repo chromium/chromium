@@ -1,7 +1,0 @@
-
-
-  @import url(media-queries-1.css) screen;
-
-    @media screen {
-      #main { color: yellow; }
-    }

@@ -1,4 +1,0 @@
-Tests that expression which is evaluated as Object Literal, is correctly stored in console history. (crbug.com/584881)
-
-{a:1, b:2}
-

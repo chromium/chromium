@@ -1,4 +1,0 @@
-Test for: bug 68238: [soup] Crash while loading http://www.jusco.cn This test verifies that WebCore timers do not fire during synchronous XMLHttpRequests.
-
-PASS
-

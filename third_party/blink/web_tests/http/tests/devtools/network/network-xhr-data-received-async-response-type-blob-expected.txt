@@ -1,5 +1,0 @@
-Tests that dataReceived is called on NetworkDispatcher for XHR with responseType="blob".
-
-Received data for resource.php
-SUCCESS
-

@@ -1,3 +1,0 @@
-Test for bug 33815: Crash when using DOMTimer from a detached frame.
-
-Pass if no crash.

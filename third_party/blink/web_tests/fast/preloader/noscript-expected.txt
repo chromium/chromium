@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: PASS
-This test requires DumpRenderTree to see the log of what resources are loaded. It checks that images inside a noscript block are not loaded.
-
-<noscript>
-    <img src="resources/noscript-image1.png">
-</noscript>
-<img src="resources/noscript-image2.png">
-

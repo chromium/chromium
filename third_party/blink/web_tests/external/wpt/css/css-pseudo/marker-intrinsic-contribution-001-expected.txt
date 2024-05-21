@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Intrinsic contribution of inside decimal marker
-  assert_equals: clientWidth expected 30 but got 20
-Harness: the test ran to completion.
-

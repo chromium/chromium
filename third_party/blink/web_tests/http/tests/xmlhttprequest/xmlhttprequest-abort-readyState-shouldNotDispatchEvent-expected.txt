@@ -1,9 +1,0 @@
-Test bug 13141 : XMLHttpRequest should set readyState to 0 after abort()
-
-Updated for bug 16989: Add send() flag checks in XmlHttpRequest
-
-Should see "PASS" two times:
-
-PASS
-PASS
-

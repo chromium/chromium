@@ -1,8 +1,0 @@
-# Copyright 2022 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Since //third-party/lzma_sdk/.clang-format disables formatting, we need to
-# re-enable it here. Unfortunately there's no easy way to import the formatting
-# from //.clang-format, so we manually set the style here.
-BasedOnStyle: Chromium

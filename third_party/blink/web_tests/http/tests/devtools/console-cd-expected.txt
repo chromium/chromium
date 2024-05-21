@@ -1,4 +1,0 @@
-Tests that console evaluation can be performed in an iframe context.Bug 19872.
-
-foo = 2011
-

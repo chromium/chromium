@@ -1,7 +1,0 @@
-
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-Test case for 61989
-This is test for Bug 61989 No crash means test PASS.
-

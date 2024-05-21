@@ -1,9 +1,0 @@
-Test invalidation set scope for attribute features.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS internals.updateStyleAndReturnAffectedElementCount() is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

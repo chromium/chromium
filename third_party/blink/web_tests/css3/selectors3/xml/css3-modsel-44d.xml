@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-44d.css" type="text/css"?>
-<test>
-  <div xmlns="http://www.w3.org/1999/xhtml"> This should be unstyled. </div>
-  <p xmlns="http://www.w3.org/1999/xhtml"> This should have a green background. </p>
-</test>

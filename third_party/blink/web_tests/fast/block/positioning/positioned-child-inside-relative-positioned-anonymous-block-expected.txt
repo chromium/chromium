@@ -1,3 +1,0 @@
-crbug.com/548017: A positioned element inside a relatively positioned inline should use the width of the inline, rather than the anonymous block created to accommodate block-flow parents, when determining its own width. There should be a green square below
-
-PASS

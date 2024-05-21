@@ -1,2 +1,0 @@
-PASS: Cross frame access to a data: URL embed in a frame window.open'ed on foreign domain denied!
-

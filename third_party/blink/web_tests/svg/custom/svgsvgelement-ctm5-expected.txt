@@ -1,9 +1,0 @@
-svg1 CTM: [object SVGMatrix] [(1.50, 0.00)(0.00, 1.50)(100.00, 0.00)]
-svg1 ScreenCTM: [object SVGMatrix] [(1.50, 0.00)(0.00, 1.50)(100.00, 0.00)]
-svg2 CTM: [object SVGMatrix] [(30.00, 0.00)(0.00, 30.00)(-50.00, -150.00)]
-svg2 ScreenCTM: [object SVGMatrix] [(30.00, 0.00)(0.00, 30.00)(-50.00, -150.00)]
-group CTM: [object SVGMatrix] [(20.00, 0.00)(0.00, 20.00)(100.00, 100.00)]
-group ScreenCTM: [object SVGMatrix] [(30.00, 0.00)(0.00, 30.00)(250.00, 150.00)]
-svg3 CTM: [object SVGMatrix] [(20.00, 0.00)(0.00, 20.00)(0.00, 0.00)]
-svg3 ScreenCTM: [object SVGMatrix] [(30.00, 0.00)(0.00, 30.00)(100.00, 0.00)]
-

@@ -1,6 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/navigation/post-redirect-get-reload.php with navigation type 'reload'
-1. Submit a form
-1a. The form redirects to a get.
-2. Reload
-
-The reload should not trigger a form resubmission warning.

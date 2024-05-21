@@ -1,7 +1,0 @@
-CONSOLE DEBUG: Preconnect triggered for http://wut.com.test/
-This test checks if a Link header inside an iframe triggered a dns prefetch. 
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-I'm an iframe with a Link header

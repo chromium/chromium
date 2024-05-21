@@ -1,3 +1,0 @@
-Popup opened.
-Popup closed when the input type changed.
-TEST COMPLETE

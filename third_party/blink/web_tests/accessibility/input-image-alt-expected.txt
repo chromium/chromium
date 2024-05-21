@@ -1,9 +1,0 @@
-This test makes sure that an input image returns its alt tag as the description
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS img.name is 'Submit'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

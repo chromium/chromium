@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 12: Uncaught TypeError: Cannot read property 'createElement' of null
-We pass if we don't crash. 

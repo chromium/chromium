@@ -1,9 +1,0 @@
-Read-only number input should not dispatch a change event.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS changeEventCounter is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

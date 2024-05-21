@@ -1,4 +1,0 @@
-Test that css animation can be paused over protocol.
-Animation created
-Animation canceled
-

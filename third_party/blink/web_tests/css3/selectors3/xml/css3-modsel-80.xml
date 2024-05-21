@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-80.css" type="text/css"?>
-<test>
-<div xmlns="http://www.w3.org/1999/xhtml">
-<address class="red">A first address that should have a green background</address>
-<address class="red">A second address that should have a green background</address>
-<address>A third address with normal background</address>
-This div should have three addresses above it.</div>
-</test>

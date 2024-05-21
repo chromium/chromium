@@ -1,3 +1,0 @@
-crbug.com/597193: Trailing space occurring before a no-wrap span should not fool it into thinking it can break. There should be three separate lines with the word 'Text' below.
-
-Text Text Text

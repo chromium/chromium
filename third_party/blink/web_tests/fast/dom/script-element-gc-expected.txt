@@ -1,4 +1,0 @@
-ALERT: Script onload handler called!
-This tests that removing the script element from the script loaded by the element itself, and then garbage collecting does not cause a crash when dispatching the onload element (because the script element was freed).
-
-SUCCESS! Didn't Crash!

@@ -1,3 +1,0 @@
-CONSOLE ERROR: Uncaught (in promise) ReferenceError: foo is not defined
-CONSOLE ERROR: Uncaught (in promise) AbortError: Transition was skipped
-

@@ -1,9 +1,0 @@
-Radio buttons within the same form outside a document should still be updated appropriately when one of them is checked.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS radio1.checked is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

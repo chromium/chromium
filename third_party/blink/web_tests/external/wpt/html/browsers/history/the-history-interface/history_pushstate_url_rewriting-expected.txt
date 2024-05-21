@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] data:(script to run this test) to data:(script to run this test)?newsearch should not work
-  assert_equals: expected "exception" but got "no exception"
-Harness: the test ran to completion.
-

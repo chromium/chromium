@@ -1,4 +1,0 @@
-ALERT: PASS (1/1)
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'sha256-OBpkpZD3ME366d9wfdsWwYSvYORUMfT+bvUVI5XJzBw=' 'sha256-6VVrnAGI98OnlK9Y20hAMwfwBE8c8FOtE/jDYM7tPFk='". Either the 'unsafe-inline' keyword, a hash ('sha256-1YpMZRdgC0WhwwFBK0bksRyUnuhzlCJp0nKmbZYUi+Q='), or a nonce ('nonce-...') is required to enable inline execution.
-
-This tests Unicode normalization. While appearing the same, the strings in the scripts are different Unicode points. Unicode NFC normalization would make both match the hash, but normalization should not be performed, and so the second script should not run.

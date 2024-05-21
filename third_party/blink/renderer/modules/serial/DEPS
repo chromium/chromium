@@ -1,6 +1,0 @@
-include_rules = [
-  "+base/unguessable_token.h",
-  "+mojo/public/cpp/system/data_pipe.h",
-  "+mojo/public/cpp/system/simple_watcher.h",
-  "+services/device/public/mojom",
-]

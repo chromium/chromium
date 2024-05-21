@@ -1,8 +1,0 @@
-PASS "createCDATASection" in window.xmlDoc is true
-PASS window.xmlDoc.createCDATASection("Hello").data is "Hello"
-PASS window.xmlDoc.createCDATASection("Ha]]>o") threw exception InvalidCharacterError: Failed to execute 'createCDATASection' on 'Document': String cannot contain ']]>' since that is the end delimiter of a CData section..
-PASS window.xmlDoc.createCDATASection(null).data is "null"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

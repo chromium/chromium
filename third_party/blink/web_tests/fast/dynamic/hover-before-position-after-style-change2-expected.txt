@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=56401 Hover the mouse over the "Block" text. The test passes if the "Block" text is not moved above ">". This test ensures that the "before" element after hover is inserted in the same position.
-
-PASS

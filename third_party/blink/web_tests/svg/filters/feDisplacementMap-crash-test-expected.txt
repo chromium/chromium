@@ -1,2 +1,0 @@
-ALERT: TypeError: Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided is 0, which is not settable.
-PASS

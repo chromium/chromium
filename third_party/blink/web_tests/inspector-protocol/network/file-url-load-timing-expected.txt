@@ -1,3 +1,0 @@
-Verifies that there is no ResourceTiming object in responseReceived for file urls.
-response.timing present: false
-

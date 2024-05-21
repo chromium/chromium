@@ -1,4 +1,0 @@
-Tests Page.resetNavigationHistory
-Length before reset: 4
-Length after reset: 1
-

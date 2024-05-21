@@ -1,3 +1,0 @@
-This tests that changing an input element's type in its onfocus handler does not cause its onblur handler to be called. If this test is successful, "SUCCESS" should be shown below.
-
-SUCCESS

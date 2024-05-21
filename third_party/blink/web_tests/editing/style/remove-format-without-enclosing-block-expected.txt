@@ -1,4 +1,0 @@
-AexecCommand("RemoveFormat") was crashing when there is no enclosing block.
-The test has passed if it does not crash.
-
-PASS

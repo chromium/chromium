@@ -1,2 +1,0 @@
-CONSOLE DEBUG: DNS prefetch triggered for wut.com.test
-This test checks if a Link header inside a stylesheet triggered a dns prefetch.

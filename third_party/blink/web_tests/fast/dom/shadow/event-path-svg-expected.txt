@@ -1,7 +1,0 @@
-#circle, [object SVGSVGElement], [object HTMLBodyElement], [object HTMLHtmlElement], [object HTMLDocument], [object Window], length: 6
-#circle, [object SVGSVGElement], [object HTMLBodyElement], [object HTMLHtmlElement], [object HTMLDocument], [object Window], length: 6
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-

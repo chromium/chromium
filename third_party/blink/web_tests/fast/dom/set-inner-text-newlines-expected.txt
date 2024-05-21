@@ -1,3 +1,0 @@
-ALERT: <br>Text<br>with<br>newlines<br><br>
-This tests that setInnerText converts newlines to <br> elements correctly. If the test is successful, the text "SUCCESS" should be shown below.
-SUCCESS

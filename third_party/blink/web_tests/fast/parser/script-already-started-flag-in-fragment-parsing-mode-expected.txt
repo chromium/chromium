@@ -1,3 +1,0 @@
-Test that scripts inserted while parsing an html fragment have the "already started" flag set, and that it's copied over if the node is cloned.
-
-PASS

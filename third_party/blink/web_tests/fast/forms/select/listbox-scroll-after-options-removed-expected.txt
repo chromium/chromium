@@ -1,7 +1,0 @@
-Bug 15252: <select multiple> doesn't scroll to top when old options are removed and new ones are added, leaving listbox empty-looking
-
-When the test runs, all the <option>s in the select are removed and replaced with 1 new option. If the bug is present, the select will appear empty until you scroll up with the mousewheel.
-
-Test Passed
-Test Passed
-

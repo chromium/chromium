@@ -1,9 +1,0 @@
-Tests certain trace events in iframes.
-Recording started
-Tracing complete
-Frames:
-  url: inspector-protocol/resources/inspector-protocol-page.html name:  parentUrl: -
-  url: data:text/html,<script>window.foo = 42</script> name: frame0 parentUrl: inspector-protocol/resources/inspector-protocol-page.html
-  url: about:blank name: Frame No. 1 parentUrl: inspector-protocol/resources/inspector-protocol-page.html
-  url: inspector-protocol/resources/blank.html name:  parentUrl: inspector-protocol/resources/inspector-protocol-page.html
-

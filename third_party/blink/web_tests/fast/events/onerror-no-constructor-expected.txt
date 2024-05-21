@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: FAIL
-CONSOLE ERROR: Uncaught PASS if this is reported as an uncaught exception.
-

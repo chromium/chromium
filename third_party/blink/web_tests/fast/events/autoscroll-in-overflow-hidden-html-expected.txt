@@ -1,7 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Document whose HTML or BODY tags have overflow:hidden should not autoscroll.
-PASSED: the autoscroll has not happened.
-

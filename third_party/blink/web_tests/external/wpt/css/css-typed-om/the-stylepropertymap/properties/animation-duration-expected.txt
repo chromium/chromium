@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'animation-duration' to a time: -3.14ms
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
-Harness: the test ran to completion.
-

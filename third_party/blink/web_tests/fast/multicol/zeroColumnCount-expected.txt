@@ -1,9 +1,0 @@
-Test that column-count:0 is parsed as invalid syntax and thrown away.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(document.body).webkitColumnCount is '2'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

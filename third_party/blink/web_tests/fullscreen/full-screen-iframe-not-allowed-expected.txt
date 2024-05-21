@@ -1,8 +1,0 @@
-Test for bug 56264: Handle entering full screen security restrictions
-
-To test manually, click the "Go full screen" button - the page should not enter full screen mode.
-
-EVENT(webkitfullscreenerror)
-SUCCEED - did not enter full screen!
-END OF TEST
-

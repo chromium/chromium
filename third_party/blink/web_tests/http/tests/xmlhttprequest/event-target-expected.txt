@@ -1,9 +1,0 @@
-Tests for bug 11053 - XMLHttpRequest should be an EventTarget.
-
-fooListener: this = [object XMLHttpRequest]
-onload: this = [object XMLHttpRequest]
-eventListener: this = [object XMLHttpRequest]
-eventListener2: this = [object XMLHttpRequest]
-onload: this = [object XMLHttpRequest]
-eventListener: this = [object XMLHttpRequest]
-eventListener2: this = [object XMLHttpRequest]

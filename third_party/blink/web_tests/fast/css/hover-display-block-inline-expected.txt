@@ -1,5 +1,0 @@
-PASS Setting display to inline on hover processed OK.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

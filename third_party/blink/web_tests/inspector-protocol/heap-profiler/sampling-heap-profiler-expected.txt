@@ -1,7 +1,0 @@
-Test sampling heap profiler.
-Sampling started
-Sampling stopped
-size=0   testMain:10:17
-size=0   makeDeepCallStack:15:26
-size>0   junkGenerator:23:22
-

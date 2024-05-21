@@ -1,5 +1,0 @@
-The test verifies that CSS.stopRuleUsageTracking doesn't crash when used concurrently with the CSSOM modifications.
-=== Size of array: 0
-   Number of used Rules: 0
-   Number of unused Rules: 0
-

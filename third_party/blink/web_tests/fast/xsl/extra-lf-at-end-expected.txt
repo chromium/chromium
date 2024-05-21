@@ -1,8 +1,0 @@
-Test for bug 15919: XSLTProcessor.transformToFragment creates an extra not defined TEXT_NODE at the end.
-
-PASS: oResult.nodeType should of type DOCUMENT_FRAGMENT_NODE(11)
-PASS: oProc.getParameter(null, 'text') getParameter should return the correct value
-PASS: oResult.firstChild.nodeName can have multiple children, firstchild should be the div
-PASS: oResult.lastChild.nodeName can have multiple children, lastchild should be the br
-PASS: oResult.firstChild.textContent || oResult.firstChild.text textContent should be set to parameter value
-Done

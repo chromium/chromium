@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] iframe marginwidth and marginheight
-  Uncaught Error: assert_equals: Number of attributes on the child document's body expected 0 but got 2
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-}
-
-NULL pointer crash in TextIterator::handleTextBox() when using RTL text. If there is no crash, then the test passes.
-
-If you can see this, then the test passes.

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs>
-    <path id="foo" d="M150 50 L 450 50" />
-  </defs>
-  <text>
-    <textPath id="theTP" xlink:href="#foo">PASS</textPath>
-  </text>
-</svg>

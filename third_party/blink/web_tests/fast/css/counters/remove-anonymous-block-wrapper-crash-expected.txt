@@ -1,3 +1,0 @@
-Remove a block child, so that its parent block no longer needs to wrap inline children inside an anonymous block.
-
-PASS if no crash or assertion failure.

@@ -1,9 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-Test for rdar://problem/5973313 REGRESSION (r32508): Down arrow doesn't change caret with non-user entered newlines in textareas.
-
-To test manually, click to the right of the first word on the first line to place the caret at the end of the line, then press the down arrow. The caret should move to the next (empty) line. Then click somewhere on that line. The caret should not stay there.
-
-Lorem
-
-ipsum

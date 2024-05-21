@@ -1,8 +1,0 @@
-Tests that zooming a calc expression containing 'em' units works correctly
-
-On success, you will see no "FAIL" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

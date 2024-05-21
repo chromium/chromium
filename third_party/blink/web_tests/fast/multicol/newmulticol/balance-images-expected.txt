@@ -1,8 +1,0 @@
-PASS mc.offsetHeight is 246
-PASS document.documentElement.scrollWidth is document.documentElement.clientWidth
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-There should be a 2 by 2 image grid below.

@@ -1,1 +1,0 @@
-PASS: This text should appear as a tooltip.

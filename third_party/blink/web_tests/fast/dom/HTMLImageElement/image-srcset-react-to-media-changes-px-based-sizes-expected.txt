@@ -1,6 +1,0 @@
-PASS img.currentSrc.indexOf("blue_rect") is not -1
-PASS img.currentSrc.indexOf("image-set-4x") is not -1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

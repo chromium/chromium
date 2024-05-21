@@ -1,4 +1,0 @@
-This page tests a specific set of conditions that could cause a property map to rehash, giving two objects with equal structure ID's unequal structures. If the test passes, you'll see a PASS message below.
-
-PASS: getP7(o) == getP7(o2) should be true and is.
-

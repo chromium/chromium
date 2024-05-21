@@ -1,6 +1,0 @@
-Test for HTMLSelectElement.namedItem()
-FOUND ITEM: 2
-FOUND ITEM: 1
-FOUND ITEM: 1
-FOUND ITEM: 1
-ERROR: Cannot read properties of null (reading 'innerHTML')

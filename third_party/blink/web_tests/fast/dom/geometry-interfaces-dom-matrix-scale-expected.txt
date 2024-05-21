@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "DOMMatrix.scale(sx, sy)", "DOMMatrix.scaleSelf(sx, sy)"
-Harness: the test ran to completion.
-

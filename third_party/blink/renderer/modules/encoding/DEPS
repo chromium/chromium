@@ -1,4 +1,0 @@
-include_rules = [
-    "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/encoding",
-]

@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-20.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">The background color of <a href="#foo">anchors</a>
-  in this page should turn <a href="#foo">to green</a> when they have the
-  <a href="#foo">focus</a>.</p>
-</test>

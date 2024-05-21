@@ -1,7 +1,0 @@
-main frame - DidStartNavigation
-main frame - ReadyToCommitNavigation
-main frame - didCommitLoadForFrame
-main frame - didFinishDocumentLoadForFrame
-main frame - didHandleOnloadEventsForFrame
-main frame - didFinishLoadForFrame
-Test for https://bugs.webkit.org/show_bug.cgi?id=31227. If it didn't crash, the browser passed the test.

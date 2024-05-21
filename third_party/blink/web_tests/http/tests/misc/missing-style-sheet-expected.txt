@@ -1,3 +1,0 @@
-This test passes if it does not ASSERT that the document's pending style sheet count is less than 0, and the load event fires.
-
-PASS: Load event fired.

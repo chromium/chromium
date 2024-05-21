@@ -1,6 +1,0 @@
-Tests:
-Double-click the green "a" and drag backwards to select "bar baz" with word granularity. Delete, then undo the delete. The space that got smart deleted should now be selected and the anchor of the selection should be at the end of the selection.
-
-
-foo bar baz biz
-PASSED

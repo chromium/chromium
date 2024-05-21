@@ -1,4 +1,0 @@
-CONSOLE ERROR: Refused to load manifest from 'http://127.0.0.1:8000/security/contentSecurityPolicy/manifest.test/manifest.json' because it violates the following Content Security Policy directive: "manifest-src 'none'".
-
-ALERT: Pass
-

@@ -1,6 +1,0 @@
-This tests for a hang when creating a list from a particular selection, of table content that is already in a list item. The table should be in a list, and each table cell should contain a list item.
-
-DOM:
-<ul><li id="li"><table border="1"><tbody><tr><td id="td"><ul><li>foo</li></ul></td><td><ul><li>bar</li></ul></td></tr></tbody></table></li></ul>
-
-<br>

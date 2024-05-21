@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-82b.css" type="text/css"?>
-<test>
-<div xmlns="http://www.w3.org/1999/xhtml" class="t1">
-<p class="green">This paragraph should have green background.</p>
-<address>But this address should be unstyled.</address>
-<p class="green">This paragraph should have green background.</p>
-</div>
-</test>

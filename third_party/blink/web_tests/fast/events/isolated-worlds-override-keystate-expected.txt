@@ -1,5 +1,0 @@
-Default policy for navigation to 'blank' is 'new background tab'
-Default policy for navigation to 'blank2' is 'new background tab'
-Tests that adding a ctrl modifier to a click on a link from an isolated world triggers a background tab.
-
-link link

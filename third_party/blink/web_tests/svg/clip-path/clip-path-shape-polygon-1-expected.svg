@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<defs>
-    <clipPath id="clip" clip-rule="nonzero">
-        <polygon points="0,0 100,200 200,0 0,200 100,0 200,200 0,0"/>
-    </clipPath>
-</defs>
-<rect width="200" height="200" fill="green" clip-path="url(#clip)"/>
-</svg>

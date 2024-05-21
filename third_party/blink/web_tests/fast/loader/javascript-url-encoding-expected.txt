@@ -1,6 +1,0 @@
-Test that non-ASCII javascript: URLs are handled correctly.
-
-1. SUCCESS.
-2. SUCCESS.
-
- 

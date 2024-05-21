@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-18a.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml" class="a">The background color of <a href="#foo">this anchor (<strong>here</strong>)</a> should turn to green when the pointing device hovers over it.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class="b">The background color of <a href="#foo">this anchor (<strong>here</strong>)</a> should <strong>remain green when you hover it</strong>.</p>
-<p xmlns="http://www.w3.org/1999/xhtml" class="c">The background color of <a href="http://link.example.com/">this anchor (<strong>here</strong>)</a> should <strong>remain green when the pointing device hovers over it</strong> (do not follow that link).</p>
-</test>

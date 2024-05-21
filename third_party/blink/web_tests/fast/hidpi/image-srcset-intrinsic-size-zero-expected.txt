@@ -1,5 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-This test passes if the image is displayed with infinite dimensions.

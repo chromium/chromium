@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <filter id="rgba-flood" x="0" y="0" width="1" height="1"
-          color-interpolation-filters="sRGB">
-    <feFlood flood-color="rgba(128,0,0,0)" flood-opacity="0"/>
-  </filter>
-  <rect fill="#008000" width="100" height="100"/>
-  <rect filter="url(#rgba-flood)" width="100" height="100"/>
-</svg>

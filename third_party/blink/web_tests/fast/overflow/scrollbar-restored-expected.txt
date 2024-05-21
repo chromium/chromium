@@ -1,5 +1,0 @@
-Test for rdar://problem/7215132, bug 29167, REGRESSION (r48064): mint.com loses scrollbars after coming out of edit mode, and rdar://problem/7314421, bug 30517, REGRESSION (r48064): Extra scroll bars in GarageBand Lesson Store.
-
-This tests that after setting 'overflow' on the document element to 'hidden' and back to 'visible', scrollbars appear as necessary.
-
-PASS

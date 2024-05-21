@@ -1,5 +1,0 @@
-CONSOLE MESSAGE: CustomEvent received in main world
-CONSOLE MESSAGE: detail was {"foo":5,"bar":"hello","targetWorld":"main"}
-CONSOLE MESSAGE: CustomEvent received in isolated world
-CONSOLE MESSAGE: detail was {"foo":5,"bar":"hello","targetWorld":"isolated"}
-Tests that properties of CustomEvent initialized with initCustomEvent() are cloned when accessed in isolated worlds.

@@ -1,8 +1,0 @@
-This test checks the origin referrer policy when navigating from a secure URL to an insecure URL. The test passes if the printed referrer is https://127.0.0.1:8443
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is https://127.0.0.1:8443/
-Referrer is https://127.0.0.1:8443/
-

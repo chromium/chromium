@@ -1,4 +1,0 @@
-Test case for checking blob URL can be created from the code running from data URI
-
-PASS: created blob URL
-

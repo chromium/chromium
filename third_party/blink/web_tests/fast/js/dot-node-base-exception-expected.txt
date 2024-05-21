@@ -1,9 +1,0 @@
-This test checks that a correct exception is raised when calculating the base value of a dot expression fails.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS (document.appendChild()).foobar() threw exception TypeError: Failed to execute 'appendChild' on 'Node': 1 argument required, but only 0 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,9 +1,0 @@
-khorimoto@chromium.org
-rdevlin.cronin@chromium.org
-stevenjb@chromium.org
-
-per-file accessibility_private.js=file://ui/accessibility/OWNERS
-per-file automation.js=file://ui/accessibility/OWNERS
-per-file braille_display_private.js=file://ui/accessibility/OWNERS
-per-file input_method_private.js=file://ui/base/ime/OWNERS
-per-file terminal_private.js=file://chrome/browser/extensions/api/terminal/OWNERS

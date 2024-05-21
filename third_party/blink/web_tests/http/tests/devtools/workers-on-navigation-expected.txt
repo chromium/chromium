@@ -1,7 +1,0 @@
-Tests that workers are correctly detached upon navigation.
-
-Worker added
-Worker removed
-Page reloaded.
-Worker added
-

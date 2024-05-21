@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] setBaseAndExtent() with null nodes
-  assert_equals: focus node, got an TypeError exception expected "TypeError" but got "Error"
-Harness: the test ran to completion.
-

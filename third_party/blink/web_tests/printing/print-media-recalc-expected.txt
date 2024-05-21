@@ -1,8 +1,0 @@
-PASS internals.numberOfPages(800, 200) is 2
-PASS getComputedStyle(document.body, null).fontSize is '16px'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-A
-B

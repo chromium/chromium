@@ -1,6 +1,0 @@
-Test for bug 34231: Nodes in XPath result snapshots should keep JS wrappers alive.
-
-This page tests for proper invalidation of a node's event listeners. If the test passes, you'll see a PASS message below.
-
-PASS: You didn't crash.
-

@@ -1,2 +1,0 @@
-This text should be green.
-PASS

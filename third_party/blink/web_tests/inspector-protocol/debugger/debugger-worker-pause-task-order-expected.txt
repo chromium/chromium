@@ -1,4 +1,0 @@
-Tests that tasks order is not changed when worker is resumed.
-Worker created
-count must be 1: 1
-

@@ -1,7 +1,0 @@
-Test Worker lifecycle. Will print PASS multiple times, followed by DONE.
-
-PASS: workerThreadCount = 0
-PASS: Worker thread created
-PASS: Worker exited when close() called.
-DONE
-

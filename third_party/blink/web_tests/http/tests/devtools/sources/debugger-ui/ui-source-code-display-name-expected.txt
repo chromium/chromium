@@ -1,8 +1,0 @@
-Tests UISourceCode display name.
-
-UISourceCode display name for url "http://localhost:8080/folder/filename?parameter=value&nnn=1" is "filename?parameter=value&nnn=1".
-UISourceCode display name for url "http://localhost:8080/folder/very-long-filename-123456?nn=1" is "very-long-filename-123456?nn=1".
-UISourceCode display name for url "http://localhost:8080/folder/too-long-filename-1234567890?nn=1" is "too-long-filena…234567890?nn=1".
-UISourceCode display name for url "http://localhost:8080/folder/long-filename?parameter=value&nnn=1" is "long-filename?p…er=value&nnn=1".
-UISourceCode display name for url "http://localhost:8080/folder/too-long-filename-1234567890?parameter=value&nnn=1" is "too-long-filena…er=value&nnn=1".
-

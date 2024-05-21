@@ -1,1 +1,0 @@
-This tests transitioning of elements containing a calc expression. The test passes if it does not crash.

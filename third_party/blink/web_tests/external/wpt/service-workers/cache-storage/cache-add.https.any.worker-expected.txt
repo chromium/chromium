@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Cache.addAll called with the same Request object specified twice
-  promise_rejects_dom: Cache.addAll should throw InvalidStateError if the same request is added twice. function "function() { throw e }" threw object "TypeError: Failed to execute 'addAll' on 'Cache': Request failed" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
-Harness: the test ran to completion.
-

@@ -1,2 +1,0 @@
-Tests the browser does not crash while intercepting a request where blob is posted (crbug.com/782545)
-

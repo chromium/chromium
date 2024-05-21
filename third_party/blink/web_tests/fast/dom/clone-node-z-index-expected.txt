@@ -1,3 +1,0 @@
-Test for bug 37900: cloneNode() does not preserve z-index with more than six digit
-
-PASS

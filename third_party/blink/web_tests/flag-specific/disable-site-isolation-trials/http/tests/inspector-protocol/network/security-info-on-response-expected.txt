@@ -1,5 +1,0 @@
-Tests that security details are reported, even in the case of site isolation.
-
-Security state: insecure
-Set-Cookie: name=value
-

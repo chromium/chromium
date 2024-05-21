@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Type space key in editable element in <button> shouldn't be handled by the <button>
-  assert_equals: Click event should not be fired on the <button> expected null but got object "[object PointerEvent]"
-Harness: the test ran to completion.
-

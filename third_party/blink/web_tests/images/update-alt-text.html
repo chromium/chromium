@@ -1,8 +1,0 @@
-<!doctype HTML>
-Ensure we can update the alt text on an image that has failed to load.
-<img id="img" src="none" alt="FAIL">
-<script>
-    document.body.offsetTop;
-    var img = document.getElementById('img');
-    img.onerror = function() { img.alt = "PASS"; }
-</script>

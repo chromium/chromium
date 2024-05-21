@@ -1,5 +1,0 @@
-crbug.com/637811: Percent height replaced content in a cell should not flex the height or width of the cell.
-
-PASS
-PASS
-PASS

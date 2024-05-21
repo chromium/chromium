@@ -1,3 +1,0 @@
-Bug 72004: Crash in styleDidChange when changing a table cell's height.
-
-If this test does not crash, it has PASSED.

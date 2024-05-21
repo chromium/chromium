@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://FOO"
-	xmlns:foo="http://FOO">
-	<xsd:include schemaLocation="include3_0.inc" />
-
-	<xsd:element name="bar"/>
-	<xsd:element name="foo"/>
-</xsd:schema>

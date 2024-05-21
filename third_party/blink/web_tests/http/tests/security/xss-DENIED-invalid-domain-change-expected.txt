@@ -1,1 +1,0 @@
-PASS: cross-site not access allowed

@@ -1,1 +1,0 @@
-Make a multicol container childless. Then change its width to trigger layout of all children. PASS if no crash.

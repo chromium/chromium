@@ -1,3 +1,0 @@
-You should see PASS followed by an unpaired surrogate (missing/replacement glyph) and a Arabic Alef.
-
-PASSí ®Ø§

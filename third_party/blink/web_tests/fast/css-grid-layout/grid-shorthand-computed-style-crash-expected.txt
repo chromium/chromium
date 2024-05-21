@@ -1,1 +1,0 @@
-This test checks that getting computed style of grid shorthand does not crash.

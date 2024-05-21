@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/brotli/enc",
-  "+third_party/brotli/dec",
-]

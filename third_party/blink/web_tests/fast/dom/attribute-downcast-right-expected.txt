@@ -1,1 +1,0 @@
-This tests that an Attribute object is not downcasted to a MappedAttribute. See http://bugs.webkit.org/show_bug.cgi?id=21032 .

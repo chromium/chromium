@@ -1,7 +1,0 @@
-Mouse Over
-
-This test checks the fix for https://bugs.webkit.org/show_bug.cgi?id=18506. To test it manually:
-Hover mouse over "Mouse Over" link
-Quickly jump to the yellow box that pops up and select "Select" link
-Move mouse away so that pop up disappears
-Press the "Copy" keyboard accelerator - this should not cause any crash

@@ -1,6 +1,0 @@
-Tests that worker can be paused.
-Started worker
-Worker created
-didConnectToWorker
-SUCCESS: Worker paused
-

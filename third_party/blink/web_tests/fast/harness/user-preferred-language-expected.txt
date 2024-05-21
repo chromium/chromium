@@ -1,4 +1,0 @@
-This test verifies that internals.userPreferredLanguages returns a mutable Array of the user's preferred languages.
-
-internals.userPreferredLanguages returns a non-empty array: PASS
-internals.userPreferredLanguages is mutable, and returns the same value passed to it: PASS

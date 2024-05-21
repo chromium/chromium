@@ -1,2 +1,0 @@
-Label: 
-THIS TEST HAS PASSED

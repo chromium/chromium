@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<foo:foo xmlns:foo="http://FOO" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://FOO include1_0.xsd" foo:req="oo">
-	<foo:bar foo:bar="o"  uri="asd"><foo:bar.A/><foo:bar.B>anyURI</foo:bar.B></foo:bar>
-	<boo/>
-	
-</foo:foo>

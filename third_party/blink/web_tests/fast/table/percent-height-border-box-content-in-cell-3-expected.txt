@@ -1,5 +1,0 @@
-Text
-
-crbug.com/669687: Percent height border-box content in a cell gets the correct height.
-
-PASS

@@ -1,8 +1,0 @@
-table { border-collapse: collapse; font-size: x-small; font-family: Lucida Grande; border: 1px solid #999; }
-td, th { border-left: 1px solid #999; border-right: 1px solid #999; padding: 4px 8px; }
-thead > tr { background-color: #dde; }
-tbody > tr:nth-child(odd) { background-color: #eee; }
-tbody > tr:nth-child(even) { background-color: #ccc; }
-td.allowed { color: green; }
-td.closed { color: red; }
-td.other { color: orange; }

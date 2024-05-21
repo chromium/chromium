@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] sec-fetch-site - src - HTTPS downgrade-upgrade, no attributes
-  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-Harness: the test ran to completion.
-

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="document-function.xsl"?>
-<doc>
-<para>This tests the xslt document() function. If this test is successful, there should be three paragraphs below.</para>
-<para>This is a paragraph</para>
-<para>This is another paragraph</para>
-</doc>

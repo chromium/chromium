@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-  <circle fill="rgb(180, 180, 250)" cx="100" cy="20" r="85" />
-  <text x="10" y="45" font-size="40" fill="rgba(0, 0, 0, 0.3)">30% opacity</text>
-  <text x="10" y="95" font-size="40" fill="black" fill-opacity="0.3">30% opacity</text>
-</svg>

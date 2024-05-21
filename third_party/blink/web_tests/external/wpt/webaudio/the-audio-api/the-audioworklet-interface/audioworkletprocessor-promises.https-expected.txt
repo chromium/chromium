@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] test
-  assert_equals: Microtask checkpoints are performed\n                       in between render quantum expected "ok" but got "ko"
-Harness: the test ran to completion.
-

@@ -1,6 +1,0 @@
-Ensures that when a project is added with already existing files they bind.
-
-Bound Files:
-http://127.0.0.1:8000/devtools/network/resources/empty.html <=> file:///tmp/127.0.0.1:8000/devtools/network/resources/empty.html
-
-

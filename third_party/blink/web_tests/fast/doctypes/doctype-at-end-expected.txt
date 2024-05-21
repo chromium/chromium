@@ -1,3 +1,0 @@
-This tests the behavior of a Doctype at the end of the document.
-PASS: a doctype at the end of the document was ignored.
-

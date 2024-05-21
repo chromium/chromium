@@ -1,3 +1,0 @@
-This tests checks that deferred compositing is still invoked when nothing except touch hit rects change. The trickiness is that touch hit rects cannot be recomputed until after compositing is updated, so there is a risk of accidentally skipping updating touch rects unless we ping the compositor correctly.
-
-PASS

@@ -1,8 +1,0 @@
-
-Title: TC0001
-Fragment: 't=,'
-Comment: Syntax error, not allowed according to the ABNF. The media fragment is ignored.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == '0') OK
-END OF TEST
-

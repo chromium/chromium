@@ -1,5 +1,0 @@
-Test offset for position computation across complex runs with font fallbacks, in this case due to a font (Arial) lacking a newline glyph.
-
-FAIL: Selected text is "sparingly "
-
-Jus­ti­fi­ca­tion should be used sparingly and cautiously on Web pages.

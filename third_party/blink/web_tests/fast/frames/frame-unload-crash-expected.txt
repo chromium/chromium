@@ -1,3 +1,0 @@
-This is a test for bug 25136: CRASH in DocumentLoader::removeSubresourceLoader due to null m_frame. If successful, PASS should be printed below.
-
-PASS

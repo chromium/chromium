@@ -1,3 +1,0 @@
-Test for bug 10313: xsl:import doesn't work in stylesheets loaded via XMLHttpRequest.
-
-SUCCESS

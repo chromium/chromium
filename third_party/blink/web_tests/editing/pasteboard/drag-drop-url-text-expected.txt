@@ -1,7 +1,0 @@
-This tests text selection drag for a URL-like text.
-
-To test this by hand, select all of the text in this input: 
-and drag/drop it into this input: 
-
-If you see that the text "http://www.apple.com/" was put in the second box, then the test passed.
-PASS

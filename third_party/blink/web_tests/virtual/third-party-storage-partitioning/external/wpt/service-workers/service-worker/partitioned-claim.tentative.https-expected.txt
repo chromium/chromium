@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ServiceWorker's clients.claim() is partitioned
-  assert_equals: 3p iframe was successfully claimed expected "success" but got "failure"
-Harness: the test ran to completion.
-

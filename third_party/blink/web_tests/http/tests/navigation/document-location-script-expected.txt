@@ -1,5 +1,0 @@
-This tests that assigning to document.location from a script tag doesn't add a back/forward item.
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/document-location-script.html?1
-===============================================

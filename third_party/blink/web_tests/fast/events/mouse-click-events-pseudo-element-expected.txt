@@ -1,9 +1,0 @@
-This tests if mouse events are dispatched on an element obscured by a pseudo-element.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS eventLog is "mousedown mouseup click mousedown mouseup click dblclick "
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

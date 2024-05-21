@@ -1,7 +1,0 @@
-This test attempts to set a leading newline in a text area's default value.
-
-If the test passes, you should see a 3 lines saying "Passed" below.
-
-Passed
-Passed
-Passed

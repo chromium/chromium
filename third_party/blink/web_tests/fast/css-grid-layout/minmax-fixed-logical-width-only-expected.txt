@@ -1,9 +1,0 @@
-Bug 104700: [CSS Grid Layout] Implement grid items sizing for fixed minmax grid tracks
-
-Checks that a grid element with fixed minmax properly compute the logical width in several writing-mode.
-
-PASS
-PASS
-PASS
-PASS
-PASS

@@ -1,4 +1,0 @@
-Blocked access to external URL http://user@/localhost:8000/misc/resources/compass.jpg
-This test checks that URLs with a username but no hostname do not mistakenly get loaded. If it fails in the browser, you will also see an image.
-PASS document.getElementsByTagName("img")[0].width is 0
-

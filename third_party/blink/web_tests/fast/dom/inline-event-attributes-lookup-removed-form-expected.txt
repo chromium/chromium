@@ -1,9 +1,0 @@
-Tests that lookup in inline event handlers keeps references alive
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS result is "PASS"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

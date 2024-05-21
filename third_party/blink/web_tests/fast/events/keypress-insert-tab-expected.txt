@@ -1,4 +1,0 @@
-This tests that you can insert a tab in a WebKit app that allows tab insertion
-
-
-Test Passed

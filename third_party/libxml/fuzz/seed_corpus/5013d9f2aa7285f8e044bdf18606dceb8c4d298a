@@ -1,3 +1,0 @@
-<?xml version="1.0"?>
-<foo:foo xmlns:foo="http://FOO" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://FOO restrict-CT-attr-ref_0.xsd" foo:id="b0836217462"/>

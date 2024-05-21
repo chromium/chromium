@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: open() in document that is not fully active (but may be active) should throw
-  assert_throws_dom: function "function() { client.open("GET", "...") }" did not throw
-Harness: the test ran to completion.
-

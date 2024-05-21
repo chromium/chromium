@@ -1,3 +1,0 @@
-This tests that xml viewer is not used when there is a tag in XHTML namespace.
-This should be green.
-SUCCESS

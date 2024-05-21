@@ -1,4 +1,0 @@
-rdar://problem/6049803
-To do the test manually you have to try triggering the autoscroll by starting the dragging from within the text field. If the autoscroll occurs the text has FAILED since the containing iframe has scrolling=no else it has PASSED.
-Though you should be able to write some long text in the input and to trigger the autoscroll within the input.
-PASSED

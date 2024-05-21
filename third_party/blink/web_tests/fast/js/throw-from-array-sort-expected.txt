@@ -1,6 +1,0 @@
-This test verifies that an exception thrown during array sort immediately ends execution.
-
-If the test passes, you'll see a pass message below.
-
-PASS
-

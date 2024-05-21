@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=11444 REGRESSION (r17378): Exception (-[NSCFDictionary setObject:forKey:]: attempt to insert nil value) when submitting a form with an empty uninitialized field.
-
-PASS

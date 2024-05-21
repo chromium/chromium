@@ -1,5 +1,0 @@
-PASS document.querySelectorAll("p.li").length is 5
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

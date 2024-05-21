@@ -1,3 +1,0 @@
-The characters in the vertical div should not overlap.
-PASS
-一丁丂七丄丅丆

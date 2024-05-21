@@ -1,6 +1,0 @@
-PASS: windows-1255
-
-
-This test checks that charset sniffer does not get confused by the left angle bracket that is not part of a tag. There was a bug where the less-than caused all text after it until the next closing bracket to be consumed as the tag, resulting in the closing script tag being missed by the charset sniffer.
-
-The charset sniffer would think it was still in the script mode and ignore the meta tag. This test relies on the charset sniffer ignoring meta tags inside script and checking at least 1024 bytes of data for a meta tag.

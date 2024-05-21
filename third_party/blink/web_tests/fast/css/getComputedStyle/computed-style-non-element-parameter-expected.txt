@@ -1,7 +1,0 @@
-PASS getComputedStyle(null) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS getComputedStyle(undefined) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS getComputedStyle(document.createTextNode("foo")) threw exception TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

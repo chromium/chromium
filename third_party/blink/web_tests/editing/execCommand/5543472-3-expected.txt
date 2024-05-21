@@ -1,4 +1,0 @@
-This tests for a bug where a creating a list from a particular selection inside a table would create list items beyond the end of the selection. Only the second two table cells should contain list items.
-
-DOM:
-<table border="1"><tbody><tr><td>foo</td><td id="td"><ul><li>bar</li></ul></td><td><ul><li>baz</li></ul></td></tr></tbody></table><div>foo</div><div>bar</div>

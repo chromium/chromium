@@ -1,8 +1,0 @@
-PASS if it doesn't crash. See Bug 40158.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,6 +1,0 @@
-PASS - "max-width" property for "test" element at 0s saw something close to: none
-PASS - "max-width" property for "test" element at 0.25s saw something close to: 10
-PASS - "max-width" property for "test" element at 1s saw something close to: 10
-PASS - "max-width" property for "test" element at 1.75s saw something close to: none
-PASS - "max-width" property for "test" element at 2s saw something close to: none
-

@@ -1,2 +1,0 @@
-If you observe a popup this test has failed due to a MouseMovement being treated as a user gesture by the popup blocker.
-PASSED

@@ -1,9 +1,0 @@
-p { background-color : red ; border : thick solid red ; padding : 1em }
-p.t1 { background-color : lime }
-p.t2 { border : thick solid green }
-
-div { background: green; color: white; }
-div.teST { background: red; color: yellow; }
-div.te { background: red; color: yellow; }
-div.st { background: red; color: yellow; }
-div.te.st { background: red; color: yellow; }

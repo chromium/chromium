@@ -1,6 +1,0 @@
-PASS selection.focusNode is sample2.firstChild
-PASS selection.focusOffset is 2
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

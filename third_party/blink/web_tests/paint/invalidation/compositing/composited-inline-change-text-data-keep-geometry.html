@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../../resources/run-after-layout-and-paint.js"></script>
-<script>
-runAfterLayoutAndPaint(function() {
-  document.getElementById('span').firstChild.data = '234';
-}, true);
-</script>
-Tests invalidation when setting innerHTML of a composited inline element.<br>
-<span id="span" style="font-family: monospace; position: relative; backface-visibility: hidden">123</span>

@@ -1,5 +1,0 @@
-The following is a real-world example of use of the wbr element. This test checks that we parse it properly.
-
-TEST PASSED: Markup was correct
-
-http://groups.yahoo.com/group/BATN/message/34500

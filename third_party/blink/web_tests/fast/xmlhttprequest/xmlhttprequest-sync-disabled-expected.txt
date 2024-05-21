@@ -1,9 +1,0 @@
-This tests that synchronous XMLHttpRequests fail when they are disabled for documents.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.open("GET", "http://mydomain/", false) threw exception InvalidAccessError: Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests are disabled for this page..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

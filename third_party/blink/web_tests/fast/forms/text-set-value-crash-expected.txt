@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=11115 REGRESSION: Crash on Flickr after hitting cancel from adding a note.
-
-No crash means test PASS.

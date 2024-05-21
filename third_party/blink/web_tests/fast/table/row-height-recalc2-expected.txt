@@ -1,7 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=24971 Setting style.height = value in javascript doesn't work in tablerows(<tr>). This test PASSED if you see 2 'PASS' messages below.
-
-
-
-PASS: initial height of the row should be 50px.
-PASS: final height of the row should be 100px.
-

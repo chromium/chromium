@@ -1,2 +1,0 @@
-Should not crash.
-PASS: WebKit did not crash.

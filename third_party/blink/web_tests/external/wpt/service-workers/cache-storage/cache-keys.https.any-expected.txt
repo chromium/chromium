@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Cache.keys without parameters and VARY entries
-  assert_equals: Cache.keys without parameters should match all entries. expected 3 but got 1
-Harness: the test ran to completion.
-

@@ -1,3 +1,0 @@
-Tests that a subresource is loaded if the server expects an Accept header to provide it.
-
-PASS

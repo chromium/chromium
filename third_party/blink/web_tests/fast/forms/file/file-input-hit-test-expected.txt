@@ -1,3 +1,0 @@
-This tests clicking on a region immediately after a file input field. WebKit should not crash and you should see PASS below. To manually test this, click on the black region below.
-
-PASS

@@ -1,4 +1,0 @@
-Test sharing SharedArrayBuffers between dedicated workers.
-
-SharedArrayBuffers are not enabled -- skipping test.
-

@@ -1,6 +1,0 @@
-There is a potential problem with some of these tests: Apache
-sometimes returns 304s (correctly, I guess) instead of always running
-the CGI script. I've tried to avoid this problem using 'no-store'
-headers but I don't know if that's the right way to do this.
-
-Note: 016 and 017 do not yet have pass criteria.

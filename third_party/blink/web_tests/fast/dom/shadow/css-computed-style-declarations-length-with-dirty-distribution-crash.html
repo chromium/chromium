@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<div>Tests that CSSComputedStyleDeclaration.length with dirty distribution doesn't crash.</div>
-<div id='host'></div>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-host.attachShadow({mode: 'open'});
-window.getComputedStyle(host).length;
-</script>

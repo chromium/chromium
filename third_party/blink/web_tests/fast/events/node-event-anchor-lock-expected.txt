@@ -1,6 +1,0 @@
-This test does the following:
-1. Navigate to an anchor link. WebKit will ensure that the anchor remains visible as other objects load around it and scripts execute.
-2. The div containing the anchor link will be scrolled via PageDown. This simulated user action should stop us locking the screen to where the anchor is.
-3. Force a repaint. If the lock to the anchor was properly released, the scroll caused by the PageDown will not be reverted and parentDiv.scrollTop will be greater than 600px (the offset of the anchor). If we return to the anchor, the test has failed.
-Go to anchor
-PASS: scrollTop is greater than 600px

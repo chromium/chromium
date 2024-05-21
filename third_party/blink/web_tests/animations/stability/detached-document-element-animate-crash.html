@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script>
-test(() => {
-  document.implementation.createDocument('', '').createElement('div').animate({transform: 'none'}, 1000);
-}, 'Don\'t crash when animating elements attached to detached documents.');
-</script>

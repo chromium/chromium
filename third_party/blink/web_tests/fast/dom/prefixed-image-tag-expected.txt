@@ -1,5 +1,0 @@
-This test makes sure that a prefixed image keeps its prefix and that the localName matches img
-
-PASSED: prefix was kept
-PASSED: localName matches <img>
-

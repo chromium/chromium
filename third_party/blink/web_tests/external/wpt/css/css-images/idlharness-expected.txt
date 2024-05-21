@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSS namespace: attribute elementSources
-  assert_own_property: CSS does not have property "elementSources" expected property "elementSources" missing
-Harness: the test ran to completion.
-

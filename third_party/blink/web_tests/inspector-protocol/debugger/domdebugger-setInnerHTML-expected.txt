@@ -1,3 +1,0 @@
-Tests pausing on setInnerHTML breakpoint.
-Paused on the innerHTML assignment: modifyHTML@:7
-

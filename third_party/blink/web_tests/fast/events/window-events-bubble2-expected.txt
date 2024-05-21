@@ -1,3 +1,0 @@
-Tests that preventDefault() will still allow window events to bubble.
-Clicking here should fire window.onclick. This will match Firefox behavior.
-Window.onClick fired. Test Passed.

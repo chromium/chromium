@@ -1,6 +1,0 @@
-inner script ran!
-HelloWorld
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

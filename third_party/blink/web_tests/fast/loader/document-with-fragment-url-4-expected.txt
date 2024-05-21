@@ -1,5 +1,0 @@
-ALERT: First load complete.  URL's current hash is 
-ALERT: After replaceState, the URL's current hash is #foo
-ALERT: Second load complete.  URL's current hash is 
-This page uses history.replaceState() to add #foo to its URL. Then click the second link, which has an empty href and should take you back to the original URL without the #foo.
-Click here to return to the original page with the original url

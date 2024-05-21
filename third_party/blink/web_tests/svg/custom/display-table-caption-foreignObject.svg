@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <script>
-  if (window.testRunner)
-    testRunner.dumpAsText();
-  </script>
-  <foreignObject display="table-caption"><xhtml:div>This test PASSED if we don't crash when the display value is table-caption</xhtml:div></foreignObject>
-</svg>

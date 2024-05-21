@@ -1,6 +1,0 @@
-Tests how execution context and target are selected.
-
-top
-execution-context-iframe1.html
-execution-context-iframe2.html
-

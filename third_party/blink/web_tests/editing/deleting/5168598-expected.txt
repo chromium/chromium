@@ -1,3 +1,0 @@
-This tests for a crash when deleting a link inside a text field inside a completely editable document. You shouldn't see anything inside the text field.'We probably shouldn't let users add rich content to text fields even if they are in richly editable regions.'
-
- PASS

@@ -1,5 +1,0 @@
-This tests for a hang when outdenting an indented list whose last item contains another list. It should not hang.The selection is incorrect here.
-orange
-lemon
-orange
-lemon

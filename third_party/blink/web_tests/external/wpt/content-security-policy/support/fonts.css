@@ -1,8 +1,0 @@
-@font-face {
-  font-family: 'Ahem';
-  src: url('/fonts/Ahem.ttf');
-}
-
-body {
-  font-family: 'Ahem', Fallback, sans-serif;
-}

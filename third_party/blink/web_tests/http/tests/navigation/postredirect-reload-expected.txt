@@ -1,7 +1,0 @@
-PASS
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/postredirect-reload.html
-        http://127.0.0.1:8000/navigation/resources/redirect-reload.html
-curr->  http://127.0.0.1:8000/navigation/resources/reloadresult.pl
-===============================================

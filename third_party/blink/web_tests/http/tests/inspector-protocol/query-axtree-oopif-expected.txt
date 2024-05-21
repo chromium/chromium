@@ -1,5 +1,0 @@
-Tests that we cannot find elements inside OOPIF by accessible name
-
-Running test: testGetIdsForSubtreeByAccessibleNameOOPIF
-node1
-

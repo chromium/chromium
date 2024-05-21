@@ -1,4 +1,0 @@
-A
-B
-C
-This test: PASSED!

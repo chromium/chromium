@@ -1,1 +1,0 @@
-This tests for a crash when performing selectLine: inside an empty editable div. It cannot be run manually.

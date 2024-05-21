@@ -1,1 +1,0 @@
-Permissions-Policy: ambient-light-sensor=(),accelerometer=(),gyroscope=(),magnetometer=()

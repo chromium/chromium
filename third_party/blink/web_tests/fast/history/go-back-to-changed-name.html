@@ -1,9 +1,0 @@
-<script>
-    var tmp = window.name;
-    window.name = "crash";
-    
-    testRunner.dumpAsText();
-    testRunner.queueLoad("resources/go-back-to-changed-name2.html?" + tmp);
-    testRunner.queueLoad("resources/go-back-to-changed-name3.html");
-    testRunner.queueBackNavigation(1);
-</script>

@@ -1,4 +1,0 @@
-<x xmlns:xinclude="http://www.w3.org/2001/XInclude">
-   <!-- Simple test of including another text document -->
-   <xinclude:include href="../ents/something.txt" parse="text"/>
-</x>

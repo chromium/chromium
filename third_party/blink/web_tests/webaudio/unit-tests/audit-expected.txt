@@ -1,5 +1,0 @@
-CONSOLE ERROR: [audit.js] this test requires the explicit comparison with the expected result when it runs with run_web_tests.py.
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "  1 is equal to 1."
-Harness: the test ran to completion.
-

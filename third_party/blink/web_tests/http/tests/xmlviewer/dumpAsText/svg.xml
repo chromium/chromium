@@ -1,9 +1,0 @@
-<!-- If you can see this, this test has failed, except if you are
-     not using an SVG-aware client. -->
-<root>
-    <header>This tests that xml viewer is not used when there is a tag in SVG namespace.</header>
-    <FAIL/>
-    <svg:svg xmlns:svg="http://www.w3.org/2000/svg" x="20" y="20" font-size="20">
-        <svg:text y="20" font-size="20">SUCCESS</svg:text>
-    </svg:svg>
-</root>

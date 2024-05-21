@@ -1,8 +1,0 @@
-This tests that a javascript: URL loaded in an iframe has access to its parent's frame
-
-PASS: Cross frame access from a javascript: URL was allowed!
-
---------
-Frame: 'aFrame'
---------
-Inner iframe.

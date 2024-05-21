@@ -1,3 +1,0 @@
-Test of Range.createContextualFragment() with in-scope namespace prefixes on elements. If the test succeeds you will see the word "PASS" below.
-
-PASS

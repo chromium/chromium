@@ -1,4 +1,0 @@
-This tests that calling XMLHttpRequest.abort() removes the responseText for the XMLHttpRequest.
-
-PASS: abort() cleared the response text.
-

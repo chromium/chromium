@@ -1,9 +1,0 @@
-crbug.com/590412: this test checks that style is correctly serialized without any crashes when applying property-all after setting identity-box-chrome-color.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS

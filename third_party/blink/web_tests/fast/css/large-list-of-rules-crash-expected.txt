@@ -1,1 +1,0 @@
-Test case for https://bugs.webkit.org/show_bug.cgi?id=27748. If the browser did not crash, the test passed.

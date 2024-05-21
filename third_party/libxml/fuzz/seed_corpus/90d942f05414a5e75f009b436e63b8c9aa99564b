@@ -1,7 +1,0 @@
-<html>
-<body>
-<form>
-  <input type="text" name="test" value="&scaron;">
-</form>
-</body>
-</html>

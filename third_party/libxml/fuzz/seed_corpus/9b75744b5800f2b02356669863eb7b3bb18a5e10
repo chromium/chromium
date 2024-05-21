@@ -1,8 +1,0 @@
-<element name="vector" xmlns="http://relaxng.org/ns/structure/1.0"
-         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <list>
-    <oneOrMore>
-      <data type="double"/>
-    </oneOrMore>
-  </list>
-</element>

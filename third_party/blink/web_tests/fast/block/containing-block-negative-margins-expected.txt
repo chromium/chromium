@@ -1,3 +1,0 @@
-crbug.com/413202: Margins can expand/shrink the width of an element if a float does not constrain it.
-PASS
-PASS

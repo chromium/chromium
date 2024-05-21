@@ -1,9 +1,0 @@
-PASS Links are on the same line.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS First link didn't move after layout.
-PASS Last link didn't move after layout.
-About Us
-Contact Us

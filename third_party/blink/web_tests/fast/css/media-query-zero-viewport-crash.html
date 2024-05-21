@@ -1,8 +1,0 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<iframe id="iframe" width="0"></iframe>
-<script>
-test(() => {
-  iframe.contentWindow.matchMedia("(min-width: 10vw)");
-}, "Don't crash when evaluating media queries with viewport units that are zero.");
-</script>

@@ -1,7 +1,0 @@
-This tests RemoveFormant command on an orphaned list item following non-orphaned list items. WebKit used to remove non-orphaned list items ("hello world"). You should see "hello world WebKit" below.
-| <ul>
-|   <li>
-|     "hello"
-|   <li>
-|     "world"
-|   "<#selection-anchor>WebKit<#selection-focus>"

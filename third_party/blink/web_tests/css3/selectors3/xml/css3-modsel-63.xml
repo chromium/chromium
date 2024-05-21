@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-63.css" type="text/css"?>
-<test>
- <div xmlns="http://www.w3.org/1999/xhtml" class="stub">
-  <p> <span>The color of this text should be green when the pointing device hovers over it.</span> </p>
-  <p> <a href="http://dummy.example.org/dummy">The color of this text should be green when the pointing device hovers over it.</a> </p>
- </div>
-</test>

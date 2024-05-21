@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Empty tables do not take table-columns into account
-  assert_equals: expected 50 but got 200
-[FAIL] Empty tables do not take table-rows into account
-  assert_equals: expected 50 but got 100
-Harness: the test ran to completion.
-

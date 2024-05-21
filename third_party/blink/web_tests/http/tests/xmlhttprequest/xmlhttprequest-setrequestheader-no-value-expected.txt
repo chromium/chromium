@@ -1,3 +1,0 @@
-Test that setRequestHeader can be used to set headers that have a name, but no value.
-
-SUCCESS

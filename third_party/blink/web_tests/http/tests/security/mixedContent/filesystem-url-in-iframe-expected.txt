@@ -1,7 +1,0 @@
-ALERT: PASS (1/2): File written
-This tests that filesystem URLs created in a secure context are treated as secure origins. This test passes if the iframe renders PASS correctly, and no console warning appears.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS (2/2): File displayed

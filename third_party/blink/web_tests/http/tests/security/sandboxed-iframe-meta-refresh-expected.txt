@@ -1,7 +1,0 @@
-CONSOLE ERROR: Refused to execute the redirect specified via '<meta http-equiv='refresh' content='...'>'. The document is sandboxed, and the 'allow-scripts' keyword is not set.
-Sandboxing a frame puts it into a unique origin by default, which the containing document shouldn't have script access to. This test passes if an exception is thrown upon the access violation.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

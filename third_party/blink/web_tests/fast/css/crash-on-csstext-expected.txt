@@ -1,1 +1,0 @@
-This page shouldn't crash while fetching cssText - Bug 460810.

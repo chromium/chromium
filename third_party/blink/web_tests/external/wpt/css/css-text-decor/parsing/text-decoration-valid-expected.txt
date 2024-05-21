@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['text-decoration'] = "solid" should set the property value
-  assert_equals: serialization should be canonical expected "none" but got "solid"
-[FAIL] e.style['text-decoration'] = "currentcolor" should set the property value
-  assert_equals: serialization should be canonical expected "none" but got "currentcolor"
-Harness: the test ran to completion.
-

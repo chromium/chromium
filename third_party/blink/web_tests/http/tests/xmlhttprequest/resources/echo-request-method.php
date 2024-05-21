@@ -1,6 +1,0 @@
-<?php
-if ($_SERVER['REQUEST_METHOD'])
-    header("X-CUSTOM-REQUEST-METHOD: " . $_SERVER['REQUEST_METHOD']);
-else 
-    header("X-CUSTOM-REQUEST-METHOD: NOT_SET");
-?>  

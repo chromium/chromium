@@ -1,5 +1,0 @@
-Test that an inner multicol with only one line makes the outer multicol tall enough to contain it.
-
-There should be a blue square below.
-
-PASS

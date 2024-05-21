@@ -1,9 +1,0 @@
-Test that WebSocket connections are throttled.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS openedCount is 255
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

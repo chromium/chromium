@@ -1,8 +1,0 @@
-PASS Function("'use strict'; function f(eval,[x]){}") threw exception of type SyntaxError.
-PASS !!Function("function f(eval,[x]){}") is true
-PASS true === true
- PASSED! 
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

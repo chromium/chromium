@@ -1,4 +1,0 @@
-This test should not hit an assertion in LayoutGeometryMap in debug builds
-
-
-This test should not hit an assertion in LayoutGeometryMap in debug builds

@@ -1,9 +1,0 @@
-This is a test to make sure the localStorage object for multiple windows in the same security origin share the same global storage area.
-
-Value for FOO is BAR
-Logging from second window:
-Value for FOO is BAR
-Value for FOO after changing my own copy is BAR-NEWWINDOW
-Value for FOO in my opening window is BAR-NEWWINDOW
-
-

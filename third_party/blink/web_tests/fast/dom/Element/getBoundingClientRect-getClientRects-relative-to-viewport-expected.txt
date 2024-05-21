@@ -1,8 +1,0 @@
-PASS unScrolledBoundingBox.top - scrolledDownBoundingBox.top is 50
-PASS unScrolledBoundingBoxes[0].top - scrolledDownBoundingBoxes[0].top is 50
-PASS unScrolledBoundingBox.left - scrolledRightBoundingBox.left is 50
-PASS unScrolledBoundingBoxes[0].left - scrolledRightBoundingBoxes[0].left is 50
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-PASS - "box-shadow" property for "none-to-normal" element at 0.3s saw something close to: rgba(0, 0, 0, 0.6) 12px 12px 6px 0px
-PASS - "box-shadow" property for "none-to-inset" element at 0.3s saw something close to: rgba(0, 0, 0, 0.6) 12px 12px 6px 0px inset
-PASS - "box-shadow" property for "inset-to-normal" element at 0.3s saw something close to: rgb(0, 0, 0) 20px 20px 10px 0px
-PASS - "box-shadow" property for "normal-to-inset" element at 0.3s saw something close to: rgb(0, 0, 0) 20px 20px 10px 0px inset
-

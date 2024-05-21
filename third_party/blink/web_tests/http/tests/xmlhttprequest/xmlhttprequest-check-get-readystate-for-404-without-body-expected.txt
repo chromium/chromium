@@ -1,3 +1,0 @@
-This tests the readyState of a XMLHttpRequset which is sended with a "GET" method. And the response's status is 404 without body.
-
-PASS

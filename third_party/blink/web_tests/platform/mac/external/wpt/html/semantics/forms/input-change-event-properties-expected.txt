@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <select> pressing down arrow
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'bubbles')"
-Harness: the test ran to completion.
-

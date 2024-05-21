@@ -1,3 +1,0 @@
-This tests applying style to a selection that ends with a line break. Only the first paragraph should be styled.
-
-<blockquote id="blockquote" type="cite"><b>hello</b></blockquote>world

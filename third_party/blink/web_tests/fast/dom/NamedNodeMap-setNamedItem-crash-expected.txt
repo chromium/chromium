@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to execute 'setNamedItem' on 'NamedNodeMap': parameter 1 is not of type 'Attr'.
-This passes if it does not crash. (see https://bugs.webkit.org/show_bug.cgi?id=18958)

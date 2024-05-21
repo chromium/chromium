@@ -1,5 +1,0 @@
-Test the user agent style sheet rule that disables inheritance of text-emphasis to ruby text.
-
-攻殻 機動隊 攻殻こうかく機動隊きどうたい
-
-PASS

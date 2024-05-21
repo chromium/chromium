@@ -1,5 +1,0 @@
-This tests that changing selection in an iframe does not fire selectionchange event in the parent document and vice versa.
-
-PASS: selecting all of parent's document body fired selection change events from parent
-PASS: selecting all of parent's document body fired selection change events from child
-PASS: selecting "rocks" of "WebKit rocks" in the parent fired selection change events from parent, parent

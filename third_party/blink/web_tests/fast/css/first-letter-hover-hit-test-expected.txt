@@ -1,6 +1,0 @@
-PASS style.color is 'rgb(255, 165, 0)'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-H

@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-    <clipPath id="clip" clipPathUnits="objectBoundingBox">
-        <circle cx="0.5" cy="0.5" r="0.5"/>
-    </clipPath>
-</defs>
-
-<rect x="40" y="40" height="300" width="300" style="fill:green;clip-path:url(#clip);"/>
-</svg>

@@ -1,6 +1,0 @@
-There should be a single H1 block with a single BR below.
-
-
-There should be a single H1 block with a single BR above.
-
-<div>There should be a single H1 block with a single BR below.</div> <h1><br></h1> <div id="div">There should be a single H1 block with a single BR above.</div>

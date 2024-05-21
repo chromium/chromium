@@ -1,5 +1,0 @@
-Tests that intersection observer works with device emulation.
-target intersecting true
-target intersecting false
-target intersecting true
-

@@ -1,4 +1,0 @@
-Test that a forwarded user gesture that is consumed before the time fires is resurrected.
-
-Click Here
-PASSED

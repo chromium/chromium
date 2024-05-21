@@ -1,1 +1,0 @@
-This test PASSED if we don't crash when the display value is table-caption by using inherit

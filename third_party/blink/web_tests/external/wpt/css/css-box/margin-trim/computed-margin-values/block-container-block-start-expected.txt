@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] item 1
-  assert_equals: \n<item style="margin-top: 30px;" data-expected-margin-top="0"></item>\nmargin-top expected "0" but got "30"
-Harness: the test ran to completion.
-

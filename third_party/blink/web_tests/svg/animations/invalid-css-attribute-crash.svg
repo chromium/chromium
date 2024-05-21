@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-<!-- Test for WK94569: Passes if there is no crash in animating non-CSS animations with attributeType=CSS. -->
-<text x="5" y="20">This test passes if it does not CRASH.</text>
-<feConvolveMatrix>
-<set attributeName="result" attributeType="CSS" to="inherit"></set>
-</feConvolveMatrix>
-</svg>

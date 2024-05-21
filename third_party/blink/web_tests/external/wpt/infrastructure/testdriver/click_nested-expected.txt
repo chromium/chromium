@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] TestDriver click method with multiple windows and nested iframe
-  Unhandled rejection: assert_unreached: click failed Reached unreachable code
-Harness: the test ran to completion.
-

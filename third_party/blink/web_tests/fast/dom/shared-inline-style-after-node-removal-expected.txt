@@ -1,9 +1,0 @@
-This test checks that an element that shared its inline style with one or more other elements still retain that style after one of the sharing elements was destroyed.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS computedStyle.color is 'rgb(0, 128, 0)'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

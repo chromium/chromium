@@ -1,2 +1,0 @@
-Tests that the table width having table-layout fixed changes when width is changed dynamically.
-PASS

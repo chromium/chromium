@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["insertOrderedList",""]] "<div contenteditable=\\"true\\"><table><tr><td>[f<b>s<br>d</b>f]</td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></table></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div contenteditable=\\"true\\"><table><tbody><tr><td><ol><li>f<b>s</b></li><li><b>d</b>f</li></ol></td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></tbody></table></div>" but got "<div contenteditable=\\"true\\"><table><tbody><tr><td><ol><li>f<b>s<br>d</b></li><li><b>d</b>f</li></ol></td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></tbody></table></div>"
-[FAIL] [["insertOrderedList",""]] "<div contenteditable=\\"true\\"><table><tr><td>[f<b>s]<br>d</b>f</td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></table></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div contenteditable=\\"true\\"><table><tbody><tr><td><ol><li>f<b>s</b></li></ol><b>d</b>f</td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></tbody></table></div>" but got "<div contenteditable=\\"true\\"><table><tbody><tr><td><ol><li>f<b>s<br>d</b></li></ol><b>d</b>f</td><td>fsdf</td></tr><tr><td>gghfg</td><td>fsfg</td></tr></tbody></table></div>"
-Harness: the test ran to completion.
-

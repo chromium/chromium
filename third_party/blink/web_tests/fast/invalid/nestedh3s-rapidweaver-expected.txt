@@ -1,8 +1,0 @@
-This page tests nesting h3 and h4 elements as seen in RapidWeaver 3.5.1.
-
-h3.firstChild: A
-h3.nextSibling: DIV
-h3.nextSibling.innerText: content
-
-header
-content

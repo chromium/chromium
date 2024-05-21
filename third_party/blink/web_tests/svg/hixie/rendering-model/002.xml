@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
-  <desc>There should be a green circle and no red.</desc>
-  <circle cx="150" cy="100" r="50" fill="red"/>
-  <circle cx="150" cy="100" r="50" fill="green"/>
-</svg>

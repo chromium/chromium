@@ -1,3 +1,0 @@
-Test for bug 7392: GMAIL: XMLHttpRequest does not correctly report "Interactive" state on receipt of load data.
-
-SUCCESS

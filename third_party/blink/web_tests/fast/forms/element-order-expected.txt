@@ -1,9 +1,0 @@
-This test checks that the elements array of a form element returns the elements in document order rather than order of insertion into the document. Older versions of WebKit returned the elements in order of insertion.
-
-If the test works properly, the text at the bottom will most likely say "x" then "y" then "z" in that order. If it fails, it will most likely say "x", then "z", then "y".
-
-  
-
-x
-y
-z

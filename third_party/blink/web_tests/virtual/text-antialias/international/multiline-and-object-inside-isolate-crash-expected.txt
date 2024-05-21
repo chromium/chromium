@@ -1,7 +1,0 @@
-    
-	PASS if this text displays only once, and no exception or crash
-        
-        
-
-        
-

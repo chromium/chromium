@@ -1,9 +1,0 @@
-A test for maxlength attribute of an input element with non-text type
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input.value is "1234"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

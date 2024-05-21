@@ -1,9 +1,0 @@
-Min-height should make the multicol container taller if min-height is greater than the content height, but it should not affect column balancing. We specify column-fill:auto here, but the columns should still be balanced, because height is auto.
-
-Below there should be a yellow square with the word "OKAY" inside - from left to right, with large letter spacing.
-
-O
-K
-A
-Y
-PASS

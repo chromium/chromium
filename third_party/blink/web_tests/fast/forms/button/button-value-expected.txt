@@ -1,5 +1,0 @@
-Tests: HTMLButtonElement::value
-
-This test changes the value of the button. The original value is "Fail"; the new value should be "Success"
-
- Button value is: Success

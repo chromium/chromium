@@ -1,9 +1,0 @@
-Tests UISourceCode class.
-
-
-Running: testUISourceCode
-Content is requested from SourceCodeProvider.
-Callback 1 is invoked.
-Callback 2 is invoked.
-Callback 3 is invoked.
-

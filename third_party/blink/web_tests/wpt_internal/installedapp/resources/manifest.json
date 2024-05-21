@@ -1,8 +1,0 @@
-{
-  "name": "InstalledRelatedApps test",
-  "short_name": "Test",
-  "related_applications": [
-    {"platform": "play", "id": "com.test"},
-    {"platform": "itunes", "url": "https://itunes.apple.com"}
-  ]
-}

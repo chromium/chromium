@@ -1,3 +1,0 @@
-This test checks for a regression where scriptable plugins hide properties of the OBJECT element. If the test passes, you will see a "PASSED" message below.
-
-PASSED

@@ -1,9 +1,0 @@
-<!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/stack-overflow.js"></script>
-<script>
-test(() => {
-  fillStackAndRun(() => new Response('hi'));
-}, 'stack overflow in Response constructor should not crash the browser');
-</script>

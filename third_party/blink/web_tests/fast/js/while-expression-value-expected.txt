@@ -1,7 +1,0 @@
-This page tests the evaluated value of a while expression.
-
-PASS: x should be 1 and is.
-PASS: x should be 1 and is.
-PASS: x should be 1 and is.
-PASS: x should be 1 and is.
-

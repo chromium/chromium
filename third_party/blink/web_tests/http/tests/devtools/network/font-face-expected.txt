@@ -1,7 +1,0 @@
-Tests that a used font-face is reported and an unused font-face is not reported.
-
-RequestStarted: font-face.html
-RequestFinished: font-face.html
-RequestStarted: used.ttf
-RequestFinished: used.ttf
-

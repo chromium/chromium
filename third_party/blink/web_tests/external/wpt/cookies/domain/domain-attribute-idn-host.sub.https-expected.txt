@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] UTF8-encoded IDN in domain attribute
-  assert_equals: expected "no cookies" but got "utf8=set"
-[FAIL] UTF8-encoded IDN with non-ASCII dot in domain attribute
-  assert_equals: expected "no cookies" but got "utf8-dot=set"
-Harness: the test ran to completion.
-

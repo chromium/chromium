@@ -1,9 +1,0 @@
-Element APIs should not force layout for nodes not in the active document.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS No style or layout updates.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,8 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=11449 Type-to-select in unopened popups doesn't work with Hebrew.
-
-ש
-ד
-ג
-כ
-ע
-SUCCESS

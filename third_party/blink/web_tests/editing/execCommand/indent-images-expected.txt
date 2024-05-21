@@ -1,6 +1,0 @@
-This test indents insides a document with exactly two image elements.
-| <blockquote>
-|   style="margin: 0 0 0 40px; border: none; padding: 0px;"
-|   <img>
-|   <img>
-|   <#selection-caret>

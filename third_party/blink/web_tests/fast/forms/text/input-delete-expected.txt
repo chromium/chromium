@@ -1,3 +1,0 @@
-This tests that calling setSelectionRange on a text field will correctly close the typing command. If the test fails, the deleteCommand that happens after the setSelectionRange will fail, and the text field will say "Test Failed".
-
-Passed

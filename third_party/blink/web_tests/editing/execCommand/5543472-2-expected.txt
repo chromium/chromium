@@ -1,4 +1,0 @@
-This tests for a bug when performing the list operation on a selection that starts just before a list and ends inside the list. This should only create list items in selected cells.
-
-DOM:
-<table border="1"><tbody><tr><td><ul><li>foo</li></ul></td><td id="td"><ul><li>bar</li></ul></td><td>baz</td></tr></tbody></table>

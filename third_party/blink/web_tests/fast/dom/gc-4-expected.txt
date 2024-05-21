@@ -1,5 +1,0 @@
-This test checks for a regression against rdar://problem/4152454 crash in KJS::ExprStatementNode::execute(KJS::ExecState*) in World Clock widget with TOT. The original bug occurred because some objects did not properly mark themselves, and so the garbage collector prematurely destroyed them.
-
-If the test passes, you will see the word "passed" below. Otherwise, it will crash.
-
-passed

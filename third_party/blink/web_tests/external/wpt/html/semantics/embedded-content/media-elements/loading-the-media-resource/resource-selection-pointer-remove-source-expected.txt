@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pointer updates (removing source elements)
-  assert_equals: error events on c expected 1 but got 0
-Harness: the test ran to completion.
-

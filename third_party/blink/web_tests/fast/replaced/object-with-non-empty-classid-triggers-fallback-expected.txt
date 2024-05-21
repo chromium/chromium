@@ -1,4 +1,0 @@
-This tests that fallback content is rendered for objects with non-empty classid attributes. The test passes if two lines are printed below containing the work 'PASS'.
-
-object with classid attribute but no type attribute renders fallback: PASS
-object with classid and type attributes renders fallback: PASS

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] requestFullscreen() in iframe followed by removing the iframe
-  assert_unreached: Promise didn't reject. Reached unreachable code
-Harness: the test ran to completion.
-

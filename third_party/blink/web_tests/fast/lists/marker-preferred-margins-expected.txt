@@ -1,2 +1,0 @@
-The list items should have no content.
-PASS

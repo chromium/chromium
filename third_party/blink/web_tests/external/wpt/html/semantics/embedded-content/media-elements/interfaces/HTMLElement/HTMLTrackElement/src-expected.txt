@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] HTMLTrackElement.src unresolvable value in content attribute
-  assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
-[FAIL] HTMLTrackElement.src assigning unresolvable value to IDL attribute
-  assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
-Harness: the test ran to completion.
-

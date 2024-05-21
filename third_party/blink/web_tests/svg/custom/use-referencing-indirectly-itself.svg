@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    
-    <!-- This use should be visible because it refers to a valid target and doesn't have any cycling. -->
-    <use xlink:href="use-referencing-an-image.svg#greenRect" />
-    <!-- This use won't be visible because it refers indirectly its own svg document. -->
-    <use x="25" y="25" xlink:href="use-referencing-an-image.svg#toImage" />
-   
-</svg>

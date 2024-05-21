@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-5.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml" title="title">This paragraph should have a green background because its TITLE
-      attribute is set.</p>
-</test>

@@ -1,5 +1,0 @@
-CONSOLE ERROR: Error: <path> attribute d: Expected moveto path command ('M' or 'm'), "    10,10 L 20,20 30…".
-CONSOLE ERROR: Error: <path> attribute d: Expected number, "…0 C 20,20 30 40 fiftyfive twenty…".
-CONSOLE ERROR: Error: <path> attribute d: Expected arc flag ('0' or '1'), "…10,10 A 20,20 0 large,yes 40 50".
-CONSOLE ERROR: Error: <path> attribute d: Expected path command, "M 10,10 E 20,20 z".
-

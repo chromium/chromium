@@ -1,2 +1,0 @@
-test left overflow in LTR page.
-scroll: Success

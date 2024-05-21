@@ -1,5 +1,0 @@
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/resources/shared-with-xhtml.js' with computed SHA-256 integrity 'yM5ZyzNsyKfaXRY78zSGapeQKtl0oGdpPpYxgwl8XW8='. The resource has been blocked.
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/resources/shared-with-xhtml.js' with computed SHA-256 integrity 'yM5ZyzNsyKfaXRY78zSGapeQKtl0oGdpPpYxgwl8XW8='. The resource has been blocked.
-This test passes if no 'FAIL' alert appears.
-
- 

@@ -1,1 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=21063 (NULL pointer crash in dispatchEvent(null)). It passes if it does not crash.

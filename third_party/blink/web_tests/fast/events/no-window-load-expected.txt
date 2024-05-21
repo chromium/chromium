@@ -1,4 +1,0 @@
-This test ensures that "load" events for images do not trigger bubble or capture handlers on the window object. We need this quirk to be compatible with a variety of web sites.
-Bubble for load event hit at most once: PASS.
-Capture for load event hit at most once: PASS.
- 

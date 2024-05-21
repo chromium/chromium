@@ -1,3 +1,0 @@
-Click the Fullscreen button to start a manual test. The page should not crash.
-
-Fullscreen

@@ -1,3 +1,0 @@
-Tests that page.setWebLifecycleState method invokes the state transition callbacks.
-SUCCESS!
-

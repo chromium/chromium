@@ -1,8 +1,0 @@
-Remove style element before its shadow root is attached to document but it should not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

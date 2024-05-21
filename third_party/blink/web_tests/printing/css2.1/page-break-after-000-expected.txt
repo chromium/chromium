@@ -1,7 +1,0 @@
-There must be a page break after this paragraph, followed by another line of content. This test should produce two pages of output.
-This text should be at the top of the second and final page.
-
-
-PASS: page number of "test" is 1
-PASS: number of pages is 2
-All tests passed

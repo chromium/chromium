@@ -1,4 +1,0 @@
-Test that adding an event listener for an event with a unique name works correctly (this used to corrupt event listener map after GC).
-
-PASS
-

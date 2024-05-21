@@ -1,5 +1,0 @@
-webkit.org/b/115379: Ensure children of fixed pos objects get a layout when the fixed pos object detects that it has to move with an absolute positioned ancestor.
-
-fixed div
-inner div
-PASS

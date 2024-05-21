@@ -1,2 +1,0 @@
-if (window.testRunner) testRunner.dumpAsText();
-*{display:-webkit-box;} *:optional{-webkit-box-ordinal-group:4294967295;}

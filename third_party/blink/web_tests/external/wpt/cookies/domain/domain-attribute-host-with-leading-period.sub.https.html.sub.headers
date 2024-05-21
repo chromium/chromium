@@ -1,1 +1,0 @@
-Set-Cookie: domain-attribute-host-with-leading-period=b; Path=/; Domain=.{{host}}

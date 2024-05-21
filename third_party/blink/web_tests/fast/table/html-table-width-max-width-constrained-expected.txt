@@ -1,4 +1,0 @@
-This test checks that a fixed table layout with max-width doesn't over-constraint the cell (ie the content width still wins over max-width per the specification).
-For this test to pass, the second cell shouldn't bleed out of the table.
-Cell text	Cell text text text text
-PASS

@@ -1,8 +1,0 @@
-PASS: img onerror fired
-PASS: input type=image onerror fired
-PASS: script onerror fired
-PASS: video src onerror fired
-PASS: audio onerror fired
-PASS: source onerror fired
-
-      

@@ -1,2 +1,0 @@
-ALERT: SUCCESS
-Test that a document in a subframe processed with XSLT has a correct location. (bug 18259).

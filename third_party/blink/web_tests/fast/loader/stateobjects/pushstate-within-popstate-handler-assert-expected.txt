@@ -1,1 +1,0 @@
-This test checks to make sure that calling pushState() from within a popstate event handler doesn't ASSERT or crash.

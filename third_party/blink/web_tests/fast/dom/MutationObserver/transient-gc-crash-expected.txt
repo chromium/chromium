@@ -1,9 +1,0 @@
-Clearing transient observers after observation node is GCed should not cause a crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS mutations.length is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

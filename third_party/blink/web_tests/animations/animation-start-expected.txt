@@ -1,6 +1,0 @@
-This tests the order and firing of animationstart events for animations which started as soon as the document loads.
-
-transform
-left
-animationstart received for translate
-animationstart received for left

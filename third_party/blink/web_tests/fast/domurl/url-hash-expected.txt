@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] non hierarchical
-  assert_equals: expected "#a" but got ""
-Harness: the test ran to completion.
-

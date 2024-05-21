@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Untrusted key events on <custom-control disabled="">Text</custom-control>, observed from <form>
-  assert_array_equals: Observed events lengths differ, expected array ["keydown", "keyup"] length 2, got [] length 0
-Harness: the test ran to completion.
-

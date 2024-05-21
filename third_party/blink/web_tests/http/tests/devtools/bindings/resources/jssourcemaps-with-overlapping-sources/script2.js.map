@@ -1,8 +1,0 @@
-{
-    "version": 3,
-    "file": "script2.js",
-    "sourceRoot": "",
-    "sources": ["common.ts", "unique2.ts"],
-    "names": [],
-    "mappings": "AAAA"
-}

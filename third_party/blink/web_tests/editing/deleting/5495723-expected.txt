@@ -1,3 +1,0 @@
-This tests for a bug where deleting whole paragraphs of quoted content plus a line break could pull unquoted content into a blockquote.
-
-<blockquote type="cite">one<br></blockquote><span id="end">three</span>

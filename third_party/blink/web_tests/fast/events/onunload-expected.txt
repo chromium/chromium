@@ -1,2 +1,0 @@
-CONSOLE ERROR: Blocked alert('unload') during unload.
-You should only see one unload alert appear.

@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-<defs>
-<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-<stop offset="0%" stop-color="red"/>
-<stop offset="100%" stop-color="blue"/>
-</linearGradient>
-</defs>
-<text x="200" y="200" style="font-size: 200px; text-shadow: #000 20px 20px 20px;" fill="url(#gradient)">SVG</text>
-</svg>

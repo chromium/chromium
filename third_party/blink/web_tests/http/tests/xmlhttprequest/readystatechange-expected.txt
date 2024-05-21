@@ -1,6 +1,0 @@
-ALERT: onreadystatechange called
-ALERT: evt.constructor = function Event() { [native code] }
-ALERT: readystatechange listener called
-Tests for bug 15102 - XMLHttpRequest should dispatch readystatechange event.
-
-If this passes you should see alerts for onreadystatechange and for a readystatechange listener.

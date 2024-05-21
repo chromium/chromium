@@ -1,3 +1,0 @@
-This test makes sure that we don't crash if an iframe is sandboxed and has a plugin resource as it's src.
-
-

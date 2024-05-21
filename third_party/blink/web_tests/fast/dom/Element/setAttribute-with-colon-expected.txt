@@ -1,7 +1,0 @@
-This tests checks whether setAttribute allows name parameters with colons in them. If the test is successful, text below should say "SUCCESS".
-
-namespace is null
-prefix is null
-localName is bb:dddd
-SUCCESS
-

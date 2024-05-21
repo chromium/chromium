@@ -1,4 +1,0 @@
-Tests accessibility of Tree outline sidepane in Application Panel.
-aXe violations: []
-
-

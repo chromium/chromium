@@ -1,4 +1,0 @@
-A directory for flexbox tests copied from Mozilla.
-
-Modified to work with our test harness (use flexbox.css, don't use
-MozReftestInvalidate)

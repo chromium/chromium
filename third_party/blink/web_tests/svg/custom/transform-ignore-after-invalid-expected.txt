@@ -1,1 +1,0 @@
-CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "…e(2,2) scale(1,2,3) translate(50…".

@@ -1,9 +1,0 @@
-This test checks HeapSnapshots loader.
-
-
-Running: heapSnapshotSaveToFileTest
-
-Running: heapSnapshotLoadFromFileTest
-
-Running: heapSnapshotRejectToSaveToFileTest
-

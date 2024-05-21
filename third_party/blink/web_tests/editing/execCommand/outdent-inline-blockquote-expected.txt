@@ -1,4 +1,0 @@
-
-Executing Outdent on an inline blockquote that is not the first element in the document should not crash.
-
-Test passed: no crash

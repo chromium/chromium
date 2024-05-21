@@ -1,3 +1,0 @@
-foo
-Test for bug 63076: Assertion failure in LayoutSVGInlineText::characterStartsNewTextChunk
-This test passes if it does not crash

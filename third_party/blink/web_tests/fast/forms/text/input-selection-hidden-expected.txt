@@ -1,5 +1,0 @@
-This tests the selection methods on the new text field when it is hidden and then made visible.
-
-setSelectionRange(3, 12)
-Passed.
-

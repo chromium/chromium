@@ -1,1 +1,0 @@
-If you can read this, the test passed.

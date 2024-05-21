@@ -1,6 +1,0 @@
-This tests to see that a selection inside an input field is removed when clicking (and focusing) a button in the same frame.
-
-
-
-
-Success

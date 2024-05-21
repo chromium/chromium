@@ -1,6 +1,0 @@
-Verify that inline sourcemap has proper URL and compiledURL.
-
-SourceMap Loaded:
-url: data:application/json;base64,eyJmaWxlIjoiY29tcGlsZWQuanMiLCJtYXBwaW5ncyI6IkFBQVNBLFFBQUFBLElBQUcsQ0FBQ0MsQ0FBRCxDQUFhQyxDQUFiLENBQ1osQ0FDSSxNQUFPRCxFQUFQLENBQW9CQyxDQUR4QixDQUlBLElBQUlDLE9BQVM7Iiwic291cmNlcyI6WyJzb3VyY2UuanMiXSwic291cmNlc0NvbnRlbnQiOlsiPHNvdXJjZSBjb250ZW50PiJdfQ==
-compiledURL: test://evaluations/0/inline-source-map-loading.js
-

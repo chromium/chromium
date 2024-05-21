@@ -1,1 +1,0 @@
-Passes if it does not crash in ASAN.

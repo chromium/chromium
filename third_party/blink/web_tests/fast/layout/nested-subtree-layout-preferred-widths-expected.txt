@@ -1,2 +1,0 @@
-crbug.com/497178: This test ensures we properly recompute preferred widths for nested subtree roots. If this test is ever flaky, it should be considered failing due the the non-deterministic way we iterate over subtree layout roots.
-PASS

@@ -1,5 +1,0 @@
-This should not be red.
-
-This tests for a regression against https://bugs.webkit.org/show_bug.cgi?id=5983 REGRESSION: onmouseover-powered navbar at MacNN renders incorrectly.
-
-Test result: PASS

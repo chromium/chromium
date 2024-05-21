@@ -1,5 +1,0 @@
-On most platforms, if you click and move the mouse on selected text, it will always initiate a drag. On Mac, there must be a delay between the click and the mouse move before a drag starts. Otherwise, it will just change the selection.
-
-To manually test, select "hello" and rapidly drag. You should see "hello world" on Mac and "worldhello" on all other platforms.
-
-worldhello

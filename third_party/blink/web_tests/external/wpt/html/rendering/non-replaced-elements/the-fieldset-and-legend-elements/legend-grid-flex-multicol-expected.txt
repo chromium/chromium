@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] inline-flex
-  assert_equals: display expected "inline-flex" but got "flex"
-[FAIL] inline-grid
-  assert_equals: display expected "inline-grid" but got "grid"
-Harness: the test ran to completion.
-

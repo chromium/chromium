@@ -1,7 +1,0 @@
-Tests console execution context selector for paintworklet.
-
-Console context selector:
-* top / 127.0.0.1:8000 
-  ____PaintWorklet #1 / 127.0.0.1:8000 
-  ____PaintWorklet #2 / 127.0.0.1:8000 
-

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] @getComputedStyle: 1e9% - huge legal percentage
-  assert_equals: huge legal percentage expected "1e+009%" but got "8191.75%"
-Harness: the test ran to completion.
-

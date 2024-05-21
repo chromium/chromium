@@ -1,4 +1,0 @@
-include_rules = {
-  "+services/network/public/mojom",
-  "+third_party/liburlpattern",
-}

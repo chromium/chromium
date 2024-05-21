@@ -1,8 +1,0 @@
-Test that resolving a promise after the window gets closed does not assert or crash
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

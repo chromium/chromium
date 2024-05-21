@@ -1,5 +1,0 @@
-This page contains the following errors:
-error on line 19 at column 7: Opening and ending tag mismatch: use line 4 and svg
-
-Below is a rendering of the page up to the first error.
-PASS without crash.

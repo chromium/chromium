@@ -1,4 +1,0 @@
-Default policy for navigation to 'notify-done.html' is 'new background tab'
-Tests that ctrl-clicking on a submit button results in a new background tab.
-
- 

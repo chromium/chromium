@@ -1,9 +1,0 @@
-Test that CSS rules don't lose custom properties on GC when only reachable through its declarations.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS style.parentRule.foo is "bar"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

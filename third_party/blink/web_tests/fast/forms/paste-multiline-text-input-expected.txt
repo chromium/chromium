@@ -1,9 +1,0 @@
-Test: This test verifies that text inputs will accept multiple lines of pasted text. You should see three tests "PASS" below.
-
-Multi-line test:
-PASS
-Null char test:
-PASS
-Trailing newline test:
-PASS
-

@@ -1,1 +1,0 @@
-A crash reproducing test using DRT. The test passes if it doesn't crash.

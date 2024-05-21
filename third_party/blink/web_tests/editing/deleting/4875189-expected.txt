@@ -1,5 +1,0 @@
-This test deletes the contents of a list, then it performs another delete, which should remove the empty list item. There should be two paragraphs below.
-
-Paragraph One.
-Paragraph Two.
-Paragraph One.<br>Paragraph Two.

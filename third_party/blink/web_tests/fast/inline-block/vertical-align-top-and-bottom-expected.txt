@@ -1,2 +1,0 @@
-  crbug.com/604144: In an inline formatting context with a mix of top and bottom vertically aligned inline-blocks use the lowest.
-PASS

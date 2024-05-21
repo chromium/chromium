@@ -1,8 +1,0 @@
-<p>This tests that calling HTMLDocument.hasFocus() on a frameless HTMLDocument does not crash.</p>
-<script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-
-    var newDoc = document.implementation.createHTMLDocument("");
-    newDoc.hasFocus();
-</script>

@@ -1,2 +1,0 @@
-Tests that checks for no crashes when stale-while-revalidate is on
-

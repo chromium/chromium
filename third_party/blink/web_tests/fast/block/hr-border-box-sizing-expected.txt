@@ -1,3 +1,0 @@
-THe hr element uses border-box sizing so a 100% width does not create a horizontal scrollbar.
-
-PASS

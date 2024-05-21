@@ -1,8 +1,0 @@
-This test does the following:
-1. Load a page, trigger an XHR.
-2. Reload the page.
-3. Dump the http readers for the reload of the XHR.
-
-The XHR is trigger after onload has fired. There should not be an HTTP_CACHE_CONTROL header forcing reload, so an http cache could load the resource without contacting the server.
-The test passes if there is no HTTP_CACHE_CONTROL header displayed below.
-

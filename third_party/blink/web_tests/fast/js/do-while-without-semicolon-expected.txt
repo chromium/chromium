@@ -1,3 +1,0 @@
-This page verifies that a statement following a do/while statement will execute even if a semi-colon does not separate the two. See bug 10880.
-
-PASS: Script following do/while statement executed.

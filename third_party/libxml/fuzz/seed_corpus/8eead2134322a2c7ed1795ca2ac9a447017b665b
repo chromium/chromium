@@ -1,3 +1,0 @@
-<ex1:test xmlns:ex1="http://example.com/1/"
-          xmlns:ex3="http://example.com/3/"
-          ex3:foo="bar"/>

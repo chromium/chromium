@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>SecurityFeature"
-}
-team_email: "chrome-security-owp-team@google.com, chrome-privacy-core@google.com"
-buganizer_public: {
-  component_id: 1456828
-}

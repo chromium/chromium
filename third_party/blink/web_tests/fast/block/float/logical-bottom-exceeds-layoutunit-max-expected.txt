@@ -1,3 +1,0 @@
-Elements should avoid floats even if they are as high as LayoutUnit::max()
-a
-PASS

@@ -1,6 +1,0 @@
-Test for bug 12602:
-
-//div[number() = 123]: SUCCESS
-//div[string-length() = 3]: SUCCESS
-//div[normalize-space() = '123']: SUCCESS
-//div[string() = '123']: SUCCESS

@@ -1,9 +1,0 @@
-Tests that removing the first, unexecuted event listener does not terminate event listener iteration
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS messages.toString() is "l0,l2"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

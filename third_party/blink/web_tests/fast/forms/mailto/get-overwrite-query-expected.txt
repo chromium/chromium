@@ -1,3 +1,0 @@
-Policy delegate: attempt to load mailto:nobody@gmail.com?to=someone%40example.org with navigation type 'form submitted'
- 
-Expected results when clicking "Send" button: A new mail message is created with an empty body, and two addressees.

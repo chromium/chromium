@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="data:text/xsl,&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;&lt;xsl:template match=&quot;*&quot;&gt;&lt;html&gt;&lt;body&gt;PASS&lt;/body&gt;&lt;/html&gt;&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;"?>
-<html xmlns="http://www.w3.org/1999/xhtml"> 
-<body>
-FAIL: The data://... XSL should be loaded.
-</body>
-</html>

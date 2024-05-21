@@ -1,7 +1,0 @@
-Verify that inline stylesheets do not appear in navigator.
-
-top
-  127.0.0.1:8000
-    devtools/resources
-      inspected-page.html
-

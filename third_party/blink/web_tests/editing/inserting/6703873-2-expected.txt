@@ -1,2 +1,0 @@
-This tests that placing the cursor at the beginning of a doubly-quoted paragraph and hitting Return splits the outer blockquote at the right place, namely just above the inner blockquote, and inserts an empty line there, rather than outside the outer blockquote.
-<blockquote type="cite"><div>Lorem<br>ipsum</div></blockquote><br><blockquote type="cite"><div><blockquote id="test" type="cite">dolor</blockquote></div></blockquote>

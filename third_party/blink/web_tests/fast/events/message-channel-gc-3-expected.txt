@@ -1,7 +1,0 @@
-Test that MessagePort messages are delivered even if both ports are inaccessible from JS any more.
-
-Should say PASS twice.
-
-PASS: message delivered. Port: [object MessagePort]
-PASS: port closed.
-

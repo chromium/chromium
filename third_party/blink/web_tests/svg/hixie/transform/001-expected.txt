@@ -1,1 +1,0 @@
-CONSOLE ERROR: Error: <circle> attribute transform: Unexpected end of attribute. Expected ')', "translate(200,0".

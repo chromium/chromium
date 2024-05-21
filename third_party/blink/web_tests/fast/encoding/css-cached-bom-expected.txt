@@ -1,2 +1,0 @@
-Test that stylesheet with BOM is correctly parsed when loaded from cache. You should see word SUCCESS below.
-SUCCESS

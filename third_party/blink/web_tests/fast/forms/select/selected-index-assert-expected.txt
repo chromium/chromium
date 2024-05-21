@@ -1,2 +1,0 @@
-This tests for a regression against https://bugs.webkit.org/show_bug.cgi?id=6942 Assertion failure in HTMLSelectElementImpl::selectedIndex (m_multiple)
-No assertion failure (on a debug build) means test PASS. 

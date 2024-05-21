@@ -1,3 +1,0 @@
-Test for bug 4195 - REGRESSION: KOI8-U encoding no longer supported.
-
-The test passes if these two letters look inverted along the vertical axis: "ЭЄ"

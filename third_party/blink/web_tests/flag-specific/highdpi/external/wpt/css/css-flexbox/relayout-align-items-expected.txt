@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .flexbox 1
-  assert_equals: \n<div id="from-stretch" class="flexbox" style="align-items: flex-end;">\n    <div data-expected-height="10" data-offset-y="90"></div>\n    <div data-expected-height="10" data-offset-y="90" class="align-self-auto"></div>\n    <div data-expected-height="10" data-offset-y="0" class="align-self-flex-start"></div>\n    <div data-expected-height="10" data-offset-y="90" class="align-self-flex-end"></div>\n    <div data-expected-height="10" data-offset-y="45" class="align-self-center"></div>\n    <div data-expected-height="10" data-offset-y="0" class="align-self-baseline"></div>\n    <div data-expected-height="100" data-offset-y="0" class="align-self-stretch"></div>\n</div>\nheight expected 10 but got 9
-[FAIL] .flexbox 2
-  assert_equals: \n<div id="to-stretch" class="flexbox align-items-flex-start" style="align-items: stretch;">\n    <div data-expected-height="100" data-offset-y="0"></div>\n    <div data-expected-height="100" data-offset-y="0" class="align-self-auto"></div>\n    <div data-expected-height="10" data-offset-y="0" class="align-self-flex-start"></div>\n    <div data-expected-height="10" data-offset-y="90" class="align-self-flex-end"></div>\n    <div data-expected-height="10" data-offset-y="45" class="align-self-center"></div>\n    <div data-expected-height="10" data-offset-y="0" class="align-self-baseline"></div>\n    <div data-expected-height="100" data-offset-y="0" class="align-self-stretch"></div>\n</div>\nheight expected 10 but got 9
-Harness: the test ran to completion.
-

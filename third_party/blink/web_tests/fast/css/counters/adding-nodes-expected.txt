@@ -1,4 +1,0 @@
-The following two lines should have the same content:
-
-1- 2- 2- 2.1-
-1-2-2.0-2.0.1-

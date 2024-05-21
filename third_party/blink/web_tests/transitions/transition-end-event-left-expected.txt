@@ -1,4 +1,0 @@
-Initiating a 500ms transition on the left property of box1.
-
-PASS --- [Expected] Property: left Target: box1 Elapsed Time: 0.5
-

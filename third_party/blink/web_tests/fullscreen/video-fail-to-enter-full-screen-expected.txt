@@ -1,5 +1,0 @@
-CONSOLE WARNING: Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
-This tests that the video should not be rendered in full screen if requestFullScreen() fails.
-
-END OF TEST
-

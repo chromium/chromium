@@ -1,5 +1,0 @@
-This tests for a crash when indenting a particular selection that contains a block nested in an inline element that contains an hr. It should not crash.
-
-
-
-

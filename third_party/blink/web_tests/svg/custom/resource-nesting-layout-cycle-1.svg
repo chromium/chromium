@@ -1,8 +1,0 @@
-<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <rect fill="url(#p1)" stroke="green" x="10" y="10" width="50" height="50"/>
-  <pattern id="p2">
-    <pattern id="p1">
-      <rect fill="url(#p2)" x="10" y="10" width="200" height="200"/>
-    </pattern>
-  </pattern>
-</svg>

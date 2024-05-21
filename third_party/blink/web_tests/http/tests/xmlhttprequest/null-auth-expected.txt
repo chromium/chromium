@@ -1,5 +1,0 @@
-Test that null values in XHR login/password parameters are treated correctly.
-
-No auth tokens should be sent with this request.
-
-No authentication

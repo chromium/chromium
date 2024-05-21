@@ -1,5 +1,0 @@
-Text  Text
-
-crbug.com/452593: The baseline of an 'inline-table' is the baseline of the first row of the table. You should see two black boxes beside each other.
-
-PASS

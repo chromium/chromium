@@ -1,5 +1,0 @@
-PASS visibleNewline(textarea.value) is "hello//world"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

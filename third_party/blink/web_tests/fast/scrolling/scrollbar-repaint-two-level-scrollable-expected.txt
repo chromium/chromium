@@ -1,2 +1,0 @@
-Tests invalidation and painting of scrollbar parts of a scroll area contained by another scroll area, when scrolling of the outer scroll area exposes a new port of the inner scrollbar. Passes if no assertion failure.
-PASS

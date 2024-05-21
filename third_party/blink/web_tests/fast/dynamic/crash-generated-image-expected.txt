@@ -1,2 +1,0 @@
-Test for bug 61411: ASSERTION FAILED: !m_layoutRoot->container() || !m_layoutRoot->container()->needsLayout() with generated content
-Test passes if it does not crash.

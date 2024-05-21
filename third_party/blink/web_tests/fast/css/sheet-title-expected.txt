@@ -1,3 +1,0 @@
-Test setting of the title of stylesheets for both <link> and <style> elements. See bug #11824.
-
-SUCCESS

@@ -1,6 +1,0 @@
-This page tests whether an exception thrown from a function that has lazily constructed an activation properly tears off the function's activation.
-
-If the test passes, you'll see a PASS message below.
-
-PASS: args[0] should be 1 and is.
-

@@ -1,5 +1,0 @@
-Given a float followed by a regular block with the same height as the float, then a block B with a negative margin, followed by a block with with overflow:hidden. Check that the overflow:hidden block doesn't overlap with the float, and also that it takes up all available space (but not more) beside the float. There's an empty collapse-through block before B, so that our initial logical top estimate fails and we have to relayout. When laying out again, we have to detect that the float that we first thought didn't affect the overflow:hidden block now affects it.
-
-Below there should be an olive square to the left of a navy square. The navy square should be slightly larger than the olive one, and there should be spacing between them. They should not overlap.
-
-PASS

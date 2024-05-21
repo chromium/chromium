@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
- <rect width="100%" height="100%" fill="navy"/>
- <line x1="0" y1="0" x2="100" y2="100" stroke="blue"/>
- <line x1="100" y1="0" x2="0" y2="100" stroke="blue"/>
- <text x="50" y="30" text-anchor="middle" fill="white" font-size="7">This should be a SQUARE.</text>
- <text x="50" y="40" text-anchor="middle" fill="white" font-size="5">It should stretch to fit the window.</text>
- <text x="50" y="48" text-anchor="middle" fill="white" font-size="3">(Whatever the window size.)</text>
-</svg>

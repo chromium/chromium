@@ -1,3 +1,0 @@
-This test checks the padding for radio buttons with no theme. This was wrong at one point because of a typo in the html4.css file.
-
-PASS

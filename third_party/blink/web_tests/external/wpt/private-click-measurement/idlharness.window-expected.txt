@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] HTMLAnchorElement interface: attribute attributionSourceId
-  assert_true: The prototype object must have a property "attributionSourceId" expected true got false
-[FAIL] HTMLAnchorElement interface: document.createElement("a") must inherit property "attributionSourceId" with the proper type
-  assert_inherits: property "attributionSourceId" not found in prototype chain
-Harness: the test ran to completion.
-

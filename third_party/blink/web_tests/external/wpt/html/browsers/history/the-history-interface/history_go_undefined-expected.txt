@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] history.forward() with session history
-  assert_array_equals: Pages opened during history navigation expected property 2 to be 2 but got 3 (expected array [3, 2, 2] got [3, 2, 3])
-Harness: the test ran to completion.
-

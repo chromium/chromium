@@ -1,4 +1,0 @@
-Should allow generated content inside summary
-before PASS
-after PASS
-

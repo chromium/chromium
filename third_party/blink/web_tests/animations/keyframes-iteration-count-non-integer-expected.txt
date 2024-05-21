@@ -1,2 +1,0 @@
-This test performs an animation of the left property with a non integer iteration count.
-PASS end of animation

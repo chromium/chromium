@@ -1,6 +1,0 @@
-This tests to make sure that content that has the document default color is pasted as blue
-(or whatever the color for quoted content is) when pasted in the middle of quoted content.
-| <blockquote>
-|   type="cite"
-|   <div>
-|     "(This text should be blue.<#selection-caret>)"

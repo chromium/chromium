@@ -1,2 +1,0 @@
-Div with z-index: -100
-Hit testing found div "main": PASS

@@ -1,4 +1,0 @@
-CONSOLE ERROR: Uncaught SecurityError: Failed to read a named property 'document' from 'Window': Sandbox access violation: Blocked a frame at "http://127.0.0.1:8000" from accessing a frame at "http://127.0.0.1:8000".  The frame requesting access is sandboxed and lacks the "allow-same-origin" flag.
-This test verifies that sandboxed iframe prevents cross-domain script access. It will print "PASS" on success.
-
-PASS: cross-domain script access disallowed from sandboxed iframe

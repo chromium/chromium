@@ -1,3 +1,0 @@
-crbug.com/627305: Percent height content in a border-box sized cell with border and a computed height should use the height of the cell.
-
-PASS

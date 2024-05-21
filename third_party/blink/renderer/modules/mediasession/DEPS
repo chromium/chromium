@@ -1,9 +1,0 @@
-include_rules = [
-    "+base/test/simple_test_tick_clock.h",
-    "+services/media_session/public/mojom",
-    "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/event_target_modules.h",
-    "+third_party/blink/renderer/modules/modules_export.h",
-    "+third_party/blink/renderer/modules/mediasession",
-    "+url/url_constants.h",
-]

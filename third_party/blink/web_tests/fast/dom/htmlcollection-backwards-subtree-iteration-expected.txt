@@ -1,4 +1,0 @@
-Tests that HTMLCollection of a subtree (as opposed to direct children) can be iterated backwards.
-There should be no console error and WebKit should not hit an assertion.
-
-PASS

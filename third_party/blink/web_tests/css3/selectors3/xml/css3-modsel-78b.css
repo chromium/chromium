@@ -1,4 +1,0 @@
-.green { background-color : lime ! important }
-.t1 td:not(:last-child) { background-color : red }
-p > *:not(:last-child) { background-color : red }
-table.t1 td { border : thin black solid }

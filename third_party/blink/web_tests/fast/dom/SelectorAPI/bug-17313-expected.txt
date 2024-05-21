@@ -1,3 +1,0 @@
-Test case for bug 17313
-
-The test has passed if reloading the page does not crash.

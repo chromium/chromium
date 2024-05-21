@@ -1,9 +1,0 @@
-This tests copying and pasting text with ruby doesn't insert new lines before and after rt but still inserts a new line around a block element around ruby.To manually test, copy and paste the text into the textarea. There should be not new line in the textarea.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS textarea.value.indexOf('\n') is firstLine.length
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

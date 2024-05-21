@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 3 , harness_status.message = Uncaught Error
-Harness: the test ran to completion.
-

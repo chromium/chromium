@@ -1,8 +1,0 @@
-
-Title: TC0014
-Fragment: 't=15'
-Comment: The request lies beyond the end of the resource. If the UA knows the duration of the resource, it seeks to the end of the media resource. Otherwise, the UA will send an (out-of-range) HTTP request with an 'include-setup' in order to setup its decoding pipeline.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == 'duration') OK
-END OF TEST
-

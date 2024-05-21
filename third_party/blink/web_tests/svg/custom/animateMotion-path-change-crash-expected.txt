@@ -1,1 +1,0 @@
-Test for WK106530: This test passes if it does not crash.

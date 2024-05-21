@@ -1,1 +1,0 @@
-This test checks that getting computed style of grid-template shorthand does not crash.

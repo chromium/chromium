@@ -1,5 +1,0 @@
-Verifies that text editor has focus after panel re-selecting.
-
-initial: focused = true
-after panel reselected: focused = true
-

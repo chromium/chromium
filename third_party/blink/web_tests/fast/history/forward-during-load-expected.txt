@@ -1,1 +1,0 @@
-PASS Calling history.forward() above shouldn't prevent the rest of the page from loading.

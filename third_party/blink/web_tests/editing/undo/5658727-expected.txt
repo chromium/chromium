@@ -1,3 +1,0 @@
-This tests for a bug where changing focus away from a textarea that has been emptied out by the Undo operation would clear the Undo stack. You should see a textarea with "foo" inside it below.
-
- Success: Redo worked after the textarea lost focus.

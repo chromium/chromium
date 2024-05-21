@@ -1,3 +1,0 @@
-This tests placing the caret just before a block image and pressing delete. The image should not be deleted. The caret should just move back to the previous paragraph.<img id="img" style="display:block;" src="../resources/abe.png">
-
-Selection: [[object Text], 167]

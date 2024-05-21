@@ -1,9 +1,0 @@
-<p>Test for a <href="https://bugs.webkit.org/show_bug.cgi?id=30982">bug 30982</a>: createHTMLDocument doesn't escape ampersand and less-than in title.</p>
-<p>Should say PASS:</p>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-var result = document.implementation.createHTMLDocument('foo</title>').title;
-document.write((result == 'foo</title>') ? "PASS" : ("FAIL. Title is:<xmp>" + result + "</xmp>"));
-</script>

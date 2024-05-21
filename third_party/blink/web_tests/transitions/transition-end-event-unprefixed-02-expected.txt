@@ -1,4 +1,0 @@
-Initiating a transition catching one transition event only despite listening the prefixed and unprefixed event.
-
-PASS --- [Expected] Property: left Target: box1 Elapsed Time: 0.1
-

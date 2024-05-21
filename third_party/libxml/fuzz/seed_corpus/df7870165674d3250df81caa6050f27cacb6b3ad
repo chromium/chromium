@@ -1,2 +1,0 @@
-<?xml version="1.0"?>
-<root><foo>txt<!--hello--><![CDATA[data]]><?target data?><bar>txt<!--hello--><![CDATA[data]]><?target data?></bar></foo></root>

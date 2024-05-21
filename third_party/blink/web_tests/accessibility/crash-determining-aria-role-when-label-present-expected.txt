@@ -1,9 +1,0 @@
-This tests a crashing scenario where an element with a role attribute is a child of a label that also has a corresponding control.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS input.childrenCount is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

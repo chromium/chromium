@@ -1,7 +1,0 @@
-Text 
- Text
-
-crbug.com/452593: If an inline-table consists of a single row which consists of a cell whose styled height exceeds the styled height of its contents then the table should use the bottom of the table as its baseline.
-
-PASS
-PASS

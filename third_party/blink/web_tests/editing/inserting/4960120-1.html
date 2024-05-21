@@ -1,9 +1,0 @@
-<p>This tests for a bug where the first newline entered into a text area would be lost.</p>
-<textarea id="textarea"></textarea>
-
-<script>
-var textarea = document.getElementById("textarea");
-textarea.setSelectionRange(0, 0);
-textarea.focus();
-document.execCommand("InsertLineBreak");
-</script>

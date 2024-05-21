@@ -1,8 +1,0 @@
-Both inputs should be of the same size and the placeholder should be at the same place.
-PASS rect0.top is rect1.top
-PASS rect0.height is rect1.height
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

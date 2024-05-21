@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Set selectorText to named page with two :first pseudo page
-  assert_equals: expected "named:first:first" but got "named:first"
-[FAIL] Set selectorText to named page with pseudo pages of :first, :left, :right, :first in order.
-  assert_equals: expected "named:first:left:right:first" but got "named:first"
-Harness: the test ran to completion.
-

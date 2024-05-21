@@ -1,2 +1,0 @@
-postMessage("closing");
-close();

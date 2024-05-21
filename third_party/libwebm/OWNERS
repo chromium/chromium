@@ -1,9 +1,0 @@
-# The following OWNERS refer to libwebm Chromium integration.
-niklase@chromium.org
-
-# The following OWNER refer to libwebm content.
-tomfinegan@chromium.org
-
-# Original (legacy) owner.
-emircan@chromium.org
-mcasas@chromium.org

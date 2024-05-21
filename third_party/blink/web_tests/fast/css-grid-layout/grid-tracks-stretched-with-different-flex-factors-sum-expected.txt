@@ -1,9 +1,0 @@
-This test verifies that we don't crash in debug builds when using flex tracks and 'stretch' value for the content alignment css properties.
-
-When the sum of all track's flex factor is < 1, they don't exhaust the available space, which is used to stretch the 'auto' sized tracks.
-
-PASS
-
-When the sum of all track's flex factor is >= 1, they exhaust the available space, hence the 'stretch' alignment is not applied to the 'auto' sized tracks.
-
-PASS

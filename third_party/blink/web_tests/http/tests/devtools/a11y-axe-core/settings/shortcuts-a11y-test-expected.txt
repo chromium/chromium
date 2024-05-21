@@ -1,6 +1,0 @@
-Tests accessibility in the settings tool shortcuts pane using the axe-core linter.
-
-Running: testShortcuts
-aXe violations: []
-
-

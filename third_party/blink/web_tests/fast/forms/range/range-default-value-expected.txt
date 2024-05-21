@@ -1,9 +1,0 @@
-Bug 20134: REGRESSION: (2.0.4-3.0.4): No default value set for <input type=range> with an even difference of (max - min)
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS slider.value is "51"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

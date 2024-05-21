@@ -1,9 +1,0 @@
-FormAssociatedElements should not be associated with forms in different trees (and should not crash)
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.forms[0].elements[0] is undefined.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

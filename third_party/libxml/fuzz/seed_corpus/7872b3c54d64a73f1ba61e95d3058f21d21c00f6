@@ -1,7 +1,0 @@
-<doc>
-    <e xml:base="http://example.com/base/">
-	<images xml:base="images/">
-	    <img href="img1.gif"/>
-	</images>
-    </e>
-</doc>

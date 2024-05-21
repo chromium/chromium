@@ -1,5 +1,0 @@
-Tests that evaluating an expression with a syntax error in the console won't crash the browser. Bug 61194.
-
-foo().
-VM:1 Uncaught SyntaxError: Unexpected end of input
-

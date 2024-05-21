@@ -1,4 +1,0 @@
-Simple test that dragging selected text in an input box nested in a draggable element works.
-
-Draggable div wrapping a text input box: 
-PASS

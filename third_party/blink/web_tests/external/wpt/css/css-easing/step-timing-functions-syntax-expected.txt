@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['animation-timing-function'] = "step-start" should set the property value
-  assert_equals: serialization should be canonical expected "steps(1, start)" but got "step-start"
-[FAIL] e.style['animation-timing-function'] = "step-end" should set the property value
-  assert_equals: serialization should be canonical expected "steps(1)" but got "step-end"
-Harness: the test ran to completion.
-

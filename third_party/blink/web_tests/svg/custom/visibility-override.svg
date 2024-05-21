@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <rect fill="red" height="100px" width="100px"/>
-  <g visibility='hidden'>
-    <rect fill="green" height="100px" width="100px" visibility='visible'/>
-    <rect fill="red" height="100px" width="100px"/>
-  </g>
-</svg>

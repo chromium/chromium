@@ -1,4 +1,0 @@
-Test that createObjectURL with no argument should throw an exception.
-PASS: Failed to execute 'createObjectURL' on 'URL': 1 argument required, but only 0 present.
-DONE
-

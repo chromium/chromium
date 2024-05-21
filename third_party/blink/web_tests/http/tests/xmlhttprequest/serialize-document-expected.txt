@@ -1,3 +1,0 @@
-Test for bug 18421: XMLHttpRequest does not properly encode & and < in outgoing messages.
-
-PASS

@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path id="thePath" d="M50 150 L 450 150" />
-  <text>
-    <textPath xlink:href="#thePath">This text should be ABOVE the other line.</textPath>
-    <textPath xlink:href="#thePath"><tspan dy="20">This text should be BELOW the other line.</tspan></textPath>
-  </text>
-</svg>

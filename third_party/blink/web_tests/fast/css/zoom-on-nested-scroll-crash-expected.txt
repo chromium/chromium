@@ -1,3 +1,0 @@
-Test for bug 291293.
-
-Zooming in (ctrl++) should not crash. The test PASSES if it did not crash.

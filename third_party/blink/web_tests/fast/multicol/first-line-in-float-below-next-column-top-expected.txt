@@ -1,7 +1,0 @@
-When its first is on the other side of a column boundary, test that we push the entire float to the next column.
-
-There should be a blue square below. It should be right-bottom aligned inside a cyan box.
-
-
-
-PASS

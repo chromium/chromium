@@ -1,5 +1,0 @@
-Regression test for http://bugs.webkit.org/show_bug.cgi?id=15169 Freeze on Google maps using the "Dig a hole" tool.
-
-This tests that the empty string property of a CSSStyleDeclaration is undefined and that retrieving it does not cause a hang.
-
-PASS

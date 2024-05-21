@@ -1,6 +1,0 @@
-Checks that deferred scripts with invalid URLs are ignored and subsequent deferred scripts executed.
-defer
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

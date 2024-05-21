@@ -1,3 +1,0 @@
-Test for rdar://problem/6131096 Reproducible crash in CounterNode::isReset under guard malloc.
-
-PASS

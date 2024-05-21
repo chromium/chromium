@@ -1,8 +1,0 @@
-Verifies that the priority field will be handled correctly.
-
-priority_high: High
-priority_low: Low
-priority_medium: Medium
-priority_invalid: Medium
-priority_default: Medium
-

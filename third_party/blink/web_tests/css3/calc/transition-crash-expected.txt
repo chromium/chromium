@@ -1,1 +1,0 @@
-This test checks class changes affecting sibling selectors happening during transitions over calculated lengths. The test passes if it does not crash.

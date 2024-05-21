@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Accept-Encoding should not appear in a service worker
-  assert_equals: Accept-Encoding should not be set for media expected (object) null but got (string) "identity;q=1, *;q=0"
-Harness: the test ran to completion.
-

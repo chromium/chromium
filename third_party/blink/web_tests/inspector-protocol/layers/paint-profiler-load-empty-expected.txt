@@ -1,3 +1,0 @@
-Tests that Paint Profiler refuses to load a picture with empty dimensions
-Loading empty snapshot: [object Object]
-

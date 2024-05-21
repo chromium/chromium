@@ -1,8 +1,0 @@
-details0's open attribute is expected to be'true' and is.
-details0's open attribute is expected to be'false' and is.
-details2's open attribute is expected to be'true' and is.
-details2's open attribute is expected to be'false' and is.
-details3's open attribute is expected to be'true' and is.
-details3's open attribute is expected to be'false' and is.
-PASS
-

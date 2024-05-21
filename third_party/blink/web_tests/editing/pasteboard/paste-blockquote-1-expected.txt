@@ -1,4 +1,0 @@
-This tests pasting a blockquote into an empty paragraph.
-| <blockquote>
-|   type="cite"
-|   "This should be blockquoted.<#selection-caret>"

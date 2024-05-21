@@ -1,4 +1,0 @@
-A test for hit testing when an svg container is relatively positioned in a containing block. See bug 13981.
-
-
-

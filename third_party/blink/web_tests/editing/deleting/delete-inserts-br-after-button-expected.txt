@@ -1,3 +1,0 @@
-This tests to see if a line break is incorrectly inserted when you delete the content directly following a button.
-buttonthis text should be on the same line as the button
-PASS

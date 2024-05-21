@@ -1,7 +1,0 @@
-This is a test for https://bugs.webkit.org/show_bug.cgi?id=6029 plainText() returns a partial result when the node contains RTL text.
-
-The following lines should be identical.
-
-בבקשה select and copy this sentence.
-
-בבקשה select and copy this sentence.

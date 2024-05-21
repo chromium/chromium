@@ -1,3 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to resolve module specifier "specifier-without-valid-prefix". Relative references must start with either "/", "./", or "../".
-CONSOLE ERROR: Uncaught TypeError: Failed to resolve module specifier "./foo". Invalid relative url or base scheme isn't hierarchical.
-

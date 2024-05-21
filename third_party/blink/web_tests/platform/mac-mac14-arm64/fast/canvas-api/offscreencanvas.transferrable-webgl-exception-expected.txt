@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that transfer an OffscreenCanvas that has a context throws exception.
-  assert_throws_dom: function "function() {\n            worker.postMessage({offscreenCanvas}, [offscreenCanvas]);\n        }" did not throw
-Harness: the test ran to completion.
-

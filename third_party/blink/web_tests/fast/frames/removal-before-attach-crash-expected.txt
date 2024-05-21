@@ -1,3 +1,0 @@
-Test for bug 13792.
-
-To test manually, close this Safari window, click the “Garbage Collect JavaScript Objects” button in the Caches window, and then open a new Safari window. The browser should not crash.

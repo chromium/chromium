@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Removing a preload matching "type" should not trigger a fetch
-  assert_array_equals: expected property 1 to be "timeout" but got "load" (expected array ["load", "timeout"] got ["load", "load"])
-Harness: the test ran to completion.
-

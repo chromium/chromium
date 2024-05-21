@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 11 duplicate test names: "Test source-over", "Test source-in", "Test source-out", "Test source-atop", "Test destination-over", "Test destiation-in", "Test destination-out", "Test destination-atop", "Test lighter", "Test copy", "Test xor"
-Harness: the test ran to completion.
-

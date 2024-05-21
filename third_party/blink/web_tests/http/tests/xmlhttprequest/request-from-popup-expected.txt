@@ -1,3 +1,0 @@
-Test for bug 4343: XMLHttpRequest doesn't work in a JavaScript-created window.
-
-SUCCESS

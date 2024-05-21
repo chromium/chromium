@@ -1,9 +1,0 @@
-Test for rdar://problem/6074587 REGRESSION (34722): Unable to view AT&T wireless bill - window title contains markup, window is empty.
-
-PASS: foo&lt;/title>bar parsed correctly
-PASS: foo& parsed correctly
-PASS: foo&bar parsed correctly
-PASS: &lt;/title>bar parsed correctly
-PASS: & parsed correctly
-PASS: &bar parsed correctly
-

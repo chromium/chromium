@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebTransport client should be able to create and handle a bidirectional stream without waiting for ready
-  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
-[FAIL] WebTransport client should be able to create, accept, and handle a unidirectional stream without waiting for ready
-  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
-Harness: the test ran to completion.
-

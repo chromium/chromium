@@ -1,9 +1,0 @@
-This test checks that document.defaultView returns the window object, and that it implements all the methods and properties it should.
-
-If the test passes, you will see only PASS messages below.
-
-PASS: defaultView is the window object
-
-PASS: defaultView.document is the document object
-
-PASS: defaultView implements getComputedStyle

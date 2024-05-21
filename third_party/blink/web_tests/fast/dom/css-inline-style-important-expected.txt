@@ -1,9 +1,0 @@
-This test checks to see whether setting a CSS value including !important on an inline style property fails (as it should).
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS window.getComputedStyle(e).color is "rgb(255, 0, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

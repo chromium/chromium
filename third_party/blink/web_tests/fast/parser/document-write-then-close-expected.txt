@@ -1,3 +1,0 @@
-Cancelling a document.write()-inserted and blocking script shouldn't fail.
-
-PASS if no crash.

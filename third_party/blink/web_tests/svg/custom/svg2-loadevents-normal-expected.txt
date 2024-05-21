@@ -1,2 +1,0 @@
-This tests normal load dispatching order.
-Passed

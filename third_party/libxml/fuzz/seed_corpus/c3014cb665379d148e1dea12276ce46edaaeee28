@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- This is the test data for the check of the implementation of varieties of xsd:simpleType element. -->
-<foo xmlns="http://FOO">
-	<barA>fajita</barA>
-	<barB>pub pub</barB>
-	<barC><![CDATA[tequilla]]></barC>
-</foo>
-

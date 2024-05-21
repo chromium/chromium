@@ -1,1 +1,0 @@
-Smoke test for CSS style array index getter and setter. Passes if no crash.

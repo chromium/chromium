@@ -1,3 +1,0 @@
-Test for bug 13495: REPRODUCIBLE CRASH: Referencing an undefined entity in an XHTML document.
-
-If you don't crash, you pass.

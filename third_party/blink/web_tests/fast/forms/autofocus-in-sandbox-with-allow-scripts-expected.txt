@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: line 1: INPUT
-This test passes if the activeElement is the input element rather than the body (which it would be if the sandbox didn't allow autofocus although allow-scripts flag is set). 

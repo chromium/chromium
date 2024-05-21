@@ -1,2 +1,0 @@
-This tests to make sure an ASSERT doesn't fire when performing a FormatBlock operation on a selection that ends just after a horizontal rule that is the last element in the document. The test should not assert.
-<pre><hr></pre>

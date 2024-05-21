@@ -1,7 +1,0 @@
-Tests that WebSocket network requests do not loose focus on frame being received.
-
-Selected Request: ws://localhost:8880/echo
-Sending Websocket frame
-Websocket Frame Received
-Selected Request: ws://localhost:8880/echo
-

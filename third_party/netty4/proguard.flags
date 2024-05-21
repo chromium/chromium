@@ -1,5 +1,0 @@
-# Netty4 references a number of classes that aren't included in the jar, and are
-# not found in third_party.
--dontwarn org.jboss.marshalling.**
--dontwarn org.eclipse.jetty.**
--dontwarn com.sun.nio.sctp.**

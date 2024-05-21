@@ -1,7 +1,0 @@
-PASS document.activeElement is target
-Remove tabindex.
-PASS blur event was disaptched.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

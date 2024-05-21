@@ -1,5 +1,0 @@
-Tests how animation could be resolved into remote object.
-Animation started
-Remote object:
-Animation
-

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Calling formData() on an aborted request
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-[FAIL] Aborting a request after calling formData()
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-Harness: the test ran to completion.
-

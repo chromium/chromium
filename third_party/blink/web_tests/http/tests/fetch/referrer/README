@@ -1,3 +1,0 @@
-This directory contains referrer tests with content security policy.
-For Request property, see script-tests/request.js.
-For fetch() tests with the default policy, see script-tests/referrer.js.

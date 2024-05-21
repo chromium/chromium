@@ -1,2 +1,0 @@
-Unknown script types should not be loaded nor executed. If this test fails, an extra line will appear in the output with the script's MIME type.
-

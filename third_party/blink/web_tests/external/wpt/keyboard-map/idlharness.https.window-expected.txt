@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Keyboard interface: attribute onlayoutchange
-  assert_true: The prototype object must have a property "onlayoutchange" expected true got false
-[FAIL] Keyboard interface: navigator.keyboard must inherit property "onlayoutchange" with the proper type
-  assert_inherits: property "onlayoutchange" not found in prototype chain
-Harness: the test ran to completion.
-

@@ -1,2 +1,0 @@
-This tests that frames are properly deregistered with the page's counter when removed. If this test is successful, the text "SUCCESS" will be shown below.
-SUCCESS

@@ -1,9 +1,0 @@
-Changing a collapsed border's width should change the width of the table and the width of a shrink-to-fit containing block.
-
-There should be a square with a 4px inner blue border and a 1px outer black border.
-
-Firefox 50.0a1 (nightly 2016-07-07) fails this, so it should probably be upstreamed, except it uses chrome-specific `runAfterLayoutAndPaint`.
-
-The table cell has rowspan=2 because we almost didn't cover the case where a cell's rowspan exceeded the declared rows.
-
-PASS

@@ -1,7 +1,0 @@
-<!DOCTYPE html>
-<div id='host'>Child</div>
-<script>
-const host = document.querySelector('#host');
-host.offsetLeft;  // Force layout
-host.attachShadow({ 'mode': 'open' });  // Child should be detached
-</script>

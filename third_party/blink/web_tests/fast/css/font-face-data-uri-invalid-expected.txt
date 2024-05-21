@@ -1,5 +1,0 @@
-CONSOLE WARNING: Failed to decode downloaded font: data:font/ttf;base64,VGhpcyBpcyBub3QgYSBmb250LiAgVGhpcyBpcyBub3QgYSBmb250LiAgVGhpcyBpcyBub3QgYSBmb250LiAgVGhpcyBpcyBub3QgYSBmb250LiAgVGhpcyBpcyBub3QgYSBmb250Lgo=
-CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1416128883
-Test for bug 85089: [Qt] ASSERT in FontCustomPlatformDataQt.cpp with invalid font in data URI
-
-This tests for an ASSERT when using @font-face with invalid font data

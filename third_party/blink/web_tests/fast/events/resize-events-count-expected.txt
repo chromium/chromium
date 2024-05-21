@@ -1,6 +1,0 @@
-Test how many resize events are emitted during window resize.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS resizeEventCount is 1

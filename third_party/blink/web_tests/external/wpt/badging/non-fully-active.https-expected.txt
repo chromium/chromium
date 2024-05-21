@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] badging a non-fully active document should reject with InvalidStateError
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

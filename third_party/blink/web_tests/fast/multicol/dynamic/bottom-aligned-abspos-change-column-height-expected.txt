@@ -1,6 +1,0 @@
-A bottom-aligned absolutely positioned descendant needs to be repositioned before being repaginated when its containing block gets a new height.
-
-The word "PAPAYA" should be seen in the first column below.
-
-PAPAYA
-PASS

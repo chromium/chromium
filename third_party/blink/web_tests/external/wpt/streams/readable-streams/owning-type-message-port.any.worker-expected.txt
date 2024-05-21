@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Transferred MessageChannel works as expected
-  promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
-[FAIL] Second branch of owning ReadableStream tee should end up into errors with transfer only values
-  promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
-Harness: the test ran to completion.
-

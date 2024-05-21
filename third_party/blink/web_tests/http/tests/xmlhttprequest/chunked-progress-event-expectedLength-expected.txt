@@ -1,7 +1,0 @@
-Test case for bug 36156: XHR 'progress' event code assumes wrongly that expectedLength >= 0
-
-Verify that the progress event total property is 0 when the expected overall length can't be computed.
-
-PASS should appear below:
-
-PASS

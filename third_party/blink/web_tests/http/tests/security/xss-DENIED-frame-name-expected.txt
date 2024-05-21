@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught SecurityError: Failed to read a named property 'prop' from 'Window': Blocked a frame with origin "http://localhost:8000" from accessing a frame with origin "http://127.0.0.1:8000". Protocols, domains, and ports must match.
-  This test passes if it doesn't alert fail.

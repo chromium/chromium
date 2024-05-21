@@ -1,2 +1,0 @@
-This tests normal load dispatching order and an image that does not render(display=none).
-Passed

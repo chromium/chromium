@@ -1,2 +1,0 @@
-Move the mouse over the input element and click and drag upwards to outside the bounds of the input element. If this does not crash, the test passed.
- PASS

@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: foo is called
-CONSOLE MESSAGE: foo is called

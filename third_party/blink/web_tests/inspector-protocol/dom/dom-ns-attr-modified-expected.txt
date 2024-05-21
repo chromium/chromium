@@ -1,7 +1,0 @@
-Test that DOM events have correct parameters for attribute with namespace in XML document.
-
-Changing attribute...
-Modified attribute: 'xlink:href'='changed-url'
-Removing attribute...
-Removed attribute: 'xlink:href'
-

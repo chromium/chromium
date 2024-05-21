@@ -1,1 +1,0 @@
-SUCCESS: Found all the spaces as expected.

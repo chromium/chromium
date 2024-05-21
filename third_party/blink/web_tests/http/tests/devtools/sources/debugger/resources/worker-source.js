@@ -1,7 +1,0 @@
-function doSomething()
-{
-    debugger;
-}
-
-doSomething();
-

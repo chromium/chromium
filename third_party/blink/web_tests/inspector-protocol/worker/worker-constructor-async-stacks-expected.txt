@@ -1,9 +1,0 @@
-Async stack trace in worker constructor.
-Setup page session
-Set breakpoint before worker created
-Run stepInto with breakOnAsyncCall flag
-Setup worker session
-(anonymous) at :0:0
---Worker Created--
-(anonymous) at test.js:2:13
-

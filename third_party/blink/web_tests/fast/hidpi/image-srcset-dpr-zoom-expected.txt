@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS Math.abs(document.getElementById("foo").clientWidth - 200) < 0.1 is true
-This test passes if the image below is a 200px wide green square when the deviceScaleFactor is 1, since the user has zoomed in.

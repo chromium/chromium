@@ -1,3 +1,0 @@
-This is a negative test for https://bugs.webkit.org/show_bug.cgi?id=20795, it makes sure that forms submitted using GET with a content-type of text/plain actually send data in URL encoded in the URL
-
-Success

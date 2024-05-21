@@ -1,9 +1,0 @@
-Script that fails to load should not dispatch multiple error events
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS numberOfTimesOnErrorHandlerHasRun is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

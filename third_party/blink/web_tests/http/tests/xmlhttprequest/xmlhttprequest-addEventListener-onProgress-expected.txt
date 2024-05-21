@@ -1,9 +1,0 @@
-Test case for Bug 18655: [XHR] OnProgress needs more test case
-
-This test verify that addEventListener("progress", XXX, XXX) works as expected.
-
-You should see PASSED 2 times.
-
-PASSED (1)
-PASSED (2)
-

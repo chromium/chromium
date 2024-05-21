@@ -1,3 +1,0 @@
-This tests a crash when changing focus deletes the node being focused. This test requires DRT.
-
-PASSED

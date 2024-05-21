@@ -1,5 +1,0 @@
-Verify that errors in the protocol handlers are dispatched in the page.
-ReferenceError: c is not defined
-    at window.cdp.onmessage (<anonymous>:5:37)
-    at <anonymous>:1:18
-

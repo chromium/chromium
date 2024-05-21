@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .test 5: last baseline
-  assert_equals: \n<div class="test" style="align-content: last baseline" title="last baseline">\n    <div class="float" data-offset-y="35">FLT</div>\n    <div class="in-flow" data-offset-y="45"></div>\n    <div class="in-flow">\n      <div class="float" data-offset-y="45">FLT</div>\n      <span class="label">LAST BASELINE</span>\n      <span class="abspos">ABS</span>\n      <span class="relpos">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 40
-Harness: the test ran to completion.
-

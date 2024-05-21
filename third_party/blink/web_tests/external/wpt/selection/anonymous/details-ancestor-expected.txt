@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Selecting the default summary of <details> should report a DOM-visible ancestor
-  assert_equals: expected "HTMLDetailsElement" but got "HTMLBodyElement"
-Harness: the test ran to completion.
-

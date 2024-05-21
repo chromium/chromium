@@ -1,5 +1,0 @@
-PASS - "left" property for "target" element at 0.5s saw something close to: 50
-PASS - "top" property for "target" element at 0.5s saw something close to: 50
-PASS - "left" property for "target" element at 1.5s saw something close to: 150
-PASS - "top" property for "target" element at 1.5s saw something close to: 150
-

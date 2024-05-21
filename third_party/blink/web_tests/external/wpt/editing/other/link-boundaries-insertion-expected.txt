@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Insert text into the selection at the end of a link
-  assert_equals: The text should be inserted into the link expected "Linka" but got "Link"
-[FAIL] Insert text into the selection at the beginning of a link
-  assert_equals: The text should be inserted into the link expected "aLink" but got "Link"
-Harness: the test ran to completion.
-

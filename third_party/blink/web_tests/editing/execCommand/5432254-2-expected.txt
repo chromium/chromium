@@ -1,9 +1,0 @@
-This tests for a deletion bug. The paragraph inside the table should be in a list, and the test shouldn't hang.
-
-foo
-
-
-
-<div><table id="table" border="1"><tbody><tr><td id="td"><ul><li>foo</li></ul></td></tr></tbody></table></div> <br id="br">
-
-PASS

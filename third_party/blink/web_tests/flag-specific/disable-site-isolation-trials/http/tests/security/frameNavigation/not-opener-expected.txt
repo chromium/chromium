@@ -1,2 +1,0 @@
-PASS
-There are currently 4 windows opened.

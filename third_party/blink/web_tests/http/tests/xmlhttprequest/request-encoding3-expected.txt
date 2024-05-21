@@ -1,3 +1,0 @@
-Test for http://crbug.com/277526: XMLHttpRequest normalizes the data sent to the server into Unicode NFC.
-
-SUCCESS

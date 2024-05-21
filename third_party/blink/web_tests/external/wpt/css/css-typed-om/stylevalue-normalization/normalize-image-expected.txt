@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Normalizing a <gradient> returns a CSSImageValue
-  assert_equals: expected "CSSImageValue" but got "CSSStyleValue"
-Harness: the test ran to completion.
-

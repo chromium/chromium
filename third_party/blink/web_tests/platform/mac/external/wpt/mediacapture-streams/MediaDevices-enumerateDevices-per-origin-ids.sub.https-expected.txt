@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] enumerateDevices has stable deviceIds across same-origin iframe
-  assert_true: deviceIds stay the same when loaded in same origin expected true got false
-[FAIL] enumerateDevices rotates deviceId after clearing site data
-  assert_false: deviceIds are not kept after clearing site data expected false got true
-Harness: the test ran to completion.
-

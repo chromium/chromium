@@ -1,3 +1,0 @@
-SUCCESS
-
-Test for bug 5499: Page reload does not send any cache control headers.

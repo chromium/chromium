@@ -1,8 +1,0 @@
-This test checks that the auto-placement algorithm takes 'order' into account when placing grid items.
-
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

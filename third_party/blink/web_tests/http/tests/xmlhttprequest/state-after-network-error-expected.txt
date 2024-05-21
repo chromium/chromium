@@ -1,6 +1,0 @@
-Test that request state reaches DONE even if a network error occurs.
-
-Should say SUCCESS:
-
-SUCCESS
-

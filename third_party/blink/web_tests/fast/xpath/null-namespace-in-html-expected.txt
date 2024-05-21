@@ -1,7 +1,0 @@
-This tests that XPath expressions with prefixes work correctly.
-
-PASS //div
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

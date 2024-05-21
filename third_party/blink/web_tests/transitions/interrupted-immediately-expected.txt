@@ -1,3 +1,0 @@
-Box should stay left as style is reset immediately
-
-PASS

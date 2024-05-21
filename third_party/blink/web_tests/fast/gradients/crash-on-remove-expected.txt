@@ -1,3 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=18879 Reproducible crash when removing a gradient.
-
-The test should not crash and there should be a green square below.

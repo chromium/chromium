@@ -1,9 +1,0 @@
-Test touch-adjustment on a block where we also touch the inner text and outside link.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS adjusted node was DIV#div1.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

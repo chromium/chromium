@@ -1,5 +1,0 @@
-# don't suggest word with NOSUGGEST flag (for example vulgar or obscene words)
-# See OpenOffice.org Issue #55498
-# (nosuggest.sug is an empty file)
-NOSUGGEST A
-COMPOUNDFLAG B

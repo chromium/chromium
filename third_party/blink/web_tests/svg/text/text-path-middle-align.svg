@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <path id="circle" d="M250 150C305.228 150 350 194.772 350 250C350 305.228 305.228 350 250 350C194.772 350 150 305.228 150 250C150 194.772 194.772 150 250 150" fill="none" stroke="black"/>
-  <text>
-    <textPath xlink:href="#circle" startOffset="0%" font-size="18pt" fill="red" text-anchor="middle">M</textPath>
-  </text>
-</svg>

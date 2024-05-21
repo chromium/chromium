@@ -1,3 +1,0 @@
-This tests that compatMode returns 'CSS1Compat' when the declared DTD is known (we are in almost strict mode). If the test is successful, the text below should say "SUCCESS".
-SUCCESS
-

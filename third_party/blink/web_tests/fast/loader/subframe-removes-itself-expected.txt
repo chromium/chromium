@@ -1,9 +1,0 @@
-frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'resources/subframe-that-removes-itself.html', http method GET
-frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
-main frame - didFinishDocumentLoadForFrame
-frame "<!--framePath //<!--frame0-->-->" - ReadyToCommitNavigation
-frame "<!--framePath //<!--frame0-->-->" - didCommitLoadForFrame
-frame "<!--framePath //<!--frame0-->-->" - DidFailLoad
-main frame - didHandleOnloadEventsForFrame
-main frame - didFinishLoadForFrame
-This tests a subframe that removes itself to make sure a delegate message to indicate the interrupted load fires.

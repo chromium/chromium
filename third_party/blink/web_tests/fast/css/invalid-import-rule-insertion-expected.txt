@@ -1,2 +1,0 @@
-This text should be red and the page should have no other style.
-Pass

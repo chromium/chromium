@@ -1,9 +1,0 @@
-Test interactive validation with required attribute. This test checks if an empty required field prevents form submission and checks if a non-empty required field doesn't prevent form submission.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS queryValues["test"] is "2012-W15"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

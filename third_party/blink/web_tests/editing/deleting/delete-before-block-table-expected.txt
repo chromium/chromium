@@ -1,3 +1,0 @@
-This tests placing the caret just before a block table and pressing delete. The caret should just move back to the previous paragraph.<table border="1" id="table"><tbody><tr><td>1</td><td>2</td></tr></tbody></table>
-
-Selection: [[object Text], 134]

@@ -1,4 +1,0 @@
-This test should not trigger an ASSERT in isSelfCollapsingBlock()
-
-A
-A

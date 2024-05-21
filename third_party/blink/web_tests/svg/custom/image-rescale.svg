@@ -1,8 +1,0 @@
-<svg version="1.1"
-     xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     id="drawingArea-layers" width="700" height="400" >
-     <image  x="0" y="0" width="320" height="210" xlink:href="resources/image-rescale.jpg" />
-     <image  x="350" y="0" width="32.0" height="21.0" transform="translate(350 0) scale(10) translate(-350 0)"
-             xlink:href="resources/image-rescale.jpg" />
-</svg>

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] color: percent height
-  assert_equals: expected 27 but got 14
-[FAIL] color: min-height
-  assert_equals: expected 27 but got 14
-Harness: the test ran to completion.
-

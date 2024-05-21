@@ -1,5 +1,0 @@
-
-
-Test 1 result: PASS
-Test 2 result: PASS
-

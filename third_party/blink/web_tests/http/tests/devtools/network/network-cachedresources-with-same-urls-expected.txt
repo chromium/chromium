@@ -1,5 +1,0 @@
-Tests that when we load two different images from the same url (e.g. counters), their content is different in network panel as well.
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&random=1
-http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&random=1
-

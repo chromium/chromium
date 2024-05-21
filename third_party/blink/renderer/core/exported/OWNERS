@@ -1,3 +1,0 @@
-per-file web_shared_worker_impl.h=file://third_party/blink/renderer/core/workers/OWNERS
-per-file web_shared_worker_impl.cc=file://third_party/blink/renderer/core/workers/OWNERS
-per-file web_media_player_impl_unittest.cc=file://media/OWNERS

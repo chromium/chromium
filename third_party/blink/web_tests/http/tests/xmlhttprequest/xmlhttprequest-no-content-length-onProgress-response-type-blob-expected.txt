@@ -1,7 +1,0 @@
-This test verifies that file with content type does trigger onProgress event when response type "blob" is specified.
-
-You should see PASSED twice.
-
-PASSED
-
-PASSED

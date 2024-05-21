@@ -1,9 +1,0 @@
-This is a new window to make sure there is a copy of the previous window's sessionStorage, and that they diverge after a change
-
-Value for FOO is BAR
-Logging from second window:
-Value for FOO is BAR
-Value for FOO after changing my own copy is BAR-NEWWINDOW
-Value for FOO in my opening window is BAR
-
-

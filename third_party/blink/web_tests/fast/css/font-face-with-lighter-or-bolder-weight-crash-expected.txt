@@ -1,1 +1,0 @@
-Test for a crash when a font-weight property in @font-face contains one of the relative 'lighter' or 'bolder' keywords. PASS if Blink does not crash in debug.

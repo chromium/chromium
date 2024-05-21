@@ -1,4 +1,0 @@
-This tests that the Image JavaScript object works as expected. If the test is successful, the test "SUCCESS" should be shown below.
-
-SUCCESS!
-

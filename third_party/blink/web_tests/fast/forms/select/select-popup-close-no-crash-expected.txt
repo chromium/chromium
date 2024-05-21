@@ -1,9 +1,0 @@
-Check that first disconnecting then closing a page popup does not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS no crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

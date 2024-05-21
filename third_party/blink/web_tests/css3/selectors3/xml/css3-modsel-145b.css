@@ -1,5 +1,0 @@
-
-  line { display: block; }
-  [type~=odd] { background: lime ! important; }
-  line:nth-of-type(odd) { background: red; }
-  [hidden] { display: none; }

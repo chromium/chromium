@@ -1,5 +1,0 @@
-Applying document.execCommand('Bold') to elements having insertion points (<shadow> or <content>) shoud not cause a crash.
-
-To test manually, make a selection from somewhere in "nested before" to somehwere in "nested after", then press Ctrl+B twice. It should not cause a crash.
-
-PASS

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'list-style-type' to the 'none' keyword: none
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'list-style-type' to the 'custom-ident' keyword: custom-ident
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] 'list-style-type' does not support 'symbols("*" "A" "B" "C")'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
-Harness: the test ran to completion.
-

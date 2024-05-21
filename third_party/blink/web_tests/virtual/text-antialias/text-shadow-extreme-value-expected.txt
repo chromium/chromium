@@ -1,1 +1,0 @@
-Extreme text-shadow blur values should not crash.

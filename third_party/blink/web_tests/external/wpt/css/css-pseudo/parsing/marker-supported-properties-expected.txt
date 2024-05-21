@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property white-space value 'nowrap' in ::marker
-  assert_equals: expected "nowrap" but got "pre"
-Harness: the test ran to completion.
-

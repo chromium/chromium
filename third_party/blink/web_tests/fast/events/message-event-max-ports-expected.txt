@@ -1,9 +1,0 @@
-Excessively long port sequences should gracefully fail.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS new MessageEvent("message", {ports:ports}) threw exception RangeError: Failed to construct 'MessageEvent': Failed to read the 'ports' property from 'MessageEventInit': Array length exceeds supported limit..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-include_rules = [
-    "+services/network/public/mojom/web_client_hints_types.mojom-shared.h",
-]

@@ -1,8 +1,0 @@
-
-Title: TC0034
-Fragment: 't%3D3'
-Comment: UA does not identify this as a media fragment, so it will play the entire media resource. Note: %3D is equivalent to =.
-EVENT(canplaythrough)
-EXPECTED (video.currentTime == '0') OK
-END OF TEST
-

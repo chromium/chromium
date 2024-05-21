@@ -1,6 +1,0 @@
-This test makes sure that calling childrenCount on an accessible element doesn't crash under ASAN immediately after switching that document's display from block to inline-block, due to a bug in AXLayoutObject::addInlineTextBoxChildren.
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-Test for bug 63776: Partial layout when a flex-box has visibility: collapse
-
-This test PASSES if it does not CRASH.

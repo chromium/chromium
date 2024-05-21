@@ -1,4 +1,0 @@
-CONSOLE WARNING: Failed to decode downloaded font: data:application/x-truetype-font,
-This is a test for Bug 16996: Crash in createFontCustomPlatformData when loading 0-byte font via @font-face.
-
-`1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?

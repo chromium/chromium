@@ -1,2 +1,0 @@
-This tests that getComputedStyle does a relayout before returning the computed style.
-SUCCESS

@@ -1,9 +1,0 @@
-This tests that XMLHttpRequest.responseXML returns an XMLDocument.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS responseDocument is "[object XMLDocument]"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

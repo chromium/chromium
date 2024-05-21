@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to display 'http://127.0.0.1:8000/security/XFrameOptions/resources/x-frame-options-deny.cgi' in a frame because it set 'X-Frame-Options' to 'deny'.
-ALERT: PASS: onload fired.
-CONSOLE ERROR: Refused to display 'http://127.0.0.1:8000/security/XFrameOptions/resources/x-frame-options-deny.cgi' in a frame because it set 'X-Frame-Options' to 'deny'.
-ALERT: PASS: onload fired.
-Test that two main resources pointing to the same url that are canceled within didReceiveResponse() don't cause us to crash.   

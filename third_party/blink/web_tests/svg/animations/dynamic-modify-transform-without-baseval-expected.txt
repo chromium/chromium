@@ -1,1 +1,0 @@
-This test passes if no assert is hit and PASS is printed: PASS.

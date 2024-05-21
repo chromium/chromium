@@ -1,2 +1,0 @@
-crbug.com/279286: ASSERT: Bad cast from CSSInitialValue to CSSValueList
-This test has passed if it doesn't crash

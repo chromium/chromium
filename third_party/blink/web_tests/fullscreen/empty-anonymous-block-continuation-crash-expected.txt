@@ -1,2 +1,0 @@
-WebKit Bug 89386 - Crash in LayoutInline::willBeDestroyed.
-Test passes if it does not crash.

@@ -1,2 +1,0 @@
-This test passes if the meter element doesn't have form attribute.
-PASS

@@ -1,9 +1,0 @@
-Tests that having a bad time has correct cross frame behavior.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Got 100 ouches.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

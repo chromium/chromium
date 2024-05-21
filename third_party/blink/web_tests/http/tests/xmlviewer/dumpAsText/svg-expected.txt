@@ -1,2 +1,0 @@
-This tests that xml viewer is not used when there is a tag in SVG namespace. 
-SUCCESS

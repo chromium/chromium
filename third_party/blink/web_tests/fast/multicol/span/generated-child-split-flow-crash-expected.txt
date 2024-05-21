@@ -1,4 +1,0 @@
-A
-B
-C
-PASS if no crash

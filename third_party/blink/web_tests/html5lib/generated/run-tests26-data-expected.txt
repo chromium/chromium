@@ -1,1 +1,0 @@
-../resources/tests26.dat: PASS

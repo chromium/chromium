@@ -1,3 +1,0 @@
-.red { background-color : red }
-p:not(:nth-of-type(3)) { background-color : lime }
-dl > *:not(:nth-of-type(3n+1)) { background-color : lime }

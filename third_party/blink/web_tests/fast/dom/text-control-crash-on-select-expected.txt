@@ -1,1 +1,0 @@
-Tests that we don't crash when killing an text input's or textarea's renderer and then calling select.

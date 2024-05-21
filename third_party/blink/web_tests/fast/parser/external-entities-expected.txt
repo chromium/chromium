@@ -1,6 +1,0 @@
-This page contains the following errors:
-error on line 9 at column 13: Entity 'message' not defined
-
-Below is a rendering of the page up to the first error.
-
-This should be the only line on this page. You should see a parse error above.

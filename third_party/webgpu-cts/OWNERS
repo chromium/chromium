@@ -1,7 +1,0 @@
-kainino@chromium.org
-enga@chromium.org
-cwallez@chromium.org
-
-# If you're doing structural changes get a review from one of the OWNERS.
-per-file resource_files.txt=*
-per-file ts_sources.txt=*

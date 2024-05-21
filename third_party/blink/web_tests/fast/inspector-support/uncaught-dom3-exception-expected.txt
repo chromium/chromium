@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
-This tests that we are getting the correct message for DOM Exception 3: HIERARCHY_REQUEST_ERR.

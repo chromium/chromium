@@ -1,2 +1,0 @@
-This tests that elementFromPoint will get the input element.
-Test Passed

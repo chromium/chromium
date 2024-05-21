@@ -1,6 +1,0 @@
-PASS if no crash.
-
-After initial layout: A multicol has a column-span:all descendant (not a direct child, so that we establish block continuations and anonymous multi-column blocks)
-Turn a child of this multicol container into a multicol
-Add another column-span:all descendant (again, not a direct child, so that we get more continuations)
-Set display:none on everything

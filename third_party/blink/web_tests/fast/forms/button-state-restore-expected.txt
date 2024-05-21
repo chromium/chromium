@@ -1,5 +1,0 @@
-This is a test for http://bugs.webkit.org/show_bug.cgi?id=14400 Assertion failure (SHOULD NEVER BE REACHED) going back on YouTube.
-
-Test result: PASS
-
-Button  

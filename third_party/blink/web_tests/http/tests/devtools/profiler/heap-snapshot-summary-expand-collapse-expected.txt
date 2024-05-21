@@ -1,9 +1,0 @@
-https://crbug.com/738932 Tests the snapshot view is not empty on repeatitive expand-collapse.
-
-Profiler was enabled.
-Detailed heap profiles were enabled.
-
-Running: testShowAll
-
-Profiler was disabled.
-

@@ -1,3 +1,0 @@
-This tests performs a sequence of actions that result in a GBK converter with substitution enabled being destroyed.
-
-PASS if there is no assertion failure.

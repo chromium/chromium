@@ -1,4 +1,0 @@
-The following two lines should be the same:
-
-1-2-3-
-1-2-3-

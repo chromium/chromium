@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] sender.getParameters() should return the same transaction ID if called back-to-back without relinquishing the event loop, even if the microtask queue runs
-  assert_true: expected true got false
-[FAIL] sender.getParameters() should return the same transaction ID if called back-to-back without relinquishing the event loop, even if there is an intervening call to setParameters
-  assert_true: expected true got false
-[FAIL] setParameters() when the event loop has been relinquished since the last getParameters() should reject with InvalidStateError
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

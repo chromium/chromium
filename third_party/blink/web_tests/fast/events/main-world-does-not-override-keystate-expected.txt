@@ -1,4 +1,0 @@
-Default policy for navigation to 'blank' is 'new foreground tab'
-Tests that adding a ctrl modifier to a click on a link from the main world triggers a foreground tab.
-
-link

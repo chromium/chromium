@@ -1,9 +1,0 @@
-PASS range.startContainer.id is rootNode.id
-PASS range.startOffset is 3
-PASS range.endContainer.id is rootNode.id
-PASS range.startOffset is 3
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Test that there is no crash when surroundContents is called with a node preceding the current selection.

@@ -1,7 +1,0 @@
-PASS selection2.anchorNode is selection2.focusNode
-PASS selection2.anchorOffset is 5
-PASS selection2.focusOffset is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

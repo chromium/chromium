@@ -1,7 +1,0 @@
-PASS document.activeElement is target
-Remove href.
-PASS document.activeElement is target
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

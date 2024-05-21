@@ -1,181 +1,0 @@
-This test aims to check for typeMismatch flag and sanitization with type=email input fields.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-Valid single addresses when 'multiple' attribute is not set.
-PASS "something@something.com" is a valid email address. 
-PASS "someone@localhost.localdomain" is a valid email address. 
-PASS "someone@127.0.0.1" is a valid email address. 
-PASS "a@b.b" is a valid email address. 
-PASS "a/b@domain.com" is a valid email address. 
-PASS "{}@domain.com" is a valid email address. 
-PASS "m*'!%@something.sa" is a valid email address. 
-PASS "tu!!7n7.ad##0!!!@company.ca" is a valid email address. 
-PASS "%@com.com" is a valid email address. 
-PASS "!#$%&'*+/=?^_`{|}~.-@com.com" is a valid email address. 
-PASS ".wooly@example.com" is a valid email address. 
-PASS "wo..oly@example.com" is a valid email address. 
-PASS "someone@do-ma-in.com" is a valid email address. 
-PASS "somebody@example" is a valid email address. 
-PASS "
-a@p.com
-" is a valid email address. It was sanitized to "a@p.com".
-PASS "
-a@p.com
-" is a valid email address. It was sanitized to "a@p.com".
-PASS "a
-@p.com" is a valid email address. It was sanitized to "a@p.com".
-PASS "a
-@p.com" is a valid email address. It was sanitized to "a@p.com".
-PASS "" is a valid email address. 
-PASS " " is a valid email address. It was sanitized to "".
-PASS " a@p.com" is a valid email address. It was sanitized to "a@p.com".
-PASS "a@p.com " is a valid email address. It was sanitized to "a@p.com".
-PASS " a@p.com " is a valid email address. It was sanitized to "a@p.com".
-PASS " a@p.com " is a valid email address. It was sanitized to "a@p.com".
-PASS "	a@p.com	" is a valid email address. It was sanitized to "a@p.com".
-PASS "a@p.com" is a valid email address. It was sanitized to "a@p.com".
-Invalid single addresses when 'multiple' attribute is not set.
-PASS "invalid:email@example.com" is a invalid email address. 
-PASS "@somewhere.com" is a invalid email address. 
-PASS "example.com" is a invalid email address. 
-PASS "@@example.com" is a invalid email address. 
-PASS "a space@example.com" is a invalid email address. 
-PASS "something@ex..ample.com" is a invalid email address. 
-PASS "a@c" is a invalid email address. 
-PASS "someone@somewhere.com." is a invalid email address. 
-PASS """testlah""@example.com" is a invalid email address. 
-PASS ""testblah"@example.com" is a invalid email address. 
-PASS "someone@somewhere.com@" is a invalid email address. 
-PASS "someone@somewhere_com" is a invalid email address. 
-PASS "someone@some:where.com" is a invalid email address. 
-PASS "." is a invalid email address. 
-PASS "F/s/f/a@feo+re.com" is a invalid email address. 
-PASS "some+long+email+address@some+host-weird-/looking.com" is a invalid email address. 
-PASS "a @p.com" is a invalid email address. 
-PASS "a @p.com" is a invalid email address. 
-PASS "a	@p.com" is a invalid email address. 
-PASS "a@p.com" is a invalid email address. 
-PASS "a@p.com" is a invalid email address. 
-PASS "a @p.com" is a invalid email address. 
-PASS "a　@p.com" is a invalid email address. 
-PASS "ddjk-s-jk@asl-.com" is a invalid email address. 
-PASS "someone@do-.com" is a invalid email address. 
-PASS "somebody@-p.com" is a invalid email address. 
-PASS "somebody@-.com" is a invalid email address. 
-Valid single addresses when 'multiple' attribute is set.
-PASS "something@something.com" is a valid email address list. 
-PASS "someone@localhost.localdomain" is a valid email address list. 
-PASS "someone@127.0.0.1" is a valid email address list. 
-PASS "a@b.b" is a valid email address list. 
-PASS "a/b@domain.com" is a valid email address list. 
-PASS "{}@domain.com" is a valid email address list. 
-PASS "m*'!%@something.sa" is a valid email address list. 
-PASS "tu!!7n7.ad##0!!!@company.ca" is a valid email address list. 
-PASS "%@com.com" is a valid email address list. 
-PASS "!#$%&'*+/=?^_`{|}~.-@com.com" is a valid email address list. 
-PASS ".wooly@example.com" is a valid email address list. 
-PASS "wo..oly@example.com" is a valid email address list. 
-PASS "someone@do-ma-in.com" is a valid email address list. 
-PASS "somebody@example" is a valid email address list. 
-PASS " a@p.com " is a valid email address list. It was sanitized to "a@p.com".
-PASS "	a@p.com	" is a valid email address list. It was sanitized to "a@p.com".
-PASS "
-a@p.com
-" is a valid email address list. It was sanitized to "a@p.com".
-PASS "a@p.com" is a valid email address list. It was sanitized to "a@p.com".
-PASS "
-a@p.com
-" is a valid email address list. It was sanitized to "a@p.com".
-PASS "a
-@p.com" is a valid email address list. It was sanitized to "a@p.com".
-PASS "a
-@p.com" is a valid email address list. It was sanitized to "a@p.com".
-PASS "" is a valid email address list. 
-PASS " " is a valid email address list. It was sanitized to "".
-PASS " a@p.com" is a valid email address list. It was sanitized to "a@p.com".
-PASS "a@p.com " is a valid email address list. It was sanitized to "a@p.com".
-PASS " a@p.com " is a valid email address list. It was sanitized to "a@p.com".
-Invalid single addresses when 'multiple' attribute is set.
-PASS "invalid:email@example.com" is a invalid email address list. 
-PASS "@somewhere.com" is a invalid email address list. 
-PASS "example.com" is a invalid email address list. 
-PASS "@@example.com" is a invalid email address list. 
-PASS "a space@example.com" is a invalid email address list. 
-PASS "something@ex..ample.com" is a invalid email address list. 
-PASS "a@c" is a invalid email address list. 
-PASS "someone@somewhere.com." is a invalid email address list. 
-PASS """testlah""@example.com" is a invalid email address list. 
-PASS ""testblah"@example.com" is a invalid email address list. 
-PASS "someone@somewhere.com@" is a invalid email address list. 
-PASS "someone@somewhere_com" is a invalid email address list. 
-PASS "someone@some:where.com" is a invalid email address list. 
-PASS "." is a invalid email address list. 
-PASS "F/s/f/a@feo+re.com" is a invalid email address list. 
-PASS "some+long+email+address@some+host-weird-/looking.com" is a invalid email address list. 
-PASS "a@p.com" is a invalid email address list. 
-PASS " a@p.com " is a invalid email address list. 
-PASS "　a@p.com　" is a invalid email address list. 
-PASS "a @p.com" is a invalid email address list. 
-PASS "a @p.com" is a invalid email address list. 
-PASS "a	@p.com" is a invalid email address list. 
-PASS "a@p.com" is a invalid email address list. 
-PASS "a@p.com" is a invalid email address list. 
-PASS "a @p.com" is a invalid email address list. 
-PASS "a　@p.com" is a invalid email address list. 
-PASS "ddjk-s-jk@asl-.com" is a invalid email address list. 
-PASS "someone@do-.com" is a invalid email address list. 
-PASS "somebody@-p.com" is a invalid email address list. 
-PASS "somebody@-.com" is a invalid email address list. 
-Valid multiple addresses when 'multiple' attribute is set.
-PASS "someone@somewhere.com,john@doe.com,a@b.c,a/b@c.c,ualla@ualla.127" is a valid email address list. 
-PASS "tu!!7n7.ad##0!!!@company.ca,F/s/f/a@feo-re.com,m*'@a.b" is a valid email address list. 
-PASS " a@p.com,b@p.com" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "a@p.com ,b@p.com" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "a@p.com, b@p.com" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "a@p.com,b@p.com " is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "   a@p.com   ,   b@p.com   " is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS " a@p.com , b@p.com " is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "	a@p.com	,	b@p.com	" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "
-a@p.com
-,
-b@p.com
-" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "a@p.com,b@p.com" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-PASS "
-a@p.com
-,
-b@p.com
-" is a valid email address list. It was sanitized to "a@p.com,b@p.com".
-Invalid multiple addresses when 'multiple' attribute is set.
-PASS "someone@somewhere.com,john@doe..com,a@b,a/b@c,ualla@ualla.127" is a invalid email address list. 
-PASS "some+long+email+address@some+host:weird-/looking.com,F/s/f/a@feo+re.com,,m*'@'!%" is a invalid email address list. 
-PASS "   a @p.com   ,   b@p.com   " is a invalid email address list. It was sanitized to "a @p.com,b@p.com".
-PASS "   a@p.com   ,   b @p.com   " is a invalid email address list. It was sanitized to "a@p.com,b @p.com".
-PASS "a@p.com,b@p.com" is a invalid email address list. 
-PASS " a@p.com , b@p.com " is a invalid email address list. 
-PASS "　a@p.com　,　b@p.com　" is a invalid email address list. 
-PASS ",," is a invalid email address list. 
-PASS " ,," is a invalid email address list. It was sanitized to ",,".
-PASS ", ," is a invalid email address list. It was sanitized to ",,".
-PASS ",, " is a invalid email address list. It was sanitized to ",,".
-PASS "  ,  ,  " is a invalid email address list. It was sanitized to ",,".
-PASS " , , " is a invalid email address list. It was sanitized to ",,".
-PASS "	,	,	" is a invalid email address list. It was sanitized to ",,".
-PASS "
-,
-,
-" is a invalid email address list. It was sanitized to ",,".
-PASS ",," is a invalid email address list. 
-PASS ",," is a invalid email address list. It was sanitized to ",,".
-PASS "
-,
-,
-" is a invalid email address list. It was sanitized to ",,".
-PASS " , , " is a invalid email address list. 
-PASS "　,　,　" is a invalid email address list. 
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

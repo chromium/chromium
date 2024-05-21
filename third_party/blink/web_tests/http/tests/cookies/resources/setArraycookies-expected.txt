@@ -1,5 +1,0 @@
-This test case to set a Array of Cookie size of 3 and check if it's been correctly set and in order.
-If the Test case was successful, Then it should print Passed below!!
-
-
-Passed

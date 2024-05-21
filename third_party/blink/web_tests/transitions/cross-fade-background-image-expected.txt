@@ -1,3 +1,0 @@
-PASS - "background-image" property for "box" and "boxStatic" elements at 0.5s are close enough to each other
-PASS - "background-image" property for "boxShorthand" and "boxStatic" elements at 0.5s are close enough to each other
-

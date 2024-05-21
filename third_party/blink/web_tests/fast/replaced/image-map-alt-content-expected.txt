@@ -1,3 +1,0 @@
-crbug.com/466116: Image maps not working when alt content displayed. Click on the rectangle to test.
-
-PASS: Area clicked.

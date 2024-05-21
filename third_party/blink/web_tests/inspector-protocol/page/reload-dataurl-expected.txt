@@ -1,3 +1,0 @@
-Tests reloading pages with data URLs.
-Querying window.foo after reload (expect "undefined"): undefined
-

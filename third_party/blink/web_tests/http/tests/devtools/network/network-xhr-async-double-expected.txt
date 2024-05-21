@@ -1,5 +1,0 @@
-Tests responses in network tab for two XHRs sent without any delay between them. Bug 91630
-
-resource1.content: request1
-resource2.content: request2
-

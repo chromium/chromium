@@ -1,3 +1,0 @@
-crbug.com/235189: If our container's width is zero, then so is ours: there should be no red.
-
-PASS

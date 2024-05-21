@@ -1,4 +1,0 @@
-Tests that origin group names in the Security panel are distinct.
-
-Number of names (4) == number of unique names (4): true (expected: true)
-

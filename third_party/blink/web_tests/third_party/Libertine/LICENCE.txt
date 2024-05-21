@@ -1,7 +1,0 @@
-- Lizenz / Licence -
-
-Unsere Schriften sind frei im Sinne der GPL, d.h. (stark vereinfacht) dass Veränderungen an der Schriftart erlaubt sind unter der Bedingung, dass diese wieder der Öffentlichkeit unter gleicher Lizenz freigegeben werden. Querdenker behaupten oft, dass bei der Verwendung einer GPL-Schrift eingebettet in beispielsweise eine PDF auch diese freigestellt werden müsse. Deshalb gibt es die sogenannte "Font-exception" der GPL (welche diesem Lizenztext hinzugefügt wurde). Weitere Informationen zur GPL (Lizenztext mit Font-Exzeption als GPL.txt in diesem Paket).
-Zusätzlich stehen die Schriften unter der Open Font License (siehe OFL.txt).
-
-Our fonts are free in the sense of the GPL. In short: Changing the font is allowed as long as the derivative work is published under the same licence again. Pedantics keep claiming that the embedded use of GPL-fonts in i.e. PDFs requires the free publication of the PDF as well. This is why our GPL contains the so called "font exception". Further information about the GPL (licence text with font exception see GPL.txt in this package).
-Additionally our fonts are licensed under the Open Fonts License (see OFL.txt).

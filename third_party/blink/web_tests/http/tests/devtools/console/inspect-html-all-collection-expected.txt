@@ -1,4 +1,0 @@
-Tests that HTMLAllCollection properties can be inspected.
-
-PASSED: retrieved length of document.all
-

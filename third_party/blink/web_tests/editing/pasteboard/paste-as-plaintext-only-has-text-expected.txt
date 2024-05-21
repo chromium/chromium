@@ -1,4 +1,0 @@
-To run this test manually, simply try invoking the copy command on this page followed by the paste as plain text command. If it works, text/plain should be the only MIME type, 'Hello' should be associated with text/plain, and the empty string should be associated with text/html.
-Types: text/plain
-text/plain: "Hello"
-text/html: ""

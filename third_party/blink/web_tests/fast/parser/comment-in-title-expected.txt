@@ -1,3 +1,0 @@
---> This text should be part of the title.
-The title of this document is:
-<!--

@@ -1,4 +1,0 @@
-A basic test for JS execution on secondary threads. Passes if the browser didn't crash.
-
-DONE
-

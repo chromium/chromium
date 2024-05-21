@@ -1,7 +1,0 @@
-ASSERT should not be triggered when type is changed in focus event.
-
-PASS unless crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

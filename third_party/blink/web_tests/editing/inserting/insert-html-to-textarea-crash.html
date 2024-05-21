@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<textarea></textarea>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-document.querySelector('textarea').setSelectionRange(0, 0);
-document.execCommand("InsertHTML", false, "<b></b>");
-document.body.textContent = 'PASS if Blink doesn\'t crash.';
-</script>

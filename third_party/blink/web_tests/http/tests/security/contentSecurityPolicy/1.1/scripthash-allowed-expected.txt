@@ -1,5 +1,0 @@
-ALERT: PASS (1/4)
-ALERT: PASS (2/4)
-ALERT: PASS (3/4)
-ALERT: PASS (4/4)
-This tests the effect of a valid script-hash value. It passes if no console warning is visible, and the alert() is executed.

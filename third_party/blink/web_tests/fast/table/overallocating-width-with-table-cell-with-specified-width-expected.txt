@@ -1,5 +1,0 @@
-	M	Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text	Text Text
-	M	Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text	Text Text
-PASS
-PASS
-crbug.com/504124: overallocating width unwinds correctly on auto width cells

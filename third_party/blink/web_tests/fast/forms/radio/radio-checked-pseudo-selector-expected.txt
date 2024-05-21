@@ -1,6 +1,0 @@
-PASS view.getComputedStyle(input1, '').getPropertyValue('color') is "rgb(0, 128, 0)"
-PASS input1.checked is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

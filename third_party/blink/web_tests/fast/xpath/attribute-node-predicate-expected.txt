@@ -1,9 +1,0 @@
-PASS //@id[false]
-PASS //@id[1]/parent::*
-PASS //@id[2]/parent::*
-PASS //@id[string()='21']/parent::*
-PASS //@id[string()='22']/parent::*
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

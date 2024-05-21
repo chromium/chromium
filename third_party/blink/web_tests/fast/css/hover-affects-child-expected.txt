@@ -1,2 +1,0 @@
-This tests that a style that affects child elements when hovering over a parent element correctly recalculates the child style. To test manually move the mouse over the red square, it should become green.
-PASSED: Calculated style of inner element is correct

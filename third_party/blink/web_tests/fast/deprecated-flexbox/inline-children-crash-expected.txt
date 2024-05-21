@@ -1,3 +1,0 @@
-Remove last block content from a flexbox, leaving only inline content. This should not crash
-
-text

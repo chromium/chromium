@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Start and iteration events are ordered by time
-  assert_equals: Event #1 types should match (expected: animationiteration, animationstart, actual: animationstart, animationiteration) expected "animationiteration" but got "animationstart"
-[FAIL] Iteration and end events are ordered by time
-  assert_equals: Event #1 types should match (expected: animationiteration, animationend, actual: animationend, animationiteration) expected "animationiteration" but got "animationend"
-[FAIL] Start and end events are sorted correctly when fired simultaneously
-  assert_equals: Event #1 targets should match expected Element node <div style="animation: anim 100s 2"></div> but got Element node <div style="animation: anim 100s 100s"></div>
-Harness: the test ran to completion.
-

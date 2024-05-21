@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] grid > item 4
-  assert_equals: \n<item data-expected-margin-bottom="0" class="span-four"></item>\nmargin-bottom expected "0" but got "10"
-[FAIL] grid > item 5
-  assert_equals: \n<item data-expected-margin-bottom="0"></item>\nmargin-bottom expected "0" but got "10"
-Harness: the test ran to completion.
-

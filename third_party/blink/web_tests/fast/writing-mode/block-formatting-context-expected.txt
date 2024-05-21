@@ -1,2 +1,0 @@
-The green LR block should avoid the blue float.
-PASS: The floating block is in the correct position.

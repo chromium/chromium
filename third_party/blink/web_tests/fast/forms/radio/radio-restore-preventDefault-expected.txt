@@ -1,9 +1,0 @@
-PASS document.getElementById("radio1").checked is true
-PASS document.getElementById("radio2").checked is false
-PASS document.getElementById("radio1").checked is false
-PASS document.getElementById("radio2").checked is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-A B

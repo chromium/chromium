@@ -1,9 +1,0 @@
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-doc = document.implementation.createDocument("", null);
-doc.appendChild(document.createElement('video'));
-doc.firstChild.webkitRequestFullscreen();
-</script>
-PASS if this didn't crash.

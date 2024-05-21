@@ -1,4 +1,0 @@
-hello world
-Dragging to the left: PASS
-Dragging to the left: PASS
-

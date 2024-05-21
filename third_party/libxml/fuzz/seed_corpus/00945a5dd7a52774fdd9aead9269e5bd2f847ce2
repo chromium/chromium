@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id$ -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           elementFormDefault="qualified" attributeFormDefault="unqualified"
-           xml:lang="en">
-
-    <xs:include schemaLocation="582906-2-common.xsd"/>
-
-</xs:schema>

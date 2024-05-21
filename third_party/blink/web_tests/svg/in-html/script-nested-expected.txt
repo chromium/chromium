@@ -1,6 +1,0 @@
-nested script ran!
-inline script done!
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

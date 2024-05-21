@@ -1,3 +1,0 @@
-This tests that when nodes are foster-parented after being adopted into another document, they are adopted back into the ownerDocument of their foster parent.
-
-PASS.

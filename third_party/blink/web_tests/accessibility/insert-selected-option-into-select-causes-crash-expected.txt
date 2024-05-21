@@ -1,9 +1,0 @@
-This test ensures that inserting a selected option into an HTML Select element doesn't cause a crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

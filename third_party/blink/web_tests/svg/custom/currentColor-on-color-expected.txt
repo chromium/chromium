@@ -1,9 +1,0 @@
-This test checks the currentColor value on the color property
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(rectElement).color is "rgb(0, 128, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

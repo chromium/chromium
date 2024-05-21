@@ -1,1 +1,0 @@
-This test verifies that using characters not found in the default font along with the small-caps font variant does not crash the browser. If successful, this test should not crash, and an odd character below: ʌ

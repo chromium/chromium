@@ -1,9 +1,0 @@
-This tests that RemoveFormat does not add extra span tags when executed inside a table cell.
-| <table>
-|   <tbody>
-|     <tr>
-|       <td>
-|         "<#selection-anchor>hello<#selection-focus>"
-|     <tr>
-|       <td>
-|         "world"

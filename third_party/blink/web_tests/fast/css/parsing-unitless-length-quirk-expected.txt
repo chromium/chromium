@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 6 duplicate test names: "Unitless length quirk for border-spacing property", "No unitless length quirk for border-top property", "No unitless length quirk for border property", "No unitless length quirk for font property", "Unitless length quirk for background-position property", "No unitless length quirk for background property"
-Harness: the test ran to completion.
-

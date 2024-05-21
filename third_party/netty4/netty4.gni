@@ -1,8 +1,0 @@
-# Copyright 2016 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Defines location of netty4 jar file.
-
-NETTY4_JAR_FILE =
-    "//third_party/netty4/src/jar/all-in-one/netty-all-4.1.9.Final.jar"

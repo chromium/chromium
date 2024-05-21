@@ -1,3 +1,0 @@
-crbug.com/465096: Percent height content in a cell with a computed height should use the height of the cell.
-
-PASS

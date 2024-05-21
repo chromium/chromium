@@ -1,3 +1,0 @@
-This tests that having an object tag with a html (or xhtml) document doesn't assert if there is whitespace between the opening and closing node.
-
-SUCCESS - didn't crash!

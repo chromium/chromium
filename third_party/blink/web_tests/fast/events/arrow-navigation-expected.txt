@@ -1,4 +1,0 @@
-This tests that you can use arrow keys to navigate.
-
-Test Passed
-

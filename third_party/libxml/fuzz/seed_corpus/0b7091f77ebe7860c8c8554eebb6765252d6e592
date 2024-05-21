@@ -1,9 +1,0 @@
-<element name="addressBook" ns="http://www.example.com"
-         xmlns="http://relaxng.org/ns/structure/1.0">
-  <zeroOrMore>
-    <element name="card" ns="http://www.example.com">
-      <attribute name="name" ns=""/>
-      <attribute name="email" ns=""/>
-    </element>
-  </zeroOrMore>
-</element>

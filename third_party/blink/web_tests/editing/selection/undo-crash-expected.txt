@@ -1,2 +1,0 @@
-To run this test manually, type some text in the input field, then click the "Crash me" button. 
-SUCCEEDED

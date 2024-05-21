@@ -1,2 +1,0 @@
-CONSOLE ERROR: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/active-subresource-in-iframe-blocked.https.html' was loaded over HTTPS, but requested an insecure stylesheet 'http://example.test:8080/security/mixedContent/resources/style.css'. This request has been blocked; the content must be served over HTTPS.
-This test passes if the active subresource in the frame below is blocked.

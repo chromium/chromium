@@ -1,8 +1,0 @@
-Tests content is moved from cached resource to resource agent's data storage when cached resource is destroyed.
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&random=1&size=400
-request.type: image
-request.content.length after requesting content: 536
-Releasing cached resource.
-request.content.length after requesting content: 536
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] constructing an insecure WebSocket in a secure context should throw
-  assert_throws_dom: constructor should throw function "() => CreateInsecureWebSocket()" did not throw
-Harness: the test ran to completion.
-

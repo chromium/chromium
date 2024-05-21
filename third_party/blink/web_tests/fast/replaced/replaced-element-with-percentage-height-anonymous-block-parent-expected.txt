@@ -1,2 +1,0 @@
-PASS
-crbug.com/414532: Layout a percentage height replaced element when it has anonymous wrapper and an ancestor changes height.

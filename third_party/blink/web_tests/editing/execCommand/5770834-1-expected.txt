@@ -1,7 +1,0 @@
-This tests for a crash when removing format from two paragraphs that are inside blocks with different block properties than the blocks surrounding them. You should see two left aligned paragraphs below. It demonstrates a bug: RemoveFormat doesn't always reset text alignment
-
-
-<div style="text-align: right;">
-<div style="">foo<br>bar</div>
-</div>
-

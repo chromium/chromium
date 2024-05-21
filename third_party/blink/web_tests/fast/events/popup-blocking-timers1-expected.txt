@@ -1,7 +1,0 @@
-Click Here
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Test calling window.open() directly. A popup should be allowed.
-PASS newWindow is non-null.

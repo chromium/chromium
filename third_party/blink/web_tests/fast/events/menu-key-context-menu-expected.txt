@@ -1,4 +1,0 @@
-This test checks if contextmenu event target is correct when triggered from menu key.
-
-Test
-PASS

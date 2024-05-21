@@ -1,1 +1,0 @@
-This test passes if the source expression does not throw an "invalid source" error.

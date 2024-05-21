@@ -1,1 +1,0 @@
-This test fails if we crash or any text below this is visible (the iframe should detach itself from the page). 

@@ -1,5 +1,0 @@
-Test for chromium bug : 334652. ASSERTION FAILED: !remainder in WebCore::LayoutTableSection::distributeExtraRowSpanHeightToAutoRows.
-For this test to PASS, it should not crash.
-r0c0	
-r0c1
-rowspan=2

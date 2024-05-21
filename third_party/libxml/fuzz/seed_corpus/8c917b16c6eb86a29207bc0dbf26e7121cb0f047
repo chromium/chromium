@@ -1,3 +1,0 @@
-xpointer(id('chapter1')/p)
-xpointer(id('chapter1')/p[1]/range-to(following-sibling::p[2]))
-xpointer(range-to(id('chapter2')))

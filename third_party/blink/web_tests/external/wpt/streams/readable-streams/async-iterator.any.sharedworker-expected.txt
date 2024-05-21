@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Async iterator instances should have the correct list of properties
-  assert_equals: return should have 1 parameter expected 1 but got 0
-Harness: the test ran to completion.
-

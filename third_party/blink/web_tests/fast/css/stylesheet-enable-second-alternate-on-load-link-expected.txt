@@ -1,5 +1,0 @@
-Test for 65140: REGRESSION (r84327-r84329): CSS stylesheets fail to load on www.flagstar.com login page
-
-This test PASSED if PASSED is written below (alternatively the next line should have a GREEN background).
-
-FAILED, background = rgba(0, 0, 0, 0)

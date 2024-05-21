@@ -1,4 +1,0 @@
-This tests that window.closed on a closed window, or window without a frame, does not crash the browser. See rdar://problem/5329841
-
-Passed!
-

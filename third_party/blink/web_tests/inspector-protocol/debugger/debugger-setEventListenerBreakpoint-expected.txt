@@ -1,8 +1,0 @@
-Tests event listener breakpoints.
-PASS: Debugger was enabled
-Error on attempt to set event listener breakpoint when DOM is disabled: undefined
-PASS: DOM was enabled
-PASS: Listener was set.
-PASS: DOM agent was disabled successfully.
-PASS: The second attempt to disable DOM agent failed as expected.
-

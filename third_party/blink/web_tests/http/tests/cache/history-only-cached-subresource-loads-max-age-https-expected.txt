@@ -1,8 +1,0 @@
-This test checks that loading a subresource with "Cache-Control: max-age=0" is cached and reused in back navigation when the page is not in the page cache.
-
-We then test that loading the same subresource is refetched when used in non-stale loads such as refreshes or normal navigation.
-
-PASS - max-age subresource was cached and used for a back navigation
-PASS - max-age subresource was refetched with a reload
-PASS - max-age subresource was refetched with a normal navigation
-

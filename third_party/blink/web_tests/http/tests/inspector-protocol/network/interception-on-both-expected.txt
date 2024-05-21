@@ -1,6 +1,0 @@
-Tests that a request can be intercepted on both request and response stages.
-request will be sent: http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html
-intercepted request: http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html
-intercepted response: http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html 200
-response received http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html
-

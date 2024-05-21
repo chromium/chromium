@@ -1,3 +1,0 @@
-Test for bug 12340: XPath name() function doesn't work with nodes and attributes in null namespace.
-
-SUCCESS

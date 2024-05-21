@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!-- If you can see this, this test has failed. -->
-<?xml-stylesheet href="resources/xsl.xml" type="text/xsl"?>
-<FAIL>
-    <header>This tests that xml viewer is not used when there is an XSL stylesheet.</header>
-    FAIL
-</FAIL>

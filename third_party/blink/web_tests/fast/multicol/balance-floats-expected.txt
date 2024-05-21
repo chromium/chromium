@@ -1,5 +1,0 @@
-The word "YO" (with large letter spacing) should be seen below. There should also be a tiny blue square. And there should be no crash or assertion failure.
-
-Y
-O
-PASS

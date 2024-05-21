@@ -1,3 +1,0 @@
-Insert a spanner between two absolutely positioned elements.
-
-PASS if no crash.

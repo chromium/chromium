@@ -1,6 +1,0 @@
-Done.
-
-============== Back Forward List ==============
-        (file test):fast/loader/resources/form-submission-before-load-page2.html
-curr->  (file test):fast/loader/resources/form-submission-before-load-page3.html
-===============================================

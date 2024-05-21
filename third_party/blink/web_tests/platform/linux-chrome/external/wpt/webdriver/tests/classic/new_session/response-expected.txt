@@ -1,3 +1,0 @@
-This is a wdspec test.
-[FAIL] test_capability_user_agent
-Harness: the test ran to completion.

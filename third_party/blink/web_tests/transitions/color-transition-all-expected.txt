@@ -1,4 +1,0 @@
-PASS - "color" property for "outer" element at 0.5s saw something close to: 0,127,127
-PASS - "color" property for "inner" element at 0.5s saw something close to: 255,0,0
-PASS - "-webkit-text-fill-color" property for "inner" element at 0.5s saw something close to: 255,0,0
-

@@ -1,6 +1,0 @@
-PASS surroundContents(sample.cloneNode(true)) is "<b>2345</b>"
-PASS surroundContents(sample) is "<b>2345</b>"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-Tests that responseReceived is called on NetworkDispatcher for downloads.
-
-Received response for download.zzz
-SUCCESS
-

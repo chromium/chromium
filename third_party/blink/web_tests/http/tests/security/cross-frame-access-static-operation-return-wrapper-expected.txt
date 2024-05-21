@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: Tests that static operations return DOM wrappers which are associated with the caller's context, not associated with |this| which can be faked.
-CONSOLE MESSAGE: http://127.0.0.1:8000/security/cross-frame-access-static-operation-return-wrapper.html
-

@@ -1,2 +1,0 @@
-Tests Runtime.getProperties doesnt crash on document.all in iframe
-

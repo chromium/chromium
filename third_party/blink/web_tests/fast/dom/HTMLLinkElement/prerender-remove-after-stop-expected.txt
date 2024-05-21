@@ -1,3 +1,0 @@
-Test navigation and removal of link prerender elements
-
-This test succeeds when it does not crash. The iframe above this text should also not crash, and should show an empty page.

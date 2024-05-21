@@ -1,5 +1,0 @@
-PASS loadEventsFired is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

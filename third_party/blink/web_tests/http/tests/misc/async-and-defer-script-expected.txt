@@ -1,8 +1,0 @@
-Checks that the async attribute takes precendence over defer.
-DOMContentLoaded
-slowAsync
-load
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

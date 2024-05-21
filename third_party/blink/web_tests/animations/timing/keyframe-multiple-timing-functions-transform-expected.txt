@@ -1,7 +1,0 @@
-PASS - "transform" property for "box" element at 0.5s saw something close to: 1,0,0,1,50,0
-PASS - "opacity" property for "box" element at 0.5s saw something close to: 1
-PASS - "opacity" property for "box" element at 0.9s saw something close to: 1
-PASS - "transform" property for "box" element at 1s saw something close to: 1,0,0,1,100,0
-PASS - "transform" property for "box" element at 1.5s saw something close to: 1,0,0,1,150,0
-PASS - "opacity" property for "box" element at 1.5s saw something close to: 1
-

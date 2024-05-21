@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Storage events should not be fired for BFCached pages after becoming active
-  assert_array_equals: pageA should not receive storage events for updates while in BFCache lengths differ, expected array ["window.load", "window.pageshow", "window.pagehide.persisted", "window.pageshow.persisted", "storage2"] length 5, got ["window.load", "window.pageshow", "window.pagehide.persisted", "window.pageshow.persisted", "storage1", "storage2"] length 6
-Harness: the test ran to completion.
-

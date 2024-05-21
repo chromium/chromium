@@ -1,3 +1,0 @@
-.red { background-color : red }
-p:not(:only-child) { background-color : lime }
-div.testText > div > p { margin-left : 1em }

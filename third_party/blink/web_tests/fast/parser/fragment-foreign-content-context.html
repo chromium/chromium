@@ -1,9 +1,0 @@
-<div>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=56380">https://bugs.webkit.org/show_bug.cgi?id=56380</a>. Verify that WebKit does not ASSERT when a fragment with a foreign content context element is parsed.</div>
-<script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-
-    var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    document.body.appendChild(svgElement);
-    svgElement.appendChild(document.createElement("div")).insertAdjacentHTML("beforeBegin", "<div>");
-</script>

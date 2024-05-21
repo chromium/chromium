@@ -1,5 +1,0 @@
-Min-height should make the multicol container taller if min-height is greater than the content height, but it should not affect column balancing. We specify column-fill:auto here, but the columns should still be balanced, because height is auto. Note that in this test, the balanced content is shorter than min-height, which is what matters. The height of the uncolumnized content (i.e. the flowthread), on the other hand, is actually greater than min-height (but that shouldn't make any difference).
-
-Below there should be a blue square above a yellow square.
-
-PASS

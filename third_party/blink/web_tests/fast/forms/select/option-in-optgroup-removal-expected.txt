@@ -1,8 +1,0 @@
-
-This tests that an option in a optgroup can be removed from the containing select.
-
-Option 1
-Option 2
-Option 3
-Passed
-

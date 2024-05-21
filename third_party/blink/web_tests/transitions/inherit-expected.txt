@@ -1,9 +1,0 @@
-Tests inheritance of transition-property.
-
-PASS: Box 1 computed transition-property: all, expected: all
-PASS: Box 2 computed transition-property: left, expected: left
-PASS: Box 3 computed transition-property: left, expected: left
-PASS: Box 4 computed transition-property: left, expected: left
-PASS: Box 5 computed transition-property: left, expected: left
-PASS: Box 6 computed transition-property: all, expected: all
-

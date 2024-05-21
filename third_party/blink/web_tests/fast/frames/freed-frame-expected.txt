@@ -1,1 +1,0 @@
-This test passes if it does not crash or trip ASAN. See http://crbug.com/315889

@@ -1,3 +1,0 @@
-Tests a crash in the regular expression engine. If this test prints a PASS message, then it succeeded.
-
-PASS: Got to pattern length of 8192 without crashing.

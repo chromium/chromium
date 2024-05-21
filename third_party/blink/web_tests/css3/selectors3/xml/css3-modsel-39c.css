@@ -1,2 +1,0 @@
-p::first-letter { color: lime; font-size: xx-large; }
- p::before { color: red; content: 'T'; }

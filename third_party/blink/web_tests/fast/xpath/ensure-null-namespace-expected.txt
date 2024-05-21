@@ -1,3 +1,0 @@
-Test for bug 12581: XPath //title shouldn't match <title> in XHTML.
-
-SUCCESS

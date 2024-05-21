@@ -1,2 +1,0 @@
-This tests that we don't crash when the renderer goes away during event handling.
-

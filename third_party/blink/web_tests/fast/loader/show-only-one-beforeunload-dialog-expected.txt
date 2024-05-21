@@ -1,4 +1,0 @@
-CONFIRM NAVIGATION
-CONSOLE ERROR: Blocked attempt to show multiple 'beforeunload' confirmation panels for a single navigation.
-CONSOLE ERROR: Blocked attempt to show multiple 'beforeunload' confirmation panels for a single navigation.
-

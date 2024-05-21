@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS internals.updateStyleAndReturnAffectedElementCount() is 2
-PASS internals.needsLayoutCount() is 0
-Should not layout when list color changes.
-List item

@@ -1,5 +1,0 @@
-Tests function location in CallFrame.
-Paused on 'debugger;'
-Top frame location: {"scriptId":"42","lineNumber":8,"columnNumber":4}
-Top frame functionLocation: {"scriptId":"42","lineNumber":5,"columnNumber":21}
-

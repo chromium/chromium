@@ -1,7 +1,0 @@
-This test sees if dynamically creating an iframe, dynamically adding form elements to it, and dynamically submitting the form result in an extra back/forward entry. It is important that these steps run after the initial load is complete, hence the setTimeout() for running the test.
-
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/dynamic-iframe-dynamic-form-back-entry.html
-            http://127.0.0.1:8000/navigation/resources/notify-done.html (in frame "testFrame")
-===============================================

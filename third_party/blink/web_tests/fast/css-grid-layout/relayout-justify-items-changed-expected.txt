@@ -1,9 +1,0 @@
-Tests how a justify-items style change requires a relayout of the grid and previously stretched items.
-
-The grid bellow had initially 'justify-items: end' and was changed to 'stretch'.
-
-PASS
-
-The grid bellow was initially stretched and it has now 'justify-items: center'.
-
-PASS

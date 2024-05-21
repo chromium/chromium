@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12373 ASSERTION FAILURE: !child->needsLayout() on paypal.com.
-
-No assert means test PASSED.

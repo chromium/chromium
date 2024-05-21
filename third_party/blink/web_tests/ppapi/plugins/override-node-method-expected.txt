@@ -1,4 +1,0 @@
-ALERT: PASS
-Test that a plugin can override Node methods of its element. This also means that the plugin is instantiated when accessing properties and methods of its owner element.
-
-Should alert PASS.

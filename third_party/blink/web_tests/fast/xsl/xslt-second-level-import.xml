@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="resources/xslt-second-level-import.xsl"?>
-<stub>
-FAIL
-
-This test checks to make sure that XML_DTD_NODE objects being at the top level of an external stylesheet does not cause pre-loading of child stylesheets to fail.
-
-</stub>

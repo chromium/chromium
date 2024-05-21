@@ -1,9 +1,0 @@
-Test if width of inline box including a image and whitespaces is same with the included image width.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.querySelector('li').getBoundingClientRect().width is 32

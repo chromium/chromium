@@ -1,1 +1,0 @@
-PASS, if the script does not cause a crash or ASSERT failure

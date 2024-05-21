@@ -1,6 +1,0 @@
-This tests that assigning to document.location from a timeout from the onload handler adds a back/forward item.
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/document-location-onload.html
-curr->  http://127.0.0.1:8000/navigation/document-location-onload.html?1
-===============================================

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- The rectangular viewBox causes the green rect to render as a 100x100 square. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200">
-  <rect width="100%" height="50%" fill="green"/>
-</svg>

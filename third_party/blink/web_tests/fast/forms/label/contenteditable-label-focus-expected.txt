@@ -1,8 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Calling target.focus()
-focus received by [object HTMLLabelElement]
-PASS document.activeElement is target
-I'm editable. Just a button

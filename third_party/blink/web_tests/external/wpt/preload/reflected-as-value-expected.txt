@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Link preload "as" value for "video" should be "video".
-  assert_equals: expected "video" but got ""
-[FAIL] Link preload "as" value for "audio" should be "audio".
-  assert_equals: expected "audio" but got ""
-[FAIL] Link preload "as" value for "json" should be "json".
-  assert_equals: expected "json" but got ""
-Harness: the test ran to completion.
-

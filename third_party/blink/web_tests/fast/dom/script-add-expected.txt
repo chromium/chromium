@@ -1,9 +1,0 @@
-This tests 5 different ways of dynamically loading a script by creating a script element.
-
-If it works you should see 5 messages below about successfully loading a script.
-
-Loaded script 1.
-Loaded script 2.
-Loaded script 3.
-Loaded script 4.
-Loaded script 5.

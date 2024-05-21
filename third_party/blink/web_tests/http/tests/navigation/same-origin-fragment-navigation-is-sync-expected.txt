@@ -1,5 +1,0 @@
-ALERT: iframe onload fired
-ALERT: PASS: url fragment has changed synchronously
-ALERT: PASS: scheduled postMessage() before hashchange triggered.
-ALERT: PASS: hashchange triggered after postMessage().
-This tests that same-origin fragment navigations are synchronous. It does so by scheduling a postMessage before scheduling the navigation. If the navigation is synchronous, the internals API will be able to report the presence of an url fragment immediately.

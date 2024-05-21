@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-<g transform="translate(120,60)">
-    <rect x="-10" y="-10" width="20" height="20" transform="scale(4 2) rotate(45)" style="fill: #ff9; stroke: black;"/>
-</g>
-</svg>

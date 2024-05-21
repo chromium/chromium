@@ -1,5 +1,0 @@
-This test ensures WebKit allows text be typed in an input element, when input:focus rule shrinks the width of input element and the focus was set by mouse down on the shrunken part of the element.
-
-To manually test, click on the right half of the input element (green part). You should see 'PASS'.
-
-PASS

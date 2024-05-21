@@ -1,4 +1,0 @@
-Policy delegate: attempt to load http://www.example.com/ with navigation type 'other'
-Test for window.onload never fires if page contains an <iframe> with a bad scheme or whose load is cancelled by returning null from resource load delegate's willSendRequest. If the test passes, you should see the word "PASSED" below.
-
-PASSED

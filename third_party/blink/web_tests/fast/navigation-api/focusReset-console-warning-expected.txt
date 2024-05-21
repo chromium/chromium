@@ -1,5 +1,0 @@
-CONSOLE WARNING: The "manual" value for intercept()'s focusReset option will override the previously-passed value of "after-transition".
-CONSOLE WARNING: The "after-transition" value for intercept()'s focusReset option will override the previously-passed value of "manual".
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

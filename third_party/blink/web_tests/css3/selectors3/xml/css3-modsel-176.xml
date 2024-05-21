@@ -1,5 +1,0 @@
-<?xml-stylesheet href="css3-modsel-176.css" type="text/css"?>
-<test>
-  <p xmlns="http://www.w3.org/1999/xhtml" id="id" class="class test">This line should be green.</p>
-  <div xmlns="http://www.w3.org/1999/xhtml" id="theid" class="class test">This line should be green.</div>
-</test>

@@ -1,2 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/download/resources/basic-ascii.php with navigation type 'other'
-Download file name should be "test file.txt".

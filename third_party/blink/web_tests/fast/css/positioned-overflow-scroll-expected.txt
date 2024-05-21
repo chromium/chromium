@@ -1,2 +1,0 @@
-Test that scrollbar width is added to the intrinsic width of different display types.
-PASS

@@ -1,1 +1,0 @@
-This test succeeds if the two blocks show red and green respectively: SUCCESS

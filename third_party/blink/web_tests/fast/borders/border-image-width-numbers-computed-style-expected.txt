@@ -1,6 +1,0 @@
-PASS elm.borderImageWidth is "0 5.5 4.4 3.3"
-PASS elm.borderImageOutset is "2.5 0 1.4 1.9"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

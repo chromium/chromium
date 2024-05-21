@@ -1,3 +1,0 @@
-This test ensures WebKit allows space be inserted in textarea even when doing so forces the space to wrap to the next line.
-
-PASS

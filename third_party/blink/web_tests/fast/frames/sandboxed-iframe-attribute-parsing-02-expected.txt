@@ -1,5 +1,0 @@
-CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
-CONSOLE ERROR: Blocked form submission to 'javascript:top.disallowedFormSubmitted();' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
-Line feed characters before and after attribute value
-
-PASS

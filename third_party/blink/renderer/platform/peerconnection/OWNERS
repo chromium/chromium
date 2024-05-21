@@ -1,6 +1,0 @@
-file://third_party/blink/renderer/modules/peerconnection/OWNERS
-
-per-file *video*=hiroh@chromium.org
-per-file rtc_video_*=file://media/gpu/OWNERS
-
-per-file stats_collect*=kron@chromium.org

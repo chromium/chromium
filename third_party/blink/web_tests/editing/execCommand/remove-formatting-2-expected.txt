@@ -1,7 +1,0 @@
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-This tests that RemoveFormat not only removes style from the selected part of the DOM, but that it also applies the document default style to the selection if that's necessary in order to leave the selected text unstyled.
-| "<#selection-anchor>This<#selection-focus>"
-| " text should look the same as the text above."

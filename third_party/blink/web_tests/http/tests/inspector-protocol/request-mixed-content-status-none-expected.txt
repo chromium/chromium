@@ -1,5 +1,0 @@
-Tests that willSendRequest contains the correct mixed content status for not-mixed content.
-Network agent enabled
-Mixed content type of https://example.test:8443/inspector-protocol/resources/no-mixed-content-iframe.html: none
-Mixed content type of https://example.test:8443/inspector-protocol/resources/blank.js: none
-

@@ -1,3 +1,0 @@
-Tests that highlighting a detached node does not crash. crbug.com/958958
-
-

@@ -1,2 +1,0 @@
-ALERT: PASS: This test passes if this string is alerted
-

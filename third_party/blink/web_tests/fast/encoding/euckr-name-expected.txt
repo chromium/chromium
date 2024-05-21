@@ -1,6 +1,0 @@
-Test for bug 25487. Even though we treat EUC-KR as windows-949, the name exposed via DOM APIs should still be EUC-KR.
-
-characterSet: EUC-KR (should be EUC-KR)
-charset: EUC-KR (should be EUC-KR)
-inputEncoding: EUC-KR (should be EUC-KR)
-

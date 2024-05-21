@@ -1,8 +1,0 @@
-Tests behavior of code that clears the text from a focused editable div.
-
-To run manually press any key to clear the text in the div.
-The key that was typed should replace the text in the editable div and div should still have the focus and a blinking caret.
-
-a
-
-PASS

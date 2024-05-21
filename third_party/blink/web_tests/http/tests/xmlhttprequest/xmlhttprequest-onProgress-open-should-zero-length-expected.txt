@@ -1,6 +1,0 @@
-Verify that XMLHttpRequest.open resets received size.
-
-You should see PASSED once.
-
-PASSED
-

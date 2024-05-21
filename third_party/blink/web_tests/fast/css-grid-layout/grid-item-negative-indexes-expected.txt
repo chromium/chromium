@@ -1,7 +1,0 @@
-This test checks that negative grid position indexes don't make us crash.
-XXXXX XXXXXX
-PASS
-XXXXX XXXXXX
-PASS
-XXXXX XXXXXX
-PASS

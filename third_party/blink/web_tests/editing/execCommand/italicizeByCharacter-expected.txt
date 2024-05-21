@@ -1,4 +1,0 @@
-This tests italicizing the first character. The double quotation at the beginning must be italicized.
-
-"The quick brown fox jumps over the lazy dog" uses every letter in the english language.
-execItalicCommand: <span id="test"><i>"</i>The quick brown fox jumps over the lazy dog" uses every letter in the english language. </span>

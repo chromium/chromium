@@ -1,4 +1,0 @@
-Test case for HTMLButtonElement.click()
-Successful if it reads "test passed" below upon loading the page
-No need to click me. In fact, don't.
-test passed

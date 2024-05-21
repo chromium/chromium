@@ -1,9 +1,0 @@
-This test attempts to enumerate all the keys in localStorage with .length + .key(). The built-in properties of the Storage object should be ignored. The test operates on the localStorage object.
-
-alpha
-bar
-batman
-foo
-fu
-zeta
-

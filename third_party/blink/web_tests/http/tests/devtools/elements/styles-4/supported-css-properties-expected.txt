@@ -1,4 +1,0 @@
-Test supported CSS properties.
-
-Margin longhands: margin-bottom, margin-left, margin-right, margin-top
-

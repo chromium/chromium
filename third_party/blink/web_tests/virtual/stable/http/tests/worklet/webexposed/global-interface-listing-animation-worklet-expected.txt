@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: This test logs exposed APIs from AnimationWorkletGlobalScope
-CONSOLE MESSAGE: CSS.animationWorklet not exposed
-

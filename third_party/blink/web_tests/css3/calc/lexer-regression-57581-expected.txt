@@ -1,3 +1,0 @@
-This test comes from a regression filed in https://bugs.webkit.org/show_bug.cgi?id=57581.
-
-The test passes if it does not crash

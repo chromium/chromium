@@ -1,6 +1,0 @@
-# forbid compounds with spec. pattern at word bound and allow modificated form
-# (for Indian languages)
-COMPOUNDFLAG A
-CHECKCOMPOUNDPATTERN 1
-CHECKCOMPOUNDPATTERN o/X b/Y z
-COMPOUNDMIN 1

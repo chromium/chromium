@@ -1,8 +1,0 @@
-
-PASS on initial position
-PASS on after half cycle completion
-PASS on after full cycle completion
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

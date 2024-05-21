@@ -1,4 +1,0 @@
-PASS: windows-1252
-
-
-This test baselines charset sniffer behavior where the opening bracket inside a tag is consumed as part of the tag data, causing the meta tag to be missed.

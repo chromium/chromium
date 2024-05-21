@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-15.css" type="text/css"?>
-<test>
-<ul xmlns="http://www.w3.org/1999/xhtml">
-  <li id="t1">This list item should have a green background. because its ID is &quot;t1&quot;</li>
-  <li id="t2">This list item should have a green background. because its ID is &quot;t2&quot;</li>
-  <li id="t3"><span id="t44">This list item should have a green background. because the inner SPAN does not match &quot;#t4&quot;</span></li>
-</ul>
-</test>

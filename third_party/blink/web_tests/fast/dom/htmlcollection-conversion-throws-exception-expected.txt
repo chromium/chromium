@@ -1,4 +1,0 @@
-ALERT: This test verifies that exception thrown while converting an object to string are correctly propagated and do not crash the browser.
-ALERT: OK: EXCEPTION
-ALERT: OK: EXCEPTION
-

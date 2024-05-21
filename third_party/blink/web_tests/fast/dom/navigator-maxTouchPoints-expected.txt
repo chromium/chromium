@@ -1,9 +1,0 @@
-This tests that the maxTouchPoints setting is plumbed through to the navigator object.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS navigator.maxTouchPoints is 37
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

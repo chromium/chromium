@@ -1,2 +1,0 @@
-This tests for an ASSERT during a RemoveFormat call when it's called on a selection containing only a horizontal rule. It should not ASSERT.
-<hr>

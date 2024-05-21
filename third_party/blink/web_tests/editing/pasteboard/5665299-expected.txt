@@ -1,3 +1,0 @@
-This tests for a bug where pasting plain text into an empty contenteditable div would create paragraphs held in clones of the contenteditable div. To run it manually, do a Paste and Match style and then inspect the editable region. It should contain paragraphs held in regular divs.
-
-<div>test</div><div><br></div><div><br></div>

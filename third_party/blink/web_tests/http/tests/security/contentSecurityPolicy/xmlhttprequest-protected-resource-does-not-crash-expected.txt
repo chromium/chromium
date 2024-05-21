@@ -1,4 +1,0 @@
-PASS: [object HTMLDocument]
-
-
-Loading a frameless document (like those generated via XMLHttpRequest) shouldn't crash the CSP parser.

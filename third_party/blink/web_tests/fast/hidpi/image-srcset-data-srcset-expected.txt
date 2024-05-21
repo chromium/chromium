@@ -1,7 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==75 is true
-This test passes if the image below looks like a 2x2 grid (yellow, gray, light green, dark green). In this case the srcset attribute has a base64 url, with the comma escaped.
-The image is displayed in a width of 75px, since the 2x resource gets picked (as the highest density resource current available.

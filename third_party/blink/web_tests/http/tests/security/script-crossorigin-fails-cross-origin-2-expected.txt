@@ -1,4 +1,0 @@
-CONSOLE ERROR: Access to script at 'http://localhost:8000/security/resources/cors-script.php?cors=false&value=FAIL' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-In an XHTML document, test that a script element with a crossorigin attribute does not load a cross-origin script when the resource sharing check fails on the response.
-
-PASS

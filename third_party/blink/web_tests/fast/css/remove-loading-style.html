@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<!-- crbug.com/345114: Adding and removing a style with an @import at page load causes the page to never render.-->
-<div>PASS</div>
-<script>
-  var s = document.createElement('style');
-  s.textContent = "@import url('resources/red.css');";
-  document.head.appendChild(s);
-  s.parentNode.removeChild(s);
-</script>

@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<svg width="4in" height="3in"
- xmlns = 'http://www.w3.org/Graphics/SVG/svg-19990412.dtd'>
-  <desc>This well formed svg document contains a hyperlink
-  </desc>
-  <a xml:link="simple" show="replace" actuate="user" href="http://www.w3.org">
-    <p d="M 0 0 L 200 0 L 100 200 Z"/>
-  </a>
-</svg>

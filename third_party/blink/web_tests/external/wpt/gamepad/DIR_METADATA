@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>GamepadAPI"
-}
-team_email: "device-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456694
-}

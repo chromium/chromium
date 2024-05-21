@@ -1,3 +1,0 @@
-This test ensures that selecting all and inserting text into a page with a frameset does not crash
-
-PASS

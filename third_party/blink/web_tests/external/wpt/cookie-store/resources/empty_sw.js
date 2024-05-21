@@ -1,1 +1,0 @@
-// Empty service worker script.

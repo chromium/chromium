@@ -1,1 +1,0 @@
-PASS: The text is displayed and the file did not trigger a crash.

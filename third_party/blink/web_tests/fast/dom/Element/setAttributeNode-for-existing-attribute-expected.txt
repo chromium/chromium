@@ -1,3 +1,0 @@
-Testcase for bug 279193: setAttributeNode() does not set the new value to an existing attribute if specified attribute is in a different case.\nThe issue can be manually verified by ascertaining that a green colored block is displayed instead of a red one.
- 
-background-color specified with lowercase style attribute was: red and specified with uppercase style attribute is: green

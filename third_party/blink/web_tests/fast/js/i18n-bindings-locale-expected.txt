@@ -1,9 +1,0 @@
-CONSOLE ERROR: Uncaught ReferenceError: v8Locale is not defined
-This test checks properties and methods of Locale object.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

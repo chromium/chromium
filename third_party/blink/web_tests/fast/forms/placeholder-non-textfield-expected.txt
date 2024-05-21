@@ -1,3 +1,0 @@
-Test for rdar://problem/6469944 REGRESSION(3.2.1-ToT): Repro crash in WebCore::HTMLInputElement::updatePlaceholderVisibility opening http://billshrink.com.
-
-Not crashing means PASS.

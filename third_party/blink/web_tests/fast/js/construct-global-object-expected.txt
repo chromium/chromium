@@ -1,5 +1,0 @@
-This page tests which object prototype is used when calling "new" across windows. If the test passes, you'll see a series of PASS messages below.
-
-PASS: o instanceof frames[0].Object should be true and is.
-PASS: o.__proto__.__proto__ === frames[0].Object.prototype should be true and is.
-

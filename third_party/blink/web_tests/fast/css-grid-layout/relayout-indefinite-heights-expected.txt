@@ -1,9 +1,0 @@
-Tests how a change in grid's height requires evaluating again whether the grid has indefinite or definite height.
-
-The grid bellow had initially 'height: auto' (indefinite) and has been changed to '90px' (definite).
-
-PASS
-
-The grid bellow had initially 'height: 90px' (definite) and has been changed to 'auto' (indefinite).
-
-PASS

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Check if the stylesheet's error event is fired before the pending parsing-blocking script is unblocked
-  assert_true: The pending parsing-blocking script should only run after the last element that contributes a script-blocking style sheet's error event is fired if the sheet fails to load. expected true got false
-Harness: the test ran to completion.
-

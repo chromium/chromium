@@ -1,8 +1,0 @@
-Tests content is available for failed image request.
-
-http://127.0.0.1:8000/devtools/network/resources/404.php
-resource.type: image
-resources count = 1
-http://127.0.0.1:8000/devtools/network/resources/404.php
-resource.content after requesting content: 404 - resource was not found.
-

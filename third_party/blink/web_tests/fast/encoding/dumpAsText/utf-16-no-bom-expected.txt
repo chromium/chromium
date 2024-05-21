@@ -1,3 +1,0 @@
-This XML file does not appear to have any style information associated with it. The document tree is shown below.
-
-<TEST>Should be "CYRILLIC SMALL LETTER IO" (like e with diaeresis): ё</TEST>

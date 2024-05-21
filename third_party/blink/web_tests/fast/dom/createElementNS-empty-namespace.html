@@ -1,9 +1,0 @@
-<p>Test that createElementNS("", ...) creates an element in null namespace. Per DOM 3 Core,</p>
-<pre>In programming languages where empty strings can be differentiated from null, empty strings, when given as a namespace URI, are converted to null.</pre>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-var elem = document.createElementNS("", "p");
-document.write(elem.namespaceURI === null ? "PASS" : ("FAIL: '" + elem.namespaceURI + "'"));
-</script>

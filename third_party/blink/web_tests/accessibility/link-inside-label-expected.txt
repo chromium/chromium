@@ -1,6 +1,0 @@
-Row 1  More info Do something
-
-This tests that a link element present inside a label element is accessible when label has more than one child.
-
-
-Role was:AXRole: AXLink

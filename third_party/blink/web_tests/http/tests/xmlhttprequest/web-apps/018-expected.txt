@@ -1,3 +1,0 @@
-The following line should say "PASS" twice, and you should not get any alerts or see the word "FAIL" anywhere on the next line.
-
-PASS PASS

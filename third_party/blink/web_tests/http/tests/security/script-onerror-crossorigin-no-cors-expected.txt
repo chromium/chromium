@@ -1,9 +1,0 @@
-CONSOLE ERROR: Access to script at 'http://localhost:8000/security/resources/cors-script.php?fail=true&cors=false' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-The test passes if 'window.onerror' is not invoked on a script loaded with a 'crossorigin' attribute, but delivered without valid CORS headers.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

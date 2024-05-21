@@ -1,8 +1,0 @@
-file://components/payments/OWNERS
-
-rouslan@chromium.org
-zino@chromium.org
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-

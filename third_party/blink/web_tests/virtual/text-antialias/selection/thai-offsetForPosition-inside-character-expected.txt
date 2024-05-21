@@ -1,5 +1,0 @@
-To test manually, verify that you can select each one of the Thai glyphs separately from the other by dragging.
-
-PASS
-
-ไพ

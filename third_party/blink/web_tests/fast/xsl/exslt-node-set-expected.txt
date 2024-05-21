@@ -1,3 +1,0 @@
-Test that exslt:node-set() function is supported.
-
-SUCCESS

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] mediaDevices.enumerateDevices() is present and working - before capture
-  assert_equals: deviceId should be empty string if getUserMedia was never called successfully. expected "" but got "default"
-[FAIL] mediaDevices.enumerateDevices() is working - after video capture
-  assert_equals: audio deviceId should be empty. expected 0 but got 7
-Harness: the test ran to completion.
-

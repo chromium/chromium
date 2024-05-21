@@ -1,5 +1,0 @@
-ALERT: document.URL = about:srcdoc
-ALERT: document.baseURI = http://example.com/base/URI/of/parent.html
-ALERT: After <base> element:
-ALERT: document.baseURI = http://example.org/base/URI/from/child/base/tag.html
-A srcdoc document should inherit its document.baseURI from its parent (but not its document.URI). 

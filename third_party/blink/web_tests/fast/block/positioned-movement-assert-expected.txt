@@ -1,1 +1,0 @@
-crbug.com/454824: Don't mark ancestors for layout during positioned movement layout. This test should not assert.

@@ -1,9 +1,0 @@
-PASS cssRules.length is 4
-PASS cssRules[0].cssText is ".noposition { background: url(\"foo.png\") 0% 0% / contain; }"
-PASS cssRules[1].cssText is ".position1 { background: url(\"foo.png\") 1px center / contain; }"
-PASS cssRules[2].cssText is ".position2 { background: url(\"foo.png\") 1px / contain; }"
-PASS cssRules[3].cssText is ".position3 { background: url(\"foo.png\") 1px 1px / contain; }"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

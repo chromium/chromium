@@ -1,7 +1,0 @@
-Test access to images inside forms as form element propertyies. Expected results match IE, because its behavior makes much more sense than Firefox one.
-
-PASS: 'document.forms[0].foo' is 'undefined'.
-PASS: 'document.forms[1].foo' is 'imgFoo'.
-PASS: 'document.forms[0].bar' is 'undefined'.
-DONE
-

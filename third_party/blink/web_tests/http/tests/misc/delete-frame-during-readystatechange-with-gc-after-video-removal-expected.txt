@@ -1,1 +1,0 @@
-Test deleting a subframe from within its readystatechange event and garbage collecting right after removing the video element from the document. We pass if we don't crash.

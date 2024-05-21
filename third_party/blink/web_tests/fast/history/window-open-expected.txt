@@ -1,7 +1,0 @@
-Test for rdar://problem/6550530 REGRESSION (r40508): Window opened with window.open has no initial history item (global and back/forward).
-
-Click here to open a new window
-
-The most recent item in global history should be window-open-window.html.
-
-PASS

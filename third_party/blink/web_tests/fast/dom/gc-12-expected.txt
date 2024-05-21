@@ -1,8 +1,0 @@
-This test verifies that DOM nodes are not garbage collected as long as a node in the tree is referenced from JavaScript.
-
-PASS: span should be a Node and is.
-PASS: span.parentNode should be a Node and is.
-PASS: span.firstChild should be a Node and is.
-PASS: span should be a Node and is.
-PASS: span.parentNode should be a Node and is.
-

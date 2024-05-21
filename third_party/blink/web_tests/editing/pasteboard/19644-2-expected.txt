@@ -1,1 +1,0 @@
-<span style="background-color: rgb(187, 187, 187);">This tests to make sure that we wrap copied markup in a div to hold a fully selected body's attributes and style when the that body has a background-color. If you copy and paste this text into Mail, it should have a grey background.</span>

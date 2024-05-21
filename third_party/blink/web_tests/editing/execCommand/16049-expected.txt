@@ -1,5 +1,0 @@
-This tests to see if BackColor can be performed on a caret selection. The text typed afterword should have the new background color.
-<span style="background-color: rgb(0, 0, 255);">Blue</span>
-
-This tests to see if ForeColor can be performed in a plaintext-only region. The text typed afterword should not have the requested color.
-Black

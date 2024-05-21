@@ -1,6 +1,0 @@
-Test for handling calc() values on table elements as if they were Auto. Check crbug.com/350852 for details.
-
-PASS
-PASS
-PASS
-PASS

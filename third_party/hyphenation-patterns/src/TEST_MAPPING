@@ -1,7 +1,0 @@
-{
-  "presubmit": [
-    {
-      "name": "minikin_tests"
-    }
-  ]
-}

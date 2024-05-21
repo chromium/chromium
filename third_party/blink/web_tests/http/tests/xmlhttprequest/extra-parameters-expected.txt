@@ -1,5 +1,0 @@
-Test that XMLHttpRequest tolerates extra parameters to its methods.
-
-  Status: 200
-  StatusText: "OK"
-  ResponseText: "SUCCESS"

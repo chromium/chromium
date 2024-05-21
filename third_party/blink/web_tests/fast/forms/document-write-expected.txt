@@ -1,3 +1,0 @@
-Test for bug 4372: JavaScript document.write page form does not submit in Safari if document.close is not called.
-
-SUCCESS

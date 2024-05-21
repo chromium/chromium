@@ -1,5 +1,0 @@
-PASS str is 'threw exception'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

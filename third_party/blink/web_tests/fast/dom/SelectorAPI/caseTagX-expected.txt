@@ -1,6 +1,0 @@
-PASS document.querySelector('div SPAN') is null
-PASS document.getElementById('lower1').webkitMatchesSelector('div SPAN') is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,4 +1,0 @@
-Verify that only one request is made for basic script requests with integrity attribute.
-
-call-success-with-integrity-frame.html:5 Script loaded successfully.
-

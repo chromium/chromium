@@ -1,3 +1,0 @@
-Simple test that custom clipboard MIME types can be set during copy events and retrieved during paste events. The test can be manually run by copying any text on this page and then pasting anywhere. On success, the word SUCCESS will appear below.
-
-SUCCESS

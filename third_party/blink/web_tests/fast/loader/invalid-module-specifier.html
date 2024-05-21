@@ -1,9 +1,0 @@
-<script>
-// This test is Blink specific since it checks error message text.
-if (window.testRunner)
-  testRunner.dumpAsText();
-</script>
-<script type="module">
-import "specifier-without-valid-prefix";
-</script>
-<script type="module" src="data:text/javascript,import './foo'"></script>

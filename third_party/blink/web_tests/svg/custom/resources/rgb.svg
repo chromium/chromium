@@ -1,7 +1,0 @@
-<svg id="svg-root" width="192" height="64" xmlns="http://www.w3.org/2000/svg">
-  <g id="RGB">
-    <rect id="R" x="0" y="0" width="64" height="64" fill="#c00"/>
-    <rect id="G" x="64" y="0" width="64" height="64" fill="#090"/>
-    <rect id="B" x="128" y="0" width="64" height="64" fill="#00f"/>
-  </g>
-</svg>

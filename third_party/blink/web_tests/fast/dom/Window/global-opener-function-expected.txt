@@ -1,5 +1,0 @@
-This test checks to ensure that you can declare a global function called "opener" to shadow window.opener.
-
-If the test passes, you will see 1 "success" message below. Otherwise, you will see 1 "failure" message.
-
-success: function opener() declared

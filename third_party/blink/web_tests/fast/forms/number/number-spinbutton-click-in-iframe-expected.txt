@@ -1,9 +1,0 @@
-Checks mouse click on spin button in iframe.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS testInput.value is "12346"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

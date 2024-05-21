@@ -1,3 +1,0 @@
-Click on the right of this line outside the black box.
-The caret should be placed on the right of the first line, NOT on the right of this line.
-PASS

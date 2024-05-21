@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Setting an Element's dataset property should not interfere with namespaced attributes with same name
-  assert_equals: expected 3 but got 2
-Harness: the test ran to completion.
-

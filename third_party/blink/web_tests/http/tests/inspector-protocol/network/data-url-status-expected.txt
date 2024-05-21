@@ -1,4 +1,0 @@
-Tests that network instrumentation indicates HTTP 200 status for data: URLs.
-Navigation status: 200 (OK)
-Fetch status: 200 (OK)
-

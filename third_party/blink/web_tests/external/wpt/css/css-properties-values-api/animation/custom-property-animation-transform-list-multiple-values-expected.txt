@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <transform-list> containing multiple values with iterationComposite
-  assert_equals: expected "translateX(250px) scale(11.5)" but got "translateX(50px) scale(3.5)"
-[FAIL] Animating a custom property of type <transform-list> containing multiple values and with mismatching list lengths
-  assert_equals: dimension of the matrix: undefined expected 6 but got 16
-Harness: the test ran to completion.
-

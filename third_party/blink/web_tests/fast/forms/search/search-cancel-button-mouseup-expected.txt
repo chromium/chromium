@@ -1,7 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12618 REGRESSION (SearchField): Dragging across the text and releasing over the clear button clears the field.
-
-PASS
-
-
-
-

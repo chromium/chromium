@@ -1,4 +1,0 @@
-Check that calling Storage.clearTrustTokens with an invalid issuerOrigin produces an error
-PASS: Storage.clearTrustTokens with valid origin
-PASS: Storage.clearTrustTokens with invalid origin
-

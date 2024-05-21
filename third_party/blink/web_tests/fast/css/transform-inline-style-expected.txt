@@ -1,6 +1,0 @@
-Tests reading inline style of transition, and -webkit-transform-origin
-https://bugs.webkit.org/show_bug.cgi?id=22594
-
-style: 1s, left 3s cubic-bezier(0.2, 0.3, 0.6, 0.8) 2s
-style: left 30%
-

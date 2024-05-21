@@ -1,2 +1,0 @@
-Test passes if it does not CRASH in debug. Note, this test does not have a DOCTYPE as the failure does not reproduce with a DOCTYPE.
-if (window.testRunner) testRunner.dumpAsText(); document.execCommand("selectAll"); document.designMode = "On"; document.execCommand("italic")

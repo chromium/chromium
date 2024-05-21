@@ -1,4 +1,0 @@
-Tests that style properties of elements in iframes loaded from domain different from the main document domain can be inspected. See bug 31587.
-
-    background: green;
-

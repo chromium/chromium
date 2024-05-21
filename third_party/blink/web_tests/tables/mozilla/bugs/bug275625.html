@@ -1,8 +1,0 @@
-<html><head><title>Testcase bug 275625 - Crash with a:hover, a:hover+br{display:table-row;}</title>
-<style>
-a, a + br{display:inline;}
-</style>
-</head>
-<body onload="document.styleSheets[0].cssRules[0].style.display = 'table-row'">
-<a href="#">This should not crash</a><br>
-</body></html>

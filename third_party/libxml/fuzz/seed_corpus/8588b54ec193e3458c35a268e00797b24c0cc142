@@ -1,7 +1,0 @@
-<schema xmlns="http://www.ascc.net/xml/schematron" >
-     <pattern name="Sum equals 100%.">
-          <rule context="Total">
-               <assert test="sum(//Percent) = 100">The values do not sum to 100%. </assert>
-          </rule>
-     </pattern>
-</schema>

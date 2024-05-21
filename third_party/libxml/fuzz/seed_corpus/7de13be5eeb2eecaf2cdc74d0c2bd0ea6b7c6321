@@ -1,6 +1,0 @@
-<element name="bad" xmlns="http://relaxng.org/ns/structure/1.0">
-  <data type="string"/>
-  <element name="note">
-    <text/>
-  </element>
-</element>

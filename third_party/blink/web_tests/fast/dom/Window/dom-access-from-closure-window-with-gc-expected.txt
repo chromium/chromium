@@ -1,5 +1,0 @@
-document.URL: fast/dom/Window/resources/dom-access-from-closure-window-child.html
-window.document.URL: fast/dom/Window/resources/notify-opener-done.html
-name: child
-window.name: child
-

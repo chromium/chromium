@@ -1,7 +1,0 @@
-This tests for a copy bug where styles from matched rules would be placed on elements and take precedence over styles from their inline style declarations. When run manually, you must do a Paste. The text in the bottom region should be blue.
-
-
-<p style="color: blue;">This text</p>
-<p style="color: blue;">should be</p>
-<p style="color: blue;">blue</p>
-

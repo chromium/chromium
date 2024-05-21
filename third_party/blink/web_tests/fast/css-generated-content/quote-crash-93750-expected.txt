@@ -1,3 +1,0 @@
-Bug 93750: LayoutQuote (anonymous) corrupts doubly linked list on insertion before head of list
-
-It passes if it does not CRASH or ASSERT.

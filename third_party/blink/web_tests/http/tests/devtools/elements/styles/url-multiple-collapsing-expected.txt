@@ -1,4 +1,0 @@
-Tests that multiple URLs which are long are not squashed into a single URL. Bug 590172.
-
--webkit-image-set(url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND?pfncmbjabnpldlfbnmhnhblapoibfbei) 1x, url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND@2x?pfncmbjabnpldlfbnmhnhblapoibfbei) 2x)
-

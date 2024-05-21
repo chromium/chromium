@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Cross Origin Fetch with safe range header
-  promise_test: Unhandled rejection with value: "failed load with range header bytes=0-10"
-Harness: the test ran to completion.
-

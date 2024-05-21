@@ -1,7 +1,0 @@
-main frame - DidStartNavigation
-main frame - ReadyToCommitNavigation
-main frame - didCommitLoadForFrame
-main frame - didFinishDocumentLoadForFrame
-main frame - didHandleOnloadEventsForFrame
-main frame - didFinishLoadForFrame
-This test checks that no loader actions occur when setting window.location.hash to the empty string or "#". If this test fails when run in a browser, it will reload continuously. If this test fails when run in DumpRenderTree, the FrameLoader callback output will contain willPerformClientRedirectToURL callbacks.

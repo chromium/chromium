@@ -1,4 +1,0 @@
-window.location.href = http://127.0.0.1:8000/security/postMessage/origin-unaffected-by-base-tag.html
-waiting...
-Received message: data="Received message: data="Message from parent" origin="http://127.0.0.1:8000"" origin="http://localhost:8000"
-Received message: data="Received message: data="done" origin="http://127.0.0.1:8000"" origin="http://localhost:8000"

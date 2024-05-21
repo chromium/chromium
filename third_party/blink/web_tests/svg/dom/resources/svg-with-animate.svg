@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <rect x="10" y="10" width="10" height="10" fill="red">
-    <animate attributeName="x" attributeType="XML" begin="0s" dur="10s" fill="freeze" from="0" to="100" />
-  </rect>
-</svg>

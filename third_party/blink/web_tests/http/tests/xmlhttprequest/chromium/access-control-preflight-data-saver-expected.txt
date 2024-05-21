@@ -1,4 +1,0 @@
-Test that 'Save-Data' header is treated as a simple header and preflight request is not created. Should print PASS.
-
-PASS
-

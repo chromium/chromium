@@ -1,2 +1,0 @@
-There should be a square with a 4px blue border.
-PASS

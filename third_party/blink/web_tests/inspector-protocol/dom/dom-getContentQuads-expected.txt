@@ -1,6 +1,0 @@
-Tests DOM.getContentQuads method.
-Returned quads amount: 3
-node at quad #0: SPAN
-node at quad #1: SPAN
-node at quad #2: B
-

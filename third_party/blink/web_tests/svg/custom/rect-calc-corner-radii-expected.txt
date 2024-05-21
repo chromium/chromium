@@ -1,1 +1,0 @@
-CONSOLE ERROR: Error: <rect> attribute ry: A negative value is not valid. ("-100")

@@ -1,6 +1,0 @@
-This tests that non-webby URLs are not blocked as mixed content. The test passes if the load proceeds without warning. The test fails if a mixed content error or warning is displayed, and/or the load is blocked.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-

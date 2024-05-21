@@ -1,5 +1,0 @@
-<!-- This test covers re-entry to global code from a function node, without ever executing global code prior to the first function call.
-  -->
-<body id="bodyNode" onload="document.write('<script' + '>' + 'var x = 0; var y = 1; var z = 2; if (window.testRunner) testRunner.dumpAsText(); document.write(\'<div>This test ensures that we can directly enter JS function code and re-enter globally without any initial global code being executed.</div>\')' + '</script' + '>');">
-    This test makes sure JS can enter a function directly without first executing global code.
-</body>

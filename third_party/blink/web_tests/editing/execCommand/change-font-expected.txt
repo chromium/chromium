@@ -1,3 +1,0 @@
-There should only be one font tag.
-
-SUCCESS

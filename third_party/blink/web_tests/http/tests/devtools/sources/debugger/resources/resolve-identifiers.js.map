@@ -1,1 +1,0 @@
-{"version":3,"file":"resolve-identifiers.js","sourceRoot":"","sources":["resolve-identifiers.ts"],"names":[],"mappings":"AAAA;IACI,IAAI,GAAG,GAAG,EAAE,CAAC;IACb,GAAG,CAAC,CAAC,IAAI,KAAG,GAAG,CAAC,EAAE,KAAG,GAAG,CAAC,EAAE,KAAG,EAAE,EAAE,CAAC;QAC/B,OAAO,CAAC,GAAG,CAAC,KAAG,CAAC,CAAC;QACjB,QAAQ,CAAC;IACb,CAAC;AACL,CAAC"}

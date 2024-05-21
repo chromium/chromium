@@ -1,9 +1,0 @@
-This page tests that frames receive focus events when a click occurs within their content area, and blur events when a click occurs outside their content area.
-
-To test, click in the frame and then click on this text.
-
-main frame blurred
-iframe focused
-iframe blurred
-main frame focused
-

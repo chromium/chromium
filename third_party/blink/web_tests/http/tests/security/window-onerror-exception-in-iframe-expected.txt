@@ -1,6 +1,0 @@
-CONSOLE ERROR: Uncaught IframeException
-Test that exceptions in iframe are not reported to the main frame window.onerror handler. window.onerror should print exactly one line.
-
-Main frame window.onerror: Uncaught MainFrameException at window-onerror-exception-in-iframe.html:34
-DONE
-

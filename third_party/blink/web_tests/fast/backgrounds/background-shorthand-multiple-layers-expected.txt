@@ -1,9 +1,0 @@
-Tests that serialization of background shorthand property with multiple layers is correct.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS getComputedStyle(e).background is "url(\"dummy://foo\") repeat scroll 0% 0% / auto padding-box border-box, rgb(255, 0, 0) url(\"dummy://bar\") repeat scroll 0% 0% / auto padding-box border-box"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

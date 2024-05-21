@@ -1,9 +1,0 @@
-WebSocket test that Origin is 'null' in a sandboxed iframe.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS wsOrigin is "null"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

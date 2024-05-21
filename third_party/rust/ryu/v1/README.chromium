@@ -1,9 +1,0 @@
-Name: ryu
-URL: https://crates.io/crates/ryu
-Description: Fast floating point to string conversion
-Version: 1.0.18
-Security Critical: yes
-Shipped: yes
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/ryu-1.0.18/LICENSE-APACHE
-Revision: 12746aa88cc51a6f1fc97f92b8d36d991c2d966e

@@ -1,3 +1,0 @@
-This ensures that postMessage called in a callback does not crash.
-
-PASS

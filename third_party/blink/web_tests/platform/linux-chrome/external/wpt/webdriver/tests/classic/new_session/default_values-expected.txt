@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_repeat_new_session
-  assert 200 == 500
-Harness: the test ran to completion.

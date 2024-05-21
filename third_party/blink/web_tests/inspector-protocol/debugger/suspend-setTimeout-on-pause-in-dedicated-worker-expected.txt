@@ -1,6 +1,0 @@
-Tests that setTimeout callback will not fire while script execution is paused. Bug 377926.
-Started worker
-Worker created
-SUCCESS: Worker paused
-SUCCESS: global_value is 1
-

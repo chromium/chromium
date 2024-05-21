@@ -1,4 +1,0 @@
-This test that the loadstart event is fired for XMLHttpRequestUpload objects.
-
-PASS: loadstart event fired on XMLHttpRequestUpload.
-

@@ -1,1 +1,0 @@
-This tests that LayoutGeometryMap and TransformState both avoid pixel snapping prior to applying translation-only transforms. The test passes if it doesn't assert on Debug.

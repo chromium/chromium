@@ -1,3 +1,0 @@
-Tests that Location interface is [LegacyUnforgeable], thus JSON.stringify() works well for Location objects.
-
-stringify: Success

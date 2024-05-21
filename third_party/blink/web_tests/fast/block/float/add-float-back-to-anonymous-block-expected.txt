@@ -1,4 +1,0 @@
-crbug.com/585064: Floats should fold back into anonymous blocks if possible. There should be a single green rectangle below.
-
-X
-PASS

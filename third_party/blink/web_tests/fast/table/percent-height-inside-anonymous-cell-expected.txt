@@ -1,3 +1,0 @@
-There should be a papayawhip-colored square below.
-
-PASS

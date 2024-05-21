@@ -1,4 +1,0 @@
-Tests DOM.getContentQuads method with single before element.
-Returned quads amount: 1
-window.CLICKED =  42
-

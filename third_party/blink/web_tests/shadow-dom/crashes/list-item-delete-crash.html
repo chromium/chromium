@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src='../../resources/testharness.js'></script>
-<script src='../../resources/testharnessreport.js'></script>
-<ul><summary><div><div style="display: list-item;"></div></div><iframe></iframe><div></div></summary></ul>
-<script>
-test(() => {
-  document.querySelector('summary').remove();
-}, "crbug.com/846449. Deleting a list-item (in summary) with enclosing ul should not crash.");
-</script>

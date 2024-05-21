@@ -1,9 +1,0 @@
-Test if Blink does not crash by form submission in a document with null encoding.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if not crashed
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,2 +1,0 @@
-To test this manually, first make sure you can see this text at all, and then hover over it and make sure the background turns blue.
-PASSED: The hover effect works!

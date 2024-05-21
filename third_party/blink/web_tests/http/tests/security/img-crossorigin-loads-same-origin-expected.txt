@@ -1,3 +1,0 @@
-ALERT: PASS
-This image should load:
-

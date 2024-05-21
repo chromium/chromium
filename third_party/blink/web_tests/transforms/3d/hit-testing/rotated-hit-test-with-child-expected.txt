@@ -1,5 +1,0 @@
-Element at 30, 30 has id "box1": PASS
-Element at 80, 100 has id "box1": PASS
-Element at 100, 120 has id "box2": PASS
-Element at 200, 250 has id "box2": PASS
-

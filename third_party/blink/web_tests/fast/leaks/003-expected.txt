@@ -1,4 +1,0 @@
-This test verifies that garbage collection successfully cleans up after the destruction of a frame containing a JavaScript interpreter. If the test passes, you'll see a PASS message below.
-
-PASS: 20 garbage JS objects or fewer left uncollected after destroying a frame.
-

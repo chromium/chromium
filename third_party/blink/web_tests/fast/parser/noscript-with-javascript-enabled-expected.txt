@@ -1,2 +1,0 @@
-This test case verifies that contents inside <noscript> are ignored when Javascript is enabled.
-Succeeded!

@@ -1,2 +1,0 @@
-This test will trigger a mouse over of this element. We will then check to see if event was properly set (i.e., not null). This is in response to a v8 bug that can break window.event exposure if the client tries to manually set event.
-PASS: After MouseEvent, event is valid

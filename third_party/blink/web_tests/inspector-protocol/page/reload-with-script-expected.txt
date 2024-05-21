@@ -1,5 +1,0 @@
-Tests scriptToEvaluateOnLoad passed to Page.reload is executed appopriately
-PAGE: reloading
-Reloaded with script
-Reloaded without script
-

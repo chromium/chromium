@@ -1,2 +1,0 @@
-This tests that an image element won't be garbage collected when it's loading, even if it doesn't have any references.
-SUCCESS

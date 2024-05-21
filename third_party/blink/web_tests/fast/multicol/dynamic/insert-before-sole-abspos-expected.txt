@@ -1,3 +1,0 @@
-Insert an in-flow object before an absolutely positioned element that up until now was the only multicol child.
-
-PASS if no assertion failure or crash.

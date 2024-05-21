@@ -1,9 +1,0 @@
-include_rules = [
-    "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/event_modules.h",
-    "+third_party/blink/renderer/modules/manifest/manifest_manager.h",
-    "+third_party/blink/renderer/modules/modules_export.h",
-    "+third_party/blink/renderer/modules/permissions",
-    "+third_party/blink/renderer/modules/push_messaging",
-    "+third_party/blink/renderer/modules/service_worker",
-]

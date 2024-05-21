@@ -1,2 +1,0 @@
-This tests that the invalid cursor property value does not get applied. See Bug 11221.
-SUCCESS

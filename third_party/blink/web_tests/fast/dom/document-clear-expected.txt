@@ -1,7 +1,0 @@
-Original line 1
-
-New line 1
-
-Calling document.clear() from an external script should not crash.
-
-If successful, there will be 4 lines total

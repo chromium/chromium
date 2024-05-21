@@ -1,9 +1,0 @@
-There should be two words below, on separate lines, with large letter spacing. The first line should read "SART". The second one should read "KU". There should be a hotpink square to the right of the second line, but nowhere else.
-
-S
-K
-A
-U
-R
-T
-PASS

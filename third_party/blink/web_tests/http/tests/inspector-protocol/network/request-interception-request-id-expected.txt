@@ -1,3 +1,0 @@
-Verifies that requestIntercepted has a requestId corresponding to requestWillBeSent's requestId
-requestIntercepted.requestId === requestWillBeSent.requestId: true
-

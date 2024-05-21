@@ -1,5 +1,0 @@
-Bug 12085: Assertion failure in WebCore::RenderFlow::rightmostPosition
-
-marquee
-
-If this test does not ASSERT, it has PASSED

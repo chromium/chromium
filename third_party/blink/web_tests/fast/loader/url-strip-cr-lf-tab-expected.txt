@@ -1,3 +1,0 @@
-Test for bug 8770: XMLHttpRequest should strip CR/LF characters from the URL (not just XMLHttpRequest, really, and TAB is also stripped).
-
-Success

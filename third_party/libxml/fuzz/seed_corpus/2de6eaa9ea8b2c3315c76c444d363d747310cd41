@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<!-- This instance should raise an error, since in
-  "restriction-enum-1_1.xsd", the restricting enumeration
-  rules out the value "c" (which is allowed in the restricted
-  type).
--->
-<foo>c</foo>

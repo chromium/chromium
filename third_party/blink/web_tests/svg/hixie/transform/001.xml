@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
- <circle r="100" cx="100" cy="100" fill="red"/>
- <circle r="100" cx="100" cy="100" fill="green" transform="translate(200,0"/>
- <!-- Per SVG Tiny 1.2, that last attribute is unsupported and must therefore be ignored. -->
-</svg>

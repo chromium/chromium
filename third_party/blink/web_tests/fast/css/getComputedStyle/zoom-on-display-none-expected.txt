@@ -1,4 +1,0 @@
-PASS! Neither the computed width of the displayed div nor the computed width of the display:none div has been affected by the zoom factor.
-
-
-This div has a zoom value of "2." It has a width of 300px.

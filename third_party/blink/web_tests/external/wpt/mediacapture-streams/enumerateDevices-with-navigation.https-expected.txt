@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] enumerateDevices with navigation
-  assert_equals: Promise state while inactive expected "pending" but got "rejected"
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-Plugin received event: TouchStart
-TestPlugin: isPersistent
-Plugin received event: TouchEnd
-TestPlugin: isPersistent
-Each event description above should be followed by 'TestPlugin: isPersistent'

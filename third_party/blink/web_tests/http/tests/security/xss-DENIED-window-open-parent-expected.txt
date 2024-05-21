@@ -1,2 +1,0 @@
-This test passes if there is no alert dialog.
-

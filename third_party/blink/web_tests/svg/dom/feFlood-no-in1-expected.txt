@@ -1,9 +1,0 @@
-This test checks that an SVGFEFloodElement object has no in1 property.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS feFlood.in1 is undefined
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

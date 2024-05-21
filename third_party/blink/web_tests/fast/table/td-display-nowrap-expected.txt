@@ -1,7 +1,0 @@
-Tests the behavior change mentioned in https://bugs.webkit.org/show_bug.cgi?id=21287#c3
-
-Header
-Div with display: table-cell
-Computed white-space style of <th>: nowrap
-Computed white-space style of <div>: normal
-

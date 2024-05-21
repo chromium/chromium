@@ -1,5 +1,0 @@
-some utf8 characters: UTF-8 æøå 中国
-
-php_cookie: UTF-8 æøå 中国
-
-cookies read through js: php_cookie=UTF-8+%C3%A6%C3%B8%C3%A5+%E4%B8%AD%E5%9B%BD; js_cookie=UTF-8 æøå 中国

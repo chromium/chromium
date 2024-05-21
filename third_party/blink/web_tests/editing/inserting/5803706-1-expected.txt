@@ -1,3 +1,0 @@
-This tests to make sure that hitting return at the end of a header element breaks out of it. Below, a regular paragraph element should follow the h2.
-
-<h2 id="h2">foo</h2><div><br></div>

@@ -1,1 +1,0 @@
-testRunner.setFilePathForMockFileDialog(testRunner.getWritableDirectory());

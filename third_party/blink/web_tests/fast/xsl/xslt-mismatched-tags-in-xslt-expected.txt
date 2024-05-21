@@ -1,8 +1,0 @@
-CONSOLE ERROR: Opening and ending tag mismatch: p line 8 and body
-
-CONSOLE ERROR: Opening and ending tag mismatch: body line 6 and html
-
-CONSOLE ERROR: Opening and ending tag mismatch: html line 5 and xsl:template
-
-CONSOLE ERROR: Opening and ending tag mismatch: template line 4 and stylesheet
-

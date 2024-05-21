@@ -1,3 +1,0 @@
-Test that the styleSheet collection contains all sheets referenced through the <link> elements. See bug #22429.
-
-SUCCESS

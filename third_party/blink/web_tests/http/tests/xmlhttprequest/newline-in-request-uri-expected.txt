@@ -1,4 +1,0 @@
-Test for bug 22731: Newline in XMLHttpRequest URL can be used to remove HTTP headers (e.g. Host:).
-
-LF SUCCESS
-CR SUCCESS

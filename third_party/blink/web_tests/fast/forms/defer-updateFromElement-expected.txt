@@ -1,3 +1,0 @@
-Test for rdar://problem/7458272 REGRESSION (r50470) Reproducible ASSERT in LayoutEmbeddedContent::UpdateGeometry().
-
- 

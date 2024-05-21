@@ -1,2 +1,0 @@
-This test verifies WebKit doesn't crash even if the DOM changes in shadow DOM caused the shadow host's style to change.
-PASS

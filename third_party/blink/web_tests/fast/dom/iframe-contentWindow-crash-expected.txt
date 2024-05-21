@@ -1,1 +1,0 @@
-This is a test for http://bugs.webkit.org/show_bug.cgi?id=13868 REGRESSION: crash on accessing a new iframe's contentWindow property. This tests HTMLIFrameElement.contentWindow. If there is no crash this test passes.

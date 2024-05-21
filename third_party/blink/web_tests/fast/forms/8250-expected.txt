@@ -1,3 +1,0 @@
-This is a test for bug 8250. The 'before text inserted' event handler wasn't being told about 'interchange newlines'. The text field should have a space in it, followed by the word 'foo'.
-
-TEST PASSED

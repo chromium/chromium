@@ -1,2 +1,0 @@
-CONSOLE ERROR: Subresource Integrity: The resource 'http://localhost:8000/security/resources/localScript.js' has an integrity attribute, but the resource requires the request to be CORS enabled to check the integrity, and it is not. The resource has been blocked because the integrity cannot be enforced.
-

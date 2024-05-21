@@ -1,7 +1,0 @@
-features:
-- name: background-clip
-  files:
-  - background-clip-*
-- name: border-image
-  files:
-  - border-image-*

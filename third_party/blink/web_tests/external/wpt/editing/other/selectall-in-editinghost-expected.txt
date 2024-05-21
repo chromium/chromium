@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] execCommand('selectAll') should select all content in the editing host when it has focus but no selection range
-  assert_false: Selection should not contain the preceding text of the editing host expected false got true
-Harness: the test ran to completion.
-

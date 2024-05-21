@@ -1,6 +1,0 @@
-In this case, Safari and Firefox don't add a history item. 
-
-============== Back Forward List ==============
-curr->  http://127.0.0.1:8000/navigation/onload-navigation-iframe-2.html
-            http://127.0.0.1:8000/navigation/resources/blank.txt? (in frame "myFrame")
-===============================================

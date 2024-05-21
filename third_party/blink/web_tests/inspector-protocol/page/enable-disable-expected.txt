@@ -1,6 +1,0 @@
-Tests enabling/disabling Page domain while recording Timeline.
-Timeline started
-Page enabled
-Page disabled
-Timeline stopped
-

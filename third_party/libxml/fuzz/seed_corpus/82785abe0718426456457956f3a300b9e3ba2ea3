@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	   xmlns="http://www.example.org/test-import-case"
-	   targetNamespace="http://www.example.org/test-import-case">
-  <xs:include schemaLocation="./582887-element.xsd" />
-  <xs:include schemaLocation="./582887-attribute.xsd" />
-
-</xs:schema>

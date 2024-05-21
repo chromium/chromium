@@ -1,1 +1,0 @@
-If running this test manually put focus inside the iframe and hit 'page down'. 

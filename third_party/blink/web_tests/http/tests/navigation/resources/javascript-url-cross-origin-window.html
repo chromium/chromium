@@ -1,8 +1,0 @@
-
-<a id="a" href="javascript:postMessage('FAIL', '*');" target="target"></a>
-<script>
-a.click();
-setTimeout(function() {
-  opener.postMessage("PASS", "*");
-}, 0);
-</script>

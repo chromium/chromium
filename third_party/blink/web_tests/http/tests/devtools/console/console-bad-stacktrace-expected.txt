@@ -1,5 +1,0 @@
-Tests that console messages with invalid stacktraces will still be rendered, crbug.com/826210
-
- This should be visible
-(anonymous) @ unknown
-

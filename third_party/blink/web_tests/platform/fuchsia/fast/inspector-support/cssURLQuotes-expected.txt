@@ -1,7 +1,0 @@
-CONSOLE ERROR: Not allowed to load local resource: unquoted
-CONSOLE ERROR: Not allowed to load local resource: quoted
-CONSOLE ERROR: Not allowed to load local resource: should(Quote)
-ALERT: url("file:///unquoted") (URL should be quoted)
-ALERT: url("file:///quoted") (URL should be quoted)
-ALERT: url("file:///should(Quote)") (URL should be quoted)
-

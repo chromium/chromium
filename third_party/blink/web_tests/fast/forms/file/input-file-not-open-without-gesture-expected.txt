@@ -1,4 +1,0 @@
-CONSOLE WARNING: File chooser dialog can only be shown with a user activation.
-This file is to test that opening file dialog requires a user gesture. Please refer to https://bugs.webkit.org/show_bug.cgi?id=47593 for more details.
-Test opening file dialog without user gesture is PASSED
-

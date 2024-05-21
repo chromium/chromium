@@ -1,9 +1,0 @@
-Tests that there is no exception in front-end on page reload when breakpoint is set in HTML document and some dynamic scripts are loaded before the script with the breakpoint is loaded.
-Setting breakpoint:
-Reloading page.
-Script execution paused.
-    Dumping breakpoint storage
-        dynamic-scripts-breakpoints.html:7
-Script execution resumed.
-Page reloaded.
-

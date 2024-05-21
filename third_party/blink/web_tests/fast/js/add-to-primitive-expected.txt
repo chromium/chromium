@@ -1,4 +1,0 @@
-This page tests that string addition prefers valueOf() over toString() for conversion. If the test passes, you'll see a PASS message below.
-
-PASS: '1' + valueOfIsZero should be 10 and is.
-

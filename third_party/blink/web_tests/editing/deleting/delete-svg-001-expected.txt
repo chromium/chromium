@@ -1,5 +1,0 @@
-PASS sample.textContent.charCodeAt(0) is 160
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

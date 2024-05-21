@@ -1,3 +1,0 @@
-This tests to see if 'style.display' for an element can be set dynamically. See bug 820947.
-
-This test: PASSED!

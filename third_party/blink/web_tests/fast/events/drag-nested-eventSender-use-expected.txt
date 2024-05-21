@@ -1,9 +1,0 @@
-Test that unsupported nested use of eventSender.beginDragWithFiles() is handled without crashing.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS runTest() threw exception Error: Nested beginDragWithFiles/beginDragWithStringData() not supported..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

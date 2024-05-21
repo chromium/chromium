@@ -1,8 +1,0 @@
-Test for rdar://problem/5879597 Type-to-select in lists with no initial selection can crash.
-
-One
-Two
-Three
-Four
-Five
-SUCCESS

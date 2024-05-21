@@ -1,4 +1,0 @@
-Tests that custom events with prefixed animations names are correctly dispatched.
-PASS: webkitAnimationStart event listener has been called.
-PASS: webkitAnimationIteration event listener has been called.
-PASS: webkitAnimationEnd event has been called.

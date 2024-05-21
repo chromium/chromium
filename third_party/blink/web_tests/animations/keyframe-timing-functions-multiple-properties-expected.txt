@@ -1,9 +1,0 @@
-PASS - "left" property for "box" element at 0.2s saw something close to: 11.87
-PASS - "top" property for "box" element at 0.2s saw something close to: 11.34
-PASS - "width" property for "box" element at 0.2s saw something close to: 118.7
-PASS - "height" property for "box" element at 0.2s saw something close to: 113.4
-PASS - "left" property for "box" element at 1.4s saw something close to: 23.15
-PASS - "top" property for "box" element at 1.4s saw something close to: 34.84
-PASS - "width" property for "box" element at 1.4s saw something close to: 163.1
-PASS - "height" property for "box" element at 1.4s saw something close to: 361.3
-

@@ -1,9 +1,0 @@
-Tests that FrameView::m_scrollableAreas is updated after closing a modal dialog when the scroller and its ancestors have percentage heights. (see crbug.com/633520)
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS internals.numberOfScrollableAreas(document) is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

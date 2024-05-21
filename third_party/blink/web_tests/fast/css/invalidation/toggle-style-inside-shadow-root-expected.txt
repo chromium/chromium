@@ -1,8 +1,0 @@
-PASS internals.updateStyleAndReturnAffectedElementCount() is 1
-PASS getComputedStyle(rootDiv).backgroundColor is "rgb(255, 0, 0)"
-PASS internals.updateStyleAndReturnAffectedElementCount() is 1
-PASS getComputedStyle(rootDiv).backgroundColor is "rgba(0, 0, 0, 0)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

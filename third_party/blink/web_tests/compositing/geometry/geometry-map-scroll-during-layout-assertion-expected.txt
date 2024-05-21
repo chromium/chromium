@@ -1,1 +1,0 @@
-This test should not hit an assertion in debug builds.

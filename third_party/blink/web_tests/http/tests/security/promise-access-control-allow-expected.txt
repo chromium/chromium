@@ -1,4 +1,0 @@
-CONSOLE ERROR: Uncaught (in promise) 42
-CONSOLE MESSAGE: PASS: received unhandledrejection event
-CONSOLE MESSAGE: PASS: received expected reason
-Tests that promise rejection events are received for cross origin CORS scripts

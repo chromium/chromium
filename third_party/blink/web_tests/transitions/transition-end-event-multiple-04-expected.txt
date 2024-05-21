@@ -1,6 +1,0 @@
-Initiating transitions on transform properties of all boxes, starting at different times and with different durations and values.
-
-PASS --- [Expected] Property: transform Target: box1 Elapsed Time: 0.5
-PASS --- [Expected] Property: transform Target: box2 Elapsed Time: 0.55
-PASS --- [Expected] Property: transform Target: box4 Elapsed Time: 0.4
-

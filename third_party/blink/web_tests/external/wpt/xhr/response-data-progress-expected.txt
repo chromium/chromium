@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: progress events grow response body size, unknown content-length
-  assert_unreached: onprogress not called multiple times, or response body did not grow. Reached unreachable code
-[FAIL] XMLHttpRequest: progress events grow response body size, known content-length
-  assert_unreached: onprogress not called multiple times, or response body did not grow. Reached unreachable code
-Harness: the test ran to completion.
-

@@ -1,8 +1,0 @@
-Test that nested use of eventSender.beginDragWithFiles() from within |dragover| is handled without crashing.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

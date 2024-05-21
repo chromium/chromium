@@ -1,5 +1,0 @@
-ASYNC : src = javascript:"content"
-ASYNC : src = data:text/html,content
-ASYNC : srcdoc = "content"
-done
-

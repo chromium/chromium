@@ -1,9 +1,0 @@
-This can cause a crash if AccessibilityRenderObject assumes that a file input element's renderer must be type LayoutFileUploadControl, but in corner cases (display:run-in) this may not be true.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS title is non-null.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

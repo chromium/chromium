@@ -1,3 +1,0 @@
-This tests for a bug where FormatBlock in a p element would leave one letter with the wrong style.
-
-<p>This should be in a p element.</p><h2>This should be in an H2.</h2>

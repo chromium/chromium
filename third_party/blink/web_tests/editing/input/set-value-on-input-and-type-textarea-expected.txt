@@ -1,3 +1,0 @@
-This tests typing a character after input event handler modified values of textarea. WebKit should not crash and you should see PASS below:
-
-PASS

@@ -1,9 +1,0 @@
-Bug 46950: Search field cancel button keeps event capturing if the value is cleared in a focus event.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS mouseDownCount is 2
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

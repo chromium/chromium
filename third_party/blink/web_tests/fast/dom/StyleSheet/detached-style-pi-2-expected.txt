@@ -1,5 +1,0 @@
-Bug 45205: Test that <xml-stylesheet> processing instructions only have stylesheets when in document.
-
-Not in document: PASS
-After adding to document: PASS
-DONE

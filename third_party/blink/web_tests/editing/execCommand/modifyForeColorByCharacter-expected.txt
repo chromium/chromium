@@ -1,4 +1,0 @@
-This tests changing the forecolor of the first letter. The double quotation mark at the beginning must appear green.
-
-"The quick brown fox jumps over the lazy dog" uses every letter in the english language.
-execForeColorCommand: <span id="test"><font color="#008000">"</font>The quick brown fox jumps over the lazy dog" uses every letter in the english language. </span>

@@ -1,3 +1,0 @@
-This tests to see that Range::compareBoundaryPoints throws a WrongDocumentError exception if the two ranges are in different documents, or if one is detached.
-
-food

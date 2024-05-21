@@ -1,6 +1,0 @@
-This tests that a locally scoped variable in an event handler of a form takes precedence over items of form.
-
-A
-B
-C
-This test: PASSED!

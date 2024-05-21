@@ -1,6 +1,0 @@
-Checks stepInto fetch
-Script execution paused.
-Call stack:
-    0)  (test.js:3)
-Script execution resumed.
-

@@ -1,3 +1,0 @@
-Disabled button 
-This tests that disabled form elements don't call submit when they receive a DOMActivate event. If this test is successful, the text "SUCCESS" should be shown below.
-SUCCESS

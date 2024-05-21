@@ -1,4 +1,0 @@
-This page tests for correct behavior in the case of a global object that has had a property deleted. If the test passes, you'll see a PASS message below.
-
-PASS: x should be 42 and is.
-

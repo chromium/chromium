@@ -1,4 +1,0 @@
-Tests "Bypass for network" checkbox with redirection doesn't cause crash.
-
-Success
-

@@ -1,9 +1,0 @@
-Click Here
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Test calling window.open() in a 100 ms interval. A popup should only be allowed on the first execution of the interval.
-PASS newWindow is non-null.
-Test calling window.open() in a 100 ms interval. A popup should only be allowed on the first execution of the interval.
-PASS newWindow is null

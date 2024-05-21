@@ -1,9 +1,0 @@
-Check if clicking a label focuses on a date input in it.
-PASS document.activeElement.id is "body"
-Clicking a label.
-PASS document.activeElement.id is "date1"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Label: 

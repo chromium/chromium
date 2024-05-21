@@ -1,2 +1,0 @@
-This test that adding a noscript tag into a document created using createHTMLDocument doesn't crash.
-SUCCESS!

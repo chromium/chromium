@@ -1,7 +1,0 @@
-This tests window.onFocus and window.onBlur handlers. It uses the testRunners ability to mimic bringing the window to the front and pushing it to the back.
-
-It is not intended to be run interactively: when you run it interactively, you should see 'Window was blurred' and 'Window was focused' messages as you push the window to the back and bring it to the front, respectively.
-
-Window was blurred
-Window was focused
-Window was blurred

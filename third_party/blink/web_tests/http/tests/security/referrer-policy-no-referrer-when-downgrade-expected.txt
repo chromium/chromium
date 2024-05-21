@@ -1,8 +1,0 @@
-This test checks the default referrer policy when navigating from an insecure URL to another insecure URL. The test passes if the printed referrer is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?no-referrer-when-downgrade
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?no-referrer-when-downgrade
-Referrer is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?no-referrer-when-downgrade
-

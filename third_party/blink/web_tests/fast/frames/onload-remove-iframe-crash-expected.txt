@@ -1,5 +1,0 @@
-This test checks for a crash that once happened in WebKit. The crash was caused by an onload handler for a synchronously loaded iframe removing the iframe from the document.
-
-(For compatibility, WebKit loads about:blank and javascript: URLs synchronously).
-
-PASS: You didn't crash.

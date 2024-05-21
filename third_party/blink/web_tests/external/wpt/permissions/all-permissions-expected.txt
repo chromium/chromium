@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Query "push" permission
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'query' on 'Permissions': Push Permission without userVisibleOnly:true isn't supported yet."
-[FAIL] Query "bluetooth" permission
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'bluetooth' is not a valid enum value of type PermissionName."
-[FAIL] Query "xr-spatial-tracking" permission
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'xr-spatial-tracking' is not a valid enum value of type PermissionName."
-Harness: the test ran to completion.
-

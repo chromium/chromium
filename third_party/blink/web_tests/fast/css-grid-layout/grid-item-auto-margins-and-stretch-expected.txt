@@ -1,8 +1,0 @@
-This test checks that the 'stretch' value is only applied if neither of its margins (in the appropriate axis) are 'auto'.
-
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

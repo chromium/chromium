@@ -1,9 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=12264 REGRESSION (r18843): Webkit crashes on 43Folders.com home page.
-
-All tags below should report “PASS”
-
-<script>: PASS
-<style>: PASS
-<textarea>: PASS
-<title>: PASS
-<xmp>: PASS

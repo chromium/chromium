@@ -1,2 +1,0 @@
-http://crbug.com/678150
-http-equiv should ignore non-ascii character and no refresh happen. This test will timeout if it fails.

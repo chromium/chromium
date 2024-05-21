@@ -1,3 +1,0 @@
-Test for crbug.com/316549: This test passes if the scrollable div has width=250.
-
-PASS

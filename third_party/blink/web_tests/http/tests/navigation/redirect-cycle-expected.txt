@@ -1,6 +1,0 @@
-Page 3
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/redirect-cycle.html
-curr->  http://127.0.0.1:8000/navigation/resources/redirect-cycle-1.pl
-===============================================

@@ -1,2 +1,0 @@
-PASS: __worldID is undefined in normal world.
-FAIL: __worldID is undefined in isolated world 1.

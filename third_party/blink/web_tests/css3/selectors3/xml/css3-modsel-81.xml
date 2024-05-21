@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-81.css" type="text/css"?>
-<test>
- <p xmlns="http://www.w3.org/1999/xhtml" class="red">This paragraph should have a green background.</p>
- <div xmlns="http://www.w3.org/1999/xhtml">This div contains only one paragraph.
-  <p>This paragraph should be unstyled.</p>
- </div>
-</test>

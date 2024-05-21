@@ -1,3 +1,0 @@
-This test passes if a script resource is loaded twice if asked to fetch it with and without CORS enabled.
-
-PASS

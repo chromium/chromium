@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <radialGradient id="gradient">
-    <stop stop-color="#000080" offset="0"/>
-    <stop stop-color="#008000" offset="1"/>
-    <set attributeName="fy" to="25%" fill="freeze"/>
-  </radialGradient>
-  <rect width="100" height="100" fill="url(#gradient)"/>
-</svg>

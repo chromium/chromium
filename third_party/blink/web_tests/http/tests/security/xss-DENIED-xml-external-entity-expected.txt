@@ -1,4 +1,0 @@
-CONSOLE ERROR: line 11: Unsafe attempt to load URL http://localhost:8000/security/resources/target.xml from frame with URL http://127.0.0.1:8000/security/xss-DENIED-xml-external-entity.xhtml. Domains, protocols and ports must match.
-
-This test includes a cross-origin external entity. It passes if the load fails and thus there is no text below this line.
-

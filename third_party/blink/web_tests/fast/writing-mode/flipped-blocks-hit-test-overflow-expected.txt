@@ -1,5 +1,0 @@
-This tests hit-testing in the overflow area of flipped-blocks writing mode blocks.
-
-The red rectangle should turn green when you hover over it.
-
-PASS

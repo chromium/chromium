@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Adding 2nd fragment
-  assert_equals: number of fragments expected 2 but got 1
-[FAIL] Resizing 2nd fragment
-  assert_equals: number of fragments expected 2 but got 1
-[FAIL] Resizing all fragments
-  assert_equals: number of fragments expected 2 but got 1
-Harness: the test ran to completion.
-

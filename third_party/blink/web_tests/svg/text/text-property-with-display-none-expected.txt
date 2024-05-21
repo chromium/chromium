@@ -1,2 +1,0 @@
-This test is to ensure that we do not crash when attempting to determine the dimension properties of an SVG text element with no renderer.
-PASS: Did not crash when attempting to access SVG text dimensions.

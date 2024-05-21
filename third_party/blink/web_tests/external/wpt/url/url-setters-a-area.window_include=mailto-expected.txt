@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <a>: Setting <mailto:me@example.net>.protocol = 'http' Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must.
-  assert_equals: expected "mailto:me@example.net" but got "http://me@example.net/"
-[FAIL] <area>: Setting <mailto:me@example.net>.protocol = 'http' Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must.
-  assert_equals: expected "mailto:me@example.net" but got "http://me@example.net/"
-Harness: the test ran to completion.
-

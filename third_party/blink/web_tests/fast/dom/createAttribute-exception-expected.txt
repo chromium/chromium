@@ -1,5 +1,0 @@
-bug18066 REGRESSION: createAttribute throws NAMESPACE_ERR exception
-
-You should see PASSED once.
-
-PASSED

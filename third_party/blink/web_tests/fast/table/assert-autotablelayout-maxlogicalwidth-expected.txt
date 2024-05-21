@@ -1,6 +1,0 @@
-Test for Bugzilla Bug 92471: ASSERTION FAILED: allocatedMaxLogicalWidth <= cellMaxLogicalWidth : int WebCore::AutoTableLayout::calcEffectiveLogicalWidth().
-
-The following test passes if there is no assert or crash.
-
-
-						

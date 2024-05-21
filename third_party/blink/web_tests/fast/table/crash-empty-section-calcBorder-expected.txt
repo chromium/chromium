@@ -1,3 +1,0 @@
-Bug 71246: REGRESSION(98738): Multiple crashes in the table rendering code
-
-This test PASSES if it does not CRASH.

@@ -1,5 +1,0 @@
-This XML file does not appear to have any style information associated with it. The document tree is shown below.
-
-<root>
-<utf8>SUССЕSS - These 'CCE' are cyrillic letters.</utf8>
-</root>

@@ -1,1 +1,0 @@
-SUCCESS. If you see this page the test has successfully loaded a new page without crashing or submitting a form from an onunload handler.

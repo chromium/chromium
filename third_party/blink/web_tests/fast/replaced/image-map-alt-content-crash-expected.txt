@@ -1,1 +1,0 @@
-crbug.com/482214: Don't crash when hit testing while moving across a broken image that contains an image map.

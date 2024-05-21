@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Fetch with range header will be sent with Accept-Encoding: identity
-  assert_equals: Expect identity accept-encoding on media request expected "identity" but got "identity;q=1, *;q=0"
-Harness: the test ran to completion.
-

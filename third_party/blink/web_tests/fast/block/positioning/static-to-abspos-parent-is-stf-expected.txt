@@ -1,5 +1,0 @@
-Change from position:static to position:absolute when the parent is a shrink-to-fit container. The parent needs to recalculate its intrinsic size when this happens.
-
-There should be a black square below.
-
-PASS

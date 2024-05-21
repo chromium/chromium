@@ -1,5 +1,0 @@
-Test for deletion that involves paragraph merging at the very end of a document.
-
-PASS: Backspace deleted a newline and did not cause a crash.
-
-The test puts the cursor below this paragraph and performs a delete.

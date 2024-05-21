@@ -1,5 +1,0 @@
-Test that margins on a multicol container don't collapse with spanners' margins.
-
-There should be a blue square below.
-
-PASS

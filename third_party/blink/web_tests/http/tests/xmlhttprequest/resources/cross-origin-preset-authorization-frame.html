@@ -1,9 +1,0 @@
-<script>
-// Good for both cross-origin-no-authorization and cross-origin-authorization, which only differ in cross-origin case.
-var req = new XMLHttpRequest;
-req.open("GET", "cross-origin-no-authorization.php", false, "test", "test");
-req.send();
-opener.postMessage("test", "*");
-window.close();
-</script>
-<p>This frame sets up authorization for another origin.</p>

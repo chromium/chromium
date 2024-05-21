@@ -1,4 +1,0 @@
-This page tests for a bogus invalidation of a node's event listeners. If the test passes, you'll see a PASS message below.
-
-PASS: div.onclick should be function () { return "click"; } and is.
-

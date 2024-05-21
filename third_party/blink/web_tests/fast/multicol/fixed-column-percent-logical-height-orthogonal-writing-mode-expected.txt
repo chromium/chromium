@@ -1,5 +1,0 @@
-Bug 103075: LayoutBox::computePercentageLogicalHeight should use containingBlockLogicalWidthForContent
-
-This test checks that a percent logical height child in an orthogonal writing mode uses the multi-column's containing block column-width when resolving the logical height.
-
-PASS

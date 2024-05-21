@@ -1,7 +1,0 @@
-This tests that modifying location.port works as it should
-
-PASS: internalFrame.contentWindow.location.port == "" should be true and is.
-FAIL: internalFrame.contentWindow.location.port == "88" should be true but instead is false.
-PASS: internalFrame.contentWindow.location.port == "" should be true and is.
-FAIL: internalFrame.contentWindow.location.port == "80" should be true but instead is false.
-FAIL: internalFrame.contentWindow.location.host should be :0 but instead is .

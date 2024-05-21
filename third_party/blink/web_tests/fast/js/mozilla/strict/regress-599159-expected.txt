@@ -1,9 +1,0 @@
-PASS 1 === 1
-PASS 1 === 1
-PASS 12 === 12
-PASS 12 === 12
- PASSED! 
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

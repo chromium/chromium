@@ -1,3 +1,0 @@
-Tests createContextualFragment does not mark scripts elements it parsed as already started. You should see PASS below:
-
-PASS

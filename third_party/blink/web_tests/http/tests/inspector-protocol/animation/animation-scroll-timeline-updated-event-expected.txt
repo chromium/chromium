@@ -1,4 +1,0 @@
-Tests that `animationUpdated` event is emitted when the animation is updated
-PASS: startTime is reported correctly as percentage.
-PASS: startTime is reported correctly as percentage in the animation coming from animationUpdated event.
-

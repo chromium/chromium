@@ -1,8 +1,0 @@
-<p>Test for a <href="https://bugs.webkit.org/show_bug.cgi?id=30992">bug 30992</a>: Node.isDefaultNamespace doesn't convert empty strings to null.</p>
-<p>Should say PASS:</p>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-document.write((document.implementation.createDocument(null, 'root', null).isDefaultNamespace('')) ? "PASS" : "FAIL");
-</script>

@@ -1,5 +1,0 @@
-monorail {
-  component: "Blink>Worker"
-}
-
-team_email: "worker-dev@chromium.org"

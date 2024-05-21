@@ -1,8 +1,0 @@
-This tests that XPath expressions do not consider (traverse into) template content
-
-A B
-PASS document.evaluate('count(//span)', test, null, XPathResult.NUMBER_TYPE, null).numberValue is 2
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,3 +1,0 @@
-CONSOLE ERROR: Uncaught SyntaxError: Invalid or unexpected token
-This test ensures we don't crash when we are given garbage for an attribute expecting a function.
-https://bugs.webkit.org/show_bug.cgi?id=19025

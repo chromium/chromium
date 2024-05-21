@@ -1,6 +1,0 @@
-This tests a parent node (has child nodes) is draggable. You should be able to drag the bookmark image below and drop it to bookmarks bar.
-
-Bookmark
-
-
-Test passed.

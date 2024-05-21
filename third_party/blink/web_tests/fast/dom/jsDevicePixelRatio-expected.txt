@@ -1,1 +1,0 @@
-The user interface scale factor is 1.

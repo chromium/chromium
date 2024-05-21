@@ -1,9 +1,0 @@
-Tests that canvas does not crash on getContext. crbug.com/442633
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Canvas did not crash on getContext.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

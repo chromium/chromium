@@ -1,9 +1,0 @@
-This page verifies that eval can be overridden.
-
-If the test passes, you'll see a series of pass messages below.
-
-PASS: eval("x") should be global-scope eval override and is.
-PASS: eval("x") should be with-scope eval override and is.
-PASS: eval("x") should be catch-scope eval override and is.
-PASS: eval("x") should be local-scope eval override and is.
-

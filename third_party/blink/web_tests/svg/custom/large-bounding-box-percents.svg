@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <radialGradient id="myradial" r="5">
-        <stop offset="0" style="stop-color: green"/>
-        <stop offset="1" style="stop-color: red"/>
-    </radialGradient>
-  <rect x='0' y='0' width='100' height='100' style="fill:url(#myradial)"/>
-</svg>

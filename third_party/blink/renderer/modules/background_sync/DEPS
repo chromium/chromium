@@ -1,6 +1,0 @@
-include_rules = [
-    "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/background_sync",
-    "+third_party/blink/renderer/modules/event_modules.h",
-    "+third_party/blink/renderer/modules/service_worker",
-]

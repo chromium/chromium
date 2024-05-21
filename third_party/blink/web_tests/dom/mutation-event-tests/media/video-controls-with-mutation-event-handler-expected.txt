@@ -1,6 +1,0 @@
-CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-This tests that we don't crash while creating a video element while a DOMSubtreeModified even handler is registered.
-
-If you can see the movie below, the test passed.
-
-SUCCESS: The test ran without crashing

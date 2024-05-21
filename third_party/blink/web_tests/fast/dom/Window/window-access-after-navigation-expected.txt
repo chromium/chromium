@@ -1,3 +1,0 @@
-Test for bug 27394: properties on a window object should be accessible after the frame of the window object has navigated to another page.
-
-SUCCESS

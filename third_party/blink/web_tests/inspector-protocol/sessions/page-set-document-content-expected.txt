@@ -1,6 +1,0 @@
-Tests that Page.setDocumentContent is observable from different session.
-Reloading to grab frame ids
-Setting document content in session1
-Reading document content in session2:
-Hello from session 1!
-

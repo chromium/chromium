@@ -1,3 +1,0 @@
-Test for Bug 22161: Assertion failure in RenderThemeWin::systemColor when loading microsoftpdc.com
-
-There should be no assertions when loading this page.

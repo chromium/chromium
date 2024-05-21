@@ -1,7 +1,0 @@
-<script src="../common.js"></script>
-<script>
-  observeAndReportResourceLoadPriority(new URL('../../../resources/dummy.css', location));
-</script>
-
-<!-- Media-matching style sheets block rendering, and are critical -->
-<link rel="preload" as="style" href="../../../resources/dummy.css" onload="reportLoaded()" onerror="reportFailure()">

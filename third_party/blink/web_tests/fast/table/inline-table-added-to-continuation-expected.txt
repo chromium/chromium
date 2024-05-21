@@ -1,4 +1,0 @@
-crbug.com/372832: There should be a green square below. In the layout tree the anonymous table should be under the LayoutInline in the last anonymous block, not in the middle anonymous block.
-
-  
-PASS

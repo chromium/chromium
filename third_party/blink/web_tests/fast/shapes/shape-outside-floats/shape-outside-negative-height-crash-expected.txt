@@ -1,5 +1,0 @@
-This test passes if it doesn't crash.
-
-a a
-a
-a

@@ -1,4 +1,0 @@
-This test checks that percentage tracks reduce the grid's scrollbars if any in order to calculate their breadths.
-
-PASS
-PASS

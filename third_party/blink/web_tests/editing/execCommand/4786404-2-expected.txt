@@ -1,6 +1,0 @@
-This tests for a bug where performing the Remove Format operation on a selection that started in underlined content would underline everything operated on. "foo bar baz" should not have underline.
-| <div>
-|   contenteditable="true"
-|   id="div"
-|   "<#selection-anchor>foo"
-|   " bar baz<#selection-focus>"

@@ -1,9 +1,0 @@
-Replaced node using outerHTML.
-removing node using outerHTML.
-Testing merging text nodes.
-Testing adding
-using outerHTML.
-PASS: replace
-PASS: remove
-PASS: merge text nodes
-PASS: line break

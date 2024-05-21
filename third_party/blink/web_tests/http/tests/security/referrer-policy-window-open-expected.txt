@@ -1,5 +1,0 @@
-This test opens a new window. It passes, if the referrer is the origin only.
-
-HTTP Referer header is http://127.0.0.1:8000/
-Referrer is http://127.0.0.1:8000/
-

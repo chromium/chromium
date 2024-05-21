@@ -1,7 +1,0 @@
-Test Closed MessagePort Whether Receive Message Or Not.
-
-Should be a START message, followed with DONE.
-
-START
-DONE
-

@@ -1,4 +1,0 @@
-Tests DOM.focus method.
-BODY
-second
-

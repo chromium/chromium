@@ -1,9 +1,0 @@
-<input type="text" onfocus="this.value=''" value="click to edit">
-<p>Tests clicking on an input element that has a value that self-destructs. If the test succeeds, there should be a blinking caret in the text field.</p>
-<script>
-if (window.eventSender) {
-    eventSender.mouseMoveTo(15, 15);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-}
-</script>

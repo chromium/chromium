@@ -1,7 +1,0 @@
-PASS
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/redirect-on-back-updates-history-item.html
-curr->  http://127.0.0.1:8000/navigation/resources/redirect-updates-history-item-done.html
-        http://127.0.0.1:8000/navigation/resources/redirect-on-back-updates-history-item-goback.html
-===============================================

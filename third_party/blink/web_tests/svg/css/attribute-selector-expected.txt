@@ -1,2 +1,0 @@
-You should see the word PASS below and the background should be green.
-PASS

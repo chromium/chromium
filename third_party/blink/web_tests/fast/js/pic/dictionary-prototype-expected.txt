@@ -1,5 +1,0 @@
-This page tests for correct behavior in the case of a prototype that transitions to dictionary status. If the test passes, you'll see a series of PASS messages below.
-
-PASS: slice === getSlice(array) should be true and is.
-PASS: slice === getSlice(array) should be true and is.
-

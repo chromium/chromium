@@ -1,1 +1,0 @@
-This test checks that dragging a pdf doesn't crash the browser.

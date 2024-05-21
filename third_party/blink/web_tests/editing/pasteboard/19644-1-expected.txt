@@ -1,1 +1,0 @@
-This tests for a bug where we would wrap copied markup in a div to hold a fully selected body's attributes and style even if there was nothing special about the body that warranted doing so. After you cut/paste, the text should only have 5 pixels of padding.

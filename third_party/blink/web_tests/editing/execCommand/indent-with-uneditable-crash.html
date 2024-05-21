@@ -1,9 +1,0 @@
-<div contenteditable=true><span contenteditable=false></span><b></b>ABC<span id="sample"></span></div>
-<script>
-var sample = document.getElementById('sample');
-window.getSelection().collapse(sample, sample.childNodes.length);
-document.execCommand("Indent");
-document.body.textContent = 'PASS; NOT CRASHED';
-if (window.testRunner)
-    testRunner.dumpAsText();
-</script>

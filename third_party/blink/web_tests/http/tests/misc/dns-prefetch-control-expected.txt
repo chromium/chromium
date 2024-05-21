@@ -1,9 +1,0 @@
-This is a test of DNS prefetch control. It's considered a pass if it doesn't crash. It can also be used as a manual test of DNS prefetch using a networking monitoring tool.
-
-The following frames contain links that are expected to trigger a DNS prefetch.
-
-        
-
-The following frames contain links that are not expected to cause a DNS prefetch.
-
-      

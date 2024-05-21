@@ -1,9 +1,0 @@
-This tests copying/pasting less than a paragraph of quoted content. It should appear quoted.
-
-
-<blockquote id="blockquote" type="cite">Hello World</blockquote>
-<br>
-<div>On Tuesday, Dave wrote:</div>
-<div><br></div>
-<blockquote id="blockquote" type="cite">Hello World</blockquote>
-

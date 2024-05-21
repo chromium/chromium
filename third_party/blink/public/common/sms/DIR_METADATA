@@ -1,5 +1,0 @@
-mixins: "//content/browser/sms/COMMON_METADATA"
-monorail {
-  component: "Blink>SMS"
-}
-

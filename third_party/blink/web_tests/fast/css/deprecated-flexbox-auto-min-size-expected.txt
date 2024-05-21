@@ -1,3 +1,0 @@
-Tests that deprecated flexboxes treat min-width/min-height:auto as 0px.
-PASS
-PASS

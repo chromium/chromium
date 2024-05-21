@@ -1,9 +1,0 @@
-Tests that wrapping keys must have the 'wrapKey' usage.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-error is: InvalidAccessError: key.usages does not permit this operation
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

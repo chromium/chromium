@@ -1,3 +1,0 @@
-This test passes if the following paragraph starts with PASS.
-
-PASS. This is a test paragraph. You can insert extra text at its start; the :first-letter styles should be updated to accommodate this new text.

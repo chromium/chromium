@@ -1,3 +1,0 @@
-Test added to address crash: http://crbug.com/360391
-
-This test tests to see if renderless plugin creation is possible; previously it would have crashed due to the lack of a frame().

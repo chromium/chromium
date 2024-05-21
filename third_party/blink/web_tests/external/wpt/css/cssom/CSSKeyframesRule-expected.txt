@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] name, cssRules, appendRule, findRule, deleteRule
-  assert_equals: CSSKeyframesRule cssText attribute with CSS-wide keyword name expected "@keyframes\\"initial\\"{}" but got "@keyframesinitial{}"
-Harness: the test ran to completion.
-

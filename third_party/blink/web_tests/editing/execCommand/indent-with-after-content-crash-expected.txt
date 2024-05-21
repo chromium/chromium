@@ -1,2 +1,0 @@
-This tests indenting with :after {content: "]"}. The test passes if WebKit doesn't crash.
-PASS.

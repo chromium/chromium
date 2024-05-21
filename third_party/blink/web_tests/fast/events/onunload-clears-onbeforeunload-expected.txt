@@ -1,3 +1,0 @@
-CONSOLE ERROR: Blocked alert('before unload') during beforeunload.
-CONSOLE ERROR: Blocked alert('unload') during unload.
-If you didn't hit an assert you PASS.

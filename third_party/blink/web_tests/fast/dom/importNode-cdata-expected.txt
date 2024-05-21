@@ -1,3 +1,0 @@
-This is a test to verify that importNode of a CDATASection on a HTML Document works.
-
-PASSED

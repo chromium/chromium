@@ -1,8 +1,0 @@
-This test performs an animation of the transform property with different fill modes. It animates over 0.1 second with a 0.1 second delay. It takes snapshots at document load and the end of the animations.
-Both Iterate - Reverse
-Both Iterate - Alternate Reverse
-PASS - start of animation - id: a expected: 300 actual: matrix(1, 0, 0, 1, 300, 0)
-PASS - start of animation - id: b expected: 300 actual: matrix(1, 0, 0, 1, 300, 0)
-PASS - end of animation - id: a expected: 200 actual: matrix(1, 0, 0, 1, 200, 0)
-PASS - end of animation - id: b expected: 300 actual: matrix(1, 0, 0, 1, 300, 0)
-

@@ -1,4 +1,0 @@
-This tests that a textarea where the wrap attribute is removed reverts to normal wrapping behavior.
-
- 
-Success

@@ -1,8 +1,0 @@
-Tests that Input.insertText waits for JavaScript event handlers to finish.
-Dispatching event
-inputEventPromise has not resolved yet
-Paused on debugger statement
-Input Value: Hello World! ❤️🚀
-Resumed
-Recieved ack for input event
-

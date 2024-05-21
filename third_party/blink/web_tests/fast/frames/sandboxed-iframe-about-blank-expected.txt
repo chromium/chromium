@@ -1,9 +1,0 @@
-This test verifies that sandboxing 'about:blank' does not make the containing frame sandboxed.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Container frame is able to run script.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

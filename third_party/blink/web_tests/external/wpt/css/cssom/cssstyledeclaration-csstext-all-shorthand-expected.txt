@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 'all' shorthand with all longhands
-  assert_equals: expected "all: inherit; direction: inherit; unicode-bidi: inherit;" but got "all: inherit; direction: inherit; unicode-bidi: inherit; -webkit-border-image: inherit; -webkit-user-modify: inherit;"
-Harness: the test ran to completion.
-

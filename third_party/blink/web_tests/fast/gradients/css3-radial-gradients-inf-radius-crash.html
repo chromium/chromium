@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<div style="background-image: radial-gradient(5% 1000000000000000000000000000000000000% at center, green, blue, red);"></div>
-<div style="background-image: radial-gradient(1000000000000000000000000000000000000% 5% at center, green, blue, red);"></div>
-<div style="background-image: radial-gradient(1000000000000000000000000000000000000% 1000000000000000000000000000000000000% at center, green, blue, red);"></div>
-<script>
-test(function() {}, 'Radial-gradient does not crash when specified with a height or width (or both) of near infinity.');
-</script>

@@ -1,5 +1,0 @@
-This tests that document.body.clientWidth and document.body.clientHeight cause a layout on use. The test has passed if they have positive values.
-
-document.body.clientWidth = 800
-document.body.clientHeight = 600
-

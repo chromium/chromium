@@ -1,5 +1,0 @@
-https://bugs.webkit.org/show_bug.cgi?id=20289
-
-Sanity check screenDepthPerComponent to ensure it is returning the number of bits per color rather than the screen depth (e.g. 24).
-Should be rgb(0, 0, 0): rgb(0, 0, 0)
-Should be rgb(0, 128, 0): rgb(0, 128, 0)

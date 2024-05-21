@@ -1,1 +1,0 @@
-This page tests that an empty render surface does not crash as reported in this bug. Pass if this does not crash.

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Navigating from the initial about:blank must not replace window.navigator
-  assert_equals: expected object "[object Navigator]" but got object "[object Navigator]"
-[FAIL] Navigating from the initial about:blank must not replace window.clientInformation
-  assert_equals: expected object "[object Navigator]" but got object "[object Navigator]"
-Harness: the test ran to completion.
-

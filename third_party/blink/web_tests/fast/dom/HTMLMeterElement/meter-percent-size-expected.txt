@@ -1,3 +1,0 @@
-Tests that percentage sizes on a meter element doesn't crash.
-
-    PASS

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] div.dropzone should not be null
-  assert_not_equals: div.dropzone should not be null got disallowed value null
-[FAIL] div dropzone idl attribute must reflect the content attribute of the same name
-  assert_equals: div dropzone idl attribute must reflect the content attribute of the same name expected (string) "copy file:image/png file:image/gif file:image/jpeg" but got (object) null
-Harness: the test ran to completion.
-

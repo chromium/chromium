@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect x="0" y="0" width="500" height="600" fill="#fff" />
-
-<g fill="green" transform="translate(200,200)">
-    <path id="path" d="M-25,0C120,-40 -80,-60 20,25zM20 10q-10 -10 2 -10" transform="scale(5,5)"/>
-</g>
-</svg>

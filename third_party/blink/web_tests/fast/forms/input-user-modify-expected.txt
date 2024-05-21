@@ -1,3 +1,0 @@
-The inner element of input should not be modifiable. Trying to delete the inner element of input should not cause a crash.
-
-PASS

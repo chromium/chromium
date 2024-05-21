@@ -1,4 +1,0 @@
-include_rules = [
-    "+base/compiler_specific.h",
-    "+media/base",
-]

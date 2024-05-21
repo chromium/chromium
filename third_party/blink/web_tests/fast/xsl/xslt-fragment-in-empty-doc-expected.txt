@@ -1,3 +1,0 @@
-This test checks whether XSLTProcessor.transformToFragment() does not crash when the target document does not have a root node.
-
-PASS: You didn't crash.

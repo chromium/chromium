@@ -1,9 +1,0 @@
-This text should use the system font.
-#system-ui:
-"DejaVu Sans" : 37
-
-This text should use the system font.
-#system-ui-20pt:
-"DejaVu Sans" : 37
-
-

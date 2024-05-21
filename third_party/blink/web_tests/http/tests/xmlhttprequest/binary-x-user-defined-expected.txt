@@ -1,3 +1,0 @@
-Test for bug 15555: XMLHttpRequest does not support charset "x-user-defined", which can facilitate loading of binary data.
-
-SUCCESS

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] opening unidirectional stream before ready
-  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
-[FAIL] opening bidirectional stream before ready
-  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
-Harness: the test ran to completion.
-

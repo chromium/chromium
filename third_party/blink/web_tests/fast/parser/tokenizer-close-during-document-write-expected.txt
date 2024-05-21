@@ -1,3 +1,0 @@
-Test for bug 39008: Webkit crashes on clicking back button when in hotmail.
-
-SUCCESS: didn't crash

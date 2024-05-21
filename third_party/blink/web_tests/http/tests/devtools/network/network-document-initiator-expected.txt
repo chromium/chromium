@@ -1,6 +1,0 @@
-Tests that page navigation initiated by JS is correctly reported.
-
-Page reloaded.
-http://127.0.0.1:8000/devtools/network/resources/initiator.html?foo: script
-    navigateFromScript http://127.0.0.1:8000/devtools/network/resources/initiator.html 7
-

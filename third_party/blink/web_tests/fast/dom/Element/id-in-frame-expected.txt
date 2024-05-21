@@ -1,9 +1,0 @@
-Test using id in frame
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.getElementById("theframe") is non-null.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

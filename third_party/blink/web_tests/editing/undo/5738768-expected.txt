@@ -1,1 +1,0 @@
-This tests for a crash on Undo. You should see an empty input field below.

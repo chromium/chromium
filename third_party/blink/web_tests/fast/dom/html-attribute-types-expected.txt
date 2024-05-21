@@ -1,7 +1,0 @@
-This checks the types of some HTML DOM attributes whose types currently clash with our implementation.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS typeof img.border is 'string'
-PASS typeof pre.width is 'number'

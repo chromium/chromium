@@ -1,1 +1,0 @@
-Tests that the :empty pseudo-class doesn't cause a crash when the empty status changes during parsing. 

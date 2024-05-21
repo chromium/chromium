@@ -1,4 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/navigation/resources/post-target-policy-test.php with navigation type 'back/forward'
-Policy delegate: attempt to load http://127.0.0.1:8000/navigation/resources/post-target-policy-test.php with navigation type 'back/forward'
-
-This page was reached via a form POST. After navigating away, there should be no form resubmission nag when navigating back here.

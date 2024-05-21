@@ -1,9 +1,0 @@
-Tests that disabling style property works.
-
-Before disable
-    font-weight: bold;
-After disable
-/-- overloaded --/ /-- disabled --/     /* font-weight: bold; */
-After enable
-    font-weight: bold;
-

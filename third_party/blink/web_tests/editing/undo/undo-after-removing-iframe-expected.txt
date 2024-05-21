@@ -1,6 +1,0 @@
-PASS doc.body.innerHTML is "ONE<iframe id=\"iframe1\"></iframe>"
-PASS $("sample").textContent is "OneFoo"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] If the implementation has a stack property on normal errors, it also does on DOMExceptions
-  assert_equals: The typeof values must match expected "string" but got "undefined"
-Harness: the test ran to completion.
-

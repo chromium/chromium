@@ -1,2 +1,0 @@
-
-This tests moving into an empty root inline boxes. The test passes as long as WebKit doesn't crash.

@@ -1,5 +1,0 @@
-Test that workers stay reachable via message ports. Should print "DONE" when done.
-
-PASS: Worker is reachable.
-DONE
-

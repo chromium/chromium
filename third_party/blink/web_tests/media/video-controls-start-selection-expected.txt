@@ -1,9 +1,0 @@
-PASS document.getSelection().rangeCount is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-
-Start selection on video with controls
-
- Some text here

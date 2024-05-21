@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] MouseEvent's pageX and pageY attributes should be the sum of the scroll offset and clientX/clientY
-  assert_equals: expected 5020 but got 20
-Harness: the test ran to completion.
-

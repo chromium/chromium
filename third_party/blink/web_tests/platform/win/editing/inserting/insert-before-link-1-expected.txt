@@ -1,3 +1,0 @@
-This tests insertion before/after links. Text should always be inserted at the start or end of a link should be inserted outside of it.
-
-this text should not be in a link<a id="link" href="http://www.google.com/">this should</a>&nbsp;this should not<a href="http://www.google.com/">this should</a>this should not

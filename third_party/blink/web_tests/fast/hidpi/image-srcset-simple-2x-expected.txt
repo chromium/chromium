@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS document.getElementById("foo").clientWidth==200 is true
-This test passes if the image below says 1x with a reddish background when the deviceScaleFactor is 1, and if says 2x with a greenish background when the deviceScaleFactor is 2.

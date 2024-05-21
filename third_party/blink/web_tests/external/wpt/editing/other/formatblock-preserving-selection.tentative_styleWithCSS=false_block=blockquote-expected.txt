@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Preserve selection after formatBlock with blockquote at <table><tr><td>a[bc</td></tr></table><div>de]f</div>
-  assert_equals: Result: <blockquote><table><tbody><tr><td><blockquote>abc</blockquote></td></tr></tbody></table>def</blockquote> expected "bcde" but got "bcdef"
-Harness: the test ran to completion.
-

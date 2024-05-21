@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <!-- Test that 'fill' on the 'rect' falls back to currentColor (green). -->
-  <g color="#008000" fill="#ff0000">
-    <rect width="100" height="100" fill="url(#notfound) currentColor"/>
-  </g>
-</svg>

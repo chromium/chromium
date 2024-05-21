@@ -1,3 +1,0 @@
-There should be a square below with an internal blue border and external black border. The external black border is around a shrink-to-fit div.
-
-PASS

@@ -1,5 +1,0 @@
-Test ensure overflow:hidden has the same effect that overflow-y:hidden has with respect to autoscroll.
-To test manually, text select by draggin the text below, and move the mouse downwards out of the div boundary. It should not scroll!
-Try to autoscroll this text.
-
-PASSED : the autoscroll did not happen!

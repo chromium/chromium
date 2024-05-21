@@ -1,9 +1,0 @@
-<?xml-stylesheet href="css3-modsel-124.css" type="text/css"?>
-<test xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
-<div xmlns="http://www.w3.org/1999/xhtml" class="stub">
-<p title="foo">This paragraph should have a green background.</p>
-<q xmlns="http://www.example.org/a" a:title="foo">This paragraph should be unstyled.</q>
-<s xmlns="http://www.example.org/a" a:title="foobar">This paragraph should have a green background.</s>
-<r xmlns="http://www.example.org/b" b:title="foo">This paragraph should have a green background.</r>
-</div>
-</test>

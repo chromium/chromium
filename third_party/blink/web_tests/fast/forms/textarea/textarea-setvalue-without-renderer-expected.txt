@@ -1,5 +1,0 @@
-This test checks for a regression against Glendale REGRESSION (Safari 416.12-417.2) gmail 'reply' does not fill in to: field or quoted message. Specifically, it checks to make sure that a textarea element created without a renderer maintains its value after it gains a renderer.
-
-If the test passes, you will see a value of "success" below.
-
-value of textarea element is: success

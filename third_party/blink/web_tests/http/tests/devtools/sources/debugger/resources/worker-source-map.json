@@ -1,8 +1,0 @@
-{
-"version":3,
-"file":"",
-"lineCount":1,
-"mappings":"AAAAA,QAASA,YAAW,EACpB,CACI,QADJ,CAIAA,WAAA;",
-"sources":["worker-source.js"],
-"names":["doSomething"]
-}

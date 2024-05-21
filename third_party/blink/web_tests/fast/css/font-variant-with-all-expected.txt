@@ -1,5 +1,0 @@
-Test for crbug.com/363631: font-variant: all causes ASSERT crash.
-
-PASS when running this test with debug binary and seeing no crash.
-
-PASS

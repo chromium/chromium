@@ -1,3 +1,0 @@
-Image object may not be captured by the promise of Image.decode.
-If GC kicks in before promise is resolved/rejected, Image object should be kept alive.
-PASS; no crash.

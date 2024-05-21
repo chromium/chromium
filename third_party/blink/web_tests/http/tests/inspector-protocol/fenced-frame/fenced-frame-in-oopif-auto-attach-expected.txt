@@ -1,4 +1,0 @@
-Tests that auto-attach of fenced frame inside oopif works correctly
-attached to iframe
-attached to fenced frame
-

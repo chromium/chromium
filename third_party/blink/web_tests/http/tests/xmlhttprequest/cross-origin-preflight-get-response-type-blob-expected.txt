@@ -1,4 +1,0 @@
-The "Origin" header must be sent with a "non-simple" cross-origin resource sharing request that uses the GET method and specifies "blob" as response type.
-
-PASS: Origin header correctly sent
-

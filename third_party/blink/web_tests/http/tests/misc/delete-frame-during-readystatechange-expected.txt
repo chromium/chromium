@@ -1,1 +1,0 @@
-Test deleting a subframe from within its readystatechange event. We pass if we don't crash.

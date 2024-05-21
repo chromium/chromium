@@ -1,8 +1,0 @@
-This test checks the default referrer policy when navigating from a secure URL to an insecure URL. The test passes if the printed referrer is empty.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is empty
-Referrer is empty
-

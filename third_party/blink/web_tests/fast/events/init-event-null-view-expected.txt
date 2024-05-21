@@ -1,3 +1,0 @@
-This is a regression test for bug 4298. Without the bug fix it causes a crash.
-
-Successfully created a mouse event object without a view and didn't crash.

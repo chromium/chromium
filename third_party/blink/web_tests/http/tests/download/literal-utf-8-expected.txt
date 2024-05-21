@@ -1,2 +1,0 @@
-Policy delegate: attempt to load http://127.0.0.1:8000/download/resources/literal-utf-8.php with navigation type 'other'
-Downloaded file name should be "SUССЕSS.txt" (letters "CCE" are Cyrillic).

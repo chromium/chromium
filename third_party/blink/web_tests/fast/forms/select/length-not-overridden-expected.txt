@@ -1,5 +1,0 @@
-This tests that the length property is not overriden by having an option with the name 'length'.
-
-Select Element Test Passed
-Options Collection Test Passed
-

@@ -1,3 +1,0 @@
-.red { background-color : red }
-p:nth-of-type(3) { background-color : lime }
-dl > :nth-of-type(3n+1) { background-color : lime }

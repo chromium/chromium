@@ -1,9 +1,0 @@
-Test for Case1: Non-Nested
-PASS harness.expected is testRunner.tooltipText
-Test for Case 2: Nested
-PASS harness.expected is testRunner.tooltipText
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-

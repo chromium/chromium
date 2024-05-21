@@ -1,7 +1,0 @@
-Test sending and receiving small messages of different lengths.
-
-Should say PASS:
-
-Running the test...
-PASS
-

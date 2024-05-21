@@ -1,4 +1,0 @@
-Verify that highlighter type for SCSS file loaded via sourceMap is correct.
-
-text/x-scss
-

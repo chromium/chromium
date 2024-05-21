@@ -1,7 +1,0 @@
-<script>
-function frameLoaded() {
-  if (window.opener)
-    window.opener.postMessage('done', '*');
-}
-</script>
-<iframe onload="frameLoaded()" src="data:text/html,<html><script src='http://example.test:8080/security/mixedContent/resources/script.js'></script></html>"></iframe>

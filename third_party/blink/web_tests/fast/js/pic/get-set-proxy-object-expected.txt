@@ -1,4 +1,0 @@
-This page tests cached get and set through a proxy object. If the test passes, you'll see a PASS message below.
-
-PASS: You didn't crash.
-

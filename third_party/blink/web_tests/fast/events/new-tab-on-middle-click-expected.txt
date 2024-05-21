@@ -1,3 +1,0 @@
-Tests that middle button click on a fragment link results in a new tab.
-
-SUCCESS, no same-document navigation

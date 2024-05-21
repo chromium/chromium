@@ -1,3 +1,0 @@
-ALERT: PASS
-This tests that we can cause the Page to defer loading while loading the same resource in multiple iframes. In this test, the load deferral is because of a modal dialog via window.alert. We pass if we don't assert in debug.
-See https://bugs.webkit.org/show_bug.cgi?id=111902.  

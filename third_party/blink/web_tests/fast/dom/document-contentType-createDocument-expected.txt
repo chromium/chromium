@@ -1,6 +1,0 @@
-PASS doc.contentType is "text/html"
-PASS doc.contentType is "application/xml"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

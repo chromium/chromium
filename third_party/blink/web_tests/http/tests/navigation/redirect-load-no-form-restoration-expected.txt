@@ -1,8 +1,0 @@
-This tests that the old url's document state (including the form state) is not restored for the new url after a redirect.
-
-Test Passed
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/redirect-load-no-form-restoration.html
-curr->  http://127.0.0.1:8000/navigation/resources/redirect-load.html
-===============================================

@@ -1,2 +1,0 @@
-Filename being dragged: onload-image.png
-This test requires DumpRenderTree. To test manually, drag the image to the desktop. It should receive the name "onload-image.png".

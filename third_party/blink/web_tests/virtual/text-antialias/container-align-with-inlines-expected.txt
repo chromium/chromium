@@ -1,7 +1,0 @@
-The blue box should be right-aligned. You will need to scroll right to see it.
-https://bugs.webkit.org/show_bug.cgi?id=105695
-
-XXX
-
-XXX
-Success

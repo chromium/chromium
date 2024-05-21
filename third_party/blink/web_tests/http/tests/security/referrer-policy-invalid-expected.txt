@@ -1,9 +1,0 @@
-CONSOLE ERROR: Failed to set referrer policy: The value 'invalid' is not one of 'always', 'default', 'never', 'origin-when-crossorigin', 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', or 'unsafe-url'. The referrer policy has been left unchanged.
-This test checks that an invalid referrer policy is ignored when navigating from an insecure URL to another insecure URL. The test passes if the printed referrer is the full URL.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-HTTP Referer header is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?invalid
-Referrer is http://127.0.0.1:8000/security/resources/referrer-policy-start.html?invalid
-

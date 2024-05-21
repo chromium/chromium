@@ -1,5 +1,0 @@
-Testing a11y in performance panel - main flamechart.
-Page reloaded.
-aXe violations: []
-
-

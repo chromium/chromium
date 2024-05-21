@@ -1,8 +1,0 @@
-Plugin received event: MouseEnter
-Plugin received event: MouseMove
-Plugin received event: MouseDown
-Plugin received event: MouseUp
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

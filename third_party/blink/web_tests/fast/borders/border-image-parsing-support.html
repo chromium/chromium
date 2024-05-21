@@ -1,9 +1,0 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script>
-test(() => {
-  assert_false(CSS.supports('border-image', '1 / 1 2 3 4 5'));
-  assert_false(CSS.supports('border-image', '1 / 1 / '));
-  assert_true(CSS.supports('border-image', '1 / 1 / 1'));
-}, 'border-image parsing support');
-</script>

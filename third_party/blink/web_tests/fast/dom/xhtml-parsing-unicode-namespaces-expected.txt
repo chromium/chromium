@@ -1,3 +1,0 @@
-This tests parsing XHTML that uses Unicode namespace prefixes. If the test succeeds you will see the word "PASS" below.
-
-PASS

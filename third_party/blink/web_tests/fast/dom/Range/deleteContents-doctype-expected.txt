@@ -1,9 +1,0 @@
-This test verifies if Range.deleteContents can handle doctype.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS range.deleteContents() did not throw exception.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

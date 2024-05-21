@@ -1,7 +1,0 @@
-Test for a bug where computing the text offset for a position at the beginning of a glyph cluster at the beginning of a Core Text run resulted in an attempt to read past the end of a vector.
-
-The test passes if an assertion failure does not occur and the selection is before the first Thai character.
-
-PASS
-
-ไพ

@@ -1,9 +1,0 @@
-Test for the formmethod attribute in input tags.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS The formmethod attribute was successfully used
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

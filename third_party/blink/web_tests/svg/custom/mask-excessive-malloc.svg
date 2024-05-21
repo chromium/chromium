@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg">
-<mask id="mask" width="2147483647" height="2147483647">
-    <rect x="0" y="0" width="2147483647" height="2147483647" fill="white"/>
-</mask>
-<path mask="url(#mask)" fill="blue" d="M 200 200 l 100 0 l 0 200 l -100 0 Z"/>
-</svg>

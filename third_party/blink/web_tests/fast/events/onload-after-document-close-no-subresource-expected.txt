@@ -1,4 +1,0 @@
-This test verifies that the load event fires after a document.close, even if the document contains no subresources. See bug 13241.
-
-PASS: onload fired
-

@@ -1,2 +1,0 @@
-This test passes if we do NOT crash while rendering SVG text with CSS styles :first-letter and :first-line.
-Some text

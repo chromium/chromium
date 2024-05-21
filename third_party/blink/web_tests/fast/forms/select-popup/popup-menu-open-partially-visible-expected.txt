@@ -1,7 +1,0 @@
-PASS internals.pagePopupWindow.isWindowHidden() is false
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-o1
-o2

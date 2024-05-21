@@ -1,4 +1,0 @@
-This tests adopting a parent iframe (i.e. the iframe contains the document into which iframe is adopted). WebKit should not hang and should throw a hierarchy request exception.
-
-Adopting parent frame: PASS
-Adopting grandparent frame: PASS

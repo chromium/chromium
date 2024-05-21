@@ -1,1 +1,0 @@
-this resource should not be intercepted by a service worker

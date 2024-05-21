@@ -1,3 +1,0 @@
-This test is to see if a remote file can include a local image when the access has been white listed using addOriginAccessAllowListEntry.
-
-Test Passed. Local image loaded remotely.

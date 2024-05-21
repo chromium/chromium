@@ -1,2 +1,0 @@
-This tests smart pasting in a text control. To manually test, double click the middle word in the text area below. Then cut and paste. It should result in the original text. The space before the middle word should not be lost.
-FAIL: Smart cutting and pasting do not result in the original text.

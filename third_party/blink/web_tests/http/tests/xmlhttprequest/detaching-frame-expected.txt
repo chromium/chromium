@@ -1,3 +1,0 @@
-Test that removing an IFRAME from an XMLHttpRequest finished callback does not cause a crash.
-
-PASS: No crash.

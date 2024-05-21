@@ -1,1 +1,0 @@
-Tests for performance.measureMemory API that require --enable-blink-features=ForceEagerMeasureMemory to avoid waiting for GC.

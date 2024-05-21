@@ -1,7 +1,0 @@
-This is the first paragraph, used for the moving-backward test.
-
-This tests for a problem with selections at document edges.
-
-SUCCESS
-
-This is the last paragraph, used for the moving-forward test.

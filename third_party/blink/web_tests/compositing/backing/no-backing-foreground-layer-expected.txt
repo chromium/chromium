@@ -1,1 +1,0 @@
-This test should not ASSERT in debug builds.

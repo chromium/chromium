@@ -1,2 +1,0 @@
-This tests hit testing on the border and padding areas of an input. Clicks in either should hit the input element.
-Test Passed

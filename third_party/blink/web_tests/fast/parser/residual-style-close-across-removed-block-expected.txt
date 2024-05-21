@@ -1,3 +1,0 @@
-Test for rdar://problem/6255862 domfuzz: null deref in WebCore::HTMLParser::handleResidualStyleCloseTagAcrossBlocks(WebCore::HTMLStackElem*).
-
-This tests closing a residual style tag out of order after a block child has been removed from the tree. No crash means PASS.

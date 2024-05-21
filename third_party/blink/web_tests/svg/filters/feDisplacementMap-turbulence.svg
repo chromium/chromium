@@ -1,9 +1,0 @@
-<svg width="200" height="200" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-<filter id="displacement">
-  <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="5" result="turbulence"/>
-  <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="30" xChannelSelector="R" yChannelSelector="G"/>
-</filter>
-
-<circle cx="100" cy="100" r="100" style="filter: url(#displacement)"/>
-</svg>
-

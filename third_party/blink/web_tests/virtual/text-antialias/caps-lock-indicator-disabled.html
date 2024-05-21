@@ -1,8 +1,0 @@
-<!doctype html>
-Test passes if password field does not include caps lock icon on right edge on any platform.<br>
-<input id="password" type="password">
-<script>
-    if (window.internals)
-        internals.setCapsLockState(false);
-    password.focus();
-</script>

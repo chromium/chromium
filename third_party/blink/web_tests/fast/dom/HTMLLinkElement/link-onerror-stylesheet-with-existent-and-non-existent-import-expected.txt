@@ -1,5 +1,0 @@
-This tests that an Error event is fired at an HTML Link element when its style sheet fails to load an @import'ed style sheet (regardless of whether it successfully loaded another @import'ed style sheet). This test PASSED if there are only PASS messages below. Otherwise, it FAILED.
-
-PASS Fired Error event.
-PASS #test color was rgb(0, 0, 255).
-

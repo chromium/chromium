@@ -1,3 +1,0 @@
-Test to see if the charset property in a link works properly.
-
-SUCCESS

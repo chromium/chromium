@@ -1,3 +1,0 @@
-<!DOCTYPE doc [
-  <!ENTITY % elem "<!ELEMENT e0000000000">
-  %elem;

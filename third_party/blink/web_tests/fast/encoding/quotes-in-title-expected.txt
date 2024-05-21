@@ -1,4 +1,0 @@
-PASS: KOI8-R
-
-
-This test checks whether charset sniffer skips over quoted elements in a title tag correctly. Tests a bug in the charset sniffer that would consume all characters after the bracket in the quoted text until the next closing bracket, causing the closing title tag to be missed.

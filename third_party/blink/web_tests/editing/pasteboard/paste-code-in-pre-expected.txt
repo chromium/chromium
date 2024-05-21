@@ -1,6 +1,0 @@
-This tests a bug when copying HTML markup inside <pre> tags. When pasted, this content would appear as the rendered form of that markup.
-You should see markup in the editable region below. See <rdar://5027857>.
-| <pre>
-|   contenteditable="true"
-|   id="pre"
-|   "<input type='button'>foo<br>bar<b>baz</b><#selection-caret>"

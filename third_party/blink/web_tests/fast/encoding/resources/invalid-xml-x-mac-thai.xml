@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="x-mac-thai" ?>
-<root>
- <fail> This is an invalid byte in x-mac-thai:  </fail>
- <test/> <!-- shouldn't ever be parsed, as the parser should abort at the first sign of non-well-formedness -->
-</root>

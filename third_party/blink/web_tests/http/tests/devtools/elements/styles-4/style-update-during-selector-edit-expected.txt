@@ -1,4 +1,0 @@
-Tests that modification of element styles while editing a selector does not commit the editor.
-
-SUCCESS: Styles pane not updated.
-

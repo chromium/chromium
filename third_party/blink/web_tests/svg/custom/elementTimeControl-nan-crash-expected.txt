@@ -1,1 +1,0 @@
-Test for WK100322: ElementTimeControl should check for invalid values. This test passes if it does not crash. 

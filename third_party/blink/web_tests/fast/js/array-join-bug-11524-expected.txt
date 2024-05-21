@@ -1,9 +1,0 @@
-This test verifies that Array.prototype.join uses the ToString operator rather than calling element.toString(). See bug 11524 for more information.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS [customObject].join() is 'custom object'
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

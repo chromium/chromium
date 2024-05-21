@@ -1,6 +1,0 @@
-This tests that assigning to document.location from a timeout in a button click adds a back/forward item. Navigate
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/document-location-click-timeout.html
-curr->  http://127.0.0.1:8000/navigation/document-location-click-timeout.html?1
-===============================================

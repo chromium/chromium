@@ -1,7 +1,0 @@
-Test case for bug 40952: Onloadend event is not supported in XMLHttpRequest
-
-Verify that a loadend ProgressEvent is dispatched after the abort ProgressEvent when an async upload request is aborted.
-
-PASS should appear below:
-
-PASS

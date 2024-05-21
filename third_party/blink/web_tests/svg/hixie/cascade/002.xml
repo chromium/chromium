@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="400" width="400">
- <style type="text/css">
-  circle { fill: maroon; }
-  a:visited circle { fill: green; }
- </style>
- <a xlink:href="002.xml" xlink:type="simple"><circle cx="200" cy="200" r="100" fill="red"/></a>
-</svg>

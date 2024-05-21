@@ -1,3 +1,0 @@
-There should be no assertion failures below, but the word DONE should show up.
-
-DONE

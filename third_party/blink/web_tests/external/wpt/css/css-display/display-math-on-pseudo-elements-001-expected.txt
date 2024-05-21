@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] computed display on ::before and ::after for <math class="inline">
-  assert_equals: expected "inline" but got "block"
-[FAIL] computed display on ::before and ::after for <mrow class="inline">
-  assert_equals: expected "inline" but got "block"
-Harness: the test ran to completion.
-

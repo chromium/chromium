@@ -1,4 +1,0 @@
-This tests beforeunload event in multiple subframes. You should see PASS below:
-
-PASS
-  

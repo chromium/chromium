@@ -1,4 +1,0 @@
-This page verifies that the single property optimization doesn't cause similar looking objects to be given the same structure identifiers. If the test passes, you'll see a PASS message below.
-
-PASS: getA(o2) should be undefined and is.
-

@@ -1,8 +1,0 @@
-// Copyright 2021 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// Information about how/where an opaque Ads object may be used.
-// https://github.com/WICG/privacy-preserving-ads/blob/main/Parakeet.md
-
-interface Ads{};

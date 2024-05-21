@@ -1,7 +1,0 @@
-Setting event listener breakpoints.
-Dumping Animation category.
-Animation
-Running the axe-core linter on the Animation category of the event listener breakpoints pane.
-aXe violations: []
-
-

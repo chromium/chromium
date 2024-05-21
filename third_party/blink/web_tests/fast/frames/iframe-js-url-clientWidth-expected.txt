@@ -1,5 +1,0 @@
-This page tests whether an iframe correctly reports renderer-dependent values when executing a javascript: load. If the test passes, you'll see a series of 'PASS' messages below.
-
-PASS: iframe.frameElement.clientWidth should be 250 and is.
-PASS: iframe.frameElement.clientHeight should be 250 and is.
-

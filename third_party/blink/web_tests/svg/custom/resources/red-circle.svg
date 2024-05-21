@@ -1,7 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-<title>Circle</title>
-<desc>SVG Tag for drawing a red circle</desc>
-<circle cx="25" cy="25" r="20" fill="red"/>
-</svg>

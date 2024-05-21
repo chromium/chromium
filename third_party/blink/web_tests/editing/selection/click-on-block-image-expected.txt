@@ -1,5 +1,0 @@
-To run this test manually, click to the left and verify that the caret is placed to the left of the image, then click to the right of the image and verify that the caret is on the right.
-hello
-world
-Anchor ([object HTMLDivElement], 1) is correct.
-Anchor ([object HTMLDivElement], 2) is correct.

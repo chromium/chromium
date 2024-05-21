@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] When converting 'navigationStart' to a timestamp and a mark named 'navigationStart' exists, the global object has to be a Window object.
-  assert_throws_js: function "() => {\n    performance.mark('navigationStart');\n    performance.measure('name', 'navigationStart', 'navigationStart');\n  }" did not throw
-Harness: the test ran to completion.
-

@@ -1,3 +1,0 @@
-Test that window.onerror won't reveal any potentially sensitive script content if the latter is loaded from a different domain. The test passes if you don't see any data from the linked resource. Bug 52903.
-
-window.onerror message: Script error. at : 0

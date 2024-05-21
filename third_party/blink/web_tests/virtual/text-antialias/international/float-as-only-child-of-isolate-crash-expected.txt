@@ -1,1 +1,0 @@
-This tests that we avoid trying to lay out floats inside an inline with unicode-bidi: isolate. Test passes if we don't crash.

@@ -1,3 +1,0 @@
-Test for Bug https://bugs.webkit.org/show_bug.cgi?id=19891 Broken HTML object elements cause de-reference of pointer to freed memory
-
-Pass if there is no crash or ASSERT.

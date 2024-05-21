@@ -1,7 +1,0 @@
-Test that inspected page won't crash if inspected worker is terminated while it is paused. Test passes if it doesn't crash. Bug 101065.
-Started worker
-Worker created
-didConnectToWorker
-Worker paused
-SUCCESS: Did terminate paused worker
-

@@ -1,1 +1,0 @@
-postMessage(performance.timeOrigin);

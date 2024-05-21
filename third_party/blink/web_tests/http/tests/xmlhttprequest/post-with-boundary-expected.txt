@@ -1,5 +1,0 @@
-Test for bug 40947: REGRESSION (r57544): XMLHttpRequest POSTed multipart/form-data wrongfully gets a charset appended.
-
-There should be no charset added, and most importantly, it shouldn't be appended to the end.
-
-PASS

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="198" height="100">
-  <style>
-    <![CDATA[@font-face{font-family:"ahem-data"; src:url('data:font/ttf;base64,validAsDataUrlButInvalidAsFontData');}]]>
-  </style>
-  <text x="50" y="50" font-family="ahem-data" font-size="16">Hello, World</text>
-</svg>

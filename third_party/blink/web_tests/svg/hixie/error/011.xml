@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0,, 1 1"> <!-- two commas is non-conformant, so this should be unsupported and therefore ignored. -->
- <rect x="0" y="0" width="1" height="1" fill="red"/>
- <text x="10" y="30" font-size="20" fill="blue">There should be no red on this page.</text>
-</svg>

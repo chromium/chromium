@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-	<rect x="8" y="8" width="100" height="100" tabindex="0" fill="none"/>
-	<script>
-	document.querySelector("rect").focus();
-	</script>
-</svg>

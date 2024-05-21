@@ -1,6 +1,0 @@
-vasilii@chromium.org
-file://device/fido/OWNERS
-file://content/browser/webid/OWNERS
-
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

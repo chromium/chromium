@@ -1,8 +1,0 @@
-Test EventSource attribute listener functionality. Should print a series of PASS messages followed by DONE.
-
-PASS: attribute listeners are initially null
-PASS: setting and getting attribute listener works
-PASS: resetting attribute listener works
-PASS: dispatching event on an EventSource triggers attribute listener
-DONE
-

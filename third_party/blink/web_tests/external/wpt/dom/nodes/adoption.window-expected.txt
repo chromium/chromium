@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] adoptNode() and DocumentFragment with host
-  assert_equals: expected Document node with 0 children but got Document node with 2 children
-Harness: the test ran to completion.
-

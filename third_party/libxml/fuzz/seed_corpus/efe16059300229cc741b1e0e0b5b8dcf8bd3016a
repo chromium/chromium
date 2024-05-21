@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<roap:deviceHello
-  xmlns:roap="urn:oma:bac:dldrm:roap-1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <deviceID>
-        <keyIdentifier
-><hash>vXENc+Um/9/NvmYKiHDLaErK0gk=</hash></keyIdentifier>
-    </deviceID>
-</roap:deviceHello>

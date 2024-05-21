@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] IntersectionObserverEntry interface object length
-  assert_equals: wrong value for IntersectionObserverEntry.length expected 1 but got 0
-Harness: the test ran to completion.
-

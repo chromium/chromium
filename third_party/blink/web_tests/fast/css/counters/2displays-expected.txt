@@ -1,9 +1,0 @@
-This test passes if both the first and the second counter are 1000.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS internals.counterValue(document.getElementById('testView')) is '1000 1000'

@@ -1,8 +1,0 @@
-features:
-- name: focus-visible
-  files:
-  - parse-focus-visible.html
-- name: has
-  files:
-  - parse-has.html
-  - parse-has-*

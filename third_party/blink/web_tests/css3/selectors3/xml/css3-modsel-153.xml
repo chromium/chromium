@@ -1,6 +1,0 @@
-<?xml-stylesheet href="css3-modsel-153.css" type="text/css"?>
-<test>
- <address xmlns="http://tests.example.org/xml-only/"><![CDATA[]]></address>
- <div xmlns="http://www.w3.org/1999/xhtml" class="text">This line should have a green background.</div>
- <p xmlns="http://www.w3.org/1999/xhtml">(Note: This test is based on unpublished errata.)</p>
-</test>

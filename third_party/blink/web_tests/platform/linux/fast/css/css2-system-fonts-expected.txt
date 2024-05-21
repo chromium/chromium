@@ -1,7 +1,0 @@
-This tests platform specific system font styles. If any of the styles appear in monospace the test fails.
-caption: 16px Arial
-icon: 16px Arial
-menu: 16px Arial
-message-box: 16px Arial
-small-caption: 16px Arial
-status-bar: 16px Arial

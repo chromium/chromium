@@ -1,1 +1,0 @@
-This test assures that inserting a newline in a list nested in a blockquote doesn't crash.

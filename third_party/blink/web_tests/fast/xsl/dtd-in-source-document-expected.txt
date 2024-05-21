@@ -1,2 +1,0 @@
-This tests that entities defined in an external DTD referenced to from the source document are replaced correctly. If this test is successful, the text SUCCESS should be shown below.
-SUCCESS

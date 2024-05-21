@@ -1,5 +1,0 @@
-Test that text/plain;charset=UTF-8 is set as default Content-Type for POST requests
-with text content. Should print PASS.
-
-PASS
-

@@ -1,3 +1,0 @@
-This tests that frame used when setting eventListeners on an EventTarget using addEventListener is the target nodes frame. (rdar://problem/5426142). This test passes if you don't see an alert dialog with the domain of "localhost" in it and an "Unsafe JavaScript" warning is logged to the console.
-
- 

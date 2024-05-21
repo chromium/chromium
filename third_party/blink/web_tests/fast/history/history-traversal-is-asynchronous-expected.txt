@@ -1,9 +1,0 @@
-Checks that session history traversal is done asynchronously.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS location.hash is "#state1"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

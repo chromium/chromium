@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: PASS if no assertion failure
-

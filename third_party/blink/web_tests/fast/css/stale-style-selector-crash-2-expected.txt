@@ -1,5 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13563 REGRESSION: Crash loading message in Yahoo! Mail.
-
-The following line should say SUCCESS in green letters over a white background.
-
-SUCCESS

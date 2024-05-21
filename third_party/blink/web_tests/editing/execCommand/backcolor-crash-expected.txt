@@ -1,3 +1,0 @@
-This is a crash test when executing backColor on a node where all of its ancestors have transparent background color. You should see PASS at the end.
-backColor: rgba(0, 0, 0, 0)
-PASS

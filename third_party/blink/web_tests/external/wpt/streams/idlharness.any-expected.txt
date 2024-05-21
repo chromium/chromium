@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] ReadableStream interface: operation from(any)
-  assert_own_property: interface object missing static operation expected property "from" missing
-[FAIL] ReadableStream interface: calling from(any) on new ReadableStream() with too few arguments must throw TypeError
-  assert_own_property: interface object must have static operation as own property expected property "from" missing
-Harness: the test ran to completion.
-

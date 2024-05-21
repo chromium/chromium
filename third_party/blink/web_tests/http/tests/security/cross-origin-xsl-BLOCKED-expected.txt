@@ -1,4 +1,0 @@
-CONSOLE ERROR: Unsafe attempt to load URL http://localhost:8000/security/resources/forbidden-stylesheet.xsl from frame with URL http://127.0.0.1:8000/security/resources/cross-origin-xsl.xml. Domains, protocols and ports must match.
-
-This test loads the XML document in an iframe so that it can call dumpAsText(). This test passes if the iframe below does not contain a message starting with "FAIL".
-

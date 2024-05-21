@@ -1,5 +1,0 @@
-<0notatag>
-PASS: windows-1255
-
-
-This test checks that charset sniffer does not get confused by text that looks like a tag whose name begins with a digit.

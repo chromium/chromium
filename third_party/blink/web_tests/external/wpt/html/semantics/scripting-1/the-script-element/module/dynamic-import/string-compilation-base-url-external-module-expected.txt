@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setTimeout should successfully import
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/imports-a.js?label=setTimeout"
-[FAIL] reflected-inline-event-handlers should successfully import
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/dynamic-import/imports-a.js?label=reflected-inline-event-handlers"
-[FAIL] inline-event-handlers-UA-code should successfully import
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/dynamic-import/imports-a.js?label=inline-event-handlers-UA-code"
-Harness: the test ran to completion.
-

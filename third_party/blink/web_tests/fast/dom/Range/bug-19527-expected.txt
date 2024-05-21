@@ -1,3 +1,0 @@
-Test Range.comparePoint and Range.isPointInRange Firefox extensions.
-
-PASS

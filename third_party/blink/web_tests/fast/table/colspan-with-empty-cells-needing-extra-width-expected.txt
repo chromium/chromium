@@ -1,5 +1,0 @@
-crbug.com/534830: Don't deduct the min-width of empty cells from the available table width. There should be no red.
-
-	
-TestTestTest
-PASS

@@ -1,6 +1,0 @@
-translate(80px, 90px) expected matrix(1, 0, 0, 1, 80, 90) : PASS
-translate(10px, 50%) expected matrix(1, 0, 0, 1, 10, 60) : PASS
-scale(1.2, 0.8) expected matrix(1.2, 0, 0, 0.8, 0, 0) : PASS
-skew(-0.7rad, 20deg) expected matrix(1, 0.36397, -0.842288, 1, 0, 0) : PASS
-rotate(45deg) expected matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0) : PASS
-

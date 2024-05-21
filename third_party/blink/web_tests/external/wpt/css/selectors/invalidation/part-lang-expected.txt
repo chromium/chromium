@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ::part():lang() invalidation
-  assert_equals: expected "rgb(0, 255, 255)" but got "rgb(255, 0, 0)"
-[FAIL] ::part():lang() invalidation from setAttribute
-  assert_equals: expected "rgb(0, 255, 255)" but got "rgb(255, 0, 0)"
-Harness: the test ran to completion.
-

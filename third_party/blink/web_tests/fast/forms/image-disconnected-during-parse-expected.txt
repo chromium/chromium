@@ -1,9 +1,0 @@
-Image elements should not be associated with forms in different trees
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.forms[0].myimage is undefined.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

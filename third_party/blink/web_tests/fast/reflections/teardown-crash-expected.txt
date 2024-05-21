@@ -1,1 +1,0 @@
-To pass this test, WebKit should not crash under GuardMalloc during render tree tear down.

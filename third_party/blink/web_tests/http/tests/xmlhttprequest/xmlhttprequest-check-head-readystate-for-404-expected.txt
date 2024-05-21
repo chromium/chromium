@@ -1,3 +1,0 @@
-This tests the readyState of a XMLHttpRequset which is sent with a "HEAD" method to a not exist resource.
-
-PASS

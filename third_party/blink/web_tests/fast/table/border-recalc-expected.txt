@@ -1,9 +1,0 @@
-Check that we don't recalc table cell contents when presentation attributes change.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS internals.updateStyleAndReturnAffectedElementCount() is 4
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

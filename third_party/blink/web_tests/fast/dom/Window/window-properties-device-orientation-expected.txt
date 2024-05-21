@@ -1,7 +1,0 @@
-This test dumps all of the properties that are reachable from the window.DeviceMotionEvent window.ondevicemotion, window.DeviceOrientationEvent and window.ondeviceorientation objects, along with their types. These properties are currently enabled by a runtime flag.
-
-window.DeviceMotionEvent [function]
-window.ondevicemotion [null]
-window.DeviceOrientationEvent [function]
-window.ondeviceorientation [null]
-

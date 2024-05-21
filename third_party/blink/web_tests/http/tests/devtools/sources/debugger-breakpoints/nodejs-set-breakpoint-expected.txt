@@ -1,7 +1,0 @@
-Verify that front-end is able to set breakpoint for node.js scripts.
-
-Setting breakpoint:
-Script execution paused.
-Successfully paused on breakpoint
-Script execution resumed.
-

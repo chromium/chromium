@@ -1,1 +1,0 @@
-If this text is visible and the test did not crash, this test passes

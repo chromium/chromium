@@ -1,3 +1,0 @@
-TITLE CHANGED: 'New non-empty title'
-TITLE CHANGED: 'title-text-property-assigning-empty-string.html'
-

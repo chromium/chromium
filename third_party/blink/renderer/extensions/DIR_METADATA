@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>Internals>Modularization"
-}
-team_email: "platform-architecture-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456437
-}

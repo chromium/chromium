@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] -webkit-user-modify is not supported
-  assert_equals: expected (undefined) undefined but got (string) ""
-Harness: the test ran to completion.
-

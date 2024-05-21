@@ -1,8 +1,0 @@
-This test setting various attributes of a CanvasRenderingContext2D to JavaScript null.
-
-TEST SUCCEEDED: The value was the string 'source-over'. [tested CanvasRenderingContext2D.globalCompositeOperation]
-TEST SUCCEEDED: The value was the string 'butt'. [tested CanvasRenderingContext2D.lineCap]
-TEST SUCCEEDED: The value was the string 'miter'. [tested CanvasRenderingContext2D.lineJoin]
-TEST SUCCEEDED: The value was the string 'rgba(0, 0, 0, 0)'. [tested CanvasRenderingContext2D.shadowColor]
-
-

@@ -1,3 +1,0 @@
-Bug 19588: CRASH doing open() on destroyed window
-
-If this page does not crash the test has passed.

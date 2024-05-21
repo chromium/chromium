@@ -1,2 +1,0 @@
-http://webkit.org/b/30424 and <rdar://problem/7308952> - REGRESSION (r48687) - Some pages appear blank.
-If you can see this, the page loaded fine and the bug is fixed.

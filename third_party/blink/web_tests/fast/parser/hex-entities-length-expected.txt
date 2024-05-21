@@ -1,8 +1,0 @@
-There should be 6 lines below, each with two copies of the same character.
-
-aa
-ḁḁ
-𐐀𐐀
-𐑍𐑍
-𐑎𐑎
-𐑏𐑏

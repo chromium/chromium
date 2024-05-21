@@ -1,3 +1,0 @@
-bug 83728: Reduce the use of Layer outside of the rendering code
-This test passes if you see PASSED below.
-PASSED: The test did not crash!

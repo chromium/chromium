@@ -1,9 +1,0 @@
-PASS 'use strict'; var a = arr(); a.length = 2; a threw exception of type TypeError.
-PASS true === true
-PASS 'use strict'; var a = addx(arr()); a.length = 2; a threw exception of type TypeError.
-PASS true === true
- PASSED! 
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

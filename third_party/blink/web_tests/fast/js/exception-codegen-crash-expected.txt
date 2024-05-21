@@ -1,3 +1,0 @@
-This page tests some conditions that used to cause crashes during codegen.
-
-If you don't crash, you pass.

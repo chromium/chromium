@@ -1,3 +1,0 @@
-This is a test for http://bugs.webkit.org/show_bug.cgi?id=10472 REGRESSION: "add" method of <select> object does not put the <option> object in the correct position.
-
-Result: PASS

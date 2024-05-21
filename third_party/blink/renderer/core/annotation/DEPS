@@ -1,3 +1,0 @@
-include_rules = [
-    "+components/shared_highlighting/core/common"
-]

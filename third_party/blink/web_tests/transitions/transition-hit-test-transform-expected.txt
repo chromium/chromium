@@ -1,5 +1,0 @@
-This test starts a transition of the 'transform' property and then does elementFromPoint calls at the shown yellow dots to see if hit testing works
-PASS - 150px was outside as it should be
-PASS - 300px was inside as it should be
-PASS - 450px was outside as it should be
-

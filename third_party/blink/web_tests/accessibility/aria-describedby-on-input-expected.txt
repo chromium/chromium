@@ -1,4 +1,0 @@
-This computer will self-destruct in  minutes.
-Allows you to specify the number of minutes after which the computer will self-destruct.
-
-The accessibility description is "Allows you to specify the number of minutes after which the computer will self-destruct."

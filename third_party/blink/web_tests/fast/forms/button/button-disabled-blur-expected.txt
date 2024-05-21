@@ -1,7 +1,0 @@
-PASS document.activeElement is button
-Clicking a button makes the button disabled.
-PASS blur event was disaptched.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

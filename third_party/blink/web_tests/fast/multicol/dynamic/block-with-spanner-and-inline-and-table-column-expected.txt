@@ -1,5 +1,0 @@
-Test that having an inline and table-column after a spanner behaves.
-
-You should see the word "PASS" below.
-
-PASS

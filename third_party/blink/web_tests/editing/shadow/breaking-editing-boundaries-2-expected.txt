@@ -1,5 +1,0 @@
-When selecting from a child of ShadowRoot to an element outside of shadow host, a crash should not be caused.
-
-To test manually, select from 'before shadow' to 'after host'.
-
-PASS

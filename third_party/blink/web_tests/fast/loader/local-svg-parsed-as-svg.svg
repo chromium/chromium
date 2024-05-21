@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-    <script>
-        if (window.testRunner)
-           testRunner.dumpAsText();
-        var tagName = document.documentElement.tagName;
-        alert(tagName == "svg" ? "PASS: File parsed as SVG" : "FAIL: document.documentElement.tagName was '" + tagName + "', expected 'svg'");
-    </script>
-</svg>

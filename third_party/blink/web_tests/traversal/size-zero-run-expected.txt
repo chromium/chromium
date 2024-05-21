@@ -1,7 +1,0 @@
-If a zero-length render object (such as a text node that has been set to "") occurred at the end of a line, it was previously given a non-zero sized run.
-
-A crash would occur on iteration over a node containing such a run. NodeIterators, the innerText property, and hovering over a link all use iteration.
-
-This tests iteration using both the innerText property and NodeIterators. It is successful if it doesn't crash Safari.
-
-hel

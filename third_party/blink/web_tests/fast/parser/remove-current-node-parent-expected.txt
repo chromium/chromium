@@ -1,1 +1,0 @@
-At the time of writing, our current behavior ignores content in subtrees removed during parsing. However, HTML5 suggests it should not be ignored. See: http://www.hixie.ch/tests/adhoc/html/parsing/error-handling/034.html and: https://bugs.webkit.org/show_bug.cgi?id=7137SUCCESS (no crash!)

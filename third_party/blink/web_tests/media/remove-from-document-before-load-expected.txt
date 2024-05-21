@@ -1,1 +1,0 @@
-PASS: A crash did not occur when the media element was removed before loading.

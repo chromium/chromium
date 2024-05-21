@@ -1,1 +1,0 @@
-This test passes if memory usage is not so hight that it crashes the browser. It should be less than 100MB.

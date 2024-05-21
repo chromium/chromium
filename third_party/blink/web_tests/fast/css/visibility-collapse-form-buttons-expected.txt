@@ -1,3 +1,0 @@
-The two buttons below should say PASS:
-
-PASS

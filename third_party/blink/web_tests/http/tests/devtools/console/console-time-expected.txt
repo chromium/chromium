@@ -1,7 +1,0 @@
-console.time / console.timeEnd tests.
-
-console-time.js:16 default: <time>
-console-time.js:18 42: <time>
-console-time.js:20 239: <time>
-console-time.js:22 [object Object]: <time>
-

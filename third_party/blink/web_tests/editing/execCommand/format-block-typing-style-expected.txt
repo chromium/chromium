@@ -1,6 +1,0 @@
-This tests ensures FormatBlock preserves the typing style.
-
-"world" should be bolded:
-| "hello"
-| <b>
-|   " world<#selection-caret>"

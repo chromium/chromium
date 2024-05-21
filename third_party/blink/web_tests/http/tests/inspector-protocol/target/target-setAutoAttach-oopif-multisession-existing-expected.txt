@@ -1,4 +1,0 @@
-Tests that the attachedToTarget message is dispatched to all attached sessions
-session 1 attached
-session 2 attached
-

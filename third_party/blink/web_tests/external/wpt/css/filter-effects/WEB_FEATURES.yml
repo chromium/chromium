@@ -1,7 +1,0 @@
-features:
-- name: backdrop-filter
-  files:
-  - backdrop-filter-*
-  - backdrop-filters-*
-  - css-backdrop-filters-*
-  - repaint-added-backdrop-filter.html

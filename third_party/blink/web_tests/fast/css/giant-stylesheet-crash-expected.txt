@@ -1,1 +1,0 @@
-This test verifies that creating a huge inline stylesheet doesn't crash.

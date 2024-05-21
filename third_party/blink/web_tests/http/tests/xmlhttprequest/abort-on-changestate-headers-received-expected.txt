@@ -1,7 +1,0 @@
-PASS this reached HEADERS_RECEIVED state.
-PASS this reached DONE state.
-PASS numberOfDocumentsAfter is numberOfDocumentsBefore
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

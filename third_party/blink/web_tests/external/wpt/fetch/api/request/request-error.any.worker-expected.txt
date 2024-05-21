@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] RequestInit's window is not null
-  assert_throws_js: Expect TypeError exception function "() => new Request(...args)" did not throw
-Harness: the test ran to completion.
-

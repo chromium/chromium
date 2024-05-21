@@ -1,8 +1,0 @@
-Caught expected exception: SyntaxError: Failed to execute 'insertAdjacentHTML' on 'Element': The value provided ('blah') is not one of 'beforeBegin', 'afterBegin', 'beforeEnd', or 'afterEnd'.
-Caught expected exception: NoModificationAllowedError: Failed to execute 'insertAdjacentHTML' on 'Element': The element has no parent.
-Caught expected exception: TypeError: Failed to execute 'insertAdjacentHTML' on 'Element': 2 arguments required, but only 0 present.
-Caught expected exception: TypeError: Failed to execute 'insertAdjacentHTML' on 'Element': 2 arguments required, but only 1 present.
-
-1 (black) 2 (green) 3 (green) 4 (black)
-
-PASS

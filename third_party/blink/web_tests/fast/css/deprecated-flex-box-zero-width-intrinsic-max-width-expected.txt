@@ -1,9 +1,0 @@
-Tests if the Deprecated Flex boxes with max-width: max-content and width:0 has non-zero calculated width
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS flexBoxDiv.width is non-zero.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

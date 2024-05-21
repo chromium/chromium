@@ -1,9 +1,0 @@
-PASS self::node()[true() and false()][true()]
-PASS self::node()[true() or false()][true()]
-PASS //element[descendant::y[.='z']]
-PASS //element[descendant::y[.='z']][1]
-PASS //element[descendant::y[.='z']][2]
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

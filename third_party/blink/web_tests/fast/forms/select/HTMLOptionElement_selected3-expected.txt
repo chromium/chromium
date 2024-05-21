@@ -1,7 +1,0 @@
-This test checks the behavior of selected/selectedIndex properties prior to the </select> being parsed. https://bugs.webkit.org/show_bug.cgi?id=32641
-
-Before querying selectedIndex, [theOption].selected = true
-
-[theSelect].selectedIndex = 0
-
-After querying selectedIndex, [theOption].selected = true

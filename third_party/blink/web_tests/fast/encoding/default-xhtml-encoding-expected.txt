@@ -1,3 +1,0 @@
-Test default XHTML encoding (in the absence of an XML declaration).
-
-Charset: UTF-8 (should be UTF-8)

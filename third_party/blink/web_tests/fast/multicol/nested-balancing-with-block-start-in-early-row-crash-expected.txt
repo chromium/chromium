@@ -1,7 +1,0 @@
-When balancing the last row (fragmentainer group), be sure to skip past things that don't occur in that row, such as pagination struts in preceding rows.
-
-PASS if no crash or assertion failure.
-
-
-
-

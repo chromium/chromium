@@ -1,9 +1,0 @@
-<?xml-stylesheet href="css3-modsel-88.css" type="text/css"?>
-<test>
-<blockquote xmlns="http://www.w3.org/1999/xhtml"><div>This text should be unstyled.</div></blockquote>
-<div xmlns="http://www.w3.org/1999/xhtml">
-<div>
-<p>This text should be green.</p>
-</div>
-</div>
-</test>

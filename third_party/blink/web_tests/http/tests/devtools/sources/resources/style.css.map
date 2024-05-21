@@ -1,8 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,IAAK;EACD,KAAK,EAAE,IAAI",
-"sources": ["style.scss"],
-"sourcesContent": ["html {\n    color: blue;\n}\n"],
-"names": [],
-"file": "style.css"
-}

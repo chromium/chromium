@@ -1,1 +1,0 @@
-This test checks that positioned grid items (absolute or fixed) do not crash on debug.
