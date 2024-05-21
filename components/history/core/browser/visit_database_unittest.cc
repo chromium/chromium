@@ -395,13 +395,20 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
     EXPECT_TRUE(AddVisit(&test_visit_rows[i], SOURCE_BROWSED));
   }
 
-  // Query the visits for all time.  We should not get the first or the second
-  // visit (duplicates of the sixth) or the redirect or subframe visits.
+  // Query the visits for all time.
   VisitVector results;
   QueryOptions options;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(2U, results.size());
+#if !defined(ANDROID)
+  // We should not get the first or the second visit (duplicates of the sixth)
+  // or the redirect or subframe visits.
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+#else
+  // On Android, the one with app_id is chosen among the duplicates.
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+#endif
+
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
 
   // Query the visits with app_id. Only those with the matching app_id will be
@@ -545,15 +552,20 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
     EXPECT_TRUE(AddVisit(&test_visit_rows[i], SOURCE_BROWSED));
   }
 
-  // Query the visits for the first url id.  We should not get the first, the
-  // second or the sixth (duplicates of the seventh) or any other urls,
-  // redirects or subframe visits.
+  // Query the visits for the first url id.
   VisitVector results;
   QueryOptions options;
   int url_id = test_visit_rows[0].url_id;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(1U, results.size());
+#if !defined(ANDROID)
+  // We should not get the first, the second or the sixth (duplicates of the
+  // seventh) or any other urls, redirects or subframe visits.
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[6]));
+#else
+  // On Android, the one with app_id is chosen among the duplicates.
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+#endif
 
   // Query the visits with app_id. Only those with the matching both url id
   // (1,2,6,7) and app id(2,3,4,6) will be returned(2, 6) -> 6 (deduped).
