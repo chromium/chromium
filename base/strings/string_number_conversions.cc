@@ -120,7 +120,10 @@ bool StringToDouble(StringPiece16 input, double* output) {
 }
 
 std::string HexEncode(const void* bytes, size_t size) {
-  return HexEncode(span(static_cast<const uint8_t*>(bytes), size));
+  return HexEncode(
+      // TODO(crbug.com/40284755): The pointer-based overload of HexEncode
+      // should be removed.
+      UNSAFE_BUFFERS(span(static_cast<const uint8_t*>(bytes), size)));
 }
 
 std::string HexEncode(span<const uint8_t> bytes) {

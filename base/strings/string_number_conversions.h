@@ -109,9 +109,10 @@ BASE_EXPORT bool StringToDouble(StringPiece16 input, double* output);
 // you suspect that the data you want to format might be large, the absolute
 // max size for |size| should be is
 //   std::numeric_limits<size_t>::max() / 2
-BASE_EXPORT std::string HexEncode(const void* bytes, size_t size);
 BASE_EXPORT std::string HexEncode(base::span<const uint8_t> bytes);
 BASE_EXPORT std::string HexEncode(StringPiece chars);
+// TODO(crbug.com/40284755): The pointer-based overload should be removed.
+BASE_EXPORT std::string HexEncode(const void* bytes, size_t size);
 
 // Appends a hex representation of `byte`, as two uppercase (by default)
 // characters, to `output`. This is a useful primitive in larger conversion
