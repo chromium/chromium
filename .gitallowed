@@ -1,5 +1,0 @@
-# This file contains patterns which are excluded from git-secrets matching.
-# Only add patterns where this is extremely likely to be a false positive.
-
-# This directory contains publicly available keys and is updated frequently.
-^([^:]*/)?components/certificate_transparency/data/
