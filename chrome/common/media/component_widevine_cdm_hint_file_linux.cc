@@ -19,6 +19,13 @@
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
+#include "media/base/media_switches.h"
+#endif
+
 namespace {
 
 // Fields used inside the hint file.
@@ -29,10 +36,33 @@ const char kLastBundledVersion[] = "LastBundledVersion";
 // empty dictionary if the hint file does not exist or is formatted incorrectly.
 base::Value::Dict GetHintFileContents() {
   base::FilePath hint_file_path;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // ChromeOS Lacros should use the Widevine CDM Component Updated by ChromeOS
+  // Ash. This is determined by using command line arguments passed when Ash
+  // launches Lacros.
+  if (!base::FeatureList::IsEnabled(media::kLacrosUseAshWidevine)) {
+    DVLOG(1) << "CDM hint file disabled.";
+    return base::Value::Dict();
+  }
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          switches::kCrosWidevineComponentUpdatedHintFile)) {
+    DVLOG(1) << "Command line switch " +
+                    std::string(
+                        switches::kCrosWidevineComponentUpdatedHintFile) +
+                    " not found.";
+    return base::Value::Dict();
+  }
+
+  hint_file_path = command_line->GetSwitchValuePath(
+      switches::kCrosWidevineComponentUpdatedHintFile);
+#else
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
                                &hint_file_path));
-  DVLOG(1) << __func__ << " checking " << hint_file_path;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  DVLOG(1) << __func__ << " checking " << hint_file_path;
   if (!base::PathExists(hint_file_path)) {
     DVLOG(1) << "CDM hint file at " << hint_file_path << " does not exist.";
     return base::Value::Dict();
@@ -64,6 +94,9 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path,
                                std::optional<base::Version> bundled_version) {
   DCHECK(!cdm_base_path.empty());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  NOTREACHED_NORETURN() << "Lacros should not be updating the hint file.";
+#else
   base::FilePath hint_file_path;
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
                                &hint_file_path));
@@ -84,6 +117,7 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path,
   DVLOG(1) << __func__ << " setting " << cdm_base_path << " to " << json_string;
   return base::ImportantFileWriter::WriteFileAtomically(hint_file_path,
                                                         json_string);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 base::FilePath GetHintedWidevineCdmDirectory() {

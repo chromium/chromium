@@ -184,13 +184,18 @@ std::unique_ptr<content::CdmInfo> GetAshBundledWidevine() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if (BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) &&             \
+     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 // This code checks to see if Component Updater picked a version of the Widevine
 // CDM to be used last time it ran. (Component Updater may choose the bundled
 // CDM if there is not a new version available for download.) If there is one
 // and it looks valid, return the CdmInfo for that CDM. Otherwise return
 // nullptr.
+//
+// On ChromeOS Lacros, Component Update for the Widevine CDM is disabled.
+// However, as Lacros uses the Widevine CDM available to ChromeOS Ash, this code
+// is needed to check to see if the Ash Widevine CDM has been updated.
 std::unique_ptr<content::CdmInfo> GetHintedWidevine() {
   // Ideally this would cache the result, as Component Update may run and
   // download a new version once Chrome has been running for a while. However,
@@ -212,8 +217,8 @@ std::unique_ptr<content::CdmInfo> GetHintedWidevine() {
 
   return CreateCdmInfoFromWidevineDirectory(install_dir);
 }
-#endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) &&
-        // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#endif  // (BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH))) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   DVLOG(1) << __func__;
@@ -273,7 +278,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // the bundled CDM if it matches the version Component Update determines that
   // should be used.
   std::unique_ptr<content::CdmInfo> hinted_widevine;
-#if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+#if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   hinted_widevine = GetHintedWidevine();
 #endif
 
