@@ -11585,6 +11585,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4970" label="CaretPositionFromPoint"/>
   <int value="4971" label="DocumentPolicyIncludeJSCallStacksInCrashReports"/>
   <int value="4972" label="MaximumHTMLParserDOMTreeDepthHit"/>
+  <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -13,6 +13,10 @@ namespace blink {
 
 using mojom::blink::ModelStreamingResponseStatus;
 
+extern const char kExceptionMessageSessionDestroyed[];
+extern const char kExceptionMessageInvalidTemperatureAndTopKFormat[];
+extern const char kExceptionMessageUnableToCreateSession[];
+
 void ThrowInvalidContextException(ExceptionState& exception_state);
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);

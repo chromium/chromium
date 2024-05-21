@@ -25,7 +25,8 @@ class ModelExecutionSession : public blink::mojom::ModelGenericSession {
   // `blink::mojom::ModelGenericSession` implementation.
   void Execute(const std::string& input,
                mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-                   responder) override;
+                   pending_responder) override;
+  void Destroy() override;
 
  private:
   void ModelExecutionCallback(

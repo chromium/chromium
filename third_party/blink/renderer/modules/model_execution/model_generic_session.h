@@ -38,10 +38,13 @@ class ModelGenericSession final : public ScriptWrappable,
   ReadableStream* executeStreaming(ScriptState* script_state,
                                    const WTF::String& input,
                                    ExceptionState& exception_state);
+  void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
  private:
   class Responder;
   class StreamingResponder;
+
+  bool is_destroyed_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<blink::mojom::blink::ModelGenericSession>

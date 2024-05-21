@@ -4364,6 +4364,8 @@ enum WebFeature {
   kDocumentPolicyIncludeJSCallStacksInCrashReports = 4971,
   kMaximumHTMLParserDOMTreeDepthHit = 4972,
 
+  kV8ModelGenericSession_Destroy_Method = 4973,
+
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

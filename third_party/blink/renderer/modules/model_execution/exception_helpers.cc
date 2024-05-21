@@ -10,14 +10,45 @@
 
 namespace blink {
 
+const char kExceptionMessageExecutionContextInvalid[] =
+    "The execution context is not valid.";
+const char kExceptionMessageServiceUnavailable[] =
+    "Model execution service is not available.";
+
+const char kExceptionMessageUnknown[] = "An unknown error occurred.";
+const char kExceptionMessageInvalidRequest[] = "The request was invalid.";
+const char kExceptionMessageRequestThrottled[] = "The request was throttled.";
+const char kExceptionMessagePermissionDenied[] =
+    "A user permission error occurred, such as not signed-in or not "
+    "allowed to execute model.";
+const char kExceptionMessageGenericError[] = "Other generic failure occurred.";
+const char kExceptionMessageRetryableError[] =
+    "A retryable error occurred in the server.";
+const char kExceptionMessageNonRetryableError[] =
+    "A non-retryable error occurred in the server.";
+const char kExceptionMessageUnsupportedLanguage[] =
+    "The language was unsupported.";
+const char kExceptionMessageFiltered[] =
+    "The execution yielded a bad response.";
+const char kExceptionMessageDisabled[] = "The response was disabled.";
+const char kExceptionMessageCancelled[] = "The request was cancelled.";
+const char kExceptionMessageSessionDestroyed[] =
+    "The model execution session has been destroyed.";
+
+const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
+    "Initializing a new session must either specify both topK and temperature, "
+    "or neither of them.";
+const char kExceptionMessageUnableToCreateSession[] =
+    "The session cannot be created.";
+
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "The execution context is not valid.");
+                                    kExceptionMessageExecutionContextInvalid);
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
   resolver->Reject(DOMException::Create(
-      "Model execution service is not available.",
+      kExceptionMessageServiceUnavailable,
       DOMException::GetErrorName(DOMExceptionCode::kOperationError)));
 }
 
@@ -26,49 +57,52 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
   switch (error) {
     case ModelStreamingResponseStatus::kErrorUnknown:
       return DOMException::Create(
-          "An unknown error occurred.",
+          kExceptionMessageUnknown,
           DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
     case ModelStreamingResponseStatus::kErrorInvalidRequest:
       return DOMException::Create(
-          "The request was invalid.",
+          kExceptionMessageInvalidRequest,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
     case ModelStreamingResponseStatus::kErrorRequestThrottled:
       return DOMException::Create(
-          "The request was throttled.",
+          kExceptionMessageRequestThrottled,
           DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
     case ModelStreamingResponseStatus::kErrorPermissionDenied:
       return DOMException::Create(
-          "A user permission error occurred, such as not signed-in or not "
-          "allowed to execute model.",
+          kExceptionMessagePermissionDenied,
           DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError));
     case ModelStreamingResponseStatus::kErrorGenericFailure:
       return DOMException::Create(
-          "Other generic failure occurred.",
+          kExceptionMessageGenericError,
           DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
     case ModelStreamingResponseStatus::kErrorRetryableError:
       return DOMException::Create(
-          "A retryable error occurred in the server.",
+          kExceptionMessageRetryableError,
           DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
     case ModelStreamingResponseStatus::kErrorNonRetryableError:
       return DOMException::Create(
-          "A non-retryable error occurred in the server.",
+          kExceptionMessageNonRetryableError,
           DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
     case ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
       return DOMException::Create(
-          "The language was unsupported.",
+          kExceptionMessageUnsupportedLanguage,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
     case ModelStreamingResponseStatus::kErrorFiltered:
       return DOMException::Create(
-          "The execution yielded a bad response.",
+          kExceptionMessageFiltered,
           DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
     case ModelStreamingResponseStatus::kErrorDisabled:
       return DOMException::Create(
-          "The response was disabled.",
+          kExceptionMessageDisabled,
           DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
     case ModelStreamingResponseStatus::kErrorCancelled:
       return DOMException::Create(
-          "The request was cancelled.",
+          kExceptionMessageCancelled,
           DOMException::GetErrorName(DOMExceptionCode::kAbortError));
+    case ModelStreamingResponseStatus::kErrorSessionDestroyed:
+      return DOMException::Create(
+          kExceptionMessageSessionDestroyed,
+          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED_IN_MIGRATION();

@@ -6514,6 +6514,7 @@ interface MimeTypeArray
 interface ModelGenericSession
     attribute @@toStringTag
     method constructor
+    method destroy
     method execute
     method executeStreaming
 interface ModelManager

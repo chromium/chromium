@@ -141,8 +141,7 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
           options->topK(), options->temperature());
     } else {
       resolver->Reject(DOMException::Create(
-          "Initializing a new session must either specify both topK and "
-          "temperature, or neither of them.",
+          kExceptionMessageInvalidTemperatureAndTopKFormat,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       return promise;
     }
@@ -160,7 +159,7 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
               resolver->Resolve(generic_session);
             } else {
               resolver->Reject(DOMException::Create(
-                  "The session cannot be created.",
+                  kExceptionMessageUnableToCreateSession,
                   DOMException::GetErrorName(
                       DOMExceptionCode::kInvalidStateError)));
             }

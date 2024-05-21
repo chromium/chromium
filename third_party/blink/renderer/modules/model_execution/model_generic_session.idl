@@ -9,4 +9,5 @@
 interface ModelGenericSession {
   [Measure, CallWith=ScriptState, RaisesException] Promise<DOMString> execute(DOMString input);
   [Measure, CallWith=ScriptState, RaisesException] ReadableStream executeStreaming(DOMString input);
+  [Measure, CallWith=ScriptState, RaisesException] void destroy();
 };

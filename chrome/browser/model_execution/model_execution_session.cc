@@ -86,13 +86,37 @@ void ModelExecutionSession::ModelExecutionCallback(
 
 void ModelExecutionSession::Execute(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder) {
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  if (!session_) {
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    responder->OnResponse(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
+        std::nullopt);
+    return;
+  }
+
   mojo::RemoteSetElementId responder_id =
-      responder_set_.Add(std::move(responder));
+      responder_set_.Add(std::move(pending_responder));
   optimization_guide::proto::StringValue request;
   request.set_value(input);
   session_->ExecuteModel(
       request,
       base::BindRepeating(&ModelExecutionSession::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), responder_id));
+}
+
+void ModelExecutionSession::Destroy() {
+  if (session_) {
+    session_.reset();
+  }
+
+  for (auto& responder : responder_set_) {
+    responder->OnResponse(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
+        std::nullopt);
+  }
+
+  responder_set_.Clear();
 }

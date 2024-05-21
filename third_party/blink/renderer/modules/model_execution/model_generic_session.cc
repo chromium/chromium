@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -48,7 +49,7 @@ class ModelGenericSession::Responder final
     visitor->Trace(receiver_);
   }
 
-  ScriptPromise<IDLString> GetPromise() { return resolver_->Promise(); }
+  ScriptPromiseResolver<IDLString>* GetResolver() { return resolver_; }
 
   mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
   BindNewPipeAndPassRemote(
@@ -226,10 +227,17 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
       int(input.CharactersSizeInBytes()));
 
   Responder* responder = MakeGarbageCollected<Responder>(script_state);
-  model_session_remote_->Execute(
-      input, responder->BindNewPipeAndPassRemote(task_runner_));
 
-  return responder->GetPromise();
+  if (is_destroyed_) {
+    responder->GetResolver()->Reject(DOMException::Create(
+        kExceptionMessageSessionDestroyed,
+        DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+  } else {
+    model_session_remote_->Execute(
+        input, responder->BindNewPipeAndPassRemote(task_runner_));
+  }
+
+  return responder->GetResolver()->Promise();
 }
 
 ReadableStream* ModelGenericSession::executeStreaming(
@@ -254,6 +262,12 @@ ReadableStream* ModelGenericSession::executeStreaming(
   StreamingResponder* streaming_responder =
       MakeGarbageCollected<StreamingResponder>(script_state);
 
+  if (is_destroyed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageSessionDestroyed);
+    return nullptr;
+  }
+
   model_session_remote_->Execute(
       input, streaming_responder->BindNewPipeAndPassRemote(task_runner_));
 
@@ -261,6 +275,23 @@ ReadableStream* ModelGenericSession::executeStreaming(
   // enqueue.
   return ReadableStream::CreateWithCountQueueingStrategy(
       script_state, streaming_responder, 1);
+}
+
+void ModelGenericSession::destroy(ScriptState* script_state,
+                                  ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::kSessionDestroy);
+  if (!is_destroyed_) {
+    is_destroyed_ = true;
+    model_session_remote_->Destroy();
+  }
 }
 
 }  // namespace blink
