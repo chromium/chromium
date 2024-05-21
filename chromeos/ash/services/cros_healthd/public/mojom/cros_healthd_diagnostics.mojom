@@ -84,21 +84,31 @@ enum DiskReadRoutineTypeEnum {
 [Stable, Extensible]
 enum DiagnosticRoutineStatusEnum {
   [Default] kUnknown = 12,
-  kReady = 0,  // Routine is ready to start.
-  kRunning = 1,  // Routine is currently running.
-  kWaiting = 2,  // Routine needs user input to continue.
-  kPassed = 3,  // Routine completed and passed.
-  kFailed = 4,  // Routine completed and failed.
-  kError = 5,  // An error prevented the routine from completing.
-  kCancelled = 6,  // Routine was cancelled before completion. A cancelled
-                   // routine's information can still be accessed with a
-                   // GetRoutineUpdateRequest.
-
-  kFailedToStart = 7,  // Routine could not be created.
-  kRemoved = 8,  // Routine has been removed and is no longer valid.
-  kCancelling = 9,  // Routine is in the process of being cancelled.
-  kUnsupported = 10,  // Routine is not supported by the device.
-  kNotRun = 11,  // Routine was not run because it is currently not applicable.
+  // Routine is ready to start.
+  kReady = 0,
+  // Routine is currently running.
+  kRunning = 1,
+  // Routine needs user input to continue.
+  kWaiting = 2,
+  // Routine completed and passed.
+  kPassed = 3,
+  // Routine completed and failed.
+  kFailed = 4,
+  // An error prevented the routine from completing.
+  kError = 5,
+  // Routine was cancelled before completion. A cancelled routine's information
+  // can still be accessed with a GetRoutineUpdateRequest.
+  kCancelled = 6,
+  // Routine could not be created.
+  kFailedToStart = 7,
+  // Routine has been removed and is no longer valid.
+  kRemoved = 8,
+  // Routine is in the process of being cancelled.
+  kCancelling = 9,
+  // Routine is not supported by the device.
+  kUnsupported = 10,
+  // Routine was not run because it is currently not applicable.
+  kNotRun = 11,
 };
 
 // Enumeration of each of the messages a diagnostics routine can pass back.
@@ -108,11 +118,14 @@ enum DiagnosticRoutineStatusEnum {
 [Stable, Extensible]
 enum DiagnosticRoutineUserMessageEnum {
   [Default] kUnknown = 2,
-  kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
-  kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
-  [MinVersion=1] kCheckLedColor = 3,  // The user needs to check the LED color.
-  [MinVersion=2] kPressPowerButton = 4,  // The user needs to press the power
-                                        // button.
+  // The user needs to unplug the AC power cord.
+  kUnplugACPower = 0,
+  // The user needs to plug in the AC power cord.
+  kPlugInACPower = 1,
+  // The user needs to check the LED color.
+  [MinVersion=1] kCheckLedColor = 3,
+  // The user needs to press the power button.
+  [MinVersion=2] kPressPowerButton = 4,
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
@@ -121,14 +134,16 @@ enum DiagnosticRoutineUserMessageEnum {
 [Stable, Extensible]
 enum DiagnosticRoutineCommandEnum {
   [Default] kUnknown = 4,
-  kContinue = 0,  // Resume a routine that is waiting.
-  kCancel = 1,  // Cancelled routines must still be removed before the routine
-                // is destroyed.
-
-  kGetStatus = 2,  // Used to get status but not otherwise control a routine.
-  kRemove = 3,  // All routines which started successfully must be removed,
-                // otherwise they will persist on the system. This makes sure
-                // the routine is terminated before removing it.
+  // Resume a routine that is waiting.
+  kContinue = 0,
+  // Cancelled routines must still be removed before the routine is destroyed.
+  kCancel = 1,
+  // Used to get status but not otherwise control a routine.
+  kGetStatus = 2,
+  // All routines which started successfully must be removed, otherwise they
+  // will persist on the system. This makes sure the routine is terminated
+  // before removing it.
+  kRemove = 3,
 };
 
 // Generic return value for a RunSomeRoutine call.
@@ -163,8 +178,8 @@ struct NonInteractiveRoutineUpdate {
   // Current status of the routine.
   DiagnosticRoutineStatusEnum status@0;
   // More detailed status - for example, if |status| was kError,
-  // |status_message| would describe the error encountered, like "failed to
-  // read file."
+  // |status_message| would describe the error encountered, like "failed to read
+  // file."
   string status_message@1;
 };
 
@@ -199,8 +214,10 @@ struct RoutineUpdate {
 [Stable, Extensible]
 enum AcPowerStatusEnum {
   [Default] kUnknown = 2,
-  kConnected = 0,  // Power supply is connected.
-  kDisconnected = 1,  // Power supply is disconnected.
+  // Power supply is connected.
+  kConnected = 0,
+  // Power supply is disconnected.
+  kDisconnected = 1,
 };
 
 // Enumeration of the self-test type in nvme_self_test routine
@@ -209,8 +226,10 @@ enum AcPowerStatusEnum {
 [Stable, Extensible]
 enum NvmeSelfTestTypeEnum {
   [Default] kUnknown = 2,
-  kShortSelfTest = 0,  // Short time self-test.
-  kLongSelfTest = 1,  // Long time self-test.
+  // Short time self-test.
+  kShortSelfTest = 0,
+  // Long time self-test.
+  kLongSelfTest = 1,
 };
 
 // Enumeration of each possible LEDs on a device. This enum type is a mirror of

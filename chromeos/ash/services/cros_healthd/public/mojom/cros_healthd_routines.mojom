@@ -28,8 +28,8 @@ interface CrosHealthdRoutinesService {
   // for the routine, e.g. available hardware, correct arguments, etc.
   //
   // All exceptions that occur (either during initialization or while executing
-  // the routine) will close the connection to the provided RoutineControl
-  // with a specific reason (see cros_healthd.mojom.Exception) and a string
+  // the routine) will close the connection to the provided RoutineControl with
+  // a specific reason (see cros_healthd.mojom.Exception) and a string
   // message containing human readable information about the exception.
   // For that reason it is necessary to always setup a disconnect handler on the
   // RoutineControl remote to be informed about potential exceptions.
@@ -118,8 +118,8 @@ union RoutineArgument {
   NetworkBandwidthRoutineArgument network_bandwidth@18;
 };
 
-// This routine checks whether there is any memory problem by
-// reading/writing different patterns.
+// This routine checks whether there is any memory problem by reading/writing
+// different patterns.
 //
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
@@ -197,9 +197,9 @@ struct CpuCacheRoutineArgument {
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
 struct PrimeSearchRoutineArgument {
-  // |exec_duration| determines how long the prime search test will run. If
-  // the provided value is null, default to running for 1 minute. If the value
-  // is less than 1 second, run for 1 second.
+  // |exec_duration| determines how long the prime search test will run. If the
+  // provided value is null, default to running for 1 minute. If the value is
+  // less than 1 second, run for 1 second.
   mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 
@@ -214,8 +214,10 @@ struct VolumeButtonRoutineArgument {
   enum ButtonType {
     // The default value is for backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
-    kVolumeUp = 1,  // Test for the volume up button.
-    kVolumeDown = 2,  // Test for the volume down button.
+    // Test for the volume up button.
+    kVolumeUp = 1,
+    // Test for the volume down button.
+    kVolumeDown = 2,
   };
   // The type of volume button to test.
   ButtonType type@0;
@@ -257,9 +259,9 @@ struct LedLitUpRoutineArgument {
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
 struct FloatingPointRoutineArgument {
-  // `exec_duration` determines how long the prime search test will run. If
-  // the provided value is null, default to running for 1 minute. If the value
-  // is less than 1 second, run for 1 second.
+  // `exec_duration` determines how long the prime search test will run. If the
+  // provided value is null, default to running for 1 minute. If the value is
+  // less than 1 second, run for 1 second.
   mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 
@@ -324,9 +326,9 @@ struct CameraAvailabilityRoutineArgument {
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
 struct UrandomRoutineArgument {
-  // `exec_duration` determines how long the prime search test will run. If
-  // the provided value is null, default to running for 1 minute. If the value
-  // is less than 1 second, run for 1 second.
+  // `exec_duration` determines how long the prime search test will run. If the
+  // provided value is null, default to running for 1 minute. If the value is
+  // less than 1 second, run for 1 second.
   mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 

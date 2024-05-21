@@ -161,18 +161,18 @@ struct ProcessInfo {
   // Unused memory available to the process, in KiB. This will always be
   // |total_memory_kib| - |resident_memory_kib|.
   uint32 free_memory_kib@8;
-  // The sum of bytes passed to system read calls. This includes terminal
-  // I/O and is independent of whether the physical disk is accessed.
+  // The sum of bytes passed to system read calls. This includes terminal I/O
+  // and is independent of whether the physical disk is accessed.
   uint64 bytes_read@9;
-  // The sum of bytes passed to system write calls. This includes terminal
-  // I/O and is independent of whether the physical disk is accessed.
+  // The sum of bytes passed to system write calls. This includes terminal I/O
+  // and is independent of whether the physical disk is accessed.
   uint64 bytes_written@10;
   // Attempted count of read syscalls.
   uint64 read_system_calls@11;
   // Attempted count of write syscalls.
   uint64 write_system_calls@12;
-  // Attempt to count the number of bytes which this process really did cause
-  // to be fetched from the storage layer.
+  // Attempt to count the number of bytes which this process really did cause to
+  // be fetched from the storage layer.
   uint64 physical_bytes_read@13;
   // Attempt to count the number of bytes which this process caused to be sent
   // to the storage layer.
@@ -268,8 +268,10 @@ union BlockDeviceVendor {
   uint32 nvme_subsystem_vendor@0;
   uint16 emmc_oemid@1;
   uint16 other@2;
+
   [MinVersion=1, Default]
   uint64 unknown@3;
+
   [MinVersion=2]
   uint16 jedec_manfid@4;
 };
@@ -282,6 +284,7 @@ union BlockDeviceProduct {
   uint32 nvme_subsystem_device@0;
   uint64 emmc_pnm@1;
   uint16 other@2;
+
   [MinVersion=1, Default]
   uint64 unknown@3;
 };
@@ -294,6 +297,7 @@ union BlockDeviceRevision {
   uint8 nvme_pcie_rev@0;
   uint8 emmc_prv@1;
   uint16 other@2;
+
   [MinVersion=1, Default]
   uint64 unknown@3;
 };
@@ -306,8 +310,10 @@ union BlockDeviceFirmware {
   uint64 nvme_firmware_rev@0;
   uint64 emmc_fwrev@1;
   uint16 other@2;
+
   [MinVersion=1, Default]
   uint64 unknown@3;
+
   [MinVersion=2]
   uint64 ufs_fwrev@4;
 };
@@ -661,8 +667,8 @@ struct TimezoneInfo {
   string region@1;
 };
 
-// Memory probe result. Can either be populated with the MemoryInfo or an
-// error retrieving the information.
+// Memory probe result. Can either be populated with the MemoryInfo or an error
+// retrieving the information.
 [Stable]
 union MemoryResult {
   // Valid MemoryInfo.
@@ -950,6 +956,7 @@ struct OsInfo {
     // 32 bit platform.
     k32 = 3,
   };
+
   [MinVersion=2]
   EfiPlatformSize efi_platform_size@5;
 };
@@ -1433,6 +1440,7 @@ struct PciBusInfo {
   // Note that not every device has these fields.
   [MinVersion=1]
   NullableUint16? sub_vendor_id@6;
+
   [MinVersion=1]
   NullableUint16? sub_device_id@7;
 };
@@ -2161,14 +2169,14 @@ struct TelemetryInfo {
   // Information about boot performance. Only present when kBootPerformance was
   // included in the categories input to ProbeTelemetryInfo.
   BootPerformanceResult? boot_performance_result@12;
-  // Information about the bus devices. Only present when kBus was included
-  // in the categories input to ProbeTelemetryInfo.
+  // Information about the bus devices. Only present when kBus was included in
+  // the categories input to ProbeTelemetryInfo.
   BusResult? bus_result@13;
   // Information about the system. Only present when kSystem was included in the
   // categories input to ProbeTelemetryInfo.
   SystemResult? system_result@14;
-  // Information about the tpm. Only present when kTpm was included in
-  // the categories input to ProbeTelemetryInfo.
+  // Information about the tpm. Only present when kTpm was included in the
+  // categories input to ProbeTelemetryInfo.
   TpmResult? tpm_result@15;
   // Information about the graphics. Only present when kGraphics was included in
   // the categories input to ProbeTelemetryInfo.
@@ -2182,8 +2190,8 @@ struct TelemetryInfo {
   // ProbeTelemetryInfo.
   [MinVersion=2]
   NetworkInterfaceResult? network_interface_result@18;
-  // Information about the input software and hardware. Only present when
-  // kInput was included in the categories input to ProbeTelemetryInfo.
+  // Information about the input software and hardware. Only present when kInput
+  // was included in the categories input to ProbeTelemetryInfo.
   [MinVersion=3]
   InputResult? input_result@19;
   // Information about audio hardware. Only present when kAudioHardware was

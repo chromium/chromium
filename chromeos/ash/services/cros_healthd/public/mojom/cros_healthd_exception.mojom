@@ -18,13 +18,13 @@ module ash.cros_healthd.mojom;
 // NextMinVersion: 1, NextIndex: 2
 [Stable]
 struct Exception {
-  // A specific reason for clients to handle exceptions (e.g. showing a
-  // specific message to UI). Use this instead of parsing |debug_message|.
+  // A specific reason for clients to handle exceptions (e.g. showing a specific
+  // message to UI). Use this instead of parsing |debug_message|.
   // Only add a new reason if there is a client handling that reason. Don’t add
   // reasons like kServiceUnavailable, but something like
   // kFailedToCallFooService, to make it specific.
-  // When we raise Exception through a mojo disconnection, this will be the
-  // mojo error code.
+  // When we raise Exception through a mojo disconnection, this will be the mojo
+  // error code.
   [Stable, Extensible]
   enum Reason {
     // This is required for backwards compatibility. Don't raise this.
@@ -38,8 +38,8 @@ struct Exception {
     // use this as the reason.
     kUnexpected = 2,
     // Raises this if clients try to run an unsupported feature. Note that
-    // clients should use methods which return `SupportStatus` for
-    // support status check.
+    // clients should use methods which return `SupportStatus` for support
+    // status check.
     kUnsupported = 3,
   };
   Reason reason@0;
