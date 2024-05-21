@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromecast/system",
-  "+components/metrics",
-  "+components/prefs",
-  "+third_party/crashpad/crashpad/client",
-]

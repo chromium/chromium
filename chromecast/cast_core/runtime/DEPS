@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/cast_receiver/common/public",
-]

@@ -1,4 +1,0 @@
-# Args for all Release builds.
-cast_is_debug = false
-is_debug = false
-is_official_build = true

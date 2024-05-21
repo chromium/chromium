@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/public/test",
-  "+media/cdm/clear_key_cdm_common.h",
-]

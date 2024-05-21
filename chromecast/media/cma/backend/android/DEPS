@@ -1,4 +1,0 @@
-include_rules = [
-  "+jni",
-  "+media/filters",
-]

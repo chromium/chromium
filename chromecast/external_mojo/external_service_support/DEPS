@@ -1,8 +1,0 @@
-include_rules = [
-  "+chromecast/crash",
-  "+components/crash/core/app",
-  "+mojo/core/embedder",
-  "+services/tracing",
-  "+third_party/crashpad/crashpad/client",
-  "+third_party/perfetto/include/perfetto",
-]

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/crash/core/common",
-  "+gpu/config/gpu_crash_keys.h",
-  "+third_party/breakpad",
-]

@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromecast/common/mojom",
-  "+media/mojo",
-  "+mojo/public/cpp",
-  "+services/service_manager/public",
-]

@@ -1,9 +1,0 @@
-include_rules = [
-  "+chromecast/cast_core/common",
-  "+chromecast/renderer",
-  "+components/cast_streaming/public",
-  "+components/cast_streaming/renderer/public",
-  "+content/public/renderer",
-  "+media/base",
-  "+third_party/blink/public/common",
-]
