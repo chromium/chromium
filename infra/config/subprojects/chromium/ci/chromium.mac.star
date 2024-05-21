@@ -425,8 +425,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
-    cores = None,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "15",
