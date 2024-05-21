@@ -4428,12 +4428,6 @@ const char kRelatedSearchesAllLanguageName[] =
 const char kRelatedSearchesAllLanguageDescription[] =
     "Enables requesting related searches suggestions for all the languages.";
 
-const char kRequestDesktopSiteWindowSettingName[] =
-    "Window setting for request desktop site on Android.";
-const char kRequestDesktopSiteWindowSettingDescription[] =
-    "Secondary option in `Site settings` to request the desktop version of "
-    "websites based on window width.";
-
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =

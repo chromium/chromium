@@ -39,8 +39,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -168,9 +166,6 @@ public class DesktopSiteSettingsIPHController {
     @VisibleForTesting
     boolean showWindowSettingIPH(@NonNull Tab tab, Profile profile) {
         if (mMessageDispatcher == null) return false;
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-            return false;
-        }
 
         // Return early when the IPH triggering criteria is not satisfied.
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);

@@ -46,8 +46,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
@@ -165,15 +163,10 @@ public class RequestDesktopUtils {
         // For incognito profile, keep the domain level setting to override the settings from normal
         // profile.
         if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
-            if (ContentFeatureMap.isEnabled(
-                    ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-                // To support the window setting, keep the domain settings when the window setting
-                // is ON.
-                PrefService prefService = UserPrefs.get(profile);
-                if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
-                    contentSettingValue = ContentSettingValues.DEFAULT;
-                }
-            } else {
+            // To support the window setting, keep the domain settings when the window setting
+            // is ON.
+            PrefService prefService = UserPrefs.get(profile);
+            if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
                 contentSettingValue = ContentSettingValues.DEFAULT;
             }
         }
@@ -287,13 +280,11 @@ public class RequestDesktopUtils {
     /**
      * Default-enables the desktop site window setting if Chrome is opened on a tablet-sized
      * internal display.
+     *
      * @param activity The current {@link Activity}.
      * @param profile The current {@link Profile}.
      */
     public static void maybeDefaultEnableWindowSetting(Activity activity, Profile profile) {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-            return;
-        }
         int smallestScreenWidthDp = DisplayUtil.getCurrentSmallestScreenWidth(activity);
         boolean isOnExternalDisplay = isOnExternalDisplay(activity);
         if (isOnExternalDisplay
@@ -443,13 +434,10 @@ public class RequestDesktopUtils {
     }
 
     /**
-     * Determine whether RDS window setting should be applied.
-     * When returning 'true' the mobile user agent should be used for the current window size.
+     * Determine whether RDS window setting should be applied. When returning 'true' the mobile user
+     * agent should be used for the current window size.
      */
     static boolean shouldApplyWindowSetting(Profile profile, GURL url, Context context) {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-            return false;
-        }
         // Skip window setting on Automotive and revisit if / when they add split screen.
         if (BuildInfo.getInstance().isAutomotive) {
             return false;

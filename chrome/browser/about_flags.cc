@@ -9816,13 +9816,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableAndroidGamepadVibration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-window-setting",
-     flag_descriptions::kRequestDesktopSiteWindowSettingName,
-     flag_descriptions::kRequestDesktopSiteWindowSettingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteWindowSetting)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-remade-downstream-metrics",
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsDescription,

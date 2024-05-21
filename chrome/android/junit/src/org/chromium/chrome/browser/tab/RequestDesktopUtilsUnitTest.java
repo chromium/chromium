@@ -74,7 +74,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
@@ -267,7 +266,6 @@ public class RequestDesktopUtilsUnitTest {
         when(mDisplayAndroid.getYdpi()).thenReturn(276.5f);
         ShadowDisplayAndroidManager.setDisplay(mDisplay);
         when(mDisplay.getDisplayId()).thenReturn(Display.DEFAULT_DISPLAY);
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, false);
         ShadowDisplayUtil.setCurrentSmallestScreenWidth(800);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         doAnswer(invocation -> mWindowSetting)
@@ -307,102 +305,6 @@ public class RequestDesktopUtilsUnitTest {
                     SingleCategorySettingsConstants
                             .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
         }
-    }
-
-    @Test
-    public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteBlock() {
-        // Regular profile type.
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        mRdsDefaultValue = ContentSettingValues.BLOCK;
-        // Pre-existing subdomain setting.
-        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting is not set correctly.",
-                ContentSettingValues.ALLOW,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-        Assert.assertEquals(
-                "Request Desktop Site subdomain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
-
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-    }
-
-    @Test
-    public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteAllow() {
-        // Regular profile type.
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        mRdsDefaultValue = ContentSettingValues.BLOCK;
-        // Pre-existing subdomain setting.
-        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-        Assert.assertEquals(
-                "Request Desktop Site subdomain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
-
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting is not set correctly.",
-                ContentSettingValues.ALLOW,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-    }
-
-    @Test
-    public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteAllow() {
-        // Regular profile type.
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        mRdsDefaultValue = ContentSettingValues.ALLOW;
-        // Pre-existing subdomain setting.
-        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.ALLOW);
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting is not set correctly.",
-                ContentSettingValues.BLOCK,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-        Assert.assertEquals(
-                "Request Desktop Site subdomain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
-
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, true);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-    }
-
-    @Test
-    public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteBlock() {
-        // Regular profile type.
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        mRdsDefaultValue = ContentSettingValues.ALLOW;
-        // Pre-existing subdomain setting.
-        mContentSettingMap.put(mGoogleUrl.getHost(), ContentSettingValues.BLOCK);
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-        Assert.assertEquals(
-                "Request Desktop Site subdomain level setting should be removed.",
-                ContentSettingValues.DEFAULT,
-                mContentSettingMap.get(mGoogleUrl.getHost()).intValue());
-
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mMapsUrl, false);
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting is not set correctly.",
-                ContentSettingValues.BLOCK,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
     }
 
     @Test
@@ -448,7 +350,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteBlock_WindowSettingOn() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -476,7 +377,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteBlock_WindowSettingOff() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -504,7 +404,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteAllow_WindowSettingOn() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -532,7 +431,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_SiteAllow_WindowSettingOff() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -560,7 +458,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteAllow_WindowSettingOn() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -588,7 +485,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteAllow_WindowSettingOff() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -616,7 +512,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteBlock_WindowSettingOn() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -644,7 +539,6 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void
             testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_SiteBlock_WindowSettingOff() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         // Regular profile type.
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -901,20 +795,9 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testShouldApplyWindowSetting_FeatureOff() {
-        mWindowSetting = true;
-        boolean shouldApplyWindowSetting =
-                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
-        Assert.assertFalse(
-                "Desktop site window setting should not be applied when feature is off",
-                shouldApplyWindowSetting);
-    }
-
-    @Test
     public void testShouldApplyWindowSetting_IsAutomotive() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         boolean shouldApplyWindowSetting =
                 RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
@@ -925,7 +808,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldApplyWindowSetting_SettingOff() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         boolean shouldApplyWindowSetting =
                 RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
@@ -936,7 +818,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldApplyWindowSetting_isNotGlobalSetting() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         ShadowTabUtils.setIsGlobalSetting(false);
         boolean shouldApplyWindowSetting =
@@ -949,7 +830,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldApplyWindowSetting_windowAttributesWidthValid() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         ShadowTabUtils.setIsGlobalSetting(true);
         mLayoutParams.width = 800;
@@ -971,7 +851,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldApplyWindowSetting_windowAttributesWidthInvalid() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = true;
         ShadowTabUtils.setIsGlobalSetting(true);
         mDisplayMetrics.density = 2.0f;
@@ -993,18 +872,7 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testMaybeDefaultEnableWindowSetting_FeatureOff() {
-        mWindowSetting = false;
-        mIsDefaultValuePreference = true;
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
-        Assert.assertFalse(
-                "Desktop site window setting should not be default enabled when feature is off",
-                mWindowSetting);
-    }
-
-    @Test
     public void testMaybeDefaultEnableWindowSetting_PhoneSizedScreen() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
         ShadowDisplayUtil.setCurrentSmallestScreenWidth(400);
@@ -1017,7 +885,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeDefaultEnableWindowSetting_ExternalDisplay() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
         when(mDisplay.getDisplayId()).thenReturn(/*non built-in display*/ 2);
@@ -1030,7 +897,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeDefaultEnableWindowSetting_NotDefaultValuePreference() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = false;
         RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
@@ -1042,7 +908,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeDefaultEnableWindowSetting_ShouldDefaultEnable() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
         RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);

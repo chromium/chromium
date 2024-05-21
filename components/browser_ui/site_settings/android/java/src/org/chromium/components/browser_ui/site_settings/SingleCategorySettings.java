@@ -77,8 +77,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -1262,9 +1260,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
 
         // Configure/hide the desktop site window setting, as needed.
-        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && ContentFeatureMap.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             mDesktopSiteWindowPref.setOnPreferenceChangeListener(this);
             updateDesktopSiteWindowSetting();
         } else {
@@ -1459,10 +1455,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     // TODO(crbug.com/40852484): Looking at a different class setup for SingleCategorySettings that
     // allows category specific logic to live in separate files.
     private void updateDesktopSiteWindowSetting() {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-            return;
-        }
-
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         Boolean categoryEnabled =

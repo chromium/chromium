@@ -2628,9 +2628,6 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesAllLanguageName[];
 extern const char kRelatedSearchesAllLanguageDescription[];
 
-extern const char kRequestDesktopSiteWindowSettingName[];
-extern const char kRequestDesktopSiteWindowSettingDescription[];
-
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];

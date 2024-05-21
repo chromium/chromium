@@ -33,10 +33,7 @@ RequestDesktopSiteWebContentsObserverAndroid::
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  if (base::FeatureList::IsEnabled(
-          features::kRequestDesktopSiteWindowSetting)) {
-    pref_service_ = profile->GetPrefs();
-  }
+  pref_service_ = profile->GetPrefs();
 }
 
 RequestDesktopSiteWebContentsObserverAndroid::
@@ -68,9 +65,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   bool is_global_setting = setting_info.primary_pattern.MatchesAllHosts();
 
   // RDS Window Setting support.
-  if (base::FeatureList::IsEnabled(
-          features::kRequestDesktopSiteWindowSetting) &&
-      !base::android::BuildInfo::GetInstance()->is_automotive() &&
+  if (!base::android::BuildInfo::GetInstance()->is_automotive() &&
       pref_service_->GetBoolean(prefs::kDesktopSiteWindowSettingEnabled) &&
       desktop_mode && !always_request_desktop_site && is_global_setting) {
     int web_contents_width_dp =
