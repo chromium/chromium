@@ -14,6 +14,15 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+namespace {
+
+// Microsoft search engine name.
+NSString* const kMicrosoftBingSearchEngineName = @"Microsoft Bing";
+// Google search engine name.
+NSString* const kGoogleSearchEngineName = @"Google";
+
+}  // namespace
+
 @interface SearchEngineTestCase : ChromeTestCase
 @end
 
@@ -35,13 +44,17 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // Set the country to one that is eligible for the choice screen (in this
-  // case, France).
+  // Need to use `switches::kEeaListCountryOverride` as the country to list all
+  // the search engines. This is to make sure the more button appears.
   config.additional_args.push_back(
-      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=FR");
+      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
+      switches::kEeaListCountryOverride);
   // Force the dialog to trigger also for existing users.
   config.additional_args.push_back(
-      "--enable-features=SearchEngineChoiceTrigger:for_tagged_profiles_only/"
+      std::string("--enable-features=") +
+      switches::kSearchEngineChoiceTrigger.name + ":" +
+      switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name +
+      "/"
       "false");
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
@@ -77,33 +90,20 @@
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test.
-- (void)FLAKY_testSearchEngineChoiceScreenSelectThenScroll {
+- (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
-  // The more button is not visible on iPads, only on iPhones.
-  // TODO(crbug.com/329579023): We need have a more reliable way to know if
-  // there is a more button or not instead of checking if the test is running
-  // on iPad or iPhone.
-  BOOL moreButtonVisible = ![ChromeEarlGrey isIPadIdiom];
-  if (moreButtonVisible) {
-    // Verifies that the primary button is initially the "More" button.
-    [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-  }
   // Selects a search engine.
-  NSString* searchEngineToSelect = @"Bing";
+  NSString* searchEngineToSelect = kMicrosoftBingSearchEngineName;
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
                               amount:50];
-  if (moreButtonVisible) {
-    // Taps the primary button. This scrolls the table down to the bottom.
-    [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  }
+  // Taps the primary button. This scrolls the table down to the bottom.
+  [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   // Verify that the "More" button has been removed.
   [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_nil()];
@@ -116,29 +116,17 @@
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test.
-- (void)FLAKY_testSearchEngineChoiceScreenScrollThenSelect {
+- (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
-  // The more button is not visible on iPads, only on iPhones.
-  // TODO(crbug.com/329579023): We need have a more reliable way to know if
-  // there is a more button or not instead of checking if the test is running
-  // on iPad or iPhone.
-  BOOL moreButtonVisible = ![ChromeEarlGrey isIPadIdiom];
-  if (moreButtonVisible) {
-    // Verifies that the primary button is initially the "More" button.
-    [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-    // Taps the primary button. This scrolls the table down to the bottom.
-    [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  } else {
-    // Verify that the more button is not visible.
-    [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_nil()];
-  }
+  // Verifies that the "More" button is visible.
+  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
+  // Taps the more button. This scrolls the table down to the bottom.
+  [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   // Verifies that the primary button is now the disabled "Set as Default"
   // button.
   id<GREYMatcher> primaryActionButtonMatcher =
@@ -148,7 +136,7 @@
                                    nil)];
 
   // Selects a search engine.
-  NSString* searchEngineToSelect = @"Bing";
+  NSString* searchEngineToSelect = kMicrosoftBingSearchEngineName;
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp
@@ -166,7 +154,7 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     return;
   }
-  NSString* googleSearchEngineIdentifier = @"Google";
+  NSString* googleSearchEngineIdentifier = kGoogleSearchEngineName;
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:googleSearchEngineIdentifier
                      scrollDirection:kGREYDirectionDown

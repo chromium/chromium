@@ -73,9 +73,6 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   button.snippetText = element.snippetDescription;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.searchEngineKeyword = element.keyword;
-  button.accessibilityIdentifier =
-      [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
-                                 element.name];
   return button;
 }
 
@@ -137,7 +134,6 @@ UIButton* CreateSetAsDefaultButton() {
   SetConfigurationTitle(
       button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.accessibilityIdentifier = kSetAsDefaultSearchEngineIdentifier;
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the SetAsDefault button, using VoiceOver.
   button.accessibilityContainerType = UIAccessibilityContainerTypeSemanticGroup;
@@ -359,6 +355,8 @@ UIButton* CreateMorePillButton() {
   _floatingSetAsDefaultButton = CreateSetAsDefaultButton();
   _floatingSetAsDefaultButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_floatingSetAsDefaultButtonContainer addSubview:_floatingSetAsDefaultButton];
+  _floatingSetAsDefaultButton.accessibilityIdentifier =
+      kSetAsDefaultSearchEngineIdentifier;
   _floatingSetAsDefaultButtonContainer.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   [_floatingSetAsDefaultButton addTarget:self
@@ -371,6 +369,7 @@ UIButton* CreateMorePillButton() {
   _morePillButton = CreateMorePillButton();
   _morePillButton.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:_morePillButton];
+  _morePillButton.accessibilityIdentifier = kSearchEngineMoreButtonIdentifier;
   [_morePillButton addTarget:self
                       action:@selector(moreButtonAction)
             forControlEvents:UIControlEventTouchUpInside];
