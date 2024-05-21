@@ -778,8 +778,8 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
   // Enable proactive nudge.
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = true;
-  config.proactive_nudge_show_probability = 1.0;
   config.proactive_nudge_delay = base::Seconds(0);
+  config.proactive_nudge_segmentation = false;
 
   autofill::FormData form_data;
   form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
@@ -2311,6 +2311,7 @@ TEST_F(ChromeComposeClientTest,
   config.proactive_nudge_enabled = true;
   config.proactive_nudge_show_probability = 1.0;
   config.proactive_nudge_delay = base::Seconds(0);
+  config.proactive_nudge_segmentation = false;
 
   PrefService* prefs = GetProfile()->GetPrefs();
 

@@ -312,12 +312,7 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
         compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled);
   }
 
-  if (base::RandDouble() <
-      compose::GetComposeConfig().proactive_nudge_show_probability) {
-    return base::ok();
-  }
-
-  return base::unexpected(compose::ComposeShowStatus::kRandomlyBlocked);
+  return base::ok();
 }
 
 base::expected<void, compose::ComposeNudgeDenyReason>

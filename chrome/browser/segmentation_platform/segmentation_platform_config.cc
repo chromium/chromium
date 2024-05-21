@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/compose/buildflags.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
@@ -47,6 +48,10 @@
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "components/segmentation_platform/embedder/default_model/compose_promotion.h"
 #endif
 
 namespace segmentation_platform {
@@ -133,16 +138,6 @@ std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
   return config;
 }
 
-std::unique_ptr<Config> GetConfigForComposePromotion() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kComposePromotionKey;
-  config->segmentation_uma_name = kComposePromotionUmaName;
-  config->AddSegmentId(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION);
-  config->auto_execute_and_cache = false;
-  return config;
-}
-
 std::unique_ptr<Config> GetConfigForDesktopNtpModule() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDesktopNtpModuleKey;
@@ -188,13 +183,13 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(DatabaseApiClients::GetConfig());
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+  configs.emplace_back(ComposePromotion::GetConfig());
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
 
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformComposePromotion)) {
-    configs.emplace_back(GetConfigForComposePromotion());
-  }
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebAppsEnableMLModelForPromotion)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());

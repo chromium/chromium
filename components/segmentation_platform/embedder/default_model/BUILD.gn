@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/compose/features.gni")
+
 static_library("default_model") {
   sources = [
     "android_home_module_ranker.cc",
@@ -39,6 +41,7 @@ static_library("default_model") {
   ]
   deps = [
     "//base",
+    "//components/compose:buildflags",
     "//components/prefs:prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
@@ -62,6 +65,13 @@ static_library("default_model") {
       "tablet_productivity_user_model.cc",
       "tablet_productivity_user_model.h",
     ]
+  }
+  if (enable_compose) {
+    sources += [
+      "compose_promotion.cc",
+      "compose_promotion.h",
+    ]
+    deps += [ "//components/compose/core/browser:browser" ]
   }
 }
 
@@ -116,6 +126,11 @@ source_set("unit_tests") {
     "//components/sync_device_info:test_support",
     "//testing/gtest",
   ]
+
+  if (enable_compose) {
+    sources += [ "compose_promotion_unittest.cc" ]
+    deps += [ "//components/compose/core/browser:browser" ]
+  }
 }
 
 source_set("default_model_test_base") {
