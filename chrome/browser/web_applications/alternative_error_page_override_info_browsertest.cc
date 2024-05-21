@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/url_formatter/url_formatter.h"
@@ -23,7 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
@@ -31,11 +29,6 @@
 class AlternativeErrorPageOverrideInfoBrowserTest
     : public web_app::WebAppBrowserTestBase {
  public:
-  AlternativeErrorPageOverrideInfoBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
-                                   {});
-  }
-
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
   content::mojom::AlternativeErrorPageOverrideInfoPtr GetErrorPageInfo(
@@ -69,8 +62,6 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   void TearDownOnMainThread() override {
     WebAppBrowserTestBase::TearDownOnMainThread();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Testing url outside the scope of an installed app.

@@ -126,11 +126,7 @@ struct Manifest {
   // A mapping of locales to their translations.
   map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
 
-  // TODO(crbug.com/1271804): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
-  ManifestUserPreferences? user_preferences;
-
+  // TODO(b:340126786): Remove these obsolete fields.
   // TODO(crbug.com/1318305): This field is non-standard and part of a Chrome
   // experiment. See: https://github.com/w3c/manifest/issues/1045
   bool has_dark_theme_color;
@@ -347,21 +343,6 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
-};
-
-// Structure representing overrides for certain user preferences.
-struct ManifestUserPreferences {
-  ManifestUserPreferenceOverrides? color_scheme_dark;
-};
-
-// Structure representing manifest fields that can be overridden given certain
-// user preferences (eg. dark mode). All fields are optional.
-struct ManifestUserPreferenceOverrides {
-  bool has_theme_color;
-  uint32 theme_color;
-
-  bool has_background_color;
-  uint32 background_color;
 };
 
 // Structure representing customizations to the tab strip.

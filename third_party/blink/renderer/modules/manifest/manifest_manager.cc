@@ -288,11 +288,6 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
       UseCounter::Count(GetSupplementable(), WebFeature::kWebAppTabbed);
     }
   }
-
-  if (manifest.has_dark_theme_color || manifest.has_dark_background_color) {
-    UseCounter::Count(GetSupplementable(),
-                      WebFeature::kWebAppManifestUserPreferences);
-  }
 }
 
 void ManifestManager::ResolveCallbacks(ResolveState state) {

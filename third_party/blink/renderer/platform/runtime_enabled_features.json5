@@ -4229,12 +4229,6 @@
       status: "experimental",
     },
     {
-      name: "WebAppDarkMode",
-      origin_trial_feature_name: "WebAppDarkModeV2",
-      status: "experimental",
-      base_feature: "WebAppEnableDarkMode",
-    },
-    {
       name: "WebAppLaunchHandler",
       origin_trial_feature_name: "Launch Handler",
       status: {"Android": "experimental", "default": "stable"},
