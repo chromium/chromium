@@ -144,7 +144,7 @@ bool VisitedURLRankingServiceFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 bool VisitedURLRankingServiceFactory::ServiceIsNULLWhileTesting() const {
-  return false;
+  return true;
 }
 
 }  // namespace visited_url_ranking

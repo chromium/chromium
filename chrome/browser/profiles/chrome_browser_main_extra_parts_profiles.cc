@@ -209,6 +209,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
@@ -264,7 +265,6 @@
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
-#include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #else
@@ -869,6 +869,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   HttpsFirstModeServiceFactory::GetInstance();
   IdentityManagerFactory::EnsureFactoryAndDependeeFactoriesBuilt();
   InMemoryURLIndexFactory::GetInstance();
+  visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();
 #endif
@@ -1266,11 +1267,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   user_notes::UserNoteServiceFactory::EnsureFactoryBuilt();
   UserEducationServiceFactory::GetInstance();
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/340893655) Fix dangling pointer issue (on Mac) and enable
-  // for non-Android architectures.
-  visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_app::IsolatedWebAppReaderRegistryFactory::GetInstance();

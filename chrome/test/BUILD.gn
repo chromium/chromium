@@ -7154,6 +7154,7 @@ test("unit_tests") {
     "//components/vector_icons",
     "//components/version_info:generate_version_info",
     "//components/visited_url_ranking/public",
+    "//components/visited_url_ranking/public:test_support",
     "//components/webapps/common",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",

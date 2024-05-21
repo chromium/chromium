@@ -15,17 +15,27 @@
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/visited_url_ranking/public/fetch_options.h"
+#include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
+
+using visited_url_ranking::Fetcher;
+using visited_url_ranking::FetchOptions;
+using visited_url_ranking::URLVisitAggregate;
+using visited_url_ranking::URLVisitAggregatesTransformType;
+using Source = visited_url_ranking::URLVisit::Source;
 
 namespace {
 std::u16string FormatRelativeTime(const base::Time& time) {
@@ -88,4 +98,36 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     std::move(callback).Run(std::move(tabs_mojom));
     return;
   }
+
+  auto fetch_options =
+      FetchOptions::CreateDefaultFetchOptionsForTabResumption();
+  // Filter certain content categories, generally for use cases where a device
+  // and profile may be shared by multiple family members.
+  fetch_options.transforms.insert(
+      fetch_options.transforms.begin(),
+      URLVisitAggregatesTransformType::kHistoryCategoriesFilter);
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  // TODO (crbug.com/329243396): Wire call to `RankURLVisitAggregates`.
+  visited_url_ranking_service->FetchURLVisitAggregates(
+      fetch_options,
+      base::BindOnce(
+          &MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
+    GetTabsCallback callback,
+    visited_url_ranking::ResultStatus status,
+    std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
+  std::vector<history::mojom::TabPtr> tabs_mojom;
+  for (const auto& url_visit_aggregate : url_visit_aggregates) {
+    auto tab_mojom = history::mojom::Tab::New();
+    // TODO(crbug.com/338622450): Wire fields to be displayed on the UI.
+    tab_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
+    tabs_mojom.push_back(std::move(tab_mojom));
+  }
+
+  std::move(callback).Run(std::move(tabs_mojom));
 }

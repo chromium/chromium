@@ -23,3 +23,19 @@ source_set("public") {
     "//url",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "testing/mock_visited_url_ranking_service.cc",
+    "testing/mock_visited_url_ranking_service.h",
+  ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

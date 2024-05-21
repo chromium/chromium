@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_MOST_RELEVANT_TAB_RESUMPTION_MOST_RELEVANT_TAB_RESUMPTION_PAGE_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_MOST_RELEVANT_TAB_RESUMPTION_MOST_RELEVANT_TAB_RESUMPTION_PAGE_HANDLER_H_
 
+#include <vector>
+
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -35,6 +39,12 @@ class MostRelevantTabResumptionPageHandler
 
   // most_relevant_tab_resumption::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
+
+  // Invoked when the URL visit aggregates have been fetched.
+  void OnGotRankedURLVisitAggregates(
+      GetTabsCallback callback,
+      visited_url_ranking::ResultStatus status,
+      std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 
  private:
   raw_ptr<Profile> profile_;
