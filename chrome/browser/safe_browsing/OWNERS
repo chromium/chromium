@@ -5,3 +5,6 @@ file://components/safe_browsing/OWNERS
 per-file chrome_safe_browsing_blocking_page_factory.*=skrakowi@chromium.org
 per-file safe_browsing_blocking_page_test.*=skrakowi@chromium.org
 per-file threat_details_unittest.cc=skrakowi@chromium.org
+
+# For extensions telemetry changes.
+per-file BUILD.gn=anunoy@chromium.org
