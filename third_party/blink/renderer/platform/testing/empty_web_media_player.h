@@ -19,8 +19,7 @@ namespace blink {
 // An empty WebMediaPlayer used only for tests. This class defines the methods
 // of WebMediaPlayer so that mock WebMediaPlayers don't need to redefine them if
 // they don't care their behavior.
-class EmptyWebMediaPlayer : public WebMediaPlayer,
-                            public base::SupportsWeakPtr<EmptyWebMediaPlayer> {
+class EmptyWebMediaPlayer : public WebMediaPlayer {
  public:
   ~EmptyWebMediaPlayer() override = default;
 
@@ -74,11 +73,14 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   bool HasAvailableVideoFrame() const override { return false; }
   bool HasReadableVideoFrame() const override { return false; }
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
-    return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();
+    return weak_ptr_factory_.GetWeakPtr();
   }
   void RegisterFrameSinkHierarchy() override {}
   void UnregisterFrameSinkHierarchy() override {}
   bool PassedTimingAllowOriginCheck() const override { return true; }
+
+ private:
+  base::WeakPtrFactory<EmptyWebMediaPlayer> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
