@@ -781,7 +781,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   line_info->SetLineStyle(node_, *items_data_, use_first_line_style_);
 
   DCHECK(!line_info->TextIndent());
-  if (is_first_formatted_line_) {
+  if (is_first_formatted_line_ && end_item_index_ == Items().size()) {
     const Length& length = line_info->LineStyle().TextIndent();
     LayoutUnit maximum_value;
     // Ignore percentages (resolve to 0) when calculating min/max intrinsic
