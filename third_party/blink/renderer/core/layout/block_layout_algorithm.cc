@@ -2422,7 +2422,6 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
         should_text_box_trim_end_ = false;
       }
       container_builder_.SetIsTextBoxTrimApplied();
-      // TODO(crbug.com/40254880): Need to adjust the box size.
     }
     if (should_text_box_trim_end_ && child.IsBlock() &&
         !layout_result->IsSelfCollapsing()) {
@@ -2569,6 +2568,19 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     }
     if (!container_builder_.BfcBlockOffset())
       DCHECK_EQ(logical_block_offset, LayoutUnit());
+  } else if (layout_result.IsBlockEndTrimmed()) {
+    // Trim the space to respect the `text-box-trim` property here.
+    const PhysicalFragment& inline_physical_fragment =
+        layout_result.GetPhysicalFragment();
+    CHECK(inline_physical_fragment.IsLineBox());
+    const auto& line_box =
+        To<PhysicalLineBoxFragment>(inline_physical_fragment);
+    LayoutUnit block_end_to_be_trimmed =
+        Style().IsFlippedLinesWritingMode()
+            ? line_box.Metrics().ascent - line_box.IntrinsicMetrics().ascent
+            : line_box.Metrics().descent - line_box.IntrinsicMetrics().descent;
+    logical_block_offset = logical_offset.block_offset + fragment.BlockSize() -
+                           block_end_to_be_trimmed;
   } else {
     // We add the greater of AnnotationOverflow and ClearanceAfterLine here.
     // Then, we cancel the AnnotationOverflow part if

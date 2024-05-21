@@ -647,8 +647,8 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
   }
 
   if (should_apply_end) {
-    // Apply `text-box-trim: end` if this is the last line.
-    // TODO(crbug.com/40254880): Not supported yet.
+    // Ask the block layout algorithm to trim the end of the line box.
+    container_builder_.SetIsBlockEndTrimmed();
   }
 
   // TODO(crbug.com/40254880): Block-in-inline case probably needs a logic.
