@@ -2233,6 +2233,7 @@ IN_PROC_BROWSER_TEST_F(
   signin_form.password_value = u"pw";
   signin_form.username_value = u"temp";
   password_store->AddLogin(signin_form);
+  WaitForPasswordStore();
 
   NavigateToFile("/password/frame_detached_after_submit.html");
 
