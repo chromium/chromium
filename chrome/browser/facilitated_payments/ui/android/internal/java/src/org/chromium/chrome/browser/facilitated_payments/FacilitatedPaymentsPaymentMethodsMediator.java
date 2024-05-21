@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
@@ -72,7 +73,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(BANK_NAME, bankAccount.getBankName())
                         .with(
                                 BANK_ACCOUNT_SUMMARY,
-                                getBankAccountSummaryString(context, bankAccount));
+                                getBankAccountSummaryString(context, bankAccount))
+                        .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance);
         return bankAccountModelBuilder.build();
     }
 

@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -33,6 +37,11 @@ class BankAccountViewBinder {
         } else if (propertyKey == BANK_ACCOUNT_SUMMARY) {
             TextView bankAccountSummary = view.findViewById(R.id.bank_account_summary);
             bankAccountSummary.setText(model.get(BANK_ACCOUNT_SUMMARY));
+        } else if (propertyKey == BANK_ACCOUNT_DRAWABLE_ID) {
+            ImageView bankAccountIcon = view.findViewById(R.id.bank_account_icon);
+            bankAccountIcon.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(BANK_ACCOUNT_DRAWABLE_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

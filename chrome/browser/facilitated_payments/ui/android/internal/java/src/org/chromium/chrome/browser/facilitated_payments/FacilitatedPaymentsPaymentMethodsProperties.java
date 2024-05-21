@@ -38,8 +38,12 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableObjectPropertyKey("bank_name");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_SUMMARY =
                 new ReadableObjectPropertyKey("bank_account_summary");
+        static final ReadableIntPropertyKey BANK_ACCOUNT_DRAWABLE_ID =
+                new ReadableIntPropertyKey("bank_account_drawable_id");
 
-        static final PropertyKey[] NON_TRANSFORMING_KEYS = {BANK_NAME, BANK_ACCOUNT_SUMMARY};
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
+            BANK_NAME, BANK_ACCOUNT_SUMMARY, BANK_ACCOUNT_DRAWABLE_ID
+        };
 
         private BankAccountProperties() {}
     }
