@@ -73,6 +73,10 @@ namespace {
 const std::u16string& hidden_label = u"Hidden";
 const std::u16string& visible_label = u"Visible";
 
+// Touch drag constants.
+constexpr base::TimeDelta kTouchDragDuration = base::Milliseconds(200);
+const int kTouchDragSteps = 5;
+
 enum class Movement { kTouch, kMouse };
 
 template <typename T>
@@ -1550,7 +1554,8 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
   ASSERT_FALSE(button_widget->IsVisible());
 }
 
-TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
+TEST_F(GameDashboardContextTest,
+       GameDashboardButtonFullscreen_MouseOverAndTouchGesture) {
   // Create an ARC game window.
   SetAppBounds(gfx::Rect(50, 50, 800, 700));
   CreateGameWindow(/*is_arc_window=*/true,
@@ -1585,6 +1590,41 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   // Move mouse to the center of the app, and verify Game Dashboard button
   // widget is not visible.
   event_generator->MoveMouseTo(app_bounds.CenterPoint());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+  ASSERT_FALSE(button_widget->IsVisible());
+
+  // Touch drag from top edge of window.
+  event_generator->GestureScrollSequence(app_bounds.top_center(),
+                                         app_bounds.CenterPoint(),
+                                         kTouchDragDuration, kTouchDragSteps);
+  ASSERT_TRUE(button_widget->IsVisible());
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+
+  // Touch drag to top edge of window.
+  event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
+                                         app_bounds.top_center(),
+                                         kTouchDragDuration, kTouchDragSteps);
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+  ASSERT_FALSE(button_widget->IsVisible());
+
+  // Re-open the game dashboard button and touch drag to bottom edge of window.
+  event_generator->GestureScrollSequence(app_bounds.top_center(),
+                                         app_bounds.CenterPoint(),
+                                         kTouchDragDuration, kTouchDragSteps);
+  ASSERT_TRUE(button_widget->IsVisible());
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+
+  event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
+                                         app_bounds.bottom_center(),
+                                         kTouchDragDuration, kTouchDragSteps);
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+  ASSERT_FALSE(button_widget->IsVisible());
+
+  // Touch drag to bottom edge of window while the game dashboard button is
+  // hidden.
+  event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
+                                         app_bounds.bottom_center(),
+                                         kTouchDragDuration, kTouchDragSteps);
   ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
   ASSERT_FALSE(button_widget->IsVisible());
 }

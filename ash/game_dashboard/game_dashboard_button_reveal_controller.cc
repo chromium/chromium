@@ -78,7 +78,9 @@ void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
   // mouse cursor is within the top edge of the game window in fullscreen.
   const gfx::Point mouse_screen_location =
       event->target()->GetScreenLocation(*event);
-  if (IsMouseWithinButtonRevealBounds(mouse_screen_location)) {
+  if (IsEventWithinButtonRevealBounds(
+          mouse_screen_location,
+          chromeos::ImmersiveFullscreenController::kMouseRevealBoundsHeight)) {
     if (!top_edge_hover_timer_.IsRunning()) {
       top_edge_hover_timer_.Start(
           FROM_HERE, kMouseRevealDelay, this,
@@ -95,10 +97,46 @@ void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
+void GameDashboardButtonRevealController::OnGestureEvent(
+    ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      // Record the start location of a scroll gesture.
+      gesture_scroll_start_pos_ = event->location();
+      return;
+    case ui::ET_GESTURE_SCROLL_UPDATE: {
+      if (!gesture_scroll_start_pos_.has_value()) {
+        return;
+      }
+      // If scroll started at top and is going towards the bottom, show the game
+      // dashboard button; otherwise, hide the game dashboard button.
+      // Everything following is called at most once, as the optional variable
+      // is immediately reset.
+      const bool target_visibility =
+          event->details().scroll_y() > 0 &&
+          IsEventWithinButtonRevealBounds(
+              gesture_scroll_start_pos_.value(),
+              game_dashboard_utils::GetFrameHeaderHeight(
+                  context_->game_window()));
+      UpdateVisibility(target_visibility, /*animate=*/true);
+      gesture_scroll_start_pos_.reset();
+      return;
+    }
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      gesture_scroll_start_pos_.reset();
+      return;
+    default:
+      return;
+  }
+}
+
 bool GameDashboardButtonRevealController::CanShowGameDashboardButton(
     const gfx::Point& mouse_screen_location) {
   return !context_->game_dashboard_button_widget()->IsVisible() &&
-         IsMouseWithinButtonRevealBounds(mouse_screen_location);
+         IsEventWithinButtonRevealBounds(
+             mouse_screen_location,
+             chromeos::ImmersiveFullscreenController::kMouseRevealBoundsHeight);
 }
 
 bool GameDashboardButtonRevealController::CanHideGameDashboardButton(
@@ -108,12 +146,12 @@ bool GameDashboardButtonRevealController::CanHideGameDashboardButton(
          IsMouseOutsideHeaderBounds(mouse_screen_location);
 }
 
-bool GameDashboardButtonRevealController::IsMouseWithinButtonRevealBounds(
-    const gfx::Point& mouse_screen_location) {
+bool GameDashboardButtonRevealController::IsEventWithinButtonRevealBounds(
+    const gfx::Point& event_screen_location,
+    int reveal_height) {
   gfx::Rect button_reveal_bounds = context_->game_window()->GetBoundsInScreen();
-  button_reveal_bounds.set_height(
-      chromeos::ImmersiveFullscreenController::kMouseRevealBoundsHeight);
-  return button_reveal_bounds.Contains(mouse_screen_location);
+  button_reveal_bounds.set_height(reveal_height);
+  return button_reveal_bounds.Contains(event_screen_location);
 }
 
 bool GameDashboardButtonRevealController::IsMouseOutsideHeaderBounds(

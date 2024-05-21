@@ -8,10 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
-
-namespace gfx {
-class Point;
-}  // namespace gfx
+#include "ui/gfx/geometry/point.h"
 
 namespace ash {
 
@@ -39,6 +36,7 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
   friend class GameDashboardContextTestApi;
@@ -53,11 +51,11 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
   // `mouse_screen_location` is within the Game Dashboard reveal bounds.
   bool CanHideGameDashboardButton(const gfx::Point& mouse_screen_location);
 
-  // Returns true if `mouse_screen_location` is within the Game Dashboard
-  // button's reveal bounds, which is the top section of the window with a
-  // height of
-  // `chromeos::ImmersiveFullscreenController::kMouseRevealBoundsHeight`.
-  bool IsMouseWithinButtonRevealBounds(const gfx::Point& mouse_screen_location);
+  // Returns true if `event_screen_location` is within the Game Dashboard
+  // button's reveal bounds, which is the top section of the window with the
+  // given `reveal height`.
+  bool IsEventWithinButtonRevealBounds(const gfx::Point& event_screen_location,
+                                       int reveal_height);
 
   // Returns true if `mouse_screen_location` is outside the window's frame
   // header.
@@ -73,6 +71,9 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
 
   // Timer to track cursor being held at the top edge of the screen.
   base::OneShotTimer top_edge_hover_timer_;
+
+  // Gesture scroll begin position when drag starts.
+  std::optional<gfx::Point> gesture_scroll_start_pos_;
 
   base::WeakPtrFactory<GameDashboardButtonRevealController> weak_ptr_factory_{
       this};
