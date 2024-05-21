@@ -2486,6 +2486,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Cellular.TechnologyEnabled"
+    enum="BooleanEnabled" expires_after="2025-05-15">
+  <owner>rmao@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the enablement of a Cellular device in
+    the system. A sample is emitted once every 3 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.TimeToConfig" units="ms"
     expires_after="2024-09-29">
   <owner>ejcaruso@chromium.org</owner>
