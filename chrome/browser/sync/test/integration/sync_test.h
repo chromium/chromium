@@ -288,10 +288,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   void DisableNotificationsImpl();
   void EnableNotificationsImpl();
 
-  // Helper to ProfileManager::CreateProfileAsync that creates a new profile
-  // used for UI Signin. Blocks until profile is created.
-  static Profile* MakeProfileForUISignin(base::FilePath profile_path);
-
   // Sets up fake responses for kClientLoginUrl, kIssueAuthTokenUrl,
   // kGetUserInfoUrl and kSearchDomainCheckUrl in order to mock out calls to
   // GAIA servers.

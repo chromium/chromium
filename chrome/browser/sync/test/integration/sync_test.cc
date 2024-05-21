@@ -368,17 +368,6 @@ bool SyncTest::CreateProfile(int index) {
   return true;
 }
 
-// TODO(shadi): Ideally creating a new profile should not depend on signin
-// process. We should try to consolidate MakeProfileForUISignin() and
-// MakeProfile(). Major differences are profile paths and creation methods. For
-// UI signin we need profiles in unique user data dir's and we need to use
-// ProfileManager::CreateProfileAsync() for proper profile creation.
-// static
-Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return &profiles::testing::CreateProfileSync(profile_manager, profile_path);
-}
-
 Profile* SyncTest::GetProfile(int index) const {
   DCHECK(!profiles_.empty()) << "SetupClients() has not yet been called.";
   DCHECK(index >= 0 && index < static_cast<int>(profiles_.size()))
