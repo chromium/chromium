@@ -270,11 +270,7 @@ public class TabSwitcherCoordinator
                             snackbarManager,
                             modalDialogManager);
             mMessageManager.registerMessages(mTabListCoordinator);
-            mMessageManager.bind(
-                    mTabListCoordinator,
-                    container,
-                    /* visibilitySupplier= */ () -> true,
-                    mMediator);
+            mMessageManager.bind(mTabListCoordinator, container, mMediator);
 
             mMenuOrKeyboardActionController = menuOrKeyboardActionController;
             mTabSwitcherMenuActionHandler =

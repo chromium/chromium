@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -16,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -32,9 +34,13 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.util.TokenHolder;
 
 /** Holds dependencies for constructing a {@link TabSwitcherPane}. */
 public class TabSwitcherPaneCoordinatorFactory {
+    private final TokenHolder mMessageManagerTokenHolder =
+            new TokenHolder(this::onMessageManagerTokenStateChanged);
+
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
@@ -48,6 +54,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final ModalDialogManager mModalDialogManager;
     private final @TabListMode int mMode;
     private final @NonNull BottomSheetController mBottomSheetController;
+
+    private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -117,27 +125,28 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
             boolean isIncognito) {
+        int token = mMessageManagerTokenHolder.acquireToken();
+        assert mMessageManager != null;
         return new TabSwitcherPaneCoordinator(
                 mActivity,
-                mLifecycleDispatcher,
                 mProfileProviderSupplier,
                 createTabModelFilterSupplier(isIncognito),
                 () -> mTabModelSelector.getModel(false),
                 mTabContentManager,
                 mTabCreatorManager,
                 mBrowserControlsStateProvider,
-                mMultiWindowModeStateDispatcher,
                 mScrimCoordinator,
-                mSnackbarManager,
                 mModalDialogManager,
                 mBottomSheetController,
+                mMessageManager,
                 parentView,
                 resetHandler,
                 isVisibleSupplier,
                 isAnimatingSupplier,
                 onTabClickCallback,
                 mMode,
-                /* supportsEmptyState= */ !isIncognito);
+                /* supportsEmptyState= */ !isIncognito,
+                () -> mMessageManagerTokenHolder.releaseToken(token));
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
@@ -201,5 +210,43 @@ public class TabSwitcherPaneCoordinatorFactory {
                     });
         }
         return tabModelFilterSupplier;
+    }
+
+    private void onMessageManagerTokenStateChanged() {
+        if (mMessageManagerTokenHolder.hasTokens()) {
+            assert mMessageManager == null : "MessageManager should not exist yet.";
+            mMessageManager =
+                    new TabSwitcherMessageManager(
+                            mActivity,
+                            mLifecycleDispatcher,
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilterSupplier(),
+                            mMultiWindowModeStateDispatcher,
+                            mSnackbarManager,
+                            mModalDialogManager);
+            if (mLifecycleDispatcher.isNativeInitializationFinished()) {
+                mMessageManager.initWithNative(
+                        mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());
+            } else {
+                mLifecycleDispatcher.register(
+                        new NativeInitObserver() {
+                            @Override
+                            public void onFinishNativeInitialization() {
+                                mMessageManager.initWithNative(
+                                        mProfileProviderSupplier.get().getOriginalProfile(),
+                                        getTabListMode());
+                                mLifecycleDispatcher.unregister(this);
+                            }
+                        });
+            }
+        } else {
+            mMessageManager.destroy();
+            mMessageManager = null;
+        }
+    }
+
+    TabSwitcherMessageManager getMessageManagerForTesting() {
+        return mMessageManager;
     }
 }

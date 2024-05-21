@@ -52,8 +52,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -70,7 +68,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -99,17 +96,15 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private ScrimCoordinator mScrimCoordinator;
-    @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private TabSwitcherMessageManager mMessageManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Callback<Integer> mOnTabClickedCallback;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
@@ -131,6 +126,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     private FrameLayout mContainerView;
     private FrameLayout mCoordinatorView;
     private TabSwitcherPaneCoordinator mCoordinator;
+    private boolean mDestroyed;
 
     @Before
     public void setUp() {
@@ -170,33 +166,38 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.TabSwitcher.SetupRecyclerView.Time");
+        mDestroyed = false;
         mCoordinator =
                 new TabSwitcherPaneCoordinator(
                         activity,
-                        mLifecycleDispatcher,
                         mProfileProviderSupplier,
                         mTabModelFilterSupplier,
                         () -> mTabModel,
                         mTabContentManager,
                         mTabCreatorManager,
                         mBrowserControlsStateProvider,
-                        mMultiWindowModeStateDispatcher,
                         mScrimCoordinator,
-                        mSnackbarManager,
                         mModalDialogManager,
                         mBottomSheetController,
+                        mMessageManager,
                         mContainerView,
                         mResetHandler,
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
                         TabListMode.GRID,
-                        /* supportsEmptyState= */ true);
+                        /* supportsEmptyState= */ true,
+                        () -> {
+                            mDestroyed = true;
+                        });
         watcher.assertExpected();
 
         mCoordinator.initWithNative();
 
         mIsVisibleSupplier.set(true);
+
+        verify(mMessageManager).registerMessages(any());
+        verify(mMessageManager).bind(any(), any(), any());
     }
 
     DialogController showTabGridDialogWithTabs() {
@@ -220,6 +221,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @After
     public void tearDown() {
         mCoordinator.destroy();
+        assertTrue(mDestroyed);
     }
 
     @Test
@@ -356,6 +358,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         assertFalse(thumbnailView.isPlaceholder());
 
         mIsVisibleSupplier.set(false);
+
+        verify(mMessageManager, times(2)).unbind(any());
 
         mCoordinator.softCleanup();
         assertTrue(thumbnailView.isPlaceholder());

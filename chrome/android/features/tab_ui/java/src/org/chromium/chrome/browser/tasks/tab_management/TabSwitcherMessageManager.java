@@ -127,8 +127,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
             new ObservableSupplierImpl<>();
 
-    private @Nullable Supplier<Boolean> mVisibilitySupplier;
-
     private @Nullable Profile mProfile;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
     private @Nullable PriceMessageService mPriceMessageService;
@@ -179,13 +177,11 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      *
      * @param tabListCoordinator The {@link TabListCoordinator} to show messages on.
      * @param container The {@link ViewGroup} of the container view.
-     * @param visibilitySupplier A supplier for the visibility of the {@link TabListCoordinator}.
      * @param priceWelcomeMessageReviewActionProvider The review action provider for price welcome.
      */
     public void bind(
             @NonNull TabListCoordinator tabListCoordinator,
             @NonNull ViewGroup container,
-            @NonNull Supplier<Boolean> visibilitySupplier,
             @NonNull
                     PriceWelcomeMessageReviewActionProvider
                             priceWelcomeMessageReviewActionProvider) {
@@ -196,7 +192,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             }
         }
         mTabListCoordinatorSupplier.set(tabListCoordinator);
-        mVisibilitySupplier = visibilitySupplier;
         mPriceWelcomeMessageReviewActionProviderSupplier.set(
                 priceWelcomeMessageReviewActionProvider);
 
@@ -217,7 +212,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         removeAllAppendedMessage();
 
         mTabListCoordinatorSupplier.set(null);
-        mVisibilitySupplier = null;
         mPriceWelcomeMessageReviewActionProviderSupplier.set(null);
 
         mTabGridIphDialogCoordinator.setParentView(null);
@@ -575,9 +569,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     private boolean shouldShowMessages() {
         return !mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                && mTabListCoordinatorSupplier.get() != null
-                && mVisibilitySupplier != null
-                && mVisibilitySupplier.get();
+                && mTabListCoordinatorSupplier.get() != null;
     }
 
     /** Returns whether this manager has appended any messages. */
@@ -588,6 +580,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     /** Resets whether this manager has appended any messages. */
     public static void resetHasAppendedMessagesForTesting() {
         sAppendedMessagesForTesting = false;
+    }
+
+    boolean isNativeInitializedForTesting() {
+        return mProfile != null;
     }
 
     void setPriceMessageServiceForTesting(@NonNull PriceMessageService priceMessageService) {

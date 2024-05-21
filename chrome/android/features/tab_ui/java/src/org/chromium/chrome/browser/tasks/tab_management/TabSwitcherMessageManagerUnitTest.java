@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -85,8 +84,6 @@ public class TabSwitcherMessageManagerUnitTest {
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
-    private boolean mVisible;
-    private final Supplier<Boolean> mVisibilitySupplier = () -> mVisible;
 
     private TabSwitcherMessageManager mMessageManager;
     private MockTab mTab1;
@@ -109,7 +106,6 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(mTabModel).when(mTabModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
         mCurrentTabModelFilterSupplier.set(mTabModelFilter);
-        mVisible = true;
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
@@ -127,10 +123,7 @@ public class TabSwitcherMessageManagerUnitTest {
                         mModalDialogManager);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
-                mTabListCoordinator,
-                container,
-                mVisibilitySupplier,
-                mPriceWelcomeMessageReviewActionProvider);
+                mTabListCoordinator, container, mPriceWelcomeMessageReviewActionProvider);
         mMessageManager.addObserver(mMessageUpdateObserver);
 
         mMessageManager.setPriceMessageServiceForTesting(mPriceMessageService);
@@ -162,13 +155,6 @@ public class TabSwitcherMessageManagerUnitTest {
 
         mMessageManager.afterReset(1);
         verify(mMessageUpdateObserver, times(2)).onRemoveAllAppendedMessage();
-        verify(mMessageUpdateObserver).onAppendedMessage();
-
-        mVisible = false;
-
-        mMessageManager.afterReset(1);
-        verify(mMessageUpdateObserver, times(3)).onRemoveAllAppendedMessage();
-        // Not incremented a second time.
         verify(mMessageUpdateObserver).onAppendedMessage();
     }
 
@@ -229,15 +215,6 @@ public class TabSwitcherMessageManagerUnitTest {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
 
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
-    }
-
-    @Test
-    @SmallTest
-    public void exitMultiWindowMode_NotVisible() {
-        mVisible = false;
-        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
-
-        verify(mMessageUpdateObserver, never()).onRestoreAllAppendedMessage();
     }
 
     @Test
