@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
+#include "base/check_deref.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,7 +18,7 @@ ContentFacilitatedPaymentsDriverFactory::
         optimization_guide::OptimizationGuideDecider*
             optimization_guide_decider)
     : content::WebContentsObserver(web_contents),
-      client_(*client),
+      client_(CHECK_DEREF(client)),
       optimization_guide_decider_(optimization_guide_decider) {}
 
 ContentFacilitatedPaymentsDriverFactory::

@@ -258,10 +258,10 @@ class FacilitatedPaymentsManager {
   void ResetForTesting();
 
   // Owner.
-  raw_ref<FacilitatedPaymentsDriver> driver_;
+  const raw_ref<FacilitatedPaymentsDriver> driver_;
 
   // Indirect owner.
-  raw_ref<FacilitatedPaymentsClient> client_;
+  const raw_ref<FacilitatedPaymentsClient> client_;
 
   // The client for the facilitated payment API.
   std::unique_ptr<FacilitatedPaymentsApiClient> api_client_;

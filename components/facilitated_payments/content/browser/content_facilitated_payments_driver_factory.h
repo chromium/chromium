@@ -63,7 +63,7 @@ class ContentFacilitatedPaymentsDriverFactory
       driver_map_;
 
   // Owner.
-  raw_ref<FacilitatedPaymentsClient> client_;
+  const raw_ref<FacilitatedPaymentsClient> client_;
 
   // The optimization guide decider to help determine whether the current main
   // frame URL is eligible for facilitated payments.

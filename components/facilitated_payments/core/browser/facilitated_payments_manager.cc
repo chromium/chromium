@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -25,8 +26,8 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsClient* client,
     std::unique_ptr<FacilitatedPaymentsApiClient> api_client,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
-    : driver_(*driver),
-      client_(*client),
+    : driver_(CHECK_DEREF(driver)),
+      client_(CHECK_DEREF(client)),
       api_client_(std::move(api_client)),
       optimization_guide_decider_(optimization_guide_decider),
       initiate_payment_request_details_(
