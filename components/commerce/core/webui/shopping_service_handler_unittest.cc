@@ -137,6 +137,10 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               SetName,
               (const base::Uuid& uuid, const std::string& name),
               (override));
+  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
+              SetUrls,
+              (const base::Uuid& uuid, const std::vector<GURL>& urls),
+              (override));
 };
 
 void GetEvaluationProductInfos(
@@ -933,6 +937,34 @@ TEST_F(ShoppingServiceHandlerTest, TestSetNameForProductSpecificationsSet) {
              shopping_service::mojom::ProductSpecificationsSetPtr set_ptr) {
             ASSERT_EQ(*uuid, set_ptr->uuid);
             ASSERT_EQ("set1", set_ptr->name);
+            ASSERT_EQ(1u, set_ptr->urls.size());
+            ASSERT_EQ("https://example.com/", set_ptr->urls[0]);
+          },
+          &uuid)
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestSetUrlsForProductSpecificationsSet) {
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet updated_set = ProductSpecificationsSet(
+      uuid.AsLowercaseString(), 0, 0, {GURL("https://example.com/")}, "set1");
+  ON_CALL(*product_spec_service_, SetUrls)
+      .WillByDefault(testing::Return(std::move(updated_set)));
+
+  base::RunLoop run_loop;
+  // Attempt a call to |SetUrlsForProductSpecificationsSet| with an valid url,
+  // invalid url, and empty url.
+  handler_->SetUrlsForProductSpecificationsSet(
+      uuid, {GURL("https://example.com/"), GURL(), GURL("foo")},
+      base::BindOnce(
+          [](const base::Uuid* uuid,
+             shopping_service::mojom::ProductSpecificationsSetPtr set_ptr) {
+            ASSERT_EQ(*uuid, set_ptr->uuid);
+            ASSERT_EQ("set1", set_ptr->name);
+            // Ensure that the empty url and the invalid url have been filtered
+            // out.
             ASSERT_EQ(1u, set_ptr->urls.size());
             ASSERT_EQ("https://example.com/", set_ptr->urls[0]);
           },

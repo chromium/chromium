@@ -771,6 +771,40 @@ void ShoppingServiceHandler::SetNameForProductSpecificationsSet(
   std::move(callback).Run(ProductSpecsSetToMojo(set.value()));
 }
 
+void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
+    const base::Uuid& uuid,
+    const std::vector<GURL>& urls,
+    SetUrlsForProductSpecificationsSetCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // If an url is valid, but longer than mojo can handle, mojo will replace the
+  // url with `GURL().` To avoid passing ShoppingService empty urls, we filter
+  // them out before passing the list to `SetUrls.`
+  std::vector<GURL> valid_urls;
+  for (const auto& url : urls) {
+    if (url.is_valid()) {
+      valid_urls.push_back(url);
+    }
+  }
+  if (valid_urls.size() < 1) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const auto& set =
+      shopping_service_->GetProductSpecificationsService()->SetUrls(uuid,
+                                                                    valid_urls);
+  if (set.has_value()) {
+    std::move(callback).Run(ProductSpecsSetToMojo(set.value()));
+  } else {
+    std::move(callback).Run(nullptr);
+  }
+}
+
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));

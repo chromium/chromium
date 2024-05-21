@@ -231,6 +231,11 @@ interface ShoppingServiceHandler {
   // Uuid. If no set with the provided Uuid exists, nullopt is returned.
   SetNameForProductSpecificationsSet(mojo_base.mojom.Uuid uuid, string name)
       => (ProductSpecificationsSet? updated_set);
+
+  // Set the URLs for a product specifications set associated with the provided
+  // Uuid. If no set with the provided Uuid exists, nullopt is returned.
+  SetUrlsForProductSpecificationsSet(mojo_base.mojom.Uuid uuid,
+      array<url.mojom.Url> urls) => (ProductSpecificationsSet? updated_set);
 };
 
 // WebUI-side handler for requests from the browser.

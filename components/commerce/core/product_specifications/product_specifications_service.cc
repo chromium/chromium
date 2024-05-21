@@ -94,9 +94,9 @@ ProductSpecificationsService::AddProductSpecificationsSet(
   return std::optional(ProductSpecificationsSet::FromProto(specifics.value()));
 }
 
-std::optional<ProductSpecificationsSet> ProductSpecificationsService::SetUrls(
-    const base::Uuid& uuid,
-    const std::vector<GURL>& urls) {
+const std::optional<ProductSpecificationsSet>
+ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
+                                      const std::vector<GURL>& urls) {
   std::optional<ProductSpecificationsSet> product_specs_set =
       GetSetByUuid(uuid);
   if (!product_specs_set.has_value()) {

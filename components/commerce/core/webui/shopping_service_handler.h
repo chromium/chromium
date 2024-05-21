@@ -128,6 +128,10 @@ class ShoppingServiceHandler
       const base::Uuid& uuid,
       const std::string& name,
       SetNameForProductSpecificationsSetCallback callback) override;
+  void SetUrlsForProductSpecificationsSet(
+      const base::Uuid& uuid,
+      const std::vector<GURL>& urls,
+      SetUrlsForProductSpecificationsSetCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

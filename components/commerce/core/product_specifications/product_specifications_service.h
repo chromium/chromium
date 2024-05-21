@@ -48,7 +48,7 @@ class ProductSpecificationsService : public KeyedService {
   // Set the URLs for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated
   // ProductSpecificationsSet will be returned, otherwise nullopt.
-  std::optional<ProductSpecificationsSet> SetUrls(
+  virtual const std::optional<ProductSpecificationsSet> SetUrls(
       const base::Uuid& uuid,
       const std::vector<GURL>& urls);
 
