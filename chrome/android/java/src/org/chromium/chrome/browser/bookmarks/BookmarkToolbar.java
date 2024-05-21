@@ -17,6 +17,7 @@ import androidx.core.view.MenuCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -205,7 +206,10 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
                     .setVisible(selectedBookmarks.size() == 1);
             getMenu()
                     .findItem(R.id.selection_open_in_incognito_tab_id)
-                    .setVisible(IncognitoUtils.isIncognitoModeEnabled());
+                    .setVisible(
+                            // TODO(crbug.com/341836626): Move this logic to the mediator.
+                            IncognitoUtils.isIncognitoModeEnabled(
+                                    ProfileManager.getLastUsedRegularProfile()));
 
             // It does not make sense to open a folder in new tab.
             for (BookmarkId bookmark : selectedBookmarks) {

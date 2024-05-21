@@ -31,7 +31,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -60,7 +59,6 @@ import java.util.function.Consumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         shadows = {
-            SearchActivityPreferencesManagerTest.ShadowIncognitoUtils.class,
             SearchActivityPreferencesManagerTest.ShadowLensController.class,
             SearchActivityPreferencesManagerTest.ShadowVoiceRecognitionUtil.class,
         })
@@ -72,16 +70,6 @@ public class SearchActivityPreferencesManagerTest {
 
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
-
-    @Implements(IncognitoUtils.class)
-    public static class ShadowIncognitoUtils {
-        public static boolean sIsAvailable = true;
-
-        @Implementation
-        public static boolean isIncognitoModeEnabled() {
-            return sIsAvailable;
-        }
-    }
 
     @Implements(LensController.class)
     public static class ShadowLensController {
@@ -489,7 +477,7 @@ public class SearchActivityPreferencesManagerTest {
     public void updateFeatureAvailability() {
         ShadowLensController.sIsAvailable = true;
         ShadowVoiceRecognitionUtil.sIsAvailable = true;
-        ShadowIncognitoUtils.sIsAvailable = true;
+        IncognitoUtils.setEnabledForTesting(true);
 
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
@@ -517,7 +505,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.incognitoAvailable);
 
         // Disable Incognito.
-        ShadowIncognitoUtils.sIsAvailable = false;
+        IncognitoUtils.setEnabledForTesting(false);
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
         data = SearchActivityPreferencesManager.getCurrent();

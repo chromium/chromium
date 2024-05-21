@@ -1432,7 +1432,10 @@ public class ToolbarManager
                                                 ? LayoutType.NONE
                                                 : mLayoutStateProvider.getActiveLayoutType()),
                         mCompositorViewHolder::getResourceManager,
-                        IncognitoUtils::isIncognitoModeEnabled,
+                        () -> {
+                            return IncognitoUtils.isIncognitoModeEnabled(
+                                    mTabModelSelector.getCurrentModel().getProfile());
+                        },
                         isTabToGtsAnimationEnabled,
                         isStartSurfaceEnabled,
                         HistoryManagerUtils::showHistoryManager,

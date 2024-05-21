@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -94,6 +96,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Mock BookmarkModel mBookmarkModel;
     @Mock BookmarkOpener mBookmarkOpener;
     @Mock Runnable mNavigateBackRunnable;
+    @Mock Profile mProfile;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -108,6 +111,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         when(mBookmarkDelegate.getModel()).thenReturn(mBookmarkModel);
         when(mBookmarkDelegate.getSelectionDelegate()).thenReturn(mSelectionDelegate);
 
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         IncognitoUtils.setEnabledForTesting(true);
 
         mActivity = getActivity();

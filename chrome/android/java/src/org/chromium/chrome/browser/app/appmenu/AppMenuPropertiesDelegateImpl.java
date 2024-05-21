@@ -1363,7 +1363,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean isIncognitoEnabled() {
-        return IncognitoUtils.isIncognitoModeEnabled();
+        return IncognitoUtils.isIncognitoModeEnabled(
+                mTabModelSelector.getCurrentModel().getProfile());
     }
 
     static void setPageBookmarkedForTesting(Boolean bookmarked) {

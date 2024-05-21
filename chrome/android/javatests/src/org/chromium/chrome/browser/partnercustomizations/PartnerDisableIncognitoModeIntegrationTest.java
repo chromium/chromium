@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
@@ -92,7 +93,8 @@ public class PartnerDisableIncognitoModeIntegrationTest {
                             PartnerBrowserCustomizations.isIncognitoDisabled(),
                             Matchers.is(parentalControlsEnabled));
                     Criteria.checkThat(
-                            IncognitoUtils.isIncognitoModeEnabled(),
+                            IncognitoUtils.isIncognitoModeEnabled(
+                                    ProfileManager.getLastUsedRegularProfile()),
                             Matchers.not(parentalControlsEnabled));
                 });
     }

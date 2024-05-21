@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,15 +65,17 @@ public class LauncherShortcutActivity extends Activity {
     }
 
     /**
-     * Adds or removes the "New incognito tab" launcher shortcut based on whether incognito mode
-     * is enabled.
+     * Adds or removes the "New incognito tab" launcher shortcut based on whether incognito mode is
+     * enabled.
+     *
      * @param context The context used to retrieve the system {@link ShortcutManager}.
+     * @param profile The profile used to check whether incognito mode is enabled.
      */
-    public static void updateIncognitoShortcut(Context context) {
+    public static void updateIncognitoShortcut(Context context, Profile profile) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
         SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
-        boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled();
+        boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled(profile);
         boolean incognitoShortcutAdded =
                 preferences.readBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
 

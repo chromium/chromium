@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrarJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -156,6 +157,8 @@ public class HistoryUITest {
         mItem2 = StubbedHistoryProvider.createHistoryItem(1, timestamp);
         mHistoryProvider.addItem(mItem1);
         mHistoryProvider.addItem(mItem2);
+
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         doReturn(1L).when(mMockLargeIconBridgeJni).init();

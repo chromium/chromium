@@ -686,7 +686,6 @@ public class ProcessInitializationHandler {
                         ::makeDeferredRecordings);
         tasks.add(WebApkUninstallTracker::runDeferredTasks);
 
-        tasks.add(IncognitoTabLauncher::updateComponentEnabledState);
         tasks.add(OfflineContentAvailabilityStatusProvider::getInstance);
         tasks.add(() -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
         tasks.add(TosDialogBehaviorSharedPrefInvalidator::refreshSharedPreferenceIfTosSkipped);
@@ -712,6 +711,11 @@ public class ProcessInitializationHandler {
      */
     @CallSuper
     protected void addPerProfileStartupDeferredTasks(Profile profile, List<Runnable> tasks) {
+        // TODO(crbug.com/40254448): Determine how IncognitoTabLauncher should support multiple
+        // concurrent profiles. Currently, the enabled state will change based on the Profile
+        // initialization order.
+        tasks.add(() -> IncognitoTabLauncher.updateComponentEnabledState(profile));
+
         tasks.add(() -> SigninCheckerProvider.get(profile).onMainActivityStart());
 
         tasks.add(

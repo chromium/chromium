@@ -27,12 +27,13 @@ import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * An exposed Activity that allows launching an Incognito Tab.
  *
- * No URL or search term can be entered in, the Incognito tab is started with a blank (but focused)
- * omnibox. This component will be disabled if incognito mode is disabled.
+ * <p>No URL or search term can be entered in, the Incognito tab is started with a blank (but
+ * focused) omnibox. This component will be disabled if incognito mode is disabled.
  */
 public class IncognitoTabLauncher extends Activity {
     /** The Intent action used to launch the IncognitoTabLauncher. */
@@ -128,11 +129,11 @@ public class IncognitoTabLauncher extends Activity {
      * Checks whether Incognito mode is enabled for the user and enables/disables the
      * IncognitoLauncherActivity appropriately. This call requires native to be loaded.
      */
-    public static void updateComponentEnabledState() {
+    public static void updateComponentEnabledState(Profile profile) {
         // TODO(peconn): Update state in a few more places (eg CustomTabsConnection#warmup).
         boolean enable =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS)
-                        && IncognitoUtils.isIncognitoModeEnabled();
+                        && IncognitoUtils.isIncognitoModeEnabled(profile);
 
         PostTask.postTask(TaskTraits.USER_VISIBLE, () -> setComponentEnabled(enable));
     }

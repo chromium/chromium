@@ -21,17 +21,6 @@ public class IncognitoUtils {
     private IncognitoUtils() {}
 
     /**
-     * @return true if incognito mode is enabled.
-     */
-    @Deprecated
-    public static boolean isIncognitoModeEnabled() {
-        if (sIsEnabledForTesting != null) {
-            return sIsEnabledForTesting;
-        }
-        return isIncognitoModeEnabled(ProfileManager.getLastUsedRegularProfile());
-    }
-
-    /**
      * @param profile The {@link Profile} used to determine incognito status.
      * @return Whether incognito mode is enabled.
      */

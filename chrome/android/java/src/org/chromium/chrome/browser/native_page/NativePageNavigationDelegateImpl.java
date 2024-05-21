@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -41,6 +42,11 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
         mHost = host;
         mTabModelSelector = tabModelSelector;
         mTab = tab;
+    }
+
+    @Override
+    public boolean isOpenInIncognitoEnabled() {
+        return IncognitoUtils.isIncognitoModeEnabled(mProfile);
     }
 
     @Override

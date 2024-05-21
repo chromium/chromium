@@ -285,7 +285,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                                                                 .isNonMultiDisplayContextOnTablet(
                                                                         context))
                                                 .build()),
-                        IncognitoUtils.isIncognitoModeEnabled()),
+                        IncognitoUtils.isIncognitoModeEnabled(
+                                ProfileManager.getLastUsedRegularProfile())),
                 true);
     }
 

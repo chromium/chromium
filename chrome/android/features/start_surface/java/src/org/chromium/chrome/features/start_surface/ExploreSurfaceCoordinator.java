@@ -88,7 +88,8 @@ public class ExploreSurfaceCoordinator {
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mJankTracker = jankTracker;
-        mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
+        mExploreSurfaceNavigationDelegate =
+                new ExploreSurfaceNavigationDelegate(parentTabSupplier, profile);
         mProfile = profile;
 
         mFeedSurfaceCoordinator =

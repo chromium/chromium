@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.prefs.PrefService;
 
@@ -128,7 +129,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         if (!mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
             getMenu().removeItem(R.id.selection_mode_delete_menu_id);
         }
-        if (!IncognitoUtils.isIncognitoModeEnabled()) {
+        if (!IncognitoUtils.isIncognitoModeEnabled(ProfileManager.getLastUsedRegularProfile())) {
             getMenu().removeItem(R.id.selection_mode_open_in_incognito);
         }
     }

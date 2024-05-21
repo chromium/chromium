@@ -2018,7 +2018,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     return;
                 }
 
-                if (!IncognitoUtils.isIncognitoModeEnabled()) {
+                if (!IncognitoUtils.isIncognitoModeEnabled(
+                        getProfileProviderSupplier().get().getOriginalProfile())) {
                     // The incognito launcher shortcut is manipulated in #onDeferredStartup(),
                     // so it's possible for a user to invoke the shortcut before it's disabled.
                     // Quick actions search widget is installed on the home screen and may
@@ -2676,7 +2677,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
+        LauncherShortcutActivity.updateIncognitoShortcut(
+                ChromeTabbedActivity.this, mTabModelProfileSupplier.get());
 
         ChromeSurveyController.initialize(
                 mTabModelSelector,
@@ -2892,9 +2894,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
         } else if (id == R.id.new_incognito_tab_menu_id) {
-            if (IncognitoUtils.isIncognitoModeEnabled()) {
-                if (!mTabModelSelector.isTabStateInitialized()) return false;
+            if (!mTabModelSelector.isTabStateInitialized()) return false;
 
+            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+            if (IncognitoUtils.isIncognitoModeEnabled(profile)) {
                 getTabModelSelector().getModel(false).commitAllTabClosures();
                 // This action must be recorded before opening the incognito tab since UMA actions
                 // are dropped when an incognito tab is open.
@@ -2903,9 +2906,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 reportNewTabShortcutUsed(true);
                 if (fromMenu) RecordUserAction.record("MobileMenuNewIncognitoTab.AppMenu");
                 getTabCreator(true).launchNtp();
-                Tracker tracker =
-                        TrackerFactory.getTrackerForProfile(
-                                mTabModelSelector.getCurrentModel().getProfile());
+                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
         } else if (id == R.id.all_bookmarks_menu_id) {

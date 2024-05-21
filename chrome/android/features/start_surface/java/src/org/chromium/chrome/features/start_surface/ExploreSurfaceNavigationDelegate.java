@@ -8,7 +8,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -17,9 +19,16 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 /** Implementation of the {@link NativePageNavigationDelegate} for the explore surface. */
 class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     private final Supplier<Tab> mParentTabSupplier;
+    private final Profile mProfile;
 
-    ExploreSurfaceNavigationDelegate(Supplier<Tab> parentTabSupplier) {
+    ExploreSurfaceNavigationDelegate(Supplier<Tab> parentTabSupplier, Profile profile) {
         mParentTabSupplier = parentTabSupplier;
+        mProfile = profile;
+    }
+
+    @Override
+    public boolean isOpenInIncognitoEnabled() {
+        return IncognitoUtils.isIncognitoModeEnabled(mProfile);
     }
 
     @Override
