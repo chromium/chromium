@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -40,38 +39,26 @@ class SuggestionListViewBinder {
         } else if (SuggestionListProperties.CHILD_TRANSLATION_Y.equals(propertyKey)) {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
-        } else if (SuggestionListProperties.VISIBLE.equals(propertyKey)) {
-            boolean visible = model.get(SuggestionListProperties.VISIBLE);
-            // Actual View showing the dropdown.
-            View dropdownView = view.dropdown.getViewGroup();
-            if (visible) {
-                // Ensure the tracked keyboard state is consistent with actual keyboard state.
-                // The keyboard is about to be called up.
-                view.dropdown.resetKeyboardShownState();
-                if (dropdownView.getParent() == null) {
-                    view.container.addView(dropdownView);
-                    // When showing the suggestions list for the first time, make sure to apply
-                    // appropriate visibility to freshly inflated container.
-                    // This is later handled by subsequent calls to updateContainerVisibility()
-                    // performed whenever the suggestion model list changes.
-                    updateContainerVisibility(model, view);
-                }
-            } else {
-                UiUtils.removeViewFromParent(dropdownView);
-            }
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
+        } else if (SuggestionListProperties.OMNIBOX_SESSION_ACTIVE.equals(propertyKey)) {
+            view.dropdown.onOmniboxSessionStateChange(
+                    model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
         } else if (SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER.equals(propertyKey)) {
             view.dropdown.setHeightChangeListener(
                     model.get(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_LISTENER.equals(propertyKey)) {
-            view.dropdown.setSuggestionDropdownScrollListener(
-                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER));
+            view.dropdown
+                    .getLayoutScrollListener()
+                    .setSuggestionDropdownScrollListener(
+                            model.get(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER.equals(propertyKey)) {
-            view.dropdown.setSuggestionDropdownOverscrolledToTopListener(
-                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
+            view.dropdown
+                    .getLayoutScrollListener()
+                    .setSuggestionDropdownOverscrolledToTopListener(
+                            model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChanged();
@@ -101,6 +88,9 @@ class SuggestionListViewBinder {
                             updateContainerVisibility(model, view);
                         }
                     });
+            // When the suggestions list is installed for the first time, it may already contain
+            // elements. Be sure to capture and reflect this fact appropriately.
+            updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
         } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -59,6 +58,7 @@ import org.chromium.ui.base.WindowDelegate;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = 28)
 public class OmniboxSuggestionsDropdownUnitTest {
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -69,7 +69,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     private Context mContext;
 
-    private OmniboxSuggestionsDropdown mDropdown;
+    private TestOmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
     private OmniboxAlignment mOmniboxAlignment;
     private ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
@@ -121,13 +121,31 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 }
             };
 
+    // TODO(341377411): resolve issues with mockito not being able to stub the isInLayout method.
+    private static class TestOmniboxSuggestionsDropdown extends OmniboxSuggestionsDropdown {
+        private boolean mIsInLayout;
+
+        public TestOmniboxSuggestionsDropdown(Context context) {
+            super(context, null);
+        }
+
+        @Override
+        public boolean isInLayout() {
+            return mIsInLayout;
+        }
+
+        public void setIsInLayout(boolean isInLayout) {
+            mIsInLayout = isInLayout;
+        }
+    }
+
     @Before
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new OmniboxSuggestionsDropdown(mContext, null);
+        mDropdown = new TestOmniboxSuggestionsDropdown(mContext);
         mDropdown.setAdapter(mAdapter);
         mListener = mDropdown.getLayoutScrollListener();
     }
@@ -163,7 +181,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void testScrollListener_keyboardShouldDismissOnScrollAttemptFromTop() {
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
@@ -178,7 +196,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void testScrollListener_keyboardShouldDismissOnScrollAttemptFromScrolledList() {
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
@@ -193,8 +211,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void testScrollListener_keyboardShouldShowOnScrollToTop() {
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        mDropdown.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
@@ -225,8 +243,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void testScrollListener_dismissingKeyboardWhenScrollDoesNotHappen() {
         // In some cases the list may be long enough to stretch below the keyboard, but not long
         // enough to be scrollable. We want to dismiss the keyboard in these cases, too.
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        mDropdown.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
 
         // Pretend we're scrolling down (delta=10) but there is no content to move to (scroll=0).
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, 10));
@@ -249,8 +267,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void testScrollListener_dismissingKeyboardWhenTheListIsOnlyBarelyUnderTheKeyboard() {
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        mDropdown.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
 
         // We want to scroll by 10px, but there's only 1px of slack. This means the suggestions list
         // spans entirely under the keyboard. Hide the keyboard.
@@ -271,7 +289,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void testScrollListener_reemitsKeyboardDismissOnReset() {
-        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+        mListener.setSuggestionDropdownScrollListener(mDropdownScrollListener);
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         // This time the scroll happens, even if just by one pixel.
@@ -305,21 +323,31 @@ public class OmniboxSuggestionsDropdownUnitTest {
     }
 
     @Test
-    public void testAlignmentProvider_windowAttachment() {
+    public void onOmniboxSessionStateChange_withEmbedder() {
         mDropdown.setEmbedder(mEmbedder);
-        assertFalse(mAttachedToWindow);
 
-        mDropdown.onAttachedToWindow();
+        assertFalse(mAttachedToWindow);
+        mDropdown.onOmniboxSessionStateChange(true);
         assertTrue(mAttachedToWindow);
 
-        mDropdown.onDetachedFromWindow();
+        mDropdown.onOmniboxSessionStateChange(false);
+        assertFalse(mAttachedToWindow);
+    }
+
+    @Test
+    public void onOmniboxSessionStateChange_withoutEmbedder() {
+        assertFalse(mAttachedToWindow);
+        mDropdown.onOmniboxSessionStateChange(true);
+        assertFalse(mAttachedToWindow);
+        mDropdown.onOmniboxSessionStateChange(false);
         assertFalse(mAttachedToWindow);
     }
 
     @Test
     public void testAlignmentProvider_widthChange() {
         mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onAttachedToWindow();
+        mDropdown.onOmniboxSessionStateChange(true);
+
         mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
@@ -338,7 +366,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     public void testAlignmentProvider_topChange() {
         mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onAttachedToWindow();
+        mDropdown.onOmniboxSessionStateChange(true);
+
         mDropdown.setLayoutParams(
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -364,7 +393,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     public void testAlignmentProvider_heightChange() {
         mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onAttachedToWindow();
+        mDropdown.onOmniboxSessionStateChange(true);
+
         mDropdown.setLayoutParams(
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -386,12 +416,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @LooperMode(Mode.PAUSED)
     public void testAlignmentProvider_changeDuringlayout() {
-        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext, null));
         mDropdown.setAdapter(mAdapter);
         mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onAttachedToWindow();
+        mDropdown.onOmniboxSessionStateChange(true);
 
-        doReturn(true).when(mDropdown).isInLayout();
+        mDropdown.setIsInLayout(true);
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
@@ -399,16 +428,15 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertFalse(mDropdown.isLayoutRequested());
 
         // The posted task should re-request layout.
-        Mockito.clearInvocations(mDropdown);
         ShadowLooper.runUiThreadTasks();
-        verify(mDropdown).requestLayout();
+        assertTrue(mDropdown.isLayoutRequested());
     }
 
     @Test
     public void translateChildrenVertical() {
         mDropdown.setAdapter(mAdapter);
         mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onAttachedToWindow();
+        mDropdown.onOmniboxSessionStateChange(true);
 
         View childView = Mockito.mock(View.class);
 

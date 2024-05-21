@@ -18,8 +18,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
     static final WritableFloatPropertyKey CHILD_TRANSLATION_Y = new WritableFloatPropertyKey();
 
-    /** Whether the suggestion list is visible. */
-    static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
+    /** Whether the Omnibox session is active and Suggestions may be shown. */
+    static final WritableBooleanPropertyKey OMNIBOX_SESSION_ACTIVE =
+            new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
     static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
@@ -67,7 +68,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new PropertyKey[] {
                 ALPHA,
                 CHILD_TRANSLATION_Y,
-                VISIBLE,
+                OMNIBOX_SESSION_ACTIVE,
                 EMBEDDER,
                 SUGGESTION_MODELS,
                 COLOR_SCHEME,

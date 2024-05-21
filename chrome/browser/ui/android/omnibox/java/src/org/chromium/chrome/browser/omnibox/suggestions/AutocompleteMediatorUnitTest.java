@@ -337,7 +337,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, /* isFinal= */ true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
-        Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
+        Assert.assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
     }
 
     @Test
@@ -351,7 +351,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, /* isFinal= */ true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
-        Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
+        Assert.assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
     }
 
     @Test
@@ -1533,11 +1533,11 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void updateOmniboxSuggestionsVisibility_informsVisualStateObserver() {
-        mMediator.updateOmniboxSuggestionsVisibility(true);
+    public void propagateOmniboxSessionStateChange_informsVisualStateObserver() {
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mVisualStateObserver, atLeastOnce()).onOmniboxSuggestionsVisibilityChanged(eq(true));
 
-        mMediator.updateOmniboxSuggestionsVisibility(false);
+        mMediator.propagateOmniboxSessionStateChange(false);
         verify(mVisualStateObserver, atLeastOnce())
                 .onOmniboxSuggestionsVisibilityChanged(eq(false));
     }

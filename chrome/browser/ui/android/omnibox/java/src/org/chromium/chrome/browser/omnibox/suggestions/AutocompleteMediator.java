@@ -229,7 +229,7 @@ class AutocompleteMediator
                         windowAndroid,
                         mListPropertyModel,
                         embedder::getVerticalTranslationForAnimation,
-                        () -> updateOmniboxSuggestionsVisibility(true),
+                        () -> propagateOmniboxSessionStateChange(true),
                         addedVerticalOffset);
     }
 
@@ -463,7 +463,7 @@ class AutocompleteMediator
      *     org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlAnimationFinished(boolean)
      */
     void onUrlAnimationFinished(boolean hasFocus) {
-        updateOmniboxSuggestionsVisibility(hasFocus);
+        propagateOmniboxSessionStateChange(hasFocus);
     }
 
     /**
@@ -1075,19 +1075,20 @@ class AutocompleteMediator
     }
 
     /**
-     * Update whether the omnibox suggestions are visible.
+     * Update whether the Omnibox session is active.
      *
-     * @param shouldBeVisible whether the omnibox suggestions are visible
+     * @param isActive whether session is currently active
      */
     @VisibleForTesting
-    void updateOmniboxSuggestionsVisibility(boolean shouldBeVisible) {
-        boolean wasVisible = mListPropertyModel.get(SuggestionListProperties.VISIBLE);
-        mListPropertyModel.set(SuggestionListProperties.VISIBLE, shouldBeVisible);
-        if (shouldBeVisible && !wasVisible) {
-            mIgnoreOmniboxItemSelection = true; // Reset to default value.
+    void propagateOmniboxSessionStateChange(boolean isActive) {
+        boolean wasActive = mListPropertyModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE);
+        mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
+
+        if (isActive != wasActive) {
+            mIgnoreOmniboxItemSelection |= isActive; // Reset to default value.
+            mOmniboxSuggestionsVisualStateObserver.ifPresent(
+                    (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(isActive));
         }
-        mOmniboxSuggestionsVisualStateObserver.ifPresent(
-                (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(shouldBeVisible));
     }
 
     /**
