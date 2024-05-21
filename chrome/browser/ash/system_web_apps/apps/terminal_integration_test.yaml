@@ -16,5 +16,5 @@ criteria: |
   Sends the given text to the element as individual key press commands
 cases:
   - id: "Crosh"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic"]
 ...

@@ -15,5 +15,5 @@ criteria: |
   Test Assistant hotkey to toggle launcher.
 cases:
   - id: "Hotkey"
-    tags: []
+    tags: ["crosier:crosierdemosuite"]
 ...

@@ -15,5 +15,5 @@ criteria: |
   Navigate to the appropriate test page, based on whether handwriting recognition is supported or not
 cases:
   - id: "Recognition"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic"]
 ...

@@ -16,7 +16,7 @@ criteria: |
   Testing the OS Settings system web app.
 cases:
   - id: "OpenOsSettings"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic"]
   - id: "ManagedDeviceInfo"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic"]
 ...

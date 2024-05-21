@@ -15,5 +15,5 @@ criteria: |
   Checks ownership and permissions of user files for logged-in users
 cases:
   - id: "UserFilesLoggedIn"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic"]
 ...

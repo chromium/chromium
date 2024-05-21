@@ -21,7 +21,7 @@ cases:
   - id: "CloseLidDbusIntegration"
     tags: ["crosier:crosierdemosuite", "crosier:cq"]
   - id: "CloseLidPref"
-    tags: ["crosier:crosierdemosuite", "crosier:cq", "crosier:informational"]
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "informational"]
 ...
 ```
 
@@ -34,8 +34,9 @@ Following tags are recognized and supported:
 non-critical test suite for stability and regression monitoring.
 * `crosier:cq` - test case will run in global CQ and post-submit snapshot
 builds.
-* `crosier:informational` - test case will be considered as non-critical, i.e.
-not included in the critical CQ test suite.
+* `informational` - test case will be considered as non-critical, i.e. not
+included in the critical CQ test suite.
+* `group:hw_agnostic` - test will run on VMs rather than on devices.
 
 ## Include new yaml file in Crosier binary build
 
