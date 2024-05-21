@@ -1042,11 +1042,6 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles =
       personal_data().address_data_manager().GetProfilesToSuggest();
-  if (options.exclude_disused_addresses) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    RemoveProfilesNotUsedSinceTimestamp(min_last_used, sorted_profiles);
-  }
   if (options.require_non_empty_value_on_trigger_field) {
     std::erase_if(sorted_profiles, [&](const AutofillProfile* profile) {
       return GetProfileSuggestionMainText(
@@ -1062,7 +1057,13 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
         NormalizeForComparisonForType(field_contents, trigger_field_type),
         field_is_autofilled);
   }
+  if (options.exclude_disused_addresses) {
+    RemoveDisusedSuggestions(profiles_to_suggest);
+  }
   const AutofillProfileComparator comparator(personal_data().app_locale());
+  // It is important that deduplication is the last filtering strategy to be
+  // executed, otherwise some profiles could be deduplicated in favor of another
+  // profile that is later removed by another filtering strategy.
   if (options.deduplicate_suggestions) {
     profiles_to_suggest = DeduplicatedProfilesForSuggestions(
         profiles_to_suggest, trigger_field_type, field_types, comparator);
@@ -1274,16 +1275,34 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
   return matched_profiles;
 }
 
-void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
-    base::Time min_last_used,
-    std::vector<AutofillProfile*>& profiles) {
+void AutofillSuggestionGenerator::RemoveDisusedSuggestions(
+    std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles)
+    const {
+  const base::Time min_last_used =
+      AutofillClock::Now() - kDisusedDataModelTimeDelta;
+  auto is_profile_disused =
+      [&min_last_used](
+          const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
+        return profile->use_date() <= min_last_used;
+      };
+  if (base::ranges::count_if(profiles, is_profile_disused) == 0) {
+    AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(0);
+    return;
+  }
   const size_t original_size = profiles.size();
-  std::erase_if(profiles, [min_last_used](const AutofillProfile* profile) {
-    return profile->use_date() <= min_last_used;
-  });
-  const size_t num_profiles_suppressed = original_size - profiles.size();
-  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
-      num_profiles_suppressed);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillChangeDisusedAddressSuggestionTreatment)) {
+    profiles.erase(
+        std::remove_if(profiles.begin() +
+                           std::min(features::kNumberOfIgnoredSuggestions.Get(),
+                                    static_cast<int>(profiles.size())),
+                       profiles.end(), is_profile_disused),
+        profiles.end());
+  } else {
+    std::erase_if(profiles, is_profile_disused);
+  }
+  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(original_size -
+                                                           profiles.size());
 }
 
 void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(

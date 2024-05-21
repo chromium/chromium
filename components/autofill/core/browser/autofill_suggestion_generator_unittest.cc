@@ -77,6 +77,9 @@ using testing::UnorderedElementsAreArray;
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
+constexpr char kAddressesSuppressedHistogramName[] =
+    "Autofill.AddressesSuppressedForDisuse";
+
 Matcher<Suggestion> EqualLabels(
     const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
   return Field(&Suggestion::labels, suggestion_objects);
@@ -774,9 +777,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 // Tests that disused profiles get removed.
 TEST_F(AutofillSuggestionGeneratorTest,
-       GetProfilesToSuggest_RemoveProfilesNotUsedSinceTimestamp) {
-  const char kAddressesSuppressedHistogramName[] =
-      "Autofill.AddressesSuppressedForDisuse";
+       GetProfilesToSuggest_RemoveDisusedProfiles_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillChangeDisusedAddressSuggestionTreatment);
   base::Time kCurrentTime = AutofillClock::Now();
   constexpr size_t kNumProfiles = 10;
   constexpr base::TimeDelta k30Days = base::Days(30);
@@ -795,7 +799,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
     personal_data().address_data_manager().AddProfile(profiles[i]);
   }
 
-  // Filter the profiles while capturing histograms.
   base::HistogramTester histogram_tester;
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -803,14 +806,46 @@ TEST_F(AutofillSuggestionGeneratorTest,
               .GetProfilesToSuggest(NAME_FULL, u"",
                                     /*field_is_autofilled=*/false, {NAME_FULL});
 
-  // Validate that we get the expected filtered profiles and histograms.
   ASSERT_EQ(kNbSuggestions, profiles_to_suggest.size());
   for (size_t i = 0; i < kNbSuggestions; ++i) {
     EXPECT_EQ(profiles[i].guid(), profiles_to_suggest[i]->guid()) << i;
   }
-  histogram_tester.ExpectTotalCount(kAddressesSuppressedHistogramName, 1);
-  histogram_tester.ExpectBucketCount(kAddressesSuppressedHistogramName,
-                                     kNumProfiles - kNbSuggestions, 1);
+  histogram_tester.ExpectUniqueSample(kAddressesSuppressedHistogramName,
+                                      kNumProfiles - kNbSuggestions, 1);
+}
+
+// Tests that disused profiles get removed, but that this doesn't affect the
+// first few profiles in the list, depending on the parameterization of the
+// feature AutofillChangeDisusedAddressSuggestionTreatment.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_RemoveDisusedProfiles_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillChangeDisusedAddressSuggestionTreatment,
+      base::FieldTrialParams{
+          {features::kNumberOfIgnoredSuggestions.name, "1"}});
+  base::Time kDisusedTime =
+      AutofillClock::Now() - kDisusedDataModelTimeDelta - base::Days(1);
+
+  AutofillProfile profile_1 = test::GetFullProfile();
+  AutofillProfile profile_2 = test::GetFullProfile2();
+  profile_1.set_use_count(10);
+  profile_1.set_use_date(kDisusedTime);
+  profile_2.set_use_count(1);
+  profile_2.set_use_date(kDisusedTime);
+  personal_data().address_data_manager().AddProfile(profile_1);
+  personal_data().address_data_manager().AddProfile(profile_2);
+
+  base::HistogramTester histogram_tester;
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest =
+          test_api(suggestion_generator())
+              .GetProfilesToSuggest(NAME_FULL, u"",
+                                    /*field_is_autofilled=*/false, {NAME_FULL});
+
+  ASSERT_EQ(profiles_to_suggest.size(), 1u);
+  EXPECT_EQ(profiles_to_suggest.front()->guid(), profile_1.guid());
+  histogram_tester.ExpectUniqueSample(kAddressesSuppressedHistogramName, 1, 1);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {

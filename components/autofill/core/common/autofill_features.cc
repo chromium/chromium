@@ -339,6 +339,17 @@ BASE_FEATURE(kAutofillSuggestionNStrikeModel,
 const base::FeatureParam<int> kSuggestionStrikeLimit{
     &kAutofillSuggestionNStrikeModel, "strike-limit", 5};
 
+// Makes disused suggestion suppression logic ignore the first
+// `kNumberOfIgnoredSuggestions` suggestions (in frecency order), so that the
+// logic never returns an empty list after being passed a non-empty one.
+BASE_FEATURE(kAutofillChangeDisusedAddressSuggestionTreatment,
+             "AutofillChangeDisusedAddressSuggestionTreatment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kNumberOfIgnoredSuggestions{
+    &kAutofillChangeDisusedAddressSuggestionTreatment, "ignored-suggestions",
+    1};
+
 // Unifies the tracking of the last interacted elements between FormTracker and
 // AutofillAgent and fixes inconsistencies in this tracking.
 BASE_FEATURE(kAutofillUnifyAndFixFormTracking,

@@ -206,11 +206,15 @@ class AutofillSuggestionGenerator {
                            const std::u16string& field_contents_canon,
                            bool field_is_autofilled);
 
-  // Removes profiles that haven't been used after `min_last_used` from
-  // |profiles|. The relative ordering of `profiles` is maintained.
-  void RemoveProfilesNotUsedSinceTimestamp(
-      base::Time min_last_used,
-      std::vector<AutofillProfile*>& profiles);
+  // Removes profiles that haven't been used after `kDisusedDataModelTimeDelta`
+  // from `profiles`. Note that the goal of this filtering strategy is only to
+  // reduce visual noise for users that have many profiles, and therefore in
+  // some cases, some disused profiles might be kept in the list, to avoid
+  // filtering out all profiles, leading to no suggestions being shown. The
+  // relative ordering of `profiles` is maintained.
+  void RemoveDisusedSuggestions(
+      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles)
+      const;
 
   // Removes expired local credit cards not used since `min_last_used` from
   // `cards`. The relative ordering of `cards` is maintained.
