@@ -261,26 +261,20 @@ public class TabSwitcherCoordinator
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());
 
-            var tabListEditorControllerSupplier =
-                    LazyOneshotSupplier.fromSupplier(
-                            () -> {
-                                mTabListEditorManager.initTabListEditor();
-                                return mTabListEditorManager.getControllerSupplier().get();
-                            });
             mMessageManager =
                     new TabSwitcherMessageManager(
                             activity,
                             lifecycleDispatcher,
                             currentTabModelFilterSupplier,
-                            container,
                             multiWindowModeStateDispatcher,
                             snackbarManager,
-                            modalDialogManager,
-                            mTabListCoordinator,
-                            /* visibilitySupplier= */ () -> true,
-                            tabListEditorControllerSupplier,
-                            mMediator,
-                            mode);
+                            modalDialogManager);
+            mMessageManager.registerMessages(mTabListCoordinator);
+            mMessageManager.bind(
+                    mTabListCoordinator,
+                    container,
+                    /* visibilitySupplier= */ () -> true,
+                    mMediator);
 
             mMenuOrKeyboardActionController = menuOrKeyboardActionController;
             mTabSwitcherMenuActionHandler =
@@ -363,7 +357,7 @@ public class TabSwitcherCoordinator
                     profile,
                     shouldUseDynamicResource ? mDynamicResourceLoaderSupplier.get() : null);
 
-            mMessageManager.initWithNative(profile);
+            mMessageManager.initWithNative(profile, mTabListCoordinator.getTabListMode());
 
             mMultiThumbnailCardProvider.initWithNative(profile);
             mMediator.initWithNative(mSnackbarManager);

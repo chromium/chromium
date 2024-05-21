@@ -252,27 +252,20 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());
 
-            var tabListEditorControllerSupplier =
-                    LazyOneshotSupplier.fromSupplier(
-                            () -> {
-                                tabListEditorManager.initTabListEditor();
-                                return tabListEditorManager.getControllerSupplier().get();
-                            });
-
             mMessageManager =
                     new TabSwitcherMessageManager(
                             activity,
                             lifecycleDispatcher,
                             tabModelFilterSupplier,
-                            parentView,
                             multiWindowModeStateDispatcher,
                             snackbarManager,
-                            modalDialogManager,
-                            tabListCoordinator,
-                            isVisibleSupplier,
-                            tabListEditorControllerSupplier,
-                            /* priceWelcomeMessageReviewActionProvider= */ mMediator,
-                            mode);
+                            modalDialogManager);
+            mMessageManager.registerMessages(tabListCoordinator);
+            mMessageManager.bind(
+                    tabListCoordinator,
+                    parentView,
+                    isVisibleSupplier,
+                    /* priceWelcomeMessageReviewActionProvider= */ mMediator);
         }
     }
 
@@ -299,7 +292,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
             mTabListCoordinator.initWithNative(originalProfile, /* dynamicResourceLoader= */ null);
 
-            mMessageManager.initWithNative(originalProfile);
+            mMessageManager.initWithNative(originalProfile, mTabListCoordinator.getTabListMode());
 
             mMultiThumbnailCardProvider.initWithNative(originalProfile);
         }

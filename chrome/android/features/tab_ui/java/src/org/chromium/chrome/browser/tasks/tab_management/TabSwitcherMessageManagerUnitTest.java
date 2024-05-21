@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -123,19 +122,19 @@ public class TabSwitcherMessageManagerUnitTest {
                         activity,
                         mActivityLifecycleDispatcher,
                         mCurrentTabModelFilterSupplier,
-                        container,
                         mMultiWindowModeStateDispatcher,
                         mSnackbarManager,
-                        mModalDialogManager,
-                        mTabListCoordinator,
-                        mVisibilitySupplier,
-                        LazyOneshotSupplier.fromValue(mTabListEditorController),
-                        mPriceWelcomeMessageReviewActionProvider,
-                        TabListMode.GRID);
+                        mModalDialogManager);
+        mMessageManager.registerMessages(mTabListCoordinator);
+        mMessageManager.bind(
+                mTabListCoordinator,
+                container,
+                mVisibilitySupplier,
+                mPriceWelcomeMessageReviewActionProvider);
         mMessageManager.addObserver(mMessageUpdateObserver);
 
         mMessageManager.setPriceMessageServiceForTesting(mPriceMessageService);
-        mMessageManager.initWithNative(mProfile);
+        mMessageManager.initWithNative(mProfile, TabListMode.GRID);
 
         assertTrue(mCurrentTabModelFilterSupplier.hasObservers());
     }

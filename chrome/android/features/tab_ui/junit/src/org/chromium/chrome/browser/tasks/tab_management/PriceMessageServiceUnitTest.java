@@ -99,7 +99,10 @@ public class PriceMessageServiceUnitTest {
 
         mMessageService =
                 new PriceMessageService(
-                        mProfile, mMessageProvider, mReviewActionProvider, mNotificationManager);
+                        mProfile,
+                        () -> mMessageProvider,
+                        () -> mReviewActionProvider,
+                        mNotificationManager);
         mMessageService.addObserver(mMessageObserver);
     }
 

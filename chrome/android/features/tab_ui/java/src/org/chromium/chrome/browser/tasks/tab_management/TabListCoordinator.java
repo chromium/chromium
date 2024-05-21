@@ -406,6 +406,11 @@ public class TabListCoordinator
         }
     }
 
+    /** Returns the {@link TabListMode} of the coordinator. */
+    public @TabListMode int getTabListMode() {
+        return mMode;
+    }
+
     /**
      * @param onLongPressTabItemEventListener to handle long press events on tabs.
      */
