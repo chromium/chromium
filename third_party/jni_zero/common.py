@@ -51,14 +51,15 @@ class StringBuilder:
       return self._param_list_generator()
 
     self('(')
-    punctuation_size = 2 * len(values) # punctuation: ", ()"
-    single_line_size = sum(len(v) for v in values) + punctuation_size
-    if self._cur_line_length() + single_line_size < _TARGET_LINE_LENGTH:
-      self(', '.join(values))
-    else:
-      self('\n')
-      with self.indent(4):
-        self(',\n'.join(values))
+    if values:
+      punctuation_size = 2 * len(values) # punctuation: ", ()"
+      single_line_size = sum(len(v) for v in values) + punctuation_size
+      if self._cur_line_length() + single_line_size < _TARGET_LINE_LENGTH:
+        self(', '.join(values))
+      else:
+        self('\n')
+        with self.indent(4):
+          self(',\n'.join(values))
     self(')')
 
   @contextlib.contextmanager
@@ -67,11 +68,11 @@ class StringBuilder:
     self(';\n')
 
   @contextlib.contextmanager
-  def block(self):
-    self(' {\n')
+  def block(self, start=' {\n', end='}\n'):
+    self(start)
     with self.indent(2):
       yield
-    self('}\n')
+    self(end)
 
   @contextlib.contextmanager
   def indent(self, amount):

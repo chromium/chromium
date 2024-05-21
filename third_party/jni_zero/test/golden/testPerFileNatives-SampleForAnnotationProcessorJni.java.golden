@@ -54,7 +54,8 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   @Override
   public SampleForAnnotationProcessor[] returnConvertedAppObjects() {
-    return (SampleForAnnotationProcessor[]) nativeReturnConvertedAppObjects(SampleForAnnotationProcessor.class);
+    return (SampleForAnnotationProcessor[]) nativeReturnConvertedAppObjects(
+        SampleForAnnotationProcessor.class);
   }
   private static native Object[] nativeReturnConvertedAppObjects(Class __arrayClazz);
 
@@ -144,13 +145,47 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   @Override
   public int[] testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
-    return (int[]) nativeTestAllPrimitives(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
+    return (int[]) nativeTestAllPrimitives(
+        zint,
+        ints,
+        zlong,
+        longs,
+        zshort,
+        shorts,
+        zchar,
+        chars,
+        zbyte,
+        bytes,
+        zdouble,
+        doubles,
+        zfloat,
+        floats,
+        zbool,
+        bools);
   }
   private static native int[] nativeTestAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
 
   @Override
   public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, MyClass.SecondNestedInterface nestedInterface, View view, Context context, Object[] convertedObjects) {
-    nativeTestSpecialTypes(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
+    nativeTestSpecialTypes(
+        clazz,
+        classes,
+        throwable,
+        throwables,
+        string,
+        strings,
+        convertedString,
+        convertedStrings,
+        optionalString,
+        tStruct,
+        structs,
+        obj,
+        convertedObj,
+        objects,
+        nestedInterface,
+        view,
+        context,
+        convertedObjects);
   }
   private static native void nativeTestSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects);
 
