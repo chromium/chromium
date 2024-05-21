@@ -3807,7 +3807,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PreferAesGcm" enum="BooleanPreferred"
-    expires_after="2024-04-03">
+    expires_after="never">
+<!-- expires-never: Core metric used to monitor hardware capabilities -->
+
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
