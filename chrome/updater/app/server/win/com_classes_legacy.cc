@@ -1001,7 +1001,8 @@ LegacyProcessLauncherImpl::LegacyProcessLauncherImpl() = default;
 LegacyProcessLauncherImpl::~LegacyProcessLauncherImpl() = default;
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
-  return LaunchCmdLineEx(cmd_line, nullptr, nullptr, nullptr);
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
+  return E_NOTIMPL;
 }
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,
@@ -1059,15 +1060,13 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   return S_OK;
 }
 
-// Launches a process at medium integrity. The `server_proc_id`, `proc_handle`,
-// and `stdout_handle` provided by the caller are not populated on return, so
-// the caller will not be able to monitor the progress. See crbug.com/1523813.
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     const WCHAR* cmd_line,
     DWORD* /*server_proc_id*/,
     ULONG_PTR* /*proc_handle*/,
     ULONG_PTR* /*stdout_handle*/) {
-  return RunDeElevatedCmdLine(cmd_line);
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
+  return E_NOTIMPL;
 }
 
 LegacyAppCommandWebImpl::LegacyAppCommandWebImpl()
