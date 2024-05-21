@@ -386,6 +386,15 @@ void ProfileMenuView::OnSigninButtonClicked(CoreAccountInfo account,
   if (!perform_menu_actions())
     return;
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+
+  if (button_type == ActionableItem::kSigninReauthButton) {
+    // The reauth button does not trigger a sync opt in.
+    signin_ui_util::ShowReauthForAccount(
+        browser()->profile(), account.email,
+        signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+    return;
+  }
+
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       browser()->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
@@ -718,6 +727,7 @@ void ProfileMenuView::BuildSyncInfo() {
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info.account_id)) {
       // Sign-in pending state.
+      button_type = ActionableItem::kSigninReauthButton;
       description =
           l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
       button_text =

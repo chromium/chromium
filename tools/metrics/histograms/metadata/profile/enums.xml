@@ -421,6 +421,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Edit profile button"/>
   <int value="18" label="Create incognito shortcut button (deprecated)"/>
   <int value="19" label="Sign-in and turn on sync button for web-only account"/>
+  <int value="20" label="Chrome Profile management link"/>
+  <int value="21" label="Reauth button (Verify it's you)"/>
 </enum>
 
 <enum name="ProfileNetUserCount">

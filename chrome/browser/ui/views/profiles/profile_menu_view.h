@@ -46,6 +46,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
  private:
   friend class ProfileMenuViewExtensionsTest;
+  friend class ProfileMenuViewSigninPendingTest;
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
