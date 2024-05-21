@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/win/media_foundation_audio_decoder.h"
+
 #include <mfapi.h>
 #include <mferror.h>
 #include <stdint.h>
 #include <wmcodecdsp.h>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -21,7 +25,6 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
-#include "media/filters/win/media_foundation_audio_decoder.h"
 
 namespace media {
 
@@ -551,7 +554,11 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
     audio_buffer =
         AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
                                   channel_count_, sample_rate_, frames, pool_);
-    base::SpanWriter<uint8_t> channel_data = audio_buffer->channel_data();
+    auto channel_data = base::SpanWriter<uint8_t>(
+        // TODO(crbug.com/40284755): channel_data() should be an array of spans,
+        // not unbounded pointers. This span is constructed unsoundly.
+        UNSAFE_BUFFERS(base::span(audio_buffer->channel_data()[0u],
+                                  frames * channel_count_ * 4u)));
     for (uint64_t i = 0; i < frames; i++) {
       for (uint64_t ch = 0; ch < channel_count_; ch++) {
         auto a = static_cast<int8_t>(destination[0u]);
