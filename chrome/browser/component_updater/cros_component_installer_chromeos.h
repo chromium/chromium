@@ -85,6 +85,7 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
+  bool AllowUpdates() const override;
 
  protected:
   const raw_ptr<CrOSComponentInstaller, DanglingUntriaged>
@@ -137,6 +138,7 @@ class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
                       base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
+  bool AllowUpdates() const override;
 
   static void SetAshVersionForTest(const char* version);
 };

@@ -24,12 +24,15 @@
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -494,6 +497,35 @@ TEST_F(CrOSComponentInstallerTest, LacrosUpdatesIgnoreCompoenentUpdaterPolicy) {
   LacrosInstallerPolicy policy(config, installer.get());
 
   ASSERT_FALSE(policy.SupportsGroupPolicyEnabledComponentUpdates());
+}
+
+TEST_F(CrOSComponentInstallerTest, LacrosDefaultAllowUpdates) {
+  ash::ScopedTestingCrosSettings cros_settings;
+
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"lacros-fishfood",
+                         ComponentConfig::PolicyType::kLacros, "", ""};
+  LacrosInstallerPolicy policy(config, installer.get());
+
+  EXPECT_TRUE(policy.AllowUpdates());
+}
+
+TEST_F(CrOSComponentInstallerTest, DisabledOSUpdatesDisableLacrosUpdates) {
+  // Disable updates.
+  ash::ScopedTestingCrosSettings cros_settings;
+  cros_settings.device_settings()->SetBoolean(ash::kUpdateDisabled, true);
+
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"lacros-fishfood",
+                         ComponentConfig::PolicyType::kLacros, "", ""};
+  LacrosInstallerPolicy policy(config, installer.get());
+
+  // Expect updates to be disabled.
+  EXPECT_FALSE(policy.AllowUpdates());
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterComponent) {
