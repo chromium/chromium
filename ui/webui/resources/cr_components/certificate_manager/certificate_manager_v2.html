@@ -5,15 +5,6 @@
     margin-bottom: 24px;
   }
 
-  #crsCerts {
-    padding-inline-end: var(--cr-section-padding);
-    padding-inline-start: var(--cr-section-indent-padding);
-  }
-
-  .cert-row {
-    display: flex;
-  }
-
   .push-left {
     margin-left: auto;
   }
@@ -21,34 +12,28 @@
 
 <cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
 </cr-tabs>
+
+<!-- TODO(crbug.com/40928765): localize strings -->
 <iron-pages selected="[[selectedTabIndex_]]">
 
-  <div>Client Certificates
+  <div>
     <if expr="is_win or is_macosx">
-      <div id="provisioned-client-certs">
-        From your administrator
-        <template is="dom-repeat" items="[[provisionedClientCerts_]]">
-          <certificate-entry-v2
-              cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
-              display-name="[[item.displayName]]"
-              sha256hash-hex="[[item.sha256hashHex]]"
-              on-hash-copied="onHashCopied_">
-          </certificate-entry-v2>
-        </template>
-      </div>
+      <certificate-list-v2
+          id="provisionedClientCerts"
+          cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
+          header-text="From your administrator"
+          hide-export
+          on-hash-copied="onHashCopied_">
+      </certificate-list-v2>
     </if>
 
-    <div id="platform-client-certs">
-      Client certificates from platform
-      <template is="dom-repeat" items="[[platformClientCerts_]]">
-        <certificate-entry-v2
-            cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
-            display-name="[[item.displayName]]"
-            sha256hash-hex="[[item.sha256hashHex]]"
-            on-hash-copied="onHashCopied_">
-        </certificate-entry-v2>
-      </template>
-    </div>
+    <certificate-list-v2
+        id="platformClientCerts"
+        cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
+        header-text="Client certificates from platform"
+        hide-export
+        on-hash-copied="onHashCopied_">
+    </certificate-list-v2>
   </div>
 
   <div class="cr-centered-card-container">
@@ -96,26 +81,12 @@
   </div>
 
   <div>
-    <cr-expand-button class="cr-row first"
-        expanded="{{crsTrustedCertsOpened_}}">
-      <div class="cert-row">
-        Trusted Certificates
-        <cr-button class="action-button push-left"
-            id="exportCRS" on-click="onExportCrs_">
-          Export
-        </cr-button>
-      </div>
-    </cr-expand-button>
-    <cr-collapse id="crsCerts" opened="[[crsTrustedCertsOpened_]]">
-      <template is="dom-repeat" items="[[crsCertificates_]]">
-        <certificate-entry-v2
-            cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
-            display-name="[[item.displayName]]"
-            sha256hash-hex="[[item.sha256hashHex]]"
-            on-hash-copied="onHashCopied_">
-        </certificate-entry-v2>
-      </template>
-    </cr-collapse>
+    <certificate-list-v2
+        id="crsCerts"
+        cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
+        header-text="Trusted Certificates"
+        on-hash-copied="onHashCopied_">
+    </certificate-list-v2>
   </div>
 
 </iron-pages>

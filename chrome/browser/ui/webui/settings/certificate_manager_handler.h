@@ -28,6 +28,8 @@ class CertificateManagerPageHandler
     virtual void ViewCertificate(
         const std::string& sha256_hex_hash,
         base::WeakPtr<content::WebContents> web_contents) = 0;
+    virtual void ExportCertificates(
+        base::WeakPtr<content::WebContents> web_contents) {}
   };
 
   explicit CertificateManagerPageHandler(
@@ -51,7 +53,8 @@ class CertificateManagerPageHandler
   void ViewCertificate(
       certificate_manager_v2::mojom::CertificateSource source_id,
       const std::string& sha256hash_hex) override;
-  void ExportChromeRootStore() override;
+  void ExportCertificates(
+      certificate_manager_v2::mojom::CertificateSource source_id) override;
 
  private:
   // Returns a reference to the CertSource object corresponding to `source`.

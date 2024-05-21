@@ -90,7 +90,7 @@ void ViewCrsCertificateAsync(
   }
 }
 
-void ExportCertificatesAsync(
+void ExportCrsCertificatesAsync(
     base::WeakPtr<content::WebContents> web_contents,
     cert_verifier::mojom::ChromeRootStoreInfoPtr info) {
   // Containing web contents went away (e.g. user navigated away). Don't
@@ -116,23 +116,26 @@ class ChromeRootStoreCertSource
   void GetCertificateInfos(
       CertificateManagerPageHandler::GetCertificatesCallback callback)
       override {
-    cert_verifier::mojom::CertVerifierServiceFactory* factory =
-        content::GetCertVerifierServiceFactory();
-    DCHECK(factory);
-    factory->GetChromeRootStoreInfo(
+    content::GetCertVerifierServiceFactory()->GetChromeRootStoreInfo(
         base::BindOnce(&PopulateChromeRootStoreLogsAsync, std::move(callback)));
   }
 
   void ViewCertificate(
       const std::string& sha256_hex_hash,
       base::WeakPtr<content::WebContents> web_contents) override {
-    cert_verifier::mojom::CertVerifierServiceFactory* factory =
-        content::GetCertVerifierServiceFactory();
-    DCHECK(factory);
     // This should really use a cached set of info with other calls to
     // GetChromeRootStoreInfo.
-    factory->GetChromeRootStoreInfo(base::BindOnce(
-        &ViewCrsCertificateAsync, sha256_hex_hash, std::move(web_contents)));
+    content::GetCertVerifierServiceFactory()->GetChromeRootStoreInfo(
+        base::BindOnce(&ViewCrsCertificateAsync, sha256_hex_hash,
+                       std::move(web_contents)));
+  }
+
+  void ExportCertificates(
+      base::WeakPtr<content::WebContents> web_contents) override {
+    // This should really use a cached set of info with other calls to
+    // GetChromeRootStoreInfo.
+    content::GetCertVerifierServiceFactory()->GetChromeRootStoreInfo(
+        base::BindOnce(&ExportCrsCertificatesAsync, web_contents));
   }
 };
 
@@ -324,17 +327,12 @@ void CertificateManagerPageHandler::ViewCertificate(
                                            web_contents_->GetWeakPtr());
 }
 
-CertificateManagerPageHandler::CertSource::~CertSource() = default;
-
-void CertificateManagerPageHandler::ExportChromeRootStore() {
-  cert_verifier::mojom::CertVerifierServiceFactory* factory =
-      content::GetCertVerifierServiceFactory();
-  DCHECK(factory);
-  // This should really use a cached set of info with other calls to
-  // GetChromeRootStoreInfo.
-  factory->GetChromeRootStoreInfo(
-      base::BindOnce(&ExportCertificatesAsync, web_contents_->GetWeakPtr()));
+void CertificateManagerPageHandler::ExportCertificates(
+    certificate_manager_v2::mojom::CertificateSource source_id) {
+  GetCertSource(source_id).ExportCertificates(web_contents_->GetWeakPtr());
 }
+
+CertificateManagerPageHandler::CertSource::~CertSource() = default;
 
 CertificateManagerPageHandler::CertSource&
 CertificateManagerPageHandler::GetCertSource(
@@ -343,9 +341,6 @@ CertificateManagerPageHandler::GetCertSource(
       cert_source_[static_cast<unsigned>(source)];
   if (!source_ptr) {
     switch (source) {
-      case certificate_manager_v2::mojom::CertificateSource::kInvalid:
-        CHECK(false);
-        break;
       case certificate_manager_v2::mojom::CertificateSource::kChromeRootStore:
         source_ptr = std::make_unique<ChromeRootStoreCertSource>();
         break;

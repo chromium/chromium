@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_manager
 import 'chrome://settings/strings.m.js';
 
 import type {CertificateEntryV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_entry_v2.js';
+import type {CertificateListV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_list_v2.js';
 import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter, CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
@@ -31,7 +32,7 @@ class FakePageHandler extends TestBrowserProxy implements
     super([
       'getCertificates',
       'viewCertificate',
-      'exportChromeRootStore',
+      'exportCertificates',
     ]);
   }
 
@@ -45,8 +46,8 @@ class FakePageHandler extends TestBrowserProxy implements
     this.methodCalled('viewCertificate', source, sha256hashHex);
   }
 
-  exportChromeRootStore() {
-    this.methodCalled('exportChromeRootStore');
+  exportCertificates(source: CertificateSource) {
+    this.methodCalled('exportCertificates', source);
   }
 
   setCertificatesCallback(callbackFn: (source: CertificateSource) => {
@@ -104,6 +105,82 @@ suite('CertificateEntryV2Test', () => {
   });
 });
 
+suite('CertificateListV2Test', () => {
+  let certList: CertificateListV2Element;
+  let testProxy: TestCertificateManagerProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy = new TestCertificateManagerProxy();
+    CertificatesV2BrowserProxy.setInstance(testProxy);
+  });
+
+  function initializeElement() {
+    certList = document.createElement('certificate-list-v2');
+    certList.set('certSource', CertificateSource.kChromeRootStore);
+    document.body.appendChild(certList);
+  }
+
+  test('element check', async () => {
+    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+
+    initializeElement();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('getCertificates'),
+        'getCertificates called with wrong source');
+    await microtasksFinished();
+
+    const matchEls = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(2, matchEls.length, 'no certs displayed');
+    assertEquals('cert1', matchEls[0]!.displayName);
+    assertEquals('deadbeef1', matchEls[0]!.sha256hashHex);
+    assertEquals('cert2', matchEls[1]!.displayName);
+    assertEquals('deadbeef2', matchEls[1]!.sha256hashHex);
+  });
+
+  test('export', async () => {
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(certList.$.exportCerts.hidden);
+
+    certList.$.exportCerts.click();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('exportCertificates'),
+        'export click provided wrong source');
+  });
+
+  test('export hidden', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.set('certSource', CertificateSource.kChromeRootStore);
+    certList.set('hideExport', true);
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(certList.$.exportCerts.hidden);
+  });
+});
 
 suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerV2Element;
@@ -144,72 +221,15 @@ suite('CertificateManagerV2Test', () => {
     assertFalse(certManager.$.toast.open);
 
     const certEntries =
-        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
-    assertEquals(1, certEntries.length, 'no certs found');
+        certManager.$.crsCerts.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(1, certEntries.length, 'no certs displayed');
     assertEquals('', await navigator.clipboard.readText());
     certEntries[0]!.$.copy.click();
     assertTrue(certManager.$.toast.open);
     assertEquals('deadbeef', await navigator.clipboard.readText());
   });
 
-  test('CRS list populated', async () => {
-    const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
-      if (source === CertificateSource.kChromeRootStore) {
-        getCertificatesResolver.resolve();
-        return {
-          certs: [
-            {
-              sha256hashHex: 'deadbeef',
-              displayName: 'cert1',
-            },
-          ],
-        };
-      }
-      return {certs: []};
-    });
-    initializeElement();
-
-    await getCertificatesResolver.promise;
-    await microtasksFinished();
-
-    const matchEls =
-        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
-    assertEquals(1, matchEls.length, 'no certs displayed');
-    assertEquals('cert1', matchEls[0]!.displayName);
-    assertEquals('deadbeef', matchEls[0]!.sha256hashHex);
-  });
-
-  test('Export CRS certs', async () => {
-    const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
-      if (source === CertificateSource.kChromeRootStore) {
-        getCertificatesResolver.resolve();
-        return {
-          certs: [
-            {
-              sha256hashHex: 'deadbeef',
-              displayName: 'cert1',
-            },
-          ],
-        };
-      }
-      return {certs: []};
-    });
-    initializeElement();
-
-    await getCertificatesResolver.promise;
-    await microtasksFinished();
-    assertFalse(certManager.$.toast.open);
-
-    const certEntries =
-        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
-    assertEquals(1, certEntries.length, 'no certs found');
-    certManager.$.exportCRS.click();
-    await testProxy.handler.whenCalled('exportChromeRootStore');
-  });
-
-  test('platform client certs populated', async () => {
+  test('Copy platform client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
     testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kPlatformClientCert) {
@@ -231,13 +251,9 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
-    const parentElement =
-        certManager.shadowRoot!.querySelector('#platform-client-certs');
-    assertTrue(!!parentElement, 'parent element not found');
-    const matchEls = parentElement.querySelectorAll('certificate-entry-v2');
+    const matchEls = certManager.$.platformClientCerts.$.certs.querySelectorAll(
+        'certificate-entry-v2');
     assertEquals(1, matchEls.length, 'no certs displayed');
-    assertEquals('cert2', matchEls[0]!.displayName);
-    assertEquals('deadbeef2', matchEls[0]!.sha256hashHex);
 
     assertEquals('', await navigator.clipboard.readText());
     matchEls[0]!.$.copy.click();
@@ -246,7 +262,7 @@ suite('CertificateManagerV2Test', () => {
   });
 
   // <if expr="is_win or is_macosx">
-  test('provisioned client certs populated', async () => {
+  test('Copy provisioned client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
     testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kProvisionedClientCert) {
@@ -268,14 +284,10 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
-    const parentElement =
-        certManager.shadowRoot!.querySelector('#provisioned-client-certs');
-
-    assertTrue(!!parentElement, 'parent element not found');
-    const matchEls = parentElement.querySelectorAll('certificate-entry-v2');
+    const matchEls =
+        certManager.$.provisionedClientCerts.$.certs.querySelectorAll(
+            'certificate-entry-v2');
     assertEquals(1, matchEls.length, 'no certs displayed');
-    assertEquals('cert3', matchEls[0]!.displayName);
-    assertEquals('deadbeef3', matchEls[0]!.sha256hashHex);
 
     assertEquals('', await navigator.clipboard.readText());
     matchEls[0]!.$.copy.click();
@@ -290,9 +302,11 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
 
     const parentElement =
-        certManager.shadowRoot!.querySelector('#provisioned-client-certs');
+        certManager.shadowRoot!.querySelector('#provisionedClientCerts');
     // The provisioned client certs section should not be present on other OSes.
-    assertFalse(!!parentElement, 'parent element was unexpectedly found');
+    assertFalse(
+        !!parentElement,
+        'provisionedClientCerts element was unexpectedly found');
   });
   // </if>
 });

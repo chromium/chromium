@@ -24,13 +24,13 @@ interface CertificateManagerPageHandlerFactory {
 };
 
 enum CertificateSource {
-  // An invalid source. Defined as value 0 so that if there is a bug in the
-  // typescript or html and it "helpfully" gets silently converted to a 0, it
-  // will cause an error rather than silently using the first source.
-  kInvalid=0,
+  // Note that the enum is defined to start from 1 so that if there is a bug in
+  // the typescript or html and it "helpfully" gets silently converted to a 0,
+  // it will cause a mojo message validation error rather than silently using
+  // the first source.
 
   // Trusted certs from the Chrome Root Store.
-  kChromeRootStore,
+  kChromeRootStore=1,
 
   // Client certificates from the platform store.
   kPlatformClientCert,
@@ -49,8 +49,8 @@ interface CertificateManagerPageHandler {
   // Open the view certificate dialog for a specific certificate.
   ViewCertificate(CertificateSource source, string sha256_hash_hex);
 
-  // Export all the certificates trusted through the Chrome Root Store.
-  ExportChromeRootStore();
+  // Export all the certificates from a given source.
+  ExportCertificates(CertificateSource source);
 };
 
 // Calls from C++ -> TS (Browser -> Renderer).
