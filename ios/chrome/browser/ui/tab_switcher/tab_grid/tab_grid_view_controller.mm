@@ -1605,16 +1605,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                        focusOmnibox:NO];
 }
 
-- (void)pinnedTabsViewController:
-            (PinnedTabsViewController*)pinnedTabsViewController
-              didChangeItemCount:(NSUInteger)count {
-  self.topToolbar.pageControl.pinnedTabCount = count;
-  const NSUInteger totalTabCount =
-      count + self.topToolbar.pageControl.regularTabCount;
-
-  [self handleTabCountChangeWithTabCount:totalTabCount];
-}
-
 - (void)pinnedTabsViewControllerVisibilityDidChange:
     (PinnedTabsViewController*)pinnedTabsViewController {
   UIEdgeInsets insets = [self calculateInsetsForRegularGridView];
@@ -1790,19 +1780,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewControllerDidMoveItem:
     (BaseGridViewController*)gridViewController {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
-}
-
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-        didChangeItemCount:(NSUInteger)count {
-  if (gridViewController == self.regularTabsViewController) {
-    self.topToolbar.pageControl.regularTabCount = count;
-    const NSUInteger totalTabCount =
-        count + self.topToolbar.pageControl.pinnedTabCount;
-
-    [self handleTabCountChangeWithTabCount:totalTabCount];
-  } else if (gridViewController == self.incognitoTabsViewController) {
-    [self handleTabCountChangeWithTabCount:count];
-  }
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController

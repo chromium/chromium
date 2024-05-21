@@ -11,6 +11,7 @@
 
 @class TabGridBottomToolbar;
 @class TabGridTopToolbar;
+class WebStateList;
 
 // Mediates between model layer and top and bottom toolbar UI layer.
 @interface TabGridToolbarsMediator : NSObject <GridToolbarsMutator>
@@ -20,6 +21,13 @@
 // object.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbarConsumer;
 @property(nonatomic, strong) TabGridBottomToolbar* bottomToolbarConsumer;
+
+// The WebStateList that this mediator listens for any changes on the total
+// number of Webstates.
+@property(nonatomic, assign) WebStateList* webStateList;
+
+// Stops observing all objects.
+- (void)disconnect;
 
 @end
 

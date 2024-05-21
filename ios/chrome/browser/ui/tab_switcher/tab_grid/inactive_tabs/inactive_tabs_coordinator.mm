@@ -335,13 +335,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-        didChangeItemCount:(NSUInteger)count {
-  if (!self.presentingSettings) {
-    [self popIfNeeded];
-  }
-}
-
-- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
   // No op.
 }

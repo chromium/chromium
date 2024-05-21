@@ -7,6 +7,7 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
@@ -27,6 +28,7 @@
 
   _mediator.topToolbarConsumer = self.topToolbar;
   _mediator.bottomToolbarConsumer = self.bottomToolbar;
+  _mediator.webStateList = self.browser->GetWebStateList();
 }
 
 #pragma mark - Property Implementation.

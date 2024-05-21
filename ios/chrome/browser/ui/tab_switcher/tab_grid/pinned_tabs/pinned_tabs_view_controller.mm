@@ -132,9 +132,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
   [self scrollCollectionViewToSelectedItemAnimated:NO];
 
-  // Update the delegate, in case it wasn't set when `items` was populated.
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
-
   _lastInsertedItemID = web::WebStateID();
   _contentAppeared = YES;
 }
@@ -307,8 +304,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _selectedItemID = selectedItemID;
 
   [self updatePinnedTabsVisibility];
-
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
 
   [self.collectionView reloadData];
 
@@ -735,7 +730,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [_items insertObject:item atIndex:index];
   _selectedItemID = selectedItemID;
   _lastInsertedItemID = item.identifier;
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
 }
@@ -748,7 +742,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                       (web::WebStateID)selectedItemID {
   [_items removeObjectAtIndex:index];
   _selectedItemID = selectedItemID;
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
 }
@@ -756,13 +749,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Handles the completion of item insertion into the collection view.
 - (void)handleItemInsertionCompletion {
   [self updateCollectionViewAfterItemInsertion];
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 }
 
 // Handles the completion of item removal into the collection view.
 - (void)handleItemRemovalCompletion {
   [self updateCollectionViewAfterItemDeletion];
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 }
 
 // Configures the collectionView.
