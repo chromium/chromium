@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -12,9 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -60,13 +64,23 @@ void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
   icons_http_results_.clear();
 }
 
-void FakeDataRetriever::SetRendererWebAppInstallInfo(
-    std::unique_ptr<WebAppInstallInfo> web_app_info) {
-  web_app_info_ = std::move(web_app_info);
-}
-
-void FakeDataRetriever::SetEmptyRendererWebAppInstallInfo() {
-  SetRendererWebAppInstallInfo(std::make_unique<WebAppInstallInfo>());
+void FakeDataRetriever::SetWebPageMetadata(
+    const GURL& last_committed_url,
+    const std::u16string& title,
+    std::optional<webapps::mojom::WebPageMetadata> opt_metadata) {
+  CHECK(last_committed_url.is_valid());
+  GURL fallback_start_url = last_committed_url;
+  std::u16string fallback_title = title;
+  if (fallback_title.empty()) {
+    fallback_title = base::UTF8ToUTF16(fallback_start_url.spec());
+  }
+  web_app_info_ = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(fallback_start_url),
+      fallback_start_url);
+  if (opt_metadata) {
+    WebAppDataRetriever::PopulateWebAppInfoFromMetadata(web_app_info_.get(),
+                                                        opt_metadata.value());
+  }
 }
 
 void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
@@ -96,7 +110,8 @@ void FakeDataRetriever::SetDestructionCallback(base::OnceClosure callback) {
 
 void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
                                                    const GURL& scope) {
-  SetEmptyRendererWebAppInstallInfo();
+  SetWebPageMetadata(url, u"Page Title",
+                     /*opt_metadata=*/std::nullopt);
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;

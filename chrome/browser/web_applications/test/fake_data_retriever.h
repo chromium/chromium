@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -44,9 +45,10 @@ class FakeDataRetriever : public WebAppDataRetriever {
                 GetIconsCallback callback) override;
 
   // Set info to respond on |GetWebAppInstallInfo|.
-  void SetRendererWebAppInstallInfo(
-      std::unique_ptr<WebAppInstallInfo> web_app_info);
-  void SetEmptyRendererWebAppInstallInfo();
+  void SetWebPageMetadata(
+      const GURL& last_committed_url,
+      const std::u16string& title,
+      std::optional<webapps::mojom::WebPageMetadata> opt_metadata);
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
   void SetManifest(blink::mojom::ManifestPtr manifest,
                    webapps::InstallableStatusCode error_code,

@@ -62,32 +62,21 @@ class FakeWebPageMetadataAgent
         std::move(handle)));
   }
 
-  // Set |web_app_info| to respond on |GetWebAppInstallInfo|.
-  void SetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info) {
-    web_app_info_ = std::move(web_app_info);
+  void SetWebPageMetadata(const GURL& application_url,
+                          const std::u16string& title,
+                          const std::u16string& description) {
+    web_page_metadata_->application_name = title;
+    web_page_metadata_->description = description;
+    web_page_metadata_->application_url = application_url;
   }
 
   void GetWebPageMetadata(GetWebPageMetadataCallback callback) override {
-    webapps::mojom::WebPageMetadataPtr web_page_metadata(
-        webapps::mojom::WebPageMetadata::New());
-    if (!web_app_info_) {
-      std::move(callback).Run(std::move(web_page_metadata));
-      return;
-    }
-    web_page_metadata->application_name = web_app_info_->title;
-    web_page_metadata->description = web_app_info_->description;
-    web_page_metadata->application_url = web_app_info_->start_url;
-
-    // Convert more fields as needed.
-    DCHECK(web_app_info_->manifest_icons.empty());
-    DCHECK(web_app_info_->mobile_capable ==
-           WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED);
-
-    std::move(callback).Run(std::move(web_page_metadata));
+    std::move(callback).Run(web_page_metadata_.Clone());
   }
 
  private:
-  std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  webapps::mojom::WebPageMetadataPtr web_page_metadata_ =
+      webapps::mojom::WebPageMetadata::New();
 
   mojo::AssociatedReceiver<webapps::mojom::WebPageMetadataAgent> receiver_{
       this};
@@ -122,9 +111,11 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame());
   }
 
-  void SetRendererWebAppInstallInfo(
-      std::unique_ptr<WebAppInstallInfo> web_app_info) {
-    fake_chrome_render_frame_.SetWebAppInstallInfo(std::move(web_app_info));
+  void SetRendererWebPageMetadata(const GURL& application_url,
+                                  const std::u16string& title,
+                                  const std::u16string& description) {
+    fake_chrome_render_frame_.SetWebPageMetadata(application_url, title,
+                                                 description);
   }
 
   void GetWebAppInstallInfoCallback(
@@ -178,7 +169,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
   web_contents_tester()->NavigateAndCommit(kFooUrl);
 
   // No install info present.
-  SetRendererWebAppInstallInfo(nullptr);
+  SetRendererWebPageMetadata(/*application_url=*/GURL(), /*title=*/u"",
+                             /*description=*/u"");
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -199,8 +191,9 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   GURL other_app_url = GURL("https://bar.example");
-  SetRendererWebAppInstallInfo(
-      WebAppInstallInfo::CreateWithStartUrlForTesting(other_app_url));
+  std::u16string other_app_title = u"Other App Title";
+  SetRendererWebPageMetadata(other_app_url, other_app_title,
+                             /*description=*/u"");
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -211,6 +204,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   run_loop.Run();
 
   EXPECT_EQ(other_app_url, web_app_info()->start_url);
+  EXPECT_EQ(other_app_title, web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
@@ -220,12 +214,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
 
   web_contents_tester()->SetTitle(kFooTitle);
 
-  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  original_web_app_info->title = u"";
-
-  SetRendererWebAppInstallInfo(std::move(original_web_app_info));
-
+  SetRendererWebPageMetadata(GURL("https://foo.example"), /*title=*/u"",
+                             /*description=*/u"");
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetWebAppInstallInfo(
@@ -234,8 +224,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  // If the WebAppInstallInfo has no title, we fallback to the WebContents
-  // title.
+  // If the metadata has no title, we fallback to the WebContents title.
   EXPECT_EQ(kFooTitle, web_app_info()->title);
 }
 
@@ -247,11 +236,8 @@ TEST_F(WebAppDataRetrieverTest,
 
   web_contents_tester()->SetTitle(u"");
 
-  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  original_web_app_info->title = u"";
-
-  SetRendererWebAppInstallInfo(std::move(original_web_app_info));
+  SetRendererWebPageMetadata(GURL("https://foo.example"), /*title=*/u"",
+                             /*description=*/u"");
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -361,8 +347,6 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
 
   const GURL kFooUrl("https://foo.example/bar");
   web_contents_tester()->NavigateAndCommit(kFooUrl.DeprecatedGetOriginAsURL());
-
-  SetRendererWebAppInstallInfo(nullptr);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
