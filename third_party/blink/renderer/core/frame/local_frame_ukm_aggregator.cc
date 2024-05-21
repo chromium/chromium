@@ -192,14 +192,6 @@ void LocalFrameUkmAggregator::TransmitFinalSample(int64_t source_id,
                                                   ukm::UkmRecorder* recorder,
                                                   bool is_for_main_frame) {
   ReportUpdateTimeEvent(source_id, recorder);
-
-  base::UmaHistogramBoolean("Blink.LocalFrameRoot.DidReachFirstContentfulPaint",
-                            fcp_state_ != kBeforeFCPSignal);
-  if (is_for_main_frame) {
-    base::UmaHistogramBoolean(
-        "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame",
-        fcp_state_ != kBeforeFCPSignal);
-  }
 }
 
 bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
