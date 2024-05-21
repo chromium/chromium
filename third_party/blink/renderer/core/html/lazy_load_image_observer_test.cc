@@ -7,7 +7,6 @@
 #include <optional>
 #include <tuple>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -87,64 +86,6 @@ TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
-}
-
-TEST_F(LazyLoadImagesSimTest, LazyLoadedImageSizeHistograms) {
-  base::HistogramTester histogram_tester;
-  SimRequest lazy_a_resource("https://example.com/lazy_a.png", "image/png");
-  SimRequest eager_resource("https://example.com/eager.png", "image/png");
-  SimRequest lazy_b_resource("https://example.com/lazy_b.png", "image/png");
-  LoadMainResource(R"HTML(
-      <img src="lazy_a.png" loading="lazy">
-      <img src="eager.png" loading="eager">
-      <img src="lazy_b.png" loading="lazy">
-    )HTML");
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // Initially, no lazy images should have loaded.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 0);
-
-  // Load the first lazy loaded image.
-  lazy_a_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // We should have one lazy load sample, and one before-load lazy load sample.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
-  int size_kb = TestImage().size() / 1024;
-  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 1);
-  ASSERT_FALSE(GetDocument().LoadEventFinished());
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", size_kb, 1);
-
-  // Load the eager image which completes the document load.
-  eager_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // Load should finish, but because the eager image is not lazy, the lazy load
-  // metrics should not change.
-  ASSERT_TRUE(GetDocument().LoadEventFinished());
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
-
-  // Load the second lazy loaded image.
-  lazy_b_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // We should still only have one before-load sample, but we should have two
-  // lazy load samples overall.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 2);
-  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 2);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
 }
 
 class LazyLoadImagesParamsTest

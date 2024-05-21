@@ -804,10 +804,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
 
   DispatchDecodeRequestsIfComplete();
 
-  if (auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get())) {
-    LazyImageHelper::RecordMetricsOnLoadFinished(html_image_element);
-  }
-
   if (content->ErrorOccurred()) {
     pending_load_event_.Cancel();
 

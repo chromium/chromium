@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,16 +18,6 @@
 namespace blink {
 
 namespace {
-
-// Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
-// https://almanac.httparchive.org/en/2022/page-weight#fig-12 reports the 90th
-// percentile of jpeg images is 213KB with a max of ~64MB. The max bucket size
-// has been set at 64MB to capture this range with as much granularity as
-// possible.
-#define IMAGE_BYTES_HISTOGRAM(histogram_name, bytes)                        \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(histogram_name,                               \
-                              base::saturated_cast<int>((bytes) / 1024), 1, \
-                              64 * 1024, 50)
 
 Document* GetRootDocumentOrNull(Node* node) {
   if (LocalFrame* frame = node->GetDocument().GetFrame()) {
@@ -92,30 +80,6 @@ bool LazyImageHelper::ShouldDeferImageLoad(LocalFrame& frame,
   }
 
   return true;
-}
-
-void LazyImageHelper::RecordMetricsOnLoadFinished(
-    HTMLImageElement* image_element) {
-  // TODO(pdr): We should only report metrics for images that were actually lazy
-  // loaded, and checking the attribute alone is not sufficient. See:
-  // `LazyImageHelper::ShouldDeferImageLoad`.
-  if (!image_element->HasLazyLoadingAttribute()) {
-    return;
-  }
-
-  Document* root_document = GetRootDocumentOrNull(image_element);
-  if (!root_document) {
-    return;
-  }
-
-  if (ImageResourceContent* content = image_element->CachedImage()) {
-    int64_t response_size = content->GetResponse().EncodedDataLength();
-    IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImage.Size", response_size);
-    if (!root_document->LoadEventFinished()) {
-      IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImageBeforeDocumentOnLoad.Size",
-                            response_size);
-    }
-  }
 }
 
 }  // namespace blink

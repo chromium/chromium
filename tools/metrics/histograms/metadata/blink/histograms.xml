@@ -2853,29 +2853,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.LazyLoadedImage.Size" units="KB"
-    expires_after="2024-11-03">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Total network response size for each lazy loaded image that has loaded. This
-    is recorded at the point that the image element completes loading. This
-    includes all entries in `Blink.LazyLoadedImageBeforeDocumentOnLoad.Size` as
-    well as lazy loaded images that load after document load.
-  </summary>
-</histogram>
-
-<histogram name="Blink.LazyLoadedImageBeforeDocumentOnLoad.Size" units="KB"
-    expires_after="2024-06-30">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Total network response size for each lazy loaded image that has loaded
-    before the document has finished loading. This is recorded at the point that
-    the image element completes loading.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.LazyLoadIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-10-06">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
