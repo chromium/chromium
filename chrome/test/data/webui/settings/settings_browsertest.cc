@@ -628,6 +628,12 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       TrackingProtectionRolloutUx) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('TrackingProtectionRolloutUx')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
                        TrackingProtectionSettingsRollbackNotice) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettingsRollbackNotice')");

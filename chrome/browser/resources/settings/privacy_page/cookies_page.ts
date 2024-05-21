@@ -94,6 +94,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: ContentSettingsTypes.COOKIES,
       },
 
+      trackingProtectionContentSettingType_: {
+        type: String,
+        value: ContentSettingsTypes.TRACKING_PROTECTION,
+      },
+
       exceptionListsReadOnly_: {
         type: Boolean,
         value: false,
@@ -114,6 +119,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       enableFirstPartySetsUI_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
+      },
+
+      enableTrackingProtectionRolloutUx_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableTrackingProtectionRolloutUx'),
       },
 
       is3pcdRedesignEnabled_: {
@@ -149,10 +160,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   searchTerm: string;
   private cookiesContentSettingType_: ContentSettingsTypes;
+  private trackingProtectionContentSettingType_: ContentSettingsTypes;
   private exceptionListsReadOnly_: boolean;
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
+  private enableTrackingProtectionRolloutUx_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
   private isFingerprintingProtectionAvailable_: boolean;

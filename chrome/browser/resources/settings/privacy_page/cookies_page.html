@@ -9,7 +9,8 @@
         padding: 0 var(--cr-section-padding);
       }
 
-      #exceptionHeader3pcd {
+      #exceptionHeader3pcd,
+      #exceptionHeaderTrackingProtection {
         padding: 0 var(--cr-section-padding);
         margin-bottom: -32px;
       }
@@ -267,17 +268,30 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <div id="exceptionHeader3pcd">
-      <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
-    </div>
-    <site-list id="allowExceptionsList"
-        category="[[cookiesContentSettingType_]]"
-        category-subtype="[[contentSetting_.ALLOW]]"
-        category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
-        read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]"
-        cookies-exception-type="third-party">
-    </site-list>
+    <template is="dom-if" if="[[!enableTrackingProtectionRolloutUx_]]">
+      <div id="exceptionHeader3pcd">
+        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+      </div>
+      <site-list id="allow3pcExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.ALLOW]]"
+          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="third-party">
+      </site-list>
+    </template>
+    <template is="dom-if" if="[[enableTrackingProtectionRolloutUx_]]">
+      <div id="exceptionHeaderTrackingProtection">
+        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+      </div>
+      <site-list id="trackingProtectionExceptionsList"
+          category="[[trackingProtectionContentSettingType_]]"
+          category-subtype="[[contentSetting_.ALLOW]]"
+          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+          search-filter="[[searchTerm]]">
+      </site-list>
+    </template>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">

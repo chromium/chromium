@@ -84,10 +84,13 @@ suite('CookiesPageTest', function() {
     assertTrue(isChildVisible(page, '#generalControls'));
     assertTrue(isChildVisible(page, '#advancedHeader'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
-    assertTrue(isChildVisible(page, '#allowExceptionsList'));
+    assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
     // To be removed with old UI.
     assertFalse(isChildVisible(page, '#exceptionHeader'));
     assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
+    // Will only be shown in the TP rollout.
+    assertFalse(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
+    assertFalse(isChildVisible(page, '#trackingProtectionExceptionsList'));
 
     // Settings
     assertTrue(isChildVisible(page, '#doNotTrack'));
@@ -425,7 +428,7 @@ suite('TrackingProtectionSettings', function() {
     assertFalse(isChildVisible(page, '#exceptionHeader'));
     assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
-    assertTrue(isChildVisible(page, '#allowExceptionsList'));
+    assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
   });
 
   test('BlockAll3pcToggle', async function() {
@@ -546,6 +549,36 @@ suite('FingerprintingProtectionToggle', function() {
         page.getPref(
             'tracking_protection.fingerprinting_protection_enabled.value'),
         true);
+  });
+});
+
+suite('TrackingProtectionRolloutUx', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableTrackingProtectionRolloutUx: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('TrackingProtectionExceptionsListDisplayed', function() {
+    // Tracking Protection elements are shown
+    assertTrue(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
+    assertTrue(isChildVisible(page, '#trackingProtectionExceptionsList'));
+    // 3PC elements are hidden
+    assertFalse(isChildVisible(page, '#exceptionHeader3pcd'));
+    assertFalse(isChildVisible(page, '#allow3pcExceptionsList'));
   });
 });
 
