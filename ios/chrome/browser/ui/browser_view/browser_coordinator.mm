@@ -3421,6 +3421,7 @@ enum class ToolbarKind {
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(_dispatcher, SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential
+                                         inEditMode:NO
                                    showCancelButton:YES];
 }
 

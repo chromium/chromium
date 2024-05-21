@@ -340,6 +340,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                        delegate
                              credential:
                                  (password_manager::CredentialUIEntry)credential
+                             inEditMode:(BOOL)editMode
                        showCancelButton:(BOOL)showCancelButton {
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
@@ -347,6 +348,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
   [navigationController showPasswordDetailsForCredential:credential
+                                              inEditMode:editMode
                                         showCancelButton:showCancelButton];
 
   return navigationController;
@@ -830,6 +832,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
+                              inEditMode:(BOOL)editMode
                         showCancelButton:(BOOL)showCancelButton {
   // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
@@ -842,6 +845,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                            BuildReauthenticationModule()
                                context:DetailsContext::kOutsideSettings];
   self.passwordDetailsCoordinator.delegate = self;
+  self.passwordDetailsCoordinator.openInEditMode = editMode;
   self.passwordDetailsCoordinator.showCancelButton = showCancelButton;
   [self.passwordDetailsCoordinator start];
 }

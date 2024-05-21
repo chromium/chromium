@@ -445,7 +445,7 @@ BOOL AreCredentialsAtIndicesConnected(
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
     [weakSelf.navigator
-        openPasswordDetailsForCredential:CredentialUIEntry(password)];
+        openPasswordDetailsInEditModeForCredential:CredentialUIEntry(password)];
   }];
 
   return editAction;

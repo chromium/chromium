@@ -1119,13 +1119,16 @@ void CheckKeyboardIsUpAndNotCovered() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
 
-  // Check that the details page opened.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsViewControllerID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Edit the username.
+  [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
+                                          kExampleUsername))]
+      performAction:grey_replaceText(@"new username")];
 
-  // TODO(crbug.com/326406846): Check that the details page was opened in edit
-  // mode.
+  // Tap Done Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
 }
 
 // Tests that tapping the "Autofill Form" button fills the password form with

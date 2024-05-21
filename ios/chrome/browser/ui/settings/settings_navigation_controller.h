@@ -122,6 +122,7 @@ extern NSString* const kSettingsDoneButtonId;
                                        delegate
                              credential:
                                  (password_manager::CredentialUIEntry)credential
+                             inEditMode:(BOOL)editMode
                        showCancelButton:(BOOL)showCancelButton;
 
 // Creates and displays a new UIViewController for user to report an issue.

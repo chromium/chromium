@@ -91,6 +91,7 @@ void HandleSafetyCheckPasswordTap(
     password_manager::CredentialUIEntry credential =
         compromised_credentials.front();
     [settingsHandler showPasswordDetailsForCredential:credential
+                                           inEditMode:NO
                                      showCancelButton:YES];
     return;
   }

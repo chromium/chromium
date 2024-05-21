@@ -144,12 +144,12 @@
   }];
 }
 
-- (void)openPasswordDetailsForCredential:
+- (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential {
   __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
 
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openPasswordDetailsForCredential:credential];
+    [weakDelegate openPasswordDetailsInEditModeForCredential:credential];
   }];
 }
 

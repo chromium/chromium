@@ -24,8 +24,8 @@ struct CredentialUIEntry;
 // Opens password suggestion.
 - (void)openPasswordSuggestion;
 
-// Opens the details of the given credential.
-- (void)openPasswordDetailsForCredential:
+// Opens the details of the given credential in edit mode.
+- (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential;
 
 @end

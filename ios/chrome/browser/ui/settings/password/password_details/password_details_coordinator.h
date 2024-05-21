@@ -51,6 +51,9 @@ class Browser;
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;
 
+// Whether the coordinator's view controller should be opened in edit mode.
+@property(nonatomic, assign) BOOL openInEditMode;
+
 // Determine if we need to setup a cancel button on the navigation's left bar
 // button.
 @property(nonatomic) BOOL showCancelButton;

@@ -510,12 +510,13 @@ const CGFloat kIPHVerticalOffset = -5;
   [generationProvider triggerPasswordGeneration];
 }
 
-- (void)openPasswordDetailsForCredential:
+- (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential {
   [self reset];
   id<SettingsCommands> settingsCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsCommandsHandler showPasswordDetailsForCredential:credential
+                                                 inEditMode:YES
                                            showCancelButton:YES];
 }
 

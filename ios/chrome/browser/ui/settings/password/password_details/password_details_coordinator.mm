@@ -178,6 +178,9 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   self.viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   self.viewController.reauthModule = self.reauthenticationModule;
+  if (self.openInEditMode) {
+    [self.viewController editButtonPressed];
+  }
   if (self.showCancelButton) {
     [self.viewController setupLeftCancelButton];
   }
