@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'SharedWorker'";
+      "a JavaScript error: \"SecurityError: Failed to construct 'SharedWorker'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
@@ -1191,7 +1191,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': "
+      "a JavaScript error: \"SecurityError: Failed to construct "
+      "'SharedWorker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_shared_worker.js' cannot "
       "be accessed from origin 'chrome://trusted'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -1209,7 +1210,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': "
+      "a JavaScript error: \"SecurityError: Failed to construct "
+      "'SharedWorker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_shared_worker.js' cannot "
       "be accessed from origin 'http://localhost";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -1226,7 +1228,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       GetWebUIURL("trusted/web_ui_shared_worker.js"), kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': Script "
+      "a JavaScript error: \"SecurityError: Failed to construct "
+      "'SharedWorker': Script "
       "at 'chrome://trusted/web_ui_shared_worker.js' cannot be accessed from "
       "origin 'chrome-untrusted://untrusted'.";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -1256,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'Worker'";
+      "a JavaScript error: \"SecurityError: Failed to construct 'Worker'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
@@ -1328,7 +1331,7 @@ IN_PROC_BROWSER_TEST_P(
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'Worker': "
+      "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
       "cannot be accessed from origin 'chrome://trusted'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -1346,7 +1349,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'Worker': "
+      "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
       "cannot be accessed from origin 'http://localhost";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -1365,7 +1368,8 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error: \"Error: Failed to construct 'Worker': Script "
+      "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
+      "Script "
       "at 'chrome://trusted/web_ui_dedicated_worker.js' cannot be accessed "
       "from origin 'chrome-untrusted://untrusted'.";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
