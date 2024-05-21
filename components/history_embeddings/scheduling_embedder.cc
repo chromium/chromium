@@ -38,8 +38,8 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
       VLOG(2) << "Dropped pending query '" << next_query_.value()
               << "'. Next query: '" << query << "'";
       next_query_.reset();
-      // TODO(b/332394465): Distinguish skipped queries from errors.
-      std::move(next_query_callback_).Run({}, {});
+      std::move(next_query_callback_)
+          .Run({}, {}, ComputeEmbeddingsStatus::SKIPPED);
     }
 
     next_query_ = std::move(query);
@@ -64,9 +64,10 @@ void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
 void SchedulingEmbedder::OnQueryEmbeddingComputed(
     ComputePassagesEmbeddingsCallback callback,
     std::vector<std::string> query_passages,
-    std::vector<Embedding> query_embeddings) {
+    std::vector<Embedding> query_embeddings,
+    ComputeEmbeddingsStatus status) {
   std::move(callback).Run(std::move(query_passages),
-                          std::move(query_embeddings));
+                          std::move(query_embeddings), status);
 
   // If another query is pending, submit it for embedding.
   query_submission_time_.reset();

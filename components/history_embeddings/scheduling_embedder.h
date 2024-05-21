@@ -43,7 +43,8 @@ class SchedulingEmbedder : public Embedder {
   // computed. Continues processing next query if one is pending.
   void OnQueryEmbeddingComputed(ComputePassagesEmbeddingsCallback callback,
                                 std::vector<std::string> query_passages,
-                                std::vector<Embedding> query_embedding);
+                                std::vector<Embedding> query_embedding,
+                                ComputeEmbeddingsStatus status);
 
   // Requests the embedder to embed the next query if one is pending.
   void SubmitQueryToEmbedder();

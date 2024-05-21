@@ -138,15 +138,18 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
       Embedding(std::vector<float>(768, 1.0f)),
       Embedding(std::vector<float>(768, 1.0f))};
   service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings);
+                                        passages_embeddings,
+                                        ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 2;
   url_passages.visit_id = 2;
   service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings);
+                                        passages_embeddings,
+                                        ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 3;
   url_passages.visit_id = 3;
   service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings);
+                                        passages_embeddings,
+                                        ComputeEmbeddingsStatus::SUCCESS);
 
   // Verify that we find all three passages initially.
   EXPECT_EQ(CountEmbeddingsRows(service.get()), 3U);

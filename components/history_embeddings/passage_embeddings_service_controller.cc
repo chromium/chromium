@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
@@ -85,9 +86,9 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
     logger.set_status(EmbeddingsModelInfoStatus::kNoMetadata);
     return false;
   }
-  std::optional<history_embeddings::proto::PassageEmbeddingsModelMetadata>
-      embeddings_metadata = optimization_guide::ParsedAnyMetadata<
-          history_embeddings::proto::PassageEmbeddingsModelMetadata>(*metadata);
+  std::optional<proto::PassageEmbeddingsModelMetadata> embeddings_metadata =
+      optimization_guide::ParsedAnyMetadata<
+          proto::PassageEmbeddingsModelMetadata>(*metadata);
   if (!embeddings_metadata) {
     logger.set_status(EmbeddingsModelInfoStatus::kInvalidMetadata);
     return false;
@@ -136,7 +137,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
   if (embeddings_model_path_.empty() || sp_model_path_.empty()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
             << "'; sp='" << sp_model_path_ << "'";
-    std::move(callback).Run({}, {});
+    std::move(callback).Run({}, {}, ComputeEmbeddingsStatus::MODEL_UNAVAILABLE);
     return;
   }
 
@@ -171,8 +172,10 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
               result_embeddings.emplace_back(result->embeddings);
               result_embeddings.back().Normalize();
             }
-            std::move(callback).Run(std::move(result_passages),
-                                    std::move(result_embeddings));
+            std::move(callback).Run(
+                std::move(result_passages), std::move(result_embeddings),
+                results.empty() ? ComputeEmbeddingsStatus::EXECUTION_FAILURE
+                                : ComputeEmbeddingsStatus::SUCCESS);
           },
           std::move(callback)));
 }

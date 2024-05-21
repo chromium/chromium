@@ -207,8 +207,9 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     size_t count,
     SearchResultCallback callback,
     std::vector<std::string> query_passages,
-    std::vector<Embedding> query_embeddings) {
-  bool succeeded = !query_embeddings.empty();
+    std::vector<Embedding> query_embeddings,
+    ComputeEmbeddingsStatus status) {
+  bool succeeded = status == ComputeEmbeddingsStatus::SUCCESS;
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
 
@@ -428,7 +429,8 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlPassages url_passages,
     std::vector<std::string> passages,
-    std::vector<Embedding> passages_embeddings) {
+    std::vector<Embedding> passages_embeddings,
+    ComputeEmbeddingsStatus status) {
   url_passages.passages.mutable_passages()->Assign(
       std::make_move_iterator(passages.begin()),
       std::make_move_iterator(passages.end()));

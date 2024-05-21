@@ -161,7 +161,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // Invoked after the embeddings for `passages` has been computed.
   void OnPassagesEmbeddingsComputed(UrlPassages url_passages,
                                     std::vector<std::string> passages,
-                                    std::vector<Embedding> passages_embeddings);
+                                    std::vector<Embedding> passages_embeddings,
+                                    ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
   // computed.
@@ -169,7 +170,8 @@ class HistoryEmbeddingsService : public KeyedService,
                                 size_t count,
                                 SearchResultCallback callback,
                                 std::vector<std::string> query_passages,
-                                std::vector<Embedding> query_embedding);
+                                std::vector<Embedding> query_embedding,
+                                ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
   // history database. Moves each ScoredUrl into a more complete structure with

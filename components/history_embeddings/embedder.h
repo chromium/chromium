@@ -31,6 +31,23 @@ enum class PassageKind {
   REBUILD_PASSAGE,
 };
 
+// The status of an embeddings generation attempt.
+enum class ComputeEmbeddingsStatus {
+  // Embeddings are generated successfully.
+  SUCCESS,
+
+  // The model files required for generation are not available .
+  MODEL_UNAVAILABLE,
+
+  // Failure occurred during model execution.
+  EXECUTION_FAILURE,
+
+  // The generation request was skipped. This could happen if the embeddings
+  // request for a user query, which may have been obsolete (by a newer user
+  // query) by the time the embedder is free.
+  SKIPPED,
+};
+
 struct EmbedderMetadata {
   EmbedderMetadata(int64_t model_version, size_t output_size)
       : model_version(model_version), output_size(output_size) {}
@@ -39,10 +56,10 @@ struct EmbedderMetadata {
   size_t output_size;
 };
 
-// TODO(b/332394465): Use a different signature to include an error state.
 using ComputePassagesEmbeddingsCallback =
     base::OnceCallback<void(std::vector<std::string> passages,
-                            std::vector<Embedding> embeddings)>;
+                            std::vector<Embedding> embeddings,
+                            ComputeEmbeddingsStatus status)>;
 using OnEmbedderReadyCallback =
     base::OnceCallback<void(EmbedderMetadata metadata)>;
 
