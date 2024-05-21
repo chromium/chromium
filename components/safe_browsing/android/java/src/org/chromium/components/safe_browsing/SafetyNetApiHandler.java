@@ -22,6 +22,10 @@ public interface SafetyNetApiHandler {
                 @SafeBrowsingResult int resultStatus,
                 String metadata,
                 long checkDelta);
+
+        // TODO(crbug.com/341790041): Remove the default implementation
+        // here since it's not suitable for production use.
+        default void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result) {}
     }
 
     // Possible values for resultStatus. Native side has the same definitions.
@@ -37,13 +41,27 @@ public interface SafetyNetApiHandler {
         int TIMEOUT = 1;
     }
 
+    // Values for verifyAppsResult. Native side has the same definitions.
+    @IntDef({
+        VerifyAppsResult.SUCCESS_ENABLED,
+        VerifyAppsResult.SUCCESS_NOT_ENABLED,
+        VerifyAppsResult.TIMEOUT,
+        VerifyAppsResult.FAILED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface VerifyAppsResult {
+        int SUCCESS_ENABLED = 0;
+        int SUCCESS_NOT_ENABLED = 1;
+        int TIMEOUT = 2;
+        int FAILED = 3;
+    }
+
     /**
-     * Verifies that SafetyNetApiHandler can operate and initializes if feasible.
-     * Should be called on the same sequence as |startUriLookup|.
+     * Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be called
+     * on the same sequence as |startUriLookup|.
      *
-     * @param observer The object on which to call the callback functions when URL checking
-     * is complete.
-     *
+     * @param observer The object on which to call the callback functions when URL checking is
+     *     complete.
      * @return whether Safe Browsing is supported for this installation.
      */
     boolean init(Observer observer);
@@ -55,14 +73,35 @@ public interface SafetyNetApiHandler {
     void startUriLookup(long callbackId, String uri, int[] threatsOfInterest);
 
     /**
-     * Start a check to determine if a uri is in an allowlist. If true, password protection
-     * service will consider the uri to be safe.
+     * Start a check to determine if a uri is in an allowlist. If true, password protection service
+     * will consider the uri to be safe.
      *
-     * @param uri The uri from a password protection event(user focuses on password form
-     *      * or user reuses their password)
+     * @param uri The uri from a password protection event(user focuses on password form * or user
+     *     reuses their password)
      * @param threatType determines the type of the allowlist that the uri will be matched to.
-     *
      * @return true if the uri is found in the corresponding allowlist. Otherwise, false.
      */
     boolean startAllowlistLookup(String uri, int threatType);
+
+    /**
+     * Start a check to see if the user has app verification enabled. The response will be provided
+     * to the observer with the onVerifyAppsEnabledDone method.
+     *
+     * @param callbackId The id of the callback which should be returned * with the result.
+     */
+    // TODO(crbug.com/341790041): Remove the default implementations on
+    // real ones have landed. These ones are not suitable for production
+    // use.
+    default void isVerifyAppsEnabled(long callbackId) {}
+
+    /**
+     * Prompt the user to enable app verification. The response will be provided to the observer
+     * with the onVerifyAppsEnabledDone method.
+     *
+     * @param callbackId The id of the callback which should be returned * with the result.
+     */
+    // TODO(crbug.com/341790041): Remove the default implementations on
+    // real ones have landed. These ones are not suitable for production
+    // use.
+    default void enableVerifyApps(long callbackId) {}
 }
