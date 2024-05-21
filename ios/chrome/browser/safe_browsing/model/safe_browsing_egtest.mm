@@ -753,6 +753,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
+
+  // Remove bookmarked phishing site.
+  [BookmarkEarlGrey clearBookmarks];
 }
 
 @end
