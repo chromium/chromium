@@ -1,2 +1,0 @@
-[cfi-vcall]
-type:ISVCEncoder

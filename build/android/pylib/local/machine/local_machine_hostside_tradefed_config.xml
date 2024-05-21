@@ -1,4 +1,0 @@
-<configuration description="Configuration with basic CTS reporters" >
-    <!-- Custom Json result reporter -->
-    <result_reporter class="com.android.tradefed.result.LUCIResultReporter" />
-</configuration>

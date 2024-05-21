@@ -1,7 +1,0 @@
-per-file ozone.gni=file://ui/ozone/OWNERS
-per-file ozone_extra.gni=file://ui/ozone/OWNERS
-per-file rust.gni=file://build/rust/OWNERS
-per-file cast.gni=file://build/config/chromecast/OWNERS
-
-per-file unsafe_buffers_paths.txt=danakj@chromium.org
-per-file unsafe_buffers_paths.txt=tsepez@chromium.org

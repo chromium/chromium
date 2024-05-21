@@ -1,6 +1,0 @@
-# Build arguments go here. Here are some of the most commonly set ones.
-# Run `gn args <out_dir> --list` for the full list.
-#   is_component_build = true
-#   is_debug = true
-#   symbol_level = 2
-#   use_remoteexec = false

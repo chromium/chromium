@@ -1,7 +1,0 @@
-config("vulkan_memory_allocator_config") {
-  libs = ["VulkanMemoryAllocator"]
-}
-
-source_set("vulkan_memory_allocator") {
-  public_configs = [ ":vulkan_memory_allocator_config" ]
-}

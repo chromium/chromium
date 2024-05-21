@@ -1,8 +1,0 @@
-source_set("crc32c_test") {
-}
-source_set("crc_cord_state_test") {
-}
-source_set("crc_memcpy_test") {
-}
-source_set("non_temporal_memcpy_test") {
-}

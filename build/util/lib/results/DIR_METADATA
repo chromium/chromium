@@ -1,6 +1,0 @@
-monorail: {
-  component: "Infra>Client>Chrome"
-}
-buganizer_public: {
-  component_id: 1456211
-}
