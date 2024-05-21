@@ -7259,7 +7259,7 @@ def generate_install_properties_per_feature(function_name,
     # Assemble the parts.
     header_node.accumulator.add_class_decls(["ScriptState"])
     header_node.accumulator.add_include_headers([
-        "third_party/blink/renderer/platform/runtime_enabled_features.h",
+        "third_party/blink/renderer/platform/feature_context.h",
     ])
     header_node.extend([
         make_copyright_header(),

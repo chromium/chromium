@@ -617,6 +617,7 @@ component("platform") {
     "exported/web_video_frame_submitter.cc",
     "exported/wrapped_resource_request.h",
     "exported/wrapped_resource_response.h",
+    "feature_context.h",
     "file_metadata.cc",
     "file_metadata.h",
     "fonts/alternate_font_family.h",

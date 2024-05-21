@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/protected_memory.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -22,17 +21,7 @@
 
 namespace blink {
 
-class RuntimeFeatureStateOverrideContext;
-
-// A pure virtual interface for checking the availability of origin trial
-// features in a context as well as whether a feature's state has been
-// overridden.
-class PLATFORM_EXPORT FeatureContext {
- public:
-  virtual bool FeatureEnabled(mojom::blink::OriginTrialFeature) const = 0;
-  virtual RuntimeFeatureStateOverrideContext*
-  GetRuntimeFeatureStateOverrideContext() const = 0;
-};
+class FeatureContext;
 
 // A class that stores static enablers for all experimental features.
 
