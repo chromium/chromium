@@ -15,17 +15,23 @@ namespace content {
 
 // Tells ChildThreadImpl to run in in-process mode. There are a couple of
 // parameters to run in the mode: An emulated io task runner used by
-// ChnanelMojo, an IPC channel name to open.
+// ChnanelMojo, an IPC channel name to open. `child_io_runner` can be passed
+// with the current IO thread to allow it to be shared by the child process.
 class CONTENT_EXPORT InProcessChildThreadParams {
  public:
   InProcessChildThreadParams(
       scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-      mojo::OutgoingInvitation* mojo_invitation);
+      mojo::OutgoingInvitation* mojo_invitation,
+      scoped_refptr<base::SingleThreadTaskRunner> child_io_runner = nullptr);
   InProcessChildThreadParams(const InProcessChildThreadParams& other);
   ~InProcessChildThreadParams();
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_runner() const {
+  const scoped_refptr<base::SingleThreadTaskRunner>& io_runner() const {
     return io_runner_;
+  }
+
+  const scoped_refptr<base::SingleThreadTaskRunner>& child_io_runner() const {
+    return child_io_runner_;
   }
 
   mojo::OutgoingInvitation* mojo_invitation() const { return mojo_invitation_; }
@@ -33,6 +39,7 @@ class CONTENT_EXPORT InProcessChildThreadParams {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
   const raw_ptr<mojo::OutgoingInvitation> mojo_invitation_;
+  scoped_refptr<base::SingleThreadTaskRunner> child_io_runner_;
 };
 
 }  // namespace content

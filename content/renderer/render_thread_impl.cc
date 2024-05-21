@@ -615,14 +615,7 @@ void RenderThreadImpl::Init() {
       discardable_memory_allocator_.get());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // The SandboxedProcessThreadTypeHandler isn't created in
-  // render_thread_impl_browsertest.cc, nor in --single-process mode.
-  if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
-          SandboxedProcessThreadTypeHandler::Get()) {
-    sandboxed_process_thread_type_handler->HandleThreadTypeChange(
-        ChildProcess::current()->io_thread_id(),
-        base::ThreadType::kCompositing);
-  }
+  ChildProcess::current()->SetIOThreadType(base::ThreadType::kCompositing);
 #endif
 
   process_foregrounded_count_ = 0;

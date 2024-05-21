@@ -35,6 +35,10 @@
 #include "content/common/android/cpu_time_metrics.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/child/sandboxed_process_thread_type_handler.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -141,7 +145,13 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
   thread_options.thread_type = base::ThreadType::kCompositing;
 #endif
   CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
+  io_thread_runner_ = io_thread_->task_runner();
 }
+
+ChildProcess::ChildProcess(
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_runner)
+    : resetter_(&child_process, this, nullptr),
+      io_thread_runner_(std::move(io_thread_runner)) {}
 
 ChildProcess::~ChildProcess() {
   DCHECK_EQ(child_process, this);
@@ -163,8 +173,10 @@ ChildProcess::~ChildProcess() {
     }
   }
 
-  io_thread_->Stop();
-  io_thread_.reset();
+  if (io_thread_) {
+    io_thread_->Stop();
+    io_thread_.reset();
+  }
 
   if (initialized_thread_pool_) {
     DCHECK(base::ThreadPoolInstance::Get());
@@ -186,6 +198,23 @@ ChildThreadImpl* ChildProcess::main_thread() {
 void ChildProcess::set_main_thread(ChildThreadImpl* thread) {
   main_thread_.reset(thread);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void ChildProcess::SetIOThreadType(base::ThreadType thread_type) {
+  if (!io_thread_) {
+    return;
+  }
+
+  // The SandboxedProcessThreadTypeHandler isn't created in
+  // in --single-process mode or if certain base::Features are disabled. See
+  // instances of SandboxedProcessThreadTypeHandler::Create() for more details.
+  if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
+          SandboxedProcessThreadTypeHandler::Get()) {
+    sandboxed_process_thread_type_handler->HandleThreadTypeChange(
+        io_thread_->GetThreadId(), base::ThreadType::kCompositing);
+  }
+}
+#endif
 
 void ChildProcess::AddRefProcess() {
   DCHECK(!main_thread_.get() ||  // null in unittests.

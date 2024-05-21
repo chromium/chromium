@@ -9,8 +9,11 @@ namespace content {
 
 InProcessChildThreadParams::InProcessChildThreadParams(
     scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-    mojo::OutgoingInvitation* mojo_invitation)
-    : io_runner_(std::move(io_runner)), mojo_invitation_(mojo_invitation) {}
+    mojo::OutgoingInvitation* mojo_invitation,
+    scoped_refptr<base::SingleThreadTaskRunner> child_io_runner)
+    : io_runner_(std::move(io_runner)),
+      mojo_invitation_(mojo_invitation),
+      child_io_runner_(std::move(child_io_runner)) {}
 
 InProcessChildThreadParams::InProcessChildThreadParams(
     const InProcessChildThreadParams& other) = default;
