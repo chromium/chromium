@@ -499,10 +499,12 @@ std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void DeviceInfoSyncBridge::GetData(StorageKeyList storage_keys,
-                                   DataCallback callback) {
+void DeviceInfoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                            DataCallback callback) {
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& key : storage_keys) {
+    // TODO(crbug.com/341920243): verify that |key| corresponds to the local
+    // device.
     const auto& iter = all_data_.find(key);
     if (iter != all_data_.end()) {
       DCHECK_EQ(key, iter->second.specifics().cache_guid());

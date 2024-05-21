@@ -673,18 +673,19 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     return DataBatchToSpecificsMap(std::move(batch));
   }
 
-  std::map<std::string, sync_pb::EntitySpecifics> GetData(
+  std::map<std::string, sync_pb::EntitySpecifics> GetDataForCommit(
       const std::vector<std::string>& storage_keys) {
     base::RunLoop loop;
     std::unique_ptr<DataBatch> batch;
-    bridge_->GetData(storage_keys, base::BindOnce(
-                                       [](base::RunLoop* loop,
-                                          std::unique_ptr<DataBatch>* out_batch,
-                                          std::unique_ptr<DataBatch> batch) {
-                                         *out_batch = std::move(batch);
-                                         loop->Quit();
-                                       },
-                                       &loop, &batch));
+    bridge_->GetDataForCommit(
+        storage_keys,
+        base::BindOnce(
+            [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
+               std::unique_ptr<DataBatch> batch) {
+              *out_batch = std::move(batch);
+              loop->Quit();
+            },
+            &loop, &batch));
     loop.Run();
     EXPECT_NE(nullptr, batch);
     return DataBatchToSpecificsMap(std::move(batch));
@@ -818,26 +819,28 @@ TEST_F(DeviceInfoSyncBridgeTest, GetData) {
       StateWithEncryption("ekn"));
   InitializeAndPump();
 
-  EXPECT_THAT(GetData({specifics1.cache_guid()}),
+  EXPECT_THAT(GetDataForCommit({specifics1.cache_guid()}),
               UnorderedElementsAre(
                   Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1))));
 
-  EXPECT_THAT(GetData({specifics1.cache_guid(), specifics3.cache_guid()}),
-              UnorderedElementsAre(
-                  Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1)),
-                  Pair(specifics3.cache_guid(), HasDeviceInfo(specifics3))));
+  EXPECT_THAT(
+      GetDataForCommit({specifics1.cache_guid(), specifics3.cache_guid()}),
+      UnorderedElementsAre(
+          Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1)),
+          Pair(specifics3.cache_guid(), HasDeviceInfo(specifics3))));
 
-  EXPECT_THAT(GetData({specifics1.cache_guid(), specifics2.cache_guid(),
-                       specifics3.cache_guid()}),
-              UnorderedElementsAre(
-                  Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1)),
-                  Pair(specifics2.cache_guid(), HasDeviceInfo(specifics2)),
-                  Pair(specifics3.cache_guid(), HasDeviceInfo(specifics3))));
+  EXPECT_THAT(
+      GetDataForCommit({specifics1.cache_guid(), specifics2.cache_guid(),
+                        specifics3.cache_guid()}),
+      UnorderedElementsAre(
+          Pair(specifics1.cache_guid(), HasDeviceInfo(specifics1)),
+          Pair(specifics2.cache_guid(), HasDeviceInfo(specifics2)),
+          Pair(specifics3.cache_guid(), HasDeviceInfo(specifics3))));
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, GetDataMissing) {
   InitializeAndPump();
-  EXPECT_THAT(GetData({"does_not_exist"}), IsEmpty());
+  EXPECT_THAT(GetDataForCommit({"does_not_exist"}), IsEmpty());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, GetAllData) {
