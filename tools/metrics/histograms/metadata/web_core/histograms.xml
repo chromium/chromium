@@ -277,19 +277,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.FoundBlobFileForValue" enum="Boolean"
-    expires_after="2024-05-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Recorded when a blob is attempted to be read from an IndexedDB value. This
-    is triggered for both implicit blob-wrapped large values and explicit blob
-    values. Its value is false iff there was a file not found value when reading
-    the file. This metric is to help track down the rate of missing files for
-    http://crbug.com/1131151.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
     expires_after="2024-09-29">
   <owner>estade@chromium.org</owner>
@@ -456,37 +443,6 @@ chromium-metrics-reviews@google.com.
     onsuccess event (or onupgradeneeded event, in the case of a database
     upgrade) is dispatched. See WebCore.IndexedDB.OpenTime.Cold for the time it
     takes to open a database that is not open yet.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.PutBlobsCount" units="blobs"
-    expires_after="2024-05-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The number of blobs being saved in an IndexedDB object store 'put'
-    operation. Recorded for every 'put' operation.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.PutBlobsTotalSize" units="KB"
-    expires_after="2024-05-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The total size of the blobs being saved in an IndexedDB object store 'put'
-    operation. Recorded for every 'put' operation, except when there are no
-    attached blobs or a blob has an unknown size.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.PutKeySize" units="KB"
-    expires_after="2024-05-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The size of the IndexedDB key used in an IndexedDB object store 'put'
-    operation. Recorded for every 'put' operation.
   </summary>
 </histogram>
 
