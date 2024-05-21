@@ -55,6 +55,15 @@ inline constexpr char kManagedOrcaEnabled[] =
 // A boolean pref of whether mahi is enabled.
 inline constexpr char kMahiEnabled[] = "settings.mahi_enabled";
 
+// An integer pref which indicates the HMR (Quick answers and Mahi) consent
+// status from the user.
+inline constexpr char kHMRConsentStatus[] = "settings.hmr.consent_status";
+
+// An integer pref which indicates the number of times the HMR (Quick answers
+// and Mahi) consent window has been dismissed by the user.
+inline constexpr char kHMRConsentWindowDismissCount[] =
+    "settings.hmr.consent_window_dismiss_count";
+
 // A boolean pref used by an admin policy to enable/disable particular
 // features on the physical keyboard. See the policy at
 // PhysicalKeyboardAutocorrect.yml.

@@ -50,6 +50,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
@@ -570,6 +571,12 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterBooleanPref(prefs::kMahiEnabled, true);
+
+  registry->RegisterIntegerPref(
+      prefs::kHMRConsentStatus,
+      base::to_underlying(chromeos::HMRConsentStatus::kUnset));
+
+  registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
 
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
