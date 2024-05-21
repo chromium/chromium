@@ -262,7 +262,11 @@ def _emulator(emulator_avd_name):
     is_verbose = logging.getLogger().isEnabledFor(logging.INFO)
     # Always start with --wipe-data to get consistent results. It adds around
     # 20 seconds to startup timing but is essential to avoid Timeout errors.
-    cmd = [_AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config]
+    # Set disk size to 32GB since the default 8GB is insufficient.
+    cmd = [
+        _AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config,
+        '--disk-size', '32000'
+    ]
     if not is_verbose:
         cmd.append('-q')
     logging.debug('Running AVD cmd: %s', cmd)
