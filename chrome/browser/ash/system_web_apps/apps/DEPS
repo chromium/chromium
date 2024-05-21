@@ -39,6 +39,7 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/mahi/media_app",
   "+chrome/browser/ash/os_feedback",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/policy/external_data/handlers",

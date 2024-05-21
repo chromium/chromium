@@ -103,14 +103,14 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
   read_write_cards_ui_controller_->RemoveMahiUi();
 }
 
-void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor_bounds) {
+void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
   if (!chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() ||
       !::mahi::MahiWebContentsManager::Get()->GetPrefValue()) {
     return;
   }
 
-  menu_widget_ = MahiMenuView::CreateWidget(anchor_bounds,
-                                            MahiMenuView::Surface::kMediaApp);
+  menu_widget_ =
+      MahiMenuView::CreateWidget(anchor, MahiMenuView::Surface::kMediaApp);
   menu_widget_->ShowInactive();
 }
 

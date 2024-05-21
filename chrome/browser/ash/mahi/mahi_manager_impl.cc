@@ -285,15 +285,17 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
 
   media_app_client_id_ = media_app_content_manager->active_client_id();
   media_app_pdf_focused_ = true;
+  std::optional<std::string> file_name =
+      media_app_content_manager->GetFileName(media_app_client_id_);
+  CHECK(file_name.has_value());
 
   // Fits the media app page info into a MahiPageInfoPtr.
-  // crosapi::mojom::MahiPageInfoPtr media_app_pdf_info =
+  // Particularly, makes up a GURL with the file name.
   current_page_info_ = crosapi::mojom::MahiPageInfo::New(
       media_app_client_id_,
       /*page_id=*/media_app_client_id_,
-      GURL{media_app_content_manager->GetFileName(media_app_client_id_)},
-      /*title=*/media_app_content_manager->GetFileName(media_app_client_id_),
-      gfx::ImageSkia(),
+      GURL{base::StrCat({"file:///media-app/", file_name.value()})},
+      /*title=*/base::UTF8ToUTF16(file_name.value()), gfx::ImageSkia(),
       /*distillable=*/true);
 
   const bool availability =

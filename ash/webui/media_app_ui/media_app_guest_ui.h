@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 #define ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
@@ -36,6 +37,12 @@ class MediaAppGuestUIDelegate {
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) = 0;
+
+  virtual void CreateAndBindMahiHandler(
+      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+          receiver,
+      mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
+      const std::string& file_name) = 0;
 };
 
 // The webui for chrome-untrusted://media-app.
@@ -74,6 +81,11 @@ class MediaAppGuestUI
       mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) override;
+  void CreateMahiUntrustedPageHandler(
+      mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
+          receiver,
+      mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
+      const std::string& file_name) override;
 
   void StartFontDataRequest(
       const std::string& path,

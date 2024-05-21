@@ -8,6 +8,7 @@
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -204,16 +205,18 @@ MediaAppGuestUI::MediaAppGuestUI(
 }
 
 MediaAppGuestUI::~MediaAppGuestUI() {
-  if (app_navigation_committed_)
+  if (app_navigation_committed_) {
     MediaAppMetricsHelper::OnUiDestroyedAfterNavigation();
+  }
 }
 
 void MediaAppGuestUI::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
   // Force-enable autoplay support.
   const std::string allowed_resource = "app.html";
-  if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource))
+  if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource)) {
     return;
+  }
 
   if (!app_navigation_committed_) {
     app_navigation_committed_ = true;
@@ -267,7 +270,8 @@ void MediaAppGuestUI::BindInterface(
 void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
         receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
+      !base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
     return;
   }
 
@@ -281,9 +285,25 @@ void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
     mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
+    return;
+  }
   ocr_handler_ = delegate_->CreateAndBindOcrHandler(
       *web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver),
       std::move(page));
+}
+
+void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
+    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
+    const std::string& file_name) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
+    return;
+  }
+
+  delegate_->CreateAndBindMahiHandler(std::move(receiver), std::move(page),
+                                      file_name);
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

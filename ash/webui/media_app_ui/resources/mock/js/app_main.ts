@@ -236,6 +236,14 @@ class BacklightApp extends HTMLElement implements ClientApi {
 
   async setViewport(_viewport: RectF) {}
 
+  async getPdfContent(_limit: number) {
+    return {
+      'content': 'test content',
+    };
+  }
+
+  async hidePdfContextMenu() {}
+
   setDelegate(delegate: ClientApiDelegate|null) {
     this.delegate = delegate;
   }

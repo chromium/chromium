@@ -41,7 +41,7 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   void OnDismiss(bool is_other_command_executed) override;
 
   // chromeos::MahiMediaAppEvnetsProxy::Observer
-  void OnPdfContextMenuShown(const gfx::Rect& anchor_bounds) override;
+  void OnPdfContextMenuShown(const gfx::Rect& anchor) override;
   void OnPdfContextMenuHide() override;
 
   views::Widget* menu_widget_for_test() { return menu_widget_.get(); }

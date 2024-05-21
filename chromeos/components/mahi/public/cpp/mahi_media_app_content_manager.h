@@ -14,6 +14,9 @@
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 
+namespace ash {
+class MahiMediaAppClient;
+}
 namespace chromeos {
 using GetMediaAppContentCallback =
     base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
@@ -32,18 +35,24 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   base::UnguessableToken active_client_id() { return active_client_id_; }
 
   // Requests attributes / contents of current loaded PDF file in the media app.
-  virtual std::u16string GetFileName(
+  // Although MahiMediaAppContentManager keeps the current active client id, we
+  // make these functions have a `client_id` as input to allow the possibility
+  // of retrieving info from given client.
+  virtual std::optional<std::string> GetFileName(
       const base::UnguessableToken client_id) = 0;
   virtual void GetContent(const base::UnguessableToken client_id,
                           GetMediaAppContentCallback callback) = 0;
+
   // Forwards click of mahi context menu shown on the media app surface to mahi
   // manager, to show the pop up UI and request manta service accordingly.
   virtual void OnMahiContextMenuClicked(int64_t display_id,
                                         chromeos::mahi::ButtonType button_type,
                                         const std::u16string& question) = 0;
 
-  // TODO(b/335741382): we need add/remove client functions for client
-  // management.
+  // Client registration/removal.
+  virtual void AddClient(base::UnguessableToken client_id,
+                         raw_ptr<ash::MahiMediaAppClient> client) = 0;
+  virtual void RemoveClient(base::UnguessableToken client_id) = 0;
 
  protected:
   MahiMediaAppContentManager();

@@ -30,39 +30,49 @@ void MahiMediaAppContentManagerImpl::OnPdfGetFocus(
     manager->SetMediaAppPDFFocused();
   } else {
     // TODO(b/335741382): UMA metrics
-    LOG(ERROR) << "No mahi manager to response OnMediaAppPageGetFocus";
+    LOG(ERROR) << "No mahi manager to response OnPdfGetFocus";
   }
 }
 
-std::u16string MahiMediaAppContentManagerImpl::GetFileName(
+std::optional<std::string> MahiMediaAppContentManagerImpl::GetFileName(
     const base::UnguessableToken client_id) {
-  return base::UTF8ToUTF16(
-      base::StringPrintf("test_%s.pdf", client_id.ToString().c_str()));
+  auto it = client_id_to_client_.find(client_id);
+  if (it == client_id_to_client_.end()) {
+    LOG(ERROR) << "Invalid client id";
+    return std::nullopt;
+  }
+  return it->second->file_name();
 }
 
 void MahiMediaAppContentManagerImpl::GetContent(
     const base::UnguessableToken client_id,
     chromeos::GetMediaAppContentCallback callback) {
-  if (!client_id_to_client_.contains(client_id)) {
+  auto it = client_id_to_client_.find(client_id);
+  if (it == client_id_to_client_.end()) {
     LOG(ERROR) << "Request content from a removed client";
     std::move(callback).Run(nullptr);
     return;
   }
 
-  // TODO(b/335741382): call client for content.
-  crosapi::mojom::MahiPageContentPtr page_content =
-      crosapi::mojom::MahiPageContent::New(
-          /*client_id=*/client_id,
-          /*page_id=*/client_id,  // MediaApp content doesn't have page id.
-          /*page_content=*/base::UTF8ToUTF16(client_id_to_client_[client_id]));
-
-  std::move(callback).Run(std::move(page_content));
+  it->second->GetPdfContent(std::move(callback));
 }
 
 void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
     int64_t display_id,
     chromeos::mahi::ButtonType button_type,
     const std::u16string& question) {
+  auto it = client_id_to_client_.find(active_client_id_);
+  if (it == client_id_to_client_.end()) {
+    // This should not happen because the mahi context menu widget should hide
+    // when `active_client_id_` is removed.
+    LOG(ERROR) << "Mahi context menu clicked on a removed media app client";
+    return;
+  }
+
+  // Hides the media app context menu, this will in turn hide the mahi menu
+  // card.
+  it->second->HideMediaAppContextMenu();
+
   // Generates the context menu request.
   crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
       crosapi::mojom::MahiContextMenuRequest::New(
@@ -80,6 +90,22 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
     // TODO(b/335741382): UMA
     LOG(ERROR) << "No mahi manager to response OnContextMenuClicked";
   }
+}
+
+void MahiMediaAppContentManagerImpl::AddClient(
+    base::UnguessableToken client_id,
+    raw_ptr<MahiMediaAppClient> client) {
+  client_id_to_client_[client_id] = client;
+}
+
+void MahiMediaAppContentManagerImpl::RemoveClient(
+    base::UnguessableToken client_id) {
+  auto it = client_id_to_client_.find(client_id);
+  if (it == client_id_to_client_.end()) {
+    LOG(ERROR) << "Tried to remove a non-existing client id, do nothing";
+    return;
+  }
+  client_id_to_client_.erase(it);
 }
 
 }  // namespace ash
