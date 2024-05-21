@@ -17,7 +17,9 @@ BOOL HasGestureIPHAppeared();
 // Taps "Dismiss" button with animation running.
 void TapDismissButton();
 
-// Swipes the gesture IPH in direction.
-void SwipeIPHInDirection(GREYDirection direction);
+// Swipes the gesture IPH in direction. If `edgeSwipe`, the swipe will start
+// from the edge of the view, otherwise it will do so from the middle of the
+// view.
+void SwipeIPHInDirection(GREYDirection direction, BOOL edge_swipe);
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_GESTURE_IPH_GESTURE_IN_PRODUCT_HELP_VIEW_EGTEST_UTILS_H_
