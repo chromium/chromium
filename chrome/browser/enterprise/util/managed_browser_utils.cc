@@ -661,7 +661,15 @@ bool IsKnownConsumerDomain(const std::string& email_domain) {
 // static
 jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
                                                   Profile* profile) {
-  return IsBrowserManaged(profile);
+  return policy::ManagementServiceFactory::GetForProfile(profile)
+      ->IsBrowserManaged();
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
+                                                  Profile* profile) {
+  return policy::ManagementServiceFactory::GetForProfile(profile)
+      ->IsAccountManaged();
 }
 
 // static

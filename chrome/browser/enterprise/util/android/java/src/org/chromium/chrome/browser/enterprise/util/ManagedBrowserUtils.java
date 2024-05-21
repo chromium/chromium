@@ -18,6 +18,11 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().isBrowserManaged(profile);
     }
 
+    /** Wrapper around native call to determine if the profile is managed. */
+    public static boolean isProfileManaged(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isProfileManaged(profile);
+    }
+
     /** Wrapper around native call to get profile manager's representation string. */
     public static String getTitle(Profile profile) {
         return (profile != null) ? ManagedBrowserUtilsJni.get().getTitle(profile) : "";
@@ -31,6 +36,8 @@ public class ManagedBrowserUtils {
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(@JniType("Profile*") Profile profile);
+
+        boolean isProfileManaged(@JniType("Profile*") Profile profile);
 
         String getTitle(@JniType("Profile*") Profile profile);
 

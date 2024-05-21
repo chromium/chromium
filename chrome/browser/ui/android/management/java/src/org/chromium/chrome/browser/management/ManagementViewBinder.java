@@ -11,13 +11,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 class ManagementViewBinder {
     /**
      * Listens to changes in MVC model.
+     *
      * @param model MVC property model to write changes to.
      * @param view Inflated view for the ManagementPage.
      * @param propertyKey Specific model attribute that changed on this event.
      */
     public static void bind(PropertyModel model, ManagementView view, PropertyKey propertyKey) {
         if (propertyKey == ManagementProperties.BROWSER_IS_MANAGED) {
-            view.setManaged(model.get(ManagementProperties.BROWSER_IS_MANAGED));
+            view.setBrowserManaged(model.get(ManagementProperties.BROWSER_IS_MANAGED));
+        } else if (propertyKey == ManagementProperties.PROFILE_IS_MANAGED) {
+            view.setProfileManaged(model.get(ManagementProperties.PROFILE_IS_MANAGED));
         } else if (propertyKey == ManagementProperties.TITLE) {
             view.setTitleText(model.get(ManagementProperties.TITLE));
         } else if (propertyKey == ManagementProperties.LEARN_MORE_TEXT) {

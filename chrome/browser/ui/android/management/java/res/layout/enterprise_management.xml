@@ -37,7 +37,6 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cm_description_margin_top"
-            android:text="@string/management_browser_notice"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         <TextView

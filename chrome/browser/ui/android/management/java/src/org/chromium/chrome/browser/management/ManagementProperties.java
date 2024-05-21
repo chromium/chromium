@@ -17,6 +17,9 @@ class ManagementProperties {
     public static final PropertyModel.WritableBooleanPropertyKey BROWSER_IS_MANAGED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey PROFILE_IS_MANAGED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyModel.WritableObjectPropertyKey<SpannableString> LEARN_MORE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
 
@@ -32,6 +35,7 @@ class ManagementProperties {
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         BROWSER_IS_MANAGED,
+        PROFILE_IS_MANAGED,
         LEARN_MORE_TEXT,
         REPORTING_IS_ENABLED,
         LEGACY_TECH_REPORTING_IS_ENABLED,

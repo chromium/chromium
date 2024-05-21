@@ -102,6 +102,7 @@ public class ManagementViewTest {
     public void testManaged() {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
 
         createDialog();
 
@@ -111,6 +112,39 @@ public class ManagementViewTest {
         Assert.assertEquals(View.VISIBLE, view.mTitle.getVisibility());
 
         Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_browser_notice),
+                view.mDescription.getText());
+        Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
+    }
+
+    @Test
+    public void testOnlyBrowserManaged() {
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+        Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_browser_notice),
+                view.mDescription.getText());
+        Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
+    }
+
+    @Test
+    public void testOnlyProfileManaged() {
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+        Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_profile_notice),
+                view.mDescription.getText());
         Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
     }
 
@@ -118,6 +152,7 @@ public class ManagementViewTest {
     public void testCloudReporting() {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isReportingEnabled();
         doReturn(false)
                 .when(mMockPrefService)
@@ -138,6 +173,7 @@ public class ManagementViewTest {
     public void testLegacyReporting() {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
         doReturn(false).when(mMockManagedBrowserUtilNatives).isReportingEnabled();
         doReturn(true)
                 .when(mMockPrefService)

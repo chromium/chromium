@@ -20,11 +20,12 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
 /**
- * The View that renders the ManagementPage (chrome://management).
- * Consists of an medium size image icon over title and descriptive text.
+ * The View that renders the ManagementPage (chrome://management). Consists of an medium size image
+ * icon over title and descriptive text.
  */
 public class ManagementView extends ScrollView {
-    private boolean mIsManaged;
+    private boolean mIsBrowserManaged;
+    private boolean mIsProfileManaged;
     private boolean mIsReportingEnabled;
     private boolean mIsLegacyTechReportingEnabled;
 
@@ -61,7 +62,8 @@ public class ManagementView extends ScrollView {
         mReportLegacyTech = (TextView) findViewById(R.id.report_legacy_tech);
 
         // Set default management status
-        mIsManaged = false;
+        mIsBrowserManaged = false;
+        mIsProfileManaged = false;
         mIsReportingEnabled = false;
         mIsLegacyTechReportingEnabled = false;
 
@@ -84,17 +86,25 @@ public class ManagementView extends ScrollView {
         configureWideDisplayStyle();
     }
 
-    /** Sets whether account is managed. Then updates view accordingly. */
-    public void setManaged(boolean isManaged) {
-        if (mIsManaged != isManaged) {
-            mIsManaged = isManaged;
+    /** Sets whether browser is managed. Then updates view accordingly. */
+    public void setBrowserManaged(boolean isManaged) {
+        if (mIsBrowserManaged != isManaged) {
+            mIsBrowserManaged = isManaged;
             adjustView();
         }
     }
 
-    /** Gets whether account is managed. */
+    /** Sets whether profile is managed. Then updates view accordingly. */
+    public void setProfileManaged(boolean isManaged) {
+        if (mIsProfileManaged != isManaged) {
+            mIsProfileManaged = isManaged;
+            adjustView();
+        }
+    }
+
+    /** Gets whether browser or profile is managed. */
     public boolean isManaged() {
-        return mIsManaged;
+        return mIsBrowserManaged || mIsProfileManaged;
     }
 
     /** Sets whether status reporting is enabled. Then updates view accordingly. */
@@ -137,10 +147,23 @@ public class ManagementView extends ScrollView {
         mTitle.setText(title);
     }
 
+    public void setDescriptionText(String description) {
+        mDescription.setText(description);
+    }
+
     /** Adjusts Title, Description, and Learn More link based on management status. */
     private void adjustView() {
-        mDescription.setVisibility(mIsManaged ? VISIBLE : GONE);
-        mLearnMore.setVisibility(mIsManaged ? VISIBLE : GONE);
+        mDescription.setVisibility(isManaged() ? VISIBLE : GONE);
+        if (isManaged()) {
+            mDescription.setText(
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    mIsBrowserManaged
+                                            ? R.string.management_browser_notice
+                                            : R.string.management_profile_notice));
+        }
+        mLearnMore.setVisibility(isManaged() ? VISIBLE : GONE);
 
         mBrowserReporting.setVisibility(
                 mIsReportingEnabled || mIsLegacyTechReportingEnabled ? VISIBLE : GONE);

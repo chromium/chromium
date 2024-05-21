@@ -36,6 +36,9 @@ public class ManagementMediator {
                         .with(
                                 ManagementProperties.BROWSER_IS_MANAGED,
                                 ManagedBrowserUtils.isBrowserManaged(profile))
+                        .with(
+                                ManagementProperties.PROFILE_IS_MANAGED,
+                                ManagedBrowserUtils.isProfileManaged(profile))
                         .with(ManagementProperties.TITLE, ManagedBrowserUtils.getTitle(profile))
                         .with(ManagementProperties.LEARN_MORE_TEXT, getLearnMoreClickableText())
                         .with(
