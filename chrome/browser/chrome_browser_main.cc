@@ -46,6 +46,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -1223,6 +1224,8 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   tracing::MaybeSetupSystemTracingFromFieldTrial();
   tracing::SetupBackgroundTracingFromCommandLine();
   tracing::SetupPresetTracingFromFieldTrial();
+  base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName);
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostCreateThreads();

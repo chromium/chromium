@@ -498,7 +498,6 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     enabled_scenarios_.back()->Enable();
   }
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
-  DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   return true;
 }
 
@@ -559,7 +558,6 @@ bool BackgroundTracingManagerImpl::SetEnabledScenarios(
       it->second->Enable();
     }
   }
-  DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   return true;
 }
 
@@ -629,7 +627,6 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
 
   if (startup_tracing_enabled) {
     RecordMetric(Metrics::STARTUP_SCENARIO_TRIGGERED);
-    DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   }
 
   legacy_active_scenario_->StartTracingIfConfigNeedsIt();

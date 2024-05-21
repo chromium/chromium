@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/named_trigger.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -94,11 +95,12 @@ BackgroundStartupTracingObserver::IncludeStartupConfigIfNeeded(
   if (!enabled_in_current_session_ || startup_rule)
     return config;
 
-  auto rules_dict = base::Value::Dict()
-                        .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
-                        .Set("trigger_name", kStartupTracingTriggerName)
-                        .Set("trigger_delay", 30)
-                        .Set("rule_id", kStartupTracingRuleId);
+  auto rules_dict =
+      base::Value::Dict()
+          .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
+          .Set("trigger_name", base::trace_event::kStartupTracingTriggerName)
+          .Set("trigger_delay", 30)
+          .Set("rule_id", kStartupTracingRuleId);
 
   if (config) {
     config->AddReactiveRule(rules_dict);

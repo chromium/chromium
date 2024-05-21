@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -31,6 +32,7 @@
 #include "base/test/test_proto_loader.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
@@ -1665,6 +1667,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
       std::move(config), BackgroundTracingManager::ANONYMIZE_DATA));
+  base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName);
 
   tracelog_helper.WaitForStartTracing();
   background_tracing_helper.WaitForTraceStarted();

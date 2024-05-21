@@ -12,6 +12,8 @@
 
 namespace base::trace_event {
 
+inline constexpr char kStartupTracingTriggerName[] = "startup";
+
 // Notifies that a manual trigger event has occurred. Returns true if the
 // trigger caused a scenario to either begin recording or finalize the trace
 // depending on the config, or false if the trigger had no effect. If the

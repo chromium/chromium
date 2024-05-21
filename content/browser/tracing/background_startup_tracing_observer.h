@@ -13,8 +13,6 @@
 
 namespace content {
 
-constexpr const char* kStartupTracingTriggerName = "startup";
-
 // Observes for startup tracing config and sets up preferences to trace on next
 // startup.
 // TODO(crbug.com/40257548): Rename this class since this is no longer an
