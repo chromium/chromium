@@ -112,6 +112,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleHighContrast},
     {true, ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kToggleSpokenFeedback},
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kEnableSelectToSpeak},
     {true, ui::VKEY_D, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kEnableOrToggleDictation},
     {true, ui::VKEY_DICTATE, ui::EF_NONE,

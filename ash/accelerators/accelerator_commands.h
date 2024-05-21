@@ -324,6 +324,10 @@ ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 // triggered Picker.
 ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
 
+// Enables Select to Speak if the feature is currently disabled. Does nothing if
+// the feature is currently enabled.
+ASH_EXPORT void EnableSelectToSpeak();
+
 // Enables Dictation if the feature is currently disabled. Toggles (either
 // starts or stops) Dictation if the feature is currently enabled.
 ASH_EXPORT void EnableOrToggleDictation();

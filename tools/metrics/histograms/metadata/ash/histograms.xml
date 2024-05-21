@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DevToggleUnifiedDesktop"/>
   <variant name="DisableCapsLock"/>
   <variant name="EnableOrToggleDictation"/>
+  <variant name="EnableSelectToSpeak"/>
   <variant name="Exit"/>
   <variant name="FocusCameraPreview"/>
   <variant name="FocusNextPane"/>

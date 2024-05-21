@@ -29,6 +29,7 @@ enum AcceleratorAction {
   kDesksActivate7,
   kDesksToggleAssignToAllDesks,
   kDisableCapsLock,
+  kEnableSelectToSpeak,
   kEnableOrToggleDictation,
   kExit,
   kFocusCameraPreview,

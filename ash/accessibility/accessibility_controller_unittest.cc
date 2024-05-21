@@ -2024,4 +2024,86 @@ TEST_P(AccessibilityControllerSigninTest,
       container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
 }
 
+class AccessibilityControllerSelectToSpeakKeyboardShortcutTest
+    : public AshTestBase {
+ protected:
+  AccessibilityControllerSelectToSpeakKeyboardShortcutTest() = default;
+  AccessibilityControllerSelectToSpeakKeyboardShortcutTest(
+      const AccessibilityControllerSelectToSpeakKeyboardShortcutTest&) = delete;
+  AccessibilityControllerSelectToSpeakKeyboardShortcutTest& operator=(
+      const AccessibilityControllerSelectToSpeakKeyboardShortcutTest&) = delete;
+  ~AccessibilityControllerSelectToSpeakKeyboardShortcutTest() override =
+      default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilitySelectToSpeakShortcut);
+    AshTestBase::SetUp();
+  }
+
+  void SetDialogAcceptedPref(bool accepted) {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    prefs->SetBoolean(prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
+                      accepted);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
+       DialogNotAccepted) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+
+  SetDialogAcceptedPref(false);
+  ASSERT_FALSE(controller->select_to_speak().enabled());
+  controller->EnableSelectToSpeakWithDialog();
+
+  // If the dialog hasn't been accepted yet, then pressing the Select to Speak
+  // shortcut should show a dialog.
+  ASSERT_NE(nullptr, controller->GetConfirmationDialogForTest());
+  ASSERT_FALSE(controller->select_to_speak().enabled());
+}
+
+TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
+       DialogAccepted) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+
+  SetDialogAcceptedPref(true);
+  ASSERT_FALSE(controller->select_to_speak().enabled());
+  controller->EnableSelectToSpeakWithDialog();
+
+  // If the dialog has been accepted, then pressing the key shortcut should
+  // enable Select to Speak (but it should still remain inactive).
+  ASSERT_TRUE(controller->select_to_speak().enabled());
+  ASSERT_EQ(nullptr, controller->GetConfirmationDialogForTest());
+}
+
+TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
+       SelectToSpeakAlreadyEnabled) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+
+  SetDialogAcceptedPref(true);
+  controller->select_to_speak().SetEnabled(true);
+  ASSERT_TRUE(controller->select_to_speak().enabled());
+  controller->EnableSelectToSpeakWithDialog();
+
+  // If Select to Speak is already on, then pressing the key shortcut should
+  // activate it. That logic is handled in a separate class, so for the purposes
+  // of this unit test, we can just assert that Select to Speak is enabled and
+  // that the dialog isn't showing.
+  ASSERT_TRUE(controller->select_to_speak().enabled());
+  ASSERT_EQ(nullptr, controller->GetConfirmationDialogForTest());
+}
+
 }  // namespace ash

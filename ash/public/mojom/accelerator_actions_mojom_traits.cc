@@ -62,6 +62,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDesksToggleAssignToAllDesks;
     case ash::AcceleratorAction::kDisableCapsLock:
       return mojom_accelerator_action::kDisableCapsLock;
+    case ash::AcceleratorAction::kEnableSelectToSpeak:
+      return mojom_accelerator_action::kEnableSelectToSpeak;
     case ash::AcceleratorAction::kEnableOrToggleDictation:
       return mojom_accelerator_action::kEnableOrToggleDictation;
     case ash::AcceleratorAction::kExit:
@@ -413,6 +415,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kDisableCapsLock:
       *out = ash::AcceleratorAction::kDisableCapsLock;
+      return true;
+    case mojom_accelerator_action::kEnableSelectToSpeak:
+      *out = ash::AcceleratorAction::kEnableSelectToSpeak;
       return true;
     case mojom_accelerator_action::kEnableOrToggleDictation:
       *out = ash::AcceleratorAction::kEnableOrToggleDictation;

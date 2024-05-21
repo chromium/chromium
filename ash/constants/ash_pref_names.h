@@ -599,6 +599,12 @@ inline constexpr char kAccessibilityFocusHighlightEnabled[] =
 // A boolean pref which determines whether Select-to-speak is enabled.
 inline constexpr char kAccessibilitySelectToSpeakEnabled[] =
     "settings.a11y.select_to_speak";
+
+// A boolean pref which indicates whether the Select to Speak confirmation
+// dialog has ever been accepted.
+inline constexpr char kSelectToSpeakAcceleratorDialogHasBeenAccepted[] =
+    "settings.a11y.select_to_speak_accelerator_dialog_has_been_accepted";
+
 // A boolean pref which determines whether Switch Access is enabled.
 inline constexpr char kAccessibilitySwitchAccessEnabled[] =
     "settings.a11y.switch_access.enabled";

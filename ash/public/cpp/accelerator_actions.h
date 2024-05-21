@@ -164,6 +164,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(VolumeMuteToggle)                           \
   ACCELERATOR_ACTION_ENTRY(TogglePicker)                               \
   ACCELERATOR_ACTION_ENTRY(AccessibilityAction)                        \
+  ACCELERATOR_ACTION_ENTRY(EnableSelectToSpeak)                        \
   /* Debug actions are kept at an offset.*/                            \
   /* This offset should be kept consistent with the enum*/             \
   /* `AcceleratorAction` in*/                                          \

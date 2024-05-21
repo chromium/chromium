@@ -636,6 +636,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accel_Enable_SelectToSpeak">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>ash/accessibility/OWNERS</owner>
+  <description>
+    User enables Select to Speak by pressing the Search + S keyboard shortcut.
+  </description>
+</action>
+
 <action name="Accel_Exit_First_Q">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

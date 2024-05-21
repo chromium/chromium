@@ -1319,6 +1319,10 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
   }
 }
 
+void EnableSelectToSpeak() {
+  Shell::Get()->accessibility_controller()->EnableSelectToSpeakWithDialog();
+}
+
 void EnableOrToggleDictation() {
   Shell::Get()->accessibility_controller()->EnableOrToggleDictationFromSource(
       DictationToggleSource::kKeyboard);

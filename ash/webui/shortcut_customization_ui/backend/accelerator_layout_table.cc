@@ -533,6 +533,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kGeneralControls,
             /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kEnableSelectToSpeak,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kEnableSelectToSpeak,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_ENABLE_SELECT_TO_SPEAK,
+            mojom::AcceleratorCategory::kAccessibility,
+            mojom::AcceleratorSubcategory::kVisibility,
+            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kEnableOrToggleDictation,
         AcceleratorLayoutDetails(
             AcceleratorAction::kEnableOrToggleDictation,

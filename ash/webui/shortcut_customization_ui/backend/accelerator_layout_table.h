@@ -474,6 +474,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kToggleSpokenFeedback,
 
     // Accessibility > Visibility
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,

@@ -1451,6 +1451,14 @@ Style notes:
         With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="language">$1<ex>English (United States)</ex></ph>. Speech is sent to Google for processing. You can change the dictation language anytime in Settings > Accessibility.
       </message>
 
+      <!-- Select to Speak keyboard dialog strings -->
+      <message name="IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_TITLE" desc="The title of a dialog that is shown when Select to Speak is enabled from the keyboard.">
+        Turn on Select-to-Speak?
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_DESCRIPTION" desc="The description of a dialog that is shown when Select-to-Speak is enabled from the keyboard.">
+        Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search/Launcher + S.
+      </message>
+
       <!-- Accessibility nudges -->
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_NO_FOCUSED_TEXT_FIELD" desc="Displayed in a nudge when Dictation is stopped automatically because there is no focused text field.">
         Go to a text field to use Dictation
@@ -4222,6 +4230,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CLIPBOARD_HISTORY" desc="Label for accelerator action - Open Clipboard.">
         Open Clipboard
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_ENABLE_SELECT_TO_SPEAK" desc="Label for accelerator action - Enable Select-to-Speak">
+        Turn on Select-to-Speak
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION" desc="Label for accelerator action - Turn on/off dictation (type with your voice)">
         Turn on/off dictation (type with your voice)

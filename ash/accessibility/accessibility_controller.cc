@@ -287,6 +287,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown,
     prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown,
     prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2,
+    prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
 };
 
 // List of switch access accessibility prefs that are to be copied (if changed
@@ -1174,6 +1175,8 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
   registry->RegisterBooleanPref(
+      prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterBooleanPref(
       prefs::kDictationDlcSuccessNotificationHasBeenShown, false);
   registry->RegisterBooleanPref(
       prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown, false);
@@ -2020,6 +2023,25 @@ void AccessibilityController::ToggleDictationFromSource(
   ToggleDictation();
 }
 
+void AccessibilityController::EnableSelectToSpeakWithDialog() {
+  // TODO(b/286006143): Return early or show a toast (depending on feedback from
+  // UX) if Select to Speak is blocked by a policy.
+  if (!::features::IsAccessibilitySelectToSpeakShortcutEnabled() ||
+      select_to_speak().enabled()) {
+    return;
+  }
+
+  if (active_user_prefs_->GetBoolean(
+          prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted)) {
+    // Enable Select to Speak if the confirmation dialog has been previously
+    // accepted.
+    OnSelectToSpeakKeyboardDialogAccepted();
+  } else {
+    // Show the confirmation dialog if it hasn't been accepted yet.
+    ShowSelectToSpeakKeyboardDialog();
+  }
+}
+
 void AccessibilityController::EnableOrToggleDictationFromSource(
     DictationToggleSource source) {
   if (dictation().enabled()) {
@@ -2090,6 +2112,39 @@ void AccessibilityController::OnDictationKeyboardDialogAccepted() {
 
 void AccessibilityController::OnDictationKeyboardDialogDismissed() {
   dictation_keyboard_dialog_showing_for_testing_ = false;
+}
+
+void AccessibilityController::ShowSelectToSpeakKeyboardDialog() {
+  if (!client_ || !::features::IsAccessibilitySelectToSpeakShortcutEnabled()) {
+    return;
+  }
+
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_TITLE);
+  std::u16string description = l10n_util::GetStringUTF16(
+      IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_DESCRIPTION);
+  ShowConfirmationDialog(
+      title, description, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      base::BindOnce(
+          &AccessibilityController::OnSelectToSpeakKeyboardDialogAccepted,
+          GetWeakPtr()),
+      base::BindOnce(
+          &AccessibilityController::OnSelectToSpeakKeyboardDialogDismissed,
+          GetWeakPtr()),
+      base::BindOnce(
+          &AccessibilityController::OnSelectToSpeakKeyboardDialogDismissed,
+          GetWeakPtr()));
+}
+
+void AccessibilityController::OnSelectToSpeakKeyboardDialogAccepted() {
+  active_user_prefs_->SetBoolean(
+      prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted, true);
+  confirmation_dialog_.reset();
+  select_to_speak().SetEnabled(true);
+}
+
+void AccessibilityController::OnSelectToSpeakKeyboardDialogDismissed() {
+  confirmation_dialog_.reset();
 }
 
 void AccessibilityController::ShowDictationLanguageUpgradedNudge(
