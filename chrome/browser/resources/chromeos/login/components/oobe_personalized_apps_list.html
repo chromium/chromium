@@ -63,6 +63,8 @@
   }
 
   .logo-container {
+    border-radius: 8px;
+    overflow: hidden;
     width: 48px;
     height: 48px;
     align-items: center;
@@ -71,18 +73,19 @@
 
   /* Styles of icons in screen cards */
   .app-icon  {
-    padding-inline-start: 8px;
     align-items: center;
     align-self: center;
     display: flex;
     height: 48px;
     width: 48px;
+    pointer-events: none;
   }
 
   .content {
     align-items: center;
     align-self: center;
     column-gap: 12px;
+    margin-left: 8px;
   }
 
   #personalizedApps {
