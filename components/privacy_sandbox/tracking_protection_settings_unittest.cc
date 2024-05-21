@@ -14,6 +14,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -181,20 +183,44 @@ TEST_F(TrackingProtectionSettingsTest,
 }
 
 TEST_F(TrackingProtectionSettingsTest,
-       HasTrackingProtectionExceptionReturnsTrueForAllow) {
+       GetTrackingProtectionSettingReturnsAllow) {
   host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURL(GetTestUrl()),
       ContentSettingsType::TRACKING_PROTECTION,
       ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
-      GetTestUrl()));
+  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
+                GetTestUrl()),
+            CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(TrackingProtectionSettingsTest,
-       HasTrackingProtectionExceptionReturnsFalseByDefault) {
-  EXPECT_FALSE(tracking_protection_settings()->HasTrackingProtectionException(
-      GetTestUrl()));
+       GetTrackingProtectionSettingReturnsBlockByDefault) {
+  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
+                GetTestUrl()),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       GetTrackingProtectionSettingFillsSettingInfo) {
+  content_settings::TestUtils::OverrideProvider(
+      host_content_settings_map(),
+      std::make_unique<content_settings::MockProvider>(),
+      content_settings::ProviderType::kPolicyProvider);
+  host_content_settings_map()->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURL(GetTestUrl()),
+      ContentSettingsType::TRACKING_PROTECTION,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  content_settings::SettingInfo info;
+  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
+                GetTestUrl(), &info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(info.primary_pattern, ContentSettingsPattern::Wildcard());
+  EXPECT_EQ(info.secondary_pattern,
+            ContentSettingsPattern::FromURL(GetTestUrl()));
+  EXPECT_EQ(info.source, content_settings::SettingSource::kPolicy);
 }
 
 TEST_F(TrackingProtectionSettingsTest,
@@ -229,7 +255,7 @@ TEST_F(
 TEST_F(TrackingProtectionSettingsTest,
        RemoveTrackingProtectionExceptionRemovesContentSetting) {
   host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLToSchemefulSitePattern(GetTestUrl()),
       ContentSettingsType::TRACKING_PROTECTION,
       ContentSetting::CONTENT_SETTING_ALLOW);

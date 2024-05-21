@@ -74,8 +74,11 @@ class TrackingProtectionSettings
   // This removes both site-scoped (wildcarded) and origin-scoped exceptions.
   void RemoveTrackingProtectionException(const GURL& first_party_url);
 
-  // Returns whether a given url has a tracking protection exception.
-  bool HasTrackingProtectionException(const GURL& first_party_url) const;
+  // Returns the tracking protection setting for `first_party_url`. This will be
+  // BLOCK unless the user has made an explicit exception for `first_party_url`.
+  ContentSetting GetTrackingProtectionSetting(
+      const GURL& first_party_url,
+      content_settings::SettingInfo* info = nullptr) const;
 
  private:
   void OnEnterpriseControlForPrefsChanged();
