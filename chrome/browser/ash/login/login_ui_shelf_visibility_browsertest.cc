@@ -112,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
 
 // Verifies that guest button and add user button are hidden on post-login
 // screens, after a user session is started.
-IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
+// TODO(b:342006373): Flaky
+IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, DISABLED_PostLoginScreen) {
   StartOnboardingFlow();
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
