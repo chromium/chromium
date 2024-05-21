@@ -178,15 +178,11 @@ export class DestinationManager extends EventTarget implements
     assert(this.isSessionInitialized);
     // Request initial data.
     this.updateState(DestinationManagerState.FETCHING);
-    // TODO(b/323421684): Once the initial local destinations fetch completes
-    // update has initial destination set, determine relevant initial
-    // destination, and create the initial print ticket. If policy restricts
-    // fetching a destination type an empty destination list will be returned.
     this.destinationProvider.getLocalDestinations().then(
         (destinations: Destination[]): void => {
           this.addOrUpdateDestinations(destinations);
           this.initialDestinationsLoaded = true;
-          this.updateActiveDestination(PDF_DESTINATION.id);
+          this.selectInitialDestination();
           this.updateState(DestinationManagerState.LOADED);
         });
   }
@@ -196,6 +192,36 @@ export class DestinationManager extends EventTarget implements
   private insertDigitalDestinations(): void {
     assert(!this.destinationCache.get(PDF_DESTINATION.id));
     this.addOrUpdateDestination(PDF_DESTINATION);
+  }
+
+  // Determines the best fitting active destination from the available
+  // destinations. Best fitting destination is determined in this order:
+  //  1. The most recently used available destination from user preferences.
+  //  2. Using "matching regex" defined by policy. See DefaultPrinterSelection
+  //     policy.
+  //  3. Using fallback behavior.
+  //  NOTE: CrOS does not support system default printer at this time.
+  private selectInitialDestination(): void {
+    assert(this.activeDestinationId === '');
+    if (this.destinations.length === 0) {
+      // TODO(b/323421684): Handle no-destination state.
+      return;
+    }
+
+    // TODO(b/323421684): Attempt to select a recently used destination.
+    // TODO(b/323421684): Attempt to select using policy regex.
+    this.selectFallbackDestination();
+  }
+
+  // Fallback to PDF destination if available; otherwise use first available
+  // destination.
+  private selectFallbackDestination(): void {
+    assert(this.destinations.length > 0);
+    if (this.destinationCache.get(PDF_DESTINATION.id)) {
+      this.updateActiveDestination(PDF_DESTINATION.id);
+      return;
+    }
+    this.updateActiveDestination(this.destinations[0].id);
   }
 
   // Creates a merge of `destination` and UI managed fields from `uiFields`
@@ -235,6 +261,15 @@ export class DestinationManager extends EventTarget implements
     }
     this.destinationCache.set(destination.id, destination);
     this.destinations[index] = destination;
+  }
+
+  // Removes destination from list and cache.
+  removeDestinationForTesting(destinationId: string): void {
+    if (this.destinationCache.delete(destinationId)) {
+      const index = this.destinations.findIndex(
+          (d: Destination) => d.id === destinationId);
+      this.destinations.splice(index);
+    }
   }
 }
 

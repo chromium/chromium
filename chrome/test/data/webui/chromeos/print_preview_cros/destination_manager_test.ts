@@ -317,4 +317,23 @@ suite('DestinationManager', () => {
         ];
         assertDeepEquals(expectedDestinations, managerDestinations);
       });
+
+  // Verify selectDestination sets fallback destination to first available if
+  // PDF_DESTINATION not available.
+  test('fallback to first available', async () => {
+    const destinations = [createTestDestination(), createTestDestination()];
+    destinationProvider.setLocalDestinationResult(destinations);
+    instance.removeDestinationForTesting(PDF_DESTINATION.id);
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    const stateChanged = eventToPromise(
+        DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
+    mockTimer.tick(testDelay);
+    await stateChanged;
+
+    const managerDestinations = instance.getDestinations();
+    assertDeepEquals(destinations, managerDestinations);
+    assertDeepEquals(
+        managerDestinations[0], instance.getActiveDestination(),
+        'Active destination should be first destination');
+  });
 });
