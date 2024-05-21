@@ -149,6 +149,7 @@ void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
       if (auto* option = select->SelectedOption()) {
         option->Focus(FocusParams(FocusTrigger::kScript));
       }
+      select->PseudoStateChanged(CSSSelector::kPseudoOpen);
     }
   }
 }
@@ -165,6 +166,7 @@ void HTMLDataListElement::HidePopoverInternal(
       // MenuListSelectType::ManuallyAssignSlots changes behavior based on
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
+      select->PseudoStateChanged(CSSSelector::kPseudoOpen);
     }
   }
 }
