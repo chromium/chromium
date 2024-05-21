@@ -30,6 +30,7 @@
 namespace ash {
 namespace {
 
+using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -167,6 +168,17 @@ TEST_F(PickerSectionViewTest, AddsResults) {
   ASSERT_THAT(items, SizeIs(2));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
   EXPECT_TRUE(views::IsViewClass<PickerEmojiItemView>(items[1]));
+}
+
+TEST_F(PickerSectionViewTest, ClearsItems) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  section_view.ClearItems();
+
+  EXPECT_THAT(section_view.item_views_for_testing(), IsEmpty());
 }
 
 }  // namespace

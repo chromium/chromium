@@ -291,6 +291,19 @@ void PickerSectionView::AddResult(const PickerSearchResult& result,
       result.data());
 }
 
+void PickerSectionView::ClearItems() {
+  item_views_.clear();
+  if (image_item_grid_ != nullptr) {
+    RemoveChildViewT(image_item_grid_.ExtractAsDangling());
+  }
+  if (small_item_grid_ != nullptr) {
+    RemoveChildViewT(small_item_grid_.ExtractAsDangling());
+  }
+  if (list_item_container_ != nullptr) {
+    RemoveChildViewT(list_item_container_.ExtractAsDangling());
+  }
+}
+
 PickerItemView* PickerSectionView::GetTopItem() {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetTopItem()
                                        : nullptr;

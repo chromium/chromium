@@ -75,6 +75,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
   void AddResult(const PickerSearchResult& result,
                  SelectResultCallback select_result_callback);
 
+  void ClearItems();
+
   // Returns the item to highlight to when navigating to this section from the
   // top, or nullptr if the section is empty.
   PickerItemView* GetTopItem();
