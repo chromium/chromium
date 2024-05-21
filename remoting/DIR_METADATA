@@ -1,7 +1,0 @@
-monorail: {
-  component: "Services>Chromoting"
-}
-team_email: "chromoting-team@google.com"
-buganizer_public: {
-  component_id: 1457133
-}
