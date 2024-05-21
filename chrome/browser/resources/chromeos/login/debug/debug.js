@@ -145,6 +145,13 @@ function createCategoriesData() {
         subtitle: 'Home office, productivity work',
         selected: false,
       },
+      {
+        categoryId: 'oobe_gaming',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/gaming.svg',
+        title: 'Gaming',
+        subtitle: 'Action, adventure, strategy, puzzle games and more',
+        selected: false,
+      },
     ],
   };
   return data;
