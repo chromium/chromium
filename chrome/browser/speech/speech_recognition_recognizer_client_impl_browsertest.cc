@@ -48,6 +48,8 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
   MOCK_METHOD0(OnSpeechRecognitionStopped, void());
+  MOCK_METHOD1(OnLanguageIdentificationEvent,
+               void(media::mojom::LanguageIdentificationEventPtr));
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};

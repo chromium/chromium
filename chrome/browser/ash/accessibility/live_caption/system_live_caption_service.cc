@@ -35,6 +35,8 @@ SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
   SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
       ->BindSpeechRecognitionBrowserObserver(
           browser_observer_receiver_.BindNewPipeAndPassRemote());
+  source_language_ =
+      profile_->GetPrefs()->GetString(prefs::kLiveCaptionLanguageCode);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
@@ -57,6 +59,19 @@ void SystemLiveCaptionService::OnSpeechResult(
     // Hard and fast stop.
     client_.reset();
   }
+}
+
+void SystemLiveCaptionService::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  if (!controller_) {
+    return;
+  }
+
+  if (event->asr_switch_result ==
+      media::mojom::AsrSwitchResult::kSwitchSucceeded) {
+    source_language_ = event->language;
+  }
+  controller_->OnLanguageIdentificationEvent(&context_, std::move(event));
 }
 
 void SystemLiveCaptionService::OnSpeechSoundLevelChanged(int16_t level) {}

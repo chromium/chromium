@@ -72,6 +72,8 @@ class SystemLiveCaptionService
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
   void OnSpeechRecognitionStopped() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   // media::mojom::SpeechRecognitionBrowserObserver overrides:
   void SpeechRecognitionAvailabilityChanged(
@@ -93,6 +95,8 @@ class SystemLiveCaptionService
   void OnNonChromeOutputStopped() override;
 
  private:
+  // The source language code of the audio stream.
+  std::string source_language_;
   SpeechRecognizerStatus current_recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   bool output_running_ = false;

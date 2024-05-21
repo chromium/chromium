@@ -267,7 +267,7 @@ void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionError() {
 
 void SpeechRecognitionRecognizerClientImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  // Do nothing.
+  delegate()->OnLanguageIdentificationEvent(std::move(event));
 }
 
 void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionStopped() {

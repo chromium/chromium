@@ -75,6 +75,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
   void OnSpeechRecognitionStopped() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   // ash::ProjectorAnnotatorController:
   void SetTool(const ash::AnnotatorTool& tool) override;

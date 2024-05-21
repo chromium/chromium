@@ -50,7 +50,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
   void OnSpeechRecognitionStopped() override {}
-
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override {}
   // Handles a call to start speech recognition.
   void HandleStart(std::optional<std::string> locale,
                    std::optional<bool> interim_results,

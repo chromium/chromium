@@ -52,6 +52,11 @@ class SpeechRecognizerDelegate {
   // Invoked when the speech recognition has stopped.
   virtual void OnSpeechRecognitionStopped() = 0;
 
+  // Invoked when a language identification event
+  // during speech recognition has been received.
+  virtual void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) = 0;
+
  protected:
   virtual ~SpeechRecognizerDelegate() {}
 };

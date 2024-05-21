@@ -309,6 +309,11 @@ void ProjectorClientImpl::OnSpeechRecognitionStopped() {
   SpeechRecognitionEnded(/*forced=*/false);
 }
 
+void ProjectorClientImpl::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  // For now, this is ignored by projector.
+}
+
 void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
   ash::ProjectorAppClient::Get()->SetTool(tool);
 }
