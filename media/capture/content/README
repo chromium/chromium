@@ -1,5 +1,0 @@
-This folder contains code referring to content capture, or the capture of 
-"already-rendered stuff." The screen capture implementations (desktop, window,
-tab, etc.) in content/ use these tools.  The code in this dir is all about 
-deciding how to capture content w.r.t. timing, quality, and other performance
-concerns.

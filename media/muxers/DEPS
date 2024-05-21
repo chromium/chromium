@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/libwebm",
-  "+components/version_info/version_info.h",
-]

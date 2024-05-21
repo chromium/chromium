@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/crash/core/common/crash_key.h",
-  "+crypto",
-  "+media/cdm/clear_key_cdm_common.h",
-  "+third_party/boringssl/src/include",
-]

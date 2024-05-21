@@ -1,4 +1,0 @@
-include_rules = [
-  "+ash/constants",
-  "+third_party/widevine/cdm/widevine_cdm_common.h",
-]

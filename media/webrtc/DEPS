@@ -1,6 +1,0 @@
-include_rules = [
-   "+third_party/webrtc/api",
-   "+third_party/webrtc/modules/audio_processing",
-   "+third_party/webrtc/rtc_base",
-   "+third_party/webrtc_overrides",
-]
