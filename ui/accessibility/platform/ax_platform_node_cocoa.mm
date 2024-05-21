@@ -2231,11 +2231,13 @@ void CollectAncestorRoles(
       "accessibility", "AXPlatformNodeCocoa::isAccessibilitySelectorAllowed",
       "selector=", base::SysNSStringToUTF8(NSStringFromSelector(selector)));
 
-  if (!_node)
+  if (!_node) {
     return NO;
+  }
 
-  if (selector == @selector(setAccessibilityFocused:))
+  if (selector == @selector(setAccessibilityFocused:)) {
     return _node->IsFocusable();
+  }
 
   if (selector == @selector(setAccessibilityValue:)) {
     switch (_node->GetRole()) {
@@ -2281,8 +2283,10 @@ void CollectAncestorRoles(
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying
   // to set the selection range, which won't work because of 692362.
-  if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
+  if (_node->GetDelegate() && _node->GetDelegate()->IsReadOnlyOrDisabled() &&
+      IsAXSetter(selector)) {
     return NO;
+  }
 
   // TODO(crbug.com/41115917): What about role-specific selectors?
   return [super isAccessibilitySelectorAllowed:selector];
