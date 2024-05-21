@@ -79,7 +79,7 @@ export class PrintTicketManager extends EventTarget {
       this.eventTracker.add(
           this.destinationManager,
           DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
-          (event: Event): void => this.onActiveDestinationChanged(event));
+          (): void => this.onActiveDestinationChanged());
     } else {
       this.printTicket.destination = activeDest.id;
       this.printTicket.printerType = activeDest.printerType;
@@ -149,7 +149,7 @@ export class PrintTicketManager extends EventTarget {
   // set. Removes listener once destination is set in print ticket. After the
   // initial change, future updates to active destination will start in the
   // print ticket manager.
-  private onActiveDestinationChanged(_event: Event): void {
+  private onActiveDestinationChanged(): void {
     // Event listener added by initializeSession; print ticket will not be null.
     assert(this.printTicket);
 

@@ -43,7 +43,7 @@ export class DestinationSelectElement extends PolymerElement {
 
     this.eventTracker.add(
         this.controller, DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED,
-        (e: Event): void => this.onDestinationSelectShowDropdownChanged(e));
+        (): void => this.onDestinationSelectShowDropdownChanged());
 
     // Initialize properties using the controller.
     this.showLoadingUi = this.controller.shouldShowLoadingUi();
@@ -59,7 +59,7 @@ export class DestinationSelectElement extends PolymerElement {
   }
 
   // Updates UI on controller DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED event.
-  private onDestinationSelectShowDropdownChanged(_event: Event): void {
+  private onDestinationSelectShowDropdownChanged(): void {
     this.showLoadingUi = this.controller.shouldShowLoadingUi();
   }
 }

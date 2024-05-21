@@ -86,11 +86,10 @@ suite('DestinationDropdown', () => {
             destinationManager, 'getActiveDestination');
         getActiveDestinationFn.returnValue = null;
 
-        const testEvent =
-            createCustomEvent(DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION);
         const selectedChangedEvent1 = eventToPromise(
             DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, controller);
-        controller.dispatchEvent(testEvent);
+        controller.dispatchEvent(createCustomEvent(
+            DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION));
         await selectedChangedEvent1;
 
         const selected = getSelectedDestinationRow();
@@ -104,7 +103,8 @@ suite('DestinationDropdown', () => {
         getActiveDestinationFn.returnValue = PDF_DESTINATION;
         const selectedChangedEvent2 = eventToPromise(
             DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, controller);
-        controller.dispatchEvent(testEvent);
+        controller.dispatchEvent(createCustomEvent(
+            DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION));
         await selectedChangedEvent2;
 
         assertEquals(

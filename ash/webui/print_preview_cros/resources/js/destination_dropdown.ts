@@ -49,8 +49,7 @@ export class DestinationDropdownElement extends PolymerElement {
 
     this.eventTracker.add(
         this.controller, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION,
-        (e: Event): void =>
-            this.onDestinationDropdownUpdateSelectedDestination(e));
+        (): void => this.onDestinationDropdownUpdateSelectedDestination());
 
     // Initialize properties using the controller.
     this.selectedDestination = this.controller.getSelectedDestination();
@@ -68,7 +67,7 @@ export class DestinationDropdownElement extends PolymerElement {
   }
 
   // Handles updating UI when update selected destination event occurs.
-  private onDestinationDropdownUpdateSelectedDestination(_e: Event): void {
+  private onDestinationDropdownUpdateSelectedDestination(): void {
     this.selectedDestination = this.controller.getSelectedDestination();
   }
 

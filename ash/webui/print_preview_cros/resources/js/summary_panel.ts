@@ -44,10 +44,10 @@ export class SummaryPanelElement extends PolymerElement {
     this.controller = new SummaryPanelController(this.eventTracker);
     this.eventTracker.add(
         this.controller, PRINT_BUTTON_DISABLED_CHANGED_EVENT,
-        (e: Event) => this.onPrintButtonDisabledChanged(e));
+        () => this.onPrintButtonDisabledChanged());
     this.eventTracker.add(
         this.controller, SHEETS_USED_CHANGED_EVENT,
-        (e: Event) => this.onSheetsUsedChanged(e));
+        () => this.onSheetsUsedChanged());
 
     // Initialize properties using controller.
     this.sheetsUsedText = this.controller.getSheetsUsedText();
@@ -63,23 +63,23 @@ export class SummaryPanelElement extends PolymerElement {
     return this.controller;
   }
 
-  private onSheetsUsedChanged(_event: Event): void {
+  private onSheetsUsedChanged(): void {
     this.sheetsUsedText = this.controller.getSheetsUsedText();
   }
 
   // Click event handler for `#print` button.
-  protected onPrintClicked(_event: Event): void {
+  protected onPrintClicked(): void {
     this.controller.handlePrintClicked();
   }
 
   // Click event handler for `#cancel` button.
-  protected onCancelClicked(_event: Event): void {
+  protected onCancelClicked(): void {
     this.controller.handleCancelClicked();
   }
 
   // Ensure `#print` disabled state updates based on controller's
   // shouldDisablePrintButton method on `PRINT_BUTTON_DISABLED_CHANGED_EVENT`.
-  private onPrintButtonDisabledChanged(_event: Event): void {
+  private onPrintButtonDisabledChanged(): void {
     this.printButtonDisabled = this.controller.shouldDisablePrintButton();
   }
 }

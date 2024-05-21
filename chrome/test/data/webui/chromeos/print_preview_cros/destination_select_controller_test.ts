@@ -108,13 +108,13 @@ suite('DestinationSelectController', () => {
       async () => {
         const onStateChangedFn = mockController.createFunctionMock(
             controller, 'onDestinationManagerStateChanged');
-        const testEvent = createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED);
         const stateChanged = eventToPromise(
             DESTINATION_MANAGER_STATE_CHANGED, destinationManager);
-        onStateChangedFn.addExpectation(testEvent);
+        onStateChangedFn.addExpectation();
 
         // Simulate event being fired.
-        destinationManager.dispatchEvent(testEvent);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED));
         await stateChanged;
 
         mockController.verifyMocks();
@@ -126,12 +126,12 @@ suite('DestinationSelectController', () => {
       `emit ${DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED} ` +
           'on destination manager state changed',
       async () => {
-        const testEvent = createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED);
         const showLoadingChanged = eventToPromise(
             DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED, controller);
 
         // Simulate event being fired.
-        destinationManager.dispatchEvent(testEvent);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED));
         await showLoadingChanged;
       });
 

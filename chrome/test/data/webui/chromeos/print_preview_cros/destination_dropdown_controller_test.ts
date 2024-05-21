@@ -63,14 +63,13 @@ suite('DestinationDropdownController', () => {
       async () => {
         const onStateChangedFn = mockController.createFunctionMock(
             controller, 'onDestinationManagerActiveDestinationChanged');
-        const testEvent =
-            createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED);
         const stateChanged = eventToPromise(
             DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, destinationManager);
-        onStateChangedFn.addExpectation(testEvent);
+        onStateChangedFn.addExpectation();
 
         // Simulate event being fired.
-        destinationManager.dispatchEvent(testEvent);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
         await stateChanged;
 
         mockController.verifyMocks();
