@@ -89,6 +89,8 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseSelfShare, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
+  // NOTE: If you add a pref here, also update birch_browsertest.cc and
+  // birch_model_unittest.cc which have code that disables all prefs.
 }
 
 template <typename T>
@@ -429,6 +431,10 @@ void BirchModel::OverrideClockForTest(base::Clock* clock) {
   clock_override_ = clock;
 }
 
+void BirchModel::SetDataFetchCallbackForTest(base::OnceClosure callback) {
+  data_fetch_callback_for_test_ = std::move(callback);
+}
+
 void BirchModel::HandleRequestTimeout(size_t request_id) {
   auto request = pending_requests_.find(request_id);
   if (request == pending_requests_.end()) {
@@ -466,6 +472,11 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
 
   for (auto& callback : callbacks) {
     std::move(callback).Run();
+  }
+
+  if (data_fetch_callback_for_test_) {
+    std::move(data_fetch_callback_for_test_).Run();
+    data_fetch_callback_for_test_.Reset();
   }
 }
 

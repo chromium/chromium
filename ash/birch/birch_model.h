@@ -13,6 +13,7 @@
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_item.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/functional/callback.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -154,6 +155,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchDataProvider> weather_provider);
   void OverrideClockForTest(base::Clock* clock);
+  void SetDataFetchCallbackForTest(base::OnceClosure callback);
 
  private:
   friend class BirchModelTest;
@@ -251,6 +253,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // A list of current BirchModel::Observers.
   base::ObserverList<Observer> observers_;
+
+  // Invoked when a data fetch completes.
+  base::OnceClosure data_fetch_callback_for_test_;
 };
 
 }  // namespace ash
