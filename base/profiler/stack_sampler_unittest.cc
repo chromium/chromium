@@ -107,8 +107,16 @@ class DelegateInvokingStackCopier : public StackCopier {
                  TimeTicks* timestamp,
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
-    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer()) +
-                 10;  // Make msan happy.
+    // Returning true means the various out params should be populated.
+    std::array<uintptr_t, 2> fake_stack;
+    std::memcpy(stack_buffer->buffer(), fake_stack.data(), sizeof(fake_stack));
+    *stack_top =
+        reinterpret_cast<uintptr_t>(stack_buffer->buffer() + fake_stack.size());
+    // Set the stack pointer to be consistent with the copied stack.
+    *thread_context = {};
+    RegisterContextStackPointer(thread_context) =
+        reinterpret_cast<uintptr_t>(stack_buffer->buffer());
+    *timestamp = TimeTicks::Now();
     delegate->OnStackCopy();
     return true;
   }
