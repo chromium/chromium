@@ -451,15 +451,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
 
-  // TODO(crbug.com/40197696): Move the functions to
-  // AutofillSuggestionGenerator. Gets the card referred to by the guid
-  // |unique_id|. Returns |nullptr| if card does not exist.
-  CreditCard* GetCreditCard(Suggestion::BackendId unique_id);
-
-  // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if
-  // profile does not exist.
-  const AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
-
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.

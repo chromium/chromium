@@ -1817,22 +1817,22 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
     Suggestion::BackendId backend_id) {
-  if (const CreditCard* credit_card = GetCreditCard(backend_id)) {
+  const std::string guid = absl::get<Suggestion::Guid>(backend_id).value();
+  PersonalDataManager* pdm = client().GetPersonalDataManager();
+
+  if (const CreditCard* credit_card =
+          pdm->payments_data_manager().GetCreditCardByGUID(guid)) {
     // Server cards cannot be deleted from within Chrome.
     bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
-
     if (allowed_to_delete) {
-      client()
-          .GetPersonalDataManager()
-          ->payments_data_manager()
-          .DeleteLocalCreditCards({*credit_card});
+      pdm->payments_data_manager().DeleteLocalCreditCards({*credit_card});
     }
-
     return allowed_to_delete;
   }
 
-  if (const AutofillProfile* profile = GetProfile(backend_id)) {
-    client().GetPersonalDataManager()->RemoveByGUID(profile->guid());
+  if (const AutofillProfile* profile =
+          pdm->address_data_manager().GetProfileByGUID(guid)) {
+    pdm->RemoveByGUID(profile->guid());
     return true;
   }
 
@@ -2309,26 +2309,6 @@ bool BrowserAutofillManager::RefreshDataModels() {
                                    ->payments_data_manager()
                                    .GetCreditCards()
                                    .empty();
-}
-
-CreditCard* BrowserAutofillManager::GetCreditCard(
-    Suggestion::BackendId unique_id) {
-  return client()
-      .GetPersonalDataManager()
-      ->payments_data_manager()
-      .GetCreditCardByGUID(absl::get<Suggestion::Guid>(unique_id).value());
-}
-
-const AutofillProfile* BrowserAutofillManager::GetProfile(
-    Suggestion::BackendId unique_id) {
-  std::string guid = absl::get<Suggestion::Guid>(unique_id).value();
-  if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
-    return client()
-        .GetPersonalDataManager()
-        ->address_data_manager()
-        .GetProfileByGUID(guid);
-  }
-  return nullptr;
 }
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(
