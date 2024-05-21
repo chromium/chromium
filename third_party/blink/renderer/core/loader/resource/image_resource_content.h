@@ -28,7 +28,6 @@ class TimeTicks;
 
 namespace blink {
 
-class ExecutionContext;
 class FetchParameters;
 class ImageResourceInfo;
 class KURL;
@@ -221,12 +220,6 @@ class CORE_EXPORT ImageResourceContent final
   // TODO(iclelland): Eventually switch this, and related calculations, to bits
   // rather than bytes.
   uint64_t ContentSizeForEntropy() const override;
-
-  // Returns true if the image content is well-compressed (and not full of
-  // extraneous metadata). "well-compressed" is determined by comparing the
-  // image's compression ratio against a specific value that is defined by an
-  // unoptimized image policy on |context|.
-  bool IsAcceptableCompressionRatio(ExecutionContext& context);
 
   void LoadDeferredImage(ResourceFetcher* fetcher);
 

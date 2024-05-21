@@ -10,10 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/policy_value.h"
-#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
@@ -540,57 +536,6 @@ uint64_t ImageResourceContent::ContentSizeForEntropy() const {
     }
   }
   return resource_length;
-}
-
-bool ImageResourceContent::IsAcceptableCompressionRatio(
-    ExecutionContext& context) {
-  if (!image_)
-    return true;
-
-  uint64_t pixels = image_->Size().Area64();
-  if (!pixels)
-    return true;
-
-  // Calculate the image's compression ratio (in bytes per pixel) with both 1k
-  // and 10k overhead. The constant overhead allowance is provided to allow room
-  // for headers and to account for small images (which are harder to compress).
-  double raw_bpp = static_cast<double>(ContentSizeForEntropy()) / pixels;
-  double compression_ratio_1k = raw_bpp - (1024 / pixels);
-  double compression_ratio_10k = raw_bpp - (10240 / pixels);
-
-  ImageDecoder::CompressionFormat compression_format = GetCompressionFormat();
-
-  // Pass image url to reporting API.
-  const String& image_url = Url().GetString();
-
-  const char* message_format =
-      "Image bpp (byte per pixel) exceeds max value set in %s.";
-
-  if (compression_format == ImageDecoder::kLossyFormat) {
-    // Enforce the lossy image policy.
-    return context.IsFeatureEnabled(
-        mojom::blink::DocumentPolicyFeature::kLossyImagesMaxBpp,
-        PolicyValue::CreateDecDouble(compression_ratio_1k),
-        ReportOptions::kReportOnFailure,
-        String::Format(message_format, "lossy-images-max-bpp"), image_url);
-  }
-  if (compression_format == ImageDecoder::kLosslessFormat) {
-    // Enforce the lossless image policy.
-    bool enabled_by_10k_policy = context.IsFeatureEnabled(
-        mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-        PolicyValue::CreateDecDouble(compression_ratio_10k),
-        ReportOptions::kReportOnFailure,
-        String::Format(message_format, "lossless-images-max-bpp"), image_url);
-    bool enabled_by_1k_policy = context.IsFeatureEnabled(
-        mojom::blink::DocumentPolicyFeature::kLosslessImagesStrictMaxBpp,
-        PolicyValue::CreateDecDouble(compression_ratio_1k),
-        ReportOptions::kReportOnFailure,
-        String::Format(message_format, "lossless-images-strict-max-bpp"),
-        image_url);
-    return enabled_by_10k_policy && enabled_by_1k_policy;
-  }
-
-  return true;
 }
 
 void ImageResourceContent::DecodedSizeChangedTo(const blink::Image* image,

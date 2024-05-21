@@ -64,13 +64,6 @@
       depends_on: ["ExperimentalPolicies"],
     },
     {
-      name: "LosslessImagesMaxBpp",
-      document_policy_name: "lossless-images-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
       // The ForceLoadAtTop policy lets pages opt-out of scrolling that
       // automatically happens on page load. This includes fragment scrolls,
       // text fragment scrolls (i.e. this provides an opt-out for the Scroll To
@@ -79,20 +72,6 @@
       document_policy_name: "force-load-at-top",
       value_type: "Bool",
       default_value: "false",
-    },
-    {
-      name: "LosslessImagesStrictMaxBpp",
-      document_policy_name: "lossless-images-strict-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "LossyImagesMaxBpp",
-      document_policy_name: "lossy-images-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
     },
     {
       name: "OversizedImages",

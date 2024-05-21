@@ -82,22 +82,6 @@ namespace blink {
 
 namespace {
 
-bool CheckForUnoptimizedImagePolicy(ExecutionContext* context,
-                                    ImageResourceContent* new_image) {
-  if (!context || !new_image)
-    return false;
-
-  // Render the image as a placeholder image if the image is not sufficiently
-  // well-compressed, according to the unoptimized image policies on
-  // |document|.
-  if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
-      !new_image->IsAcceptableCompressionRatio(*context)) {
-    return true;
-  }
-
-  return false;
-}
-
 // This implements the HTML Standard's list of available images tuple-matching
 // logic [1]. In our implementation, it is only used to determine whether or not
 // we should skip queueing the microtask that continues the rest of the image
@@ -817,19 +801,12 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     }
   }
 
-  // TODO(loonybear): support image policies on other images in addition to
-  // HTMLImageElement.
-  // crbug.com/930281
-  auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get());
-  if (CheckForUnoptimizedImagePolicy(element_->GetExecutionContext(),
-                                     image_content_) &&
-      html_image_element)
-    html_image_element->SetImagePolicyViolated();
 
   DispatchDecodeRequestsIfComplete();
 
-  if (html_image_element)
+  if (auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get())) {
     LazyImageHelper::RecordMetricsOnLoadFinished(html_image_element);
+  }
 
   if (content->ErrorOccurred()) {
     pending_load_event_.Cancel();
