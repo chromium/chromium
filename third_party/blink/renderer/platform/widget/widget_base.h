@@ -126,6 +126,8 @@ class PLATFORM_EXPORT WidgetBase
       uint32_t frame_token,
       base::OnceCallback<void(const viz::FrameTimingDetails&)> callback);
 
+  void WarmUpCompositor();
+
 #if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(
       uint32_t frame_token,

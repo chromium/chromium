@@ -200,6 +200,11 @@ CC_BASE_EXPORT extern const base::FeatureParam<double>
 // tree Activation. See crbug.com/40335690.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
 
+// When enabled, the renderer asks the compositor to request warming up and
+// create FrameSink speculatively even if invisible. Currently, this is intended
+// to be used when prerender initial navigation is happening in background.
+// Please see crbug.com/41496019 for more details.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

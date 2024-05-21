@@ -122,6 +122,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   void SetVisible(bool visible);
   bool visible() { return state_machine_.visible(); }
+  void SetShouldWarmUp();
   void SetCanDraw(bool can_draw);
 
   // We have 2 copies of the layer trees on the compositor thread: pending_tree

@@ -1007,6 +1007,13 @@ void WidgetBase::SetCompositorVisible(bool visible) {
   layer_tree_view_->SetVisible(visible);
 }
 
+void WidgetBase::WarmUpCompositor() {
+  if (never_composited_) {
+    return;
+  }
+  layer_tree_view_->SetShouldWarmUp();
+}
+
 void WidgetBase::UpdateVisualState() {
   // When recording main frame metrics set the lifecycle reason to
   // kBeginMainFrame, because this is the calller of UpdateLifecycle

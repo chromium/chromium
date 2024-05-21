@@ -211,4 +211,8 @@ BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
              "DontAlwaysPushPictureLayerImpls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWarmUpCompositor,
+             "WarmUpCompositor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

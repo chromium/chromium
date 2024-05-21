@@ -528,6 +528,13 @@ void ProxyMain::SetVisible(bool visible) {
                                 base::Unretained(proxy_impl_.get()), visible));
 }
 
+void ProxyMain::SetShouldWarmUp() {
+  TRACE_EVENT0("cc", "ProxyMain::SetShouldWarmUp");
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetShouldWarmUpOnImpl,
+                                base::Unretained(proxy_impl_.get())));
+}
+
 void ProxyMain::SetNeedsAnimate() {
   DCHECK(IsMainThread());
   if (SendCommitRequestToImplThreadIfNeeded(ANIMATE_PIPELINE_STAGE)) {

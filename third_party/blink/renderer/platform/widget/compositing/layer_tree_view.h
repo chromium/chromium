@@ -71,6 +71,7 @@ class PLATFORM_EXPORT LayerTreeView
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
   void SetVisible(bool visible);
+  void SetShouldWarmUp();
 
   // cc::LayerTreeHostClient implementation.
   // NOTE: LayerTreeView allows re-attaching itself to a different delegate.

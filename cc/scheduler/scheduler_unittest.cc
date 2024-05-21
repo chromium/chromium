@@ -19,10 +19,12 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
@@ -4036,6 +4038,30 @@ TEST_F(SchedulerTest,
   // No invalidation should be performed since we are waiting for the main
   // thread to respond and merge with the commit.
   EXPECT_ACTIONS("WillBeginImplFrame");
+}
+
+class WarmUpCompositorSchedulerTest : public SchedulerTest {
+ public:
+  WarmUpCompositorSchedulerTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWarmUpCompositor);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that `SetShouldWarmUp()` will start initial `LayerTreeFrameSink`
+// creation even if invisible.
+TEST_F(WarmUpCompositorSchedulerTest,
+       SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
+  SetUpSchedulerWithNoLayerTreeFrameSink(EXTERNAL_BFS);
+  scheduler_->SetVisible(false);
+
+  scheduler_->SetShouldWarmUp();
+  EXPECT_ACTIONS("ScheduledActionBeginLayerTreeFrameSinkCreation");
+  client_->Reset();
+  scheduler_->DidCreateAndInitializeLayerTreeFrameSink();
+  EXPECT_NO_ACTION();
 }
 
 }  // namespace

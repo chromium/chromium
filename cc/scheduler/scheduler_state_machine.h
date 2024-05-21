@@ -210,6 +210,13 @@ class CC_EXPORT SchedulerStateMachine {
   void SetVisible(bool visible);
   bool visible() const { return visible_; }
 
+  // Indicates that warming up is requested to create a new LayerTreeFrameSink
+  // even if the LayerTreeHost is invisible. This is an experimental function
+  // and only used if `kWarmUpCompositor` is enabled. Currently, this will be
+  // requested only from prerendered pages. Please see crbug.com/40240492 for
+  // more details.
+  void SetShouldWarmUp();
+
   void SetBeginFrameSourcePaused(bool paused);
   bool begin_frame_source_paused() const { return begin_frame_source_paused_; }
 
@@ -462,6 +469,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_one_begin_impl_frame_ = false;
   bool needs_post_commit_ = false;
   bool visible_ = false;
+  bool should_warm_up_ = false;
   bool begin_frame_source_paused_ = false;
   bool resourceless_draw_ = false;
   bool can_draw_ = false;

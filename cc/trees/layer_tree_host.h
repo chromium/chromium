@@ -238,13 +238,22 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Visibility and LayerTreeFrameSink -------------------------------
 
   // Sets or gets if the LayerTreeHost is visible. When not visible it will:
-  // - Not request a new LayerTreeFrameSink from the client.
+  // - Not request a new LayerTreeFrameSink from the client (except
+  //   `kWarmUpCompositor` is enabled and warm-up is explicitly requested).
   // - Stop submitting frames to the display compositor.
   // - Stop producing main frames and committing them.
   // The LayerTreeHost is not visible when first created, so this must be called
   // to make it visible before it will attempt to start producing output.
   void SetVisible(bool visible);
   bool IsVisible() const;
+
+  // Indicates that warm-up is requested to create a new LayerTreeFrameSink
+  // even if the LayerTreeHost is invisible. This is an experimental function
+  // and only used if `kWarmUpCompositor` is enabled. Currently, this will be
+  // requested only from prerendered pages. Please see crbug.com/41496019 for
+  // more details.
+  void SetShouldWarmUp();
+  bool ShouldWarmUp() const;
 
   // Called in response to a LayerTreeFrameSink request made to the client
   // using LayerTreeHostClient::RequestNewLayerTreeFrameSink. The client will
@@ -1023,6 +1032,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   const LayerTreeSettings settings_;
 
   bool visible_ = false;
+  bool should_warm_up_ = false;
 
   // If set, then page scale animation has completed, but the client hasn't been
   // notified about it yet.

@@ -419,6 +419,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       const cc::LayerTreeSettings* settings,
       WebFrameWidget& previous_widget) override;
   void SetCompositorVisible(bool visible) override;
+  void WarmUpCompositor() override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;
   void SetCursor(const ui::Cursor& cursor) override;

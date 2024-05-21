@@ -272,6 +272,12 @@ void ProxyImpl::SetVisibleOnImpl(bool visible) {
   scheduler_->SetVisible(visible);
 }
 
+void ProxyImpl::SetShouldWarmUpOnImpl() {
+  TRACE_EVENT0("cc", "ProxyImpl::SetShouldWarmUpOnImpl");
+  DCHECK(IsImplThread());
+  scheduler_->SetShouldWarmUp();
+}
+
 void ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion) {
   DCHECK(IsImplThread());
 

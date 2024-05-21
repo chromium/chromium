@@ -89,6 +89,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetLayerTreeFrameSink(
       LayerTreeFrameSink* layer_tree_frame_sink) override;
   void SetVisible(bool visible) override;
+  void SetShouldWarmUp() override;
   void SetNeedsAnimate() override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;

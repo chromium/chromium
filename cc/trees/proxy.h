@@ -43,6 +43,7 @@ class CC_EXPORT Proxy {
   virtual void ReleaseLayerTreeFrameSink() = 0;
 
   virtual void SetVisible(bool visible) = 0;
+  virtual void SetShouldWarmUp() = 0;
 
   virtual void SetNeedsAnimate() = 0;
   virtual void SetNeedsUpdateLayers() = 0;

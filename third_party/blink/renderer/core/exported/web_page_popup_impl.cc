@@ -547,6 +547,10 @@ void WebPagePopupImpl::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
 }
 
+void WebPagePopupImpl::WarmUpCompositor() {
+  widget_base_->WarmUpCompositor();
+}
+
 void WebPagePopupImpl::PostMessageToPopup(const String& message) {
   if (!page_)
     return;

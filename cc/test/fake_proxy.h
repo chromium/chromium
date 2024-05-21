@@ -27,6 +27,7 @@ class FakeProxy : public Proxy {
   void SetLayerTreeFrameSink(
       LayerTreeFrameSink* layer_tree_frame_sink) override {}
   void ReleaseLayerTreeFrameSink() override {}
+  void SetShouldWarmUp() override {}
   void SetVisible(bool visible) override {}
   void SetNeedsAnimate() override {}
   void SetNeedsUpdateLayers() override {}

@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "cc/base/features.h"
 
 namespace cc {
 
@@ -335,8 +336,9 @@ bool SchedulerStateMachine::ShouldAbortCurrentFrame() const {
 }
 
 bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
-  if (!visible_)
+  if (!should_warm_up_ && !visible_) {
     return false;
+  }
 
   // We only want to start output surface initialization after the
   // previous commit is complete.
@@ -1121,6 +1123,8 @@ void SchedulerStateMachine::WillBeginLayerTreeFrameSinkCreation() {
   DCHECK(next_begin_main_frame_state_ == BeginMainFrameState::IDLE);
   DCHECK(!has_pending_tree_);
   DCHECK(!active_tree_needs_first_draw_);
+
+  should_warm_up_ = false;
 }
 
 void SchedulerStateMachine::WillInvalidateLayerTreeFrameSink() {
@@ -1475,10 +1479,17 @@ void SchedulerStateMachine::SetVisible(bool visible) {
 
   visible_ = visible;
 
-  if (visible)
+  if (visible) {
     main_thread_missed_last_deadline_ = false;
+    should_warm_up_ = false;
+  }
 
   did_prepare_tiles_ = false;
+}
+
+void SchedulerStateMachine::SetShouldWarmUp() {
+  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
+  should_warm_up_ = true;
 }
 
 void SchedulerStateMachine::SetBeginFrameSourcePaused(bool paused) {

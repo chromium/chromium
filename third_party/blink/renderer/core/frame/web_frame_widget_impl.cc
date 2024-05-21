@@ -2362,6 +2362,13 @@ void WebFrameWidgetImpl::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
 }
 
+void WebFrameWidgetImpl::WarmUpCompositor() {
+  // TODO(crbug.com/41496019): See if `widget_base_` is unexpectedly null in
+  // this code path.
+  CHECK(widget_base_);
+  widget_base_->WarmUpCompositor();
+}
+
 gfx::Size WebFrameWidgetImpl::Size() {
   return size_.value_or(gfx::Size());
 }

@@ -111,6 +111,12 @@ void Scheduler::SetVisible(bool visible) {
   ProcessScheduledActions();
 }
 
+void Scheduler::SetShouldWarmUp() {
+  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
+  state_machine_.SetShouldWarmUp();
+  ProcessScheduledActions();
+}
+
 void Scheduler::SetCanDraw(bool can_draw) {
   state_machine_.SetCanDraw(can_draw);
   ProcessScheduledActions();
@@ -309,8 +315,9 @@ void Scheduler::StartOrStopBeginFrames() {
   }
 
   bool needs_begin_frames = state_machine_.ShouldSubscribeToBeginFrames();
-  if (needs_begin_frames == observing_begin_frame_source_)
+  if (needs_begin_frames == observing_begin_frame_source_) {
     return;
+  }
 
   if (needs_begin_frames) {
     observing_begin_frame_source_ = true;
