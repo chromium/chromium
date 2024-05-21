@@ -101,7 +101,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptorFloss
                                  std::vector<uint8_t>& value);
 
   // Notification type of the CCCD.
-  device::BluetoothGattCharacteristic::NotificationType cccd_type_;
+  device::BluetoothGattCharacteristic::NotificationType cccd_type_ =
+      device::BluetoothGattCharacteristic::NotificationType::kNone;
 
   // Cached instance of the latest pending read/write request, if one exists.
   std::optional<GattRequest> pending_request_;
