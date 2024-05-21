@@ -195,7 +195,7 @@ class ModelTypeController : public base::SupportsWeakPtr<ModelTypeController> {
   // We use a vector because it's allowed to call Stop() multiple times (i.e.
   // while STOPPING).
   std::vector<StopCallback> model_stop_callbacks_;
-  SyncStopMetadataFate model_stop_metadata_fate_;
+  SyncStopMetadataFate model_stop_metadata_fate_ = KEEP_METADATA;
 
   // Controller receives |activation_response_| from
   // ClientTagBasedModelTypeProcessor callback and must temporarily own it until
