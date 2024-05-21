@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.util;
 
-import android.text.TextUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +20,6 @@ public class RestrictionSkipCheckTest {
             "org.chromium.base.test.util.RestrictionSkipCheckTest.TEST_RESTRICTION_APPLIES";
     private static final String TEST_RESTRICTION_DOES_NOT_APPLY =
             "org.chromium.base.test.util.RestrictionSkipCheckTest.TEST_RESTRICTION_DOES_NOT_APPLY";
-
-    private static class TestRestrictionSkipCheck extends RestrictionSkipCheck {
-        public TestRestrictionSkipCheck() {
-            super(null);
-        }
-
-        @Override
-        protected boolean restrictionApplies(String restriction) {
-            return TextUtils.equals(restriction, TEST_RESTRICTION_APPLIES);
-        }
-    }
 
     private static class UnannotatedBaseClass {
         @Restriction({TEST_RESTRICTION_APPLIES})
@@ -57,6 +44,11 @@ public class RestrictionSkipCheckTest {
         public void unannotatedMethod() {}
     }
 
+    @Restriction({"unregisteredValue"})
+    private static class UnregisteredClass {
+        public void unannotatedMethod() {}
+    }
+
     private static class ExtendsRestrictedClass extends RestrictedClass {
         @Override
         public void unannotatedMethod() {}
@@ -69,10 +61,14 @@ public class RestrictionSkipCheckTest {
 
     private static void expectShouldSkip(boolean shouldSkip, Class<?> testClass, String methodName)
             throws Exception {
+        RestrictionSkipCheck restrictionSkipCheck = new RestrictionSkipCheck();
+        restrictionSkipCheck.addHandler(TEST_RESTRICTION_APPLIES, () -> true);
+        restrictionSkipCheck.addHandler(TEST_RESTRICTION_DOES_NOT_APPLY, () -> false);
+
         Assert.assertEquals(
                 shouldSkip,
-                new TestRestrictionSkipCheck()
-                        .shouldSkip(new FrameworkMethod(testClass.getMethod(methodName))));
+                restrictionSkipCheck.shouldSkip(
+                        new FrameworkMethod(testClass.getMethod(methodName))));
     }
 
     @Test
@@ -108,5 +104,10 @@ public class RestrictionSkipCheckTest {
     @Test
     public void testSuperclassUnrestricted() throws Exception {
         expectShouldSkip(false, ExtendsUnrestrictedClass.class, "unannotatedMethod");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testUnknownRestriction() throws Exception {
+        expectShouldSkip(false, UnregisteredClass.class, "unannotatedMethod");
     }
 }

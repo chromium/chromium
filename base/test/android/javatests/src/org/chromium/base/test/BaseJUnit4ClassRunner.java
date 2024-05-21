@@ -29,6 +29,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
+import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
@@ -95,6 +96,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         public void run(Context targetContext, FrameworkMethod testMethod);
     }
 
+    protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
+
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
      *
@@ -110,6 +113,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                         0L,
                         false));
 
+        BaseRestrictions.registerChecks(mRestrictionSkipCheck);
         assert InstrumentationRegistry.getInstrumentation()
                         instanceof BaseChromiumAndroidJUnitRunner
                 : "Must use BaseChromiumAndroidJUnitRunner instrumentation with "
@@ -152,15 +156,13 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     /**
      * Override this method to return a list of {@link SkipCheck}s}.
      *
-     * Additional hooks can be added to the list using {@link #addToList}:
-     * {@code return addToList(super.getSkipChecks(), check1, check2);}
+     * <p>Additional hooks can be added to the list using {@link #addToList}: {@code return
+     * addToList(super.getSkipChecks(), check1, check2);}
      */
     @CallSuper
     protected List<SkipCheck> getSkipChecks() {
         return Arrays.asList(
-                new RestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new AndroidSdkLevelSkipCheck(),
-                new DisableIfSkipCheck());
+                mRestrictionSkipCheck, new AndroidSdkLevelSkipCheck(), new DisableIfSkipCheck());
     }
 
     /**

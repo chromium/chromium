@@ -12,10 +12,10 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.test.util.DeviceRestrictionSkipCheck;
-import org.chromium.ui.test.util.GmsCoreVersionRestrictionSkipCheck;
+import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
-import org.chromium.ui.test.util.UiRestrictionSkipCheck;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
 
@@ -28,6 +28,9 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
      */
     public ContentJUnit4ClassRunner(final Class<?> klass) throws InitializationError {
         super(klass);
+        UiRestriction.registerChecks(mRestrictionSkipCheck);
+        DeviceRestriction.registerChecks(mRestrictionSkipCheck);
+        GmsCoreVersionRestriction.registerChecks(mRestrictionSkipCheck);
 
         // Display ui scale-up on auto for tests by default, individual tests can restore this
         // scaling.
@@ -39,9 +42,6 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     protected List<SkipCheck> getSkipChecks() {
         return addToList(
                 super.getSkipChecks(),
-                new UiRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new DeviceRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new GmsCoreVersionRestrictionSkipCheck(getApplication().getApplicationContext()));
+                new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
     }
 }

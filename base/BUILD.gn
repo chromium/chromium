@@ -4842,6 +4842,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/AnnotationRule.java",
       "test/android/javatests/src/org/chromium/base/test/util/ApplicationContextWrapper.java",
       "test/android/javatests/src/org/chromium/base/test/util/ApplicationTestUtils.java",
+      "test/android/javatests/src/org/chromium/base/test/util/BaseRestrictions.java",
       "test/android/javatests/src/org/chromium/base/test/util/Batch.java",
       "test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
