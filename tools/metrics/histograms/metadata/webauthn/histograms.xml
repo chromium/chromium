@@ -299,6 +299,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Windows.KeyCredentialCreation"
+    enum="WindowsKeyCredentialCreateResult" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of the KeyCredentialManager.RequestCreateAsync method in
+    the Windows Runtime API. It is recorded when that method is called, which
+    currently only happens following a device registration with the GPM passkey
+    enclave service.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.KeyCredentialManagerSupported"
     enum="WindowsKeyCredentialManagerSupportResults" expires_after="2024-12-31">
   <owner>kenrb@chromium.org</owner>
@@ -307,6 +319,18 @@ chromium-metrics-reviews@google.com.
     Records the result of the KeyCredentialManager.IsSupportedAsync method in
     the Windows Runtime API. It is recorded on a low-priority thread at browser
     startup.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Windows.KeyCredentialSign"
+    enum="WindowsKeyCredentialSignResult" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of the KeyCredential.RequestSignAsync method in the
+    Windows Runtime API. It is recorded when that method is called, which
+    currently only happens when signing a UV passkey request for the GPM passkey
+    enclave service.
   </summary>
 </histogram>
 

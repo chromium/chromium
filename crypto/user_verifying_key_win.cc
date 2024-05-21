@@ -15,7 +15,6 @@
 #include <functional>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -23,6 +22,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -52,6 +53,46 @@ using Microsoft::WRL::ComPtr;
 namespace crypto {
 
 namespace {
+
+// Possible outcomes for WinRT API calls. These are recorded for signing
+// and key creation.
+// Do not delete or reorder entries, this must be kept in sync with the
+// corresponding metrics enum.
+enum class KeyCredentialCreateResult {
+  kSucceeded = 0,
+  kAPIReturnedError = 1,
+  kNoActivationFactory = 2,
+  kRequestCreateAsyncFailed = 3,
+  kPostAsyncHandlersFailed = 4,
+  kInvalidStatusReturned = 5,
+  kInvalidResultReturned = 6,
+  kInvalidCredentialReturned = 7,
+
+  kMaxValue = 7,
+};
+
+enum class KeyCredentialSignResult {
+  kSucceeded = 0,
+  kAPIReturnedError = 1,
+  kRequestSignAsyncFailed = 2,
+  kPostAsyncHandlersFailed = 3,
+  kIBufferCreationFailed = 4,
+  kInvalidStatusReturned = 5,
+  kInvalidResultReturned = 6,
+  kInvalidSignatureBufferReturned = 7,
+
+  kMaxValue = 7,
+};
+
+void RecordCreateAsyncResult(KeyCredentialCreateResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Windows.KeyCredentialCreation", result);
+}
+
+void RecordSignAsyncResult(KeyCredentialSignResult result) {
+  base::UmaHistogramEnumeration("WebAuthentication.Windows.KeyCredentialSign",
+                                result);
+}
 
 // Due to a Windows bug (http://task.ms/49689617), the system UI for
 // KeyCredentialManager appears under all other windows, at least when invoked
@@ -190,6 +231,7 @@ void OnSigningSuccess(
   if (FAILED(hr) || status != KeyCredentialStatus_Success) {
     LOG(ERROR) << FormatError(
         "Failed to obtain Status from IKeyCredentialOperationResult", hr);
+    RecordSignAsyncResult(KeyCredentialSignResult::kInvalidStatusReturned);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -199,6 +241,7 @@ void OnSigningSuccess(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "Failed to obtain Result from IKeyCredentialOperationResult", hr);
+    RecordSignAsyncResult(KeyCredentialSignResult::kInvalidResultReturned);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -210,9 +253,13 @@ void OnSigningSuccess(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("Failed to obtain data from signature buffer",
                               hr);
+    RecordSignAsyncResult(
+        KeyCredentialSignResult::kInvalidSignatureBufferReturned);
     std::move(callback).Run(std::nullopt);
     return;
   }
+
+  RecordSignAsyncResult(KeyCredentialSignResult::kSucceeded);
   std::move(callback).Run(
       std::vector<uint8_t>(signature_data, signature_data + signature_length));
 }
@@ -223,6 +270,7 @@ void OnSigningError(
     HRESULT hr) {
   foregrounder->Stop();
   LOG(ERROR) << FormatError("Failed to sign with user-verifying signature", hr);
+  RecordSignAsyncResult(KeyCredentialSignResult::kAPIReturnedError);
   std::move(callback).Run(std::nullopt);
 }
 
@@ -235,6 +283,7 @@ void SignInternal(
       base::win::CreateIBufferFromData(data.data(), data.size(), &signing_buf);
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: IBuffer creation failed", hr);
+    RecordSignAsyncResult(KeyCredentialSignResult::kIBufferCreationFailed);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -244,6 +293,7 @@ void SignInternal(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: Call to RequestSignAsync failed",
                               hr);
+    RecordSignAsyncResult(KeyCredentialSignResult::kRequestSignAsyncFailed);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -259,6 +309,7 @@ void SignInternal(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: Call to PostAsyncHandlers failed",
                               hr);
+    RecordSignAsyncResult(KeyCredentialSignResult::kPostAsyncHandlersFailed);
     std::move(std::get<2>(callback_splits)).Run(std::nullopt);
     return;
   }
@@ -326,11 +377,13 @@ void OnKeyCreationCompletionSuccess(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "Failed to obtain Status from IKeyCredentialRetrievalResult", hr);
+    RecordCreateAsyncResult(KeyCredentialCreateResult::kInvalidStatusReturned);
     std::move(callback).Run(nullptr);
     return;
   } else if (status != KeyCredentialStatus_Success) {
     LOG(ERROR) << "IKeyCredentialRetrievalResult failed with status "
                << static_cast<uint32_t>(status);
+    RecordCreateAsyncResult(KeyCredentialCreateResult::kInvalidResultReturned);
     std::move(callback).Run(nullptr);
     return;
   }
@@ -340,9 +393,13 @@ void OnKeyCreationCompletionSuccess(
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "Failed to obtain KeyCredential from KeyCredentialRetrievalResult", hr);
+    RecordCreateAsyncResult(
+        KeyCredentialCreateResult::kInvalidCredentialReturned);
     std::move(callback).Run(nullptr);
     return;
   }
+
+  RecordCreateAsyncResult(KeyCredentialCreateResult::kSucceeded);
   auto key = std::make_unique<UserVerifyingSigningKeyWin>(
       std::move(key_name), std::move(credential));
   std::move(callback).Run(std::move(key));
@@ -357,6 +414,7 @@ void OnKeyCreationCompletionError(
   }
   LOG(ERROR) << FormatError("Failed to obtain user-verifying key from system",
                             hr);
+  RecordCreateAsyncResult(KeyCredentialCreateResult::kAPIReturnedError);
   std::move(callback).Run(nullptr);
 }
 
@@ -376,6 +434,7 @@ void GenerateUserVerifyingSigningKeyInternal(
         "GenerateUserVerifyingSigningKeyInternal: Failed to obtain activation "
         "factory for KeyCredentialManager",
         hr);
+    RecordCreateAsyncResult(KeyCredentialCreateResult::kNoActivationFactory);
     std::move(callback).Run(nullptr);
     return;
   }
@@ -389,6 +448,8 @@ void GenerateUserVerifyingSigningKeyInternal(
         "GenerateUserVerifyingSigningKeyInternal: Call to RequestCreateAsync "
         "failed",
         hr);
+    RecordCreateAsyncResult(
+        KeyCredentialCreateResult::kRequestCreateAsyncFailed);
     std::move(callback).Run(nullptr);
     return;
   }
@@ -407,6 +468,8 @@ void GenerateUserVerifyingSigningKeyInternal(
         "GenerateUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers "
         "failed",
         hr);
+    RecordCreateAsyncResult(
+        KeyCredentialCreateResult::kPostAsyncHandlersFailed);
     std::move(std::get<2>(callback_splits)).Run(nullptr);
     return;
   }
@@ -526,7 +589,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
     std::vector<uint8_t> random(16);
     crypto::RandBytes(random);
     UserVerifyingKeyLabel key_label =
-        base::StrCat({"uvkey-", base::Base64Encode(random)});
+        base::StrCat({"uvkey-", base::HexEncode(random)});
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
