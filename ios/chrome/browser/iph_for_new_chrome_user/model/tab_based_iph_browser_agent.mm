@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
@@ -180,6 +181,11 @@ void TabBasedIPHBrowserAgent::DidStopLoading(web::WebState* web_state) {
   // loading, it is expected that `DidStopLoading` would be called with
   // `GetLoadingProgress() < 1` AFTER, as a result of the user performing the
   // tap. Therefore, the state should NOT be reset.
+}
+
+void TabBasedIPHBrowserAgent::DidChangeBackForwardState(
+    web::WebState* web_state) {
+  [HelpHandler() handleBackForwardStateChangeForActiveWebState];
 }
 
 void TabBasedIPHBrowserAgent::WasHidden(web::WebState* web_state) {

@@ -633,6 +633,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       currentWebState->GetNavigationManager();
   BOOL back = navigationManager->CanGoBack();
   BOOL forward = navigationManager->CanGoForward();
+  if (!back && !forward) {
+    return;
+  }
   int textId = IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY;
   if (forward) {
     textId = back ? IDS_IOS_BACK_FORWARD_SWIPE_IPH
@@ -652,6 +655,38 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     self.swipeBackForwardGestureIPH.bidirectional = YES;
   }
   [self.swipeBackForwardGestureIPH startAnimation];
+}
+
+- (void)handleBackForwardStateChangeForActiveWebState {
+  if (![self.swipeBackForwardGestureIPH superview]) {
+    return;
+  }
+  // Retrieve swipe-able directions.
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (!currentWebState) {
+    return;
+  }
+  const web::NavigationManager* navigationManager =
+      currentWebState->GetNavigationManager();
+  BOOL back = navigationManager->CanGoBack();
+  BOOL forward = navigationManager->CanGoForward();
+  if (!back && !forward) {
+    // Page becomes unnavigatable, removing IPH. Unknown why back forward state
+    // has changed.
+    [self.swipeBackForwardGestureIPH
+        dismissWithReason:IPHDismissalReasonType::kUnknown];
+  } else {
+    BOOL shouldBeBidirectional = back && forward;
+    // Direction doesn't match. Removing IPH.
+    if (self.swipeBackForwardGestureIPH.bidirectional !=
+        shouldBeBidirectional) {
+      [self.swipeBackForwardGestureIPH
+          dismissWithReason:IPHDismissalReasonType::kUnknown];
+    }
+  }
+  // TODO(crbug.com/341753301): Dismiss/update IPH when the web state
+  // back/forward state changes from "can only go backward" to "can only go
+  // forward" when the IPH is visible.
 }
 
 - (void)presentToolbarSwipeGestureInProductHelp {
