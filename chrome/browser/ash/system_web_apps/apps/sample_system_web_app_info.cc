@@ -17,9 +17,9 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForSampleSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUISampleSystemWebAppURL);
+  GURL start_url = GURL(ash::kChromeUISampleSystemWebAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUISampleSystemWebAppURL);
   // |title| should come from a resource string, but this is the sample app, and
   // doesn't have one.

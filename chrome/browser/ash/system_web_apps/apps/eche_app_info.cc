@@ -27,9 +27,9 @@ constexpr gfx::Size kMinimumEcheSize(240, 240);
 }  // namespace
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::eche_app::kChromeUIEcheAppURL);
+  GURL start_url = GURL(ash::eche_app::kChromeUIEcheAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::eche_app::kChromeUIEcheAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_ECHE_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(

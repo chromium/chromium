@@ -17,8 +17,9 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIShortcutCustomizationAppURL);
+  GURL start_url(ash::kChromeUIShortcutCustomizationAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->title =
       l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE);

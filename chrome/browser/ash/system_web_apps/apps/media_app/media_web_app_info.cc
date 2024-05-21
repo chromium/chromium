@@ -236,9 +236,9 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
 }
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIMediaAppURL);
+  GURL start_url = GURL(ash::kChromeUIMediaAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIMediaAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);

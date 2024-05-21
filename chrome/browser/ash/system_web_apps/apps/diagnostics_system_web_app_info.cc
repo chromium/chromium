@@ -20,9 +20,9 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForDiagnosticsSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  GURL start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIDiagnosticsAppUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_DIAGNOSTICS_TITLE);

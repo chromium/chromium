@@ -17,9 +17,9 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForPrintManagementApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIPrintManagementAppUrl);
+  GURL start_url = GURL(ash::kChromeUIPrintManagementAppUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIPrintManagementAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_TITLE);
   web_app::CreateIconInfoForSystemWebApp(

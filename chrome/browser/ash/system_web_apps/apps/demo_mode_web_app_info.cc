@@ -23,9 +23,9 @@ constexpr int kDemoModeAppMinimumHeight = 600;
 }  // namespace
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
+  GURL start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
   // TODO(b/323002417): Convert the title to a localized string
   info->title = u"ChromeOS Highlights";

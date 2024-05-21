@@ -13,9 +13,9 @@
 #include "chromeos/constants/chromeos_features.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeBocaAppIndexURL);
+  GURL start_url = GURL(ash::kChromeBocaAppIndexURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeBocaAppIndexURL);
   // TODO(aprilzhou): Convert the title to a localized string
   info->title = u"BOCA";

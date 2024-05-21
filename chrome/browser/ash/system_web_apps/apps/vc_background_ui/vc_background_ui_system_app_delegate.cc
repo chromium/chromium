@@ -36,9 +36,9 @@ VcBackgroundUISystemAppDelegate::VcBackgroundUISystemAppDelegate(
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(kChromeUIVcBackgroundURL);
+  GURL start_url = GURL(kChromeUIVcBackgroundURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(kChromeUIVcBackgroundURL);
   // TODO(b/311416410) real title and icon.
   info->title = l10n_util::GetStringUTF16(IDS_VC_BACKGROUND_APP_TITLE);

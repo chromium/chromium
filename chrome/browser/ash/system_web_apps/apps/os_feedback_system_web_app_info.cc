@@ -45,8 +45,9 @@ bool IsUserFeedbackAllowed(Profile* profile) {
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForOSFeedbackSystemWebApp() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIOSFeedbackUrl);
+  GURL start_url(ash::kChromeUIOSFeedbackUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIOSFeedbackUrl);
   info->title = l10n_util::GetStringUTF16(IDS_FEEDBACK_REPORT_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(

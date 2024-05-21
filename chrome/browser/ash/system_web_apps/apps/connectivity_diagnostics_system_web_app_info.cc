@@ -18,9 +18,9 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
+  GURL start_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   info->title = l10n_util::GetStringUTF16(IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(

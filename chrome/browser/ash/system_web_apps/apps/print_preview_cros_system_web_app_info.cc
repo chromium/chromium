@@ -52,11 +52,10 @@ bool PrintPreviewCrosDelegate::ShouldCaptureNavigations() const {
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForPrintPreviewCrosSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  const GURL url = GURL(ash::kChromeUIPrintPreviewCrosURL);
-  info->start_url = url;
-  info->scope = url;
+  GURL start_url = GURL(ash::kChromeUIPrintPreviewCrosURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
+  info->scope = start_url;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 

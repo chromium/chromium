@@ -31,9 +31,9 @@ constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 }  // namespace
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(kChromeUIHelpAppURL);
+  GURL start_url = GURL(kChromeUIHelpAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(kChromeUIHelpAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE);

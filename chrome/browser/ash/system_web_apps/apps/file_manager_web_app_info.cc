@@ -57,8 +57,9 @@ void AppendFileHandler(web_app::WebAppInstallInfo& info,
 }  // namespace
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(kChromeUIFileManagerURL);
+  GURL start_url(kChromeUIFileManagerURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
