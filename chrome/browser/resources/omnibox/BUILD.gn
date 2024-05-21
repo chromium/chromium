@@ -7,6 +7,10 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "omnibox"
 
+  # TODO(crbug.com/339686362): Remove this once `terser` (JS minifier) has been
+  # updated to support the new `with` syntax.
+  optimize = false
+
   web_component_files = [
     "ml/ml_calculator.ts",
     "ml/ml_chart.ts",

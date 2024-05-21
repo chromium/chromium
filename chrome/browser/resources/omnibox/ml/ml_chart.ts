@@ -9,7 +9,7 @@ import {clamp, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
 // @ts-ignore:next-line
-import sheet from './ml_chart.css' assert {type : 'css'};
+import sheet from './ml_chart.css' with {type : 'css'};
 import {getTemplate} from './ml_chart.html.js';
 
 // Represents a line of text when drawing multiline text onto the canvas.

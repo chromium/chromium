@@ -30,7 +30,7 @@ def Minify(source, filename):
   minifier = None
   if file_type == '.js':
     for f in js_minifier_ignore_list:
-      if filename.startswith(f):
+      if f in filename:
         return source
     minifier = __js_minifier
   elif file_type == '.css':

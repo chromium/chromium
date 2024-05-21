@@ -4,7 +4,7 @@
 
 import {OmniboxElement} from './omnibox_element.js';
 // @ts-ignore:next-line
-import sheet from './omnibox_input.css' assert {type : 'css'};
+import sheet from './omnibox_input.css' with {type : 'css'};
 
 export interface QueryInputs {
   inputText: string;
