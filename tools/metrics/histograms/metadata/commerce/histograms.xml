@@ -256,6 +256,17 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="ParcelRequestTypes" variants="ParcelRequestTypes"/>
 </histogram>
 
+<histogram name="Commerce.PDPNavigation.URLSize" units="bytes"
+    expires_after="2025-05-16">
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the size of a Product Detail Page URL in bytes. This metric is only
+    recorded if Product Detail Page recording is allowed by the user and on
+    primary main frame navigation.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
     expires_after="2024-11-03">
   <owner>ayman@chromium.org</owner>

@@ -518,7 +518,8 @@ class ShoppingService : public KeyedService,
   void PDPMetricsCallback(
       bool is_off_the_record,
       optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
+      const optimization_guide::OptimizationMetadata& metadata,
+      const GURL& url);
 
   void HandleOptGuideProductInfoResponse(
       const GURL& url,

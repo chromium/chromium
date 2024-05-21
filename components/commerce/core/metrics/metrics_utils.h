@@ -11,6 +11,8 @@
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class GURL;
+
 namespace commerce {
 class AccountChecker;
 }  // namespace commerce
@@ -89,7 +91,8 @@ void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
                       const optimization_guide::OptimizationMetadata& metadata,
                       PrefService* pref_service,
                       bool is_off_the_record,
-                      bool is_shopping_list_eligible);
+                      bool is_shopping_list_eligible,
+                      const GURL& url);
 
 // Record how a PDP was detected.
 void RecordPDPStateWithLocalMeta(bool detected_by_server,

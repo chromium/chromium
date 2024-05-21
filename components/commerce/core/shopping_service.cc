@@ -288,7 +288,7 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
                 decision, metadata);
 
             service->PDPMetricsCallback(web_wrapper->IsOffTheRecord(), decision,
-                                        metadata);
+                                        metadata, url);
           },
           weak_ptr_factory_.GetWeakPtr(), web->GetLastCommittedURL(),
           web->GetWeakPtr()));
@@ -551,12 +551,13 @@ const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
 void ShoppingService::PDPMetricsCallback(
     bool is_off_the_record,
     optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
+    const optimization_guide::OptimizationMetadata& metadata,
+    const GURL& url) {
   if (!IsPDPMetricsRecordingEnabled())
     return;
 
   metrics::RecordPDPMetrics(decision, metadata, pref_service_,
-                            is_off_the_record, IsShoppingListEligible());
+                            is_off_the_record, IsShoppingListEligible(), url);
 
   bool supported_country =
       IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched);
