@@ -767,10 +767,7 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
           attribution_reporting::kAttributionReportingRegisterSourceHeader,
           &value)) {
         if (web_source_header.has_value()) {
-          MaybeLogAuditIssue(registrations.render_frame_id(), reporting_url,
-                             registrations.devtools_request_id(),
-                             /*invalid_parameter=*/std::nullopt,
-                             AttributionReportingIssueType::kSourceIgnored);
+          // TODO(https://crbug.com/40242261): Log an audit issue.
           return std::nullopt;
         }
         web_source_header = std::move(value);
@@ -786,10 +783,7 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
           attribution_reporting::kAttributionReportingRegisterTriggerHeader,
           &value)) {
         if (web_trigger_header.has_value()) {
-          MaybeLogAuditIssue(registrations.render_frame_id(), reporting_url,
-                             registrations.devtools_request_id(),
-                             /*invalid_parameter=*/std::nullopt,
-                             AttributionReportingIssueType::kTriggerIgnored);
+          // TODO(https://crbug.com/40242261): Log an audit issue.
           return std::nullopt;
         }
         web_trigger_header = std::move(value);
