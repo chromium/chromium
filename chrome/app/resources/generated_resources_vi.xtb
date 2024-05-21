@@ -4758,7 +4758,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4503748371388753124">Máy tính của bạn chứa một thiết bị bảo mật Mô-đun nền tảng đáng tin cậy (TPM) dùng để triển khai nhiều tính năng bảo mật thiết yếu trong ChromeOS Flex. Hãy truy cập Trung tâm trợ giúp Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Đã cho phép các cookie}=1{Đã cho phép các cookie nhưng có 1 trường hợp ngoại lệ}other{Đã cho phép các cookie nhưng có {COUNT} trường hợp ngoại lệ}}</translation>
 <translation id="4504940961672722399">Sử dụng tiện ích này bằng cách nhấp vào biểu tượng này hoặc bằng cách nhấn <ph name="EXTENSION_SHORTCUT" />.</translation>
-<translation id="4505469832694348179">Tải Chrome xuống bằng mã QR này rồi đăng nhập vào Tài khoản Google của bạn.</translation>
+<translation id="4505469832694348179">Quét mã QR này để tải Chrome xuống rồi đăng nhập vào Tài khoản Google của bạn.</translation>
 <translation id="450552327874992444">Từ đã được thêm</translation>
 <translation id="4507373251891673233">Bạn đã chặn tất cả tiện ích từ <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Nhấp vào "Thêm lối tắt"</translation>
