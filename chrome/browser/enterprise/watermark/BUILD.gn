@@ -8,7 +8,10 @@ source_set("watermark_view_lib") {
     "watermark_view.h",
   ]
 
-  deps = [ "//ui/views" ]
+  deps = [
+    "//components/enterprise/watermarking",
+    "//ui/views",
+  ]
 }
 
 executable("watermark_app") {
