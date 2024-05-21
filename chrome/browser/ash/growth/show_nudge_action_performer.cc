@@ -134,7 +134,7 @@ void MaybeSetImageData(const base::Value::Dict* image_value,
     return;
   }
 
-  auto image_model = growth::ImageModel(image_value).GetImageModel();
+  auto image_model = growth::Image(image_value).GetImage();
   if (!image_model) {
     // No image model matched the image payload.
     growth::RecordCampaignsManagerError(

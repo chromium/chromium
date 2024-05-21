@@ -20,9 +20,6 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ash/grit/ash_resources.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -33,18 +30,16 @@ namespace {
 
 constexpr char kTitlePath[] = "title";
 constexpr char kMessagePath[] = "message";
-constexpr char kIconPath[] = "sourceIcon";
+constexpr char kIconPath[] = "icon";
 constexpr char kButtonsPath[] = "buttons";
 constexpr char kLabelPath[] = "label";
 constexpr char kActionPath[] = "action";
-constexpr char kImagePath[] = "image";
 constexpr char kNotificationIdTemplate[] = "growth_campaign_%d";
 
 struct ShowNotificationParams {
   std::string title;
   std::string message;
   raw_ptr<const gfx::VectorIcon> icon = nullptr;
-  raw_ptr<const gfx::Image> image = nullptr;
 
   std::vector<message_center::ButtonInfo> buttons_info;
 };
@@ -73,20 +68,13 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
     return nullptr;
   }
 
-  const auto* icon = growth::VectorIcon(icon_value).GetVectorIcon();
+  const auto* icon = growth::Image(icon_value).GetVectorIcon();
   if (!icon) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNotificationPayloadInvalidIcon);
     return nullptr;
   }
   show_notification_params->icon = icon;
-
-  const auto* image_dict = params->FindDict(kImagePath);
-  if (image_dict) {
-    // TODO: b/341368196 - consider skip showing the notification if the image
-    // type is not recognized. The payload is invalid in this case.
-    show_notification_params->image = growth::Image(image_dict).GetImage();
-  }
 
   // Set buttons info.
   const auto* buttons = params->FindList(kButtonsPath);
@@ -136,9 +124,6 @@ void ShowNotificationActionPerformer::Run(
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons = std::move(show_notification_params->buttons_info);
-  if (show_notification_params->image) {
-    optional_fields.image = *show_notification_params->image;
-  }
 
   auto id = base::StringPrintf(kNotificationIdTemplate, campaign_id);
   std::unique_ptr<message_center::Notification> notification =

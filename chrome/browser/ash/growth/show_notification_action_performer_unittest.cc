@@ -13,13 +13,10 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
-#include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
@@ -29,11 +26,8 @@ constexpr char kShowNotificationParamTemplate[] = R"(
     {
       "title": "%s",
       "message": "%s",
-      "sourceIcon": {
-        "builtInVectorIcon": 0
-      },
-      "image": {
-        "builtInImage": 2
+      "icon": {
+        "builtInIcon": 0
       }
     }
 )";
@@ -133,17 +127,6 @@ TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
   EXPECT_EQ(notification->title(), base::UTF8ToUTF16(std::string(kTestTitle)));
   EXPECT_EQ(notification->message(),
             base::UTF8ToUTF16(std::string(kTestMessage)));
-  EXPECT_EQ(chromeos::kRedeemIcon.name,
-            notification->vector_small_image().name);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const auto& expected_image =
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_GROWTH_FRAMEWORK_REBUY_PNG);
-  EXPECT_EQ(expected_image, notification->rich_notification_data().image);
-#else
-  EXPECT_EQ(gfx::Image(), notification->rich_notification_data().image);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {

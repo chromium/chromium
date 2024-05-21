@@ -6582,7 +6582,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/components/trash_service/public/mojom",
     "//chromeos/ash/components/wifi_p2p",
-    "//chromeos/ash/resources",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
     "//chromeos/ash/services/cros_healthd/public/mojom",
