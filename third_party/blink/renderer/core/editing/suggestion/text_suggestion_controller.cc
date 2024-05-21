@@ -439,6 +439,11 @@ void TextSuggestionController::ShowSpellCheckMenu(
     suggestion_ptrs.push_back(std::move(info_ptr));
   }
 
+  // |FrameSelection::AbsoluteCaretBounds()| requires clean layout.
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  GetFrame().GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSpellCheck);
   const gfx::Rect& absolute_bounds =
       GetFrame().Selection().AbsoluteCaretBounds();
   const gfx::Rect& viewport_bounds =
