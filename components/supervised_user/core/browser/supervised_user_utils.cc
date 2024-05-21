@@ -56,6 +56,26 @@ std::optional<WebFilterType> GetWebFilterForHistogram(
   }
   return merged_log_segment;
 }
+
+std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
+    const std::vector<FamilyLinkUserLogRecord>& records) {
+  std::optional<ToggleState> merged_log_segment;
+  for (const FamilyLinkUserLogRecord& record : records) {
+    std::optional<ToggleState> extensions_toggle_state =
+        record.GetExtensionsToggleStateForPrimaryAccount();
+    if (!extensions_toggle_state.has_value()) {
+      continue;
+    }
+
+    if (merged_log_segment.has_value() &&
+        merged_log_segment.value() != extensions_toggle_state) {
+      return ToggleState::kMixed;
+    }
+    merged_log_segment = extensions_toggle_state;
+  }
+  return merged_log_segment;
+}
+
 }  // namespace
 
 std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {
@@ -109,6 +129,7 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
 bool EmitLogRecordHistograms(
     const std::vector<FamilyLinkUserLogRecord>& records) {
   bool did_emit_histogram = false;
+
   std::optional<FamilyLinkUserLogRecord::Segment> segment =
       GetLogSegmentForHistogram(records);
   if (segment.has_value()) {
@@ -116,12 +137,23 @@ bool EmitLogRecordHistograms(
                                   segment.value());
     did_emit_histogram = true;
   }
+
   std::optional<WebFilterType> web_filter = GetWebFilterForHistogram(records);
   if (web_filter.has_value()) {
     base::UmaHistogramEnumeration(
         kFamilyLinkUserLogSegmentWebFilterHistogramName, web_filter.value());
     did_emit_histogram = true;
   }
+
+  std::optional<ToggleState> extensions_toggle_state =
+      GetExtensionsToggleStateForHistogram(records);
+  if (extensions_toggle_state.has_value()) {
+    base::UmaHistogramEnumeration(
+        kSkipParentApprovalToInstallExtensionsHistogramName,
+        extensions_toggle_state.value());
+    did_emit_histogram = true;
+  }
+
   return did_emit_histogram;
 }
 

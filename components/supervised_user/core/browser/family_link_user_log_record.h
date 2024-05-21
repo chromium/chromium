@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
+class PrefService;
+
 namespace signin {
 class IdentityManager;
 }
@@ -48,6 +50,7 @@ class FamilyLinkUserLogRecord {
   // Returns an immutable FamilyLinkUserLogRecord.
   static FamilyLinkUserLogRecord Create(
       signin::IdentityManager* identity_manager,
+      const PrefService& pref_service,
       SupervisedUserURLFilter* supervised_user_filter);
 
   // Returns the supervision status of the primary account.
@@ -57,12 +60,18 @@ class FamilyLinkUserLogRecord {
   // otherwise returns nullopt.
   std::optional<WebFilterType> GetWebFilterTypeForPrimaryAccount() const;
 
+  // Returns the state of the parent toggle for extensions approvals if the
+  // primary account is supervised, otherwise returns nullopt.
+  std::optional<ToggleState> GetExtensionsToggleStateForPrimaryAccount() const;
+
  private:
   FamilyLinkUserLogRecord(std::optional<Segment> supervision_status,
-                          std::optional<WebFilterType> web_filter_type);
+                          std::optional<WebFilterType> web_filter_type,
+                          std::optional<ToggleState> extensions_toggle_state);
 
   std::optional<Segment> supervision_status_;
   std::optional<WebFilterType> web_filter_type_;
+  std::optional<ToggleState> extensions_toggle_state_;
 };
 
 }  // namespace supervised_user

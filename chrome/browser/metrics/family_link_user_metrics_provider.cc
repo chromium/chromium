@@ -43,7 +43,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
         SupervisedUserServiceFactory::GetForProfile(profile);
 
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
-        IdentityManagerFactory::GetForProfile(profile),
+        IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);
