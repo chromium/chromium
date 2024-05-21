@@ -14,13 +14,16 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './sync_account_control.js';
+// <if expr="not chromeos_ash">
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+// </if>
+
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 // <if expr="not chromeos_ash">
-import '//resources/cr_elements/cr_toast/cr_toast.js';
+import './sync_account_control.js';
 
 // </if>
 
@@ -678,16 +681,13 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
+  // <if expr="not chromeos_ash">
   private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="chromeos_ash">
-    return false;
-    // </if>
-    // <if expr="not chromeos_ash">
     return this.syncStatus !== undefined &&
         !!this.syncStatus.syncSystemEnabled &&
         loadTimeData.getBoolean('signinAllowed');
-    // </if>
   }
+  // </if>
 
   private computeShowExistingPassphraseBelowAccount_(): boolean {
     return this.syncStatus !== undefined &&

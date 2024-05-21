@@ -18,6 +18,10 @@ import './passwords_deletion_dialog.js';
 import '../controls/settings_checkbox.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
+// <if expr="not is_chromeos">
+import '../people_page/sync_account_control.js';
+
+// </if>
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -282,6 +286,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
+      // <if expr="not is_chromeos">
       isSyncPaused_: {
         type: Boolean,
         value: false,
@@ -300,6 +305,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         computed:
             'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
       },
+      // </if>
 
       selectedTabIndex_: Number,
 
@@ -353,9 +359,11 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncConsented_: boolean;
   private isSyncingHistory_: boolean;
   private shouldShowCookieException_: boolean;
+  // <if expr="not is_chromeos">
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
+  // </if>
   private selectedTabIndex_: number;
   private tabsNames_: string[];
   private googleSearchHistoryString_: TrustedHTML;
@@ -717,7 +725,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   /** Called when the user clicks the link in the footer. */
   private onSyncDescriptionLinkClicked_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
@@ -744,7 +752,6 @@ export class SettingsClearBrowsingDataDialogElement extends
       }
     }
   }
-  // </if>
 
   private computeIsSyncPaused_(): boolean {
     return !!this.syncStatus!.hasError &&
@@ -761,6 +768,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     return this.syncStatus !== undefined && !!this.syncStatus!.hasError &&
         !this.isSyncPaused_ && !this.hasPassphraseError_;
   }
+  // </if>
 
   private computeGoogleSearchHistoryString_(isNonGoogleDse: boolean):
       TrustedHTML {
@@ -769,16 +777,15 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');
   }
 
+  // <if expr="not is_chromeos">
   private shouldShowFooter_(): boolean {
     let showFooter = false;
-    // <if expr="not is_chromeos">
     if (this.unoDesktopEnabled_) {
       showFooter = this.isSignedIn_;
     } else {
       showFooter = !!this.syncStatus &&
           this.syncStatus.signedInState === SignedInState.SYNCING;
     }
-    // </if>
     return showFooter;
   }
 
@@ -798,6 +805,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     return !this.showSigninInfo_() && !!this.syncStatus &&
         !this.syncStatus.hasError;
   }
+  // </if>
 
   private onTimePeriodChanged_() {
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();

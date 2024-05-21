@@ -341,6 +341,7 @@
           [[clearingDataAlertString_]]
         </div>
       </div>
+<if expr="not is_chromeos">
       <template is="dom-if"
           if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState)]]"
           restamp>
@@ -373,6 +374,7 @@
           </div>
         </div>
       </template>
+</if>
     </cr-dialog>
 
     <template is="dom-if" if="[[showHistoryDeletionDialog_]]" restamp>

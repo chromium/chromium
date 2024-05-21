@@ -32,7 +32,6 @@ export interface SettingsRoutes {
   // <if expr="_google_chrome">
   GET_MOST_CHROME: Route;
   // </if>
-  IMPORT_DATA: Route;
   INCOMPATIBLE_APPLICATIONS: Route;
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
@@ -59,7 +58,6 @@ export interface SettingsRoutes {
   SECURITY: Route;
   SECURITY_KEYS: Route;
   SECURITY_KEYS_PHONES: Route;
-  SIGN_OUT: Route;
   SITE_SETTINGS: Route;
   SITE_SETTINGS_ADS: Route;
   SITE_SETTINGS_ALL: Route;
@@ -114,6 +112,11 @@ export interface SettingsRoutes {
   SYSTEM: Route;
   TRACKING_PROTECTION: Route;
   TRIGGERED_RESET_DIALOG: Route;
+
+  // <if expr="not chromeos_ash">
+  IMPORT_DATA: Route;
+  SIGN_OUT: Route;
+  // </if>
 }
 
 /** Class for navigable routes. */

@@ -69,6 +69,7 @@
       }
     </style>
 
+<if expr="not chromeos_ash">
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
@@ -80,6 +81,7 @@
           on-sync-setup-done="onSyncSetupDone_">
       </settings-sync-account-control>
     </template>
+</if>
     <div class="cr-row first" hidden="[[!syncDisabledByAdmin_]]">
       <iron-icon id="disabled-by-admin-icon" icon="cr20:domain"></iron-icon>
       <div class="flex cr-padded-text">

@@ -2,23 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="not chromeos_ash">
-import type {CrActionMenuElement, StoredAccount} from 'chrome://settings/settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-// </if>
+import 'chrome://settings/settings.js';
 
-import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrActionMenuElement, SettingsSyncAccountControlElement, StoredAccount} from 'chrome://settings/settings.js';
 import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {simulateStoredAccounts} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-
-// clang-format on
 
 
 suite('SyncAccountControl', function() {
@@ -121,7 +115,7 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#promo-header'));
   });
 
-  test('not signed in and no stored accounts', async function() {
+  test('not signed in and no stored accounts', function() {
     testElement.syncStatus = {
       signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
@@ -132,26 +126,16 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#promo-header'));
     assertFalse(isChildVisible(testElement, '#avatar-row'));
 
-    // <if expr="not chromeos_ash">
     // Chrome OS does not use the account switch menu.
     assertFalse(isChildVisible(testElement, '#menu'));
-    // </if>
 
     assertTrue(isChildVisible(testElement, '#signIn'));
 
     testElement.$.signIn.click();
 
-    // <if expr="chromeos_ash">
-    await browserProxy.whenCalled('turnOnSync');
-    // </if>
-
-    // <if expr="not chromeos_ash">
-    await browserProxy.whenCalled('startSignIn');
-    // </if>
+    return browserProxy.whenCalled('startSignIn');
   });
 
-  // <if expr="not chromeos_ash">
-  // Chrome OS users are always signed in.
   test('not signed in but has stored accounts', async function() {
     loadTimeData.overrideValues({isSecondaryUser: true});
     testElement.syncStatus = {
@@ -281,7 +265,6 @@ suite('SyncAccountControl', function() {
     assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
   });
-  // </if>
 
   // <if expr="chromeos_lacros">
   test('main profile not signed in but has stored accounts', function() {
@@ -335,12 +318,9 @@ suite('SyncAccountControl', function() {
         testElement.shadowRoot!
             .querySelector<HTMLElement>('#sync-icon-container')!.hidden);
 
-    // <if expr="not chromeos_ash">
-    // Chrome OS does not use the account switch menu.
     assertFalse(isChildVisible(testElement, 'cr-icon-button'));
     assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
-    // </if>
 
     const userInfo =
         testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
@@ -624,7 +604,6 @@ suite('SyncAccountControl', function() {
     assertTrue(testElement.$.signIn.disabled);
   });
 
-  // <if expr="not chromeos_ash">
   test('signinPaused effects', function() {
     // <if expr="chromeos_lacros">
     // For Lacros, force the page to be loaded as if it was a secondary user so
@@ -699,5 +678,4 @@ suite('SyncAccountControl', function() {
 
     assertFalse(isChildVisible(testElement, '#avatar-row'));
   });
-  // </if>
 });

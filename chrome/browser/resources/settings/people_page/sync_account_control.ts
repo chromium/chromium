@@ -338,15 +338,6 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowTurnOffButton_(): boolean {
-    // <if expr="chromeos_ash">
-    if (this.syncStatus.domain) {
-      // Chrome OS cannot delete the user's profile like other platforms, so
-      // hide the turn off sync button for enterprise users who are not
-      // allowed to sign out.
-      return false;
-    }
-    // </if>
-
     return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_();
   }
 
@@ -392,11 +383,9 @@ export class SettingsSyncAccountControlElement extends
     const router = Router.getInstance();
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
-      // <if expr="not chromeos_ash">
       case StatusAction.REAUTHENTICATE:
         this.syncBrowserProxy_.startSignIn();
         break;
-      // </if>
       case StatusAction.UPGRADE_CLIENT:
         router.navigateTo(routes.ABOUT);
         break;
@@ -411,13 +400,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onSigninClick_() {
-    // <if expr="not chromeos_ash">
     this.syncBrowserProxy_.startSignIn();
-    // </if>
-    // <if expr="chromeos_ash">
-    // Chrome OS is always signed-in, so just turn on sync.
-    this.syncBrowserProxy_.turnOnSync();
-    // </if>
     // Need to close here since one menu item also triggers this function.
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (actionMenu) {
@@ -425,12 +408,10 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  // <if expr="not chromeos_ash">
   private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
-  // </if>
 
   private onSyncButtonClick_() {
     assert(this.shownAccount_);

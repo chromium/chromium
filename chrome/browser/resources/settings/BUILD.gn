@@ -106,7 +106,6 @@ build_webui("build") {
     "people_page/page_content_page.ts",
     "people_page/people_page.ts",
     "people_page/signout_dialog.ts",
-    "people_page/sync_account_control.ts",
     "people_page/sync_controls.ts",
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.ts",
@@ -216,6 +215,7 @@ build_webui("build") {
   if (!is_chromeos_ash) {
     web_component_files += [
       "people_page/manage_profile.ts",
+      "people_page/sync_account_control.ts",
       "relaunch_confirmation_dialog.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",

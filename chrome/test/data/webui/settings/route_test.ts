@@ -257,7 +257,7 @@ suite('Basic', function() {
 
     // <if expr="chromeos_ash">
     // Regression test for b/265453606.
-    assertFalse(!!routes.SIGN_OUT);
+    assertFalse('SIGN_OUT' in routes);
     // </if>
 
     // <if expr="not chromeos_ash">

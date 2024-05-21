@@ -73,7 +73,9 @@ export {pageVisibility, PrivacyPageVisibility, resetPageVisibilityForTesting} fr
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';
+// <if expr="not chromeos_ash">
 export {MAX_SIGNIN_PROMO_IMPRESSION, SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
+// </if>
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';

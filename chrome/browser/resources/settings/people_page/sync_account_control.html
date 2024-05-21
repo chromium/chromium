@@ -114,8 +114,6 @@
         display: block;
       }
     </style>
-    <!-- TODO(jamescook): Show the promo on Chrome OS if the user is signed-in
-         but has sync disabled. -->
     <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>
     <div class="cr-row first"
@@ -170,8 +168,6 @@
                 shownAccount_.isPrimaryAccount)]]
           </div>
         </div>
-<!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos_ash">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]"
@@ -182,7 +178,6 @@
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]">
         </div>
-</if>
         <cr-button id="sync-button" class="action-button cr-button-gap"
             hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
                 syncStatus.signinPaused)]]"
@@ -228,8 +223,6 @@
         </div>
 
       </div>
-<!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos_ash">
       <template is="dom-if"
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
               syncStatus.domain, syncStatus.signinPaused)]]" restamp>
@@ -255,5 +248,4 @@
           </button>
         </cr-action-menu>
       </template>
-</if>
     </template>
