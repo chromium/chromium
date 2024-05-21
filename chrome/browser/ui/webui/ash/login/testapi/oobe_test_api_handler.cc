@@ -117,24 +117,8 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));
   dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
-
-  bool skip_touchpad_scroll =
-      !features::IsOobeTouchpadScrollEnabled() ||
-      InputDeviceSettingsController::Get()->GetConnectedTouchpads().empty();
-  // TODO(b/327270907) Remove `testapi_shouldSkipTouchpadScroll`.
-  dict->Set("testapi_shouldSkipTouchpadScroll", skip_touchpad_scroll);
-
-  bool skip_display_size = !features::IsOobeDisplaySizeEnabled();
-  dict->Set("testapi_shouldSkipDisplaySize", skip_display_size);
-
-  // CHOOBE screen is only skipped if the number of optional screens is less
-  // than 3, since theme selection is always shown, CHOOBE should be skipped
-  // when display size Screen or touchpad scroll screen is skipped.
-  bool skip_choobe = !features::IsOobeChoobeEnabled() || skip_touchpad_scroll ||
-                     skip_display_size;
-  // TODO(b/327270907) Remove `testapi_shouldSkipChoobe`.
-  dict->Set("testapi_shouldSkipChoobe", skip_choobe);
-
+  dict->Set("testapi_shouldSkipDisplaySize",
+            !features::IsOobeDisplaySizeEnabled());
   dict->Set("testapi_shouldSkipGaiaInfoScreen",
             !features::IsOobeGaiaInfoScreenEnabled());
   dict->Set("testapi_isOobeQuickStartEnabled",
