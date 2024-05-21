@@ -34,8 +34,13 @@ import java.util.TreeSet;
 
 class TestListComputer extends Computer {
     private final List<Description> mDescriptions = new ArrayList<>();
+    private final Allowlist mShadowsAllowlist;
 
-    private static String computeConfig(
+    TestListComputer(Allowlist shadowsAllowlist) {
+        mShadowsAllowlist = shadowsAllowlist;
+    }
+
+    private String computeConfig(
             Description description,
             Set<String> instrumentedPackages,
             Set<String> instrumentedClasses) {
@@ -64,6 +69,9 @@ class TestListComputer extends Computer {
                 if (className.isEmpty()) {
                     className = annotation.value().getName();
                 }
+                if (!mShadowsAllowlist.allow(className)) {
+                    throwShadowException(clazz.getName(), className);
+                }
                 instrumentedClasses.add(className);
             }
         }
@@ -79,6 +87,21 @@ class TestListComputer extends Computer {
             }
         }
         return looperMode + sdkSuffix;
+    }
+
+    private void throwShadowException(String shadowClass, String shadowingClass) {
+        String msg =
+                """
+
+            Found non-allowlisted Robolectric shadow: %s (shadowing %s).
+            Please limit usage of shadows to non-application code by adding explicit test stubbing \
+            logic via set*ForTesting() methods.
+
+            See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
+            Used allowlist: %s
+            """
+                        .formatted(shadowClass, shadowingClass, mShadowsAllowlist.getFilename());
+        throw new RuntimeException(msg);
     }
 
     private class TestListRunner extends Runner implements Filterable {
@@ -147,6 +170,12 @@ class TestListComputer extends Computer {
     }
 
     public void writeJson(File outputFile) throws FileNotFoundException, JSONException {
+        try (PrintStream stream = new PrintStream(new FileOutputStream(outputFile))) {
+            stream.print(createJson());
+        }
+    }
+
+    JSONObject createJson() throws JSONException {
         var instrumentedPackages = new TreeSet<String>();
         var instrumentedClasses = new TreeSet<String>();
         JSONObject root = new JSONObject();
@@ -171,9 +200,6 @@ class TestListComputer extends Computer {
         for (String s : instrumentedClasses) {
             arr.put(s);
         }
-
-        try (PrintStream stream = new PrintStream(new FileOutputStream(outputFile))) {
-            stream.print(root);
-        }
+        return root;
     }
 }

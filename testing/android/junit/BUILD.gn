@@ -10,6 +10,7 @@ robolectric_library("junit_test_support") {
   annotation_processor_deps =
       [ "//third_party/android_deps:auto_service_processor" ]
   sources = [
+    "java/src/org/chromium/testing/local/Allowlist.java",
     "java/src/org/chromium/testing/local/ChromiumAndroidConfigurer.java",
     "java/src/org/chromium/testing/local/ConfigFilter.java",
     "java/src/org/chromium/testing/local/CustomShadowApplicationPackageManager.java",
@@ -40,5 +41,6 @@ robolectric_binary("junit_unit_tests") {
     "javatests/src/org/chromium/testing/local/GtestLoggerTest.java",
     "javatests/src/org/chromium/testing/local/PackageFilterTest.java",
     "javatests/src/org/chromium/testing/local/RunnerFilterTest.java",
+    "javatests/src/org/chromium/testing/local/TestListComputerTest.java",
   ]
 }
