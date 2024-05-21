@@ -197,18 +197,6 @@ PickerItemView* GetFirstCategoryItemView(PickerView* picker_view) {
       ->second->item_views_for_testing()[0];
 }
 
-TEST_F(PickerViewTest, BackgroundIsCorrect) {
-  FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  PickerView* view = GetPickerViewFromWidget(*widget);
-
-  ASSERT_TRUE(view);
-  ASSERT_TRUE(view->background());
-  EXPECT_EQ(view->background()->get_color(),
-            view->GetColorProvider()->GetColor(
-                cros_tokens::kCrosSysSystemBaseElevated));
-}
-
 TEST_F(PickerViewTest, SizeIsCorrect) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -750,7 +738,7 @@ TEST_F(PickerViewTest, BoundsOnScreenForEmptyAnchorBounds) {
           view->GetBoundsInScreen()));
 }
 
-TEST_F(PickerViewTest, ResultsBelowSearchFieldNearTopOfScreen) {
+TEST_F(PickerViewTest, MainContentBelowSearchFieldNearTopOfScreen) {
   FakePickerViewDelegate delegate;
   const gfx::Rect screen_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -761,11 +749,11 @@ TEST_F(PickerViewTest, ResultsBelowSearchFieldNearTopOfScreen) {
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
-  EXPECT_GE(view->contents_view_for_testing().GetBoundsInScreen().y(),
+  EXPECT_GE(view->zero_state_view_for_testing().GetBoundsInScreen().y(),
             view->search_field_view_for_testing().GetBoundsInScreen().bottom());
 }
 
-TEST_F(PickerViewTest, ResultsAboveSearchFieldNearBottomOfScreen) {
+TEST_F(PickerViewTest, MainContentAboveSearchFieldNearBottomOfScreen) {
   FakePickerViewDelegate delegate;
   const gfx::Rect screen_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -776,7 +764,7 @@ TEST_F(PickerViewTest, ResultsAboveSearchFieldNearBottomOfScreen) {
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
-  EXPECT_LE(view->contents_view_for_testing().GetBoundsInScreen().bottom(),
+  EXPECT_LE(view->zero_state_view_for_testing().GetBoundsInScreen().bottom(),
             view->search_field_view_for_testing().GetBoundsInScreen().y());
 }
 

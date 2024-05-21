@@ -14,8 +14,8 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
-#include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +31,7 @@ class NonClientFrameView;
 namespace ash {
 
 enum class PickerLayoutType;
-class PickerContentsView;
+class PickerMainContainerView;
 class PickerSearchFieldView;
 class PickerPageView;
 class PickerSearchResult;
@@ -40,7 +40,6 @@ class PickerSearchResultsView;
 class PickerViewDelegate;
 class PickerZeroStateView;
 class PickerCategoryView;
-class SystemShadow;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView,
@@ -86,7 +85,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
-  PickerContentsView& contents_view_for_testing() { return *contents_view_; }
   PickerSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
@@ -119,22 +117,22 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Displays `results` in the category view.
   void PublishCategoryResults(std::vector<PickerSearchResultsSection> results);
 
-  void AddSearchFieldView();
-  void AddContentsViewWithSeparator(PickerLayoutType layout_type);
+  // Adds the main container, which includes the search field and contents
+  // pages.
+  void AddMainContainerView(PickerLayoutType layout_type);
 
-  // Sets `page_view` as the active page in `contents_view_`.
+  // Sets `page_view` as the active page in `main_container_view_`.
   void SetActivePage(PickerPageView* page_view);
 
   std::optional<PickerCategory> selected_category_;
-
-  std::unique_ptr<SystemShadow> shadow_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerPerformanceMetrics performance_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
 
+  // The main container contains the search field and contents pages.
+  raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
-  raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerCategoryView> category_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
