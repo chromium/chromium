@@ -115,12 +115,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
   // Configure the NavigationBar.
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(dismissInfobarModal)];
-  cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
-  self.navigationItem.leftBarButtonItem = cancelButton;
+  UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD_CLOSE)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(dismissInfobarModal)];
+  closeButton.accessibilityIdentifier = kInfobarModalCancelButton;
+  self.navigationItem.leftBarButtonItem = closeButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
   [self loadModel];
