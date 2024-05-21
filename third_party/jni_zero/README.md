@@ -30,8 +30,8 @@ There are two ways to have native methods be found by Java:
 2) Export the symbols from the shared library, and let the runtime resolve them
    on-demand (using `dlsym()`) the first time a native method is called.
 
-2) Is generally preferred due to a smaller code size and less up-front work, but
-1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
+(2) Is generally preferred due to a smaller code size and less up-front work, but
+(1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
 Both ways are supported by this tool.
 
 ### Exposing Java Methods
