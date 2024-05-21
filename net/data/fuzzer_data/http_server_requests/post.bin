@@ -1,6 +1,0 @@
-POST /url HTTP/1.1
-User-Agent: alpaca
-Header: other
-Content-Length:10
-
-0123456789

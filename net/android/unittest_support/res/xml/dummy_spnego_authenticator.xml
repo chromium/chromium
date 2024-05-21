@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-                       android:accountType="org.chromium.test.DummySpnegoAuthenticator"
-                       android:label="DummySpengoAuthenticator" 
-                       android:icon="@mipmap/app_icon"
-                       android:smallIcon="@mipmap/app_icon"
-                       android:customTokens="true"
-                       android:accountPreferences="@xml/dummy_spnego_account_preferences"/>

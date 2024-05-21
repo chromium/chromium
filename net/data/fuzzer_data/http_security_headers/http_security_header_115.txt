@@ -1,1 +1,0 @@
-max-age=999, report-uri="foo;bar"

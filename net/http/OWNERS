@@ -1,8 +1,0 @@
-per-file http_cache_*=shivanisha@chromium.org
-per-file transport_security_state_static.*=estark@chromium.org
-per-file transport_security_state_static.*=cthomp@chromium.org
-per-file transport_security_state_static.*=jdeblasio@chromium.org
-# For automated updates
-per-file transport_security_state_static.*=mdb.chrome-pki-metadata-release-jobs@google.com
-per-file transport_security_state_static_pins.json=mdb.chrome-pki-metadata-release-jobs@google.com
-per-file *test*=file://net/quic/OWNERS # for QUIC refactors

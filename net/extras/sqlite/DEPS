@@ -1,6 +1,0 @@
-include_rules = [
-  "+base",
-  "+components/sqlite_proto",
-  "+net",
-  "+sql",
-]

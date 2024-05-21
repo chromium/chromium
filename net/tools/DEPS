@@ -1,7 +1,0 @@
-include_rules = [
-  "+base/i18n",
-]
-
-skip_child_includes = [
-  "balsa",
-]

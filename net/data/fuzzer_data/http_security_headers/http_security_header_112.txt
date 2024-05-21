@@ -1,1 +1,0 @@
-max-age=999; pin-sha256="BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="; pin-sha256="AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI="; report-uri="http://foo.com/?;bar"

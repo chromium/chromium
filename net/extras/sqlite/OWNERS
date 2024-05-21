@@ -1,5 +1,0 @@
-file://net/cookies/OWNERS
-
-per-file sqlite_persistent_reporting_and_nel_store*=file://net/reporting/OWNERS
-per-file sqlite_persistent_reporting_and_nel_store*=file://net/network_error_logging/OWNERS
-per-file sqlite_persistent_shared_dictionary_store*=file://net/extras/shared_dictionary/OWNERS

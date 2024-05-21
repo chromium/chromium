@@ -1,1 +1,0 @@
-   enFORcE, max-age=123, pumpkin=kitten

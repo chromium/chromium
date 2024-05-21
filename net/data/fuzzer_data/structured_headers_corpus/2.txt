@@ -1,6 +1,0 @@
-srisig;
-  sig=*lGZVaJJM5f2oGczFlLmBdKTDL+QADza4BgeO494ggACYJOvrof6uh5OJCcwKrk7DK+LBch0jssDYPp5CLc1SDA=*
-  integrity="mi";
-  validity-url="https://example.com/resource.validity.1511128380";
-  ed25519key=*zsSevyFsxyZHiUluVBDd4eypdRLTqyWRVOJuuKUz+A8=*
-  date=1511128380; expires=1511733180

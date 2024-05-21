@@ -1,1 +1,0 @@
-max-age = 10000; pin-sha256="AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE="; pin-sha256="AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=";report-uri="http://google.com/"

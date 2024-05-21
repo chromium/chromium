@@ -1,8 +1,0 @@
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
-per-file network_anonymization_key*=brgoldstein@google.com
-per-file network_isolation_key*=brgoldstein@google.com
-per-file isolation_info*=brgoldstein@google.com
-
-# For security review of MIME sniffing to avoid introducing security bugs
-per-file mime_sniffer*=set noparent
-per-file mime_sniffer*=file://net/base/SECURITY_OWNERS

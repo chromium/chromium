@@ -1,1 +1,0 @@
-max-age=243; pin-sha256="AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=";pin-sha256="BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="; report-uri= "http://example.test/foo"
