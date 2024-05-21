@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/error_screen.h"
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/login_wizard.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
@@ -343,8 +344,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
   void SetBlockAppLaunch(bool block) {
     if (block) {
-      block_app_launch_override_ =
-          KioskLaunchController::BlockAppLaunchForTesting();
+      block_app_launch_override_ = KioskTestHelper::BlockAppLaunch();
     } else {
       block_app_launch_override_.reset();
     }
@@ -367,7 +367,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 
   base::AutoReset<bool> skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
+      KioskTestHelper::SkipSplashScreenWait();
   std::optional<base::AutoReset<bool>> block_app_launch_override_;
 
   DeviceStateMixin device_state_{

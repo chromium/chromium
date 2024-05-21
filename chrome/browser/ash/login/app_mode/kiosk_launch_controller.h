@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -38,6 +37,7 @@ class LacrosLauncher;
 namespace ash {
 
 class KioskProfileLoadFailedObserver;
+class KioskTestHelper;
 class LoginDisplayHost;
 class OobeUI;
 
@@ -134,14 +134,6 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
 
-  // Scoped overrides used during testing. The original behavior is restored
-  // when the returned objects are destroyed.
-  [[nodiscard]] static base::AutoReset<bool> SkipSplashScreenWaitForTesting();
-  [[nodiscard]] static base::AutoReset<bool> BlockAppLaunchForTesting();
-  [[nodiscard]] static base::AutoReset<bool>
-  BlockSystemSessionCreationForTesting();
-  [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
-
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
 
   void AddKioskProfileLoadFailedObserver(
@@ -163,6 +155,21 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
     return network_ui_controller_->GetNetworkUiStateForTesting();
   }
   NetworkUiController* GetNetworkUiControllerForTesting();
+
+  // Overrides of the launch behavior during testing.
+  // Values here can only be modified through the `KioskTestHelper` class.
+  class TestOverrides {
+   private:
+    friend class KioskTestHelper;
+    friend class KioskLaunchController;
+
+    // Whether we should skip the wait for minimum screen show time.
+    static bool skip_splash_wait;
+    static bool block_app_launch;
+    static bool block_system_session_creation;
+    // Whether we should prevent Kiosk launcher from exiting when launch fails.
+    static bool block_exit_on_failure;
+  };
 
  private:
   friend class KioskLaunchControllerTest;

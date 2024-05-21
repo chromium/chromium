@@ -23,7 +23,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -889,7 +889,7 @@ class MinimumVersionKioskAutoLoginTest : public MinimumVersionExistingUserTest {
 
  private:
   base::AutoReset<bool> block_kiosk_launcher_exit_on_failure_ =
-      ash::KioskLaunchController::BlockExitOnFailureForTesting();
+      ash::KioskTestHelper::BlockExitOnFailure();
 };
 
 // Checks kiosk auto launch is not blocked even if immediate update is required

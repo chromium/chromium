@@ -72,13 +72,6 @@
 namespace ash {
 namespace {
 
-// Whether we should skip the wait for minimum screen show time.
-bool g_skip_splash_wait_for_testing = false;
-bool g_block_app_launch_for_testing = false;
-bool g_block_system_session_creation_for_testing = false;
-// Whether we should prevent Kiosk launcher from exiting when launch fails.
-bool g_block_exit_on_failure_for_testing = false;
-
 // Enum types for Kiosk.LaunchType UMA so don't change its values.
 // KioskLaunchType in histogram.xml must be updated when making changes here.
 enum KioskLaunchType {
@@ -263,6 +256,13 @@ std::string ToString(KioskAppLaunchError::Error error) {
 }
 
 }  // namespace
+
+// static
+bool KioskLaunchController::TestOverrides::skip_splash_wait = false;
+bool KioskLaunchController::TestOverrides::block_app_launch = false;
+bool KioskLaunchController::TestOverrides::block_system_session_creation =
+    false;
+bool KioskLaunchController::TestOverrides::block_exit_on_failure = false;
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
 
@@ -648,7 +648,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   // Don't exit on launch failure if a test checks for Kiosk splash screen after
   // launch fails, which happens to MSan browser_tests since this build variant
   // runs significantly slower.
-  if (g_block_exit_on_failure_for_testing) {
+  if (TestOverrides::block_exit_on_failure) {
     return;
   }
 
@@ -683,7 +683,7 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
   splash_screen_view_->Show(GetSplashScreenAppData());
 
-  if (launch_on_install_ || g_skip_splash_wait_for_testing) {
+  if (launch_on_install_ || TestOverrides::skip_splash_wait) {
     LaunchApp();
   }
 }
@@ -708,7 +708,7 @@ void KioskLaunchController::OnAppWindowCreated(
   DUMP_WILL_BE_CHECK_EQ(app_state_, AppState::kLaunched);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
-  if (!g_block_system_session_creation_for_testing) {
+  if (!TestOverrides::block_system_session_creation) {
     CreateKioskSystemSession(kiosk_app_id_, profile_, app_name);
   }
   // If timer is running, do not remove splash screen for a few
@@ -776,7 +776,7 @@ void KioskLaunchController::OnNetworkLost() {
 }
 
 void KioskLaunchController::LaunchApp() {
-  if (g_block_app_launch_for_testing) {
+  if (TestOverrides::block_app_launch) {
     return;
   }
 
@@ -802,28 +802,6 @@ void KioskLaunchController::FinishLaunchWithError(
 
 NetworkUiController* KioskLaunchController::GetNetworkUiControllerForTesting() {
   return network_ui_controller_.get();
-}
-
-// static
-base::AutoReset<bool> KioskLaunchController::SkipSplashScreenWaitForTesting() {
-  return base::AutoReset<bool>(&g_skip_splash_wait_for_testing, true);
-}
-
-// static
-base::AutoReset<bool> KioskLaunchController::BlockAppLaunchForTesting() {
-  return base::AutoReset<bool>(&g_block_app_launch_for_testing, true);
-}
-
-// static
-base::AutoReset<bool>
-KioskLaunchController::BlockSystemSessionCreationForTesting() {
-  return base::AutoReset<bool>(&g_block_system_session_creation_for_testing,
-                               true);
-}
-
-// static
-base::AutoReset<bool> KioskLaunchController::BlockExitOnFailureForTesting() {
-  return base::AutoReset<bool>(&g_block_exit_on_failure_for_testing, true);
 }
 
 }  // namespace ash

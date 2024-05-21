@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -244,7 +244,7 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
   base::AutoReset<bool> skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
+      KioskTestHelper::SkipSplashScreenWait();
 
   LoginManagerMixin login_manager_{&mixin_host_, {}};
 };

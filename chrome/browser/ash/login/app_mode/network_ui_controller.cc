@@ -5,18 +5,26 @@
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/notreached.h"
 #include "base/syslog_logging.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/network_service_instance.h"
+#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 
 namespace {
 

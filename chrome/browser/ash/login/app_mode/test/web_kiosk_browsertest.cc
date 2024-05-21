@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
@@ -136,8 +136,7 @@ class WebKioskTest : public WebKioskBaseTest {
 
   void SetBlockAppLaunch(bool block) {
     if (block) {
-      block_app_launch_override_ =
-          KioskLaunchController::BlockAppLaunchForTesting();
+      block_app_launch_override_ = KioskTestHelper::BlockAppLaunch();
     } else {
       block_app_launch_override_.reset();
     }

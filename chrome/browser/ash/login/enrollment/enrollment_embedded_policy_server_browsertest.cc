@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
@@ -1375,7 +1375,7 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
  private:
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
   base::AutoReset<bool> skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
+      KioskTestHelper::SkipSplashScreenWait();
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,

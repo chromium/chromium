@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -452,7 +452,7 @@ class LoginLogoutReporterKioskBrowserTest
   FakeCWS fake_cws_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   base::AutoReset<bool> skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
+      KioskTestHelper::SkipSplashScreenWait();
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
 

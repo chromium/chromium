@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "components/account_id/account_id.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -33,8 +36,7 @@ WebKioskBaseTest::WebKioskBaseTest()
       account_id_(ToWebKioskAccountId(app_install_url_)) {
   set_exit_when_last_browser_closes(false);
   needs_background_networking_ = true;
-  skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
+  skip_splash_wait_override_ = KioskTestHelper::SkipSplashScreenWait();
 }
 
 WebKioskBaseTest::~WebKioskBaseTest() = default;

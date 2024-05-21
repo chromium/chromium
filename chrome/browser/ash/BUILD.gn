@@ -4794,6 +4794,8 @@ static_library("test_support") {
     "app_mode/fake_cws.h",
     "app_mode/fake_kiosk_app_launcher.cc",
     "app_mode/fake_kiosk_app_launcher.h",
+    "app_mode/kiosk_test_helper.cc",
+    "app_mode/kiosk_test_helper.h",
     "app_mode/test_kiosk_extension_builder.cc",
     "app_mode/test_kiosk_extension_builder.h",
     "arc/extensions/fake_arc_support.cc",
