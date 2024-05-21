@@ -644,6 +644,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
         boolean isChangingRootIds = tab.getRootId() != originalRootId;
+        boolean isChangingStableIds = !Objects.equals(tab.getTabGroupId(), originalTabGroupId);
+        boolean isChangingGroups = isChangingRootIds || isChangingStableIds;
         boolean isChangingIndex = currentIndex != originalIndex;
 
         // We need to explicitly trigger `didMoveTabOutOfGroup` if the tab is changing groups so
@@ -652,13 +654,13 @@ public class TabGroupModelFilter extends TabModelFilter {
         // groups because it lacks enough context, hence the `mIsUndoing` variable is used as a
         // bodge to communicate this. Then we signal `didMergeTabToGroup` separately afterwards
         // so long as the tab is actually becoming part of a tab group.
-        mIsUndoing = isChangingRootIds;
+        mIsUndoing = isChangingGroups;
 
         setBothGroupIds(tab, originalRootId, originalTabGroupId);
         if (isChangingIndex) {
             if (currentIndex < originalIndex) originalIndex++;
             getTabModel().moveTab(tab.getId(), originalIndex);
-        } else if (isChangingRootIds) {
+        } else if (isChangingGroups) {
             didMoveTab(tab, originalIndex, currentIndex);
         }
         // Else we can ignore tabs that remain at the same index if they are not changing root IDs.
@@ -668,7 +670,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
         // TODO(b/b/339480464): Emit a matching willMergeTabToGroup somewhere upstream.
-        if (isChangingRootIds && isTabInTabGroup(tab)) {
+        if (isChangingGroups && isTabInTabGroup(tab)) {
             TabGroup group = mRootIdToGroupMap.get(originalRootId);
             // Last shown tab IDs are not preserved across an undo.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
