@@ -27,7 +27,6 @@ function createQuickStartQR() {
 
 function createCategoriesAppsData() {
   const data = {
-    data: {
       'categorie_1': [
         {
           AppId: 'screenID1',
@@ -104,7 +103,6 @@ function createCategoriesAppsData() {
           selected: false,
         },
       ],
-    },
   };
   return data;
 }
