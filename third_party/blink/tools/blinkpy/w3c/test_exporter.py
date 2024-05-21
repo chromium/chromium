@@ -103,7 +103,7 @@ class TestExporter:
         # The Gerrit search API is slow and easy to fail, so we wrap it in a try
         # statement to continue exporting landed commits when it fails.
         try:
-            open_gerrit_cls = self.gerrit.query_exportable_open_cls()
+            open_gerrit_cls = self.gerrit.query_exportable_cls()
         except GerritError as e:
             _log.info(
                 'In-flight CLs cannot be exported due to the following error:')

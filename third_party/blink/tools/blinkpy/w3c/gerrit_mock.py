@@ -17,7 +17,7 @@ from blinkpy.w3c.gerrit import (
 
 class MockGerritAPI:
     def __init__(self, raise_error=False):
-        self.exportable_open_cls = []
+        self.exportable_cls = []
         self.request_posted = []
         self.cl = ''
         self.cls_queried = []
@@ -25,8 +25,8 @@ class MockGerritAPI:
         self.host = MockHost()
         self.project_config = self.host.project_config
 
-    def query_exportable_open_cls(self):
-        return self.exportable_open_cls
+    def query_exportable_cls(self):
+        return self.exportable_cls
 
     def query_cl_comments_and_revisions(self, change_id):
         return self.query_cl(

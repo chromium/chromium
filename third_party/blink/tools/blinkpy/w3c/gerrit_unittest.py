@@ -51,18 +51,18 @@ class GerritAPITest(unittest.TestCase):
         cl = gerrit.query_cl_comments_and_revisions('I012345')
         self.assertEqual(cl.change_id, 'I012345')
 
-    def test_query_exportable_open_cls(self):
+    def test_query_exportable_cls(self):
         host = MockHost()
         url = ('https://chromium-review.googlesource.com/changes/'
-               '?q=project:"chromium%2Fsrc"+branch:main+is:open+-is:wip'
-               '&n=500&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
+               '?q=project:"chromium%2Fsrc"+branch:main+is:submittable+-is:wip'
+               '&n=200&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
                '&o=DETAILED_ACCOUNTS')
         payload = []
         host.web.urls = {
             url: RESPONSE_PREFIX + b'\n' + json.dumps(payload).encode(),
         }
         gerrit = GerritAPI(host, 'user', 'token')
-        cls = gerrit.query_exportable_open_cls()
+        cls = gerrit.query_exportable_cls()
         self.assertEqual(cls, [])
 
 

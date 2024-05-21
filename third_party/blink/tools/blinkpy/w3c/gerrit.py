@@ -160,15 +160,15 @@ class GerritAPI:
             raise GerritError('Timed out querying exportable open CLs.')
         return [GerritCL(data, self) for data in raw_cls]
 
-    def query_exportable_open_cls(
+    def query_exportable_cls(
         self,
-        limit: int = 500,
+        limit: int = 200,
         output_options: OutputOption = DEFAULT_OUTPUT,
     ) -> List['GerritCL']:
         query = ' '.join([
             f'project:"{self.project_config.gerrit_project}"',
             f'branch:{self.project_config.gerrit_branch}',
-            'is:open',
+            'is:submittable',
             '-is:wip',
         ])
         open_cls = self.query_cls(query, limit, output_options)
