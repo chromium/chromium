@@ -186,6 +186,9 @@ public class TabArchiver implements TabWindowManager.Observer {
     }
 
     private boolean isTabEligibleForArchive(Tab tab) {
+        // Explicitly prevent grouped tabs from getting archived.
+        if (tab.getTabGroupId() != null) return false;
+
         return isTimestampWithinTargetHours(
                 tab.getTimestampMillis(), mTabArchiveSettings.getArchiveTimeDeltaHours());
     }
