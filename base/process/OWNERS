@@ -1,3 +1,0 @@
-# LaunchProcess() is part of the Fuchsia sandbox.
-per-file launch_fuchsia.*=set noparent
-per-file launch_fuchsia.*=file://build/fuchsia/SECURITY_OWNERS

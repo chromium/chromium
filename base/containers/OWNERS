@@ -1,5 +1,0 @@
-danakj@chromium.org
-dcheng@chromium.org
-
-per-file enum_set.h=file://components/sync/OWNERS
-per-file enum_set_unittest.cc=file://components/sync/OWNERS

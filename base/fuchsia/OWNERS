@@ -1,5 +1,0 @@
-file://build/fuchsia/OWNERS
-
-# FilteredServiceDirectory is part of the Fuchsia sandbox.
-per-file filtered_service_directory.*=set noparent
-per-file filtered_service_directory.*=file://build/fuchsia/SECURITY_OWNERS

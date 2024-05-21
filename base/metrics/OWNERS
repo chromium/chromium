@@ -1,8 +1,0 @@
-# OWNERS for metrics infrastructure, also referenced from other metrics
-# infrastructure directories. Prefer sending to this review alias for
-# load balancing instead of to individual owners. It should be
-# reassigned to a reviewer in about 5 minutes (Googler can get more
-# details about the autoassigner at go/gwsq-gerrit).
-chromium-metrics-reviews@google.com
-
-file://base/metrics/METRICS_OWNERS
