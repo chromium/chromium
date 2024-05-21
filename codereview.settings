@@ -1,7 +1,0 @@
-# This file is used by git-cl to get repository specific information.
-PROJECT: chromium
-GERRIT_HOST: True
-CC_LIST: chromium-reviews@chromium.org
-VIEW_VC: https://chromium.googlesource.com/chromium/src/+/
-STATUS: http://chromium-status.appspot.com/status
-RUN_POST_UPLOAD_HOOK: True
