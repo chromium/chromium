@@ -4330,6 +4330,9 @@ message CertProvImportCertificateInstruction {
 // `cert_profile_id`.
 message ClientCertificateProvisioningRequest {
   reserved 9 to 11;
+  // The id that uniquely identifies a certificate provisioning process.
+  optional string certificate_provisioning_process_id = 16;
+
   // The scope of the certificate. Similar to policy_type in PolicyFetchRequest.
   //   google/chromeos/device => a certificate for a device is being requested.
   //   google/chromeos/user => a certificate for a user is being requested.
