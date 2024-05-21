@@ -164,11 +164,10 @@ void MultipartUploadRequest::SetRequestHeaders(
   request->headers.SetHeader("X-Goog-Upload-Header-Content-Length",
                              base::NumberToString(data_size));
 
-  if (access_token_.empty()) {
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  } else {
+  if (!access_token_.empty()) {
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 }
 
 void MultipartUploadRequest::MarkScanAsCompleteForTesting() {

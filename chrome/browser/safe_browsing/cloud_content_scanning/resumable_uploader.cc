@@ -108,11 +108,10 @@ void ResumableUploadRequest::SetMetadataRequestHeaders(
   request->headers.SetHeader(kUploadHeaderContentTypeHeader,
                              kUploadContentType);
 
-  if (access_token_.empty()) {
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  } else {
+  if (!access_token_.empty()) {
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 }
 
 void ResumableUploadRequest::Start() {
