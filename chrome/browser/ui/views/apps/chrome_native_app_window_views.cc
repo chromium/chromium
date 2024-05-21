@@ -111,7 +111,9 @@ void ChromeNativeAppWindowViews::OnBeforeWidgetInit(
 
 void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     const AppWindow::CreateParams& create_params) {
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   init_params.delegate = this;
   init_params.remove_standard_frame = ShouldRemoveStandardFrame();
   init_params.use_system_default_icon = true;

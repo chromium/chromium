@@ -186,7 +186,8 @@ void AccessCodeCastDialog::ShowForDesktopMirroring(
 
 views::Widget::InitParams AccessCodeCastDialog::CreateParams(
     AccessCodeCastDialogMode dialog_mode) {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.remove_standard_frame = true;
   // If we are acting as a system dialog, use the appropriate corner radius.
   // Otherwise, the widget will default to the correct value for browser

@@ -110,7 +110,9 @@ class PopupBaseView::Widget : public views::Widget {
   explicit Widget(PopupBaseView* autofill_popup_base_view,
                   gfx::NativeView parent_native_view,
                   views::Widget::InitParams::Activatable activatable) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view;
     params.parent = parent_native_view;
     // Ensure the popup border is not painted on an opaque background.

@@ -68,7 +68,8 @@ gfx::NativeWindow ShowWebDialogWithParams(
   if (extra_params && extra_params->corner_radius)
     view->set_corner_radius(*(extra_params->corner_radius));
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   if (extra_params)
     params = std::move(*extra_params);
   params.delegate = view;

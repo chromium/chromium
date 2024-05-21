@@ -44,7 +44,8 @@ std::list<SystemWebDialogDelegate*>* GetInstances() {
 // shadow since the dialog frame's border has its own shadow.
 views::Widget::InitParams CreateWidgetParams(
     SystemWebDialogDelegate::FrameKind frame_kind) {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.corner_radius = kSystemDialogCornerRadiusDp;
   // Set shadow type according to the frame kind.
   switch (frame_kind) {
