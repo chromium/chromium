@@ -509,7 +509,7 @@ class OrderfileGenerator:
   def _GetUnpatchedOrderfileFilename(self):
     """Gets the path to the architecture-specific unpatched orderfile."""
     arch = self._options.arch
-    return str(self._orderfiles_dir / f'unpatched_orderfile.{arch}.out')
+    return str(self._orderfiles_dir / f'unpatched_orderfile.{arch}')
 
   def _SetDevice(self):
     """ Selects the device to be used by the script.
