@@ -2674,6 +2674,8 @@ static_library("ui") {
       "ash/birch/birch_keyed_service.h",
       "ash/birch/birch_keyed_service_factory.cc",
       "ash/birch/birch_keyed_service_factory.h",
+      "ash/birch/birch_most_visited_provider.cc",
+      "ash/birch/birch_most_visited_provider.h",
       "ash/birch/birch_recent_tabs_provider.cc",
       "ash/birch/birch_recent_tabs_provider.h",
       "ash/birch/birch_release_notes_provider.cc",

@@ -506,6 +506,61 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BirchMostVisitedItem::BirchMostVisitedItem(const std::u16string& title,
+                                           const GURL& url)
+    : BirchItem(title, GetSubtitle(url)), url_(url) {}
+
+BirchMostVisitedItem::BirchMostVisitedItem(BirchMostVisitedItem&&) = default;
+
+BirchMostVisitedItem::BirchMostVisitedItem(const BirchMostVisitedItem&) =
+    default;
+
+BirchMostVisitedItem& BirchMostVisitedItem::operator=(
+    const BirchMostVisitedItem&) = default;
+
+bool BirchMostVisitedItem::operator==(const BirchMostVisitedItem& rhs) const =
+    default;
+
+BirchMostVisitedItem::~BirchMostVisitedItem() = default;
+
+BirchItemType BirchMostVisitedItem::GetType() const {
+  return BirchItemType::kMostVisited;
+}
+
+std::string BirchMostVisitedItem::ToString() const {
+  std::stringstream ss;
+  ss << "Most Visited item: {ranking: " << ranking()
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_;
+  return ss.str();
+}
+
+void BirchMostVisitedItem::PerformAction() {
+  if (!url_.is_valid()) {
+    LOG(ERROR) << "No valid URL for most visited item";
+    return;
+  }
+  RecordActionMetrics();
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kSwitchToTab);
+}
+
+void BirchMostVisitedItem::PerformSecondaryAction() {
+  NOTREACHED_IN_MIGRATION();
+}
+
+void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
+  // TODO(jamescook): Load favicon or generic web site icon.
+  std::move(callback).Run(ui::ImageModel());
+}
+
+// static
+std::u16string BirchMostVisitedItem::GetSubtitle(const GURL& url) {
+  return base::UTF8ToUTF16(url.spec());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BirchSelfShareItem::BirchSelfShareItem(const std::u16string& guid,
                                        const std::u16string& title,
                                        const GURL& url,

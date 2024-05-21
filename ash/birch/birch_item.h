@@ -26,7 +26,8 @@ enum class BirchItemType {
   kWeather = 5,       // Weather conditions.
   kReleaseNotes = 6,  // Release notes from recent OS update.
   kSelfShare = 7,     // Tabs shared to self from ChromeSync API.
-  kMaxValue = kSelfShare,
+  kMostVisited = 8,   // Most frequently visited URLs.
+  kMaxValue = kMostVisited,
 };
 
 // The base item which is stored by the birch model.
@@ -263,6 +264,31 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   GURL favicon_url_;
   std::string session_name_;
   DeviceFormFactor form_factor_;
+};
+
+// A birch item for a most-frequently-visited URL.
+class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
+ public:
+  BirchMostVisitedItem(const std::u16string& title, const GURL& url);
+  BirchMostVisitedItem(BirchMostVisitedItem&&);
+  BirchMostVisitedItem(const BirchMostVisitedItem&);
+  BirchMostVisitedItem& operator=(const BirchMostVisitedItem&);
+  bool operator==(const BirchMostVisitedItem& rhs) const;
+  ~BirchMostVisitedItem() override;
+
+  // BirchItem:
+  BirchItemType GetType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void PerformSecondaryAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
+
+  const GURL& url() const { return url_; }
+
+ private:
+  static std::u16string GetSubtitle(const GURL& url);
+
+  GURL url_;
 };
 
 // A birch item which contains tabs shared to self information.

@@ -2222,6 +2222,9 @@ inline constexpr char kBirchUseFileSuggest[] = "ash.birch.use_file_suggest";
 // A boolean pref indicating whether Birch should use recent tab data.
 inline constexpr char kBirchUseRecentTabs[] = "ash.birch.use_recent_tabs";
 
+// A boolean pref indicating whether Birch should use most visited URL data.
+inline constexpr char kBirchUseMostVisited[] = "ash.birch.use_most_visited";
+
 // A boolean pref indicating whether Birch should use self share data.
 inline constexpr char kBirchUseSelfShare[] = "ash.birch.use_self_share";
 
