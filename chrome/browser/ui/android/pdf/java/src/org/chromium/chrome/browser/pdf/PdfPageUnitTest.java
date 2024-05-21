@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -58,6 +59,8 @@ public class PdfPageUnitTest {
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
     private static final String EXAMPLE_URL = "https://www.example.com/";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
+    private static final String FILE_PATH_INCOGNITO = "/proc/5202/fd/344";
+    private static final String FILE_PATH_INCOGNITO_INVALID = "/proc/5202/fd/one";
     private static final String FILE_NAME = "sample.pdf";
     private static final String IMAGE_FILE_URL = "file:///media/external/downloads/sample.jpg";
 
@@ -190,6 +193,53 @@ public class PdfPageUnitTest {
         Assert.assertNull(
                 "PdfEventsListener should be reset to null.",
                 pdfPage.mPdfCoordinator.getPdfEventsListenerForTesting());
+    }
+
+    @Test
+    public void testGetPdfDocumentRequest_WithPdfLink() {
+        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_PATH, false);
+        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
+        Assert.assertNotNull("Uri should not be null.", request.getUri());
+        Assert.assertNull("File should be null.", request.getFile());
+        Assert.assertNull(
+                "ParcelFileDescriptor should be null.", request.getParcelFileDescriptor());
+    }
+
+    @Test
+    public void testGetPdfDocumentRequest_WithPdfLink_Incognito() {
+        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_PATH_INCOGNITO, true);
+        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
+        Assert.assertNull("Uri should be null.", request.getUri());
+        Assert.assertNull("File should be null.", request.getFile());
+        Assert.assertNotNull(
+                "ParcelFileDescriptor should not be null.", request.getParcelFileDescriptor());
+    }
+
+    @Test
+    public void testGetPdfDocumentRequest_WithPdfLink_Incognito_InvalidFd() {
+        PdfDocumentRequest request =
+                PdfUtils.getPdfDocumentRequest(FILE_PATH_INCOGNITO_INVALID, true);
+        Assert.assertNull("PdfDocumentRequest should be null when filepath is invalid.", request);
+    }
+
+    @Test
+    public void testGetPdfDocumentRequest_WithContentUri() {
+        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(CONTENT_URL, false);
+        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
+        Assert.assertNotNull("Uri should not be null.", request.getUri());
+        Assert.assertNull("File should be null.", request.getFile());
+        Assert.assertNull(
+                "ParcelFileDescriptor should be null.", request.getParcelFileDescriptor());
+    }
+
+    @Test
+    public void testGetPdfDocumentRequest_WithFileUri() {
+        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_URL, false);
+        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
+        Assert.assertNull("Uri should be null.", request.getUri());
+        Assert.assertNotNull("File should not be null.", request.getFile());
+        Assert.assertNull(
+                "ParcelFileDescriptor should be null.", request.getParcelFileDescriptor());
     }
 
     @Test

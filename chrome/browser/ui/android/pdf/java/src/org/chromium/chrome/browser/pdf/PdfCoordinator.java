@@ -32,6 +32,7 @@ public class PdfCoordinator {
     private NativePageHost mHost;
     private final View mView;
     private final FragmentManager mFragmentManager;
+    private final boolean mIsIncognito;
     private int mFragmentContainerViewId;
     private String mPdfFilePath;
     private boolean mPdfIsDownloaded;
@@ -54,6 +55,7 @@ public class PdfCoordinator {
             NativePageHost host, Profile profile, Activity activity, String filepath, String url) {
         mHost = host;
         mIsPdfLoaded = false;
+        mIsIncognito = profile.isOffTheRecord();
         mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
         mTextView = mView.findViewById(R.id.fake_pdf_text);
         mTextView.setText(PDF_LOADING);
@@ -145,7 +147,8 @@ public class PdfCoordinator {
         if (mView.getParent() == null) {
             return;
         }
-        PdfDocumentRequest pdfDocumentRequest = PdfUtils.getPdfDocumentRequest(mPdfFilePath);
+        PdfDocumentRequest pdfDocumentRequest =
+                PdfUtils.getPdfDocumentRequest(mPdfFilePath, mIsIncognito);
         if (pdfDocumentRequest != null) {
             mPdfViewerFragment = new PdfViewerFragment();
             mPdfEventsListener = new ChromePdfEventsListener();
