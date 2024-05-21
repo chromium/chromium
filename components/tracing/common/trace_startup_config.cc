@@ -13,7 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_log.h"
@@ -61,9 +61,9 @@ const char TraceStartupConfig::kDefaultStartupCategories[] =
 #endif
 
 // static
-TraceStartupConfig* TraceStartupConfig::GetInstance() {
-  return base::Singleton<TraceStartupConfig, base::DefaultSingletonTraits<
-                                                 TraceStartupConfig>>::get();
+TraceStartupConfig& TraceStartupConfig::GetInstance() {
+  static base::NoDestructor<TraceStartupConfig> g_instance;
+  return *g_instance;
 }
 
 // static

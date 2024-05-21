@@ -98,7 +98,7 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
 IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
                        MAYBE_TestFilledStartupBuffer) {
   auto config = tracing::TraceStartupConfig::GetInstance()
-                    ->GetDefaultBrowserStartupConfig();
+                    .GetDefaultBrowserStartupConfig();
   config.SetTraceBufferSizeInEvents(0);
   config.SetTraceBufferSizeInKb(0);
 

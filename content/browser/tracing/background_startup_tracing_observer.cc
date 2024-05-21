@@ -21,12 +21,12 @@ class PreferenceManagerImpl
  public:
   void SetBackgroundStartupTracingEnabled(bool enabled) override {
     tracing::TraceStartupConfig::GetInstance()
-        ->SetBackgroundStartupTracingEnabled(enabled);
+        .SetBackgroundStartupTracingEnabled(enabled);
   }
 
   bool GetBackgroundStartupTracingEnabled() const override {
-    return tracing::TraceStartupConfig::GetInstance()->IsEnabled() &&
-           tracing::TraceStartupConfig::GetInstance()->GetSessionOwner() ==
+    return tracing::TraceStartupConfig::GetInstance().IsEnabled() &&
+           tracing::TraceStartupConfig::GetInstance().GetSessionOwner() ==
                tracing::TraceStartupConfig::SessionOwner::kBackgroundTracing;
   }
 };

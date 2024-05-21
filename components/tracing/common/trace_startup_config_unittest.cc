@@ -59,12 +59,12 @@ TEST(TraceStartupConfigTest, TraceStartupEnabled) {
   base::ShadowingAtExitManager sem;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTraceStartup);
 
-  EXPECT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, TraceStartupConfigNotEnabled) {
   base::ShadowingAtExitManager sem;
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithoutPath) {
@@ -72,11 +72,11 @@ TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithoutPath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kTraceConfigFile);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_EQ(base::trace_event::TraceConfig().ToString(),
-            TraceStartupConfig::GetInstance()->GetTraceConfig().ToString());
-  EXPECT_EQ(5, TraceStartupConfig::GetInstance()->GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance()->GetResultFile().empty());
+            TraceStartupConfig::GetInstance().GetTraceConfig().ToString());
+  EXPECT_EQ(5, TraceStartupConfig::GetInstance().GetStartupDuration());
+  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
 }
 
 TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithInvalidPath) {
@@ -85,7 +85,7 @@ TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithInvalidPath) {
       switches::kTraceConfigFile,
       base::FilePath(FILE_PATH_LITERAL("invalid-trace-config-file-path")));
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, ValidContent) {
@@ -102,13 +102,13 @@ TEST(TraceStartupConfigTest, ValidContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_STREQ(
       kTraceConfig,
-      TraceStartupConfig::GetInstance()->GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(10, TraceStartupConfig::GetInstance()->GetStartupDuration());
+      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
+  EXPECT_EQ(10, TraceStartupConfig::GetInstance().GetStartupDuration());
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("trace_result_file.log")),
-            TraceStartupConfig::GetInstance()->GetResultFile());
+            TraceStartupConfig::GetInstance().GetResultFile());
 }
 
 TEST(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
@@ -124,12 +124,12 @@ TEST(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_STREQ(
       kTraceConfig,
-      TraceStartupConfig::GetInstance()->GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(0, TraceStartupConfig::GetInstance()->GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance()->GetResultFile().empty());
+      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
+  EXPECT_EQ(0, TraceStartupConfig::GetInstance().GetStartupDuration());
+  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
 }
 
 TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
@@ -157,9 +157,9 @@ TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_EQ(result_file_path,
-            TraceStartupConfig::GetInstance()->GetResultFile());
+            TraceStartupConfig::GetInstance().GetResultFile());
 }
 
 TEST(TraceStartupConfigTest, ContentWithNegtiveDuration) {
@@ -175,12 +175,12 @@ TEST(TraceStartupConfigTest, ContentWithNegtiveDuration) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_STREQ(
       kTraceConfig,
-      TraceStartupConfig::GetInstance()->GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(0, TraceStartupConfig::GetInstance()->GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance()->GetResultFile().empty());
+      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
+  EXPECT_EQ(0, TraceStartupConfig::GetInstance().GetStartupDuration());
+  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
 }
 
 TEST(TraceStartupConfigTest, ContentWithoutTraceConfig) {
@@ -197,7 +197,7 @@ TEST(TraceStartupConfigTest, ContentWithoutTraceConfig) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, InvalidContent) {
@@ -213,7 +213,7 @@ TEST(TraceStartupConfigTest, InvalidContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, EmptyContent) {
@@ -226,7 +226,7 @@ TEST(TraceStartupConfigTest, EmptyContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, TraceStartupDisabledSystemOwner) {
@@ -234,7 +234,7 @@ TEST(TraceStartupConfigTest, TraceStartupDisabledSystemOwner) {
   // Set the owner to 'system' is not sufficient to setup startup tracing.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTraceStartupOwner, "system");
-  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
 }
 
 TEST(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
@@ -244,9 +244,9 @@ TEST(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTraceStartupOwner, "system");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTraceStartup);
-  EXPECT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
   EXPECT_EQ(TraceStartupConfig::SessionOwner::kSystemTracing,
-            TraceStartupConfig::GetInstance()->GetSessionOwner());
+            TraceStartupConfig::GetInstance().GetSessionOwner());
 }
 
 }  // namespace tracing

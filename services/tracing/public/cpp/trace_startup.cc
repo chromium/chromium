@@ -88,26 +88,26 @@ void EnableStartupTracingIfNeeded() {
   // Ensure TraceLog is initialized first.
   // https://crbug.com/764357
   TraceLog::GetInstance();
-  auto* startup_config = TraceStartupConfig::GetInstance();
+  auto& startup_config = TraceStartupConfig::GetInstance();
 
-  if (startup_config->IsEnabled()) {
+  if (startup_config.IsEnabled()) {
     // Ensure that data sources are created and registered.
     TraceEventAgent::GetInstance();
 
-    TraceConfig trace_config = startup_config->GetTraceConfig();
+    TraceConfig trace_config = startup_config.GetTraceConfig();
 
     bool privacy_filtering_enabled =
-        startup_config->GetSessionOwner() ==
+        startup_config.GetSessionOwner() ==
             TraceStartupConfig::SessionOwner::kBackgroundTracing ||
         command_line.HasSwitch(switches::kTraceStartupEnablePrivacyFiltering);
 
-    bool convert_to_legacy_json = startup_config->GetOutputFormat() ==
+    bool convert_to_legacy_json = startup_config.GetOutputFormat() ==
                                   TraceStartupConfig::OutputFormat::kLegacyJSON;
 
     perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
         trace_config, privacy_filtering_enabled, convert_to_legacy_json);
     int duration_in_seconds =
-        tracing::TraceStartupConfig::GetInstance()->GetStartupDuration();
+        tracing::TraceStartupConfig::GetInstance().GetStartupDuration();
     if (duration_in_seconds > 0)
       perfetto_config.set_duration_ms(duration_in_seconds * 1000);
     perfetto::Tracing::SetupStartupTracingOpts opts;
@@ -162,16 +162,16 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   // TODO(khokhlov): Figure out if we are using custom or system backend and
   // propagate this info to the child process (after startup tracing w/system
   // backend is supported in the SDK build).
-  const auto* startup_config = TraceStartupConfig::GetInstance();
+  const auto& startup_config = TraceStartupConfig::GetInstance();
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (startup_config->IsEnabled()) {
-    trace_config = startup_config->GetTraceConfig();
+  if (startup_config.IsEnabled()) {
+    trace_config = startup_config.GetTraceConfig();
     privacy_filtering_enabled =
-        startup_config->GetSessionOwner() ==
+        startup_config.GetSessionOwner() ==
             TraceStartupConfig::SessionOwner::kBackgroundTracing ||
         command_line.HasSwitch(switches::kTraceStartupEnablePrivacyFiltering);
-    convert_to_legacy_json = startup_config->GetOutputFormat() ==
+    convert_to_legacy_json = startup_config.GetOutputFormat() ==
                              TraceStartupConfig::OutputFormat::kLegacyJSON;
   } else if (trace_log->IsEnabled()) {
     perfetto::DataSourceConfig data_source_config =

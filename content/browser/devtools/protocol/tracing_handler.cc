@@ -875,8 +875,8 @@ void TracingHandler::AttemptAdoptStartupSession(
   if (session_for_process_filter_) {
     return;
   }
-  auto* startup_config = tracing::TraceStartupConfig::GetInstance();
-  if (!startup_config->AttemptAdoptBySessionOwner(
+  auto& startup_config = tracing::TraceStartupConfig::GetInstance();
+  if (!startup_config.AttemptAdoptBySessionOwner(
           tracing::TraceStartupConfig::SessionOwner::kDevToolsTracingHandler)) {
     return;
   }
@@ -886,7 +886,7 @@ void TracingHandler::AttemptAdoptStartupSession(
   proto_format_ = proto_format;
 
   base::trace_event::TraceConfig browser_config =
-      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
+      tracing::TraceStartupConfig::GetInstance().GetTraceConfig();
   perfetto::TraceConfig perfetto_config = CreatePerfettoConfiguration(
       browser_config, return_as_stream_, proto_format_);
 
@@ -1175,7 +1175,7 @@ void TracingHandler::FrameDeleted(int frame_tree_node_id) {
 
 // static
 bool TracingHandler::IsStartupTracingActive() {
-  return ::tracing::TraceStartupConfig::GetInstance()->IsEnabled();
+  return ::tracing::TraceStartupConfig::GetInstance().IsEnabled();
 }
 
 // static

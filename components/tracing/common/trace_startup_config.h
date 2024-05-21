@@ -12,7 +12,7 @@
 
 namespace base {
 template <typename Type>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -101,7 +101,7 @@ class TRACING_EXPORT TraceStartupConfig {
   // Exposed for testing.
   static const char kDefaultStartupCategories[];
 
-  static TraceStartupConfig* GetInstance();
+  static TraceStartupConfig& GetInstance();
 
   TraceStartupConfig(const TraceStartupConfig&) = delete;
   TraceStartupConfig& operator=(const TraceStartupConfig&) = delete;
@@ -145,8 +145,8 @@ class TRACING_EXPORT TraceStartupConfig {
 
  private:
   // This allows constructor and destructor to be private and usable only
-  // by the Singleton class.
-  friend struct base::DefaultSingletonTraits<TraceStartupConfig>;
+  // by the NoDestructor class.
+  friend class base::NoDestructor<TraceStartupConfig>;
   friend class content::CommandlineStartupTracingTest;
   friend class content::BackgroundStartupTracingTest;
 

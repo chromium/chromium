@@ -342,7 +342,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   base::FilePath path_from_config =
-      tracing::TraceStartupConfig::GetInstance()->GetResultFile();
+      tracing::TraceStartupConfig::GetInstance().GetResultFile();
   if (!path_from_config.empty())
     return path_from_config;
 
@@ -384,8 +384,8 @@ void StartupTracingController::StartIfNeeded() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(state_, State::kRunning);
 
-  auto* trace_startup_config = tracing::TraceStartupConfig::GetInstance();
-  if (!trace_startup_config->AttemptAdoptBySessionOwner(
+  auto& trace_startup_config = tracing::TraceStartupConfig::GetInstance();
+  if (!trace_startup_config.AttemptAdoptBySessionOwner(
           tracing::TraceStartupConfig::SessionOwner::kTracingController)) {
     return;
   }
@@ -399,7 +399,7 @@ void StartupTracingController::StartIfNeeded() {
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   auto output_format =
-      tracing::TraceStartupConfig::GetInstance()->GetOutputFormat();
+      tracing::TraceStartupConfig::GetInstance().GetOutputFormat();
 
   BackgroundTracer::WriteMode write_mode;
 #if BUILDFLAG(IS_WIN)
@@ -417,14 +417,14 @@ void StartupTracingController::StartIfNeeded() {
 #endif
 
   const auto& chrome_config =
-      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
+      tracing::TraceStartupConfig::GetInstance().GetTraceConfig();
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
       chrome_config, /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/output_format ==
           tracing::TraceStartupConfig::OutputFormat::kLegacyJSON);
 
   int duration_in_seconds =
-      tracing::TraceStartupConfig::GetInstance()->GetStartupDuration();
+      tracing::TraceStartupConfig::GetInstance().GetStartupDuration();
   perfetto_config.set_duration_ms(duration_in_seconds * 1000);
 
   background_tracer_ = base::SequenceBound<BackgroundTracer>(
@@ -465,7 +465,7 @@ void StartupTracingController::OnStoppedOnUIThread() {
   if (on_tracing_finished_)
     std::move(on_tracing_finished_).Run();
 
-  tracing::TraceStartupConfig::GetInstance()->SetDisabled();
+  tracing::TraceStartupConfig::GetInstance().SetDisabled();
 }
 
 void StartupTracingController::SetUsingTemporaryFile(
@@ -477,14 +477,15 @@ void StartupTracingController::SetUsingTemporaryFile(
 void StartupTracingController::SetDefaultBasename(
     std::string basename,
     ExtensionType extension_type) {
-  if (!tracing::TraceStartupConfig::GetInstance()->IsEnabled())
+  if (!tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
     return;
+  }
 
   if (basename_for_test_set_)
     return;
 
   if (extension_type == ExtensionType::kAppendAppropriate) {
-    switch (tracing::TraceStartupConfig::GetInstance()->GetOutputFormat()) {
+    switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
       case tracing::TraceStartupConfig::OutputFormat::kLegacyJSON:
         basename += ".json";
         break;
