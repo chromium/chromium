@@ -146,8 +146,10 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec);
+  auto* me = metadata.add_metadata_entries();
+  me->set_primary_pattern_spec(primary_pattern_spec);
+  me->set_secondary_pattern_spec(secondary_pattern_spec);
+  me->set_source(Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -170,8 +172,10 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string secondary_pattern_spec = "[*]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec);
+  auto* me = metadata.add_metadata_entries();
+  me->set_primary_pattern_spec(primary_pattern_spec);
+  me->set_secondary_pattern_spec(secondary_pattern_spec);
+  me->set_source(Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -184,56 +188,6 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
       tpcd::metadata::InstallationResult::kErroneousSpec, 1);
 }
 
-TEST_P(TpcdMetadataComponentInstallerPolicyTest,
-       ComponentReady_ErroneousDtrp_Source1pDt) {
-  if (!IsTpcdMetadataGrantsEnabled() || !IsTpcdMetadataStagingEnabled()) {
-    GTEST_SKIP() << "Reason: Test parameters instance N/A";
-  }
-
-  const std::string primary_pattern_spec = "[*.]bar.com";
-  const std::string secondary_pattern_spec = "[*.]foo.com";
-
-  tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec, secondary_pattern_spec,
-      tpcd::metadata::Parser::kSource1pDt);
-  ASSERT_EQ(metadata.metadata_entries_size(), 1);
-
-  ExecFakeComponentInstallation(metadata.SerializeAsString());
-
-  base::HistogramTester histogram_tester;
-  ASSERT_FALSE(
-      policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
-}
-
-TEST_P(TpcdMetadataComponentInstallerPolicyTest,
-       ComponentReady_ErroneousDtrp_Source3pDt) {
-  if (!IsTpcdMetadataGrantsEnabled() || !IsTpcdMetadataStagingEnabled()) {
-    GTEST_SKIP() << "Reason: Test parameters instance N/A";
-  }
-
-  const std::string primary_pattern_spec = "[*.]bar.com";
-  const std::string secondary_pattern_spec = "[*.]foo.com";
-
-  tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec, secondary_pattern_spec,
-      tpcd::metadata::Parser::kSource3pDt);
-  ASSERT_EQ(metadata.metadata_entries_size(), 1);
-
-  ExecFakeComponentInstallation(metadata.SerializeAsString());
-
-  base::HistogramTester histogram_tester;
-  ASSERT_FALSE(
-      policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
-}
-
 TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
   if (!IsTpcdMetadataGrantsEnabled() || !IsTpcdMetadataStagingEnabled()) {
     GTEST_SKIP() << "Reason: Test parameters instance N/A";
@@ -243,45 +197,52 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec, secondary_pattern_spec,
-      tpcd::metadata::Parser::kSource1pDt,
-      tpcd::metadata::Parser::kMaxDtrp + 1);
+  auto* me = tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
-  ExecFakeComponentInstallation(metadata.SerializeAsString());
+  // Set a valid DTRP override only.
+  {
+    me->set_dtrp_override(tpcd::metadata::Parser::kMaxDtrp);
 
-  base::HistogramTester histogram_tester;
-  ASSERT_FALSE(
-      policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
-}
+    ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_kIllicitDtrp) {
-  if (!IsTpcdMetadataGrantsEnabled() || !IsTpcdMetadataStagingEnabled()) {
-    GTEST_SKIP() << "Reason: Test parameters instance N/A";
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
+    histogram_tester.ExpectBucketCount(
+        kTpcdMetadataInstallationResult,
+        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
   }
 
-  const std::string primary_pattern_spec = "[*.]bar.com";
-  const std::string secondary_pattern_spec = "[*.]foo.com";
+  // Set an erroneous DTRP.
+  {
+    me->set_dtrp(tpcd::metadata::Parser::kMaxDtrp + 1);
 
-  tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec, secondary_pattern_spec,
-      tpcd::metadata::Parser::kSourceCriticalSector, std::nullopt,
-      tpcd::metadata::Parser::kMaxDtrp);
-  ASSERT_EQ(metadata.metadata_entries_size(), 1);
+    ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-  ExecFakeComponentInstallation(metadata.SerializeAsString());
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
+    histogram_tester.ExpectBucketCount(
+        kTpcdMetadataInstallationResult,
+        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
+  }
 
-  base::HistogramTester histogram_tester;
-  ASSERT_FALSE(
-      policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kIllicitDtrp, 1);
+  // Set an erroneous DTRP override with a valid DTRP.
+  {
+    me->set_dtrp(tpcd::metadata::Parser::kMaxDtrp);
+    me->set_dtrp_override(tpcd::metadata::Parser::kMaxDtrp + 1);
+
+    ExecFakeComponentInstallation(metadata.SerializeAsString());
+
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
+    histogram_tester.ExpectBucketCount(
+        kTpcdMetadataInstallationResult,
+        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
+  }
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_FiresCallback) {

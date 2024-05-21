@@ -326,26 +326,19 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
 
   Metadata metadata;
 
-  const auto* dtrp_eligible_source = Parser::kSource1pDt;
-  EXPECT_TRUE(
-      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_eligible_source)));
-
   const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern_spec_1, secondary_pattern_spec,
-      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_on);
+      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_on);
 
   const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern_spec_2, secondary_pattern_spec,
-      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_off);
+      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_off);
 
-  const auto* dtrp_ineligible_source = Parser::kSourceCriticalSector;
-  EXPECT_FALSE(
-      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_ineligible_source)));
   tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec_3,
                                               secondary_pattern_spec,
-                                              dtrp_ineligible_source);
+                                              Parser::kSourceCriticalSector);
 
   EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
   MockComponentInstallation(metadata);
@@ -432,26 +425,19 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
 
   Metadata metadata;
 
-  const auto* dtrp_eligible_source = Parser::kSource1pDt;
-  EXPECT_TRUE(
-      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_eligible_source)));
-
   const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern_spec_1, secondary_pattern_spec,
-      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_on);
+      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_on);
 
   const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern_spec_2, secondary_pattern_spec,
-      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_off);
+      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_off);
 
-  const auto* dtrp_ineligible_source = Parser::kSourceCriticalSector;
-  EXPECT_FALSE(
-      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_ineligible_source)));
   tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec_3,
                                               secondary_pattern_spec,
-                                              dtrp_ineligible_source);
+                                              Parser::kSourceCriticalSector);
 
   EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
   MockComponentInstallation(metadata);

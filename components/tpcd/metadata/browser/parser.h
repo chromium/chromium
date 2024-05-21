@@ -111,9 +111,6 @@ class Parser {
   // `content_settings::RuleSource` enum value.
   static TpcdMetadataRuleSource ToRuleSource(const std::string& source);
 
-  // Returns true if the given source of the MetadataEntry matches the defined
-  // sources for which `dtrp` is expected to be set.
-  static bool IsDtrpEligible(const TpcdMetadataRuleSource& rule_source);
   static bool IsValidMetadata(
       const Metadata& metadata,
       RecordInstallationResultCallback callback = base::NullCallback());

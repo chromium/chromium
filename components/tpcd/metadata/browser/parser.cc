@@ -53,23 +53,6 @@ TpcdMetadataRuleSource Parser::ToRuleSource(const std::string& source) {
 }
 
 // static
-bool Parser::IsDtrpEligible(const TpcdMetadataRuleSource& rule_source) {
-  switch (rule_source) {
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
-      return true;
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
-    case content_settings::mojom::TpcdMetadataRuleSource::
-        SOURCE_CRITICAL_SECTOR:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
-      return false;
-  }
-}
-
-// static
 bool Parser::IsValidMetadata(const Metadata& metadata,
                              RecordInstallationResultCallback callback) {
   for (const tpcd::metadata::MetadataEntry& me : metadata.metadata_entries()) {
@@ -100,25 +83,15 @@ bool Parser::IsValidMetadata(const Metadata& metadata,
 
     if (base::FeatureList::IsEnabled(
             net::features::kTpcdMetadataStageControl)) {
-      if (tpcd::metadata::Parser::IsDtrpEligible(
-              tpcd::metadata::Parser::ToRuleSource(me.source()))) {
-        if (!me.has_dtrp() || !IsValidDtrp(me.dtrp())) {
-          if (callback) {
-            std::move(callback).Run(InstallationResult::kErroneousDtrp);
-          }
-          return false;
-        } else if (me.has_dtrp_override() && !IsValidDtrp(me.dtrp_override())) {
-          if (callback) {
-            std::move(callback).Run(InstallationResult::kErroneousDtrp);
-          }
-          return false;
-        }
-      } else if (me.has_dtrp() || me.has_dtrp_override()) {
-        // Catching this cases as they could point to a server-side
-        // misconfiguration of the TPCD metadata generally stemming from human
-        // errors.
+      if (me.has_dtrp() && !IsValidDtrp(me.dtrp())) {
         if (callback) {
-          std::move(callback).Run(InstallationResult::kIllicitDtrp);
+          std::move(callback).Run(InstallationResult::kErroneousDtrp);
+        }
+        return false;
+      } else if (me.has_dtrp_override() &&
+                 (!me.has_dtrp() || !IsValidDtrp(me.dtrp_override()))) {
+        if (callback) {
+          std::move(callback).Run(InstallationResult::kErroneousDtrp);
         }
         return false;
       }
@@ -240,6 +213,9 @@ MetadataEntry* AddEntryToMetadata(
   if (dtrp_override.has_value()) {
     me->set_dtrp_override(dtrp_override.value());
   }
+
+  DCHECK(Parser::IsValidMetadata(metadata));
+
   return me;
 }
 }  // namespace helpers

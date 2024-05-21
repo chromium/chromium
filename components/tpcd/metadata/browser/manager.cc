@@ -138,8 +138,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
 
     std::optional<content_settings::mojom::TpcdMetadataCohort> cohort;
 
-    if (!Parser::IsDtrpEligible(
-            Parser::ToRuleSource(metadata_entry.source())) ||
+    if (!metadata_entry.has_dtrp() ||
         !base::FeatureList::IsEnabled(
             net::features::kTpcdMetadataStageControl)) {
       cohort = content_settings::mojom::TpcdMetadataCohort::DEFAULT;
@@ -231,8 +230,7 @@ void Manager::ResetCohorts() {
   }
 
   auto reset_cohort = [&](const MetadataEntry& metadata_entry) -> bool {
-    return Parser::IsDtrpEligible(
-        Parser::ToRuleSource(metadata_entry.source()));
+    return metadata_entry.has_dtrp();
   };
   SetGrants(BuildGrantsWithPredicate(reset_cohort));
 }
