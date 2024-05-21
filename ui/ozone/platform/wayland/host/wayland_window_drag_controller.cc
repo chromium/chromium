@@ -510,23 +510,6 @@ uint32_t WaylandWindowDragController::DispatchEvent(
   return POST_DISPATCH_PERFORM_DEFAULT;
 }
 
-void WaylandWindowDragController::OnToplevelWindowCreated(
-    WaylandToplevelWindow* window) {
-  // Skip unless a toplevel window is getting visible while in attached mode.
-  // E.g: A window/tab is being detached in a tab dragging session.
-  if (state_ != State::kAttached)
-    return;
-
-  DCHECK(window);
-  auto origin = window->GetBoundsInDIP().origin();
-  gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
-  DVLOG(1) << "Toplevel window created (detached)."
-           << " widget=" << window->GetWidget()
-           << " calculated_offset=" << offset.ToString();
-
-  SetDraggedWindow(window, offset);
-}
-
 void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   DCHECK_NE(state_, State::kIdle);
   DVLOG(1) << "Window being destroyed. widget=" << window->GetWidget();

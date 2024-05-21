@@ -86,8 +86,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // drag controller.
   bool IsDragInProgress() const;
 
-  void OnToplevelWindowCreated(WaylandToplevelWindow* window);
-
   // Tells if "extended drag" extension is available.
   bool IsExtendedDragAvailable() const;
 
