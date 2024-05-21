@@ -8,11 +8,15 @@ build_webui("build") {
   grd_prefix = "indexed_db"
 
   static_files = [
+    "common.css",
     "indexeddb_internals.html",
     "indexeddb_internals.css",
   ]
 
-  web_component_files = [ "database.ts" ]
+  web_component_files = [
+    "database.ts",
+    "transaction_table.ts",
+  ]
   html_to_wrapper_template = "native"
   non_web_component_files = [ "indexeddb_internals.ts" ]
 

@@ -2,6 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+@import url('common.css');
+
 .indexeddb-summary {
     background-color: rgb(235, 239, 249);
     border-top: 1px solid rgb(156, 194, 239);
@@ -9,17 +11,6 @@
     margin-top: 12px;
     padding: 3px;
     font-weight: bold;
-}
-
-.metadata-list-item {
-    border-inline-start: solid 1px black;
-    padding-inline-start: 5px;
-    margin-inline-start: 20px;
-    margin-top: 5px;
-}
-
-indexeddb-bucket {
-    display: block;
 }
 
 .indexeddb-url {
@@ -38,11 +29,4 @@ indexeddb-bucket {
 .indexeddb-path {
   display: block;
     margin-inline-start: 1em;
-}
-
-.controls .control {
-    color: #777;
-    cursor: pointer;
-    margin-block-end: 16px;
-    text-decoration: underline;
 }

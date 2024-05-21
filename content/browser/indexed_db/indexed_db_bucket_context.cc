@@ -1062,6 +1062,7 @@ storage::mojom::IdbBucketMetadataPtr IndexedDBBucketContext::FillInMetadata(
         }
 
         transaction_info->tid = transaction->id();
+        transaction_info->client_id = connection->client_id();
         transaction_info->age =
             (base::Time::Now() - transaction->diagnostics().creation_time)
                 .InMillisecondsF();
