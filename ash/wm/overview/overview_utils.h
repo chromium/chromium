@@ -66,6 +66,8 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 // window's transient hierarchy.
 ASH_EXPORT gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
 
+OverviewItemFillMode GetOverviewItemFillMode(const gfx::Size& size);
+
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);
 

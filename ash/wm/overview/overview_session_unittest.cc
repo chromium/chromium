@@ -3068,8 +3068,8 @@ TEST_P(OverviewSessionTest, SelectingWindowWithBackdrop) {
 
   ToggleOverview();
   auto* item = GetOverviewItemForWindow(window.get());
-  ASSERT_EQ(OverviewGridWindowFillMode::kLetterBoxed,
-            item->GetWindowDimensionsType());
+  ASSERT_EQ(OverviewItemFillMode::kLetterBoxed,
+            item->GetOverviewItemFillMode());
 
   // Tap the target.
   GetEventGenerator()->set_current_screen_location(
@@ -10571,8 +10571,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // Verify that |item| is letter boxed. The bounds of |item|, minus the margin
   // should have an aspect ratio of 2 : 1.
   gfx::RectF item_bounds = item->target_bounds();
-  EXPECT_EQ(OverviewGridWindowFillMode::kLetterBoxed,
-            item->GetWindowDimensionsType());
+  EXPECT_EQ(OverviewItemFillMode::kLetterBoxed,
+            item->GetOverviewItemFillMode());
   EXPECT_EQ(2.f, item_bounds.width() / item_bounds.height());
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(gfx::ToRoundedPoint(item_bounds.CenterPoint()));
@@ -10584,10 +10584,11 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
   auto* drop_target = GetDropTarget(1);
   ASSERT_TRUE(drop_target);
-  // Verify that |drop_target| is effectively pillar boxed. Avoid calling
-  // |OverviewItem::GetWindowDimensionsType|, because it does not work for drop
-  // targets (and that is okay). The bounds of |drop_target|, minus the margin
-  // should have an aspect ratio of 1 : 2.
+
+  // Verify that `drop_target` is effectively pillar boxed. Avoid calling
+  // `OverviewItem::GetOverviewItemFillMode()`, because it does not work for
+  // drop targets (and that is okay). The bounds of `drop_target`, minus the
+  // margin should have an aspect ratio of 1 : 2.
   const gfx::Size drop_target_size =
       drop_target->item_widget()->GetWindowBoundsInScreen().size();
   EXPECT_EQ(0.5f, static_cast<float>(drop_target_size.width()) /
@@ -10637,15 +10638,13 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   auto* item4 = GetOverviewItemForWindow(window4.get());
 
   // For good test coverage in each case, the dragged window and the drop target
-  // have different |OverviewGridWindowFillMode| values.
-  EXPECT_EQ(OverviewGridWindowFillMode::kNormal,
-            item1->GetWindowDimensionsType());
-  EXPECT_EQ(OverviewGridWindowFillMode::kLetterBoxed,
-            item2->GetWindowDimensionsType());
-  EXPECT_EQ(OverviewGridWindowFillMode::kNormal,
-            item3->GetWindowDimensionsType());
-  EXPECT_EQ(OverviewGridWindowFillMode::kPillarBoxed,
-            item4->GetWindowDimensionsType());
+  // have different `OverviewItemFillMode` values.
+  EXPECT_EQ(OverviewItemFillMode::kNormal, item1->GetOverviewItemFillMode());
+  EXPECT_EQ(OverviewItemFillMode::kLetterBoxed,
+            item2->GetOverviewItemFillMode());
+  EXPECT_EQ(OverviewItemFillMode::kNormal, item3->GetOverviewItemFillMode());
+  EXPECT_EQ(OverviewItemFillMode::kPillarBoxed,
+            item4->GetOverviewItemFillMode());
 
   EXPECT_EQ(root1_drop_target_bounds(item1), root1_drop_target_bounds(item2));
   EXPECT_EQ(root1_drop_target_bounds(item3), root1_drop_target_bounds(item4));

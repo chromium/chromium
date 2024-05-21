@@ -528,8 +528,8 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
           screen_rect, transformed_bounds, top_view_inset,
           kWindowMiniViewHeaderHeight);
 
-  if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
-      transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
+  if (transform_window_.fill_mode() == OverviewItemFillMode::kNormal ||
+      transform_window_.fill_mode() == OverviewItemFillMode::kLetterBoxed) {
     overview_item_bounds.set_x(transformed_bounds.x());
     overview_item_bounds.set_width(transformed_bounds.width());
   }
@@ -538,8 +538,8 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
   // normal or pillar dimensions type to make sure there's no gap between the
   // header and the window and no empty space at the end of the overview item
   // container.
-  if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
-      transform_window_.type() == OverviewGridWindowFillMode::kPillarBoxed) {
+  if (transform_window_.fill_mode() == OverviewItemFillMode::kNormal ||
+      transform_window_.fill_mode() == OverviewItemFillMode::kPillarBoxed) {
     if (!overview_item_view_->header_view()->GetBoundsInScreen().IsEmpty()) {
       // The window top bar's target height with the transform.
       const float window_top_inset_target_height =
@@ -717,7 +717,7 @@ void OverviewItem::OnStartingAnimationComplete() {
   }
 
   const bool show_backdrop =
-      GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
+      GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
 }
@@ -931,14 +931,14 @@ void OverviewItem::StopWidgetAnimation() {
   item_widget_->GetNativeWindow()->layer()->GetAnimator()->StopAnimating();
 }
 
-OverviewGridWindowFillMode OverviewItem::GetWindowDimensionsType() const {
-  return transform_window_.type();
+OverviewItemFillMode OverviewItem::GetOverviewItemFillMode() const {
+  return transform_window_.fill_mode();
 }
 
-void OverviewItem::UpdateWindowDimensionsType() {
-  transform_window_.UpdateWindowDimensionsType();
+void OverviewItem::UpdateOverviewItemFillMode() {
+  transform_window_.UpdateOverviewItemFillMode();
   const bool show_backdrop =
-      GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
+      GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
 }
 
@@ -1037,7 +1037,7 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   // Immediately finish any active bounds animation.
   window->layer()->GetAnimator()->StopAnimatingProperty(
       ui::LayerAnimationElement::BOUNDS);
-  UpdateWindowDimensionsType();
+  UpdateOverviewItemFillMode();
   overview_grid_->PositionWindows(/*animate=*/false);
 }
 

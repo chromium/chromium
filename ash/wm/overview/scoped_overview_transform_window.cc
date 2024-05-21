@@ -152,7 +152,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       (new RasterScaleLayerObserver(window_, window_->layer(), window_))
           ->Lock());
 
-  type_ = GetWindowDimensionsType(window->bounds().size());
+  fill_mode_ = GetOverviewItemFillMode(window->bounds().size());
 
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       transient_children_to_hide;
@@ -241,18 +241,6 @@ float ScopedOverviewTransformWindow::GetItemScale(int source_height,
                                                   int title_height) {
   return std::min(2.0f, static_cast<float>(target_height - title_height) /
                             (source_height - top_view_inset));
-}
-
-// static
-OverviewGridWindowFillMode
-ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
-  if (size.width() > size.height() * kExtremeWindowRatioThreshold)
-    return OverviewGridWindowFillMode::kLetterBoxed;
-
-  if (size.height() > size.width() * kExtremeWindowRatioThreshold)
-    return OverviewGridWindowFillMode::kPillarBoxed;
-
-  return OverviewGridWindowFillMode::kNormal;
 }
 
 void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
@@ -419,13 +407,13 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
   gfx::RectF new_bounds(bounds.x() + horizontal_offset,
                         bounds.y() + vertical_offset, width, height);
 
-  switch (type()) {
-    case OverviewGridWindowFillMode::kLetterBoxed:
-    case OverviewGridWindowFillMode::kPillarBoxed: {
+  switch (fill_mode_) {
+    case OverviewItemFillMode::kLetterBoxed:
+    case OverviewItemFillMode::kPillarBoxed: {
       // Attempt to scale |rect| to fit |bounds|. Maintain the aspect ratio of
       // |rect|. Letter boxed windows' width will match |bounds|'s width and
       // pillar boxed windows' height will match |bounds|'s height.
-      const bool is_pillar = type() == OverviewGridWindowFillMode::kPillarBoxed;
+      const bool is_pillar = fill_mode_ == OverviewItemFillMode::kPillarBoxed;
       const gfx::Rect window_bounds =
           ::wm::GetTransientRoot(window_)->GetBoundsInScreen();
       const float window_ratio =
@@ -520,8 +508,8 @@ void ScopedOverviewTransformWindow::EnsureVisible() {
   original_opacity_ = 1.f;
 }
 
-void ScopedOverviewTransformWindow::UpdateWindowDimensionsType() {
-  type_ = GetWindowDimensionsType(window_->bounds().size());
+void ScopedOverviewTransformWindow::UpdateOverviewItemFillMode() {
+  fill_mode_ = ash::GetOverviewItemFillMode(window_->bounds().size());
 }
 
 void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {

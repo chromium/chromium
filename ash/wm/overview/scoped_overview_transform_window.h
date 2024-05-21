@@ -51,9 +51,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                             int top_view_inset,
                             int title_height);
 
-  static OverviewGridWindowFillMode GetWindowDimensionsType(
-      const gfx::Size& size);
-
   ScopedOverviewTransformWindow(OverviewItem* overview_item,
                                 aura::Window* window);
   ScopedOverviewTransformWindow(const ScopedOverviewTransformWindow&) = delete;
@@ -65,7 +62,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   bool is_restoring() const { return is_restoring_; }
 
-  OverviewGridWindowFillMode type() const { return type_; }
+  OverviewItemFillMode fill_mode() const { return fill_mode_; }
 
   // Starts an animation sequence which will use animation settings specified by
   // |animation_type|. The |animation_settings| container is populated with
@@ -134,7 +131,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // Called via OverviewItem from OverviewGrid when |window_|'s bounds
   // change. Must be called before PositionWindows in OverviewGrid.
-  void UpdateWindowDimensionsType();
+  void UpdateOverviewItemFillMode();
 
   // Updates the rounded corners on `window_` and its transient hierarchy (if
   // needed).
@@ -192,7 +189,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   float original_opacity_;
 
   // Specifies how the window is laid out in the grid.
-  OverviewGridWindowFillMode type_ = OverviewGridWindowFillMode::kNormal;
+  OverviewItemFillMode fill_mode_ = OverviewItemFillMode::kNormal;
 
   // The observers associated with the layers we requested caching render
   // surface and trilinear filtering. The requests will be removed in dtor if

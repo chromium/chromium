@@ -10,12 +10,16 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
@@ -29,6 +33,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
@@ -198,7 +203,7 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
     return item0->SetBounds(target_bounds, animation_type);
   }
 
-  CHECK_EQ(size, 2);
+  CHECK_EQ(2, size);
   auto& item1 = overview_items_[1];
 
   aura::Window* item0_window = item0->GetWindow();
@@ -364,6 +369,10 @@ float OverviewGroupItem::GetOpacity() const {
 }
 
 void OverviewGroupItem::PrepareForOverview() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->PrepareForOverview();
+  }
+
   prepared_for_overview_ = true;
 }
 
@@ -468,25 +477,50 @@ void OverviewGroupItem::OnMovingItemToAnotherDesk() {
   }
 }
 
-void OverviewGroupItem::Shutdown() {}
+void OverviewGroupItem::Shutdown() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->Shutdown();
+  }
+}
 
 void OverviewGroupItem::AnimateAndCloseItem(bool up) {}
 
-void OverviewGroupItem::StopWidgetAnimation() {}
+void OverviewGroupItem::StopWidgetAnimation() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->StopWidgetAnimation();
+  }
 
-OverviewGridWindowFillMode OverviewGroupItem::GetWindowDimensionsType() const {
-  // This return value assumes that the snap group represented by `this` will
-  // occupy the entire work space. So it's mostly likely that the window
-  // dimension type will be normal.
-  // TODO(michelefan): Consider the corner cases when the work space has
-  // abnormal dimension ratios.
-  return OverviewGridWindowFillMode::kNormal;
+  item_widget_->GetNativeWindow()->layer()->GetAnimator()->StopAnimating();
 }
 
-void OverviewGroupItem::UpdateWindowDimensionsType() {}
+OverviewItemFillMode OverviewGroupItem::GetOverviewItemFillMode() const {
+  return ash::GetOverviewItemFillMode(
+      gfx::ToRoundedSize(target_bounds_.size()));
+}
+
+void OverviewGroupItem::UpdateOverviewItemFillMode() {
+  for (const auto& overview_item : overview_items_) {
+    overview_item->UpdateOverviewItemFillMode();
+  }
+}
 
 gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
-  return overview_group_container_view_->GetBoundsInScreen().CenterPoint();
+  CHECK(!overview_items_.empty());
+
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  CHECK(overview_session);
+  OverviewFocusCyclerOld* focus_cycler_old =
+      overview_session->focus_cycler_old();
+  for (const auto& overview_item : overview_items_) {
+    if (overview_item->overview_item_view() ==
+        focus_cycler_old->focused_view()) {
+      return overview_item->GetMagnifierFocusPointInScreen();
+    }
+  }
+
+  NOTREACHED_IN_MIGRATION();
+  return gfx::Point();
 }
 
 const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {

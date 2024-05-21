@@ -1948,7 +1948,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
     int height) {
   gfx::SizeF target_size = item->GetWindowsUnionScreenBounds().size();
   float scale = item->GetItemScale(height);
-  OverviewGridWindowFillMode grid_fill_mode = item->GetWindowDimensionsType();
+  OverviewItemFillMode item_fill_mode = item->GetOverviewItemFillMode();
 
   // The drop target, unlike the other windows has its bounds set directly, so
   // `GetWindowsUnionScreenBounds()` won't return the value we want. Instead,
@@ -1969,8 +1969,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
         // this grid, the drop target size should reflect the maximized window
         // size on this grid's display (i.e. this display's work area size)
         // which can be different than the source display's work area size.
-        grid_fill_mode = ScopedOverviewTransformWindow::GetWindowDimensionsType(
-            work_area_size);
+        item_fill_mode = GetOverviewItemFillMode(work_area_size);
         target_size = gfx::SizeF(work_area_size);
       } else {
         // If the drag started from a different root window, `dragged_windows`
@@ -1981,8 +1980,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
         gfx::Size dragged_item_size =
             GetTotalDraggedWindowsSize(dragged_windows);
         dragged_item_size.SetToMin(work_area_size);
-        grid_fill_mode = ScopedOverviewTransformWindow::GetWindowDimensionsType(
-            dragged_item_size);
+        item_fill_mode = GetOverviewItemFillMode(dragged_item_size);
         target_size = GetTotalUnionSizeIncludingTransients(dragged_windows);
         target_size.SetToMin(gfx::SizeF(work_area_size));
       }
@@ -1994,11 +1992,11 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   }
 
   int width = std::max(1, base::ClampFloor(target_size.width() * scale));
-  switch (grid_fill_mode) {
-    case OverviewGridWindowFillMode::kLetterBoxed:
+  switch (item_fill_mode) {
+    case OverviewItemFillMode::kLetterBoxed:
       width = kExtremeWindowRatioThreshold * height;
       break;
-    case OverviewGridWindowFillMode::kPillarBoxed:
+    case OverviewItemFillMode::kPillarBoxed:
       width = height / kExtremeWindowRatioThreshold;
       break;
     default:

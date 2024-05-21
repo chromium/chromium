@@ -18,6 +18,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -151,6 +152,18 @@ gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window) {
   }
 
   return bounds;
+}
+
+OverviewItemFillMode GetOverviewItemFillMode(const gfx::Size& size) {
+  if (size.width() > size.height() * kExtremeWindowRatioThreshold) {
+    return OverviewItemFillMode::kLetterBoxed;
+  }
+
+  if (size.height() > size.width() * kExtremeWindowRatioThreshold) {
+    return OverviewItemFillMode::kPillarBoxed;
+  }
+
+  return OverviewItemFillMode::kNormal;
 }
 
 void MaximizeIfSnapped(aura::Window* window) {

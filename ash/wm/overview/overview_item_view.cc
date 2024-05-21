@@ -10,6 +10,7 @@
 #include "ash/style/close_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
@@ -159,16 +160,16 @@ gfx::Size OverviewItemView::GetPreviewViewSize() const {
   const float aspect_ratio =
       preview_pref_size.width() / preview_pref_size.height();
   gfx::SizeF target_size(GetContentAreaBounds().size());
-  OverviewGridWindowFillMode fill_mode =
-      overview_item_ ? overview_item_->GetWindowDimensionsType()
-                     : OverviewGridWindowFillMode::kNormal;
+  OverviewItemFillMode fill_mode =
+      overview_item_ ? overview_item_->GetOverviewItemFillMode()
+                     : OverviewItemFillMode::kNormal;
   switch (fill_mode) {
-    case OverviewGridWindowFillMode::kNormal:
+    case OverviewItemFillMode::kNormal:
       break;
-    case OverviewGridWindowFillMode::kLetterBoxed:
+    case OverviewItemFillMode::kLetterBoxed:
       target_size.set_height(target_size.width() / aspect_ratio);
       break;
-    case OverviewGridWindowFillMode::kPillarBoxed:
+    case OverviewItemFillMode::kPillarBoxed:
       target_size.set_width(target_size.height() * aspect_ratio);
       break;
   }

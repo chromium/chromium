@@ -199,11 +199,11 @@ void OverviewDropTarget::AnimateAndCloseItem(bool up) {}
 
 void OverviewDropTarget::StopWidgetAnimation() {}
 
-OverviewGridWindowFillMode OverviewDropTarget::GetWindowDimensionsType() const {
-  return OverviewGridWindowFillMode::kNormal;
+OverviewItemFillMode OverviewDropTarget::GetOverviewItemFillMode() const {
+  return OverviewItemFillMode::kNormal;
 }
 
-void OverviewDropTarget::UpdateWindowDimensionsType() {}
+void OverviewDropTarget::UpdateOverviewItemFillMode() {}
 
 gfx::Point OverviewDropTarget::GetMagnifierFocusPointInScreen() const {
   return gfx::Point();

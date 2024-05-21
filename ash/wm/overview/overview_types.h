@@ -101,7 +101,7 @@ enum class OverviewEnterExitType {
 // Overview items have certain properties if their aspect ratio exceeds a
 // threshold. This enum keeps track of which category the window falls into,
 // based on its aspect ratio.
-enum class OverviewGridWindowFillMode {
+enum class OverviewItemFillMode {
   // Aspect ratio is between 1:2 and 2:1.
   kNormal,
   // Width to height ratio exceeds 2:1. The overview item will have a 2:1

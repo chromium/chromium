@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -138,7 +139,7 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformingLetteredRect) {
   const int scale = 3;
   std::unique_ptr<aura::Window> window = CreateTestWindow(original_bounds);
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
-  EXPECT_EQ(OverviewGridWindowFillMode::kLetterBoxed, transform_window.type());
+  EXPECT_EQ(OverviewItemFillMode::kLetterBoxed, transform_window.fill_mode());
 
   // Without any headers, the width should match the target, and the height
   // should be such that the aspect ratio of |original_bounds| is maintained.
@@ -171,7 +172,7 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformingPillaredRect) {
   const int scale = 3;
   std::unique_ptr<aura::Window> window = CreateTestWindow(original_bounds);
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
-  EXPECT_EQ(OverviewGridWindowFillMode::kPillarBoxed, transform_window.type());
+  EXPECT_EQ(OverviewItemFillMode::kPillarBoxed, transform_window.fill_mode());
 
   // Without any headers, the height should match the target, and the width
   // should be such that the aspect ratio of |original_bounds| is maintained.
@@ -215,25 +216,24 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
 
   // Verify the window dimension type is as expected after entering overview
   // mode.
-  using OverviewGridWindowFillMode = OverviewGridWindowFillMode;
-  EXPECT_EQ(OverviewGridWindowFillMode::kLetterBoxed, scoped_wide.type());
-  EXPECT_EQ(OverviewGridWindowFillMode::kPillarBoxed, scoped_tall.type());
-  EXPECT_EQ(OverviewGridWindowFillMode::kNormal, scoped_normal.type());
+  EXPECT_EQ(OverviewItemFillMode::kLetterBoxed, scoped_wide.fill_mode());
+  EXPECT_EQ(OverviewItemFillMode::kPillarBoxed, scoped_tall.fill_mode());
+  EXPECT_EQ(OverviewItemFillMode::kNormal, scoped_normal.fill_mode());
 
   display::Screen* screen = display::Screen::GetScreen();
   const display::Display& display = screen->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  scoped_wide.UpdateWindowDimensionsType();
-  scoped_tall.UpdateWindowDimensionsType();
-  scoped_normal.UpdateWindowDimensionsType();
+  scoped_wide.UpdateOverviewItemFillMode();
+  scoped_tall.UpdateOverviewItemFillMode();
+  scoped_normal.UpdateOverviewItemFillMode();
 
   // Verify that |wide| has its window dimension type updated after the display
   // change.
-  EXPECT_EQ(OverviewGridWindowFillMode::kNormal, scoped_wide.type());
-  EXPECT_EQ(OverviewGridWindowFillMode::kPillarBoxed, scoped_tall.type());
-  EXPECT_EQ(OverviewGridWindowFillMode::kNormal, scoped_normal.type());
+  EXPECT_EQ(OverviewItemFillMode::kNormal, scoped_wide.fill_mode());
+  EXPECT_EQ(OverviewItemFillMode::kPillarBoxed, scoped_tall.fill_mode());
+  EXPECT_EQ(OverviewItemFillMode::kNormal, scoped_normal.fill_mode());
 }
 
 // Tests that transients which should be invisible in overview do not have their

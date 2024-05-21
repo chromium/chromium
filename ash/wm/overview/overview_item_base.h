@@ -294,11 +294,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Stops the current animation of `item_widget_`.
   virtual void StopWidgetAnimation() = 0;
 
-  virtual OverviewGridWindowFillMode GetWindowDimensionsType() const = 0;
+  virtual OverviewItemFillMode GetOverviewItemFillMode() const = 0;
 
-  // Recalculates the window dimensions type of the transform window. Called on
-  // window bounds change.
-  virtual void UpdateWindowDimensionsType() = 0;
+  // Updates the `OverviewItemFillMode` for this item.
+  virtual void UpdateOverviewItemFillMode() = 0;
 
   // Returns the point the accessibility magnifiers should focus on when `this`
   // is focused.
