@@ -38,6 +38,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/bookmark.xml",
+    "java/res/drawable/bottom_bar_page_insights_icon.xml",
     "java/res/layout/google_bottom_bar_even.xml",
     "java/res/layout/google_bottom_bar_spotlight.xml",
     "java/res/values/colors.xml",
