@@ -5,19 +5,23 @@
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_progress/cr_progress.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '../demo.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './progress_indicator_demo.html.js';
+import {getCss} from './progress_indicator_demo.css.js';
+import {getHtml} from './progress_indicator_demo.html.js';
 
-class ProgressIndicatorDemoElement extends PolymerElement {
+export class ProgressIndicatorDemoElement extends CrLitElement {
   static get is() {
     return 'progress-indicator-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
 

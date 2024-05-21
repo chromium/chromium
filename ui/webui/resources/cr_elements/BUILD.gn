@@ -146,6 +146,7 @@ build_webui("build") {
       "cr_icons.css",
       "cr_icons_lit.css",
       "cr_nav_menu_item_style.css",
+      "cr_nav_menu_item_style_lit.css",
       "cr_page_host_style.css",
       "cr_page_host_style_lit.css",
       "cr_radio_button/cr_radio_button.css",

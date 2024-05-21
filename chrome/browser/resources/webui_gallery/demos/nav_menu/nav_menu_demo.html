@@ -1,28 +1,28 @@
-<style include="cr-hidden-style cr-nav-menu-item-style demo">
-  nav-menu {
-    display: block;
-    width: 100%;
-  }
-</style>
-
 <h1>Navigation menus</h1>
 <div class="demos">
-  <cr-checkbox checked="{{showIcons_}}">Show icons</cr-checkbox>
-  <cr-checkbox checked="{{showRipples_}}">Show ripples on click</cr-checkbox>
-  <cr-button on-click="showDrawerMenu_">Show menu in a drawer</cr-button>
-  <nav-menu hidden$="[[isDrawerOpen_]]"
-      show-icons="[[showIcons_]]" show-ripples="[[showRipples_]]"
-      selected-index="[[selectedIndex_]]"
-      on-selected-index-changed="onSelectedIndexChanged_">
+  <cr-checkbox ?checked="${this.showIcons_}"
+      @checked-changed="${this.onShowIconsChanged_}">
+    Show icons
+  </cr-checkbox>
+  <cr-checkbox ?checked="${this.showRipples_}"
+      @checked-changed="${this.onShowRipplesChanged_}">
+    Show ripples on click
+  </cr-checkbox>
+  <cr-button @click="${this.showDrawerMenu_}">Show menu in a drawer</cr-button>
+  <nav-menu ?hidden="${this.isDrawerOpen_}"
+      ?show-icons="${this.showIcons_}" ?show-ripples="${this.showRipples_}"
+      .selectedIndex="${this.selectedIndex_}"
+      @selected-index-changed="${this.onSelectedIndexChanged_}">
   </nav-menu>
-  <div>Selected index: [[selectedIndex_]]</div>
+  <div>Selected index: ${this.selectedIndex_}</div>
 </div>
 
-<cr-drawer id="drawer" heading="Drawer" on-close="onDrawerClose_">
+<cr-drawer id="drawer" heading="Drawer" @close="${this.onDrawerClose_}">
   <div slot="body">
     <nav-menu
-        show-icons="[[showIcons_]]"
-        selected-index="[[selectedIndex_]]"
-        on-selected-index-changed="onSelectedIndexChanged_"></nav-menu>
+        ?show-icons="${this.showIcons_}" ?show-ripples="${this.showRipples_}"
+        .selectedIndex="${this.selectedIndex_}"
+        @selected-index-changed="${this.onSelectedIndexChanged_}">
+    </nav-menu>
   </div>
 </cr-drawer>

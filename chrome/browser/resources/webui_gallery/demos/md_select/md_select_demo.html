@@ -1,11 +1,9 @@
-<style include="md-select demo"></style>
-
 <h1>Select menus</h1>
 <div class="demos">
   <div class="row center">
     <label id="label">Select an option</label>
-    <select id="select" class="md-select" value="[[selectedOption_]]"
-        on-change="onSelectValueChanged_"
+    <select id="select" class="md-select" value="${this.selectedOption_}"
+        @change="${this.onSelectValueChanged_}"
         aria-labelledby="label">
       <option value="one">Option 1</option>
       <option value="two">Option 2</option>
@@ -15,7 +13,7 @@
     </select>
   </div>
 
-  <div>Selected value: [[selectedOption_]]</div>
+  <div>Selected value: ${this.selectedOption_}</div>
 
   <div class="row center">
     <label id="disabled-label">Select an option</label>
