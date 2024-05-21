@@ -125,8 +125,9 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
   // TODO(http://b/325335020): Handle multidisplay focus.
   OverviewGrid* primary_grid =
       overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  maybe_add_widget(primary_grid->pine_widget());
+  maybe_add_widget(primary_grid->desks_widget());
   maybe_add_widget(primary_grid->save_desk_button_container_widget());
+  maybe_add_widget(primary_grid->pine_widget());
   maybe_add_widget(primary_grid->feedback_widget());
   maybe_add_widget(primary_grid->birch_bar_widget());
   maybe_add_widget(primary_grid->saved_desk_library_widget());

@@ -2378,7 +2378,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
     save_desk_button_container_widget_->GetLayer()
         ->GetAnimator()
         ->StopAnimating();
-    save_desk_button_container_widget_->Show();
+    save_desk_button_container_widget_->ShowInactive();
     PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
                        /*animate=*/!in_desk_animation);
   }

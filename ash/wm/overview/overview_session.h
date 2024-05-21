@@ -398,6 +398,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   }
 
   OverviewFocusCyclerOld* focus_cycler_old() { return focus_cycler_old_.get(); }
+  OverviewFocusCycler* focus_cycler() { return focus_cycler_.get(); }
 
   SavedDeskPresenter* saved_desk_presenter() {
     return saved_desk_presenter_.get();

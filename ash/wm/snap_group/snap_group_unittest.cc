@@ -4688,6 +4688,12 @@ TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
 // returning to the original desk where the Snap Group belongs does not re-snap
 // the windows. See regression at http://b/334221711.
 TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
+  // TODO(http://b/325335020): Tabbing onto overview items is not supported
+  // yet.
+  if (features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
+
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());

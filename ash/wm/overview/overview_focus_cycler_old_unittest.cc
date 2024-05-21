@@ -557,6 +557,7 @@ TEST_P(DesksOverviewFocusCyclerOldTest, TabbingReverse) {
 
 // Tests that we can tab and chromevox interchangeably through the desk mini
 // views and new desk button in the correct order.
+// TODO(http://b/325335020): Port this test to `DesksOverviewFocusCyclerTest`.
 TEST_P(DesksOverviewFocusCyclerOldTest, TabbingChromevox) {
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   ToggleOverview();
@@ -594,6 +595,7 @@ TEST_P(DesksOverviewFocusCyclerOldTest, TabbingChromevox) {
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
+// TODO(http://b/325335020): Port this test to `DesksOverviewFocusCyclerTest`.
 TEST_P(DesksOverviewFocusCyclerOldTest, TabbingMultiDisplay) {
   UpdateDisplay("600x400,600x400,600x400");
   std::vector<raw_ptr<aura::Window, VectorExperimental>> roots =
@@ -761,6 +763,7 @@ TEST_P(DesksOverviewFocusCyclerOldTest, ActivateHighlightOnMiniView) {
   EXPECT_EQ(desks_controller->active_desk(), desks[1].get());
 }
 
+// TODO(http://b/325335020): Port this test to `DesksOverviewFocusCyclerTest`.
 TEST_P(DesksOverviewFocusCyclerOldTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());

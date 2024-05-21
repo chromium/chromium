@@ -740,6 +740,10 @@ TEST_F(PineTest, PineWidgetTabTraversal) {
 
   StartPineOverviewSession(MakeTestAppIds(1));
 
+  // Tab through the default desk button and zero state new desk button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+
   views::Widget* pine_widget =
       OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))
           .pine_widget();
@@ -748,18 +752,18 @@ TEST_F(PineTest, PineWidgetTabTraversal) {
   const PineContentsView* contents = GetContentsView();
 
   // Tab a couple times through the pine widgets focusable views.
-  PressAndReleaseKey(ui::VKEY_TAB, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(contents->GetViewByID(pine::kCancelButtonID),
             focus_manager->GetFocusedView());
-  PressAndReleaseKey(ui::VKEY_TAB, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(contents->GetViewByID(pine::kRestoreButtonID),
             focus_manager->GetFocusedView());
-  PressAndReleaseKey(ui::VKEY_TAB, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(contents->GetViewByID(pine::kSettingsButtonID),
             focus_manager->GetFocusedView());
 
   // The focus is now on a view not associated with `focus_manager`.
-  PressAndReleaseKey(ui::VKEY_TAB, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(focus_manager->GetFocusedView());
 
   // Reverse focus and verify it lands on the pine widgets last focusable view.

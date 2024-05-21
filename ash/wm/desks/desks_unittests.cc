@@ -339,12 +339,13 @@ bool TabUntil(bool reverse, Predicate&& predicate) {
 auto OverviewItemFocused(DeskBarViewBase::Type type,
                          OverviewFocusableView* view) {
   return [type, view] {
-    if (type == DeskBarViewBase::Type::kOverview) {
+    if (type == DeskBarViewBase::Type::kOverview &&
+        !features::IsOverviewNewFocusEnabled()) {
       return view->is_focused();
-    } else {
-      CHECK(view->GetView());
-      return view->GetView()->HasFocus();
     }
+
+    CHECK(view->GetView());
+    return view->GetView()->HasFocus();
   };
 }
 
@@ -476,6 +477,7 @@ struct DesksTestParams {
   bool use_touch_gestures = false;
   bool use_16_desks = false;
   bool per_desk_shelf = false;
+  bool overview_new_focus = false;
 };
 
 // Defines a parameterized test fixture to test Virtual Desks behavior.
@@ -499,6 +501,7 @@ class DesksTest : public AshTestBase,
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kFeatureManagement16Desks, GetParam().use_16_desks},
          {features::kPerDeskShelf, GetParam().per_desk_shelf},
+         {features::kOverviewNewFocus, GetParam().overview_new_focus},
          {features::kFasterSplitScreenSetup, true},
          {features::kOsSettingsRevampWayfinding, true}});
 
@@ -7342,6 +7345,11 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
 }
 
 TEST_P(DesksTest, ReorderDesksByKeyboard) {
+  // TODO(http://b/325335020): Add reordering desks by keyboard support.
+  if (features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
+
   auto* desks_controller = DesksController::Get();
 
   auto* overview_controller = OverviewController::Get();
@@ -7499,6 +7507,12 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
   EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
   event_generator->ReleaseTouch();
+
+  // TODO(http://b/325335020): Add reordering desks by keyboard support.
+  if (features::IsOverviewNewFocusEnabled()) {
+    base::i18n::SetRTLForTesting(default_rtl);
+    return;
+  }
 
   // Swap the positions of `desk_0` and `desk_2` by keyboard. Focus `desk_0`.
   overview_controller->overview_session()->focus_cycler_old()->MoveFocusToView(
@@ -11968,6 +11982,7 @@ constexpr DesksTestParams kTestCombinations[] = {
     {.use_touch_gestures = true, .use_16_desks = true},
     // Per-desk shelf enabled combinations.
     {.per_desk_shelf = true},
+    {.overview_new_focus = true},
 };
 
 // This is used for tests that only want to test 8/16 desks.
@@ -11985,8 +12000,11 @@ std::string GetTestSuffix(const DesksTestParams& params) {
   std::string use_16 = GetDeskCountSuffix(params.use_16_desks);
   std::string use_per_desk_shelf =
       params.per_desk_shelf ? "PerDeskShelf" : "NoPerDeskShelf";
-  return base::StringPrintf("%s_%s_%s", use_touch.c_str(), use_16.c_str(),
-                            use_per_desk_shelf.c_str());
+  std::string overview_new_focus =
+      params.overview_new_focus ? "OverviewNewFocus" : "OverviewOldFocus";
+  return base::StringPrintf("%s_%s_%s_%s", use_touch.c_str(), use_16.c_str(),
+                            use_per_desk_shelf.c_str(),
+                            overview_new_focus.c_str());
 }
 
 std::string GetDeskCountOnlyTestSuffix(

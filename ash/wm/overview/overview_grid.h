@@ -491,6 +491,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
   const views::Widget* desks_widget() const { return desks_widget_.get(); }
+  views::Widget* desks_widget() { return desks_widget_.get(); }
 
   const LegacyDeskBarView* desks_bar_view() const { return desks_bar_view_; }
   LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }

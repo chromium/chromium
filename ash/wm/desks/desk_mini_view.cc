@@ -304,20 +304,19 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       return true;
     }
 
-    switch (owner_bar_->type()) {
-      case DeskBarViewBase::Type::kDeskButton: {
-        if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
-          return true;
-        }
-        return desk_profile_button_ && desk_profile_button_->HasFocus();
+    if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
+        !features::IsOverviewNewFocusEnabled()) {
+      if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
+        return true;
       }
-      case DeskBarViewBase::Type::kOverview: {
-        if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
-          return true;
-        }
-        return desk_profile_button_ && desk_profile_button_->is_focused();
-      }
+      return desk_profile_button_ && desk_profile_button_->is_focused();
     }
+
+    // New overview focus uses the same mechanisms as the desk button desk bar.
+    if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
+      return true;
+    }
+    return desk_profile_button_ && desk_profile_button_->HasFocus();
   };
 
   const bool visible = get_visible();
@@ -541,8 +540,12 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 }
 
 void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
-  if ((owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-       !desk_action_view_->ChildHasFocus() &&
+  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
+      !features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
+
+  if ((!desk_action_view_->ChildHasFocus() &&
        (desk_profile_button_ == nullptr ||
         !desk_profile_button_->HasFocus()))) {
     auto* combine_desks_button = desk_action_view_->combine_desks_button();

@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_action_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -52,7 +53,8 @@ DeskActionView::~DeskActionView() {
 }
 
 bool DeskActionView::ChildHasFocus() const {
-  if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview) {
+  if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview &&
+      !features::IsOverviewNewFocusEnabled()) {
     return combine_desks_button_->is_focused() ||
            close_all_button_->is_focused();
   }

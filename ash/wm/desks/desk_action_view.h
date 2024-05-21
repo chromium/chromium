@@ -22,7 +22,7 @@ class DeskMiniView;
 // A view that holds buttons that act on a single DeskMiniView instance, such as
 // combining two desks or closing a desk and all of its windows.
 class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
-                                  views::ViewObserver {
+                                  public views::ViewObserver {
   METADATA_HEADER(DeskActionView, views::BoxLayoutView)
 
  public:

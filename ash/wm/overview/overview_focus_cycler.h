@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 
 namespace views {
@@ -17,7 +18,7 @@ class View;
 namespace ash {
 class OverviewSession;
 
-class OverviewFocusCycler {
+class ASH_EXPORT OverviewFocusCycler {
  public:
   explicit OverviewFocusCycler(OverviewSession* overview_session);
   OverviewFocusCycler(const OverviewFocusCycler&) = delete;
