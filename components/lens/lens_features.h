@@ -299,7 +299,7 @@ extern bool IsLensOverlayGoogleDseRequired();
 // Returns the finch configured loading image URL for the results in Lens
 // Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayResultsSearchLoadingURL();
+extern std::string GetLensOverlayResultsSearchLoadingURL(bool dark_mode);
 
 // Returns the ideal height of the region that is created when a user taps
 // rather than drags.

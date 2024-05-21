@@ -84,6 +84,11 @@ const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
     "https://www.gstatic.com/lens/chrome/"
     "lens_overlay_sidepanel_results_ghostloader_light-"
     "71af0ff0f00a1a03d3fe8abad71a2665.svg"};
+const base::FeatureParam<std::string> kResultsSearchLoadingDarkModeUrl{
+    &kLensOverlay, "results-search-loading-dark-mode-url",
+    "https://www.gstatic.com/lens/chrome/"
+    "lens_overlay_sidepanel_results_ghostloader_dark-"
+    "b7b5c4f8c8891c881b7a20344f5298b0.svg"};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -331,8 +336,9 @@ bool IsLensOverlayGoogleDseRequired() {
   return kLensOverlayGoogleDseRequired.Get();
 }
 
-std::string GetLensOverlayResultsSearchLoadingURL() {
-  return kResultsSearchLoadingUrl.Get();
+std::string GetLensOverlayResultsSearchLoadingURL(bool dark_mode) {
+  return dark_mode ? kResultsSearchLoadingDarkModeUrl.Get()
+                   : kResultsSearchLoadingUrl.Get();
 }
 
 int GetLensOverlayTapRegionHeight() {

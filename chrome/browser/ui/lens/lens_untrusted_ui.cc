@@ -65,7 +65,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add finch flags
   html_source->AddString(
       "resultsLoadingUrl",
-      lens::features::GetLensOverlayResultsSearchLoadingURL());
+      lens::features::GetLensOverlayResultsSearchLoadingURL(
+          lens::LensOverlayShouldUseDarkMode(
+              ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui)))));
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
   html_source->AddBoolean(
