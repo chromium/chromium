@@ -77,16 +77,29 @@ MLComputeResult* ToMLComputeResult(V8TestingScope* scope, ScriptValue value) {
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
 }
 
+String ExceptionCodeToString(ExceptionCode exception_code) {
+  switch (static_cast<ESErrorType>(exception_code)) {
+    case ESErrorType::kTypeError:
+      return "TypeError";
+    default:
+      NOTREACHED();
+      return "UnknownError";
+  }
+}
+
 std::pair<String, String> MLGraphTestBase::ComputeGraph(
     V8TestingScope& scope,
     MLGraph* graph,
     MLNamedArrayBufferViews& inputs,
     MLNamedArrayBufferViews& outputs) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-      scope.GetScriptState());
-  ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-  graph->Compute(ScopedMLTrace("Compute"), inputs, outputs, resolver,
-                 scope.GetExceptionState());
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      graph->Compute(ScopedMLTrace("Compute"), inputs, outputs,
+                     scope.GetScriptState(), scope.GetExceptionState()));
+  if (scope.GetExceptionState().HadException()) {
+    return {ExceptionCodeToString(scope.GetExceptionState().Code()),
+            scope.GetExceptionState().Message()};
+  }
   tester.WaitUntilSettled();
   if (tester.IsFulfilled()) {
     // For `MLGraph::Compute()`, the input and output ArrayBufferViews

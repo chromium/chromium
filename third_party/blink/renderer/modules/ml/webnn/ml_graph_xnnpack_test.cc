@@ -599,17 +599,13 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     ASSERT_TRUE(a_buffer_view->IsDetached());
     auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-            scope.GetScriptState());
-    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
-    tester.WaitUntilSettled();
-    EXPECT_FALSE(tester.IsFulfilled());
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", a_buffer_view);
+    inputs.emplace_back("b", b_buffer_view);
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("output", output_buffer_view);
     auto [error_name, error_message] =
-        GetErrorNameAndMessage(&scope, tester.Value());
+        ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(
         error_message,
@@ -617,6 +613,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     // Other ArrayBufferViews should not be detached.
     EXPECT_FALSE(b_buffer_view->IsDetached());
     EXPECT_FALSE(output_buffer_view->IsDetached());
+    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if the second input ArrayBufferView is detached.
@@ -625,17 +622,13 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     b_buffer_view->DetachForTesting();
     ASSERT_TRUE(b_buffer_view->IsDetached());
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-            scope.GetScriptState());
-    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
-    tester.WaitUntilSettled();
-    EXPECT_FALSE(tester.IsFulfilled());
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", a_buffer_view);
+    inputs.emplace_back("b", b_buffer_view);
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("output", output_buffer_view);
     auto [error_name, error_message] =
-        GetErrorNameAndMessage(&scope, tester.Value());
+        ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(
         error_message,
@@ -643,6 +636,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     // Other ArrayBufferViews should not be detached.
     EXPECT_FALSE(a_buffer_view->IsDetached());
     EXPECT_FALSE(output_buffer_view->IsDetached());
+    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if the output ArrayBufferView is detached.
@@ -651,17 +645,13 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
     output_buffer_view->DetachForTesting();
     ASSERT_TRUE(output_buffer_view->IsDetached());
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-            scope.GetScriptState());
-    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
-    tester.WaitUntilSettled();
-    EXPECT_FALSE(tester.IsFulfilled());
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", a_buffer_view);
+    inputs.emplace_back("b", b_buffer_view);
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("output", output_buffer_view);
     auto [error_name, error_message] =
-        GetErrorNameAndMessage(&scope, tester.Value());
+        ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message,
               "Invalid outputs: The array buffer view with name \"output\" is "
@@ -669,6 +659,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     // Other ArrayBufferViews should not be detached.
     EXPECT_FALSE(a_buffer_view->IsDetached());
     EXPECT_FALSE(b_buffer_view->IsDetached());
+    scope.GetExceptionState().ClearException();
   }
   {
     // Test the input and output ArrayBufferViews are detached if
@@ -676,13 +667,12 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
     auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-            scope.GetScriptState());
-    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    ScriptPromiseTester tester(
+        scope.GetScriptState(),
+        graph->Compute(ScopedMLTrace("Compute"),
+                       {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                       {{"output", output_buffer_view}}, scope.GetScriptState(),
+                       scope.GetExceptionState()));
     EXPECT_TRUE(a_buffer_view->IsDetached());
     EXPECT_TRUE(b_buffer_view->IsDetached());
     EXPECT_TRUE(output_buffer_view->IsDetached());
@@ -718,13 +708,12 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     ASSERT_EQ(output_buffer_view_byte_offset, expected_byte_offset);
     size_t output_buffer_view_byte_length = output_buffer_view->byteLength();
     void* output_buffer_view_base_address = output_buffer_view->BaseAddress();
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-            scope.GetScriptState());
-    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    ScriptPromiseTester tester(
+        scope.GetScriptState(),
+        graph->Compute(ScopedMLTrace("Compute"),
+                       {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                       {{"output", output_buffer_view}}, scope.GetScriptState(),
+                       scope.GetExceptionState()));
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
     auto* compute_result = NativeValueTraits<MLComputeResult>::NativeValue(

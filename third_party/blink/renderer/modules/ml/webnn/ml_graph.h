@@ -59,11 +59,11 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // ones to ComputeImpl() implemented by an MLGraph backend that binds the
   // array buffer views and executes the compiled platform graph. This method is
   // called by MLContext to implement MLContext.compute() method.
-  void Compute(ScopedMLTrace scoped_trace,
-               const MLNamedArrayBufferViews& inputs,
-               const MLNamedArrayBufferViews& outputs,
-               ScriptPromiseResolver<MLComputeResult>* resolver,
-               ExceptionState& exception_state);
+  ScriptPromise<MLComputeResult> Compute(ScopedMLTrace scoped_trace,
+                                         const MLNamedArrayBufferViews& inputs,
+                                         const MLNamedArrayBufferViews& outputs,
+                                         ScriptState* script_state,
+                                         ExceptionState& exception_state);
 
   // This method validates the input and output MLNamedBuffers against
   // the graph's input and output resources info. If there are no errors, it

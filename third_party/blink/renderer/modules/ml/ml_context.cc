@@ -160,18 +160,14 @@ ScriptPromise<MLComputeResult> MLContext::compute(
     return ScriptPromise<MLComputeResult>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
   if (graph->Context() != this) {
-    resolver->RejectWithTypeError("The graph isn't built within this context.");
-  } else {
-    graph->Compute(std::move(scoped_trace), inputs, outputs, resolver,
-                   exception_state);
+    exception_state.ThrowTypeError(
+        "The graph isn't built within this context.");
+    return ScriptPromise<MLComputeResult>();
   }
 
-  return promise;
+  return graph->Compute(std::move(scoped_trace), inputs, outputs, script_state,
+                        exception_state);
 }
 
 void MLContext::CreateWebNNGraph(

@@ -32,10 +32,10 @@ namespace {
     return;                                                       \
   });
 
-#define REJECT_AND_RETURN_IF_ERROR(func, msg)              \
-  RETURN_IF_ERROR(func, [&resolver](const String& error) { \
-    resolver->RejectWithTypeError(msg + error);            \
-    return;                                                \
+#define THROW_AND_RETURN_TYPE_IF_ERROR(func, return_value, msg)   \
+  RETURN_IF_ERROR(func, [&exception_state](const String& error) { \
+    exception_state.ThrowTypeError(msg + error);                  \
+    return return_value;                                          \
   });
 
 base::expected<void, String> ValidateNamedArrayBufferViews(
@@ -160,25 +160,32 @@ const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
   return output_resources_info_;
 }
 
-void MLGraph::Compute(ScopedMLTrace scoped_trace,
-                      const MLNamedArrayBufferViews& inputs,
-                      const MLNamedArrayBufferViews& outputs,
-                      ScriptPromiseResolver<MLComputeResult>* resolver,
-                      ExceptionState& exception_state) {
+ScriptPromise<MLComputeResult> MLGraph::Compute(
+    ScopedMLTrace scoped_trace,
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // The MLGraph object should be initialized before computing.
   DCHECK(resources_info_initialized_);
 
   // Validate the MLNamedArrayBufferViews.
-  REJECT_AND_RETURN_IF_ERROR(
+  THROW_AND_RETURN_TYPE_IF_ERROR(
       ValidateNamedArrayBufferViews(inputs, input_resources_info_),
-      "Invalid inputs: ");
-  REJECT_AND_RETURN_IF_ERROR(
+      ScriptPromise<MLComputeResult>(), "Invalid inputs: ");
+  THROW_AND_RETURN_TYPE_IF_ERROR(
       ValidateNamedArrayBufferViews(outputs, output_resources_info_),
-      "Invalid outputs: ");
+      ScriptPromise<MLComputeResult>(), "Invalid outputs: ");
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // Call ComputeImpl() implemented by an MLGraph backend.
   ComputeImpl(std::move(scoped_trace), inputs, outputs, resolver,
               exception_state);
+
+  return promise;
 }
 
 void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
@@ -205,8 +212,13 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
 void MLGraph::Build(ScopedMLTrace scoped_trace,
                     const MLNamedOperands& named_outputs,
                     ScriptPromiseResolver<MLGraph>* resolver) {
-  REJECT_AND_RETURN_IF_ERROR(ValidateAndInitializeResourcesInfo(named_outputs),
-                             "");
+  // TODO(crbug.com/40278771): replace with THROW_AND_RETURN_IF_ERROR.
+  RETURN_IF_ERROR(ValidateAndInitializeResourcesInfo(named_outputs),
+                  [&resolver](const String& error) {
+                    resolver->RejectWithTypeError(error);
+                    return;
+                  });
+
   BuildImpl(std::move(scoped_trace), named_outputs, resolver);
 }
 
