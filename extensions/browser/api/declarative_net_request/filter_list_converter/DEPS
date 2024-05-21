@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/subresource_filter/tools/ruleset_converter",
-]

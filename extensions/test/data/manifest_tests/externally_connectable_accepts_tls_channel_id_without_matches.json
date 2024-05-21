@@ -1,9 +1,0 @@
-{
-  "name": "unit_tests --gtest_filter=ExternallyConnectableTest.UnusedAcceptsTlsChannelId",
-  "version": "1",
-  "manifest_version": 3,
-  "externally_connectable": {
-    "accepts_tls_channel_id": true,
-    "matches": []
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "description": "If _locales is present, default_locale has to be defined too.",
-  "manifest_version": 2,
-  "name": "missing_default_has_locales",
-  "version": "1.0"
-}

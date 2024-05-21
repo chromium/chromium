@@ -1,8 +1,0 @@
-{
-   "name": "PageAction Test",
-   "version": "1.0",
-   "manifest_version": 2,
-   "page_action": {
-      "default_title": 42
-   }
-}

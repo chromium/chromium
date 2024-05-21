@@ -1,6 +1,0 @@
-{
-  "name": "test",
-  "manifest_version": 2,
-  "version": "1",
-  "incognito": "not_allowed"
-}

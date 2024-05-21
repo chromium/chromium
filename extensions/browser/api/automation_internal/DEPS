@@ -1,3 +1,0 @@
-include_rules = [
-  "+services/accessibility/public/mojom"
-]

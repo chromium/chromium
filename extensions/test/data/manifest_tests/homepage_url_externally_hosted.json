@@ -1,6 +1,0 @@
-{
-  "name": "foo",
-  "manifest_version": 2,
-  "version": "1",
-  "update_url": "http://foo.com/bar.xml"
-}

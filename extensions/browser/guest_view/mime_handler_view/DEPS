@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/grit/components_resources.h",
-  "+components/pdf/common/constants.h",
-  "+pdf/pdf_features.h",
-]

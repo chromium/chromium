@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/url_pattern_index",
-  "+third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h",
-  "+tools/json_schema_compiler/util.h"
-]

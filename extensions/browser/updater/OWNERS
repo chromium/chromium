@@ -1,7 +1,0 @@
-# For the extension downloader flow (ExtensionDownloader and its part, like
-# ManifestFetchData, the delegate or RequestQueue).
-burunduk@chromium.org
-
-# For the UpdateClient flow (UpdateService and its parts).
-sorin@chromium.org
-waffles@chromium.org

@@ -1,7 +1,0 @@
-{
-  "description": "Default locale has to be string and can't be empty",
-  "manifest_version": 2,
-  "name": "invalid_default_locale",
-  "default_locale": 5,
-  "version": "1.0"
-}

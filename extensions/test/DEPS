@@ -1,5 +1,0 @@
-include_rules = [
-  "+content/public",
-  "+ui/aura/test",
-  "+ui/gl",
-]

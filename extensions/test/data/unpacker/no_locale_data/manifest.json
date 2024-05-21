@@ -1,7 +1,0 @@
-{
-  "description": "_locales can't be empty",
-  "manifest_version": 2,
-  "name": "no_locale_data",
-  "default_locale": "en_US",
-  "version": "1.0"
-}

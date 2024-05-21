@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/nacl/common",
-  "+components/nacl/renderer/plugin",
-  "+extensions/shell/grit",
-  "+ppapi",
-]

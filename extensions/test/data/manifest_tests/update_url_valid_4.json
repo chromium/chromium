@@ -1,6 +1,0 @@
-{
-   "name": "Test",
-   "manifest_version": 2,
-   "update_url": "http://test.com/update?check=true",
-   "version": "1.0"
-}

@@ -1,8 +1,0 @@
-{
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMZElzFX2J1g1nRQ/8S3rg/1CjFyDltWOxQg+9M8aVgNVxbutEWFQz+oQzIP9BB67mJifULgiv12ToFKsae4NpEUR8sPZjiKDIHumc6pUdixOm8SJ5Rs16SMR6+VYxFUjlVW+5CA3IILptmNBxgpfyqoK0qRpBDIhGk1KDEZ4zqQIDAQAB",
-  "name": "chrome.feedbackPrivate basic extension tests",
-  "version": "1.0",
-  "manifest_version": 2,
-  "app": { "background": { "scripts": ["test.js"] } },
-  "permissions": ["feedbackPrivate"]
-}

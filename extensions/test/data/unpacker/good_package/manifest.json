@@ -1,9 +1,0 @@
-{
-  "name": "Good Package",
-  "manifest_version": 2,
-  "version": "1.0",
-  "description": "Good (valid) package to be used for unit testing.",
-  "icons": {
-    "128": "product_logo_128.png"
-  }
-}

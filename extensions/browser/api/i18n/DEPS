@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/language/core/browser/pref_names.h",
-]

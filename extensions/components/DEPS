@@ -1,7 +1,0 @@
-include_rules = [
-  # Things in extensions/components can depend on extensions, but not other
-  # extensions/components in a way that could make a cycle in the dependency
-  # graph. Individual components must explicitly declare their dependencies
-  # on other components.
-  "-extensions/components",
-]

@@ -1,7 +1,0 @@
-{
-  "name": "Bad Image",
-  "version": "1.0",
-  "manifest_version": 2,
-  "description": "Package with a bad image to be used for unit testing.",
-  "icons": { "128":  "not_really_an_image.png" }
-}

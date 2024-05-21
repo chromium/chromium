@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+third_party/blink/public/mojom/page/draggable_region.mojom-forward.h",
-  "+third_party/blink/public/mojom/page/draggable_region.mojom.h",
-  "+third_party/skia/include/core/SkRegion.h",
-
-  "+ui/aura",
-  "+ui/views",
-]

@@ -1,3 +1,0 @@
-include_rules = [
-  "+services/service_manager/public/mojom",
-]

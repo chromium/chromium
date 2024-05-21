@@ -1,6 +1,0 @@
-{
-  "name": "foo",
-  "manifest_version": 2,
-  "version": "1",
-  "update_url": "https://clients2.google.com/service/update2/crx"
-}

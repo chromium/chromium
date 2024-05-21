@@ -1,6 +1,0 @@
-{
-   "name": "PageAction Test",
-   "manifest_version": 2,
-   "version": "1.0",
-   "page_action": { }
-}

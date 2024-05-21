@@ -1,7 +1,0 @@
-{
-  "description": "All is well",
-  "manifest_version": 2,
-  "name": "good_l10n",
-  "default_locale": "sr",
-  "version": "1.0"
-}

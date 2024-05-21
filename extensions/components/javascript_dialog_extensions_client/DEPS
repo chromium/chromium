@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/javascript_dialogs",
-  "+content/public/browser",
-  "+extensions/browser",
-  "+extensions/common",
-]

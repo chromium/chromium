@@ -1,7 +1,0 @@
-{
-  "description": "Cannot have default_locale but skip _locales",
-  "manifest_version": 2,
-  "name": "has_default_missing_locales",
-  "default_locale": "en_US",
-  "version": "1.0"
-}

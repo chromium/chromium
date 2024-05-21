@@ -1,3 +1,0 @@
-include_rules = [
-  "+services/video_capture/public/mojom",
-]

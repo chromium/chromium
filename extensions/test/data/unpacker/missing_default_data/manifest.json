@@ -1,7 +1,0 @@
-{
-  "description": "Data for default_locale has to be present",
-  "manifest_version": 2,
-  "name": "missing_default_data",
-  "default_locale": "sr",
-  "version": "1.0"
-}
