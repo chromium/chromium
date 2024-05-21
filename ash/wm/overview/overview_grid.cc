@@ -1732,7 +1732,7 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
 
   // Calculate the bottom padding according to the existence of birch bar,
   // shelf, and home launcher.
-  if (birch_bar_view_) {
+  if (birch_bar_view_ && birch_bar_view_->GetChipsNum()) {
     // If birch bar exists, add compact padding with the maximum birch bar
     // height and birch bar bottom padding to the bottom.
     vertical_paddings.set_bottom(GetBirchBarBottomPadding(root_window_) +
@@ -2537,7 +2537,7 @@ gfx::Rect OverviewGrid::GetWallpaperClipBounds() const {
   // The bottom of the clipping bounds should be above the birch bar.
   gfx::Rect clipping_bounds = GetGridEffectiveBounds();
 
-  if (birch_bar_widget_) {
+  if (birch_bar_widget_ && birch_bar_view_->GetChipsNum()) {
     clipping_bounds.SetVerticalBounds(
         clipping_bounds.y(), birch_bar_widget_->GetWindowBoundsInScreen().y() -
                                  kCompactPaddingForEffectiveBounds);
