@@ -52,44 +52,44 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Exact match
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"My Files",
-            .expected_categories = {PickerCategory::kLocalFiles},
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"Browsing history",
+            .expected_categories = {PickerCategory::kLinks},
         },
         // Case-insensitive match
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"mY fIlEs",
-            .expected_categories = {PickerCategory::kLocalFiles},
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"bRoWsInG hIsToRy",
+            .expected_categories = {PickerCategory::kLinks},
         },
         // Prefix match
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"m",
-            .expected_categories = {PickerCategory::kLocalFiles},
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"b",
+            .expected_categories = {PickerCategory::kLinks},
         },
         // Prefix match in second word
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"fi",
-            .expected_categories = {PickerCategory::kLocalFiles},
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"hi",
+            .expected_categories = {PickerCategory::kLinks},
         },
         // Substring match
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"iles",
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"ist",
             .expected_categories = {},
         },
         // Category unavailable
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
-            .query = u"My Files",
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"Browsing history",
             .expected_categories = {},
         },
         // Not matched
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"My Files1",
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"Browsing history1",
             .expected_categories = {},
         }));
 

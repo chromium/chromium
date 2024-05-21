@@ -7146,22 +7146,22 @@ New install
         Browsing history
       </message>
       <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show Drive results.">
-        Drive Files
+        Google Drive
       </message>
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
-        My Files
+        Files
       </message>
       <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show date and time results.">
-        Dates &amp; Times
+        Date
       </message>
       <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show unit and maths results.">
-        Units &amp; Mathematics
+        Calculator
       </message>
       <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn on caps lock.">
-        Turn ON Caps Lock
+        Turn on Caps Lock
       </message>
       <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn off caps lock.">
-        Turn OFF Caps Lock
+        Turn off Caps Lock
       </message>
       <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show clipboard results.">
         Clipboard
