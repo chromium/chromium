@@ -52,8 +52,16 @@ class UserNotesInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/341994692): Flaky, especially on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TriggerNotesSidePanelFromTabContextMenu \
+  DISABLED_TriggerNotesSidePanelFromTabContextMenu
+#else
+#define MAYBE_TriggerNotesSidePanelFromTabContextMenu \
+  TriggerNotesSidePanelFromTabContextMenu
+#endif
 IN_PROC_BROWSER_TEST_F(UserNotesInteractiveTest,
-                       TriggerNotesSidePanelFromTabContextMenu) {
+                       MAYBE_TriggerNotesSidePanelFromTabContextMenu) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
   const DeepQuery kLastUserNoteQuery{"user-notes-app", "user-notes-list",
                                      "user-note:last-of-type"};
