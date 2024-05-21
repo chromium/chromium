@@ -106,12 +106,14 @@ public interface SyncService {
      *
      * @return true if the primary account is consented to Sync (the feature), false otherwise.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean hasSyncConsent();
 
     /**
      * Gets the set of data types that are currently syncing.
      *
-     * This is affected by whether sync is on.
+     * <p>This is affected by whether sync is on.
      *
      * @return ModelType set of active data types.
      */
