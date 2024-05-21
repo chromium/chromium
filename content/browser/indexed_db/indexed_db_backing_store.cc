@@ -411,34 +411,6 @@ bool DecodeExternalObjects(const std::string& data,
   return true;
 }
 
-bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  std::optional<int> limit =
-      base::GetMaximumPathComponentLength(leveldb_dir.DirName());
-  if (!limit.has_value()) {
-    DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
-// In limited testing, ChromeOS returns 143, other OSes 255.
-#if BUILDFLAG(IS_CHROMEOS)
-    limit = 143;
-#else
-    limit = 255;
-#endif
-  }
-  size_t component_length = leveldb_dir.BaseName().value().length();
-  if (component_length > static_cast<uint32_t>(*limit)) {
-    DLOG(WARNING) << "Path component length (" << component_length
-                  << ") exceeds maximum (" << *limit
-                  << ") allowed by this filesystem.";
-    const int min = 140;
-    const int max = 300;
-    const int num_buckets = 12;
-    base::UmaHistogramCustomCounts(
-        "WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength",
-        component_length, min, max, num_buckets);
-    return true;
-  }
-  return false;
-}
-
 Status DeleteBlobsInRange(IndexedDBBackingStore::Transaction* transaction,
                           int64_t database_id,
                           const std::string& start_key,
@@ -1381,7 +1353,7 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
     const std::string& message) {
   const base::FilePath info_path =
       path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
-  if (IsPathTooLong(info_path)) {
+  if (indexed_db::IsPathTooLong(info_path)) {
     return false;
   }
 
