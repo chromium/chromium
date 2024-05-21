@@ -12,20 +12,10 @@ namespace ash {
 
 ScopedNudgePause::ScopedNudgePause() {
   AnchoredNudgeManager::Get()->Pause();
-  // The old system nudge blocker can be deprecated once all nudges are migrated
-  // to the new component.
-  if (!features::IsSystemNudgeMigrationEnabled()) {
-    SystemNudgePauseManager::Get()->Pause();
-  }
 }
 
 ScopedNudgePause::~ScopedNudgePause() {
   AnchoredNudgeManager::Get()->Resume();
-  // The old system nudge blocker can be deprecated once all nudges are migrated
-  // to the new component.
-  if (!features::IsSystemNudgeMigrationEnabled()) {
-    SystemNudgePauseManager::Get()->Resume();
-  }
 }
 
 }  // namespace ash
