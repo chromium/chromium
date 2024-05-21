@@ -1,6 +1,6 @@
 file://ash/webui/PLATFORM_OWNERS
 
-bugsnash@chromium.org
+patricialor@chromium.org
 
 per-file BUILD.gn=*
 
