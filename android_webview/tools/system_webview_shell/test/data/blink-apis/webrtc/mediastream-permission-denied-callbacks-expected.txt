@@ -1,5 +1,0 @@
-Test MediaStream API permission denied callbacks in WebView
-onPermissionRequest: android.webkit.resource.VIDEO_CAPTURE,android.webkit.resource.AUDIO_CAPTURE
-request denied
-PASS: getUserMedia error callback, reason: NotAllowedError
-TEST FINISHED

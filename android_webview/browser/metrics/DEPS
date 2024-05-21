@@ -1,8 +1,0 @@
-include_rules = [
-  "-android_webview/browser",
-  "+android_webview/browser/lifecycle/webview_app_state_observer.h",
-  "+android_webview/browser/metrics",
-  "+components/component_updater",
-  "+components/metrics",
-  "+third_party/metrics_proto",
-]

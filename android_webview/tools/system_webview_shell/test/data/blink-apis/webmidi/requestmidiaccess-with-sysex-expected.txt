@@ -1,6 +1,0 @@
-Test navigator.requestMIDIAccess API in WebView
-onPermissionRequest: android.webkit.resource.MIDI_SYSEX
-request granted: android.webkit.resource.MIDI_SYSEX
-PASS: access.sysexEnabled is true
-PASS: requestMIDIAccess with option sysex:true succeeded.
-TEST FINISHED

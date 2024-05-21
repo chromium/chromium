@@ -1,7 +1,0 @@
-include_rules = [
-  "-android_webview",
-  "+android_webview/common",
-  "+android_webview/common_jni_headers",
-  "+android_webview/gpu",
-  "+content/public/gpu",
-]

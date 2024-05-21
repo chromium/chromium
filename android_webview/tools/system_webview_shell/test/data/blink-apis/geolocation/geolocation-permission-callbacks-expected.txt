@@ -1,5 +1,0 @@
-Test Geolocation API permission callbacks in WebView
-onGeolocationPermissionsShowPrompt
-geolocation request denied
-onError: code=1, message=User denied Geolocation
-TEST FINISHED

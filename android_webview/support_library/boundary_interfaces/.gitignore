@@ -1,4 +1,0 @@
-# For Android Studio, when we mirror this repo into the Android tree
-*.iml
-.gradle/
-.settings/

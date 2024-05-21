@@ -1,7 +1,0 @@
-This file is used by the WebView unittests for loading media asset files,
-see android_webview_unittests_apk and AwMediaUrlInterceptorTest.
-
-This is a text file, but we use the .ogg extension so that aapt will not
-compress its contents. This is ok for the purpose of the unit tests since
-they do not play the media, and they are only interested in the existence of
-an uncompressed media file in the assets directory.

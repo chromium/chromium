@@ -1,8 +1,0 @@
-include_rules = [
-  "-android_webview",
-  "+android_webview/public/browser",
-  "+android_webview/test/draw_fn_impl_jni_headers",
-  "+android_webview/test/shell/src/draw_fn",
-  "+ui/gl/android/scoped_a_native_window.h",
-  "+ui/gl/android/scoped_java_surface.h",
-]

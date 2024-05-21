@@ -1,5 +1,0 @@
-Test navigator.requestMIDIAccess API in WebView
-onPermissionRequest: android.webkit.resource.MIDI_SYSEX
-request denied
-PASS: requestMIDIAccess error, reason: SecurityError: An attempt was made to break through the security policy of the user agent.
-TEST FINISHED
