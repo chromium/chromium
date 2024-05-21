@@ -476,17 +476,6 @@ class TestAutofillClientTemplate : public T {
     device_authenticator_ = std::move(device_authenticator);
   }
 
-  void ShowMandatoryReauthOptInPrompt(
-      base::OnceClosure accept_mandatory_reauth_callback,
-      base::OnceClosure cancel_mandatory_reauth_callback,
-      base::RepeatingClosure close_mandatory_reauth_callback) override {
-    mandatory_reauth_opt_in_prompt_was_shown_ = true;
-  }
-
-  bool GetMandatoryReauthOptInPromptWasShown() {
-    return mandatory_reauth_opt_in_prompt_was_shown_;
-  }
-
   void ShowMandatoryReauthOptInConfirmation() override {
     mandatory_reauth_opt_in_prompt_was_reshown_ = true;
   }
@@ -740,9 +729,7 @@ class TestAutofillClientTemplate : public T {
   AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
       AutofillClient::SaveCardOfferUserDecision::kAccepted;
 
-  // Populated if mandatory re-auth opt-in was offered, or re-offered,
-  // respectively.
-  bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
+  // Populated if mandatory re-auth opt-in was re-offered.
   bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
 
   // Test addresses used to allow developers to test their forms.

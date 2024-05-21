@@ -74,6 +74,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
+  void ShowMandatoryReauthOptInPrompt(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback) override;
+
+  bool GetMandatoryReauthOptInPromptWasShown();
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -174,6 +180,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
       risk_based_authenticator_;
+
+  // Populated if mandatory re-auth opt-in was offered, or re-offered,
+  // respectively.
+  bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
 };
 
 }  // namespace payments

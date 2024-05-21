@@ -292,7 +292,8 @@ TEST_F(
 // prompt to be shown.
 TEST_F(MandatoryReauthManagerTest, StartOptInFlow) {
   mandatory_reauth_manager_->StartOptInFlow();
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
 }
 
 // Test that the MandatoryReauthManager correctly handles the case where the
@@ -536,7 +537,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
   // Counter is not changed since it's a successful opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
@@ -587,7 +589,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
   // fails.
   mandatory_reauth_manager_->OnUserAcceptedOptInPrompt();
 
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
   // Counter is increased by 1 since device authentication fails during opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),

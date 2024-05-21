@@ -493,14 +493,6 @@ class AutofillClient {
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
 
-  // Prompt the user to enable mandatory reauthentication for payment method
-  // autofill. When enabled, the user will be asked to authenticate using
-  // biometrics or device unlock before filling in payment method information.
-  virtual void ShowMandatoryReauthOptInPrompt(
-      base::OnceClosure accept_mandatory_reauth_callback,
-      base::OnceClosure cancel_mandatory_reauth_callback,
-      base::RepeatingClosure close_mandatory_reauth_callback);
-
   // Should only be called when we are sure re-showing the bubble will display a
   // confirmation bubble. If the most recent bubble was an opt-in bubble and it
   // was accepted, this will display the re-auth opt-in confirmation bubble.

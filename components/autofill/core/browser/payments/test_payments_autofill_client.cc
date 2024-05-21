@@ -147,6 +147,17 @@ TestPaymentsAutofillClient::GetRiskBasedAuthenticator() {
   return risk_based_authenticator_.get();
 }
 
+void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {
+  mandatory_reauth_opt_in_prompt_was_shown_ = true;
+}
+
+bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
+  return mandatory_reauth_opt_in_prompt_was_shown_;
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);
