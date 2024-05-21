@@ -133,7 +133,7 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
   error_screen_->SetUIState(NetworkError::UI_STATE_KIOSK_MODE);
   error_screen_->SetIsPersistentError(true);
   error_screen_->AllowGuestSignin(false);
-  error_screen_->AllowOfflineLogin(false);
+  error_screen_->DisallowOfflineLogin();
   switch (network_state) {
     case NetworkStateInformer::CAPTIVE_PORTAL: {
       error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
