@@ -1,5 +1,0 @@
-include_rules = [
-  # This overrides the -base rule in the parent directory, as this is a stub and
-  # there is no Ink code here.
-  "+base",
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+cc/test",
-  "+tools/v8_context_snapshot/buildflags.h",
-]
