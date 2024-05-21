@@ -1,4 +1,0 @@
-include_rules  =  [
-  "+components/fuchsia_component_support",
-  "+fuchsia_web/webinstance_host",
-]

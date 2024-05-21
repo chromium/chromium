@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "test_devtools_list_fetcher\.cc": [
-    "+net",
-  ],
-}

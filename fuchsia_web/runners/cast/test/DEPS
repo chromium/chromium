@@ -1,3 +1,0 @@
-include_rules = [
-  "+media/fuchsia/audio/fake_audio_device_enumerator_local_component.h",
-]
