@@ -16,7 +16,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -1613,7 +1612,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   const NSUInteger totalTabCount =
       count + self.topToolbar.pageControl.regularTabCount;
 
-  crash_keys::SetRegularTabCount(totalTabCount);
   [self handleTabCountChangeWithTabCount:totalTabCount];
 }
 
@@ -1801,10 +1799,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     const NSUInteger totalTabCount =
         count + self.topToolbar.pageControl.pinnedTabCount;
 
-    crash_keys::SetRegularTabCount(totalTabCount);
     [self handleTabCountChangeWithTabCount:totalTabCount];
   } else if (gridViewController == self.incognitoTabsViewController) {
-    crash_keys::SetIncognitoTabCount(count);
     [self handleTabCountChangeWithTabCount:count];
   }
 }

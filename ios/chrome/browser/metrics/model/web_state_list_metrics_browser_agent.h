@@ -38,7 +38,7 @@ class WebStateListMetricsBrowserAgent
   WebStateListMetricsBrowserAgent(Browser* browser,
                                   SessionMetrics* session_metrics);
 
-  // BrowserObserver methods
+  // BrowserObserver methods.
   void BrowserDestroyed(Browser* browser) override;
 
   // SessionRestorationObserver implementation.
@@ -47,7 +47,7 @@ class WebStateListMetricsBrowserAgent
       Browser* browser,
       const std::vector<web::WebState*>& restored_web_states) override;
 
-  // web::WebStateObserver
+  // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void PageLoaded(
@@ -62,6 +62,9 @@ class WebStateListMetricsBrowserAgent
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
 
+  // Updates tab count crash keys metrics.
+  void UpdateCrashkeysTabCount();
+
   // The WebStateList containing all the monitored tabs.
   raw_ptr<WebStateList> web_state_list_ = nullptr;
 
@@ -70,6 +73,10 @@ class WebStateListMetricsBrowserAgent
 
   // Whether metric recording is paused (for session restoration).
   bool metric_collection_paused_ = false;
+
+  // State of the Browser.
+  bool is_off_record_ = false;
+  bool is_inactive_ = false;
 
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>

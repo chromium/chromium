@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/navigation_metrics/navigation_metrics.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
@@ -42,6 +43,9 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   ChromeBrowserState* browser_state = browser->GetBrowserState();
   session_restoration_service_observation_.Observe(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+
+  is_off_record_ = browser_state->IsOffTheRecord();
+  is_inactive_ = browser->IsInactive();
 }
 
 WebStateListMetricsBrowserAgent::~WebStateListMetricsBrowserAgent() = default;
@@ -113,6 +117,21 @@ void WebStateListMetricsBrowserAgent::WebStateListDidChange(
 
     base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
   }
+  switch (change.type()) {
+    case WebStateListChange::Type::kInsert:
+    case WebStateListChange::Type::kDetach:
+    case WebStateListChange::Type::kMove: {
+      UpdateCrashkeysTabCount();
+      break;
+    }
+    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      break;
+  }
 }
 
 #pragma mark - WebStateObserver
@@ -168,4 +187,17 @@ void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   web_state_list_ = nullptr;
 
   browser->RemoveObserver(this);
+}
+
+void WebStateListMetricsBrowserAgent::UpdateCrashkeysTabCount() {
+  if (is_off_record_) {
+    crash_keys::SetIncognitoTabCount(web_state_list_->count());
+    return;
+  }
+  if (is_inactive_) {
+    crash_keys::SetInactiveTabCount(web_state_list_->count());
+    return;
+  }
+
+  crash_keys::SetRegularTabCount(web_state_list_->count());
 }
