@@ -48,24 +48,27 @@ class MagicBoostController {
   void ShowDisclaimerUi();
   void CloseDisclaimerUi();
 
-  // For testing.
-  views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
-  views::Widget* disclaimer_widget_for_test() {
-    return disclaimer_widget_.get();
-  }
-
   // Whether the Quick Answers and Mahi features should show the opt in UI.
   virtual bool ShouldQuickAnswersAndMahiShowOptIn();
 
   // Enables or disables all the features (including Quick Answers, Orca, and
   // Mahi).
-  void SetAllFeaturesState(bool enabled);
+  virtual void SetAllFeaturesState(bool enabled);
 
   // Enables or disables Quick Answers and Mahi.
-  void SetQuickAnswersAndMahiFeaturesState(bool enabled);
+  virtual void SetQuickAnswersAndMahiFeaturesState(bool enabled);
 
   // Enables or disables Orca.
   void SetOrcaFeatureState(bool enabled) {}
+
+  bool is_orca_included() { return is_orca_included_; }
+
+  // For testing.
+  void SetIsOrcaIncludedForTest(bool include);
+  views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
+  views::Widget* disclaimer_widget_for_test() {
+    return disclaimer_widget_.get();
+  }
 
  protected:
   friend class base::NoDestructor<MagicBoostController>;
@@ -74,6 +77,9 @@ class MagicBoostController {
   ~MagicBoostController();
 
  private:
+  // If Orca feature is included.
+  bool is_orca_included_ = false;
+
   views::UniqueWidgetPtr opt_in_widget_;
   views::UniqueWidgetPtr disclaimer_widget_;
 };

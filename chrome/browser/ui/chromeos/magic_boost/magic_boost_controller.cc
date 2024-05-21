@@ -67,6 +67,10 @@ void MagicBoostController::SetQuickAnswersAndMahiFeaturesState(bool enabled) {
   // TODO(b/339043693): Implement this function.
 }
 
+void MagicBoostController::SetIsOrcaIncludedForTest(bool include) {
+  is_orca_included_ = include;
+}
+
 ScopedMagicBoostControllerForTesting::ScopedMagicBoostControllerForTesting(
     MagicBoostController* controller_for_testing) {
   g_magic_boost_controller_for_testing = controller_for_testing;

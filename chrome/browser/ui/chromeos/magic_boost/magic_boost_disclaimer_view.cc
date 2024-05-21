@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -123,13 +125,15 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
               .AddChildren(
                   views::Builder<views::MdTextButton>()
                       .SetText(secondary_button_text)
+                      .SetID(magic_boost::ViewId::DisclaimerViewDeclineButton)
                       .SetAccessibleName(secondary_button_text)
-                      .SetStyle(ui::ButtonStyle::kText)
+                      .SetStyle(ui::ButtonStyle::kProminent)
                       .SetCallback(base::BindRepeating(
                           &MagicBoostDisclaimerView::OnDeclineButtonPressed,
                           weak_ptr_factory_.GetWeakPtr())),
                   views::Builder<views::MdTextButton>()
                       .CopyAddressTo(&accept_button_)
+                      .SetID(magic_boost::ViewId::DisclaimerViewAcceptButton)
                       .SetText(primary_button_text)
                       .SetAccessibleName(primary_button_text)
                       .SetStyle(ui::ButtonStyle::kProminent)
@@ -183,11 +187,25 @@ void MagicBoostDisclaimerView::RequestFocus() {
 }
 
 void MagicBoostDisclaimerView::OnAcceptButtonPressed() {
-  // TODO(b/339044721): Implement accept action.
+  auto* controller = MagicBoostController::Get();
+  if (controller->is_orca_included()) {
+    controller->SetAllFeaturesState(true);
+  } else {
+    controller->SetQuickAnswersAndMahiFeaturesState(true);
+  }
+
+  // TODO(b/339044721): Implement accept action: showing the next view etc.
+  controller->CloseDisclaimerUi();
 }
 
 void MagicBoostDisclaimerView::OnDeclineButtonPressed() {
-  // TODO(b/339044721): Implement decline action.
+  auto* controller = MagicBoostController::Get();
+  if (controller->is_orca_included()) {
+    controller->SetAllFeaturesState(false);
+  } else {
+    controller->SetQuickAnswersAndMahiFeaturesState(false);
+  }
+  controller->CloseDisclaimerUi();
 }
 
 BEGIN_METADATA(MagicBoostDisclaimerView)

@@ -21,6 +21,11 @@ class MockMagicBoostController : public MagicBoostController {
   // chromeos::MahiManager:
   MOCK_METHOD(void, ShowOptInUi, (const gfx::Rect&), (override));
   MOCK_METHOD(void, CloseOptInUi, (), (override));
+  MOCK_METHOD(void, SetAllFeaturesState, (bool enabled), (override));
+  MOCK_METHOD(void,
+              SetQuickAnswersAndMahiFeaturesState,
+              (bool enabled),
+              (override));
   MOCK_METHOD(bool, ShouldQuickAnswersAndMahiShowOptIn, (), (override));
 };
 
