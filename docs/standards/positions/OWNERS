@@ -1,9 +1,0 @@
-# These owners help ensure that any published positions follow the guidelines in
-# the READMEs; they do not approve the positions themselves.
-
-jyasskin@chromium.org
-
-# Override the OWNERS: * from the parent directory.
-set noparent
-file://ATL_OWNERS
-file://third_party/blink/API_OWNERS

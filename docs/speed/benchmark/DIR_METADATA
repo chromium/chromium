@@ -1,6 +1,0 @@
-monorail: {
-  component: "Test>Telemetry"
-}
-buganizer_public: {
-  component_id: 1456742
-}

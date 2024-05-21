@@ -1,6 +1,0 @@
-monorail: {
-  component: "Speed>Release"
-}
-buganizer_public: {
-  component_id: 1456627
-}
