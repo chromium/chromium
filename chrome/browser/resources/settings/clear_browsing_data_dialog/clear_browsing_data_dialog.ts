@@ -23,6 +23,7 @@ import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sy
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -64,6 +65,7 @@ export interface SettingsClearBrowsingDataDialogElement {
     clearBrowsingDataConfirm: HTMLElement,
     cookiesCheckbox: SettingsCheckboxElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
+    clearButton: CrButtonElement,
     clearBrowsingDataDialog: CrDialogElement,
     pages: IronPagesElement,
     tabs: CrTabsElement,

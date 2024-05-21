@@ -131,10 +131,7 @@ async function testCbdExperimentDualWritesPref(
   assertTrue(!!cookiesCheckbox);
   cookiesCheckbox.$.checkbox.click();
   await microtasksFinished();
-  const actionButton =
-      element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-  assertTrue(!!actionButton);
-  assertFalse(actionButton!.disabled);
+  assertFalse(element.$.clearButton.disabled);
 
   // The user selects a time range value.
   const dropdownMenu =
@@ -147,7 +144,7 @@ async function testCbdExperimentDualWritesPref(
   await microtasksFinished();
 
   // The correct time range value is dual written to the other pref.
-  actionButton.click();
+  element.$.clearButton.click();
   await microtasksFinished();
   assertEquals(expectedDualWrittenPrefValue, element.getPref(prefName).value);
 }
@@ -452,10 +449,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     assertTrue(!!cookiesCheckbox);
     cookiesCheckbox.$.checkbox.click();
     await microtasksFinished();
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
 
     // Before trying data clearing without a time range selection, the dropdown
     // is not in the dropdown-error state.
@@ -463,7 +457,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
 
     // Once the user tries to clear data without having made a time range
     // selection the dropdown goes into the dropdown-error state.
-    actionButton.click();
+    element.$.clearButton.click();
     await microtasksFinished();
     assertTrue(dropdownMenu.classList.contains('dropdown-error'));
 
@@ -632,10 +626,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await microtasksFinished();
     // Confirming the deletion persists the dropdown selection to the pref and
     // sends the time range for clearing.
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
+    element.$.clearButton.click();
     await microtasksFinished();
     assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
@@ -696,10 +687,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await microtasksFinished();
 
     // Confirming the deletion persists the tab selection to the pref.
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
+    element.$.clearButton.click();
     await microtasksFinished();
     assertEquals(
         1, element.getPref('browser.last_clear_browsing_data_tab').value);
@@ -711,9 +699,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cancelButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.cancel-button');
     assertTrue(!!cancelButton);
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
     const spinner = element.shadowRoot!.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
 
@@ -730,12 +715,12 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await microtasksFinished();
 
     assertFalse(cancelButton.disabled);
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
     assertFalse(spinner.active);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton.click();
+    element.$.clearButton.click();
 
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const dataTypes = args[0];
@@ -743,7 +728,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertEquals('browser.clear_data.cookies_basic', dataTypes[0]);
     assertTrue(element.$.clearBrowsingDataDialog.open);
     assertTrue(cancelButton.disabled);
-    assertTrue(actionButton.disabled);
+    assertTrue(element.$.clearButton.disabled);
     assertTrue(spinner.active);
 
     // Simulate signal from browser indicating that clearing has
@@ -758,7 +743,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     assertFalse(element.$.clearBrowsingDataDialog.open);
     assertFalse(cancelButton.disabled);
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
     assertFalse(spinner.active);
     assertFalse(!!element.shadowRoot!.querySelector('#historyNotice'));
     assertFalse(!!element.shadowRoot!.querySelector('#passwordsNotice'));
@@ -767,31 +752,25 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   test('ClearBrowsingDataClearButton', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
 
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
     // Initially the button is disabled because all checkboxes are off.
-    assertTrue(actionButton.disabled);
+    assertTrue(element.$.clearButton.disabled);
     // The button gets enabled if any checkbox is selected.
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await microtasksFinished();
     assertTrue(element.$.cookiesCheckboxBasic.checked);
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
     // Switching to advanced disables the button.
     element.$.tabs.selected = 1;
     await microtasksFinished();
-    assertTrue(actionButton.disabled);
+    assertTrue(element.$.clearButton.disabled);
     // Switching back enables it again.
     element.$.tabs.selected = 0;
     await microtasksFinished();
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
   });
 
   test('showHistoryDeletionDialog', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
     element.$.cookiesCheckboxBasic.$.checkbox.click();
@@ -804,11 +783,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         'browser.clear_data.time_period_v2_basic',
         TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton.click();
+    element.$.clearButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showHistoryNotice = true should trigger the notice about
@@ -849,9 +828,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   test('showPasswordsDeletionDialog', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
@@ -866,11 +842,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         'browser.clear_data.time_period_v2_basic',
         TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton.click();
+    element.$.clearButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showPasswordsNotice = true should trigger the notice about
@@ -908,9 +884,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   test('showBothHistoryAndPasswordsDeletionDialog', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
-    const actionButton =
-        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
@@ -925,11 +898,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         'browser.clear_data.time_period_v2_basic',
         TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
-    assertFalse(actionButton.disabled);
+    assertFalse(element.$.clearButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton.click();
+    element.$.clearButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showHistoryNotice = true and showPasswordsNotice = true

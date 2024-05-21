@@ -325,12 +325,14 @@
         </paper-spinner-lite>
         <cr-button class="cancel-button" autofocus
             disabled="[[clearingInProgress_]]"
-            on-click="onCancelClick_">$i18n{cancel}</cr-button>
-        <cr-button id="clearBrowsingDataConfirm"
-            class="action-button" on-click="clearBrowsingData_"
+            on-click="onCancelClick_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="clearButton" class="action-button"
+            on-click="clearBrowsingData_"
             disabled="[[isClearButtonDisabled_(clearingInProgress_,
                                                clearButtonDisabled_)]]">
-            $i18n{clearData}
+          $i18n{clearData}
         </cr-button>
 
         <!-- The alert must be inside the dialog for it to be read while the
