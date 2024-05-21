@@ -58,7 +58,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
     kFailedReauth,  // The IPH shown after reauth failure informing the user
                     // about the switch to local mode.
   };
-  class AutoResizingLayout;
+
   ~PasswordSaveUpdateView() override;
 
   // PasswordBubbleViewBase

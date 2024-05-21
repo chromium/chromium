@@ -173,7 +173,6 @@ ManagePasswordsView::CreatePasswordDetailsView() {
             view->GetBubbleFrameView()->SetFootnoteView(
                 view->CreateFooterView());
             view->PreferredSizeChanged();
-            view->SizeToContents();
           },
           base::Unretained(this)),
       base::BindRepeating(&ManagePasswordsView::ExtendAuthValidity,
@@ -313,7 +312,6 @@ void ManagePasswordsView::RecreateLayout() {
             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   }
   PreferredSizeChanged();
-  SizeToContents();
 }
 
 void ManagePasswordsView::SwitchToReadingMode() {

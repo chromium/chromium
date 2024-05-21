@@ -48,25 +48,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
-// TODO(crbug.com/40688828): come up with a more general solution for this.
-// This layout auto-resizes the host view to always adapt to changes in the size
-// of the child views.
-class PasswordSaveUpdateView::AutoResizingLayout : public views::FillLayout {
- public:
-  AutoResizingLayout() = default;
-
- private:
-  PasswordSaveUpdateView* bubble_view() {
-    return static_cast<PasswordSaveUpdateView*>(host_view());
-  }
-
-  void OnLayoutChanged() override {
-    FillLayout::OnLayoutChanged();
-    if (bubble_view()->GetWidget())
-      bubble_view()->SizeToContents();
-  }
-};
-
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
     views::View* anchor_view,
@@ -134,7 +115,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     password_dropdown->SetCallback(base::BindRepeating(
         &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
     // Set up layout:
-    SetLayoutManager(std::make_unique<AutoResizingLayout>());
+    SetLayoutManager(std::make_unique<views::FillLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
     views::AnimatingLayoutManager* animating_layout =
         root_view->SetLayoutManager(
@@ -272,7 +253,6 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
       signin::SignInAutofillBubblePromoType::Passwords,
       controller_.pending_password());
   AddChildView(std::move(sign_in_promo));
-  SizeToContents();
 
   is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
@@ -544,10 +524,6 @@ void PasswordSaveUpdateView::OnContentChanged() {
 void PasswordSaveUpdateView::UpdateFootnote() {
   DCHECK(GetBubbleFrameView());
   GetBubbleFrameView()->SetFootnoteView(CreateFooterView());
-
-  // The footnote size could have changed since it depends on whether it
-  // affects the account store, and hence resize.
-  SizeToContents();
 }
 
 void PasswordSaveUpdateView::TogglePasswordRevealed() {
