@@ -1422,7 +1422,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     } else {
       this.playText(utteranceText);
     }
-    this.highlightNodes(axNodeIds);
+    if (this.wordBoundaryState.mode ===
+            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
+        !this.shouldUseWordHighlighting()) {
+      this.highlightNodes(axNodeIds);
+    } else {
+      this.highlightNodesForWordBoundary();
+    }
     return true;
   }
 
