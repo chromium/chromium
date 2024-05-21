@@ -550,7 +550,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
   if (gestureRecognizer == self.tapGestureRecognizer) {
     return [self isPreEditing] || [self hasAutocompleteText] ||
-           (IsRichAutocompletionEnabled() && [self hasAdditionalText]);
+           (IsRichAutocompletionEnabled() && [self hasAdditionalText]) ||
+           self.omniboxHasRichInline;
   }
   return YES;
 }
@@ -567,6 +568,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
   if (IsRichAutocompletionEnabled() && self.hasAdditionalText) {
     [self handleUserInitiatedRemovalOfAdditionalText];
+  }
+  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
+    [self handleUserInitiatedRemovalOfRichInline];
   }
 }
 
@@ -801,7 +805,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
-              (IsRichAutocompletionEnabled() && [self hasAdditionalText]));
+              (IsRichAutocompletionEnabled() && [self hasAdditionalText]) ||
+              self.omniboxHasRichInline);
   }
 }
 
@@ -825,8 +830,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark preedit and inline autocomplete key commands
 
 - (void)keyCommandLeft {
-  DCHECK([self isPreEditing] || [self hasAutocompleteText] ||
-         [self hasAdditionalText]);
+  CHECK([self isPreEditing] || [self hasAutocompleteText] ||
+        [self hasAdditionalText] || self.omniboxHasRichInline);
 
   // Cursor offset.
   NSInteger offset = 0;
@@ -848,6 +853,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     }
     [self handleUserInitiatedRemovalOfAdditionalText];
   }
+  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
+    if (!hasAutocompleteText) {
+      offset = self.userText.length - 1;
+    }
+    [self handleUserInitiatedRemovalOfRichInline];
+  }
 
   // Place the cursor at computed offset.
   UITextPosition* beginning = self.beginningOfDocument;
@@ -859,8 +870,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)keyCommandRight {
-  DCHECK([self isPreEditing] || [self hasAutocompleteText] ||
-         [self hasAdditionalText]);
+  CHECK([self isPreEditing] || [self hasAutocompleteText] ||
+        [self hasAdditionalText] || self.omniboxHasRichInline);
 
   if ([self isPreEditing]) {
     [self exitPreEditState];
@@ -871,6 +882,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
   if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
     [self handleUserInitiatedRemovalOfAdditionalText];
+  }
+  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
+    [self handleUserInitiatedRemovalOfRichInline];
   }
 
   // Put the cursor to the end of the input.
@@ -929,6 +943,19 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// suggestions.
 - (void)handleUserInitiatedRemovalOfAdditionalText {
   [self removeAdditionalText];
+  if ([self.delegate
+          respondsToSelector:@selector(textFieldDidRemoveAdditionalText:)]) {
+    [self.delegate textFieldDidRemoveAdditionalText:self];
+  }
+}
+
+/// Removes the rich inline as default suggestion.
+- (void)handleUserInitiatedRemovalOfRichInline {
+  if (!self.omniboxHasRichInline) {
+    return;
+  }
+
+  self.omniboxHasRichInline = NO;
   if ([self.delegate
           respondsToSelector:@selector(textFieldDidRemoveAdditionalText:)]) {
     [self.delegate textFieldDidRemoveAdditionalText:self];
