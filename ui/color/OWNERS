@@ -1,5 +1,0 @@
-pkasting@chromium.org
-tluk@chromium.org
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

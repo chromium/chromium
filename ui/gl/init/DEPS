@@ -1,5 +1,0 @@
-include_rules = [
-  "+ui/base/ui_base_features.h",
-  "+ui/ozone/gl",
-  "+ui/ozone/public",
-]

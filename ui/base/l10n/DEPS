@@ -1,3 +1,0 @@
-include_rules = [
-  "+ui/base/ui_base_jni_headers",
-]

@@ -1,3 +1,0 @@
-include_rules = [
-  "+ui/gl/gl_jni_headers",
-]

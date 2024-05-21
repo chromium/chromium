@@ -1,5 +1,0 @@
-include_rules = [
-  "+third_party/blink/public/platform/web_gesture_curve.h",
-  "+third_party/blink/public/common/input/web_gesture_device.h",
-  "+ui/base/ui_base_features.h",
-]

@@ -1,7 +1,0 @@
-include_rules = [
-  "+skia",
-  "+third_party/libjpeg",
-  "+third_party/libjpeg_turbo",
-  "+third_party/libpng",
-  "+third_party/zlib",
-]

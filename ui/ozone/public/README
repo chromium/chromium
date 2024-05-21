@@ -1,2 +1,0 @@
-This directory contains the platform API exposed to higher level components such
-as content. These interfaces can be used outside of ui/ozone.

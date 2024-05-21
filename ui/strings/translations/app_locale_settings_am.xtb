@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE translationbundle>
-<translationbundle lang="am">
-<translation id="IDS_UI_FONT_FAMILY_XP">abyssinica sil</translation>
-<if expr="is_chromeos">
-  <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Ethiopic, sans-serif, 13px</translation>
-  <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Ethiopic, sans-serif</translation>
-</if>
-</translationbundle>

@@ -1,9 +1,0 @@
-include_rules = [
-  "+media/media_buildflags.h",
-  "-ui/ozone/platform/drm",
-  "+ui/ozone/platform/drm/common",
-  "+ui/ozone/platform/drm/gpu",
-  "+ui/ozone/platform/drm/mojom",
-  # TODO remove this once AFBC works for modesetting buffers.
-  "+third_party/libdrm/src/include/drm/drm_fourcc.h",
-]

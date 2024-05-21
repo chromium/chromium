@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/tracing",
-  "+mojo/core/embedder",
-  "+ui/gl",
-]

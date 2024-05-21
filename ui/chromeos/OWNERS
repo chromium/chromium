@@ -1,9 +1,0 @@
-afakhry@chromium.org
-jamescook@chromium.org
-khorimoto@chromium.org
-oshima@chromium.org
-xiyuan@chromium.org
-
-per-file file_manager_strings.grdp=*
-# For adding or removing languages.
-per-file *.grd=claudiomagni@chromium.org

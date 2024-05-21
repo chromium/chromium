@@ -1,7 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/dbus/session_manager",
-  "+chromeos/dbus/dbus_thread_manager.h",
-  "+chromeos/lacros",
-  "+dbus",
-  "+ui/base/ui_base_jni_headers",
-]

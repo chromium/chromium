@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/aura",
-  "+ui/gfx",
-]

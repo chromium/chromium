@@ -1,9 +1,0 @@
----
-  Checks:          'google-build-namespaces,
-                    google-readability-namespace-comments,
-                    modernize-concat-nested-namespaces,
-                    modernize-replace-auto-ptr,
-                    modernize-use-using'
-  HeaderFilterRegex: 'ui/views/*'
-  InheritParentConfig: true
-...

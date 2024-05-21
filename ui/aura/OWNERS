@@ -1,8 +1,0 @@
-edcourtney@chromium.org
-oshima@chromium.org
-sky@chromium.org
-
-per-file *x11.cc=thomasanderson@chromium.org
-per-file *x11.h=thomasanderson@chromium.org
-per-file *occlusion*=fdoray@chromium.org
-per-file native_window_occlusion_tracker_win*=davidbienvenu@chromium.org

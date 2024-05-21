@@ -1,6 +1,0 @@
-thomasanderson@chromium.org
-msisov@igalia.com
-
-# Prefer top-level X OWNERS for subtle changes involving deeper X magic.
-per-file *selection*=file://ui/base/dragdrop/OWNERS
-per-file x11_os_exchange_data_provider.*=file://ui/base/dragdrop/OWNERS

@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/win_virtual_display/driver/public",
-  "+third_party/win_virtual_display/controller",
-]

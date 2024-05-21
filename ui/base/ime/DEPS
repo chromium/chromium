@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/system",
-  "+mojo/public",
-  "+services/metrics/public/cpp",
-  "+ui/linux",
-]

@@ -1,7 +1,0 @@
-This directory contains the accelerated_widget_mac ui component. The main
-exported class is AcceleratedWidgetMac, which owns a tree of Core Animation
-CALayers that are placed into an NSView provided by the
-AcceleratedWidgetMacNSView client class.
-
-AcceleratedWidgetMac receives frames from the compositor and ensures it has
-appropriate layers for rendering that frame type into the NSView.

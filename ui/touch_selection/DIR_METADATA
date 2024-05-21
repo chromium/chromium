@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Selection"
-}
-team_email: "input-dev@chromium.org"
-buganizer_public: {
-  component_id: 1457182
-}

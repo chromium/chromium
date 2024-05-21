@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/libdrm",
-  "+ui/base/test/ui_controls_aura.h",
-]

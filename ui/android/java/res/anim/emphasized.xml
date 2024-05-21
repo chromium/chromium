@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2023 The Chromium Authors
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
-<!-- Equivalent to Interporators.Emphasized -->
-<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:pathData="M 0,0 C 0.05, 0, 0.133333, 0.06, 0.166666, 0.4 C 0.208333, 0.82, 0.25, 1, 1, 1"/>

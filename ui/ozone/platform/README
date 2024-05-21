@@ -1,4 +1,0 @@
-This directory contains implementations of platforms. Each platform implements
-the interfaces from ui/ozone/public for the rest of chromium.
-
-See docs/ozone_overview.md for details.

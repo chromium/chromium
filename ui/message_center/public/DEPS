@@ -1,4 +1,0 @@
-include_rules = [
-  "-ui/message_center",
-  "+ui/message_center/public",
-]

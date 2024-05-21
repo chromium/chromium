@@ -1,2 +1,0 @@
-This directory contains code that is used by multiple platforms, but is not part
-of the public platform API. This code should not be used outside of ui/ozone.

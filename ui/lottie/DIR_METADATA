@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>GFX"
-}
-team_email: "graphics-dev@chromium.org"
-buganizer_public: {
-  component_id: 1457268
-}

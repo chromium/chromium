@@ -1,7 +1,0 @@
-specific_include_rules = {
-  "run_all_unittests\.cc": [
-    "+mojo/core/embedder/embedder.h",
-    "+ui/base/resource/resource_bundle.h",
-    "+ui/base/ui_base_paths.h",
-  ],
-}

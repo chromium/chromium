@@ -1,8 +1,0 @@
-include_rules = [
-  "+ash/constants",
-  "+components/account_id",
-  "+components/user_manager",
-  "+device/udev_linux",
-  "+google_apis/gaia/gaia_auth_util.h",
-  "+ui/base",
-]

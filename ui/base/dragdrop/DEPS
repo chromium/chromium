@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/ozone/public/ozone_platform.h",
-  "+third_party/mozilla",
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/base/x",
-  "+ui/base/ui_base_features.h",
-]

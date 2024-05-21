@@ -1,8 +1,0 @@
-Window Management functionality for apps built on Aura.
-
-public/
-  Implementation-agnostic APIs.
-core/
-  Implementations of public/
-test/
-  Test implementations of public/, and a minimal WM for use in testing.

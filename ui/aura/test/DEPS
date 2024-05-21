@@ -1,8 +1,0 @@
-include_rules = [
-  "+cc/test",
-  "+components/viz/test",
-  "+mojo/core/embedder/embedder.h",
-  "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h",
-  "+ui/gl",
-  "+ui/wm/core",
-]

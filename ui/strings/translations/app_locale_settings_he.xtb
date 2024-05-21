@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE translationbundle>
-<translationbundle lang="he">
-<if expr="is_chromeos">
-  <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Hebrew, 13px</translation>
-  <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Hebrew, sans-serif</translation>
-</if>
-</translationbundle>

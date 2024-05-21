@@ -1,7 +1,0 @@
-monorail: {
-  component: "OS>Software>Enterprise>DLP"
-}
-team_email: "chromeos-dlp@google.com"
-buganizer_public: {
-  component_id: 1457113
-}

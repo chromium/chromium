@@ -1,9 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+services/service_manager",
-  "+services/viz/public/mojom",
-  "+ui/base/buildflags.h",  # Doesn't bring in all of ui/base.
-  "+ui/base/ui_base_features.h",
-  "+ui/base/ui_base_switches.h",
-  "+ui/display/util",
-]

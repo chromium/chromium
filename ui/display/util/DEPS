@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/skia/include/core/SkColorSpace.h",
-  "+components/device_event_log/device_event_log.h",
-]

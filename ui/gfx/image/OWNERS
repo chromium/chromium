@@ -1,2 +1,0 @@
-# ImageSkia related classes except for _mac/_ios stuff
-per-file image_skia*=oshima@chromium.org

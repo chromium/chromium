@@ -1,5 +1,0 @@
-# For Chrome/Chromium OS, please see //ui/base/ime/ash/COMMON_METADATA.
-# For non-Chrome/Chromium OS:
-buganizer_public: {
-  component_id: 1457629
-}

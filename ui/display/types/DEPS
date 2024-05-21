@@ -1,8 +1,0 @@
-include_rules = [
-  "-ui",
-  "+ui/display/types",
-  "+ui/gfx/buffer_types.h",
-  "+ui/gfx/color_space.h",
-  "+ui/gfx/hdr_static_metadata.h",
-  "+ui/gfx/geometry",
-]

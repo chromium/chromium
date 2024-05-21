@@ -1,9 +1,0 @@
-include_rules = [
-  "+third_party/iaccessible2",
-]
-
-specific_include_rules = {
-  "ax_system_caret_win_interactive_uitest\.cc": [
-    "+mojo/core/embedder",
-  ]
-}

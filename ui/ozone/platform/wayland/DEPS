@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/device_event_log",
-  "+mojo/public",
-  "+third_party/wayland",
-  "+ui/base",
-  "+ui/linux",
-]

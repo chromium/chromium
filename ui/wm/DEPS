@@ -1,7 +1,0 @@
-include_rules = [
-  "+ui/base",
-  "+ui/aura",
-  "+ui/events",
-  "+ui/display",
-  "+ui/gfx",
-]

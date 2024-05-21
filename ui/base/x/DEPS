@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/device_event_log",
-  "+third_party/khronos/EGL/egl.h",
-  "+ui/gl/gl_surface_egl.h",
-  "+ui/linux",
-  "+ui/platform_window/common/platform_window_defaults.h",
-]

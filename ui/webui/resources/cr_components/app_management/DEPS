@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "app_management_mojom_traits\.*": [
-    "+components/services/app_service/public",
-  ],
-}

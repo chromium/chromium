@@ -1,5 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+ui/events",
-  "+ui/latency/mojom",
-]

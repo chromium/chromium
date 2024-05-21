@@ -1,5 +1,0 @@
-include_rules = [
-  "+ash/constants/ash_features.h",
-  "+chromeos/ash/components/feature_usage/feature_usage_metrics.h",
-  "+third_party/re2/src/re2/re2.h",
-]

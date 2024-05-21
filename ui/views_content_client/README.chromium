@@ -1,3 +1,0 @@
-This directory contains a content client for standalone views apps. It sets up
-the multiprocess runtime environment for rendering web content, and establishes
-the required environment for running a toolkit-views application.

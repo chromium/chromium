@@ -1,7 +1,0 @@
-monorail: {
-  component: "Internals>Ozone"
-}
-team_email: "ozone-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456988
-}
