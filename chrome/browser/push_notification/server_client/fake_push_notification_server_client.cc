@@ -48,9 +48,15 @@ void FakePushNotificationServerClient::RegisterWithPushNotificationService(
     const proto::NotificationsMultiLoginUpdateRequest& request,
     RegisterWithPushNotificationServiceCallback&& callback,
     ErrorCallback&& error_callback) {
+  request_ = request;
   register_with_push_notification_service_callback_ = std::move(callback);
   register_with_push_notification_service_error_callback_ =
       std::move(error_callback);
+}
+
+const proto::NotificationsMultiLoginUpdateRequest&
+FakePushNotificationServerClient::GetRequestProto() {
+  return request_;
 }
 
 std::optional<std::string>

@@ -67,7 +67,9 @@ void PushNotificationServiceDesktopImpl::ShutdownHandler() {
 }
 
 void PushNotificationServiceDesktopImpl::OnStoreReset() {
-  // TODO(b/337874846): Clear prefs here.
+  // Reset prefs.
+  pref_service_->SetString(
+      prefs::kPushNotificationRepresentativeTargetIdPrefName, std::string());
 }
 
 void PushNotificationServiceDesktopImpl::OnMessage(
@@ -154,6 +156,9 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
       ->gcm_driver()
       ->AddAppHandler(kPushNotificationAppId, this);
 
+  std::string representative_target_id = pref_service_->GetString(
+      prefs::kPushNotificationRepresentativeTargetIdPrefName);
+
   // Create the `NotificationsMultiLoginUpdateRequest` proto which is used to
   // make the registration API call.
   push_notification::proto::NotificationsMultiLoginUpdateRequest request_proto;
@@ -167,6 +172,16 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
       ->mutable_delivery_address()
       ->mutable_gcm_device_address()
       ->set_application_id(kPushNotificationAppId);
+
+  // `representative_target_id` is left empty the first time we register with
+  // the Push Notification Service. It is then returned to us in the response
+  // proto and stored in prefs. When we have a stored representative target id,
+  // we use it to help the Push Notification Service stablize the target across
+  // registrations if the GCM registration token changes.
+  if (!representative_target_id.empty()) {
+    request_proto.mutable_target()->set_representative_target_id(
+        representative_target_id);
+  }
   request_proto.add_registrations();
   request_proto.set_registration_reason(
       push_notification::proto::RegistrationReason::COLLABORATOR_API_CALL);
@@ -194,9 +209,10 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
   is_initialized_ = true;
   server_client_.reset();
   initialization_on_demand_scheduler_->HandleResult(/*success=*/true);
-
-  // TODO(b/321305351): Use response proto to update prefs with response
-  // information for later calls.
+  CHECK(response.registration_results_size() == 1);
+  pref_service_->SetString(
+      prefs::kPushNotificationRepresentativeTargetIdPrefName,
+      response.registration_results(0).target().representative_target_id());
 }
 
 void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationFailure(

@@ -13,6 +13,7 @@ namespace prefs {
 
 extern const char
     kPushNotificationRegistrationAttemptBackoffSchedulerPrefName[];
+extern const char kPushNotificationRepresentativeTargetIdPrefName[];
 
 }  // namespace prefs
 

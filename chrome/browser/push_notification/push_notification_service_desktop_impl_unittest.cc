@@ -28,6 +28,7 @@ const char kPushNotificationAppId[] = "com.google.chrome.push_notification";
 const char kSenderIdFCMToken[] = "sharing_fcm_token";
 const char kSharingSenderID[] = "745476177629";
 const char kTestMessage[] = "This is a test message";
+const char kTestRepresentativeTargetId[] = "0123456789";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -123,6 +124,7 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    RegisterPushNotificationPrefs(pref_service_.registry());
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(
         &scheduler_factory_);
     PushNotificationServerClientDesktopImpl::Factory::SetFactoryForTesting(
@@ -159,6 +161,9 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
         registration_result->mutable_status();
     status->set_code(0);
     status->set_message("OK");
+    push_notification::proto::Target* target =
+        registration_result->mutable_target();
+    target->set_representative_target_id(kTestRepresentativeTargetId);
     return response_proto;
   }
 
@@ -170,6 +175,9 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
         ->InvokeRegisterWithPushNotificationServiceSuccessCallback(
             CreateResponseProto());
     EXPECT_TRUE(push_notification_service_->IsServiceInitialized());
+    EXPECT_EQ(kTestRepresentativeTargetId,
+              pref_service_.GetString(
+                  prefs::kPushNotificationRepresentativeTargetIdPrefName));
   }
 
   void CheckForFailedRegistration(
@@ -200,7 +208,6 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
 TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
   fake_instance_id_->SetFCMResult(instance_id::InstanceID::Result::SUCCESS);
   fake_instance_id_->SetFCMToken(kSenderIdFCMToken);
-
   ash::nearby::FakeNearbyScheduler* registration_scheduler =
       scheduler_factory_.pref_name_to_on_demand_instance()
           .find(
@@ -208,8 +215,57 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
                   kPushNotificationRegistrationAttemptBackoffSchedulerPrefName)
           ->second.fake_scheduler;
   registration_scheduler->InvokeRequestCallback();
-
+  EXPECT_EQ(std::string(), fake_client_factory_.fake_server_client()
+                               ->GetRequestProto()
+                               .target()
+                               .representative_target_id());
   CheckForSuccessfulRegistration();
+}
+
+TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
+  fake_instance_id_->SetFCMResult(instance_id::InstanceID::Result::SUCCESS);
+  fake_instance_id_->SetFCMToken(kSenderIdFCMToken);
+  pref_service_.SetString(
+      prefs::kPushNotificationRepresentativeTargetIdPrefName,
+      kTestRepresentativeTargetId);
+  ash::nearby::FakeNearbyScheduler* registration_scheduler =
+      scheduler_factory_.pref_name_to_on_demand_instance()
+          .find(
+              prefs::
+                  kPushNotificationRegistrationAttemptBackoffSchedulerPrefName)
+          ->second.fake_scheduler;
+  registration_scheduler->InvokeRequestCallback();
+  EXPECT_EQ(kTestRepresentativeTargetId,
+            fake_client_factory_.fake_server_client()
+                ->GetRequestProto()
+                .target()
+                .representative_target_id());
+  CheckForSuccessfulRegistration();
+}
+
+TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPrefStoreReset) {
+  fake_instance_id_->SetFCMResult(instance_id::InstanceID::Result::SUCCESS);
+  fake_instance_id_->SetFCMToken(kSenderIdFCMToken);
+  pref_service_.SetString(
+      prefs::kPushNotificationRepresentativeTargetIdPrefName,
+      kTestRepresentativeTargetId);
+  ash::nearby::FakeNearbyScheduler* registration_scheduler =
+      scheduler_factory_.pref_name_to_on_demand_instance()
+          .find(
+              prefs::
+                  kPushNotificationRegistrationAttemptBackoffSchedulerPrefName)
+          ->second.fake_scheduler;
+  registration_scheduler->InvokeRequestCallback();
+  EXPECT_EQ(kTestRepresentativeTargetId,
+            fake_client_factory_.fake_server_client()
+                ->GetRequestProto()
+                .target()
+                .representative_target_id());
+  CheckForSuccessfulRegistration();
+  push_notification_service_->OnStoreReset();
+  EXPECT_EQ(std::string(),
+            pref_service_.GetString(
+                prefs::kPushNotificationRepresentativeTargetIdPrefName));
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, StartServiceTokenFailure) {

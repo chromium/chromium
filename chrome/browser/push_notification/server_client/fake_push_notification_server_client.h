@@ -57,6 +57,8 @@ class FakePushNotificationServerClient : public PushNotificationServerClient {
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError
           error);
 
+  const proto::NotificationsMultiLoginUpdateRequest& GetRequestProto();
+
   bool HasRegisterWithPushNotificationServiceCallback() {
     return !register_with_push_notification_service_callback_.is_null();
   }
@@ -73,6 +75,7 @@ class FakePushNotificationServerClient : public PushNotificationServerClient {
   std::optional<std::string> GetAccessTokenUsed() override;
 
   std::string access_token_used_;
+  proto::NotificationsMultiLoginUpdateRequest request_;
   RegisterWithPushNotificationServiceCallback
       register_with_push_notification_service_callback_;
   ErrorCallback register_with_push_notification_service_error_callback_;
