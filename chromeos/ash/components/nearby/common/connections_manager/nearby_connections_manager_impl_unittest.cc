@@ -190,6 +190,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
         std::make_unique<NearbyConnectionsManagerImpl>(&nearby_process_manager_,
                                                        kServiceId);
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
         .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
@@ -537,7 +538,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     accept_or_reject_run_loop.Run();
   }
 
+  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
@@ -2088,6 +2092,11 @@ TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
                 /*is_incoming_connection=*/false,
                 nearby::connections::mojom::AuthenticationStatus::kSuccess),
             /*on_connection_result_status=*/Status::kSuccess);
+
+  histogram_tester()->ExpectBucketCount(
+      "Nearby.Connections.V3.Connection.Result", Status::kSuccess, 1);
+  histogram_tester()->ExpectTotalCount(
+      "Nearby.Connections.V3.Connection.Result", 1);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Reject) {
@@ -2118,6 +2127,11 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionResultV3Rejected) {
                 /*is_incoming_connection=*/false,
                 nearby::connections::mojom::AuthenticationStatus::kFailure),
             /*on_connection_result_status=*/Status::kError);
+
+  histogram_tester()->ExpectBucketCount(
+      "Nearby.Connections.V3.Connection.Result", Status::kError, 1);
+  histogram_tester()->ExpectTotalCount(
+      "Nearby.Connections.V3.Connection.Result", 1);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, DisconnectV3) {
@@ -2176,7 +2190,6 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionRequestedV3) {
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
-  base::HistogramTester histogram_tester;
   mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
   mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
 
@@ -2229,14 +2242,14 @@ TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
       presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kMedium,
                                                      Medium::kBluetooth));
-  histogram_tester.ExpectTotalCount(
+  histogram_tester()->ExpectTotalCount(
       "Nearby.Connections.V3.Medium.ChangedToMedium", 0);
   connection_listener_v3_remote->OnBandwidthChangedV3(
       presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kHigh,
                                                      Medium::kWebRtc));
   bandwidth_run_loop.Run();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester()->ExpectBucketCount(
       "Nearby.Connections.V3.Medium.ChangedToMedium", Medium::kWebRtc, 1);
 }
 

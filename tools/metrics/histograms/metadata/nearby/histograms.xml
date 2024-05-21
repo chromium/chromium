@@ -315,6 +315,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.V3.Connection.Result"
+    enum="NearbyConnectionsStatus" expires_after="2025-05-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result upon completing an attempt to connect to a remote device
+    with the V3 connection flow. Emitted when receiving the result from the
+    Nearby utility process.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.V3.Medium.ChangedToMedium"
     enum="NearbyConnectionsMedium" expires_after="2025-05-01">
   <owner>crisrael@google.com</owner>

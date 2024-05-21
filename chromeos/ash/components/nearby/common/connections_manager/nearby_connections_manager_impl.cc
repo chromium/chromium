@@ -1011,15 +1011,14 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiatedV3(
 void NearbyConnectionsManagerImpl::OnConnectionResultV3(
     const std::string& endpoint_id,
     Status status) {
-  CD_LOG(INFO, Feature::NEARBY_INFRA)
-      << __func__ << ": OnConnectionResult result=" << status;
+  CD_LOG(INFO, Feature::NEARBY_INFRA) << __func__ << ": result=" << status;
 
   auto it = pending_outgoing_connections_.find(endpoint_id);
   if (it == pending_outgoing_connections_.end()) {
-    connection_listener_v3s_.ReportBadMessage(
-        base::StringPrintf("OnConnectionResult() received endpoint_id=%s which "
-                           "does not exist in connections V3",
-                           endpoint_id.c_str()));
+    connection_listener_v3s_.ReportBadMessage(base::StringPrintf(
+        "OnConnectionResultV3() received endpoint_id=%s which "
+        "does not exist in connections V3",
+        endpoint_id.c_str()));
     return;
   }
 
@@ -1034,6 +1033,8 @@ void NearbyConnectionsManagerImpl::OnConnectionResultV3(
     std::move(it->second).Run(/*nearby_connection=*/nullptr);
   }
 
+  base::UmaHistogramEnumeration("Nearby.Connections.V3.Connection.Result",
+                                status);
   pending_outgoing_connections_.erase(it);
   connect_timeout_timers_v3_.erase(endpoint_id);
 }
