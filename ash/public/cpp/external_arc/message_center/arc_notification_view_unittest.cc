@@ -423,7 +423,7 @@ TEST_F(NotificationGestureUpdateTest, TrackPadGestureSlideOut) {
 
   ui::test::EventGenerator generator(
       (notification_view()->GetWidget()->GetNativeWindow()->GetRootWindow()));
-  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
+  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/200,
                            /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
   EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 }

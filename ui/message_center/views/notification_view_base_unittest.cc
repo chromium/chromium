@@ -1244,8 +1244,10 @@ TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
 
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));
-  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
-                           /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
+  generator.ScrollSequence(
+      gfx::Point(), base::TimeDelta(),
+      /*x_offset=*/notification_view()->bounds().width() + 1,
+      /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
   EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 }
 

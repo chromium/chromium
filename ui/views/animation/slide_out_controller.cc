@@ -13,6 +13,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
@@ -139,33 +140,43 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void SlideOutController::OnScrollEvent(ui::ScrollEvent* event) {
-  if (!trackpad_gestures_enabled_) {
+  // Ignore events if slide out by trackpad is not available.
+  if (!trackpad_gestures_enabled_ || mode_ != SlideMode::kFull) {
     return;
   }
 
-  // This threshold has been set to 20.f to stay consistent with the trackpad
-  // scroll threshold used to determine if the app list should be opened when
-  // scrolling on the shelf in ChromeOS.
-  constexpr float kScrollOffsetThreshold = 20.f;
-  if (abs(event->x_offset()) < kScrollOffsetThreshold ||
-      event->finger_count() != 2) {
+  // Ignore events where vertical offset is greater than horizontal (likely not
+  // a slide-out gesture).
+  if (abs(event->x_offset()) < abs(event->y_offset())) {
     return;
   }
 
-  if (mode_ == SlideMode::kFull) {
+  if (event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL) {
+    gesture_amount_ = 0;
+  } else if (event->type() == ui::EventType::ET_SCROLL) {
+    if (event->finger_count() == 2) {
+      gesture_amount_ += event->x_offset();
+    }
+  } else if (event->type() == ui::EventType::ET_SCROLL_FLING_START) {
     auto* layer = delegate_->GetSlideOutLayer();
-    gfx::Transform transform;
-    transform.Translate(layer->bounds().width(), 0);
-    AnimationBuilder()
-        .OnEnded(base::BindOnce(&SlideOutController::OnSlideOut,
-                                weak_ptr_factory_.GetWeakPtr()))
-        .Once()
-        .SetDuration(base::Milliseconds(kSwipeOutTotalDurationMs))
-        .SetTransform(layer, transform, kSwipeTweenType)
-        .SetOpacity(layer, 0.f);
-    event->SetHandled();
-    return;
+    int width = layer->bounds().width();
+    if (abs(gesture_amount_) > width) {
+      int direction = gesture_amount_ > 0 ? -1 : 1;
+      gfx::Transform transform;
+      transform.Translate(direction * width, 0);
+
+      AnimationBuilder()
+          .OnEnded(base::BindOnce(&SlideOutController::OnSlideOut,
+                                  weak_ptr_factory_.GetWeakPtr()))
+          .Once()
+          .SetDuration(base::Milliseconds(kSwipeOutTotalDurationMs))
+          .SetTransform(layer, transform, kSwipeTweenType)
+          .SetOpacity(layer, 0.f);
+    }
+    gesture_amount_ = 0;
   }
+
+  event->SetHandled();
 }
 
 void SlideOutController::RestoreVisualState() {
