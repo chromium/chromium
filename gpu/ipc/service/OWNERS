@@ -1,5 +1,0 @@
-# Mac stuff.
-per-file *_mac*=ccameron@chromium.org
-
-# Gpu Watchdog
-per-file *gpu_watchdog_thread*=magchen@chromium.org

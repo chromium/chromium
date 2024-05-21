@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/events/platform",
-  "+ui/platform_window",
-]

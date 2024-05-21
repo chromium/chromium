@@ -1,9 +1,0 @@
-include_rules = [
-  "+ui/latency",
-  "+cc/paint",
-  "+components/nacl/common/buildflags.h",
-  "+third_party/skia",
-  "+components/miracle_parameter",
-  "+components/viz/common/resources/shared_image_format.h",
-  "+components/viz/common/resources/shared_image_format_utils.h",
-]

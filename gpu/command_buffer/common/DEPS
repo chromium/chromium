@@ -1,8 +1,0 @@
-include_rules = [
-  "+third_party/skia/include",
-]
-specific_include_rules = {
-  "unittest_main\.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ],
-}

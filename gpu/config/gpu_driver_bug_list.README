@@ -1,7 +1,0 @@
-Determines whether a certain driver bug exists in the current system.
-
-The format of a valid gpu_driver_bug_list.json file is defined in
-  <gpu/config/gpu_control_list_format.txt>.
-
-The supported "features" can be found in
-  <gpu/config/gpu_driver_bug_workaround_type.h>.
