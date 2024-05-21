@@ -30,9 +30,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.TestActivity;
@@ -52,7 +53,10 @@ public class GoogleBottomBarActionsHandlerTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Tab mTab;
-    @Mock private ObservableSupplier<Tab> mTabSupplier;
+    @Mock private Supplier<Tab> mTabSupplier;
+
+    @Mock private ShareDelegate mShareDelegate;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private Activity mActivity;
     private GoogleBottomBarActionsHandler mGoogleBottomBarActionsHandler;
@@ -61,10 +65,12 @@ public class GoogleBottomBarActionsHandlerTest {
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
-        mGoogleBottomBarActionsHandler = new GoogleBottomBarActionsHandler(mActivity, mTabSupplier);
+        mGoogleBottomBarActionsHandler =
+                new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mGURL);
+        when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
     }
 
     @Test
@@ -109,5 +115,23 @@ public class GoogleBottomBarActionsHandlerTest {
 
         Set<TextBubble> textBubbleSet = TextBubble.getTextBubbleSetForTesting();
         assertEquals(1, textBubbleSet.size());
+    }
+
+    @Test
+    public void testShareAction_initiateShareForCurrentTab() {
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        BottomBarConfigCreator.ButtonId.SHARE,
+                        context.getDrawable(R.drawable.ic_share_white_24dp),
+                        context.getString(R.string.google_bottom_bar_share_button_description),
+                        /* pendingIntent= */ null);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+        verify(mShareDelegate)
+                .share(eq(mTab), eq(false), eq(ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR));
     }
 }

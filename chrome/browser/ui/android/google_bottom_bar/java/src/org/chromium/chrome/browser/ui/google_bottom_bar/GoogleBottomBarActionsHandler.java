@@ -14,6 +14,7 @@ import android.view.View;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
@@ -27,9 +28,15 @@ class GoogleBottomBarActionsHandler {
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
 
-    GoogleBottomBarActionsHandler(Activity activity, Supplier<Tab> tabProvider) {
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+
+    GoogleBottomBarActionsHandler(
+            Activity activity,
+            Supplier<Tab> tabProvider,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
+        mShareDelegateSupplier = shareDelegateSupplier;
     }
 
     View.OnClickListener getClickListener(ButtonConfig buttonConfig) {
@@ -37,10 +44,12 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.SAVE -> {
                 return v -> onSaveButtonClick(buttonConfig, v);
             }
+            case ButtonId.SHARE -> {
+                return v -> onShareButtonClick();
+            }
             case ButtonId.PIH_BASIC,
                     ButtonId.PIH_EXPANDED,
                     ButtonId.PIH_COLORED,
-                    ButtonId.SHARE,
                     ButtonId.ADD_NOTES,
                     ButtonId.REFRESH -> {
                 Log.e(TAG, "Unsupported action: %s", buttonConfig.getId());
@@ -48,6 +57,22 @@ class GoogleBottomBarActionsHandler {
             }
         }
         return null;
+    }
+
+    private void onShareButtonClick() {
+        Tab tab = mTabProvider.get();
+        if (tab == null) {
+            Log.e(TAG, "Can't perform share action as tab is null.");
+            return;
+        }
+
+        ShareDelegate shareDelegate = mShareDelegateSupplier.get();
+        if (shareDelegate == null) {
+            Log.e(TAG, "Can't perform share action as share delegate is null.");
+            return;
+        }
+        shareDelegate.share(
+                tab, /* shareDirectly= */ false, ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR);
     }
 
     private void onSaveButtonClick(BottomBarConfig.ButtonConfig buttonConfig, View view) {
