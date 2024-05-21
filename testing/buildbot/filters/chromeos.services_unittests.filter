@@ -1,6 +1,0 @@
-# TODO(crbug.com/40586826): Enable this.
--GeolocationChromeOsWifiDataProviderTest.*
--GeolocationServiceUnitTest.GeolocationConfig
-
-# TODO(crbug.com/41403062): Enable this.
--ScreenManagerOzoneInternalTest.*

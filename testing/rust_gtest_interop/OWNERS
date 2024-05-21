@@ -1,3 +1,0 @@
-# TODO(danakj): We should consider having different gtest-interop OWNERS, but
-# for now we just forward.
-file://build/rust/OWNERS

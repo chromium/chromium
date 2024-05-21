@@ -1,1 +1,0 @@
-connect-src 'self'; font-src 'self'; frame-src 'self'; img-src 'self'; manifest-src 'self'; media-src 'self'; object-src 'self'; script-src https://example.com; style-src 'self'; worker-src 'self'

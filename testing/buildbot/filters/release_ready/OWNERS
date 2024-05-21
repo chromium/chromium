@@ -1,7 +1,0 @@
-# TODO(crbug.com/40934054): Remove infra folks once Engprod could take
-# over the test contents for rel-ready builders.
-# Also uncomment `set noparent`, because only the release test content
-# folks can approve changes in release_ready.
-# set noparent
-
-file://infra/OWNERS

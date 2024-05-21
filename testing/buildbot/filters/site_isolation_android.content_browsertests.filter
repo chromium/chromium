@@ -1,7 +1,0 @@
-# https://crbug.com/906247
--RenderFrameHostManagerTest.ForegroundNavigationIsNeverBackgroundedWithSpareProcess
-
-# https://crbug.com/906256
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block*
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block*
-

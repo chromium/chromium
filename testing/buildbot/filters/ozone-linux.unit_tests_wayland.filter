@@ -1,6 +1,0 @@
-# This test relies on window activation, which currently is not possible
-# on Wayland without using unstandardized protocol extensions. Once
-# support for the xdg-activation extension has been implemented (see
-# https://crbug.com/1360854), this test should pass. As soon as the compositor
-# that is used on the test bot supports this extension, the test can be enabled.
--RelaunchNotificationControllerPlatformImplTest.SynchronousNotification

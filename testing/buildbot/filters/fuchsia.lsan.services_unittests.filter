@@ -1,9 +1,0 @@
-# TODO(crbug.com/40882771): Enable these tests when their memory leaks are fixed.
-# Some tests below allow leaks but they are suppressed on other platforms.
-# Fuchsia does not support leak suppression.
--AutomationInternalBindingsTest.CatchesExceptions
--AutomationInternalBindingsTest.GetsFocusAndNodeData
--AutomationInternalBindingsTest.GetsLocation
--AutomationInternalBindingsTest.SpotCheckBindingsAdded
--V8ManagerTest.ExecutesSimpleScript
--V8ManagerTest.SanityCheckTextEncoder

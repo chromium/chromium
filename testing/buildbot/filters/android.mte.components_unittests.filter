@@ -1,7 +1,0 @@
-# crbug.com/328193028
--CastAuthUtilTest.VerifyBadCA
--CastAuthUtilTest.VerifyBadClientAuthCert
--CastAuthUtilTest.VerifyCrlOptionalWithFallback
--CastAuthUtilTest.VerifyCrlRequiredWithExpiredFallback
--CastAuthUtilTest.VerifyCrlRequiredWithFallback
--CastAuthUtilTest.VerifyParsingErrorWithoutFeatureFlagEnforceRevocationChecking

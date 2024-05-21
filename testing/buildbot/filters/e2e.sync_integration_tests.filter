@@ -1,4 +1,0 @@
-# This is the filter file for sync e2e tests.
-
-# TODO(crbug.com/40125485): Disabled because it's flaky.
--TwoClientDictionarySyncTest.Sanity_E2ETest

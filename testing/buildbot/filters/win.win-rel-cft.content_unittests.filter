@@ -1,4 +1,0 @@
-# Filter out failing tests from Chrome for Testing trybots.
-
-# https://ci.chromium.org/ui/p/chromium/builders/ci/win-rel-cft/4777
--AdAuctionServiceImplBAndATest.*

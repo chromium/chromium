@@ -1,6 +1,0 @@
-monorail: {
-  component: "Services>Chromoting"
-}
-buganizer_public: {
-  component_id: 1457133
-}

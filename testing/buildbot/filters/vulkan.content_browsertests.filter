@@ -1,7 +1,0 @@
-AuraWindowVideoCaptureDeviceBrowserTest.*
-# Some of these tests fallback on software compositing.
-All/AuraWindowVideoCaptureDeviceBrowserTestP.*
-CaptureScreenshotTest.*
-SnapshotBrowserTest.*
-# Some of these tests fallback on software compositing.
-All/WebContentsVideoCaptureDeviceBrowserTestP.*

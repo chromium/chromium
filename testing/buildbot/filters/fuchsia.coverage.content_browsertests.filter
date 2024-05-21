@@ -1,7 +1,0 @@
-# This test is consistently failing on code coverage builder due to the timeout.
-# The root cause is still unknown since a normal release run costs less than a
-# second.
--All/SitePerProcessBrowserTest.AccessWindowProxyOfCrashedFrameAfterNavigation/0
--All/SitePerProcessBrowserTest.AccessWindowProxyOfCrashedFrameAfterNavigation/1
-
--InterestGroupBrowserTest.FeatureDetection

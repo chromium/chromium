@@ -1,7 +1,0 @@
-# TODO(crbug.com/40949065): Flakily fails a check.
--IndexedDBQuotaClientTest.DeleteBucketMixedParty/0
--IndexedDBQuotaClientTest.DeleteBucketMixedParty/1
--IndexedDBQuotaClientTest.DeleteBucketCustom/0
--IndexedDBQuotaClientTest.DeleteBucketCustom/1
--IndexedDBQuotaClientTest.DeleteBucketThirdParty/0
--IndexedDBQuotaClientTest.DeleteBucketThirdParty/1

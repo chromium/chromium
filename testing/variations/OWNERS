@@ -1,4 +1,0 @@
-file://base/metrics/OWNERS
-
-# Changes to the testing config can be approved by any committer.
-per-file fieldtrial_testing_config.json=*

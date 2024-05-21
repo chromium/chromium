@@ -1,2 +1,0 @@
-#PROD_DIR#/chromoting_test_driver --username=chromoting.swarming@gmail.com --refresh-token-path=../../remoting/tools/internal/refresh_tokens.json --hostname=chromoting-test-driver-host --verbosity=2 --v=2 --gtest_filter=ChromotingTestFixture.TestMeasurePinBasedAuthentication --pin=123456
-#PROD_DIR#/chromoting_test_driver --username=chromoting.swarming@gmail.com --refresh-token-path=../../remoting/tools/internal/refresh_tokens.json --hostname=chromoting-test-driver-host --verbosity=2 --v=2 --gtest_filter=ChromotingTestFixture.TestMeasureReconnectPerformance --pin=123456

@@ -1,1 +1,0 @@
-visibility = [ "//testing/libfuzzer/research:*" ]
