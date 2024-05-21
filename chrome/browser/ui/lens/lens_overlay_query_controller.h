@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -54,7 +55,8 @@ class LensOverlayQueryController {
       LensOverlayInteractionResponseCallback interaction_data_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      lens::LensOverlayInvocationSource invocation_source);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -112,7 +114,8 @@ class LensOverlayQueryController {
 
  private:
   enum class QueryControllerState {
-    // StartQueryFlow has not been called and the query controller is inactive.
+    // StartQueryFlow has not been called and the query controller is
+    // inactive.
     kOff = 0,
     // The full image response has not been received, or is no longer valid.
     kAwaitingFullImageResponse = 1,
@@ -164,8 +167,8 @@ class LensOverlayQueryController {
   // Helper to gate interaction fetches on whether or not the cluster
   // info has been received. If it has not been received, this function
   // sets the cluster info received callback to fetch the interaction.
-  // Additionally, invokes `thumbnail_created_callback_` and passes the data in
-  // `image_crop`.
+  // Additionally, invokes `thumbnail_created_callback_` and passes the data
+  // in `image_crop`.
   void FetchInteractionRequestAndGenerateUrlIfClusterInfoReady(
       int request_index,
       lens::mojom::CenterRotatedBoxPtr region,
@@ -261,12 +264,16 @@ class LensOverlayQueryController {
   // incognito profiles.
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // The request counter, used to make sure requests are not sent out of order.
+  // The request counter, used to make sure requests are not sent out of
+  // order.
   int request_counter_ = 0;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.
   bool parent_query_sent_ = false;
+
+  // The invocation source that triggered the query flow.
+  lens::LensOverlayInvocationSource invocation_source_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

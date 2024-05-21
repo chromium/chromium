@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Enum containing Lens entry points for the Lens Overlay feature.
+enum LensOverlayEntryPoint {
+  UNKNOWN_ENTRY_POINT = 0;
+  LENS_OVERLAY_APP_MENU = 237;
+  LENS_OVERLAY_PAGE_CONTEXT_MENU = 238;
+  LENS_OVERLAY_IMAGE_CONTEXT_MENU = 239;
+  LENS_OVERLAY_OMNIBOX_BUTTON = 240;
+  LENS_OVERLAY_TOOLBAR_BUTTON = 241;
+  LENS_OVERLAY_FIND_IN_PAGE = 242;
+}

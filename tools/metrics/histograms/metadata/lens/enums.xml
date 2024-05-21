@@ -1,0 +1,84 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(LensOverlayDismissalSource) -->
+
+<enum name="LensOverlayDismissalSource">
+  <summary>The UI source of a Lens Overlay dismissal.</summary>
+  <int value="0" label="Overlay close button"/>
+  <int value="1" label="Overlay background click"/>
+  <int value="2" label="Side panel close button"/>
+  <int value="3" label="Toolbar button"/>
+  <int value="4" label="Page changed (navigation)"/>
+  <int value="5" label="Background tab contents discarded"/>
+  <int value="6" label="Tab backgrounded while screenshotting"/>
+  <int value="7" label="Error: Screenshot creation failed"/>
+  <int value="8" label="Error: Screenshot encoding failed"/>
+  <int value="9" label="Escape key press"/>
+  <int value="10" label="Unexpected side panel open"/>
+  <int value="11" label="Browser went into fullscreen"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
+
+<!-- LINT.IfChange(LensOverlayInvocationSource) -->
+
+<enum name="LensOverlayInvocationSource">
+  <summary>The UI source of a Lens Overlay invocation.</summary>
+  <int value="0" label="App menu"/>
+  <int value="1" label="Content area page context menu"/>
+  <int value="2" label="Content area image context menu"/>
+  <int value="3" label="Toolbar button"/>
+  <int value="4" label="Find in page dialog button"/>
+  <int value="5" label="Omnibox button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
+
+<!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
+
+<enum name="LensPermissionBubbleUserAction">
+  <summary>The user interaction with the Lens Permission Bubble</summary>
+  <int value="0" label="Help Center link opened"/>
+  <int value="1" label="Accept button pressed"/>
+  <int value="2" label="Cancel button pressed"/>
+  <int value="3" label="Esc key pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
+
+<!-- TODO(crbug.com/336793181): `git cl format` deletes the ThenChange above
+     unless this enum is here. Fix the issue and delete this fake enum.  -->
+
+<enum name="ZZZZZZZ">
+  <int value="0" label="Z"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -7,8 +7,9 @@ import 'chrome-untrusted://lens/lens_overlay_app.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
-import {assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -36,15 +37,15 @@ suite('OverlayScreenshot', () => {
     return waitAfterNextRender(lensOverlayElement);
   });
 
-  // Verify selection overlay is not present until screenshot data URI is
-  // received
+  // Verify selection overlay is hidden until screenshot data URI is received
   test('ShowSelectionOverlay', async () => {
     const appContainerBeforeScreenshot =
         lensOverlayElement.shadowRoot!.querySelector('.app-container');
     assertTrue(!!appContainerBeforeScreenshot);
     const selectionOverlayBeforeScreenshot =
         appContainerBeforeScreenshot.querySelector('lens-selection-overlay');
-    assertNull(selectionOverlayBeforeScreenshot);
+    assertTrue(!!selectionOverlayBeforeScreenshot);
+    assertTrue(hasStyle(selectionOverlayBeforeScreenshot, 'display', 'none'));
 
     const dataUriBytes = new TextEncoder().encode(SCREENSHOT_DATA_URI);
     // The following struct needs to be casted as BigBuffer in order to set
@@ -63,5 +64,6 @@ suite('OverlayScreenshot', () => {
     const selectionOverlay =
         appContainer.querySelector('lens-selection-overlay');
     assertTrue(!!selectionOverlay);
+    assertFalse(hasStyle(selectionOverlayBeforeScreenshot, 'display', 'none'));
   });
 });

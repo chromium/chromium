@@ -48,7 +48,9 @@ function isWordRenderable(word: Word): boolean {
 
 // Return the text separator if there is one, else returns a space.
 function getTextSeparator(word: Word): string {
-  return word.textSeparator ? word.textSeparator : ' ';
+  return (word.textSeparator !== null && word.textSeparator !== undefined) ?
+      word.textSeparator :
+      ' ';
 }
 
 export interface TextLayerElement {
@@ -134,6 +136,8 @@ export class TextLayerElement extends PolymerElement {
   private lines: Line[];
   // The paragraphs received from OnTextReceived.
   private paragraphs: Paragraph[];
+  // The content language received from OnTextReceived.
+  private contentLanguage: string;
   private listenerIds: number[];
 
   override connectedCallback() {
@@ -143,6 +147,9 @@ export class TextLayerElement extends PolymerElement {
     this.listenerIds = [
       BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
           this.onTextReceived.bind(this)),
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.clearTextSelection.addListener(
+              this.unselectWords.bind(this)),
       BrowserProxyImpl.getInstance()
           .callbackRouter.clearAllSelections.addListener(
               this.unselectWords.bind(this)),
@@ -213,6 +220,7 @@ export class TextLayerElement extends PolymerElement {
           composed: true,
           detail: {
             text: highlightedText,
+            contentLanguage: this.contentLanguage,
             left: containingRect.left,
             right: containingRect.right,
             top: containingRect.top,
@@ -250,6 +258,7 @@ export class TextLayerElement extends PolymerElement {
     this.paragraphNumbers = [];
     this.lines = [];
     this.paragraphs = [];
+    this.contentLanguage = text.contentLanguage ?? '';
     let lineNumber = 0;
     let paragraphNumber = 0;
 

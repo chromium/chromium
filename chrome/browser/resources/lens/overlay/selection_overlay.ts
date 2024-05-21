@@ -13,6 +13,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -40,6 +41,8 @@ export interface CursorData {
 export interface TextContextMenuData {
   // The text selection that the context menu commands will act on.
   text: string;
+  // Dominant content language of the text. Language code is CLDR/BCP-47.
+  contentLanguage: string;
   // The left-most position of the selected text.
   left: number;
   // The right-most position of the selected text.
@@ -108,6 +111,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      isClosing: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -118,6 +125,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private contextMenuX: number;
   private contextMenuY: number;
   private highlightedText: string = '';
+  private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
   private textSelectionEndIndex: number = -1;
   // The data URI of the current overlay screenshot.
@@ -128,8 +136,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
+  // Whether the overlay is being shut down.
+  private isClosing: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
+  // Listener ids for events from the browser side.
+  private listenerIds: number[];
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   private draggingRespondent = DragFeature.NONE;
@@ -152,6 +164,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     super.connectedCallback();
     this.resizeObserver.observe(this);
     this.selectionElementsResizeObserver.observe(this.$.selectionOverlay);
+    this.listenerIds = [
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.notifyOverlayClosing.addListener(() => {
+            this.isClosing = true;
+          }),
+    ];
     this.eventTracker_.add(
         document, 'set-cursor', (e: CustomEvent<CursorData>) => {
           if (e.detail.cursor === CursorType.POINTER) {
@@ -171,6 +189,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.contextMenuX = e.detail.left;
           this.contextMenuY = e.detail.bottom;
           this.highlightedText = e.detail.text;
+          this.contentLanguage = e.detail.contentLanguage;
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
@@ -186,6 +205,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.resizeObserver.unobserve(this);
     this.selectionElementsResizeObserver.unobserve(this.$.selectionOverlay);
     this.eventTracker_.removeAll();
+    this.listenerIds.forEach(
+        id => assert(
+            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
   override ready() {
@@ -267,7 +290,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     document.body.style.cursor = 'crosshair';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
-    this.cursorImgUri = 'search.svg';
+    this.cursorImgUri = 'lens.svg';
   }
 
   // Called on object hover.
@@ -275,7 +298,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // No dragging for objects, so no need to set body cursor style.
     this.cursorOffsetX = 4;
     this.cursorOffsetY = 8;
-    this.cursorImgUri = 'search.svg';
+    this.cursorImgUri = 'lens.svg';
   }
 
   private resetCursor() {
@@ -526,8 +549,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleTranslate() {
-    BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
-        '"' + this.highlightedText + '" ' + this.i18n('translateSuffix'),
+    BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
+        this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
   }
 

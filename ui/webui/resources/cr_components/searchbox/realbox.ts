@@ -597,6 +597,7 @@ export class RealboxElement extends RealboxElementBase {
           // Remove thumbnail, focus input, and notify browser.
           this.thumbnailUrl_ = '';
           this.$.input.focus();
+          this.clearAutocompleteMatches_();
           this.pageHandler_.onThumbnailRemoved();
           e.preventDefault();
         } else if (e.key === 'Tab') {
@@ -761,6 +762,7 @@ export class RealboxElement extends RealboxElementBase {
     /* Remove thumbnail, focus input, and notify browser. */
     this.thumbnailUrl_ = '';
     this.$.input.focus();
+    this.clearAutocompleteMatches_();
     this.pageHandler_.onThumbnailRemoved();
   }
 

@@ -147,9 +147,9 @@ export class RegionSelectionElement extends PolymerElement {
         right,
         top,
     );
-    gradient.addColorStop(0, '#C5E9EB');
-    gradient.addColorStop(0.5, '#FFB2BD');
-    gradient.addColorStop(1, '#028488');
+    gradient.addColorStop(0, '#eef0f9');
+    gradient.addColorStop(0.5, '#a6c8ff');
+    gradient.addColorStop(1, '#5b5e66');
     this.context.strokeStyle = gradient;
 
     // Draw the path for the region bounding box.

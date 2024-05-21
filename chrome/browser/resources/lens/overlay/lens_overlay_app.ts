@@ -17,11 +17,20 @@ import type {BrowserProxy} from './browser_proxy.js';
 import type {InitialToastElement} from './initial_toast.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 
+// Closes overlay if escape button is pressed.
+function maybeCloseOverlay(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    BrowserProxyImpl.getInstance()
+        .handler.closeRequestedByOverlayEscapeKeyPress();
+  }
+}
+
 export interface LensOverlayAppElement {
   $: {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
     feedbackButton: CrIconButtonElement,
+    infoButton: CrIconButtonElement,
     initialToast: InitialToastElement,
   };
 }
@@ -38,20 +47,27 @@ export class LensOverlayAppElement extends PolymerElement {
   static get properties() {
     return {
       screenshotDataUri: String,
+      isImageRendered: Boolean,
       closeButtonHidden: {
         type: Boolean,
         reflectToAttribute: true,
       },
-      isImageRendered: Boolean,
+      isClosing: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
   // The data URI of the screenshot passed from C++.
-  private screenshotDataUri: string;
-  // Whether the close button should be hidden.
-  private closeButtonHidden: boolean = false;
+  private screenshotDataUri: string = '';
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
+  // Whether the close button should be hidden.
+  private closeButtonHidden: boolean = false;
+  // Whether the overlay is being shut down.
+  private isClosing: boolean = false;
+
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
@@ -65,7 +81,11 @@ export class LensOverlayAppElement extends PolymerElement {
           this.screenshotDataUriReceived.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
+      callbackRouter.notifyOverlayClosing.addListener(() => {
+        this.isClosing = true;
+      }),
     ];
+    window.addEventListener('keyup', maybeCloseOverlay);
   }
 
   override disconnectedCallback() {
@@ -73,6 +93,7 @@ export class LensOverlayAppElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+    window.removeEventListener('keyup', maybeCloseOverlay);
   }
 
   private onBackgroundScrimClicked() {
@@ -85,6 +106,16 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onFeedbackButtonClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
+  }
+
+  private onInfoButtonClick(event: MouseEvent|KeyboardEvent) {
+    this.browserProxy.handler.infoRequestedByOverlay({
+      middleButton: (event as MouseEvent).button === 1,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
   }
 
   private onNotifyResultsPanelOpened() {
@@ -126,6 +157,13 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onScreenshotRendered() {
     this.isImageRendered = true;
+  }
+  private getSelectionOverlayClass(screenshotDataUri: string): string {
+    if (!screenshotDataUri || !screenshotDataUri.length) {
+      return 'hidden';
+    } else {
+      return '';
+    }
   }
 }
 

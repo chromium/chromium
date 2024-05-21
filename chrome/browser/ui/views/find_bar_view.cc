@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -279,7 +280,8 @@ FindBarView::FindBarView(FindBarHost* host) {
   SetProperty(views::kElementIdentifierKey, kElementId);
   AddChildView(std::move(main_container));
 
-  if (LensOverlayController::IsEnabled(host->browser_view()->GetProfile())) {
+  if (lens::features::IsFindInPageEntryPointEnabled() &&
+      LensOverlayController::IsEnabled(host->browser_view()->GetProfile())) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -305,13 +307,16 @@ FindBarView::FindBarView(FindBarHost* host) {
                   CHECK(controller);
 
                   controller->ShowUI(
-                      LensOverlayController::InvocationSource::kFindInPage);
+                      lens::LensOverlayInvocationSource::kFindInPage);
                   UserEducationService::MaybeNotifyPromoFeatureUsed(
                       web_contents->GetBrowserContext(),
                       lens::features::kLensOverlay);
+
                   find_bar_controller->EndFindSession(
                       find_in_page::SelectionAction::kClear,
                       find_in_page::ResultAction::kClear);
+                  find_in_page::FindTabHelper::FromWebContents(web_contents)
+                      ->set_find_ui_active(false);
                 },
                 base::Unretained(this)))
             .SetStyle(ui::ButtonStyle::kTonal)

@@ -103,7 +103,9 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
                                const gfx::Size& size) {
   views::Widget* const host_widget =
       views::Widget::GetWidgetForNativeView(dialog_host->GetHostView());
-  CHECK(host_widget);
+  if (!host_widget) {
+    return gfx::Rect();
+  }
 
   gfx::Point position = dialog_host->GetDialogPosition(size);
   // Align the first row of pixels inside the border. This is the apparent top
@@ -250,7 +252,7 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
         << ", scheme=" << url.scheme_piece() << ", host=" << url.host_piece();
   }
 
-  web_modal::ModalDialogHost* dialog_host =
+  web_modal::ModalDialogHost* const dialog_host =
       manager->delegate()->GetWebContentsModalDialogHost();
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr, dialog_host->GetHostView());
@@ -260,7 +262,7 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
         return GetModalDialogBounds(
             widget, dialog_host, widget->GetRootView()->GetPreferredSize({}));
       },
-      widget, manager->delegate()->GetWebContentsModalDialogHost()));
+      widget, dialog_host));
   widget->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
       const_cast<void*>(kConstrainedWindowWidgetIdentifier));

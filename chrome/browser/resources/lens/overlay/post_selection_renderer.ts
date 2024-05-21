@@ -116,6 +116,9 @@ export class PostSelectionRendererElement extends PolymerElement {
           .callbackRouter.clearAllSelections.addListener(
               this.clearSelection.bind(this)),
       BrowserProxyImpl.getInstance()
+          .callbackRouter.clearRegionSelection.addListener(
+              this.clearSelection.bind(this)),
+      BrowserProxyImpl.getInstance()
           .callbackRouter.setPostRegionSelection.addListener(
               this.setSelection.bind(this)),
     ];

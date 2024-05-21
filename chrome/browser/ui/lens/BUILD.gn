@@ -7,8 +7,10 @@ assert(!is_android, "Lens Overlay is for desktop platforms only")
 
 static_library("lens") {
   sources = [
+    "lens_overlay_dismissal_source.h",
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
+    "lens_overlay_invocation_source.h",
     "lens_overlay_permission_utils.cc",
     "lens_overlay_permission_utils.h",
     "lens_overlay_proto_converter.cc",

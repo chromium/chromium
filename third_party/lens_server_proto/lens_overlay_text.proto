@@ -39,8 +39,10 @@ message TextLayout {
 
     // Optional. The text separator that should be appended after this word when
     // it is concatenated with the subsequent word in the same or next
-    // line/paragraph into a single-line string.
-    string text_separator = 3;
+    // line/paragraph into a single-line string. This is specified as optional
+    // because there is a distinction between the absence of a separator and
+    // the empty string as a separator.
+    optional string text_separator = 3;
 
     // Optional. The geometry of the word.
     Geometry geometry = 4;

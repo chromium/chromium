@@ -272,9 +272,18 @@ extern int GetLensOverlayHorizontalTextMargin();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySearchBubbleEnabled();
 
+// Returns whether to use segmentation mask polygons for object highlighting on
+// the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayPreciseHighlightEnabled();
+
 // Returns whether to render the Lens overlay shimmer.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayShimmerEnabled();
+
+// Returns whether to render the sparkling effect on the Lens overlay shimmer.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayShimmerSparklesEnabled();
 
 // Returns whether to allow dragging the Lens overlay selection box.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -301,6 +310,16 @@ extern int GetLensOverlayTapRegionHeight();
 // rather than drags.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayTapRegionWidth();
+
+// Returns whether to enable the image context menu extrypoint for Lens
+// Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseLensOverlayForImageSearch();
+
+// Returns whether to enable the find-in-page entry point.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsFindInPageEntryPointEnabled();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

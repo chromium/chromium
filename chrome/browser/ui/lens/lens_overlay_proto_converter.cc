@@ -98,7 +98,9 @@ lens::mojom::WordPtr CreateWordMojomFromProto(
     lens::WritingDirection writing_direction) {
   lens::mojom::WordPtr word = lens::mojom::Word::New();
   word->plain_text = proto_word.plain_text();
-  word->text_separator = proto_word.text_separator();
+  if (proto_word.has_text_separator()) {
+    word->text_separator = proto_word.text_separator();
+  }
   if (proto_word.has_geometry()) {
     word->geometry = CreateGeometryMojomFromProto(proto_word.geometry());
   }

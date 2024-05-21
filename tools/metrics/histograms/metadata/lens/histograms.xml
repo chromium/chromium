@@ -1,0 +1,157 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms for desktop
+chrome along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
+    units="ms" expires_after="2022-07-31">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the time between the start of the Lens image classifcation call to
+    the early termination before the call completes. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs"
+    units="ms" expires_after="2022-11-13">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the end to end latency of the Lens image classifcation call when the
+    user completes a long press on an image. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="Lens.ImageClassification.ResultState"
+    enum="LensClassifyResultState" expires_after="2022-10-09">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the result state of the Lens image classifcation call when the user
+    completes a long press on an image. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="Lens.ImageClassification.SdkError" enum="LensSdkError"
+    expires_after="2022-08-07">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the error code when there is a Lens SDK error occurred within the
+    classification session. The error code is an integer constant defined by the
+    SDK. Only logged on Android. See http://b/170422682 for more details.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Omnibox.LensSupportStatus" enum="LensSupportStatus"
+    expires_after="2024-09-01">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Whether the user supports the camera assisted search with Google Lens and if
+    not, the reason why. Recorded only if the feature is enabled when the
+    omnibox or the new tab page is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, enumerated by the
+    UI entry point used or the event that triggered the dimissal. In general, it
+    should not be possible to attempt to dismiss the feature if the overlay is
+    not currently showing but if this happens, nothing will be recorded.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.Invoked" enum="LensOverlayInvocationSource"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is invoked, enumerated by the UI
+    entry point used. In general, it should not be possible to attempt to invoke
+    the feature if the overlay is already showing but if this happens, nothing
+    will be recorded.
+
+    See also Lens.Overlay.Shown, which is recoded when the overlay is
+    successfully shown.
+
+    This UMA histogram is used to track feature usage and retention, and thus
+    should never expire.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown.
+    'Shown' is recorded when the Lens Permission Bubble is successfully shown.
+    'Not Shown' is recorded when the Lens Permission Bubble is already showing.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.PermissionBubble.UserAction"
+    enum="LensPermissionBubbleUserAction" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.Shown" enum="BooleanEnabled" expires_after="M135">
+  <owner>erikchen@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded once when the lens overlay UI is shown. This UMA histogram is used
+    to track feature usage and retention, and thus should never expire.
+  </summary>
+</histogram>
+
+<histogram name="Lens.QuickActionSearchWidget.LensSupportStatus"
+    enum="LensSupportStatus" expires_after="2024-06-21">
+  <owner>benwgold@chromium.org</owner>
+  <owner>yusuyoutube@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Whether the user supports the camera assisted search with Google Lens and if
+    not, the reason why. Recorded only when the Lens button is tapped on the
+    Quick Action Search Widget.
+
+    Note: Gap between 04/22 - 08/23.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

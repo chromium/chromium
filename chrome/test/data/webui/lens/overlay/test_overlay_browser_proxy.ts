@@ -6,6 +6,7 @@ import type {BrowserProxy} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageHandlerInterface, LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import {LensPageCallbackRouter} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import type {ClickModifiers} from 'chrome-untrusted://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 /**
@@ -18,11 +19,14 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     super([
       'closeRequestedByOverlayCloseButton',
       'closeRequestedByOverlayBackgroundClick',
+      'closeRequestedByOverlayEscapeKeyPress',
       'addBackgroundBlur',
       'closeSearchBubble',
       'feedbackRequestedByOverlay',
+      'infoRequestedByOverlay',
       'issueLensRequest',
       'issueTextSelectionRequest',
+      'issueTranslateSelectionRequest',
     ]);
   }
 
@@ -32,6 +36,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   closeRequestedByOverlayBackgroundClick() {
     this.methodCalled('closeRequestedByOverlayBackgroundClick');
+  }
+
+  closeRequestedByOverlayEscapeKeyPress() {
+    this.methodCalled('closeRequestedByOverlayEscapeKeyPress');
   }
 
   addBackgroundBlur() {
@@ -46,12 +54,20 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('feedbackRequestedByOverlay');
   }
 
+  infoRequestedByOverlay(clickModifiers: ClickModifiers) {
+    this.methodCalled('infoRequestedByOverlay', clickModifiers);
+  }
+
   issueLensRequest(rect: CenterRotatedBox) {
     this.methodCalled('issueLensRequest', rect);
   }
 
   issueTextSelectionRequest(query: string) {
     this.methodCalled('issueTextSelectionRequest', query);
+  }
+
+  issueTranslateSelectionRequest(query: string) {
+    this.methodCalled('issueTranslateSelectionRequest', query);
   }
 }
 

@@ -43,6 +43,34 @@ inline constexpr char kLanguageCodeParameterKey[] = "hl";
 // Query parameter for the search context.
 inline constexpr char kSearchContextParameterKey[] = "mactx";
 
+// Query parameter for the lens mode.
+inline constexpr char kLensModeParameterKey[] = "lns_mode";
+inline constexpr char kLensModeParameterTextValue[] = "text";
+inline constexpr char kLensModeParameterUnimodalValue[] = "un";
+inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
+
+// Parameters to trigger the Translation One-box.
+inline constexpr char kCtxslTransParameterKey[] = "ctxsl_trans";
+inline constexpr char kCtxslTransParameterValue[] = "1";
+inline constexpr char kTliteSourceLanguageParameterKey[] = "tlitesl";
+inline constexpr char kTliteTargetLanguageParameterKey[] = "tlitetl";
+inline constexpr char kTliteQueryParameterKey[] = "tlitetxt";
+
+// Query parameter for the invocation source.
+inline constexpr char kInvocationSourceParameterKey[] = "source";
+inline constexpr char kInvocationSourceAppMenu[] = "chrome.cr.menu";
+inline constexpr char kInvocationSourcePageSearchContextMenu[] =
+    "chrome.cr.ctxp";
+inline constexpr char kInvocationSourceImageSearchContextMenu[] =
+    "chrome.cr.ctxi";
+inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
+inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
+inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
+
+// The url query param for the viewport width and height.
+constexpr char kViewportWidthQueryParamKey[] = "biw";
+constexpr char kViewportHeightQueryParamKey[] = "bih";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -57,12 +85,20 @@ GURL AppendUrlParamsFromMap(
 
 }  // namespace
 
+void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
+                                const std::string& query,
+                                const std::string& content_language) {
+  params[kCtxslTransParameterKey] = kCtxslTransParameterValue;
+  params[kTliteQueryParameterKey] = query;
+  params[kTliteSourceLanguageParameterKey] = content_language;
+  params[kTliteTargetLanguageParameterKey] =
+      g_browser_process->GetApplicationLocale();
+}
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   GURL new_url = url_to_modify;
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kAmbientParameterKey, kAmbientParameterValue);
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kLanguageCodeParameterKey,
       g_browser_process->GetApplicationLocale());
@@ -78,6 +114,8 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
   }
 
   GURL new_url = url_to_modify;
+  new_url = net::AppendOrReplaceQueryParameter(new_url, kAmbientParameterKey,
+                                               kAmbientParameterValue);
   omnibox::SearchContext search_context;
   if (page_url.has_value()) {
     search_context.set_webpage_url(page_url->spec());
@@ -98,17 +136,51 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
   return new_url;
 }
 
+GURL AppendInvocationSourceParamToURL(
+    const GURL& url_to_modify,
+    lens::LensOverlayInvocationSource invocation_source) {
+  std::string param_value = "";
+  switch (invocation_source) {
+    case lens::LensOverlayInvocationSource::kAppMenu:
+      param_value = kInvocationSourceAppMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
+      param_value = kInvocationSourcePageSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
+      param_value = kInvocationSourceImageSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kToolbar:
+      param_value = kInvocationSourceToolbarIcon;
+      break;
+    case lens::LensOverlayInvocationSource::kFindInPage:
+      param_value = kInvocationSourceFindInPage;
+      break;
+    case lens::LensOverlayInvocationSource::kOmnibox:
+      param_value = kInvocationSourceOmniboxIcon;
+      break;
+  }
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kInvocationSourceParameterKey, param_value);
+}
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendInvocationSourceParamToURL(
+      url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensModeParameterKey,
+      kLensModeParameterTextValue);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
   url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
@@ -120,9 +192,12 @@ GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendInvocationSourceParamToURL(
+      url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params =
@@ -130,6 +205,10 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey,
       text_query.has_value() ? *text_query : "");
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensModeParameterKey,
+      text_query.has_value() ? kLensModeParameterMultimodalValue
+                             : kLensModeParameterUnimodalValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -164,8 +243,6 @@ bool HasCommonSearchQueryParameters(const GURL& url) {
   std::string temp_output_string;
   return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
                                     &temp_output_string) &&
-         net::GetValueForKeyInQuery(url, kAmbientParameterKey,
-                                    &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
                                     &temp_output_string);
 }
@@ -177,6 +254,25 @@ bool IsValidSearchResultsUrl(const GURL& url) {
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+GURL RemoveUrlViewportParams(const GURL& url) {
+  GURL processed_url = url;
+  std::string actual_viewport_width;
+  bool has_viewport_width = net::GetValueForKeyInQuery(
+      url, kViewportWidthQueryParamKey, &actual_viewport_width);
+  std::string actual_viewport_height;
+  bool has_viewport_height = net::GetValueForKeyInQuery(
+      GURL(url), kViewportHeightQueryParamKey, &actual_viewport_height);
+  if (has_viewport_width) {
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportWidthQueryParamKey, std::nullopt);
+  }
+  if (has_viewport_height) {
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportHeightQueryParamKey, std::nullopt);
+  }
+  return processed_url;
 }
 
 }  // namespace lens

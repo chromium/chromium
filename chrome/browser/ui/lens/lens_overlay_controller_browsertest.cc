@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -20,6 +21,10 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -29,6 +34,8 @@
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -63,8 +70,8 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
-using InvocationSource = LensOverlayController::InvocationSource;
-using DismissalSource = LensOverlayController::DismissalSource;
+using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
+using LensOverlayDismissalSource = lens::LensOverlayDismissalSource;
 
 constexpr char kNewTabLinkClickScript[] =
     "(function() {const anchor = document.createElement('a');anchor.href = "
@@ -98,6 +105,24 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "const searchboxInputLoaded = "
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
+
+constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
+    "(function() {const root = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot; "
+    "const iframeSrcLoaded = "
+    "  root.getElementById('results').src.includes('q=' + $1);"
+    "const tlitetxtPresent = "
+    "  root.getElementById('results').src.includes('tlitetxt=' + $1);"
+    "const ctxslTransPresent = "
+    "  root.getElementById('results').src.includes('ctxsl_trans=1');"
+    "const tliteslPresent = "
+    "  root.getElementById('results').src.includes('tlitesl=' + $2);"
+    "const tlitetlPresent = "
+    "  root.getElementById('results').src.includes('tlitetl=en-US');"
+    "const searchboxInputLoaded = "
+    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  === $1; return iframeSrcLoaded && tlitetxtPresent && ctxslTransPresent "
+    "&& tliteslPresent & tlitetlPresent && searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelThumbnailShownScript[] =
     "(function() {const appRoot = "
@@ -141,6 +166,11 @@ const lens::mojom::OverlayObjectPtr kTestOverlayObject =
     lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
 const lens::mojom::TextPtr kTestText =
     lens::mojom::Text::New(lens::mojom::TextLayout::New(), "es");
+const lens::mojom::CenterRotatedBoxPtr kTestRegion =
+    lens::mojom::CenterRotatedBox::New(
+        gfx::RectF(0.1, 0.1, 0.8, 0.8),
+        0.1,
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized);
 
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
@@ -163,6 +193,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     did_notify_results_opened_ = true;
   }
 
+  void NotifyOverlayClosing() override { did_notify_overlay_closing_ = true; }
+
   void SetPostRegionSelection(
       lens::mojom::CenterRotatedBoxPtr region) override {
     post_region_selection_ = std::move(region);
@@ -174,7 +206,14 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
         std::make_pair(selection_start_index, selection_end_index);
   }
 
-  void ClearAllSelections() override { did_clear_selections_ = true; }
+  void ClearRegionSelection() override { did_clear_region_selection_ = true; }
+
+  void ClearTextSelection() override { did_clear_text_selection_ = true; }
+
+  void ClearAllSelections() override {
+    did_clear_region_selection_ = true;
+    did_clear_text_selection_ = true;
+  }
 
   // The real side panel page that was opened by the lens overlay. Needed to
   // call real functions on the WebUI.
@@ -184,9 +223,11 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
   bool did_notify_results_opened_ = false;
+  bool did_notify_overlay_closing_ = false;
   lens::mojom::CenterRotatedBoxPtr post_region_selection_;
   std::pair<int, int> text_selection_indexes_;
-  bool did_clear_selections_ = false;
+  bool did_clear_region_selection_ = false;
+  bool did_clear_text_selection_ = false;
 };
 
 // TODO(b/334147680): Since both our interactive UI tests and our browser tests
@@ -200,13 +241,15 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager)
+      signin::IdentityManager* identity_manager,
+      LensOverlayInvocationSource invocation_source)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
                                    thumbnail_created_callback,
                                    variations_client,
-                                   identity_manager) {}
+                                   identity_manager,
+                                   invocation_source) {}
 
   void StartQueryFlow(const SkBitmap& screenshot,
                       std::optional<GURL> page_url,
@@ -248,10 +291,12 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager) override {
+      signin::IdentityManager* identity_manager,
+      lens::LensOverlayInvocationSource invocation_source) override {
     return std::make_unique<LensOverlayQueryControllerFake>(
         full_image_callback, url_callback, interaction_data_callback,
-        thumbnail_created_callback, variations_client, identity_manager);
+        thumbnail_created_callback, variations_client, identity_manager,
+        invocation_source);
   }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
@@ -440,14 +485,13 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifySearchQueryParameters(const GURL& url_to_process) {
-    EXPECT_THAT(
-        url_to_process.spec(),
-        testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
-                              ".*q=.*&gsc=1&masfc=c&hl=.*&biw=\\d+&bih=\\d+"));
+    EXPECT_THAT(url_to_process.spec(),
+                testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
+                                      ".*q=.*&gsc=1&hl=.*&biw=\\d+&bih=\\d+"));
   }
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
-                                 DismissalSource dismissal_source) {
+                                 LensOverlayDismissalSource dismissal_source) {
     controller->CloseUIAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
@@ -476,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify attempting to show the UI will show the permission bubble.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        lens::kLensPermissionDialogName);
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   auto* bubble_widget = waiter.WaitIfNeededAndGet();
@@ -487,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
@@ -536,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify attempting to show the UI will show the permission bubble.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        lens::kLensPermissionDialogName);
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   auto* bubble_widget = waiter.WaitIfNeededAndGet();
@@ -547,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
@@ -587,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify attempting to show the UI will show the permission bubble.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        lens::kLensPermissionDialogName);
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   auto* bubble_widget = waiter.WaitIfNeededAndGet();
@@ -598,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
@@ -636,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -664,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -673,6 +717,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   GURL webui_url(chrome::kChromeUILensUntrustedURL);
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   ASSERT_EQ(GetOverlayWebContents()->GetLastCommittedURL(), webui_url);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       FullscreenClosesOverlay) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Enter into fullscreen mode.
+  FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  fullscreen_controller->EnterFullscreenModeForTab(
+      tab_web_contents->GetPrimaryMainFrame());
+
+  // Verify the overlay turns off.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
@@ -687,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -699,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_results_opened_);
 
   // Now show the side panel.
-  controller->side_panel_coordinator()->RegisterEntryAndShow();
+  controller->results_side_panel_coordinator()->RegisterEntryAndShow();
 
   // Prevent flakiness by flushing the tasks.
   fake_controller->FlushForTesting();
@@ -710,6 +784,38 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_results_opened_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ShowSidePanelWithPendingRegion) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUIWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
+                                      kTestRegion->Clone());
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify region was passed to WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_EQ(kTestRegion,
+            fake_controller->fake_overlay_page_.post_region_selection_);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
@@ -724,13 +830,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
   // Now show the side panel.
-  controller->side_panel_coordinator()->RegisterEntryAndShow();
+  controller->results_side_panel_coordinator()->RegisterEntryAndShow();
 
   // Ensure the side panel is showing.
   auto* coordinator =
@@ -740,9 +851,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   // Close the side panel.
   coordinator->Close();
 
-  // Ensure the side panel closes too.
+  // Ensure the overlay closes too.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
@@ -765,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -786,7 +898,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(observer.request_shown());
 
   // Close overlay
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
 
   // Verify a prompt was shown
   ASSERT_TRUE(base::test::RunUntil([&]() { return observer.request_shown(); }));
@@ -794,14 +907,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 // TODO(b/335801964): Test flaky on Mac.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowSidePanelAfterManualRegionSelection \
-  DISABLED_ShowSidePanelAfterManualRegionSelection
+#define MAYBE_SidePanelInteractionsAfterRegionSelection \
+  DISABLED_SidePanelInteractionsAfterRegionSelection
 #else
-#define MAYBE_ShowSidePanelAfterManualRegionSelection \
-  ShowSidePanelAfterManualRegionSelection
+#define MAYBE_SidePanelInteractionsAfterRegionSelection \
+  SidePanelInteractionsAfterRegionSelection
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_ShowSidePanelAfterManualRegionSelection) {
+                       MAYBE_SidePanelInteractionsAfterRegionSelection) {
   WaitForPaint();
 
   std::string text_query = "Apples";
@@ -814,8 +927,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   // We need to flush the mojo receiver calls to make sure the screenshot was
@@ -841,25 +957,45 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
 
-  // Verify that the side panel searchbox displays a thumbnail.
+  // Verify that the side panel searchbox displays a thumbnail and that the
+  // controller has a copy.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return true ==
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelThumbnailShownScript));
   }));
+  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
+  EXPECT_FALSE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
 
-  // Verify that after text selection, the thumbnail is no longer shown.
+  // Verify that after text selection, the controller has a copy of the text,
+  // the thumbnail is no longer shown and the controller's copy of the
+  // thumbnail is empty.
   controller->IssueTextSelectionRequestForTesting(text_query,
-                                                  /*selection_start_index=*/0,
-                                                  /*selection_end_index=*/0);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return false ==
-           content::EvalJs(
-               controller->GetSidePanelWebContentsForTesting(),
-               content::JsReplace(kCheckSidePanelThumbnailShownScript));
-  }));
+                                                  /*selection_start_index=*/10,
+                                                  /*selection_end_index=*/16);
+  EXPECT_TRUE(content::EvalJs(
+                  controller->GetSidePanelWebContentsForTesting()
+                      ->GetPrimaryMainFrame(),
+                  content::JsReplace(kCheckSearchboxInput, text_query),
+                  content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES)
+                  .ExtractBool());
+  EXPECT_TRUE(controller->GetSelectedTextForTesting().has_value());
+  EXPECT_TRUE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
 
+  // Verify that after a signal from the searchbox that the text was modified,
+  // no text selection is present.
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
+  controller->OnTextModifiedForTesting();
+  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
+  fake_controller->FlushForTesting();
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
 }
 
 // TODO(b/335028577): Test flaky on Mac.
@@ -884,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -911,6 +1047,58 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
 }
 
+// TODO(b/335028577): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowSidePanelAfterTranslateSelectionRequest \
+  DISABLED_ShowSidePanelAfterTranslateSelectionRequest
+#else
+#define MAYBE_ShowSidePanelAfterTranslateSelectionRequest \
+  ShowSidePanelAfterTranslateSelectionRequest
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_ShowSidePanelAfterTranslateSelectionRequest) {
+  WaitForPaint();
+
+  std::string text_query = "Manzanas";
+  std::string content_language = "es";
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  controller->IssueTranslateSelectionRequestForTesting(
+      text_query, content_language,
+      /*selection_start_index=*/0,
+      /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+
+  // Verify that the side panel displays our query.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelTranslateResultsLoadedScript,
+                                  text_query, content_language));
+  }));
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleStartQueryResponse) {
   WaitForPaint();
@@ -934,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should change the state to screenshot and eventually to overlay.
   // When the overlay is bound, it should start the query flow which returns a
   // response for the full image callback.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -975,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should change the state to screenshot and eventually to overlay.
   // When the overlay is bound, it should start the query flow which returns a
   // response for the full image callback.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1009,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       browser()->tab_strip_model()->active_index();
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1018,7 +1206,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Open a side panel to test that the side panel persists between tab
   // switches.
-  controller->side_panel_coordinator()->RegisterEntryAndShow();
+  controller->results_side_panel_coordinator()->RegisterEntryAndShow();
   auto* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
@@ -1060,7 +1248,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1115,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1197,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1261,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -1326,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1391,7 +1579,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should eventually result in overlay state. When the overlay is
   // bound, it should start the query flow which returns a response for the
   // interaction data callback.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1432,7 +1620,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1440,7 +1628,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
-      "https://www.google.com/search?q=oranges&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
+      "hl=en-US");
   controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1460,7 +1650,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
-      "https://www.google.com/search?q=kiwi&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
+      "en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(
@@ -1518,7 +1710,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1526,7 +1718,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
-      "https://www.google.com/search?q=oranges&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
+      "hl=en-US");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1548,7 +1742,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
-      "https://www.google.com/search?q=kiwi&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
+      "en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(
@@ -1602,9 +1798,61 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // cleared.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_selections_);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_region_selection_);
   EXPECT_EQ(fake_controller->fake_overlay_page_.text_selection_indexes_,
             loaded_search_query->selected_text_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       AddQueryToHistoryAfterResize) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+
+  // Loading a url in the side panel should show the results page.
+  const GURL first_search_url(
+      "https://www.google.com/search?q=oranges&gsc=1&hl=en-US");
+  controller->LoadURLInResultsFrame(first_search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Loading a second url in the side panel should show the results page.
+  const GURL second_search_url(
+      "https://www.google.com/search?q=kiwi&gsc=1&hl=en-US");
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->LoadURLInResultsFrame(second_search_url);
+  observer.WaitForNavigationFinished();
+
+  // Make the side panel larger.
+  const int increment = -50;
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->unified_side_panel()
+      ->OnResize(increment, true);
+  // Popping the query should load the previous query into the results frame.
+  content::TestNavigationObserver pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->PopAndLoadQueryFromHistory();
+  pop_observer.WaitForNavigationFinished();
+  // The search query history stack should be empty and the currently loaded
+  // query should be set to the previous query.
+  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1623,119 +1871,332 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing the UI and then closing it should record an entry in the
   // appropriate buckets and the total count of invocations and dismissals
   // should be 1.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kAppMenu,
+                                     LensOverlayInvocationSource::kAppMenu,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/1);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kOverlayCloseButton,
-                                     /*expected_count=*/1);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Dismissed", LensOverlayDismissalSource::kOverlayCloseButton,
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/1);
 
   // Attempting to invoke the overlay twice without closing it in between
   // should record only a single new entry.
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kAppMenu,
+                                     LensOverlayInvocationSource::kAppMenu,
                                      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/2);
-  controller->ShowUI(InvocationSource::kAppMenu);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kAppMenu,
+                                     LensOverlayInvocationSource::kAppMenu,
                                      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/2);
 
   // Attempting to close the overlay twice without opening it in between should
   // only record a single entry.
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kOverlayCloseButton,
-                                     /*expected_count=*/2);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Dismissed", LensOverlayDismissalSource::kOverlayCloseButton,
+      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/2);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kOverlayCloseButton,
-                                     /*expected_count=*/2);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Dismissed", LensOverlayDismissalSource::kOverlayCloseButton,
+      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/2);
 
   // Each type of invocation and dismissal should record entries in the
   // appropriate buckets.
-  controller->ShowUI(InvocationSource::kContentAreaContextMenuPage);
+  controller->ShowUI(LensOverlayInvocationSource::kContentAreaContextMenuPage);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.Invoked", InvocationSource::kContentAreaContextMenuPage,
+      "Lens.Overlay.Invoked",
+      LensOverlayInvocationSource::kContentAreaContextMenuPage,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/3);
+  CloseOverlayAndWaitForOff(
+      controller, LensOverlayDismissalSource::kOverlayBackgroundClick);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Dismissed",
+      LensOverlayDismissalSource::kOverlayBackgroundClick,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/3);
+
+  controller->ShowUI(LensOverlayInvocationSource::kContentAreaContextMenuImage);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Invoked",
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/4);
   CloseOverlayAndWaitForOff(controller,
-                            DismissalSource::kOverlayBackgroundClick);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kOverlayBackgroundClick,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
-                                    /*expected_count=*/3);
-
-  controller->ShowUI(InvocationSource::kContentAreaContextMenuImage);
+                            LensOverlayDismissalSource::kSidePanelCloseButton);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.Invoked", InvocationSource::kContentAreaContextMenuImage,
+      "Lens.Overlay.Dismissed",
+      LensOverlayDismissalSource::kSidePanelCloseButton,
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
-                                    /*expected_count=*/4);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kSidePanelCloseButton);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kSidePanelCloseButton,
-                                     /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/4);
 
-  controller->ShowUI(InvocationSource::kToolbar);
+  controller->ShowUI(LensOverlayInvocationSource::kToolbar);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kToolbar,
+                                     LensOverlayInvocationSource::kToolbar,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/5);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kToolbar);
+  CloseOverlayAndWaitForOff(controller, LensOverlayDismissalSource::kToolbar);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kToolbar,
+                                     LensOverlayDismissalSource::kToolbar,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/5);
 
-  controller->ShowUI(InvocationSource::kFindInPage);
+  controller->ShowUI(LensOverlayInvocationSource::kFindInPage);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kFindInPage,
+                                     LensOverlayInvocationSource::kFindInPage,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/6);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kPageChanged);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kPageChanged);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kPageChanged,
+                                     LensOverlayDismissalSource::kPageChanged,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/6);
 
-  controller->ShowUI(InvocationSource::kOmnibox);
+  controller->ShowUI(LensOverlayInvocationSource::kOmnibox);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     InvocationSource::kOmnibox,
+                                     LensOverlayInvocationSource::kOmnibox,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/7);
-  CloseOverlayAndWaitForOff(controller, DismissalSource::kTabContentsDiscarded);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
-                                     DismissalSource::kTabContentsDiscarded,
-                                     /*expected_count=*/1);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kTabContentsDiscarded);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.Dismissed",
+      LensOverlayDismissalSource::kTabContentsDiscarded,
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/7);
+}
+
+// TODO(b/340886492): Fix and reenable test on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OverlayClosesSidePanelBeforeOpening \
+  DISABLED_OverlayClosesSidePanelBeforeOpening
+#else
+#define MAYBE_OverlayClosesSidePanelBeforeOpening \
+  OverlayClosesSidePanelBeforeOpening
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_OverlayClosesSidePanelBeforeOpening) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the side panel
+  auto* side_panel_coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Side panel should now be closed.
+  EXPECT_FALSE(side_panel_coordinator->IsSidePanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayClosesIfSidePanelIsOpened) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
+  // Open the side panel
+  auto* side_panel_coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+
+  // Overlay should close.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayClosesIfNewSidePanelEntryAppears) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
+  // Open our results panel
+  controller->IssueTextSelectionRequestForTesting("test query",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Open a different side panel
+  auto* side_panel_coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+
+  // Verify the side panel is open
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+
+  // Overlay should close.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+}
+
+// TODO(b/340886492): Fix and reenable test on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OverlaySidePanelEdgeCaseInteractions \
+  DISABLED_OverlaySidePanelEdgeCaseInteractions
+#else
+#define MAYBE_OverlaySidePanelEdgeCaseInteractions \
+  OverlaySidePanelEdgeCaseInteractions
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_OverlaySidePanelEdgeCaseInteractions) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // First, test the flow if the user has a side panel open, we request to close
+  // it, and then a new side panel opens before the close is finished.
+  // Open the side panel
+  auto* side_panel_coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_coordinator->IsSidePanelShowing();
+  }));  // issue here
+
+  // Wait for the side panel to open fully.
+  SidePanel* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->unified_side_panel();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel->GetAnimationValue() >= 1; }));
+
+  //   Showing UI should eventually result in overlay state. When the overlay is
+  //   bound, it should start the query flow which returns a response for the
+  //   interaction data callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(controller->state() == State::kClosingOpenedSidePanel);
+
+  // Wait for the side panel to start closing.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return side_panel->IsClosing(); }));
+
+  // Reshow the side panel to prevent the side panel from closing.
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+
+  // Verify the overlay returns to kOff state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+
+  // Secondly, test the flow if the side panel is open with our results, if we
+  // close our UI and request the close the side panel, we gracefully handle a
+  // new side panel opening which prevents our requested close.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Open our results panel
+  controller->IssueTextSelectionRequestForTesting("test query",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Request a close which will start to close the side panel.
+  controller->CloseUIAsync(LensOverlayDismissalSource::kOverlayBackgroundClick);
+  ASSERT_TRUE(controller->state() == State::kClosingSidePanel);
+
+  // Reshow the side panel to prevent a the side panel from closing.
+  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
+
+  // The overlay eventually returns to kOff state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 }  // namespace

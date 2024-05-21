@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -75,7 +76,7 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     ASSERT_EQ(controller->state(), State::kOff);
 
     // Showing UI should eventually result in overlay state.
-    controller->ShowUI(LensOverlayController::InvocationSource::kAppMenu);
+    controller->ShowUI(lens::LensOverlayInvocationSource::kAppMenu);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOverlay; }));
 
@@ -118,8 +119,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayCloseButton) {
   RunOverlayTest("lens/overlay/overlay_close_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayEscapeKey) {
+  RunOverlayTest("lens/overlay/overlay_escape_key_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayFeedbackButton) {
   RunOverlayTest("lens/overlay/overlay_feedback_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayInfoButton) {
+  RunOverlayTest("lens/overlay/overlay_info_button_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayScreenshot) {
@@ -156,4 +165,8 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
                  "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelEscapeKey) {
+  RunOverlayTest("lens/side_panel/side_panel_escape_key_test.js",
+                 "mocha.run()");
+}
 }  // namespace

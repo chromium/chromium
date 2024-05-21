@@ -34,6 +34,14 @@ interface ChromeRenderFrame {
   // Requests the bitmap selected by the most recently opened context menu.
   RequestBitmapForContextNode() => (skia.mojom.BitmapN32? bitmap);
 
+  // Requests the bounds of the image selected by the most recently opened
+  // context menu. Note that the bounds originate from the DOM layer, and no
+  // guarantee is made about their correlation with the bounds of the image as
+  // displayed in the presentation layer. The returned bounds are also not
+  // guaranteed to correspond to the result of calling
+  // RequestBitmapForContextNode().
+  RequestBoundsForContextNodeDiagnostic() => (gfx.mojom.Rect bounds);
+
   // Requests an encoded image selected by the most recently opened context
   // menu. The encoding format is specified as a parameter. If no image is
   // selected or there's an error capturing the image, |image_data| will be
