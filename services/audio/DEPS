@@ -1,9 +1,0 @@
-include_rules = [
-   "+media/audio",
-   "+media/base",
-   "+media/media_buildflags.h",
-   "+media/mojo",
-   "+media/webrtc",
-   "+sandbox",
-   "+services/audio/public",
-]

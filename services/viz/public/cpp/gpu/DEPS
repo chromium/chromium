@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/viz/common/gpu",
-  "+gpu",
-  "+skia",
-  "+third_party/skia",
-  "+ui/gfx",
-  "+ui/gl",
-]

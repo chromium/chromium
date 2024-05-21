@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/google",
-  "+net",
-  "+services/data_decoder",
-  "+services/network",
-  "+third_party/skia",
-  "+ui/gfx",
-  "+url",
-]

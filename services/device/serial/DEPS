@@ -1,7 +1,0 @@
-include_rules = [
-  "+chromeos/dbus",
-  "+components/device_event_log",
-  "+net/base",
-  "+services/device/public/mojom",
-  "+third_party/re2",
-]

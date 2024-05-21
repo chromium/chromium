@@ -1,3 +1,0 @@
-include_rules = [
-  "+gpu/command_buffer"
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/viz",
-  "+ui/gfx/mojom/color_space_mojom_traits.h",
-]

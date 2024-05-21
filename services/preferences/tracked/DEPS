@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/pref_registry",
-  "+crypto/hmac.h",
-]

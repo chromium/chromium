@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/component_updater",
-]
-
-specific_include_rules = {
-  "utilities.cc": [
-    "+ui/accessibility/accessibility_features.h",
-  ],
-}

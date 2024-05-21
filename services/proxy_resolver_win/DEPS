@@ -1,5 +1,0 @@
-include_rules = [
-  "+base",
-  "+net",
-  "+url",
-]

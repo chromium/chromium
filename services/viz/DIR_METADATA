@@ -1,7 +1,0 @@
-mixins: "//components/viz/COMMON_METADATA"
-monorail: {
-  component: "Internals>Services>Viz"
-}
-buganizer_public: {
-  component_id: 1457051
-}

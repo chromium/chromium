@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/webrtc",
-  "+third_party/webrtc/media/base",
-  "+third_party/webrtc/rtc_base",
-]

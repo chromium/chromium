@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "trust_token_request_handler.cc" : [
-    "+components/cbor",
-  ]
-}

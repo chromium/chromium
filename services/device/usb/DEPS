@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/device_event_log",
-  "+chromeos",
-  "+dbus",
-  "+services/device/usb/jni_headers",
-  "+third_party/libusb",
-  "+third_party/re2",
-]

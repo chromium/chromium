@@ -1,7 +1,0 @@
-include_rules = [
-  # The media transfer protocol daemon uses D-Bus.
-  "+chromeos/ash/components/dbus",
-  "+dbus",
-  "+services/device/public/mojom",
-  "+third_party/cros_system_api/dbus",
-]

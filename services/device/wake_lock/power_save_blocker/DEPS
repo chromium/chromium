@@ -1,9 +1,0 @@
-include_rules = [
-  "+chromeos/dbus",
-  "+dbus",
-  "+services/device/public",
-  "+ui/android",
-  "+ui/gfx",
-  "+ui/base/x",
-  "+ui/display",
-]
