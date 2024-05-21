@@ -242,7 +242,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLEmptyClusterInfo) {
 
   std::string expected_url = base::StringPrintf(
       "%s?cs=0&source=chrome.cr.menu&gsc=1&hl=%s&q=%s&lns_mode=mu&"
-      "gsessionid=&udm=24&vsrid=%s",
+      "lns_fp=1&gsessionid=&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       EncodeRequestId(request_id.get()).c_str());
 
@@ -273,7 +273,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
 
   std::string expected_url = base::StringPrintf(
       "%s?cs=0&source=chrome.cr.menu&gsc=1&hl=%s&q=%s&lns_mode=mu&"
-      "gsessionid=%s&udm=24&vsrid=%s",
+      "lns_fp=1&gsessionid=%s&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), EncodeRequestId(request_id.get()).c_str());
 
@@ -308,7 +308,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
 
   std::string expected_url = base::StringPrintf(
       "%s?cs=0&source=chrome.cr.menu&gsc=1&hl=%s&q=&lns_mode=un&"
-      "gsessionid=%s&udm=26&vsrid=%s",
+      "lns_fp=1&gsessionid=%s&udm=26&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 
@@ -344,7 +344,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
 
   std::string expected_url = base::StringPrintf(
       "%s?cs=0&source=chrome.cr.menu&param=value&gsc=1&hl=%s&q=&lns_"
-      "mode=un&gsessionid=%s&udm=26&"
+      "mode=un&lns_fp=1&gsessionid=%s&udm=26&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());

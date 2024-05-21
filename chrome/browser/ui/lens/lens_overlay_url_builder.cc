@@ -76,6 +76,10 @@ inline constexpr char kDarkModeParameterKey[] = "cs";
 inline constexpr char kDarkModeParameterLightValue[] = "0";
 inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
+// Query parameter for the Lens footprint.
+inline constexpr char kLensFootprintParameterKey[] = "lns_fp";
+inline constexpr char kLensFootprintParameterValue[] = "1";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -227,6 +231,9 @@ GURL BuildLensSearchURL(
       url_with_query_params, kLensModeParameterKey,
       text_query.has_value() ? kLensModeParameterMultimodalValue
                              : kLensModeParameterUnimodalValue);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensFootprintParameterKey,
+      kLensFootprintParameterValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(
