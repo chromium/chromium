@@ -1,7 +1,0 @@
-monorail:  {
-  component:  "Platform>Apps"
-}
-team_email:  "apps-dev@chromium.org"
-buganizer_public:  {
-  component_id:  1456886
-}
