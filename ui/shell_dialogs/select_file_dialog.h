@@ -109,8 +109,16 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
 
   // Holds information about allowed extensions on a file save dialog.
   struct SHELL_DIALOGS_EXPORT FileTypeInfo {
+    using FileExtensionList = std::vector<base::FilePath::StringType>;
+
     FileTypeInfo();
     FileTypeInfo(const FileTypeInfo& other);
+
+    explicit FileTypeInfo(FileExtensionList extensions);
+    explicit FileTypeInfo(std::vector<FileExtensionList> extensions);
+    explicit FileTypeInfo(std::vector<FileExtensionList> extensions,
+                          std::vector<std::u16string> descriptions);
+
     ~FileTypeInfo();
 
     // A list of allowed extensions. For example, it might be
@@ -122,8 +130,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     std::vector<std::vector<base::FilePath::StringType>> extensions;
 
     // Overrides the system descriptions of the specified extensions. Entries
-    // correspond to |extensions|; if left blank the system descriptions will
-    // be used.
+    // correspond to |extensions|. This must either be of length 0 or the same
+    // length as extensions.
+    // TODO(https://issues.chromium.org/issues/340178601): store a vector of
+    // FileTypeExtensions instead of this and the above vector?
     std::vector<std::u16string> extension_description_overrides;
 
     // Specifies whether there will be a filter added for all files (i.e. *.*).

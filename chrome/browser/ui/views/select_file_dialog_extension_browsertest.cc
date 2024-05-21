@@ -258,8 +258,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     std::u16string title;
     // Include a file type filter. This triggers additional functionality within
     // the Files app.
-    ui::SelectFileDialog::FileTypeInfo file_types;
-    file_types.extensions = {{"html"}};
+    ui::SelectFileDialog::FileTypeInfo file_types{{FILE_PATH_LITERAL("html")}};
     const ui::SelectFileDialog::FileTypeInfo* file_types_ptr =
         UseFileTypeFilter() ? &file_types : nullptr;
 

@@ -13,20 +13,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-namespace {
-ui::SelectFileDialog::FileTypeInfo GetFileTypeInfo() {
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(4);
-
-  // Allowed file types include:
-  // * Ansible playbooks (yaml)
-  // * Crostini backup files (tini, tar.gz, tgz)
-  file_type_info.extensions = {{"yaml", "tini", "tar.gz", "tgz"}};
-
-  return file_type_info;
-}
-}  // namespace
-
 namespace crostini {
 CrostiniFileSelector::CrostiniFileSelector(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
@@ -56,7 +42,13 @@ void CrostiniFileSelector::SelectFile(
     return;
   }
 
-  ui::SelectFileDialog::FileTypeInfo file_type_info(GetFileTypeInfo());
+  ui::SelectFileDialog::FileTypeInfo file_type_info{
+      // Allowed file types include:
+      // * Ansible playbooks (yaml)
+      // * Crostini backup files (tini, tar.gz, tgz)
+      {FILE_PATH_LITERAL("yaml"), FILE_PATH_LITERAL("tini"),
+       FILE_PATH_LITERAL("tar.gz"), FILE_PATH_LITERAL("tgz")},
+  };
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
       l10n_util::GetStringUTF16(

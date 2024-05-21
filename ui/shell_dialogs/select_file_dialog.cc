@@ -61,6 +61,22 @@ SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;
 SelectFileDialog::FileTypeInfo::FileTypeInfo(const FileTypeInfo& other) =
     default;
 
+SelectFileDialog::FileTypeInfo::FileTypeInfo(FileExtensionList in_extensions)
+    : extensions({std::move(in_extensions)}) {}
+
+SelectFileDialog::FileTypeInfo::FileTypeInfo(
+    std::vector<FileExtensionList> in_extensions)
+    : extensions(std::move(in_extensions)) {}
+
+SelectFileDialog::FileTypeInfo::FileTypeInfo(
+    std::vector<FileExtensionList> in_extensions,
+    std::vector<std::u16string> in_descriptions)
+    : extensions(std::move(in_extensions)),
+      extension_description_overrides(std::move(in_descriptions)) {
+  CHECK(extension_description_overrides.empty() ||
+        extension_description_overrides.size() == extensions.size());
+}
+
 SelectFileDialog::FileTypeInfo::~FileTypeInfo() = default;
 
 // static

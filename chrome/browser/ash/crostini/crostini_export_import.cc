@@ -195,9 +195,9 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;
   base::FilePath default_path;
-  ui::SelectFileDialog::FileTypeInfo file_types;
-  file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
-  file_types.extensions = {{"tini", "tar.gz", "tgz"}};
+  const ui::SelectFileDialog::FileTypeInfo file_types{
+      {FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tar.gz"),
+       FILE_PATH_LITERAL("tgz")}};
 
   switch (operation_data->type) {
     case ExportImportType::EXPORT:
