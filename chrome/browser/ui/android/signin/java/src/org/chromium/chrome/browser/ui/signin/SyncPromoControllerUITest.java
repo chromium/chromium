@@ -422,6 +422,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_description_recent_tabs))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
@@ -465,6 +466,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_description_recent_tabs))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
@@ -508,6 +510,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_description_recent_tabs))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 

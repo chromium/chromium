@@ -134,6 +134,7 @@ public class SyncPromoController {
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
     private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
+    private final boolean mShouldSuppressSecodaryButton;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
     private final @SigninAndHistoryOptInCoordinator.HistoryOptInMode int mHistoryOptInMode;
@@ -271,6 +272,7 @@ public class SyncPromoController {
                     mTitleStringId = R.string.sync_promo_title_bookmarks;
                     mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 }
+                mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
@@ -301,6 +303,7 @@ public class SyncPromoController {
                     mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 }
+                mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
@@ -327,9 +330,11 @@ public class SyncPromoController {
                     // TODO(crbug.com/331384429): Update the strings.
                     mTitleStringId = R.string.signin_promo_title_recent_tabs;
                     mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
+                    mShouldSuppressSecodaryButton = true;
                 } else {
                     mTitleStringId = R.string.sync_promo_title_recent_tabs;
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
+                    mShouldSuppressSecodaryButton = false;
                 }
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
@@ -350,6 +355,7 @@ public class SyncPromoController {
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_settings;
                 mDescriptionStringId = R.string.sync_promo_description_settings;
+                mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
@@ -666,13 +672,14 @@ public class SyncPromoController {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                 && shouldLaunchSigninFlow
                 && mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+            // The bookmarks manager has different conditions for displaying the new flow.
             view.getDescription().setText(R.string.signin_promo_description_bookmarks);
         }
-        // The bookmarks manager has different conditions for displaying the new flow.
         view.getPrimaryButton()
                 .setOnClickListener(v -> signinWithDefaultAccount(context, shouldLaunchSigninFlow));
         view.getPrimaryButton().setText(mDelegate.getTextForPrimaryButton(context, mProfileData));
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                || mShouldSuppressSecodaryButton) {
             view.getSecondaryButton().setVisibility(View.GONE);
             return;
         }
