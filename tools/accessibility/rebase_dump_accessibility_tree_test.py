@@ -94,7 +94,7 @@ def ParseLog(logdata):
 
       actual_text = '\n'.join(actual)
       # Make sure the text ends with a newline.
-      if actual[-1][-1] != '\n':
+      if len(actual) > 0 and actual[-1][-1] != '\n':
         actual_text += '\n'
 
       fp = open(dst_fullpath, 'w')
