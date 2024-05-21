@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -68,6 +69,12 @@ class FocusModeDetailedViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    // `g_network_handler` is null in tests, we need to manually set the network
+    // connected state. Also, the buttons or textfield under the tasks view will
+    // be enabled and the playlists under the sounds view will exists only when
+    // the user is online.
+    glanceables_util::SetIsNetworkConnectedForTest(true);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

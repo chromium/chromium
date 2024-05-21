@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/tray_background_view_catalog.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -104,23 +105,31 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kTaskItemViewCornerRadius));
 
+    const bool is_network_connected = glanceables_util::IsNetworkConnected();
     radio_button_ =
         AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
-    radio_button_->SetImageModel(views::Button::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     kRadioButtonUncheckedIcon,
-                                     cros_tokens::kCrosSysPrimary, kIconSize));
+    radio_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kRadioButtonUncheckedIcon,
+                                       is_network_connected
+                                           ? cros_tokens::kCrosSysPrimary
+                                           : cros_tokens::kCrosSysDisabled,
+                                       kIconSize));
     radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
     radio_button_->SetTooltipText(radio_button_->GetAccessibleName());
+    radio_button_->SetEnabled(is_network_connected);
 
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *task_title_);
-    task_title_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    task_title_->SetEnabledColorId(is_network_connected
+                                       ? cros_tokens::kCrosSysOnSurface
+                                       : cros_tokens::kCrosSysDisabled);
     task_title_->SetText(title);
     task_title_->SetTooltipText(title);
     task_title_->SetBorder(views::CreateEmptyBorder(kTaskTitleLabelInsets));
+    task_title_->SetEnabled(is_network_connected);
   }
   TaskItemView(const TaskItemView&) = delete;
   TaskItemView& operator=(const TaskItemView&) = delete;

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
@@ -36,6 +37,11 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    // In order to create a detailed view, we need to check the network.
+    // `g_network_handler` is null in tests, so we need to manually set the
+    // network connected state.
+    glanceables_util::SetIsNetworkConnectedForTest(true);
 
     // Focus Mode considers it to be a first time user flow if
     // `kFocusModeDoNotDisturb` has never been set by the user before. For

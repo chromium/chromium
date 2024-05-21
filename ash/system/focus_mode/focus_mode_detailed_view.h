@@ -93,7 +93,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // allow the user to select a task. Once the user enters a task in the
   // textfield or selects a task from the list, this view only shows the
   // selected saved task item view and the header.
-  void CreateTaskView();
+  void CreateTaskView(bool is_network_connected);
 
   // Performs an animation to shift the visible container views below
   // `task_view_container_`.

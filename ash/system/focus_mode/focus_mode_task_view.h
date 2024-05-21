@@ -25,7 +25,7 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   METADATA_HEADER(FocusModeTaskView, views::BoxLayoutView)
 
  public:
-  FocusModeTaskView();
+  explicit FocusModeTaskView(bool is_network_connected);
   FocusModeTaskView(const FocusModeTaskView&) = delete;
   FocusModeTaskView& operator=(const FocusModeTaskView&) = delete;
   ~FocusModeTaskView() override;
@@ -72,8 +72,10 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   // `deselect_button_`, update the style of `textfield_`, and hide the
   // selection carousel; otherwise, we will hide the two buttons, update the
   // style of `textfield_`, show the carousel, and let the user to create a new
-  // task, edit an existing task, or select a task from the carousel.
-  void UpdateStyle(bool show_selected_state);
+  // task, edit an existing task, or select a task from the carousel. If
+  // `is_network_connected` is false, we will show a different color for the
+  // button and disable it as well.
+  void UpdateStyle(bool show_selected_state, bool is_network_connected = true);
 
   // TODO(b/306272008): Update the image of `radio_button_` to a check icon if
   // it was clicked by the user.

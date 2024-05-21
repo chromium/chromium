@@ -35,6 +35,7 @@ namespace {
 
 constexpr int kIconSize = 20;
 constexpr int kTextfieldCornerRadius = 8;
+constexpr float kOfflineStateOpacity = 0.38f;
 constexpr auto kSelectedStateBoxInsets = gfx::Insets::VH(4, 0);
 constexpr auto kSelectedStateTextfieldInsets = gfx::Insets::TLBR(0, 16, 0, 12);
 constexpr auto kUnselectedStateBoxInsets = gfx::Insets::TLBR(4, 8, 4, 16);
@@ -190,7 +191,7 @@ class FocusModeTaskView::TaskTextfieldController
 //---------------------------------------------------------------------
 // FocusModeTaskView:
 
-FocusModeTaskView::FocusModeTaskView() {
+FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   textfield_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -218,9 +219,12 @@ FocusModeTaskView::FocusModeTaskView() {
   add_task_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
-                                     cros_tokens::kCrosSysSecondary,
+                                     is_network_connected
+                                         ? cros_tokens::kCrosSysSecondary
+                                         : cros_tokens::kCrosSysDisabled,
                                      kIconSize));
   add_task_button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+  add_task_button_->SetEnabled(is_network_connected);
 
   textfield_ =
       textfield_container_->AddChildView(std::make_unique<TaskTextfield>(
@@ -231,7 +235,14 @@ FocusModeTaskView::FocusModeTaskView() {
   textfield_->SetBackgroundEnabled(false);
   textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER));
-  textfield_->SetPlaceholderTextColorId(cros_tokens::kCrosSysSecondary);
+  textfield_->SetPlaceholderTextColorId(is_network_connected
+                                            ? cros_tokens::kCrosSysSecondary
+                                            : cros_tokens::kCrosSysDisabled);
+  if (!is_network_connected) {
+    textfield_->SetEnabled(false);
+    textfield_->SetPaintToLayer();
+    textfield_->layer()->SetOpacity(kOfflineStateOpacity);
+  }
   // Shrink the inactive `textfield_` ring so it's not touching the other views
   // when focused.
   views::InstallRoundRectHighlightPathGenerator(
@@ -261,10 +272,13 @@ FocusModeTaskView::FocusModeTaskView() {
   deselect_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kMediumOrLargeCloseButtonIcon,
-                                     cros_tokens::kCrosSysSecondary,
+                                     is_network_connected
+                                         ? cros_tokens::kCrosSysSecondary
+                                         : cros_tokens::kCrosSysDisabled,
                                      kIconSize));
   deselect_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_DESELECT_BUTTON));
+  deselect_button_->SetEnabled(is_network_connected);
   views::FocusRing::Install(deselect_button_);
   views::FocusRing::Get(deselect_button_)
       ->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -276,12 +290,13 @@ FocusModeTaskView::FocusModeTaskView() {
   const bool has_selected_task = controller->HasSelectedTask();
   if (has_selected_task) {
     task_title_ = base::UTF8ToUTF16(controller->selected_task_title());
-  } else {
+  } else if (is_network_connected) {
     controller->tasks_provider().GetSortedTaskList(base::BindOnce(
         &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
   }
 
-  UpdateStyle(/*show_selected_state=*/has_selected_task);
+  UpdateStyle(/*show_selected_state=*/has_selected_task,
+              /*is_network_connected=*/is_network_connected);
 
   textfield_controller_ =
       std::make_unique<TaskTextfieldController>(textfield_, this);
@@ -399,7 +414,8 @@ void FocusModeTaskView::OnTasksFetched(
   chip_carousel_->SetVisible(!tasks.empty());
 }
 
-void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
+void FocusModeTaskView::UpdateStyle(bool show_selected_state,
+                                    bool is_network_connected) {
   textfield_->SetText(task_title_);
   // Unfocus the textfield if a task is selected.
   if (show_selected_state) {
@@ -427,7 +443,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
                                 cros_tokens::kCrosSysInputFieldOnShaded,
                                 kTextfieldCornerRadius));
 
-  radio_button_->SetEnabled(true);
+  radio_button_->SetEnabled(is_network_connected);
   radio_button_->SetVisible(show_selected_state);
   deselect_button_->SetVisible(show_selected_state);
   add_task_button_->SetVisible(!show_selected_state);
@@ -439,7 +455,10 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
   radio_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kRadioButtonUncheckedIcon,
-                                     cros_tokens::kCrosSysPrimary, kIconSize));
+                                     is_network_connected
+                                         ? cros_tokens::kCrosSysPrimary
+                                         : cros_tokens::kCrosSysDisabled,
+                                     kIconSize));
 
   textfield_->set_show_selected_state(show_selected_state);
   textfield_->SetAccessibleName(

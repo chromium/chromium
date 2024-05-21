@@ -24,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -43,6 +44,8 @@ constexpr auto kSoundTabSliderInsets = gfx::Insets::VH(16, 0);
 
 constexpr int kNonPremiumChildViewsSpacing = 16;
 constexpr int kNonPremiumLabelViewMaxWidth = 288;
+
+constexpr float kOfflineStateOpacity = 0.38f;
 
 std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   auto box_view = std::make_unique<views::BoxLayoutView>();
@@ -91,40 +94,51 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   return box_view;
 }
 
+std::unique_ptr<views::BoxLayoutView> CreateOfflineStateView() {
+  auto box_view = std::make_unique<views::BoxLayoutView>();
+  box_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  box_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  auto* label = box_view->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL)));
+  label->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+      ash::TypographyToken::kCrosBody2));
+  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+
+  return box_view;
+}
+
 }  // namespace
 
 //---------------------------------------------------------------------
 // FocusModeSoundsView:
 
-FocusModeSoundsView::FocusModeSoundsView() {
+FocusModeSoundsView::FocusModeSoundsView(bool is_network_connected) {
   SetProperty(views::kMarginsKey, kDisconnectedContainerMargins);
   SetBorderInsets(gfx::Insets::TLBR(0, 0, kSoundViewBottomPadding, 0));
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  CreateTabSliderButtons();
-
-  soundscape_container_ = AddChildView(std::make_unique<SoundSectionView>(
-      focus_mode_util::SoundType::kSoundscape));
-  youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
-      focus_mode_util::SoundType::kYouTubeMusic));
-
-  // TODO: Assume that the user doesn't have a premium account currently. Will
-  // add a condition here when we finish the API implementation.
-  youtube_music_container_->SetAlternateView(CreateNonPremiumView());
-  youtube_music_container_->ShowAlternateView(true);
+  CreateTabSliderButtons(is_network_connected);
 
   // We are currently defaulting to the premium playlists when opening a new
   // focus mode panel, and this can change based on future policies.
   youtube_music_button_->SetSelected(true);
-  OnYouTubeMusicButtonToggled();
 
   auto* sounds_controller =
       FocusModeController::Get()->focus_mode_sounds_controller();
-  sounds_controller->DownloadPlaylistsForType(
-      /*is_soundscape_type=*/true,
-      base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
-                     weak_factory_.GetWeakPtr()));
+  if (is_network_connected) {
+    CreatesSoundSectionViews();
+    sounds_controller->DownloadPlaylistsForType(
+        /*is_soundscape_type=*/true,
+        base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
+                       weak_factory_.GetWeakPtr()));
+    OnYouTubeMusicButtonToggled();
+  } else {
+    AddChildView(CreateOfflineStateView());
+  }
 
   sounds_controller->AddObserver(this);
 }
@@ -160,7 +174,7 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
   }
 }
 
-void FocusModeSoundsView::CreateTabSliderButtons() {
+void FocusModeSoundsView::CreateTabSliderButtons(bool is_network_connected) {
   auto* tab_slider_box = AddChildView(std::make_unique<views::BoxLayoutView>());
   tab_slider_box->SetInsideBorderInsets(kSoundTabSliderInsets);
   tab_slider_box->SetMainAxisAlignment(
@@ -181,14 +195,37 @@ void FocusModeSoundsView::CreateTabSliderButtons() {
                           weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON));
+
+  if (!is_network_connected) {
+    sound_tab_slider->layer()->SetOpacity(kOfflineStateOpacity);
+    sound_tab_slider->SetEnabled(false);
+  }
+}
+
+void FocusModeSoundsView::CreatesSoundSectionViews() {
+  soundscape_container_ = AddChildView(std::make_unique<SoundSectionView>(
+      focus_mode_util::SoundType::kSoundscape));
+  youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
+      focus_mode_util::SoundType::kYouTubeMusic));
+
+  // TODO: Assume that the user doesn't have a premium account currently. Will
+  // add a condition here when we finish the API implementation.
+  youtube_music_container_->SetAlternateView(CreateNonPremiumView());
+  youtube_music_container_->ShowAlternateView(true);
 }
 
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {
+  CHECK(soundscape_container_);
+  CHECK(youtube_music_container_);
+
   soundscape_container_->SetVisible(true);
   youtube_music_container_->SetVisible(false);
 }
 
 void FocusModeSoundsView::OnYouTubeMusicButtonToggled() {
+  CHECK(soundscape_container_);
+  CHECK(youtube_music_container_);
+
   soundscape_container_->SetVisible(false);
   youtube_music_container_->SetVisible(true);
 }

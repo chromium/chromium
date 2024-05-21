@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
@@ -49,6 +50,11 @@ class FocusModeTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    // `g_network_handler` is null in tests, we need to manually set the network
+    // connected state. Also, the button and the label under the task item view
+    // will be enabled only when the user is online.
+    glanceables_util::SetIsNetworkConnectedForTest(true);
 
     auto& tasks_client =
         CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -326,9 +327,12 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   CreateTimerView();
 
-  CreateTaskView();
+  const bool is_network_connected = glanceables_util::IsNetworkConnected();
 
-  scroll_content()->AddChildView(std::make_unique<FocusModeSoundsView>());
+  CreateTaskView(is_network_connected);
+
+  scroll_content()->AddChildView(
+      std::make_unique<FocusModeSoundsView>(is_network_connected));
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
@@ -716,7 +720,7 @@ void FocusModeDetailedView::HandleTextfieldActivationChange() {
   }
 }
 
-void FocusModeDetailedView::CreateTaskView() {
+void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
   task_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
           RoundedContainer::Behavior::kAllRounded));
@@ -729,8 +733,10 @@ void FocusModeDetailedView::CreateTaskView() {
   // Create the task header.
   auto* task_view_header =
       task_view_container_->AddChildView(std::make_unique<views::Label>());
-  task_view_header->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
+  task_view_header->SetText(l10n_util::GetStringUTF16(
+      is_network_connected
+          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_SUBHEADER));
   task_view_header->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));
@@ -739,8 +745,8 @@ void FocusModeDetailedView::CreateTaskView() {
                                         *task_view_header);
 
   // Create the focus mode task view.
-  focus_mode_task_view_ =
-      task_view_container_->AddChildView(std::make_unique<FocusModeTaskView>());
+  focus_mode_task_view_ = task_view_container_->AddChildView(
+      std::make_unique<FocusModeTaskView>(is_network_connected));
 }
 
 void FocusModeDetailedView::OnTaskViewAnimate(const int shift_height) {
