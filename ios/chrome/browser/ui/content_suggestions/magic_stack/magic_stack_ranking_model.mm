@@ -166,6 +166,8 @@
 #pragma mark - SetUpListMediatorAudience
 
 - (void)removeSetUpList {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kCompactedSetUpList);
   DCHECK(IsIOSMagicStackCollectionViewEnabled());
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_setUpListMediator.setUpListConfigs[0]];
@@ -180,6 +182,8 @@
 #pragma mark - SafetyCheckMagicStackMediatorDelegate
 
 - (void)removeSafetyCheckModule {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kSafetyCheck);
   if (IsIOSMagicStackCollectionViewEnabled()) {
     [self.delegate
         magicStackRankingModel:self
@@ -220,6 +224,8 @@
 }
 
 - (void)removeTabResumptionModule {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kTabResumption);
   if (IsIOSMagicStackCollectionViewEnabled()) {
     [self.delegate magicStackRankingModel:self
                             didRemoveItem:_tabResumptionMediator.itemConfig];
@@ -261,6 +267,8 @@
 }
 
 - (void)parcelTrackingDisabled {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kParcelTracking);
   if (IsIOSMagicStackCollectionViewEnabled()) {
     [self.delegate magicStackRankingModel:self
                             didRemoveItem:_parcelTrackingMediator

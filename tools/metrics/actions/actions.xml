@@ -14359,6 +14359,14 @@ should be able to be added at any place in this file.
   <description>Recorded when the Safety Check result has changed.</description>
 </action>
 
+<action name="IOSMagicStackSettingsOpened">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the user opens the Magic Stack Settings page.
+  </description>
+</action>
+
 <action name="IOSMagicStackShortcutsFreshSignal" not_user_triggered="true">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-team@google.com</owner>

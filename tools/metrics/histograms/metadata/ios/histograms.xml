@@ -1585,6 +1585,13 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Disabled" enum="IOSMagicStackModuleType"
+    expires_after="2025-05-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>Records when a module was disabled.</summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.TopImpression"
     enum="IOSMagicStackModuleType" expires_after="2024-11-03">
   <owner>thegreenfrog@chromium.org</owner>
@@ -1600,6 +1607,16 @@ the generic promo launch. -->
   <owner>bling-get-set-up@google.com</owner>
   <summary>
     Records the fetch time for the Segmentation ranking for Magic Stack on NTP.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.ScrollActionToIndex" units="index"
+    expires_after="2025-05-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the Magic Stack card index to which the user scrolled to each time a
+    scroll to a new module happens.
   </summary>
 </histogram>
 
