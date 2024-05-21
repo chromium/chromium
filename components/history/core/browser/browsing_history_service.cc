@@ -213,6 +213,10 @@ void BrowsingHistoryService::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void BrowsingHistoryService::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
 void BrowsingHistoryService::WebHistoryTimeout(
     scoped_refptr<QueryHistoryState> state) {
   state->remote_status = TIMED_OUT;

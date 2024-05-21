@@ -122,6 +122,9 @@ enum class PreloadTopChromeWebUIMode {
   kPreloadOnWarmup = 0,
   kPreloadOnMakeContents = 1
 };
+extern const char kPreloadTopChromeWebUIModeName[];
+extern const char kPreloadTopChromeWebUIModePreloadOnWarmupName[];
+extern const char kPreloadTopChromeWebUIModePreloadOnMakeContentsName[];
 extern const base::FeatureParam<PreloadTopChromeWebUIMode>
     kPreloadTopChromeWebUIMode;
 
