@@ -31,6 +31,7 @@ config("fuzztest_internal_config") {
     "-Wno-unused-const-variable",
     "-Wno-unused-function",
     "-Wno-inconsistent-missing-override",
+    "-Wno-unused-lambda-capture",
   ]
 
   # int_utils.h depends on an SSE 4.2 intrinsic.
@@ -175,6 +176,8 @@ if (use_centipede) {
       "src/centipede/fuzztest_mutator.cc",
       "src/centipede/fuzztest_mutator.h",
       "src/centipede/minimize_crash.cc",
+      "src/centipede/periodic_action.cc",
+      "src/centipede/periodic_action.h",
       "src/centipede/resource_pool.cc",
       "src/centipede/rusage_profiler.cc",
       "src/centipede/rusage_stats.cc",
