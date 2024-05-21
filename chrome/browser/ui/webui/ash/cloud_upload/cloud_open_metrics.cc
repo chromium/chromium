@@ -4,39 +4,36 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 
+#include <concepts>
 #include <string>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
 
-// Stringify the `MetricState` enum.
-std::ostream& operator<<(std::ostream& os, MetricState metric_state) {
-  switch (metric_state) {
-    case MetricState::kCorrectlyNotLogged:
-      return os << "NL";
-    case MetricState::kCorrectlyLogged:
-      return os << "L";
-    case MetricState::kIncorrectlyNotLogged:
-      return os << "INL";
-    case MetricState::kIncorrectlyLogged:
-      return os << "IL";
-    case MetricState::kIncorrectlyLoggedMultipleTimes:
-      return os << "ILM";
-    case MetricState::kWrongValueLogged:
-      return os << "WVL";
+template <typename T>
+  requires(std::is_enum_v<T>)
+std::ostream& operator<<(std::ostream& os, T metric) {
+  if constexpr (std::same_as<T, MetricState>) {
+    switch (metric) {
+      case MetricState::kCorrectlyNotLogged:
+        return os << "NL";
+      case MetricState::kCorrectlyLogged:
+        return os << "L";
+      case MetricState::kIncorrectlyNotLogged:
+        return os << "INL";
+      case MetricState::kIncorrectlyLogged:
+        return os << "IL";
+      case MetricState::kIncorrectlyLoggedMultipleTimes:
+        return os << "ILM";
+      case MetricState::kWrongValueLogged:
+        return os << "WVL";
+    }
   }
-}
-
-// Stringify enums (`MetricType`) that are not the `MetricState`.
-template <
-    typename MetricType,
-    class = std::enable_if<std::is_enum<MetricType>::value &&
-                           !std::is_same<MetricType, MetricState>::value>::type>
-std::ostream& operator<<(std::ostream& os, const MetricType& value) {
-  return os << static_cast<std::underlying_type<MetricType>::type>(value);
+  return os << base::to_underlying(metric);
 }
 
 // Print debug information about this metric.
