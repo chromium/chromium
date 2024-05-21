@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/dom_distiller/core",
-  "+components/keyed_service/core",
-  "+components/prefs",
-  "+components/tab_groups",
-
-  # SkColor is referenced in a struct in session_types.h
-  "+third_party/skia/include/core/SkColor.h",
-]

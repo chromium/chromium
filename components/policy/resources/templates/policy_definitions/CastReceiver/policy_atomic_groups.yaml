@@ -1,5 +1,0 @@
-GoogleCast:
-  caption: Google Cast
-  policies:
-  - CastReceiverEnabled
-  - CastReceiverName

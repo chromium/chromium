@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/gcm_driver",
-  "+components/keyed_service",
-  "+components/sync/base",
-]

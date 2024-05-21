@@ -1,5 +1,0 @@
-include_rules = [
-  "+ui/compositor",
-  "+ui/events/keycodes",
-  "+ui/views",
-]

@@ -1,9 +1,0 @@
-include_rules = [
-  "+google/protobuf",
-  "+net",
-  "+components/optimization_guide",
-  "+services/network/public",
-  "+services/network/test",
-  "+third_party/googletest",
-  "+third_party/tflite_support",
-]

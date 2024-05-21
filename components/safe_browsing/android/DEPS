@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/safe_browsing/core/browser",
-  "+components/safe_browsing/core/common",
-  "+content/public/browser",
-  "+content/public/test",
-  "+crypto/sha2.h",
-]

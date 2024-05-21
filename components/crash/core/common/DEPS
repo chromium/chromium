@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/gwp_asan/buildflags/buildflags.h",
-  "+components/gwp_asan/client/sampling_malloc_shims.h",
-  "+components/previous_session_info/previous_session_info.h",
-  "+third_party/breakpad/breakpad/src/client/ios/Breakpad.h",
-  "+third_party/breakpad/breakpad/src/client/ios/BreakpadController.h",
-]

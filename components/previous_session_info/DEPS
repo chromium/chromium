@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/variations/variations_crash_keys.h",
-  "+components/version_info/version_info.h",
-  "+ios/web/public/test/web_task_environment.h",
-]

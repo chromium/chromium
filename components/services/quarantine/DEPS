@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromeos/dbus/dlp",
-  "+net/base/filename_util.h",
-]

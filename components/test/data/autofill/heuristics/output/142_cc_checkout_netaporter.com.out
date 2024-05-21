@@ -1,9 +1,0 @@
-UNKNOWN_TYPE | cardType | Please note that the value of your order will only be charged to your card at the time of delivery | VISA | cardType_1
-UNKNOWN_TYPE | cardType | Please note that the value of your order will only be charged to your card at the time of delivery | MASTERCARD | cardType_1
-UNKNOWN_TYPE | cardType | Please note that the value of your order will only be charged to your card at the time of delivery | AMEX | cardType_1
-UNKNOWN_TYPE | cardType | Please note that the value of your order will only be charged to your card at the time of delivery | PAYPAL | cardType_1
-CREDIT_CARD_NUMBER | cardNumber | Card Number* |  | cardNumber_2
-CREDIT_CARD_NAME_FULL | cardHoldersName | Name on card* |  | cardNumber_2
-CREDIT_CARD_VERIFICATION_CODE | cVSNumber | Security Number* |  | cardNumber_2
-CREDIT_CARD_EXP_MONTH | expiryMonth | Expiry Date* |  | cardNumber_2
-CREDIT_CARD_EXP_2_DIGIT_YEAR | expiryYear | Expiry Date* |  | cardNumber_2

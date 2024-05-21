@@ -1,8 +1,0 @@
-ScreenCaptureSettings:
-  caption: Screen Capture settings
-  policies:
-  - ScreenCaptureAllowed
-  - ScreenCaptureAllowedByOrigins
-  - WindowCaptureAllowedByOrigins
-  - TabCaptureAllowedByOrigins
-  - SameOriginTabCaptureAllowedByOrigins

@@ -1,4 +1,0 @@
-caption: Parental supervision settings
-desc: |-
-  Controls parental supervision policies, that are applied to child accounts only.
-        These policies are not set in the admin console, but configured directly by Kids API Server.

@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/public/test/android/javatests",
-  "+ui/android",
-]

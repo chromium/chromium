@@ -1,6 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+net",
-  "+services/device/public/cpp/geolocation",
-  "+services/device/public/mojom",
-]

@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Bookmarks"
-}
-team_email: "chrome-collections@google.com"
-buganizer_public: {
-  component_id: 1457392
-}

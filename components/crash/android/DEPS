@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/crash/android/jni_headers",
-  "+components/minidump_uploader/android",
-  "+components/version_info/android",
-  "+third_party/crashpad",
-  "+content/public/android/java/src/org/chromium/content_public/browser/UiThreadTaskTraits.java",
-]

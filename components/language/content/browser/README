@@ -1,3 +1,0 @@
-Note:
-The language code locator is built on all platforms but iOS since iOS currently
-does not support //device/geolocation. See http://crbug.com/774879 for details.

@@ -1,9 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+pdf/buildflags.h",
-  "+skia",
-  "+third_party/blink/public/platform/web_font_description.h",
-  "+third_party/pdfium/public/fpdf_sysfontinfo.h",
-  "+third_party/skia/include",
-  "+ui/gfx"
-]

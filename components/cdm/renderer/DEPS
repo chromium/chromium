@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/public/renderer",
-  "+third_party/widevine/cdm/buildflags.h",
-]

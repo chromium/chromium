@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/autofill/core",
-  "+components/segmentation_platform",
-  "+components/strings/grit",
-  "+components/ukm",
-  "+services/metrics/public/cpp",
-  "+ui/base",
-]

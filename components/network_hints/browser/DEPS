@@ -1,8 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+ipc",
-  "+mojo/public/cpp/bindings",
-  "+net",
-  "+services/network/public/cpp",
-  "+services/network/public/mojom",
-]

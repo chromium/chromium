@@ -1,6 +1,0 @@
-caption: Extensions
-desc: Configures extension-related policies. The user is not allowed to install blocked
-  extensions unless they are whitelisted. You can also force <ph name="PRODUCT_NAME">$1<ex>Google
-  Chrome</ex></ph> to automatically install extensions by specifying them in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph>.
-  Force-installed extensions are installed regardless whether they are present in
-  the blocklist.

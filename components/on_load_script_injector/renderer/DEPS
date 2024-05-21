@@ -1,5 +1,0 @@
-include_rules = [
-  "+content/public/renderer",
-  "+mojo/public/cpp/bindings",
-  "+third_party/blink/public",
-]

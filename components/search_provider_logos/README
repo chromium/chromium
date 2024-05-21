@@ -1,3 +1,0 @@
-The search_provider_logos component provides the logo image for a search
-provider (e.g. Google or Yahoo!). The logo is downloaded on-demand and cached on
-disk for future use.

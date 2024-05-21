@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/keyed_service/content",
-  "+content/public/browser",
-  "+content/public/test",
-]

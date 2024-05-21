@@ -1,6 +1,0 @@
-{
-  "type": "object",
-  "patternProperties": {
-    "^.$": { "type": "any" }
-  }
-}

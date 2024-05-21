@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/translate/core/browser",
-  "+components/translate/core/common",
-  "+components/translate/core/language_detection",
-  "+net",
-]

@@ -1,4 +1,0 @@
-{
-  "default_applications": ["HTTPS://JONPAY.COM/APP.JSON"],
-  "supported_origins": ["HTTPS://ALICEPAY.COM"]
-}

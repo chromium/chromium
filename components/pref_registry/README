@@ -1,6 +1,0 @@
-The //components/pref_registry component provides:
-
-A place for PrefRegistrySyncable to live, where it can be used by
-components that need to register preferences associated with users.
-
-This component should not depend on content module.

@@ -1,6 +1,0 @@
-include_rules = [
-  "-content",
-  "+components/download/network/jni_headers",
-  "+net",
-  "+services/network/public",
-]

@@ -1,5 +1,0 @@
-[
-  {
-    "reason_for_missing_test": "Policy is only available on Android Webview which doesn't support browser tests."
-  }
-]

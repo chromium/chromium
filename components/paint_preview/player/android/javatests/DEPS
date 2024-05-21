@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/signin/core/browser",
-  "+content/public/android",
-  "+content/public/test/android",
-]

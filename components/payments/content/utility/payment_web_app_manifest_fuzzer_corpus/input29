@@ -1,8 +1,0 @@
-{
-    "related_applications": [{
-        "platform": "play",
-        "url": "https://play.google.com/store/apps/details?id=com.hackerweb",
-        "id": "com.hackerweb",
-        "min_version": "1"
-    }]
-}

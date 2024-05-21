@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/prefs",
-  "+components/version_info",
-  "+crypto",
-  "+dbus",
-  "+ui/base/glib",
-]

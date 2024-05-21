@@ -1,4 +1,0 @@
-{
-  "DEFAULT_APPLICATIONS": ["https://jonpay.com/app.json"],
-  "SUPPORTED_ORIGINS": ["https://alicepay.com"]
-}

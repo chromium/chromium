@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/url_formatter",
-  "+net/base",
-]

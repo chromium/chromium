@@ -1,4 +1,0 @@
-include_rules = [
-  "+net",
-  "+ui/gfx/geometry/size_f.h",
-]

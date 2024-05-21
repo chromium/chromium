@@ -1,4 +1,0 @@
-include_rules = [
-  "+crypto/sha2.h",
-  "+google_apis/gaia/core_account_id.h",
-]

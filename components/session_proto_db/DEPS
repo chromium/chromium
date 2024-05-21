@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/commerce/core/proto/persisted_state_db_content.pb.h",
-  "+components/keyed_service",
-  "+components/leveldb_proto",
-  "+content/public/browser",
-  "+content/public/test",
-  "+third_party/leveldatabase",
-]

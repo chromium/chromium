@@ -1,8 +1,0 @@
-include_rules = [
-  "+crypto",
-  "+mojo/core/embedder",
-  "+third_party/boringssl/src/include",
-  "+third_party/re2",
-  "+third_party/blink/public/platform",
-  "+third_party/blink/public/web",
-]

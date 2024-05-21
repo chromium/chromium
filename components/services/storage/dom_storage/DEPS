@@ -1,8 +1,0 @@
-include_rules = [
-  "+third_party/blink/public/mojom/dom_storage",
-]
-specific_include_rules = {
-  "local_storage_impl\.cc": [
-    "+storage/common/database",
-  ],
-}

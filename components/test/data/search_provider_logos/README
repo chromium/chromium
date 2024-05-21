@@ -1,6 +1,0 @@
-This directory contains canned test responses from Google's Doodle API at
-www.google.com/async/ddljson. There's a unit test that verifies that Chromium
-parses all the files without errors. When something on the server-side changes,
-simply run the download_test_doodles.sh script to update all the files. Note
-that if the number of files changes (e.g. because a new test Doodle was added),
-the file list in the unit test also has to be updated.

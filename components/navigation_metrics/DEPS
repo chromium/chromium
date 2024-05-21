@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/dom_distiller/core",
-  "+components/profile_metrics",
-  "+components/url_formatter",
-  "+net/base/registry_controlled_domains",
-  # For net::IsHostnameNonUnique.
-  "+net/base/url_util.h",
-]

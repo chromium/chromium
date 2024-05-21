@@ -1,8 +1,0 @@
-The //components/user_pref component provides:
-
-a) The UserPrefs class, where components dependent on looking up
-preferences associated with users can look them up by
-content::BrowserContext.
-
-b) A place for PrefRegistrySyncable to live, where it can be used by
-components that need to register preferences associated with users.

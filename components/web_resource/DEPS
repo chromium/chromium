@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/pref_registry",
-  "+components/prefs",
-  "+services/network/public/cpp",
-  "+services/network/test",
-
-  # web_resource is used on iOS.
-  "-content",
-]

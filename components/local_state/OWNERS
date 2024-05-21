@@ -1,6 +1,0 @@
-# This WebUI page is primarily used for debugging metrics and variation
-# related prefs.
-file://base/metrics/OWNERS
-
-# WebUI owners are also listed to allow for large-scale refactoring changes.
-file://ui/webui/PLATFORM_OWNERS

@@ -1,8 +1,0 @@
-include_rules = [
-  "-content",
-  "+components/feature_engagement/internal/jni_headers",
-  "+components/feature_engagement/features.h",
-  "+components/flags_ui",
-  "+components/keyed_service",
-  "+components/leveldb_proto",
-]

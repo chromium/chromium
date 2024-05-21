@@ -1,5 +1,0 @@
-specific_include_rules = {
-  'logging_unittest\.cc': [
-    "+third_party/webrtc_overrides",
-  ]
-}

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <structure type="chrome_scaled_image" name="IDR_FLAGS_FAVICON" file="flags_ui/favicon_flags.png" />
-</grit-part>

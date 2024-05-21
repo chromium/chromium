@@ -1,5 +1,0 @@
-BrowserIdle:
-  caption: Idle Browser Actions
-  policies:
-  - IdleTimeout
-  - IdleTimeoutActions

@@ -1,6 +1,0 @@
-mek@chromium.org
-yoavweiss@chromium.org
-
-# The Link: header can be parsed at high privilege, so please include a security
-# reviewer as well:
-file://base/SECURITY_OWNERS

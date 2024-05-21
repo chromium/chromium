@@ -1,5 +1,0 @@
-# This first mixin gets clobbered by the second one, but exists
-# for you, the reader, to know that this directory is co-owned by
-# the "Enterprise" component.
-mixins: "//components/policy/COMMON_METADATA"
-mixins: "//components/supervised_user/COMMON_METADATA.chromeos"

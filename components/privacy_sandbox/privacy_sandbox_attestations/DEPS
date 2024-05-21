@@ -1,7 +1,0 @@
-include_rules = [
-  "+base/containers/enum_set.h",
-  "+base/containers/flat_map.h",
-  "+content/public/browser",
-  "+net/base/schemeful_site.h",
-  "+components/startup_metric_utils/browser/startup_metric_utils.h",
-]

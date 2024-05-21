@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/viz/demo/common",
-  "+components/viz/common",
-  "+components/viz/service",
-  "+gpu/ipc/host",
-  "+gpu/ipc/service",
-  "+services/viz/privileged",
-  "+services/viz/public",
-]

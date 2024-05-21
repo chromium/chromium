@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>Journeys"
-}
-buganizer_public: {
-  component_id: 1457319
-}

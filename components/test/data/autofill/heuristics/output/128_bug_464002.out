@@ -1,7 +1,0 @@
-CREDIT_CARD_NAME_FULL | paymentMethodForm.newCreditCardCustomerName | Name on card* |  | paymentMethodForm.newCreditCardCustomerName_1
-CREDIT_CARD_NUMBER | paymentMethodForm.cardNumber | Card number* |  | paymentMethodForm.newCreditCardCustomerName_1
-CREDIT_CARD_VERIFICATION_CODE | paymentMethodForm.cardVerificationNumber | Security code* |  | paymentMethodForm.newCreditCardCustomerName_1
-CREDIT_CARD_EXP_MONTH | paymentMethodForm.expirationMonth | 04 |  | paymentMethodForm.newCreditCardCustomerName_1
-CREDIT_CARD_EXP_4_DIGIT_YEAR | paymentMethodForm.expirationYear | 2018 |  | paymentMethodForm.newCreditCardCustomerName_1
-ADDRESS_HOME_ZIP | paymentMethodForm.zip | Card billing ZIP Code* |  | paymentMethodForm.zip_2
-UNKNOWN_TYPE | paymentMethodForm.custCode | Customer code |  | -default

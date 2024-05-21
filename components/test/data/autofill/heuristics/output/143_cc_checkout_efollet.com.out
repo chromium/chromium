@@ -1,6 +1,0 @@
-CREDIT_CARD_TYPE | cardBrand_CC | Card Type |  | cardBrand_CC_1
-CREDIT_CARD_NAME_FULL | CCHolderName_CC | Name on Card |  | cardBrand_CC_1
-CREDIT_CARD_NUMBER | cardNumber_CC | Account Number |  | cardBrand_CC_1
-CREDIT_CARD_EXP_MONTH | cardExpiryMonth_CC | Expiration Date required |  | cardBrand_CC_1
-CREDIT_CARD_EXP_4_DIGIT_YEAR | cardExpiryYear_CC | Expiration Date required |  | cardBrand_CC_1
-CREDIT_CARD_VERIFICATION_CODE | cardPin_CC | Card Security Code |  | cardBrand_CC_1

@@ -1,8 +1,0 @@
-NAME_FIRST | firstName | First name |  | firstName_1
-NAME_LAST | lastName | Last name |  | firstName_1
-ADDRESS_HOME_LINE1 | address[street1] | Address |  | firstName_1
-ADDRESS_HOME_LINE2 | address[street2] | Address line 2 (optional) |  | firstName_1
-ADDRESS_HOME_ZIP | address[zip] | ZIP code |  | firstName_1
-ADDRESS_HOME_CITY | address[city] | City |  | firstName_1
-ADDRESS_HOME_STATE | address[state] | State |  | firstName_1
-PHONE_HOME_CITY_AND_NUMBER | phoneNumber | Phone number |  | firstName_1

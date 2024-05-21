@@ -1,4 +1,0 @@
-caption: Allow or deny screen capture
-desc: |-
-  Configure policies to control the level of screen-share APIs (e.g., getDisplayMedia() or the Desktop Capture extension API)
-        that a site may capture (e.g. tab, window or desktop capture).

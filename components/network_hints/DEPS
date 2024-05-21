@@ -1,5 +1,0 @@
-include_rules = [
-  "+content/public",
-  "+ipc",
-  "+third_party/blink/public",
-]

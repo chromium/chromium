@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/keyed_service/core",
-  "+components/signin/public",
-  "+components/policy/core",
-  "+components/prefs",
-  "+services/data_decoder/public/cpp",
-]

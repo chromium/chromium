@@ -1,5 +1,0 @@
-caption: <ph name="LBS_PRODUCT_NAME">Legacy Browser Support</ph>
-desc: |-
-  Configure policies to switch between browsers.
-
-        Configured websites will automatically open in another browser than <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.

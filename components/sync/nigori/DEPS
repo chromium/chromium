@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/os_crypt/sync",
-  "+components/sync/base",
-  "+components/sync/engine",
-  "+components/sync/model",
-  "+components/sync/protocol",
-  "+components/sync/test",
-  "+crypto",
-]

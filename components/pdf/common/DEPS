@@ -1,4 +1,0 @@
-include_rules = [
-  "+extensions/buildflags/buildflags.h",
-  "+extensions/common/constants.h",
-]

@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/back_forward_cache",
-  "+mojo/public",
-  "+services/network/public/mojom",
-  "+services/service_manager/public/cpp",
-  "+ui/display",
-]

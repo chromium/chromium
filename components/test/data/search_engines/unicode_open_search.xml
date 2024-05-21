@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-<ShortName>тест</ShortName>
-<Description>Unicode ShortName</Description>
-<Url type="text/html" template="http://test/{searchTerms}"/>
-</OpenSearchDescription>

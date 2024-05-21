@@ -1,6 +1,0 @@
-include_rules = [
-  "+sql",
-  "+net",
-  "+services/network/public",
-  "+services/network/test",
-]

@@ -1,5 +1,0 @@
-include_rules = [
-  "+chrome/browser/tab",
-  "+content/public/android",
-  "+ui/android",
-]

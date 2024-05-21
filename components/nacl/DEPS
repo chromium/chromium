@@ -1,7 +1,0 @@
-include_rules = [
-  "+content/public/common",
-  "+ipc",
-  "+mojo/public",
-  "+services/service_manager",
-  "+third_party/cros_system_api/switches/chrome_switches.h",
-]

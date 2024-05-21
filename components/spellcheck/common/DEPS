@@ -1,4 +1,0 @@
-include_rules = [
-  "+ipc",
-  "+mojo/public",
-]

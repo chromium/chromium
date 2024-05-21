@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/autofill/ios",
-  "+components/security_state/core",
-  "+components/safe_browsing/ios",
-  "+ios/web/common",
-  "+ios/web/public",
-  "+services/network/public/cpp",
-]

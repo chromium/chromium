@@ -1,8 +1,0 @@
-include_rules = [
-  # history is a layered-component, forbid dependency on //content
-  "-components/history/content",
-  "-content",
-  "+components/search_engines",
-  "+components/sync_device_info",
-  "+components/url_formatter",
-]

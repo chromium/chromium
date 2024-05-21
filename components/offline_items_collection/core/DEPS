@@ -1,8 +1,0 @@
-include_rules = [
-  "+base",
-  "+components/keyed_service",
-  "+components/offline_pages",
-  "+testing",
-  "+ui/gfx",
-  "+url",
-]

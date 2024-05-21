@@ -1,5 +1,0 @@
-monorail {
-  component: "OS>Kernel>Camera"
-}
-
-team_email: "chromeos-camera@chromium.org"

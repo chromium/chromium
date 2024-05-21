@@ -1,7 +1,0 @@
-include_rules = [
-  "+media",
-  "+mojo/public",
-
-  # For testing
-  "+content/public/test",
-]

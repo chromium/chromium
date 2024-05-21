@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/policy",
-  "+components/policy/core/browser",
-  "+components/policy/core/common",
-  "+components/pref_registry",
-  "+components/prefs",
-  "+components/strings/grit/components_strings.h",
-  "+net"
-]

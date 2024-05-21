@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Interstitials"
-}
-team_email: "security-enamel@chromium.org"
-buganizer_public: {
-  component_id: 1456891
-}

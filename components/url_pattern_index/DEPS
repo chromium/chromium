@@ -1,5 +1,0 @@
-include_rules = [
-  "+net/base/registry_controlled_domains",
-  "+third_party/flatbuffers",
-  "+third_party/protobuf",
-]

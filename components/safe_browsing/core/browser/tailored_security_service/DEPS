@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/signin/public/identity_manager",
-  "+components/sync/base",
-  "+components/sync/service",
-]

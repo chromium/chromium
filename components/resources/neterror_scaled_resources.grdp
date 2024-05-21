@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <structure type="chrome_scaled_image" name="IDR_ERROR_NETWORK_GENERIC" file="neterror/error_network_generic.png" />
-</grit-part>

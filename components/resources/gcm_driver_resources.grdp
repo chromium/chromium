@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_GCM_DRIVER_GCM_INTERNALS_HTML" file="../gcm_driver/resources/gcm_internals.html" type="BINDATA" />
-  <include name="IDR_GCM_DRIVER_GCM_INTERNALS_CSS" file="../gcm_driver/resources/gcm_internals.css" type="BINDATA" />
-  <include name="IDR_GCM_DRIVER_GCM_INTERNALS_JS" file="../gcm_driver/resources/gcm_internals.js" preprocess="true" type="BINDATA" />
-</grit-part>

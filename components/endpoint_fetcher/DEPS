@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/signin/public/base",
-  "+components/signin/public/identity_manager",
-  "+components/version_info",
-  "+google_apis",
-  "+net",
-  "+services/data_decoder",
-  "+services/network",
-]

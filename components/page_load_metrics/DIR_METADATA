@@ -1,6 +1,0 @@
-monorail: {
-  component: "Speed>Metrics"
-}
-buganizer_public: {
-  component_id: 1457391
-}

@@ -1,5 +1,0 @@
-include_rules = [
-  "+net",
-  "+services/network/public/cpp",
-  "+third_party/blink/public/mojom",
-]

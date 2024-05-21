@@ -1,7 +1,0 @@
-# Please consult components/viz/README.md about allowable dependencies.
-
-include_rules = [
-  "+media/base",
-  "+media/capture",
-  "+media/mojo",
-]

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_USER_ACTIONS_CSS" file="../user_actions_ui/resources/user_actions.css" type="BINDATA" />
-  <include name="IDR_USER_ACTIONS_HTML" file="../user_actions_ui/resources/user_actions.html" type="BINDATA" />
-  <include name="IDR_USER_ACTIONS_JS" file="../user_actions_ui/resources/user_actions.js" preprocess="true" type="BINDATA" />
-</grit-part>
-
-

@@ -1,3 +1,0 @@
-This directory contains utility code for accessing Google Drive, shared by
-SyncFileSystem (chrome/browser/sync_file_system) and Google Drive integration
-on Chrome OS (chrome/browser/ash/drive).

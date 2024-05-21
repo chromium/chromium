@@ -1,7 +1,0 @@
-include_rules = [
-  "+ios/web/public",
-  "+ui/gfx",
-
-  # Only WebP decoding is allowed (no encoding).
-  "+third_party/libwebp/src/src/webp/decode.h",
-]

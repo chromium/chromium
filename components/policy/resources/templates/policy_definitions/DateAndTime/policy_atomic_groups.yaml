@@ -1,6 +1,0 @@
-DateAndTime:
-  caption: Date and time
-  policies:
-  - CalendarIntegrationEnabled
-  - SystemTimezone
-  - SystemTimezoneAutomaticDetection

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "server_environment": [
-    "+chromeos/ash/components/test",
-  ],
-}

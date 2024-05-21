@@ -1,4 +1,0 @@
-{
-  "default_application": ["https://jonpay.com/app.json"],
-  "supported_origins": ["https://alicepay.com/", "https://bobpay.com/"]
-}

@@ -1,4 +1,0 @@
-{
-  "default_applications": [""],
-  "supported_origins": ["https://alicepay.com/", "https://bobpay.com/"]
-}

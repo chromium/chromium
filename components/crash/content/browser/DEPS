@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/crash/android/jni_headers",
-  "+content/public/browser",
-  "+content/public/common",
-  "+content/public/test",
-  "+mojo/public/cpp/bindings",
-  "+third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom.h",
-  "+third_party/blink/public/common/oom_intervention"
-]

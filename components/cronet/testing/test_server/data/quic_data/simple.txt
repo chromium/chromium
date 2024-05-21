@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Cache-Control: private, max-age=0
-Content-Type: text/plain
-X-Original-Url: https://test.example.com:6121/simple.txt
-
-This is a simple text file served by QUIC.

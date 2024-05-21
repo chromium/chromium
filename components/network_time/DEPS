@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/client_update_protocol",
-  "+components/variations",
-  "+components/prefs",
-  "+net",
-  "+services/network/public/cpp",
-  "+services/network/public/mojom",
-  "+services/network/test",
-]

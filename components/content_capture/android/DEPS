@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/content_capture/android/jni_headers",
-  "+content/public/android",
-  "+content/public/browser",
-  "+third_party/blink/public/mojom/favicon",
-  "+third_party/re2",
-]

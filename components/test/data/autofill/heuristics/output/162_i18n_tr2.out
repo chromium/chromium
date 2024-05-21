@@ -1,9 +1,0 @@
-UNKNOWN_TYPE | al | Adres Başlığı: |  | al_1
-NAME_FULL | fn | Adı Soyadı: |  | al_1
-ADDRESS_HOME_LINE1 | a1 | Adres: |  | al_1
-ADDRESS_HOME_CITY | ct | İlçe: |  | al_1
-ADDRESS_HOME_STATE | st | Şehir: |  | al_1
-ADDRESS_HOME_ZIP | zc | Posta Kodu: |  | al_1
-ADDRESS_HOME_COUNTRY | co | Ülke: |  | al_1
-EMAIL_ADDRESS | em | Eposta: |  | al_1
-PHONE_HOME_CITY_AND_NUMBER | ph | Telefon: |  | al_1

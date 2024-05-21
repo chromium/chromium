@@ -1,3 +1,0 @@
-per-file *password*=file://components/password_manager/OWNERS
-
-per-file autofill_payments_features.*=file://components/autofill/core/browser/payments/OWNERS

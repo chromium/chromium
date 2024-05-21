@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_ABOUT_UI_CREDITS_CSS" file="../about_ui/resources/about_credits.css" preprocess="true" type="BINDATA" compress="brotli" />
-  <include name="IDR_ABOUT_UI_CREDITS_HTML" file="${about_credits_file}" compress="brotli" use_base_dir="false" type="BINDATA" />
-  <include name="IDR_ABOUT_UI_CREDITS_JS" file="../about_ui/resources/about_credits.js" preprocess="true" type="BINDATA" compress="brotli" />
-</grit-part>

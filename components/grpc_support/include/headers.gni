@@ -1,2 +1,0 @@
-grpc_public_headers =
-    [ "//components/grpc_support/include/bidirectional_stream_c.h" ]

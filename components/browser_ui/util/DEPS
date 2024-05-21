@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/embedder_support/android",
-  "+components/url_formatter/android",
-  "+content/public/android",
-  "+content/public/test/android",
-  "+ui/android",
-]

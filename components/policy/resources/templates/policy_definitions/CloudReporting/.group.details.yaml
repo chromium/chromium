@@ -1,8 +1,0 @@
-caption: Cloud Reporting
-desc: |-
-  Configure cloud reporting policies.
-
-        When the policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME">CloudReportingEnabled</ph> is left unset or set to disabled, these policies will be ignored.
-
-        These policies are only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-        These policies are always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.

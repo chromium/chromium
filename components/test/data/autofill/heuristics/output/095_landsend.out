@@ -1,9 +1,0 @@
-NAME_FIRST | fname | First Name |  | fname_1
-NAME_LAST | lname | Last Name |  | fname_1
-ADDRESS_HOME_LINE1 | address | Address |  | fname_1
-ADDRESS_HOME_LINE2 | address | Line 2 |  | fname_1
-ADDRESS_HOME_LINE3 | address | Line 3 |  | -default
-ADDRESS_HOME_CITY | city | City |  | fname_1
-ADDRESS_HOME_STATE | main-shipping-state | State |  | fname_1
-ADDRESS_HOME_STATE | main-shipping-province | Province |  | fname_1
-ADDRESS_HOME_ZIP | zip | Zip Code |  | fname_1

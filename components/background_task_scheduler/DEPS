@@ -1,7 +1,0 @@
-include_rules = [
-    "+components/keyed_service",
-    "-content/public/android",
-    "+content/public/android/java/src/org/chromium/content_public",
-    "+content/public/browser",
-    "+content/public/test/android",
-]

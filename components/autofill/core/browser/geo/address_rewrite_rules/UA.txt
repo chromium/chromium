@@ -1,6 +1,0 @@
-\bвулиця\b	вул
-\bnorth\b	n
-\bsouth\b	s
-\beast\b	e
-\bwest\b	w
-\bвул\.\b	вул

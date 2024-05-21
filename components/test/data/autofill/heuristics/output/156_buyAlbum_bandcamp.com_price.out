@@ -1,7 +1,0 @@
-PRICE | userPrice | Name your price: |  | userPrice_1
-UNKNOWN_TYPE | purchase-note-input | Include a message to Alvvays. |  | userPrice_1
-UNKNOWN_TYPE | notify-me | Have a gift card? Redeem it here | on | userPrice_1
-UNKNOWN_TYPE | notify-me-label | Have a gift card? Redeem it here | on | userPrice_1
-EMAIL_ADDRESS | address | Email a link to my free download to: |  | userPrice_1
-ADDRESS_HOME_COUNTRY | country | Have a gift card? Redeem it here | US | userPrice_1
-ADDRESS_HOME_ZIP | postcode | zip code |  | userPrice_1

@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/browser_ui/bottomsheet/android",
-  "+components/embedder_support/android",
-  "+components/payments/content/android/jni_headers",
-  "+components/webdata_services",
-  "+mojo/public/java",
-  "+services/network/public/cpp",
-  "+ui/android/java/src/org/chromium/ui"
-]

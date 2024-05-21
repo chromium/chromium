@@ -1,8 +1,0 @@
-NAME_FULL | name | Name: |  | name_1
-UNKNOWN_TYPE | day | DOB: | DD | name_1
-UNKNOWN_TYPE | month | / | MM | name_1
-UNKNOWN_TYPE | year | / | YY | name_1
-CREDIT_CARD_NAME_FULL | ccholder | Credit card holder: |  | ccholder_2
-CREDIT_CARD_NUMBER | credit-card-number | Credit card number: |  | ccholder_2
-CREDIT_CARD_EXP_MONTH | expiration_month | Credit card expiration: |  | ccholder_2
-CREDIT_CARD_EXP_4_DIGIT_YEAR | expiration_year | / |  | ccholder_2

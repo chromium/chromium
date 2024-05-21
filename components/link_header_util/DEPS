@@ -1,8 +1,0 @@
-include_rules = [
-  # This is used by both //content and //third_party/blink, so prevent
-  # any dependencies on //content and //third_party/blink.
-  "-content",
-  "-third_party/blink",
-
-  "+net/http",
-]

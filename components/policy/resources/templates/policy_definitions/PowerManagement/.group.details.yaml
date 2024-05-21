@@ -1,5 +1,0 @@
-caption: Power management
-desc: |-
-  Configure power management in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
-
-        These policies let you configure how <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> behaves when the user remains idle for some amount of time.

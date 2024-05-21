@@ -1,7 +1,0 @@
-include_rules = [
-  "+base",
-  "+mojo/public",
-  "+net/base",
-  "+third_party/blink/public",
-  "+ui/gfx/geometry",
-]
