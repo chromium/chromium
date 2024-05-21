@@ -515,19 +515,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   return NO;
 }
 
-- (void)updateReviewSettingsPromo {
-  self.promoVisible = NO;
-  if ([self.consumer.tableViewModel
-          hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
-    [self.consumer.tableViewModel
-        removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
-  }
-  // Decide if a sign in promo should be visible.
-  [self computePromoTableViewData];
-  // Decide if the promo should be removed.
-  [self.bookmarkPromoController updateShouldShowSigninPromo];
-}
-
 #pragma mark - Properties
 
 - (LegacyBookmarkModel*)displayedBookmarkModel {
@@ -735,6 +722,7 @@ bool IsABookmarkNodeSectionForIdentifier(
       !self.isSyncDisabledByAdministrator) {
     [self updateTableViewBackground];
   }
+  [self updateReviewSettingsPromo];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -749,6 +737,20 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 #pragma mark - Private Helpers
+
+// Updates the sign-in promo.
+- (void)updateReviewSettingsPromo {
+  self.promoVisible = NO;
+  if ([self.consumer.tableViewModel
+          hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
+    [self.consumer.tableViewModel
+        removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
+  }
+  // Decide if a sign in promo should be visible.
+  [self computePromoTableViewData];
+  // Decide if the promo should be removed.
+  [self.bookmarkPromoController updateShouldShowSigninPromo];
+}
 
 - (void)updateHeaderForProfileRootNode {
   TableViewTextHeaderFooterItem* localOrSyncableHeader =

@@ -129,12 +129,6 @@
   } else if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
              !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
                  syncService)) {
-    if (_browser->GetBrowserState()->IsOffTheRecord()) {
-      // TODO(crbug.com/339472472): There is crash if the settings are opened
-      // from the incognito tab.
-      self.shouldShowSigninPromo = NO;
-      return;
-    }
     if (self.shouldShowSigninPromo &&
         _signinPromoViewMediator.signinPromoAction !=
             SigninPromoAction::kReviewAccountSettings) {

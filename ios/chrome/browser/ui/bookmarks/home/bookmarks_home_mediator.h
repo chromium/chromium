@@ -139,9 +139,6 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
     (LegacyBookmarkModel*)bookmarkModel;
 
-// Called to update the promo after account settings is closed.
-- (void)updateReviewSettingsPromo;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_MEDIATOR_H_

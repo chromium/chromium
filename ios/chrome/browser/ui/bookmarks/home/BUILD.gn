@@ -79,7 +79,6 @@ source_set("home") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/url_loading/model",

@@ -326,9 +326,21 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                  completion:nil];
         }
       }
-      [self.baseNavigationController popToViewController:self.viewController
-                                                animated:NO];
-      [self.baseNavigationController popViewControllerAnimated:YES];
+      if (self.baseNavigationController.viewControllers.count == 1) {
+        // If the manage sync settings is the only view in
+        // `baseNavigationController`, `baseNavigationController` needs to be
+        // closed.
+        CHECK([self.baseNavigationController
+                  isKindOfClass:[SettingsNavigationController class]],
+              base::NotFatalUntil::M129);
+        [self.baseNavigationController
+            performSelector:@selector(closeSettings)];
+      } else {
+        [self.baseNavigationController popToViewController:self.viewController
+                                                  animated:NO];
+        [self.baseNavigationController popViewControllerAnimated:YES];
+        [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
+      }
     } else {
       [self.navigationControllerForChildPages.presentingViewController
           dismissViewControllerAnimated:YES

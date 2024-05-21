@@ -293,10 +293,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.sharingCoordinator = nil;
 }
 
-- (void)updateReviewSettingsPromo {
-  [self.mediator updateReviewSettingsPromo];
-}
-
 - (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node {
   _externalBookmark = node;
 }

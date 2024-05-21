@@ -84,9 +84,6 @@ class GURL;
 // Called when the view will be dismissed.
 - (void)willDismiss;
 
-// Called to update the promo after account settings is closed.
-- (void)updateReviewSettingsPromo;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_VIEW_CONTROLLER_H_
