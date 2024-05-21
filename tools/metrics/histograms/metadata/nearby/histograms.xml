@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Presence.Credentials.Storage.Initialization.Result"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the overall result of initialization of the Nearby Presence
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.LocalPublicDatabaseInitializationResult"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an initialization attempt of the local public
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an initialization attempt of the private credential
@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.RemotePublicDatabaseInitializationResult"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an initialization attempt of the remote public
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an attempt at saving credentials to the local public
@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an attempt at saving credentials to the private
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Presence.Credentials.Storage.SaveRemotePublicCredentials.Result"
     enum="BooleanSuccess" expires_after="2024-07-10">
-  <owner>polner@google.com</owner>
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the result of an attempt at saving credentials to the remote public
