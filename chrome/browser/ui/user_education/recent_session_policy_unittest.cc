@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/user_education/recent_session_policy.h"
 
+#include <sstream>
 #include <vector>
 
 #include "base/containers/map_util.h"
@@ -462,6 +463,7 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_LessThanOneWeek) {
       CreateSessionData({base::Days(1), base::Days(2)}, base::Days(4)));
   EnsureBucketCounts("UserEducation.Session.ShortTermCount", {});
   EnsureBucketCounts("UserEducation.Session.LongTermCount", {});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {});
   EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {});
   EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {});
@@ -474,6 +476,7 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_MoreThanOneWeek) {
                         base::Days(8)));
   EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{5, 1}});
   EnsureBucketCounts("UserEducation.Session.LongTermCount", {});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {});
   EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {});
@@ -485,6 +488,7 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_FullPeriod) {
        base::Days(6), base::Days(15), base::Days(20)}));
   EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{5, 1}});
   EnsureBucketCounts("UserEducation.Session.LongTermCount", {{7, 1}});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {{6, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {{2, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
@@ -502,6 +506,7 @@ TEST_F(RecentSessionPolicyTest,
        base::Days(15) + base::Minutes(15)}));
   EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{4, 1}});
   EnsureBucketCounts("UserEducation.Session.LongTermCount", {{8, 1}});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {{5, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {{2, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});

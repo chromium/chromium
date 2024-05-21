@@ -251,6 +251,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
+    expires_after="2024-09-21">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of days with at
+    least one session in the past month. This helps us understand how frequently
+    our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
 <histogram name="UserEducation.Session.RecentActiveDays" units="count"
     expires_after="2024-09-21">
   <owner>dfried@chromium.org</owner>
