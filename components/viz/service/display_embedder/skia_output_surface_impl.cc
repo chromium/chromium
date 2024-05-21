@@ -560,10 +560,12 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
       // texture info for fallback. Fallback textures are not considered YUV
       // planes since they are allocated separately and need write usage.
       context->SetImage(
-          nullptr, {gpu::GraphitePromiseTextureInfo(gr_context_type_, format)});
+          nullptr, {gpu::GraphitePromiseTextureInfo(
+                       gr_context_type_, format, /*ycbcr_info=*/std::nullopt)});
 
       texture_infos[i] =
           gpu::GraphitePromiseTextureInfo(gr_context_type_, format,
+                                          /*ycbcr_info=*/std::nullopt,
                                           /*plane_index=*/0);
       fulfills[i] = new FulfillForPlane(context);
     }
@@ -634,7 +636,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
 
   if (graphite_recorder_) {
     skgpu::graphite::TextureInfo texture_info = gpu::GraphitePromiseTextureInfo(
-        gr_context_type_, format, /*plane_index=*/0, mipmap);
+        gr_context_type_, format, image_context->ycbcr_info(),
+        /*plane_index=*/0, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
     skgpu::Origin origin = image_context->origin() == kTopLeft_GrSurfaceOrigin
@@ -678,6 +681,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
                        subsampling, sk_yuv_color_space);
   if (graphite_recorder_) {
+    // This function is for per-plane sampling and is never used in conjunction
+    // with YCbCr sampling. In particular, on Android SharedImages used with
+    // YCbCr sampling always have RGBA format and on ChromeOS such SharedImages
+    // will have PrefersExternalSampler() set to true. Both of these cases are
+    // handled by MakePromiseSkImageSinglePlane().
+    // TODO(blundell): Hoist this CHECK up to apply universally for Ganesh as
+    // well as Graphite.
+    CHECK(!image_context->ycbcr_info());
+
     std::vector<skgpu::graphite::TextureInfo> texture_infos;
     void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
@@ -685,7 +697,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
       texture_infos.emplace_back(gpu::GraphitePromiseTextureInfo(
-          gr_context_type_, format, plane_index));
+          gr_context_type_, format, /*ycbcr_info=*/std::nullopt, plane_index));
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(

@@ -28,6 +28,8 @@ class TextureInfo;
 
 namespace gpu {
 
+struct VulkanYCbCrInfo;
+
 namespace gles2 {
 class FeatureInfo;
 }  // namespace gles2
@@ -195,6 +197,7 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
+    std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index = 0,
     bool mipmapped = false);
 
