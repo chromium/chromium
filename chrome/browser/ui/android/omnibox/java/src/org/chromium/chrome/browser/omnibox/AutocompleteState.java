@@ -17,6 +17,7 @@ import java.util.Optional;
 class AutocompleteState {
     @NonNull private String mUserText;
     @NonNull private Optional<String> mAutocompleteText;
+    @NonNull private Optional<String> mAdditionalText;
     private int mSelStart;
     private int mSelEnd;
 
@@ -25,26 +26,36 @@ class AutocompleteState {
     }
 
     public AutocompleteState(
-            @NonNull String userText, @Nullable String autocompleteText, int selStart, int selEnd) {
+            @NonNull String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText,
+            int selStart,
+            int selEnd) {
         set(
                 userText,
                 TextUtils.isEmpty(autocompleteText)
                         ? Optional.empty()
                         : Optional.of(autocompleteText),
+                TextUtils.isEmpty(additionalText) ? Optional.empty() : Optional.of(additionalText),
                 selStart,
                 selEnd);
     }
 
     public void set(
-            @NonNull String userText, Optional<String> autocompleteText, int selStart, int selEnd) {
+            @NonNull String userText,
+            Optional<String> autocompleteText,
+            Optional<String> additionalText,
+            int selStart,
+            int selEnd) {
         mUserText = userText;
         mAutocompleteText = autocompleteText;
+        mAdditionalText = additionalText;
         mSelStart = selStart;
         mSelEnd = selEnd;
     }
 
     public void copyFrom(AutocompleteState a) {
-        set(a.mUserText, a.mAutocompleteText, a.mSelStart, a.mSelEnd);
+        set(a.mUserText, a.mAutocompleteText, a.mAdditionalText, a.mSelStart, a.mSelEnd);
     }
 
     @NonNull
@@ -54,6 +65,10 @@ class AutocompleteState {
 
     public Optional<String> getAutocompleteText() {
         return mAutocompleteText;
+    }
+
+    public Optional<String> getAdditionalText() {
+        return mAdditionalText;
     }
 
     /**
@@ -147,6 +162,7 @@ class AutocompleteState {
         if (diff < 0) return false;
         if (!isPrefix(mUserText, prevState.getText())) return false;
         mAutocompleteText = prevState.getAutocompleteText().map(s -> s.substring(diff));
+        mAdditionalText = prevState.mAdditionalText;
         return true;
     }
 

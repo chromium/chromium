@@ -90,7 +90,8 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         mCurrentState =
                 new AutocompleteState(
                         delegate.getText().toString(),
-                        "",
+                        null,
+                        null,
                         delegate.getSelectionStart(),
                         delegate.getSelectionEnd());
         mPreviouslyNotifiedState = new AutocompleteState(mCurrentState);
@@ -288,7 +289,8 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         if (DEBUG) Log.i(TAG, "onSetText: " + text);
         // setText() does not necessarily trigger onTextChanged(). We need to accept the new text
         // and reset the states.
-        mCurrentState.set(text.toString(), Optional.empty(), text.length(), text.length());
+        mCurrentState.set(
+                text.toString(), Optional.empty(), Optional.empty(), text.length(), text.length());
         mSpanCursorController.reset();
         mPreviouslyNotifiedState.copyFrom(mCurrentState);
         mPreviouslySetState.copyFrom(mCurrentState);
@@ -390,6 +392,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                 TextUtils.isEmpty(autocompleteText)
                         ? Optional.empty()
                         : Optional.of(autocompleteText),
+                Optional.empty(),
                 userText.length(),
                 userText.length());
         // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
