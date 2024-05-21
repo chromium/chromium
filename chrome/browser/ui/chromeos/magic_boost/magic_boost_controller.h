@@ -31,17 +31,15 @@ class MagicBoostController {
   virtual void ShowOptInUi(const gfx::Rect& anchor_view_bounds);
   virtual void CloseOptInUi();
 
-  // Shows Magic Boost disclaimer widget.
+  // Shows/closes Magic Boost disclaimer widget.
   void ShowDisclaimerUi();
+  void CloseDisclaimerUi();
 
   // For testing.
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
   views::Widget* disclaimer_widget_for_test() {
     return disclaimer_widget_.get();
   }
-
-  // Closes Magic Boost disclaimer widget.
-  void CloseDisclaimerUi() {}
 
   // Whether the Quick Answers and Mahi features should show the opt in UI.
   virtual bool ShouldQuickAnswersAndMahiShowOptIn();

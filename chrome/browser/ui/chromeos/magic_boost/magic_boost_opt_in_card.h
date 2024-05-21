@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_OPT_IN_CARD_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -42,7 +43,13 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   void RequestFocus() override;
 
  private:
+  // Button callbacks.
+  void OnPrimaryButtonPressed();
+  void OnSecondaryButtonPressed();
+
   raw_ptr<views::MdTextButton> secondary_button_ = nullptr;
+
+  base::WeakPtrFactory<MagicBoostOptInCard> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

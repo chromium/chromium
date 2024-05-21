@@ -6,6 +6,7 @@ assert(is_chromeos)
 
 source_set("magic_boost") {
   sources = [
+    "magic_boost_constants.h",
     "magic_boost_controller.cc",
     "magic_boost_controller.h",
     "magic_boost_disclaimer_view.cc",

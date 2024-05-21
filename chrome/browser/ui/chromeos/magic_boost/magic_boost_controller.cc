@@ -34,7 +34,7 @@ void MagicBoostController::ShowOptInUi(const gfx::Rect& anchor_view_bounds) {
   CHECK(!opt_in_widget_);
   CHECK(!disclaimer_widget_);
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(anchor_view_bounds);
-  opt_in_widget_->Show();
+  opt_in_widget_->ShowInactive();
 }
 
 void MagicBoostController::CloseOptInUi() {
@@ -47,6 +47,10 @@ void MagicBoostController::ShowDisclaimerUi() {
   }
   disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget();
   disclaimer_widget_->Show();
+}
+
+void MagicBoostController::CloseDisclaimerUi() {
+  disclaimer_widget_.reset();
 }
 
 bool MagicBoostController::ShouldQuickAnswersAndMahiShowOptIn() {

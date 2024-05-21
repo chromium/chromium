@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,13 +64,6 @@ const std::u16string body_text =
     u"to three lines for this case";
 const std::u16string secondary_button_text = u"No thanks";
 const std::u16string primary_button_text = u"Try it";
-
-// Placeholder callbacks
-// TODO(b/340940507): Implement button callbacks.
-base::RepeatingClosure primary_callback =
-    base::BindRepeating([]() { LOG(ERROR) << "Primary button pressed"; });
-base::RepeatingClosure secondary_callback =
-    base::BindRepeating([]() { LOG(ERROR) << "Secondary button pressed"; });
 
 // Font lists
 const gfx::FontList body_text_font_list =
@@ -186,15 +181,21 @@ MagicBoostOptInCard::MagicBoostOptInCard() {
                                       kButtonsContainerHeight))
           .AddChildren(views::Builder<views::MdTextButton>()
                            .CopyAddressTo(&secondary_button_)
+                           .SetID(magic_boost::ViewId::OptInCardSecondaryButton)
                            .SetText(secondary_button_text)
                            .SetAccessibleName(secondary_button_text)
                            .SetStyle(ui::ButtonStyle::kText)
-                           .SetCallback(std::move(secondary_callback)),
+                           .SetCallback(base::BindRepeating(
+                               &MagicBoostOptInCard::OnSecondaryButtonPressed,
+                               weak_ptr_factory_.GetWeakPtr())),
                        views::Builder<views::MdTextButton>()
+                           .SetID(magic_boost::ViewId::OptInCardPrimaryButton)
                            .SetText(primary_button_text)
                            .SetAccessibleName(primary_button_text)
                            .SetStyle(ui::ButtonStyle::kProminent)
-                           .SetCallback(std::move(primary_callback)))
+                           .SetCallback(base::BindRepeating(
+                               &MagicBoostOptInCard::OnPrimaryButtonPressed,
+                               weak_ptr_factory_.GetWeakPtr())))
           .Build());
 }
 
@@ -236,6 +237,19 @@ void MagicBoostOptInCard::UpdateWidgetBounds(
 void MagicBoostOptInCard::RequestFocus() {
   views::View::RequestFocus();
   secondary_button_->RequestFocus();
+}
+
+void MagicBoostOptInCard::OnPrimaryButtonPressed() {
+  auto* controller = MagicBoostController::Get();
+  controller->CloseOptInUi();
+  controller->ShowDisclaimerUi();
+}
+
+void MagicBoostOptInCard::OnSecondaryButtonPressed() {
+  auto* controller = MagicBoostController::Get();
+  controller->CloseOptInUi();
+  // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
+  // is pressed.
 }
 
 BEGIN_METADATA(MagicBoostOptInCard)
