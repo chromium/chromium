@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** Unit tests for {@link BottomBarConfig}. */
+/** Unit tests for {@link GoogleBottomBarViewCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GoogleBottomBarViewCreatorTest {
@@ -146,6 +146,7 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         histogramWatcher.assertExpected();
+        histogramWatcher.close();
     }
 
     @Test
@@ -160,10 +161,11 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         histogramWatcher.assertExpected();
+        histogramWatcher.close();
     }
 
     @Test
-    public void testCreateGoogleBottomBarView_logsAllChromeButtonsShown() {
+    public void testLogButtons_logsAllChromeButtonsShown() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -173,14 +175,16 @@ public class GoogleBottomBarViewCreatorTest {
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
                         .build();
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getAllChromeButtonsConfig());
-
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
+        mGoogleBottomBarViewCreator.logButtons();
+
         histogramWatcher.assertExpected();
+        histogramWatcher.close();
     }
 
     @Test
-    public void testCreateGoogleBottomBarView_logsAllEmbedderButtonsShown() {
+    public void testLogButtons_logsAllEmbedderButtonsShown() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -190,10 +194,31 @@ public class GoogleBottomBarViewCreatorTest {
                                 GoogleBottomBarButtonEvent.SAVE_EMBEDDER)
                         .build();
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getAllEmbedderButtonsConfig());
-
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
+        mGoogleBottomBarViewCreator.logButtons();
+
         histogramWatcher.assertExpected();
+        histogramWatcher.close();
+    }
+
+    @Test
+    public void
+            testLogButtons_pageInsightCoordinatorIsNullAndPendingIntentIsNull_logsUnknownButtons() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.GoogleBottomBar.ButtonShown",
+                        GoogleBottomBarButtonEvent.UNKNOWN);
+        List<Integer> buttonIdList = List.of(0, PIH_BASIC);
+        mGoogleBottomBarViewCreator =
+                getGoogleBottomBarViewCreator(
+                        mConfigCreator.create(buttonIdList, new ArrayList<>()));
+        mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+
+        mGoogleBottomBarViewCreator.logButtons();
+
+        histogramWatcher.assertExpected();
+        histogramWatcher.close();
     }
 
     @Test
@@ -210,5 +235,6 @@ public class GoogleBottomBarViewCreatorTest {
                         mActivity, getMockCustomButtonParams(SAVE)));
 
         histogramWatcher.assertExpected();
+        histogramWatcher.close();
     }
 }
