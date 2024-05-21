@@ -115,8 +115,9 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
   /**
    * Return if categories title should be shown.
    */
-  private shouldShowCategoriesTitle(): boolean {
-    return !(Object.keys(this.catgoriesMapApps).length > 1);
+  private shouldShowCategoriesTitle(catgoriesMapApps: CategoriesAppsMap):
+      boolean {
+    return !(Object.keys(catgoriesMapApps).length > 1);
   }
 
   /**

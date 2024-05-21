@@ -11,8 +11,11 @@ found in the LICENSE file.
         aria-label$="[[i18nDynamic(locale, 'categoriesLoading')]]">
     <iron-icon slot="icon" icon="oobe-32:sync-chrome"></iron-icon>
 </oobe-loading-dialog>
-<oobe-adaptive-dialog id="categoriesDialog" role="presentation"
-      for-step="overview">
+<oobe-adaptive-dialog id="categoriesDialog" role="dialog"
+      for-step="overview"
+      aria-label$="[[i18nDynamic(locale, 'categoriesScreenTitle')]]"
+      aria-description$="[[i18nDynamic(locale,
+          'categoriesScreenDescription')]]">
     <iron-icon slot="icon" icon="oobe-32:sync-chrome"></iron-icon>
     <h1 slot="title" id="categories-title" aria-live="polite">
       [[i18nDynamic(locale, 'categoriesScreenTitle')]]

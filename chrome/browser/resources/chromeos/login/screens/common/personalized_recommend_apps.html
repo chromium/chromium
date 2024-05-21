@@ -10,7 +10,11 @@ found in the LICENSE file.
         aria-label$="[[i18nDynamic(locale, 'personalizedRecommendedLoading')]]">
     <iron-icon slot="icon" icon="oobe-32:perosonalized-apps"></iron-icon>
 </oobe-loading-dialog>
-<oobe-adaptive-dialog id="personalizedRecommendDialog" role="presentation"
+<oobe-adaptive-dialog id="personalizedRecommendDialog" role="dialog"
+      aria-label$="[[i18nDynamic(locale,
+          'personalizedRecommendedAppsScreenTitle')]]"
+      aria-description$="[[i18nDynamic(locale,
+          'personalizedRecommendedAppsScreenDescription')]]"
       for-step="overview">
     <iron-icon slot="icon" icon="oobe-32:perosonalized-apps"></iron-icon>
     <h1 slot="title" id="recommend-title" aria-live="polite">

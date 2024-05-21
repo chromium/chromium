@@ -94,7 +94,11 @@
     <template is="dom-repeat"
         items="{{getCategories(catgoriesMapApps)}}" as="category">
       <div class="category-title"
-          hidden="[[shouldShowCategoriesTitle()]]" >{{category}}</div>
+          tabindex="0"
+          role="heading" aria-level="2"
+          hidden="[[shouldShowCategoriesTitle(catgoriesMapApps)]]">
+        {{category}}
+      </div>
       <div id="appsList">
           <template is="dom-repeat" rendered-item-count="{{itemRendered}}"
                 items="{{getApps(category)}}">
@@ -120,6 +124,8 @@
                   <div class="app-subtitle">[[item.subname]]</div>
                 </div>
                   <cr-checkbox checked="{{item.selected}}"
+                      aria-label$="[[item.name]]"
+                      aria-description$="[[item.subname]]"
                       on-change="updateCount"></cr-checkbox>
               </div>
           </div>
