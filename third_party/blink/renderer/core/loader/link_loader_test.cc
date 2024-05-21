@@ -845,7 +845,7 @@ TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
   // via |dummy_page_holder|.
   url_test_helpers::RegisterMockedErrorURLLoad(href_url);
   LinkLoadParameters params(
-      LinkRelAttribute("dictionary"), kCrossOriginAttributeNotSet,
+      LinkRelAttribute("compression-dictionary"), kCrossOriginAttributeNotSet,
       String() /* type */, String() /* as */, String() /* media */,
       String() /* nonce */, String() /* integrity */,
       String() /* fetch_priority_hint */,
@@ -878,7 +878,8 @@ class DictionaryLoadFromHeaderTest : public SimTest,
     SimTest::SetUp();
 
     SimRequestBase::Params params;
-    String link_header = String("<") + dict_href_ + ">; rel=\"dictionary\"";
+    String link_header =
+        String("<") + dict_href_ + ">; rel=\"compression-dictionary\"";
     params.response_http_headers.Set(http_names::kLink, link_header);
     main_resource_ =
         std::make_unique<SimRequest>(page_href_, "text/html", params);

@@ -238,9 +238,9 @@ std::string ToString(BrowserType browser_type) {
 }
 
 enum class FetchType {
-  kLinkRelDictionary,
-  kLinkRelDictionaryDocumentHeader,
-  kLinkRelDictionarySubresourceHeader,
+  kLinkRelCompressionDictionary,
+  kLinkRelCompressionDictionaryDocumentHeader,
+  kLinkRelCompressionDictionarySubresourceHeader,
   kFetchApi,
   kFetchApiWithSameOriginMode,
   kFetchApiWithNoCorsMode,
@@ -250,11 +250,11 @@ enum class FetchType {
   kIframeNavigation,
 };
 
-std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
+std::string LinkRelCompressionDictionaryScript(const GURL& dictionary_url) {
   return JsReplace(R"(
               (()=>{
                 const link = document.createElement('link');
-                link.rel = 'dictionary';
+                link.rel = 'compression-dictionary';
                 link.href = $1;
                 document.body.appendChild(link);
               })();
@@ -262,7 +262,8 @@ std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
                    dictionary_url);
 }
 
-std::string LinkRelDictionaryDocumentHeaderScript(const GURL& dictionary_url) {
+std::string LinkRelCompressionDictionaryDocumentHeaderScript(
+    const GURL& dictionary_url) {
   return JsReplace(R"(
               (()=>{
                 const iframe = document.createElement('iframe');
@@ -273,7 +274,7 @@ std::string LinkRelDictionaryDocumentHeaderScript(const GURL& dictionary_url) {
                    dictionary_url);
 }
 
-std::string LinkRelDictionarySubresourceHeaderScript(
+std::string LinkRelCompressionDictionarySubresourceHeaderScript(
     const GURL& dictionary_url) {
   return JsReplace(R"(
               (()=>{
@@ -603,14 +604,16 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     base::HistogramTester histogram_tester;
     std::string script;
     switch (fetch_type) {
-      case FetchType::kLinkRelDictionary:
-        script = LinkRelDictionaryScript(dictionary_url);
+      case FetchType::kLinkRelCompressionDictionary:
+        script = LinkRelCompressionDictionaryScript(dictionary_url);
         break;
-      case FetchType::kLinkRelDictionaryDocumentHeader:
-        script = LinkRelDictionaryDocumentHeaderScript(dictionary_url);
+      case FetchType::kLinkRelCompressionDictionaryDocumentHeader:
+        script =
+            LinkRelCompressionDictionaryDocumentHeaderScript(dictionary_url);
         break;
-      case FetchType::kLinkRelDictionarySubresourceHeader:
-        script = LinkRelDictionarySubresourceHeaderScript(dictionary_url);
+      case FetchType::kLinkRelCompressionDictionarySubresourceHeader:
+        script =
+            LinkRelCompressionDictionarySubresourceHeaderScript(dictionary_url);
         break;
       case FetchType::kFetchApi:
         script = FetchDictionaryScript(dictionary_url);
@@ -963,17 +966,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
-                       LinkRelDictionary) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+                       LinkRelCompressionDictionary) {
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GURL("https://shared-dictionary.test/blank.html"),
                          https_server()->GetURL("/shared_dictionary/test.dict"),
                          /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
-                       LinkRelDictionaryWithOriginTrial) {
+                       LinkRelCompressionDictionaryWithOriginTrial) {
   RunWriteDictionaryTest(
-      FetchType::kLinkRelDictionary,
+      FetchType::kLinkRelCompressionDictionary,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
@@ -1095,7 +1098,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
   }
   base::Time test_start_time = base::Time::Now();
   RunWriteDictionaryTest(
-      FetchType::kLinkRelDictionary,
+      FetchType::kLinkRelCompressionDictionary,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
       /*expect_success=*/true);
@@ -1129,8 +1132,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
              JsReplace(R"(
           (async () => {
+            const linkElement = document.createElement('link');
             const initialSupports =
-              document.createElement('link').relList.supports('dictionary');
+                linkElement.relList.supports('compression-dictionary');
             await new Promise(resolve => {
               const script = document.createElement('script');
               script.src = $1;
@@ -1138,7 +1142,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
               document.body.appendChild(script);
             });
             const supportsAfterAddingMeta =
-              document.createElement('link').relList.supports('dictionary');
+                linkElement.relList.supports('compression-dictionary');
             return initialSupports + ' -> ' + supportsAfterAddingMeta;
           })();
         )",
@@ -1161,7 +1165,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
   }
 
   RunWriteDictionaryTest(
-      FetchType::kLinkRelDictionary,
+      FetchType::kLinkRelCompressionDictionary,
       https_server()->GetURL("/shared_dictionary/blank.html"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled,
@@ -1428,10 +1432,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       LinkRelDictionarySecureContext) {
+                       LinkRelCompressionDictionarySecureContext) {
   // http://127.0.0.1:PORT/ is secure context, so the dictionary should be
   // written.
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 }
@@ -1446,17 +1450,18 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       LinkRelDictionaryDocumentHeader) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionaryDocumentHeader,
+                       LinkRelCompressionDictionaryDocumentHeader) {
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionaryDocumentHeader,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       LinkRelDictionarySubresourceHeader) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionarySubresourceHeader,
-                         GetURL("/shared_dictionary/blank.html"),
-                         GetURL("/shared_dictionary/test.dict"));
+                       LinkRelCompressionDictionarySubresourceHeader) {
+  RunWriteDictionaryTest(
+      FetchType::kLinkRelCompressionDictionarySubresourceHeader,
+      GetURL("/shared_dictionary/blank.html"),
+      GetURL("/shared_dictionary/test.dict"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
@@ -1474,10 +1479,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       LinkRelDictionaryInsecureContext) {
+                       LinkRelCompressionDictionaryInsecureContext) {
   // http://www.test/ is insecure context, so the dictionary should not be
   // written.
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("www.test", "/shared_dictionary/blank.html"),
                          GetURL("www.test", "/shared_dictionary/test.dict"),
                          /*expect_success=*/false);
@@ -1526,8 +1531,8 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       CrossOriginLinkRelDictionary) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+                       CrossOriginLinkRelCompressionDictionary) {
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetCrossOriginURL("/shared_dictionary/test.dict"));
 }
@@ -1540,9 +1545,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       CrossOriginLinkRelDictionaryWithoutACAO) {
+                       CrossOriginLinkRelCompressionDictionaryWithoutACAO) {
   RunWriteDictionaryTest(
-      FetchType::kLinkRelDictionary, GetURL("/shared_dictionary/blank.html"),
+      FetchType::kLinkRelCompressionDictionary,
+      GetURL("/shared_dictionary/blank.html"),
       GetCrossOriginURL("/shared_dictionary/test_no_acao.dict"),
       /*expect_success=*/false);
 }
@@ -1922,7 +1928,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestEmptyString) {
   // The response header contains `match-dest=("")` in Use-As-Dictionary header.
   const GURL dictionary_url = GetURL("/shared_dictionary/test.empty_dest.dict");
   EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(),
-                     LinkRelDictionaryScript(dictionary_url)));
+                     LinkRelCompressionDictionaryScript(dictionary_url)));
 
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
@@ -1951,7 +1957,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
   const GURL dictionary_url =
       GetURL("/shared_dictionary/test.script_dest.dict");
   EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(),
-                     LinkRelDictionaryScript(dictionary_url)));
+                     LinkRelCompressionDictionaryScript(dictionary_url)));
 
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
@@ -1974,7 +1980,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
 IN_PROC_BROWSER_TEST_P(
     SharedDictionaryBrowserTest,
     GetUsageInfoAndClearSharedDictionaryCacheForIsolationKey) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 
@@ -1998,7 +2004,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetTotalSizeAndOrigins) {
   base::Time time1 = base::Time::Now();
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   base::Time time2 = base::Time::Now();
@@ -2011,7 +2017,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetTotalSizeAndOrigins) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetSharedDictionaryInfo) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 
@@ -2040,7 +2046,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetSharedDictionaryInfo) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   base::RunLoop loop;
@@ -2062,7 +2068,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataNavigationCacheDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2075,7 +2081,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataNavigationCookiesDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2088,7 +2094,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataNavigationStorageDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2101,7 +2107,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataFetchCacheDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2116,7 +2122,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataFetchCookiesDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2131,7 +2137,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataFetchStorageDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2146,7 +2152,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataCrossOriginFetchCacheDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetCrossOriginURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2164,7 +2170,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataCrossOriginFetchCookiesDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetCrossOriginURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
@@ -2182,7 +2188,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        ClearSiteDataCrossOriginFetchStorageDirective) {
-  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
                          GetURL("/shared_dictionary/blank.html"),
                          GetCrossOriginURL("/shared_dictionary/test.dict"));
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());

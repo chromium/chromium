@@ -60,7 +60,7 @@ class CORE_EXPORT LinkRelAttribute {
   bool IsServiceWorker() const { return is_service_worker_; }
   bool IsCanonical() const { return is_canonical_; }
   bool IsMonetization() const { return is_monetization_; }
-  bool IsDictionary() const { return is_dictionary_; }
+  bool IsCompressionDictionary() const { return is_compression_dictionary_; }
   bool IsPrivacyPolicy() const { return is_privacy_policy_; }
   bool IsTermsOfService() const { return is_terms_of_service_; }
   bool IsExpect() const { return is_expect_; }
@@ -81,7 +81,7 @@ class CORE_EXPORT LinkRelAttribute {
   bool is_service_worker_ : 1 = false;
   bool is_canonical_ : 1 = false;
   bool is_monetization_ : 1 = false;
-  bool is_dictionary_ : 1 = false;
+  bool is_compression_dictionary_ : 1 = false;
   bool is_privacy_policy_ : 1 = false;
   bool is_terms_of_service_ : 1 = false;
   bool is_expect_ : 1 = false;

@@ -397,9 +397,11 @@ BASE_FEATURE(kCompressionDictionaryTransportBackend,
 
 // When both this feature and the kCompressionDictionaryTransportBackend feature
 // are enabled, the following will happen:
-//   * A <link rel=dictionary> HTML tag and a `Link: rel=dictionary` HTTP header
-//     will trigger dictionary download.
-//   * HTMLLinkElement.relList.supports('dictionary') will return true.
+//   * A <link rel=compression-dictionary> HTML tag and a
+//     `Link: rel=compression-dictionary` HTTP header will trigger dictionary
+//     download.
+//   * HTMLLinkElement.relList.supports('compression-dictionary') will return
+//     true.
 //   * The network service may register a HTTP response as a dictionary if the
 //     response header contains a `use-as-dictionary` header.
 // This feature can be enabled by an Origin Trial token in Blink. To propagate

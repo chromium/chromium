@@ -65,7 +65,7 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
     if (SupportedTokensLink().Contains(token_value)) {
       return true;
     } else if (CompressionDictionaryTransportFullyEnabled(execution_context) &&
-               token_value == "dictionary") {
+               token_value == "compression-dictionary") {
       return true;
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||

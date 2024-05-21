@@ -83,11 +83,13 @@ If you want to check whether the Compression Dictionary Transport feature is
 enabled or not, you can try the following code:
 
 ```javascript
-document.createElement('link').relList.supports('dictionary')
+document.createElement('link').relList.supports('compression-dictionary')
 ```
 
 If the code above returns true, the Compression Dictionary Transport feature is
 enabled.
+
+Note: Until M126, `dictionary` was used instead of `compression-dictionary`.
 
 ## Registering dictionaries
 
@@ -130,9 +132,11 @@ feature, depending on the outcome of [the spec discussion][httpbis-draft].
 ## Fetching dedicated dictionaries
 
 Chrome fetches a dedicated dictionary when it detects
-`<link rel="dictionary" href="DICTIONARY_URL">` in the page, or
-`Link: <DICTIONARY_URL>; rel="dictionary"` HTTP response header is set in the
-response of the page's HTML file.
+`<link rel="compression-dictionary" href="DICTIONARY_URL">` in the page, or
+`Link: <DICTIONARY_URL>; rel="compression-dictionary"` HTTP response header is
+set in the response of the page's HTML file.
+
+Note: Until M126, `dictionary` was used instead of `compression-dictionary`.
 
 ## Using dictionaries
 
@@ -212,6 +216,14 @@ changes in specifications.
 - Dictionary hashes changed to sf-binary
 - Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
 - Added support for match-dest option
+
+## Changes in M127
+
+The following changes have been made to Chrome since M127 to keep up with the
+changes in specifications.
+
+- `compression-dictionary` rel attribute is used for HTML `link` element and
+  HTTP `Link:` header instead of `dictionary`.
 
 ## Demo sites
 

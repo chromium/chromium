@@ -73,9 +73,9 @@ class PreloadHelper final {
                                     Document&,
                                     const ViewportDescription*,
                                     PendingLinkPreload*);
-  static void FetchDictionaryIfNeeded(const LinkLoadParameters&,
-                                      Document&,
-                                      PendingLinkPreload*);
+  static void FetchCompressionDictionaryIfNeeded(const LinkLoadParameters&,
+                                                 Document&,
+                                                 PendingLinkPreload*);
 
   static std::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);

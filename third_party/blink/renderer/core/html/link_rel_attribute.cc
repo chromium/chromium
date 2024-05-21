@@ -77,8 +77,8 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_canonical_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "monetization")) {
       is_monetization_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "dictionary")) {
-      is_dictionary_ = true;
+    } else if (EqualIgnoringASCIICase(link_type, "compression-dictionary")) {
+      is_compression_dictionary_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "privacy-policy")) {
       is_privacy_policy_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "terms-of-service")) {
