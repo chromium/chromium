@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -131,6 +132,8 @@ void TaskQueueViz::InitializeVizThread(
 void TaskQueueViz::ScheduleOnVizAndBlock(VizTask viz_task) {
   TRACE_EVENT0("android_webview", "ScheduleOnVizAndBlock");
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Android.WebView.ScheduleOnVizAndBlockTime");
 
   // Expected behavior is |viz_task| on the viz thread. From |viz_task| until
   // the done closure is called (which may not be in the viz_task), viz thread

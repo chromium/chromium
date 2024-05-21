@@ -9,6 +9,7 @@
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
@@ -112,6 +113,8 @@ void VizCompositorThreadRunnerWebView::ScheduleOnVizAndBlock(
 void VizCompositorThreadRunnerWebView::PostTaskAndBlock(
     const base::Location& from_here,
     base::OnceClosure task) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Android.WebView.VizCompositorRunnerPostTaskBlockTime");
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::WaitableEvent e;
   task_runner()->PostTask(from_here,

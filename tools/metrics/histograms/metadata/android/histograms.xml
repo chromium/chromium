@@ -6433,6 +6433,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ScheduleOnVizAndBlockTime"
+    units="microseconds" expires_after="2024-11-20">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the total time spent running a blocking task in
+    TaskQueueWebView::ScheduleOnVizAndBlock(). This is recorded only on devices
+    that support high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SecureCookieAction" enum="SecureCookieAction"
     expires_after="2024-11-03">
   <owner>ntfschr@chromium.org</owner>
@@ -6863,6 +6874,17 @@ chromium-metrics-reviews@google.com.
     <variant name="javascript"/>
     <variant name="unknown"/>
   </token>
+</histogram>
+
+<histogram name="Android.WebView.VizCompositorRunnerPostTaskBlockTime"
+    units="microseconds" expires_after="2024-11-20">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the total time spent running a blocking task in
+    VizCompositorThreadRunnerWebView::PostTaskAndBlock(). This is recorded only
+    on devices that support high resolution timers.
+  </summary>
 </histogram>
 
 <histogram name="AndroidSearchEngineLogo.Events"
