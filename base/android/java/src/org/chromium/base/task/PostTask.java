@@ -130,19 +130,13 @@ public class PostTask {
      * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
      * posts it and blocks until the task finishes.
      *
-     * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
-     *
-     * Use this only for trivial tasks as it ignores task priorities.
-     *
-     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
-     * callbacks rather than blocking threads.
+     * Usage outside of testing contexts is discouraged. Prefer callbacks in order
+     * to avoid blocking.
      *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      * @return The result of the callable
      */
-    @Deprecated
     public static <T> T runSynchronously(@TaskTraits int taskTraits, Callable<T> c) {
         return runSynchronouslyInternal(taskTraits, new FutureTask<T>(c));
     }
@@ -152,18 +146,12 @@ public class PostTask {
      * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
      * posts it and blocks until the task finishes.
      *
-     * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
-     *
-     * Use this only for trivial tasks as it ignores task priorities.
-     *
-     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
-     * callbacks rather than blocking threads.
+     * Usage outside of testing contexts is discouraged. Prefer callbacks in order
+     * to avoid blocking.
      *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      */
-    @Deprecated
     public static void runSynchronously(@TaskTraits int taskTraits, Runnable r) {
         runSynchronouslyInternal(taskTraits, new FutureTask<Void>(r, null));
     }
