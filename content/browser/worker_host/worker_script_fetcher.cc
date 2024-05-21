@@ -730,13 +730,12 @@ void WorkerScriptFetcher::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (status.error_code == net::OK) {
-    // It's possible to reach here when the `response_head_` doesn't have a
-    // `parsed_headers` and ask NetworkService to parse headers in
-    // OnReceiveResponse(). DidParseHeaders() will be called eventually
-    // and `this` will be deleted in it.
-    return;
-  }
+  // Successful completion must be passed to `url_loader_client_endpoints` and
+  // shouldn't reach here, because in successful fetch `url_loader_->Unbind()`
+  // should be called in `WorkerScriptFetcher::OnReceiveResponse` and thus
+  // subsequent URLLoaderClient mojo calls shouldn't reach to
+  // `WorkerScriptFetcher`.
+  CHECK_NE(status.error_code, net::OK);
 
   std::move(callback_).Run(/*main_script_load_params=*/nullptr,
                            /*subresource_loader_params=*/{}, &status);
