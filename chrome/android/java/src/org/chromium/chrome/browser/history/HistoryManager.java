@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -230,7 +232,18 @@ public class HistoryManager
                                         : R.menu.history_manager_menu,
                                 launchedForApp);
         mToolbar.setManager(this);
-        mToolbar.setPrefService(UserPrefs.get(profile));
+        mToolbar.setMenuDelegate(
+                new HistoryManagerToolbar.HistoryManagerMenuDelegate() {
+                    @Override
+                    public boolean supportsDeletingHistory() {
+                        return mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+                    }
+
+                    @Override
+                    public boolean supportsIncognito() {
+                        return IncognitoUtils.isIncognitoModeEnabled(profile);
+                    }
+                });
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
