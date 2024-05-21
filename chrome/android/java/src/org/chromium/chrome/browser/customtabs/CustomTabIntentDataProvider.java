@@ -805,6 +805,23 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 Log.w(TAG, "Only %d items are allowed in the toolbar", getMaxCustomToolbarItems());
             }
         }
+
+        if (isGoogleBottomBarEnabled) {
+            List<Bundle> googleBottomBarButtonBundles =
+                    CustomTabsConnection.getInstance().getGoogleBottomBarButtons(this);
+            List<CustomButtonParams> googleBottomBarButtons =
+                    CustomButtonParamsImpl.fromBundleList(
+                            context, googleBottomBarButtonBundles, /* tinted= */ false);
+            for (CustomButtonParams params : googleBottomBarButtons) {
+                if (GoogleBottomBarCoordinator.isSupported(params.getId())) {
+                    params.updateShowOnToolbar(false);
+                    mCustomButtonParams.add(params);
+                    mGoogleBottomBarButtons.add(params);
+                } else {
+                    Log.w(TAG, "Unused GoogleBottomBarButton id: %s", params.getId());
+                }
+            }
+        }
     }
 
     private static boolean isGoogleBottomBarEnabled(BrowserServicesIntentDataProvider provider) {
@@ -1086,6 +1103,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
         if (CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(this)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB);
+        }
+        if (CustomTabsConnection.getInstance().shouldEnableGoogleBottomBarForIntent(this)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR);
+        }
+        if (CustomTabsConnection.getInstance().hasExtraGoogleBottomBarButtons(this)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS);
         }
     }
 

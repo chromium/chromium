@@ -316,6 +316,81 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void
+            googleBottomBarFlagsOn_hasExtraGoogleBottomBarButtons_hasSupportedItemsInGoogleBottomBar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(103),
+                                createCustomGoogleBottomBarItemBundleWithId(2)));
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(2, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(1, dataProvider.getCustomButtonsOnToolbar().size());
+        assertEquals(3, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void googleBottomBarFlagsOff_hasExtraGoogleBottomBarButtons_hasItemsInToolbar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(103),
+                                createCustomGoogleBottomBarItemBundleWithId(2)));
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(0, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size());
+        assertEquals(2, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
     public void shareStateOn_buttonInToolbarAndCustomMenuItems_hasShareItemInMenu() {
         ArrayList<Bundle> buttons =
                 new ArrayList<>(Collections.singleton(createActionButtonInToolbarBundle()));
@@ -1081,6 +1156,25 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(),
                         IntentUtils.getPendingIntentMutabilityFlag(true)));
         bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
+        return bundle;
+    }
+
+    private Bundle createCustomGoogleBottomBarItemBundleWithId(int id) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(CustomTabsIntent.KEY_ID, id);
+        int iconHeight = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        bundle.putParcelable(
+                CustomTabsIntent.KEY_ICON,
+                Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
+        bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
+        bundle.putParcelable(
+                CustomTabsIntent.KEY_PENDING_INTENT,
+                PendingIntent.getBroadcast(
+                        mContext,
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, false);
         return bundle;
     }
 
