@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_pseudo_focus.h"
 
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "base/functional/bind.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -26,6 +27,9 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
   if (views::IsViewClass<PickerItemView>(view)) {
     views::AsViewClass<PickerItemView>(view)->SetItemState(
         PickerItemView::ItemState::kPseudoFocused);
+    if (views::IsViewClass<PickerListItemView>(view)) {
+      views::AsViewClass<PickerListItemView>(view)->SetBadgeVisible(true);
+    }
     return;
   }
 
@@ -48,6 +52,9 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
   if (views::IsViewClass<PickerItemView>(view)) {
     views::AsViewClass<PickerItemView>(view)->SetItemState(
         PickerItemView::ItemState::kNormal);
+    if (views::IsViewClass<PickerListItemView>(view)) {
+      views::AsViewClass<PickerListItemView>(view)->SetBadgeVisible(false);
+    }
     return;
   }
 

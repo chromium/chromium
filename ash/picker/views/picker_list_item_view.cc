@@ -10,6 +10,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/picker/views/picker_badge_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -32,11 +33,13 @@
 namespace ash {
 namespace {
 
-constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 16);
+constexpr auto kBorderInsetsWithoutBadge = gfx::Insets::TLBR(8, 16, 8, 16);
+constexpr auto kBorderInsetsWithBadge = gfx::Insets::TLBR(8, 16, 8, 12);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
 constexpr int kImageDisplayHeight = 72;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
+constexpr auto kBadgeLeftPadding = gfx::Insets::TLBR(0, 8, 0, 0);
 
 }  // namespace
 
@@ -67,7 +70,7 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
-                           views::LayoutOrientation::kVertical,
+                           views::LayoutOrientation::kHorizontal,
                            views::MinimumFlexSizeRule::kScaleToZero,
                            views::MaximumFlexSizeRule::kUnbounded,
                            /*adjust_height_for_width=*/false,
@@ -78,7 +81,15 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   secondary_container_ = main_container->AddChildView(
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
 
-  SetBorder(views::CreateEmptyBorder(kPickerListItemBorderInsets));
+  trailing_badge_ = item_contents->AddChildView(
+      views::Builder<PickerBadgeView>()
+          .SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kCenter)
+          .SetProperty(views::kMarginsKey, kBadgeLeftPadding)
+          .SetVisible(false)
+          .Build());
+  SetBadgeVisible(false);
+
   SetProperty(views::kElementIdentifierKey,
               kPickerSearchResultsListItemElementId);
 }
@@ -136,6 +147,16 @@ void PickerListItemView::SetSecondaryText(
           cros_tokens::kCrosSysOnSurfaceVariant));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+}
+
+void PickerListItemView::SetBadgeVisible(bool visible) {
+  trailing_badge_->SetVisible(visible);
+
+  if (visible) {
+    SetBorder(views::CreateEmptyBorder(kBorderInsetsWithBadge));
+  } else {
+    SetBorder(views::CreateEmptyBorder(kBorderInsetsWithoutBadge));
+  }
 }
 
 std::u16string PickerListItemView::GetPrimaryTextForTesting() const {

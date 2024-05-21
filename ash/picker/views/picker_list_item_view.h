@@ -22,6 +22,8 @@ class View;
 
 namespace ash {
 
+class PickerBadgeView;
+
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
 class ASH_EXPORT PickerListItemView : public PickerItemView {
@@ -42,11 +44,16 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   void SetSecondaryText(const std::u16string& secondary_text);
 
+  void SetBadgeVisible(bool visible);
+
   const views::View* leading_container_for_testing() const {
     return leading_container_;
   }
   const views::View* primary_container_for_testing() const {
     return primary_container_;
+  }
+  const PickerBadgeView& trailing_badge_for_testing() const {
+    return *trailing_badge_;
   }
   std::u16string GetPrimaryTextForTesting() const;
   ui::ImageModel GetPrimaryImageForTesting() const;
@@ -60,6 +67,9 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   // Contains the item's secondary text if it has been set.
   raw_ptr<views::View> secondary_container_ = nullptr;
+
+  // Contains the item's trailing badge if it has been set.
+  raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
 };
 
 }  // namespace ash

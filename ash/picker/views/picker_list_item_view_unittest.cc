@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/picker/views/picker_badge_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,6 +61,22 @@ TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
   ASSERT_THAT(item_view.leading_container_for_testing()->children(), SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<views::ImageView>(
       item_view.leading_container_for_testing()->children()[0]));
+}
+
+TEST_F(PickerListItemViewTest, SetsBadgeVisible) {
+  PickerListItemView item_view(base::DoNothing());
+
+  item_view.SetBadgeVisible(true);
+
+  EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
+}
+
+TEST_F(PickerListItemViewTest, SetsBadgeNotVisible) {
+  PickerListItemView item_view(base::DoNothing());
+
+  item_view.SetBadgeVisible(false);
+
+  EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
 }  // namespace
