@@ -34,8 +34,8 @@ import * as Network from 'devtools/panels/network/network.js';
   async function search(label, isRegex, ignoreCase, query = 'd.search') {
     TestRunner.addResult(label);
     const view = await Network.NetworkPanel.SearchNetworkView.openSearch(query);
-    view.matchCaseButton.setToggled(!ignoreCase);
-    view.regexButton.setToggled(isRegex);
+    view.matchCaseButton.toggled = !ignoreCase;
+    view.regexButton.toggled = isRegex;
     const promise = TestRunner.addSnifferPromise(view, 'searchFinished');
     view.onAction();
     await promise;

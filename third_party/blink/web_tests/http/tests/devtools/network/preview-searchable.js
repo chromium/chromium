@@ -19,8 +19,8 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     await new Promise(resolve => setTimeout(resolve, 0));
     for (var search of searches) {
       view.searchInputElement.value = search;
-      view.regexButton.setToggled(false);
-      view.caseSensitiveButton.setToggled(false);
+      view.regexButton.toggled = false;
+      view.caseSensitiveButton.toggled = false;
       view.showSearchField();
       TestRunner.addResult('Should have found and highlighted all: ' + search);
 
