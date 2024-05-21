@@ -6652,6 +6652,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_LONG" desc="Message shown below the title that tells the user that the PIN they entered needs to be less than maximum digits long.">
     PIN must be less than <ph name="MAXIMUM">$1<ex>0</ex></ph> digits
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_NONDIGIT" desc="Message shown below the title that tells the user that the PIN they entered contains non-digits.">
+    PIN must use numbers only
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_MISMATCHED" desc="Message shown below the title that tells the user they have entered two different PIN values.">
     PINs do not match
   </message>

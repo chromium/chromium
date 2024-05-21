@@ -68,6 +68,8 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_LONG);
   builder->Add("configurePinWeakPin",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_WEAK_PIN);
+  builder->Add("configurePinNondigit",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_NONDIGIT);
   builder->Add("internalError",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR);
 }

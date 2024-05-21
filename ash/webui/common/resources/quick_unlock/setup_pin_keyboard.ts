@@ -30,6 +30,7 @@ export enum MessageType {
   TOO_SHORT = 'configurePinTooShort',
   TOO_LONG = 'configurePinTooLong',
   TOO_WEAK = 'configurePinWeakPin',
+  CONTAINS_NONDIGIT = 'configurePinNondigit',
   MISMATCH = 'configurePinMismatched',
   INTERNAL_ERROR = 'internalError',
 }
@@ -227,6 +228,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         additionalInformation = (requirements.maxLength + 1).toString();
         break;
       case MessageType.TOO_WEAK:
+      case MessageType.CONTAINS_NONDIGIT:
       case MessageType.MISMATCH:
       case MessageType.INTERNAL_ERROR:
         break;
@@ -294,6 +296,9 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
           break;
         case chrome.quickUnlockPrivate.CredentialProblem.TOO_WEAK:
           this.showProblem_(MessageType.TOO_WEAK, ProblemType.ERROR);
+          break;
+        case chrome.quickUnlockPrivate.CredentialProblem.CONTAINS_NONDIGIT:
+          this.showProblem_(MessageType.CONTAINS_NONDIGIT, ProblemType.ERROR);
           break;
         default:
           assertNotReached();
