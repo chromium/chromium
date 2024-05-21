@@ -14,9 +14,11 @@ import {getPermission} from 'chrome://resources/cr_components/app_management/uti
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
+
 import {PrivacyHubMixin} from './privacy_hub_mixin.js';
 import {getTemplate} from './read_only_permission_item.html.js';
-import {getPermissionDescriptionString} from './util.js';
+import {getPermissionDescriptionString, isSensorAvailable} from './util.js';
 
 const AppManagementReadOnlyPermissionItemElementBase =
     PrivacyHubMixin(PrefsMixin(I18nMixin(PolymerElement)));
@@ -64,6 +66,14 @@ export class AppManagementReadOnlyPermissionItemElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether sensor relevant to the `permissionType` is available.
+       */
+      sensorAvailable_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -72,7 +82,21 @@ export class AppManagementReadOnlyPermissionItemElement extends
   permissionType: PermissionTypeIndex;
   icon: string;
   private available_: boolean;
+  private sensorAvailable_: boolean;
   private showAllowSensorAccessDialog_: boolean;
+
+  override ready(): void {
+    super.ready();
+
+    this.updateSensorAvailability_();
+    MediaDevicesProxy.getMediaDevices().addEventListener('devicechange', () => {
+      this.updateSensorAvailability_();
+    });
+  }
+
+  private async updateSensorAvailability_(): Promise<void> {
+    this.sensorAvailable_ = await isSensorAvailable(this.permissionType);
+  }
 
   private computeAvailable_(
       app: App|undefined,
@@ -90,7 +114,8 @@ export class AppManagementReadOnlyPermissionItemElement extends
     const isSensorBlocked =
         loadTimeData.getBoolean('privacyHubAppPermissionsV2Enabled') &&
         this.isSensorBlocked(permissionType);
-    return getPermissionDescriptionString(app, permissionType, isSensorBlocked);
+    return getPermissionDescriptionString(
+        app, permissionType, this.sensorAvailable_, isSensorBlocked);
   }
 
   private isManaged_(

@@ -8,10 +8,10 @@
 
 export class FakeMediaDevices implements MediaDevices {
   private devices_: MediaDeviceInfo[] = [];
-  private deviceChangeListener_: EventListener|null = null;
+  private deviceChangeListeners_: EventListener[] = [];
 
   addEventListener(_type: string, listener: EventListener): void {
-    this.deviceChangeListener_ = listener;
+    this.deviceChangeListeners_.push(listener);
   }
 
   enumerateDevices(): Promise<MediaDeviceInfo[]> {
@@ -31,8 +31,10 @@ export class FakeMediaDevices implements MediaDevices {
     // https://w3c.github.io/mediacapture-main/#dom-mediadeviceinfo
     (device as any).__proto__ = MediaDeviceInfo.prototype;
     this.devices_.push(device);
-    if (this.deviceChangeListener_) {
-      this.deviceChangeListener_(new Event('addDevice'));
+    for (const deviceChangeListener of this.deviceChangeListeners_) {
+      if (deviceChangeListener) {
+        deviceChangeListener(new Event('addDevice'));
+      }
     }
   }
 
@@ -42,8 +44,10 @@ export class FakeMediaDevices implements MediaDevices {
    */
   popDevice(): void {
     this.devices_.pop();
-    if (this.deviceChangeListener_) {
-      this.deviceChangeListener_(new Event('popDevice'));
+    for (const deviceChangeListener of this.deviceChangeListeners_) {
+      if (deviceChangeListener) {
+        deviceChangeListener(new Event('popDevice'));
+      }
     }
   }
 

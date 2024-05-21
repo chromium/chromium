@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy, AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
-import {App, PageCallbackRouter} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, PageCallbackRouter, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {FakeMediaDevices} from '../fake_media_devices.js';
 
 import {FakePageHandler} from './fake_page_handler.js';
 import {TestAppManagementStore} from './test_store.js';
@@ -111,4 +114,26 @@ export function isHiddenByDomIf(element: HTMLElement|null): boolean {
   }
   // The element is rendered and display !== 'none'
   return false;
+}
+
+export async function addFakeSensor(
+    mediaDevices: FakeMediaDevices,
+    permissionType: PermissionTypeIndex): Promise<void> {
+  switch (PermissionType[permissionType]) {
+    case PermissionType.kCamera:
+      mediaDevices.addDevice('videoinput', 'Fake Camera');
+      break;
+    case PermissionType.kMicrophone:
+      mediaDevices.addDevice('audioinput', 'Fake Microphone');
+      break;
+    case PermissionType.kUnknown:
+    case PermissionType.kLocation:
+    case PermissionType.kContacts:
+    case PermissionType.kStorage:
+    case PermissionType.kNotifications:
+    case PermissionType.kPrinting:
+    case PermissionType.kFileHandling:
+      assertNotReached();
+  }
+  await flushTasks();
 }

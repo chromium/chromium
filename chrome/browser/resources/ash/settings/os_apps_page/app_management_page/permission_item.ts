@@ -16,10 +16,12 @@ import {getPermission, getPermissionValueBool, recordAppManagementUserAction} fr
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
+
 import {getTemplate} from './permission_item.html.js';
 import {PrivacyHubMixin} from './privacy_hub_mixin.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
-import {getPermissionDescriptionString} from './util.js';
+import {getPermissionDescriptionString, isSensorAvailable} from './util.js';
 
 const AppManagementPermissionItemElementBase =
     PrivacyHubMixin(PrefsMixin(PolymerElement));
@@ -91,6 +93,14 @@ export class AppManagementPermissionItemElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether sensor relevant to the `permissionType` is available.
+       */
+      sensorAvailable_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -101,6 +111,7 @@ export class AppManagementPermissionItemElement extends
   private syncPermissionManually: boolean;
   private available_: boolean;
   private disabled_: boolean;
+  private sensorAvailable_: boolean;
   private showAllowSensorAccessDialog_: boolean;
   private showPermissionDescriptionString_: boolean;
 
@@ -108,6 +119,15 @@ export class AppManagementPermissionItemElement extends
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.togglePermission_);
+
+    this.updateSensorAvailability_();
+    MediaDevicesProxy.getMediaDevices().addEventListener('devicechange', () => {
+      this.updateSensorAvailability_();
+    });
+  }
+
+  private async updateSensorAvailability_(): Promise<void> {
+    this.sensorAvailable_ = await isSensorAvailable(this.permissionType);
   }
 
   private isAvailable_(
@@ -321,7 +341,8 @@ export class AppManagementPermissionItemElement extends
       app: App|undefined,
       permissionType: PermissionTypeIndex|undefined): string {
     return getPermissionDescriptionString(
-        app, permissionType, this.isSensorBlocked(permissionType));
+        app, permissionType, this.sensorAvailable_,
+        this.isSensorBlocked(permissionType));
   }
 
   private launchAllowSensorAccessDialog_(e: CustomEvent): void {

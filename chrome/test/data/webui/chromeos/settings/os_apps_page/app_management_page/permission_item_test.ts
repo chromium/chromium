@@ -5,7 +5,7 @@
 /** @fileoverview Test suite for app-manageemnt-permission-item. */
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementPermissionItemElement} from 'chrome://os-settings/lazy_load.js';
+import {AppManagementPermissionItemElement, MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, CrButtonElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -18,7 +18,8 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
-import {fakeComponentBrowserProxy, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+import {addFakeSensor, fakeComponentBrowserProxy, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+import {FakeMediaDevices} from '../../fake_media_devices.js';
 import {clearBody} from '../../utils.js';
 
 type PermissionMap = Partial<Record<PermissionType, Permission>>;
@@ -26,9 +27,10 @@ suite('AppManagementPermissionItemTest', function() {
   let permissionItem: AppManagementPermissionItemElement;
   let fakeHandler: FakePageHandler;
   const app_id: string = 'app_id';
-  const permissionType: PermissionTypeIndex = 'kLocation';
+  let mediaDevices: FakeMediaDevices;
 
-  function createPermissionItem(): void {
+  function createPermissionItem(
+      permissionType: PermissionTypeIndex = 'kLocation'): void {
     clearBody();
     permissionItem = document.createElement('app-management-permission-item');
     permissionItem.app = getApp();
@@ -54,8 +56,12 @@ suite('AppManagementPermissionItemTest', function() {
 
   setup(async function() {
     const permissions: PermissionMap = {};
-    permissions[PermissionType[permissionType]] = createTriStatePermission(
-        PermissionType[permissionType], TriState.kAsk, false);
+    const permissionTypes: PermissionTypeIndex[] =
+        ['kCamera', 'kMicrophone', 'kLocation'];
+    for (const permissionType of permissionTypes) {
+      permissions[PermissionType[permissionType]] = createTriStatePermission(
+          PermissionType[permissionType], TriState.kAsk, false);
+    }
     fakeHandler = setupFakeHandler();
     replaceStore();
     await fakeHandler.addApp(app_id, {permissions: permissions});
@@ -93,6 +99,9 @@ suite('AppManagementPermissionItemTest', function() {
 
   suite('Permission item with description', () => {
     setup(() => {
+      mediaDevices = new FakeMediaDevices();
+      MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
+
       loadTimeData.overrideValues({
         'privacyHubAppPermissionsV2Enabled': true,
         'privacyHubLocationAccessControlEnabled': true,
@@ -249,5 +258,43 @@ suite('AppManagementPermissionItemTest', function() {
           GeolocationAccessLevel.ALLOWED,
           permissionItem.prefs.ash.user.geolocation_access_level.value);
     });
+
+    test(
+        'Permission description updated when no sensor connected', async () => {
+          const checkPermissionDescription = async (
+              permissionType: PermissionTypeIndex,
+              expectedDescription: string) => {
+            createPermissionItem(permissionType);
+
+            // Permission state is kAsk at the beginning of the test.
+            assertEquals(
+                loadTimeData.getString('appManagementPermissionAsk'),
+                getPermissionDescriptionString());
+
+            await togglePermission();
+
+            assertEquals(expectedDescription, getPermissionDescriptionString());
+
+            await addFakeSensor(mediaDevices, permissionType);
+
+            assertEquals(
+                loadTimeData.getString('appManagementPermissionAllowed'),
+                getPermissionDescriptionString());
+
+            mediaDevices.popDevice();
+            await flushTasks();
+
+            assertEquals(expectedDescription, getPermissionDescriptionString());
+          };
+
+          await checkPermissionDescription(
+              'kCamera',
+              loadTimeData.getString(
+                  'permissionAllowedButNoCameraConnectedText'));
+          await checkPermissionDescription(
+              'kMicrophone',
+              loadTimeData.getString(
+                  'permissionAllowedButNoMicrophoneConnectedText'));
+        });
   });
 });

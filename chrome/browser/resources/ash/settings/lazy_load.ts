@@ -148,6 +148,7 @@ export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://res
 export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 export {AppLanguageSelectionDialogElement} from './common/app_language_selection_dialog/app_language_selection_dialog.js';
 export {AppLanguageSelectionItemElement} from './common/app_language_selection_dialog/app_language_selection_item.js';
+export {MediaDevicesProxy} from './common/media_devices_proxy.js';
 /**
  * With the optimize_webui() build step, the generated JS files are bundled
  * into a single JS file. The exports below are necessary so they can be
@@ -330,7 +331,6 @@ export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_card.js';
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
-export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
 export {SettingsPrivacyHubCameraSubpage} from './os_privacy_page/privacy_hub_camera_subpage.js';
 export {SettingsPrivacyHubGeolocationAdvancedSubpage} from './os_privacy_page/privacy_hub_geolocation_advanced_subpage.js';
