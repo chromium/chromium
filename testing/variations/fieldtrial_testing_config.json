@@ -20474,16 +20474,17 @@
             ],
             "experiments": [
                 {
-                    "name": "AllMainFrame_20230517",
+                    "name": "PrecompileMainFrameNoWait_20240520",
                     "params": {
-                        "compile-in-parallel": "true",
+                        "compile-in-parallel": "false",
                         "compile-strategy": "lazy",
-                        "inline-script-timeout": "5ms",
-                        "precompile-main-frame-only": "true",
-                        "scan-main-frame-only": "true"
+                        "inline-script-timeout": "0ms",
+                        "precompile-main-frame-only": "true"
                     },
                     "enable_features": [
-                        "PrecompileInlineScripts",
+                        "PrecompileInlineScripts"
+                    ],
+                    "disable_features": [
                         "ThreadedBodyLoader",
                         "ThreadedPreloadScanner"
                     ]
