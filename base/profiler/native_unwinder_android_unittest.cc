@@ -137,14 +137,8 @@ std::vector<Frame> CaptureScenario(
   return sample;
 }
 
-// TODO(crbug.com/40156557): After fix, re-enable on all ASAN bots.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_PlainFunction DISABLED_PlainFunction
-#else
-#define MAYBE_PlainFunction PlainFunction
-#endif
 // Checks that the expected information is present in sampled frames.
-TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
+TEST(NativeUnwinderAndroidTest, PlainFunction) {
   const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
   if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
@@ -180,15 +174,9 @@ TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
-// TODO(crbug.com/40156557): After fix, re-enable on all ASAN bots.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_Alloca DISABLED_Alloca
-#else
-#define MAYBE_Alloca Alloca
-#endif
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
-TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
+TEST(NativeUnwinderAndroidTest, Alloca) {
   const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
   if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
@@ -225,15 +213,9 @@ TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
-// TODO(crbug.com/40156557): After fix, re-enable on all ASAN bots.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OtherLibrary DISABLED_OtherLibrary
-#else
-#define MAYBE_OtherLibrary OtherLibrary
-#endif
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
-TEST(NativeUnwinderAndroidTest, MAYBE_OtherLibrary) {
+TEST(NativeUnwinderAndroidTest, OtherLibrary) {
   const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
   if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
@@ -305,13 +287,7 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
 }
 
 // Check that unwinding can be resumed after an incomplete unwind.
-#if defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/40156557): Fix, re-enable.
-#define MAYBE_ResumeUnwinding DISABLED_ResumeUnwinding
-#else
-#define MAYBE_ResumeUnwinding ResumeUnwinding
-#endif
-TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
+TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
