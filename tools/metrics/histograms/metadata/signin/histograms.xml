@@ -1601,6 +1601,22 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Settings.ChromeSigninSettingModification"
+    enum="ChromeSigninSettingModification" expires_after="2024-07-30">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records each modification of the setting value of &quot;Sign
+    in to Chrome when you sign in to other Google services&quot; done by the
+    user through the Settings page.
+
+    If the setting was shown and not modified, a value for no modification is
+    recorded when the user closes or navigates away from Chrome settings.
+
+    If the setting is not shown, no values are recorded at all.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.{View}AccessPoint"
     enum="SigninAccessPoint" expires_after="2024-12-01">

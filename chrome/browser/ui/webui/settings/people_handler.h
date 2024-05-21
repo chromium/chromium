@@ -138,13 +138,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, GetStoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSecondaryProfile,
                            GetStoredAccountsList);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithExplicitBrowserSigninTest,
-                           ChromeSigninUserChoice);
-  FRIEND_TEST_ALL_PREFIXES(
-      PeopleHandlerWithExplicitBrowserSigninTest,
-      ChromeSigninUserAvailableOnExplicitChromeSigninSignout);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithExplicitBrowserSigninTest,
-                           ChromeSigninUserAvailableOnDiceSignin);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWebOnlySigninTest,
                            ChromeSigninUserAvailableOnWebSignin);
 #if DCHECK_IS_ON()
@@ -284,6 +277,13 @@ class PeopleHandler : public SettingsPageUIHandler,
   // what stage of the setup wizard the user was in and to update the UMA
   // histograms in the case that the user cancels out.
   bool configuring_sync_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Information used to know whether changes on `ChromeSigninUserChoice`
+  // happened or not. These are used for metrics purposes.
+  bool chrome_signin_user_choice_shown_ = false;
+  bool chrome_signin_user_choice_modified_ = false;
+#endif
 
   // The OneShotTimer object used to timeout of starting the sync engine
   // service.

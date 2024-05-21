@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,6 +102,26 @@ enum class TrustedVaultBannerState {
   kOfferOptIn = 1,
   kOptedIn = 2,
 };
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// This enum is used for metrics purposes only, it is aligned with
+// `ChromeSigninUserChoice` enum, with the exception of the
+// `ChromeSigninUserChoice::kNoChoice` which is not a valid modification value.
+// It is replaced here with `kNoModification`, stating that the user saw the
+// setting and did not perform any modification while the setting page was
+// opened and the setting was shown at some point.
+//
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class ChromeSigninSettingModification {
+  kNoModification = 0,
+  kToAlwaysAsk = 1,
+  kToSignin = 2,
+  kToDoNotSignin = 3,
+
+  kMaxValue = kToDoNotSignin,
+};
+#endif
 
 // A structure which contains all the configuration information for sync.
 struct SyncConfigInfo {
@@ -253,6 +274,21 @@ settings::SignedInState GetSignedInState(
 
   return settings::SignedInState::SignedOut;
 }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+ChromeSigninSettingModification ChromeSigninUserChoiceToModification(
+    ChromeSigninUserChoice choice) {
+  switch (choice) {
+    case ChromeSigninUserChoice::kAlwaysAsk:
+      return ChromeSigninSettingModification::kToAlwaysAsk;
+    case ChromeSigninUserChoice::kSignin:
+      return ChromeSigninSettingModification::kToSignin;
+    case ChromeSigninUserChoice::kDoNotSignin:
+      return ChromeSigninSettingModification::kToDoNotSignin;
+    case ChromeSigninUserChoice::kNoChoice:
+      NOTREACHED_NORETURN() << "No choice is not expected as a modification";
+  }
+}
+#endif
 
 }  // namespace
 
@@ -269,6 +305,15 @@ PeopleHandler::PeopleHandler(Profile* profile)
     : profile_(profile), configuring_sync_(false) {}
 
 PeopleHandler::~PeopleHandler() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (chrome_signin_user_choice_shown_ &&
+      !chrome_signin_user_choice_modified_) {
+    base::UmaHistogramEnumeration(
+        "Signin.Settings.ChromeSigninSettingModification",
+        ChromeSigninSettingModification::kNoModification);
+  }
+#endif
+
   // Early exit if running unit tests (no actual WebUI is attached).
   if (!web_ui()) {
     return;
@@ -1272,6 +1317,9 @@ base::Value::Dict PeopleHandler::GetChromeSigninUserChoiceInfo() {
                 .GetChromeSigninInterceptionUserChoice(account.gaia)
           : ChromeSigninUserChoice::kNoChoice;
 
+  // Set for metrics purposes.
+  chrome_signin_user_choice_shown_ |= should_show_settings;
+
   base::Value::Dict chrome_signin_user_choice_info;
   chrome_signin_user_choice_info.Set("shouldShowSettings",
                                      should_show_settings);
@@ -1298,17 +1346,31 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   CHECK(args[0].is_int());
   ChromeSigninUserChoice user_choice =
       static_cast<ChromeSigninUserChoice>(args[0].GetInt());
+  CHECK_NE(user_choice, ChromeSigninUserChoice::kNoChoice);
 
   CHECK(args[1].is_string());
   std::string signed_in_email = args[1].GetString();
   CHECK(!signed_in_email.empty());
 
-  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(profile_));
-  CHECK_EQ(account.email, signed_in_email);
+  AccountInfo account =
+      IdentityManagerFactory::GetForProfile(profile_)
+          ->FindExtendedAccountInfoByEmailAddress(signed_in_email);
+  SigninPrefs signin_prefs(*profile_->GetPrefs());
+  // Early return to avoid recording histogram settings modifications. Also
+  // guarantees that the `user_choice` is from a user modification through the
+  // UI since the `SigninPrefs` is not aware of it yet.
+  if (user_choice ==
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia)) {
+    return;
+  }
 
-  SigninPrefs(*profile_->GetPrefs())
-      .SetChromeSigninInterceptionUserChoice(account.gaia, user_choice);
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account.gaia, user_choice);
+
+  // Set for metrics purposes.
+  chrome_signin_user_choice_modified_ = true;
+  base::UmaHistogramEnumeration(
+      "Signin.Settings.ChromeSigninSettingModification",
+      ChromeSigninUserChoiceToModification(user_choice));
 }
 
 void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {

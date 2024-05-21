@@ -201,6 +201,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Required credential field missing"/>
 </enum>
 
+<enum name="ChromeSigninSettingModification">
+  <int value="0" label="No modifications"/>
+  <int value="1" label="Modified to always ask"/>
+  <int value="2" label="Modified to always sign in"/>
+  <int value="3" label="Modified to never sign in"/>
+</enum>
+
 <enum name="FRESigninEvents">
   <int value="0" label="Checking managed status"/>
   <int value="1" label="Signing in - unmanaged"/>
