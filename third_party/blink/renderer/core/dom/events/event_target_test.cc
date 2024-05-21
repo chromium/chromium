@@ -180,12 +180,12 @@ TEST_F(EventTargetTest, UseCountSnapchanging) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
 }
 
-TEST_F(EventTargetTest, UseCountSnapchanged) {
+TEST_F(EventTargetTest, UseCountScrollsnapchange) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
   GetDocument().GetSettings()->SetScriptEnabled(true);
   ClassicScript::CreateUnspecifiedScript(R"HTML(
     const element = document.createElement('div');
-    element.addEventListener('snapchanged', () => {});
+    element.addEventListener('scrollsnapchange', () => {});
   )HTML")
       ->RunScript(GetDocument().domWindow());
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));

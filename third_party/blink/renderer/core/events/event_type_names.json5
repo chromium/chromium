@@ -295,7 +295,7 @@
     "signalingstatechange",
     "sinkchange",
     "slotchange",
-    "snapchanged",
+    "scrollsnapchange",
     "snapchanging",
     "soundend",
     "soundstart",

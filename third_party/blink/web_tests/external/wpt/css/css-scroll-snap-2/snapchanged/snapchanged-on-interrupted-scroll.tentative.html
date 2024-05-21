@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title> CSS Scroll Snap 2 Test: snapchanged events</title>
+    <title> CSS Scroll Snap 2 Test: scrollsnapchange events</title>
     <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#snap-events">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -46,8 +46,8 @@
       promise_test(async (t) => {
         await waitForCompositorCommit();
 
-        container.addEventListener("snapchanged",
-            t.unreached_func("snapchanged should not fire"));
+        container.addEventListener("scrollsnapchange",
+            t.unreached_func("scrollsnapchange should not fire"));
         let reset = () => {
           container.scrollTo({ top: 0, behavior: "smooth"});
           container.removeEventListener("scroll", reset);
@@ -59,10 +59,10 @@
         await scrollend_promise;
         assert_equals(container.scrollTop, 0, "scroll position is reset");
 
-        // snapchanged should not fire since the scroll ended on the same snap
+        // scrollsnapchange should not fire since the scroll ended on the same snap
         // target as the one it started on.
         await waitForCompositorCommit();
-      }, "snapchanged doesn't fire if interrupting scroll cancels snap");
+      }, "scrollsnapchange doesn't fire if interrupting scroll cancels snap");
     </script>
   </body>
 </html>

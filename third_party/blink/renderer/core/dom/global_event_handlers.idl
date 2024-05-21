@@ -93,7 +93,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onseeking;
   attribute EventHandler onselect;
   attribute EventHandler onslotchange;
-  [RuntimeEnabled=CSSSnapChangedEvent] attribute EventHandler onsnapchanged;
+  [RuntimeEnabled=CSSScrollSnapChangeEvent] attribute EventHandler onscrollsnapchange;
   [RuntimeEnabled=CSSSnapChangingEvent] attribute EventHandler onsnapchanging;
   //attribute EventHandler onsort;
   attribute EventHandler onstalled;

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: snapchanged event on the root/document</title>
+  <title> CSS Scroll Snap 2 Test: scrollsnapchange event on the root/document</title>
   <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#snap-events">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -77,8 +77,8 @@
           y: snap_point_2.offsetTop,
         }
       };
-      await test_snapchanged(t, test_data);
-    }, "snapchanged event fires after snap target changes via scrollTo");
+      await test_scrollsnapchange(t, test_data);
+    }, "scrollsnapchange event fires after snap target changes via scrollTo");
 
     promise_test(async (t) => {
       await waitForCompositorCommit();
@@ -93,12 +93,12 @@
           y: snap_point_2.offsetTop,
         }
       };
-      await test_snapchanged(t, test_data, /*use_onsnap_member*/true);
-    }, "Document.onsnapchanged event fires after snap target changes via" +
+      await test_scrollsnapchange(t, test_data, /*use_onsnap_member*/true);
+    }, "Document.onscrollsnapchange event fires after snap target changes via" +
        "scrollTo");
 
     promise_test(async (t) => {
-      checkSnapEventSupport("snapchanged");
+      checkSnapEventSupport("scrollsnapchange");
       await waitForScrollReset(t, scroller);
       await waitForCompositorCommit();
       assert_equals(scroller.scrollTop, 0,
@@ -106,35 +106,35 @@
       assert_equals(scroller.scrollLeft, 0,
         "scroller is initially not scrolled horizontally");
 
-      let snapchanged_promise = waitForSnapChangedEvent(document, false);
+      let scrollsnapchange_promise = waitForScrollSnapChangeEvent(document, false);
       // Set the scroll destination to just a little off (0, 0) so we snap
       // back to the top box.
       let scroll_top_target = 10;
       let scroll_left_target = 10;
 
       scroller.scrollTo(scroll_left_target, scroll_top_target);
-      let evt = await snapchanged_promise;
+      let evt = await scrollsnapchange_promise;
       assert_equals(evt, null, "no snapchanges since scroller is back to top");
-      // scroller should snap back to (0,0) with no snapchanged event.
+      // scroller should snap back to (0,0) with no scrollsnapchange event.
       assert_equals(scroller.scrollTop, 0,
       "scroller snaps back to the top");
       assert_equals(scroller.scrollLeft, 0,
       "scroller snaps back to the left");
 
-      snapchanged_promise = waitForSnapChangedEvent(document);
+      scrollsnapchange_promise = waitForScrollSnapChangeEvent(document);
       scroll_top_target = snap_point_2.offsetTop + 10;
       scroll_left_target = snap_point_2.offsetLeft + 10;
-      // This scroll should snap to snap_point_2, so snapchanged should be
+      // This scroll should snap to snap_point_2, so scrollsnapchange should be
       // fired.
       scroller.scrollTo(scroll_left_target, scroll_top_target);
 
-      evt = await snapchanged_promise;
+      evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: snap_point_2,  inline: snap_point_2 });
       assert_approx_equals(scroller.scrollTop, snap_point_2.offsetTop, 1,
         "scroller snaps to the top of snap_point_2");
       assert_approx_equals(scroller.scrollLeft, snap_point_2.offsetLeft, 1,
         "scroller snaps to the left of snap_point_2");
-    }, "snapchanged is not fired if snap target doesn't change on " +
+    }, "scrollsnapchange is not fired if snap target doesn't change on " +
        "programmatic scroll");
   </script>
 </body>

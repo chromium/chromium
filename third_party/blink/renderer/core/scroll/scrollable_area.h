@@ -580,7 +580,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void ClearPendingScrollAnchorAdjustment();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
-  void EnqueueSnapChangedEvent() const;
+  void EnqueueScrollSnapChangeEvent() const;
 
   ScrollOffset ScrollOffsetFromScrollStartData(
       const ScrollStartData& block_value,
@@ -589,9 +589,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool ScrollStartIsDefault() const;
   virtual bool IsApplyingScrollStart() const { return false; }
 
-  virtual void SetSnapchangedTargetIds(
+  virtual void SetScrollsnapchangeTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
-  virtual void UpdateSnappedTargetsAndEnqueueSnapChanged() {}
+  virtual void UpdateSnappedTargetsAndEnqueueScrollSnapChange() {}
 
   bool ScrollOffsetIsNoop(const ScrollOffset& offset) const;
 

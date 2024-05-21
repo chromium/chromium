@@ -61,13 +61,13 @@
   <script>
     let unreached_func = null;
     promise_test(async (t) => {
-      checkSnapEventSupport("snapchanged");
+      checkSnapEventSupport("scrollsnapchange");
       await waitForCompositorCommit();
-      unreached_func = t.unreached_func("snapchanged shouldn't fire " +
+      unreached_func = t.unreached_func("scrollsnapchange shouldn't fire " +
           "since the scroller is snapped to the same elements.");
-      scroller.addEventListener("snapchanged", unreached_func);
+      scroller.addEventListener("scrollsnapchange", unreached_func);
       t.add_cleanup(() => {
-        scroller.removeEventListener("snapchanged", unreached_func);
+        scroller.removeEventListener("scrollsnapchange", unreached_func);
       });
       assert_greater_than(right.offsetLeft, left.offsetLeft,
           "boxes have switched positions.");
@@ -78,27 +78,27 @@
       assert_less_than(right.offsetLeft, left.offsetLeft,
           "boxes have switched positions.");
       await waitForCompositorCommit();
-    }, "snapchanged doesn't fire after layout change if snapped to the same " +
+    }, "scrollsnapchange doesn't fire after layout change if snapped to the same " +
     "elements");
 
     promise_test(async (t) => {
-      checkSnapEventSupport("snapchanged");
+      checkSnapEventSupport("scrollsnapchange");
       await waitForCompositorCommit();
-      unreached_func = t.unreached_func("snapchanged shouldn't fire " +
+      unreached_func = t.unreached_func("scrollsnapchange shouldn't fire " +
           "since the scroller is snapped to the same elements.");
-      scroller.addEventListener("snapchanged", unreached_func);
+      scroller.addEventListener("scrollsnapchange", unreached_func);
       t.add_cleanup(() => {
-        scroller.removeEventListener("snapchanged", unreached_func);
+        scroller.removeEventListener("scrollsnapchange", unreached_func);
       });
       const scrollend_promise = waitForScrollendEventNoTimeout(scroller);
       // Move the boxes to the same vertical level. Both boxes should still be
-      // considered snapped to so snapchanged should not be triggerred.
+      // considered snapped to so scrollsnapchange should not be triggerred.
       right.style.top = `0px`;
       left.style.top = `0px`;
       await scrollend_promise;
       assert_equals(scroller.scrollTop, 0);
       await waitForCompositorCommit();
-    }, "snapchanged doesn't fire after snap to the same targets after scroll. " +
+    }, "scrollsnapchange doesn't fire after snap to the same targets after scroll. " +
     "elements");
 
   </script>

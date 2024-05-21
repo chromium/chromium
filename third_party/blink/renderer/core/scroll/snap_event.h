@@ -15,10 +15,10 @@
 namespace blink {
 
 // This class implements the SnapEvent interface for scroll-snap-related
-// JavaScript events, snapchanged and snapchanging.
+// JavaScript events, scrollsnapchange and snapchanging.
 // SnapEvents are sent to a scroller when it snaps to a different element from
 // the element to which it was previously snapped along either axis.
-// https://drafts.csswg.org/css-scroll-snap-2/#snapchanged-and-snapchanging
+// https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange-and-snapchanging
 class SnapEvent : public Event {
   DEFINE_WRAPPERTYPEINFO();
 

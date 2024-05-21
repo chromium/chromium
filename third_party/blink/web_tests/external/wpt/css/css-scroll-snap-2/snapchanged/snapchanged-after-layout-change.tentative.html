@@ -56,7 +56,7 @@
     }
 
     async function setup(t) {
-      checkSnapEventSupport("snapchanged");
+      checkSnapEventSupport("scrollsnapchange");
       await reset(t);
       await waitForCompositorCommit();
       assert_equals(scroller.scrollTop, 0, "test precondition: scroller " +
@@ -77,17 +77,17 @@
       // We are just below the inner snap area. Increase its height so that it
       // is larger than the snapport and straddled by the snapport. Verify
       // that we snap to its bottom.
-      let snapchanged_promise = waitForSnapChangedEvent(scroller);
+      let scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller);
       inner_snap_area.style.height =
         `${scroller.clientHeight + inner_snap_area.clientHeight - 10}px`;
-      const evt = await snapchanged_promise;
+      const evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: inner_snap_area, inline: null });
       target_snap_position = inner_snap_area.offsetTop +
           inner_snap_area.offsetHeight - scroller.clientHeight;
       assert_equals(scroller.scrollTop, target_snap_position,
           "scroller snaps to the bottom of the smaller snap area (which is " +
           "now covering).");
-    }, "snapchanged fires after snap area is snapped to upon layout change.");
+    }, "scrollsnapchange fires after snap area is snapped to upon layout change.");
 
     promise_test(async (t) => {
       await setup(t);
@@ -103,43 +103,43 @@
       // We are just below the inner snap area. Increase its height so that it
       // is larger than the snapport making the current scroll position
       // a valid covering position within the inner snap area.
-      let snapchanged_promise = waitForSnapChangedEvent(scroller, false);
+      let scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller, false);
       inner_snap_area.style.height =
           `${scroller.clientHeight + inner_snap_area.clientHeight + 10}px`;
-      const evt = await snapchanged_promise;
+      const evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: inner_snap_area, inline: null });
       assert_equals(scroller.scrollTop, target_snap_position,
           "scroller maintains offset which is now covering within inner area");
-    }, "snapchanged fires after snap area is snapped to upon layout change " +
+    }, "scrollsnapchange fires after snap area is snapped to upon layout change " +
        "without scroll.");
 
     promise_test(async(t) => {
       await setup(t);
       await waitForCompositorCommit();
-      let snapchanged_promise = waitForSnapChangedEvent(scroller, false);
+      let scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller, false);
       scroller.style.scrollSnapType = "none";
-      let evt = await snapchanged_promise;
+      let evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: null, inline: null });
-      snapchanged_promise = waitForSnapChangedEvent(scroller, false);
+      scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller, false);
       scroller.style.scrollSnapType = "y mandatory";
-      evt = await snapchanged_promise;
+      evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: outer_snap_area, inline: null });
-    }, "snapchanged fires when container stops snapping");
+    }, "scrollsnapchange fires when container stops snapping");
 
     promise_test(async(t) => {
       await setup(t);
       await waitForCompositorCommit();
-      let snapchanged_promise = waitForSnapChangedEvent(scroller, false);
+      let scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller, false);
       inner_snap_area.style.scrollSnapAlign = "none";
       outer_snap_area.style.scrollSnapAlign = "none";
-      let evt = await snapchanged_promise;
+      let evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: null, inline: null });
-      snapchanged_promise = waitForSnapChangedEvent(scroller, false);
+      scrollsnapchange_promise = waitForScrollSnapChangeEvent(scroller, false);
       inner_snap_area.style.scrollSnapAlign = "start";
       outer_snap_area.style.scrollSnapAlign = "start";
-      evt = await snapchanged_promise;
+      evt = await scrollsnapchange_promise;
       assertSnapEvent(evt, { block: outer_snap_area,  inline: null });
-    }, "snapchanged fires when snap container no longer has snap areas");
+    }, "scrollsnapchange fires when snap container no longer has snap areas");
   </script>
 </body>
 </html>

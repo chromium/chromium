@@ -1,6 +1,6 @@
 function checkSnapEventSupport(event_type) {
-  if (event_type == "snapchanged") {
-    assert_true(window.onsnapchanged !== undefined, "snapchanged not supported");
+  if (event_type == "scrollsnapchange") {
+    assert_true(window.onscrollsnapchange !== undefined, "scrollsnapchange not supported");
   } else if (event_type == "snapchanging") {
     assert_true(window.onsnapchanging !== undefined, "snapchanging not supported");
   } else {
@@ -48,8 +48,8 @@ async function test_snap_event(test, test_data, event_type,
     "horizontal scroll offset mismatch.");
 }
 
-async function test_snapchanged(test, test_data, use_onsnap_member = false) {
-  await test_snap_event(test, test_data, "snapchanged", use_onsnap_member);
+async function test_scrollsnapchange(test, test_data, use_onsnap_member = false) {
+  await test_snap_event(test, test_data, "scrollsnapchange", use_onsnap_member);
 }
 
 function waitForEventUntil(event_target, event_type, wait_until,
@@ -63,7 +63,7 @@ function waitForEventUntil(event_target, event_type, wait_until,
       if (event_type === "snapchanging") {
         event_target.onsnapchanging = listener;
       } else {
-        event_target.onsnapchanged = listener;
+        event_target.onscrollsnapchange = listener;
       }
     } else {
       event_target.addEventListener(event_type, listener);
@@ -73,7 +73,7 @@ function waitForEventUntil(event_target, event_type, wait_until,
         if (event_type === "snapchanging") {
           event_target.onsnapchanging = null;
         } else {
-          event_target.onsnapchanged = null;
+          event_target.onscrollsnapchange = null;
         }
       } else {
         event_target.removeEventListener(event_type, listener);
@@ -112,8 +112,8 @@ function waitForSnapEvent(event_target, event_type, scroll_happens = true,
                                    use_onsnap_member);
 }
 
-function waitForSnapChangedEvent(event_target, scroll_happens = true) {
-  return waitForSnapEvent(event_target, "snapchanged", scroll_happens);
+function waitForScrollSnapChangeEvent(event_target, scroll_happens = true) {
+  return waitForSnapEvent(event_target, "scrollsnapchange", scroll_happens);
 }
 
 function getScrollbarToScrollerRatio(scroller) {

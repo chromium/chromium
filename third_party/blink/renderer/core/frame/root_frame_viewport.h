@@ -133,7 +133,7 @@ class CORE_EXPORT RootFrameViewport final
   void SetSnapContainerDataNeedsUpdate(bool) override;
   std::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
-  void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
+  void UpdateSnappedTargetsAndEnqueueScrollSnapChange() override;
   std::optional<cc::TargetSnapAreaElementIds> GetSnapchangingTargetIds()
       const override;
   void SetSnapchangingTargetIds(

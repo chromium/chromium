@@ -464116,36 +464116,36 @@
        }
       ]
      ],
-     "snapchanged": {
-      "snapchanged-after-layout-change.tentative.html": [
+     "scrollsnapchange": {
+      "scrollsnapchange-after-layout-change.tentative.html": [
        "a3ba05fdf5e9ffa42ab5689349e33b3c9a0aee15",
        [
         null,
         {}
        ]
       ],
-      "snapchanged-on-interrupted-scroll.tentative.html": [
+      "scrollsnapchange-on-interrupted-scroll.tentative.html": [
        "a1d5259451e970c8a0c9418aa3f8629b7c95f4df",
        [
         null,
         {}
        ]
       ],
-      "snapchanged-on-programmatic-root-scroll.tentative.html": [
+      "scrollsnapchange-on-programmatic-root-scroll.tentative.html": [
        "836036942206172262a5f3ea91c1dae26c82e26a",
        [
         null,
         {}
        ]
       ],
-      "snapchanged-on-programmatic-scroll.tentative.html": [
+      "scrollsnapchange-on-programmatic-scroll.tentative.html": [
        "2b2e6a77c581ffe889fa91ab9f6a452e364ab236",
        [
         null,
         {}
        ]
       ],
-      "snapchanged-on-user-root-scroll.tentative.html": [
+      "scrollsnapchange-on-user-root-scroll.tentative.html": [
        "a59d9c58590bf1096b48542a72bdd4c03f243192",
        [
         null,
@@ -464154,7 +464154,7 @@
         }
        ]
       ],
-      "snapchanged-on-user-scroll.tentative.html": [
+      "scrollsnapchange-on-user-scroll.tentative.html": [
        "d2c2789c88a3daae45ae111d949ab4e76e9347e8",
        [
         null,
@@ -464163,14 +464163,14 @@
         }
        ]
       ],
-      "snapchanged-same-targets-after-layout-changed.html": [
+      "scrollsnapchange-same-targets-after-layout-changed.html": [
        "4d16bd80a3a270a6b008df2c45640b7d31494987",
        [
         null,
         {}
        ]
       ],
-      "snapchanged-scrolling-non-snapping-axis.tentative.html": [
+      "scrollsnapchange-scrolling-non-snapping-axis.tentative.html": [
        "e39fc0c44ee34c5a3ea56949a224e5186d9ebb2a",
        [
         null,
@@ -464179,7 +464179,7 @@
         }
        ]
       ],
-      "snapchanged-with-proximity-strictness.tentative.html": [
+      "scrollsnapchange-with-proximity-strictness.tentative.html": [
        "96cab337398654fd778eb42b6a84167b72c9363d",
        [
         null,

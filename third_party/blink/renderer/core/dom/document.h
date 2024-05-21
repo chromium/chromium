@@ -1523,9 +1523,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueVisualViewportScrollEvent();
   void EnqueueVisualViewportScrollEndEvent();
   void EnqueueVisualViewportResizeEvent();
-  void EnqueueSnapChangedEvent(Node* target,
-                               Member<Node>& block_target,
-                               Member<Node>& inline_target);
+  void EnqueueScrollSnapChangeEvent(Node* target,
+                                    Member<Node>& block_target,
+                                    Member<Node>& inline_target);
   void EnqueueSnapChangingEvent(Node* target,
                                 Member<Node>& block_target,
                                 Member<Node>& inline_target);

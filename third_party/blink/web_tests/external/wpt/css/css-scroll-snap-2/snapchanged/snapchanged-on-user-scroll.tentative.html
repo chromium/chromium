@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: snapchanged events</title>
+  <title> CSS Scroll Snap 2 Test: scrollsnapchange events</title>
   <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#snap-events">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -97,8 +97,8 @@
           y: offset_to_snap_point_2.y,
         }
       };
-      await test_snapchanged(t, test_data);
-    }, "snapchanged event fires after snap target changes on touch scroll");
+      await test_scrollsnapchange(t, test_data);
+    }, "scrollsnapchange event fires after snap target changes on touch scroll");
 
     // Wheel scroll test.
     promise_test(async (t) => {
@@ -117,8 +117,8 @@
           y: offset_to_snap_point_2.y,
         }
       };
-      await test_snapchanged(t, test_data);
-    }, "snapchanged event fires after snap target changes on wheel scroll");
+      await test_scrollsnapchange(t, test_data);
+    }, "scrollsnapchange event fires after snap target changes on wheel scroll");
 
     // Scrollbar drag test.
     promise_test(async (t) => {
@@ -144,8 +144,8 @@
           y: offset_to_snap_point_2.y,
         }
       };
-      await test_snapchanged(t, test_data);
-    }, "snapchanged event fires after snap target changes on scrollbar drag");
+      await test_scrollsnapchange(t, test_data);
+    }, "scrollsnapchange event fires after snap target changes on scrollbar drag");
 
     // Keyboard test.
     promise_test(async (t) => {
@@ -162,10 +162,10 @@
           y: offset_to_snap_point_2.y,
         }
       };
-      await test_snapchanged(t, test_data);
-    }, "snapchanged event fires after snap target changes on keydown press");
+      await test_scrollsnapchange(t, test_data);
+    }, "scrollsnapchange event fires after snap target changes on keydown press");
 
-    // Touch scroll test (onsnapchanged variant).
+    // Touch scroll test (onscrollsnapchange variant).
     promise_test(async (t) => {
       await waitForCompositorCommit();
       const start_pos = {
@@ -184,12 +184,12 @@
           y: offset_to_snap_point_2.y,
         }
       };
-      await test_snapchanged(t, test_data, /*use_onsnap_memeber*/true);
-    }, "Element.onsnapchanged event fires after snap target changes on touch " +
+      await test_scrollsnapchange(t, test_data, /*use_onsnap_memeber*/true);
+    }, "Element.onscrollsnapchange event fires after snap target changes on touch " +
        "scroll");
 
     promise_test(async (t) => {
-      await test_no_snapchanged(t, scroller, /*delta*/10);
-    }, "snapchanged is not fired if snap target doesn't change on user scroll");
+      await test_no_scrollsnapchange(t, scroller, /*delta*/10);
+    }, "scrollsnapchange is not fired if snap target doesn't change on user scroll");
   </script>
 </body>

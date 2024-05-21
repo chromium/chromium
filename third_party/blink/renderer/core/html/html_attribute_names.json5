@@ -262,7 +262,7 @@
     "onselectionchange",
     "onshow",
     "onslotchange",
-    "onsnapchanged",
+    "onscrollsnapchange",
     "onsnapchanging",
     "onstalled",
     "onstorage",

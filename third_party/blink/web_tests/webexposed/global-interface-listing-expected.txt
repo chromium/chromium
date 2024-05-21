@@ -2095,6 +2095,7 @@ interface Document : Node
     getter onresume
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -2103,7 +2104,6 @@ interface Document : Node
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanged
     getter onsnapchanging
     getter onstalled
     getter onsubmit
@@ -2319,6 +2319,7 @@ interface Document : Node
     setter onresume
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -2327,7 +2328,6 @@ interface Document : Node
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanged
     setter onsnapchanging
     setter onstalled
     setter onsubmit
@@ -3915,6 +3915,7 @@ interface HTMLElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -3922,7 +3923,6 @@ interface HTMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanged
     getter onsnapchanging
     getter onstalled
     getter onsubmit
@@ -4052,6 +4052,7 @@ interface HTMLElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -4059,7 +4060,6 @@ interface HTMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanged
     setter onsnapchanging
     setter onstalled
     setter onsubmit
@@ -6039,6 +6039,7 @@ interface MathMLElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -6046,7 +6047,6 @@ interface MathMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanged
     getter onsnapchanging
     getter onstalled
     getter onsubmit
@@ -6152,6 +6152,7 @@ interface MathMLElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -6159,7 +6160,6 @@ interface MathMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanged
     setter onsnapchanging
     setter onstalled
     setter onsubmit
@@ -8443,6 +8443,7 @@ interface SVGElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -8450,7 +8451,6 @@ interface SVGElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanged
     getter onsnapchanging
     getter onstalled
     getter onsubmit
@@ -8558,6 +8558,7 @@ interface SVGElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -8565,7 +8566,6 @@ interface SVGElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanged
     setter onsnapchanging
     setter onstalled
     setter onsubmit
@@ -12989,6 +12989,7 @@ namespace console
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -12997,7 +12998,6 @@ namespace console
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanged
     getter onsnapchanging
     getter onstalled
     getter onstorage
@@ -13223,6 +13223,7 @@ namespace console
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -13231,7 +13232,6 @@ namespace console
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanged
     setter onsnapchanging
     setter onstalled
     setter onstorage

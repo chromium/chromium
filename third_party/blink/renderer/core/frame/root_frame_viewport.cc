@@ -748,8 +748,8 @@ void RootFrameViewport::Trace(Visitor* visitor) const {
   ScrollableArea::Trace(visitor);
 }
 
-void RootFrameViewport::UpdateSnappedTargetsAndEnqueueSnapChanged() {
-  LayoutViewport().UpdateSnappedTargetsAndEnqueueSnapChanged();
+void RootFrameViewport::UpdateSnappedTargetsAndEnqueueScrollSnapChange() {
+  LayoutViewport().UpdateSnappedTargetsAndEnqueueScrollSnapChange();
 }
 
 std::optional<cc::TargetSnapAreaElementIds>

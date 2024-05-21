@@ -88,8 +88,8 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   std::optional<cc::TargetSnapAreaElementIds> snapchanging_target_ids_;
   std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   // The ids of the elements that were reported as the selected snap targets
-  // along each axis during the last snapchanged event that fired.
-  std::optional<cc::TargetSnapAreaElementIds> snapchanged_target_ids_;
+  // along each axis during the last scrollsnapchange event that fired.
+  std::optional<cc::TargetSnapAreaElementIds> scrollsnapchange_target_ids_;
   // If this is a snap container, this represents the cc::ElementId of the snap
   // area (snapped to by this snap container) that is targeted[1] or contains a
   // targeted[1] element.
@@ -555,10 +555,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   std::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
-  // Functions related to firing snapchanged events.
-  void SetSnapchangedTargetIds(
+  // Functions related to firing scrollsnapchange events.
+  void SetScrollsnapchangeTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) override;
-  void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
+  void UpdateSnappedTargetsAndEnqueueScrollSnapChange() override;
 
   // Functions related to firing snapchanging events.
   std::optional<cc::TargetSnapAreaElementIds> GetSnapchangingTargetIds()
@@ -720,8 +720,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool UsedColorSchemeScrollbarsChanged(const ComputedStyle* old_style) const;
   bool IsGlobalRootNonOverlayScroller() const;
 
-  // Get the current target for a snap event of |type| (either "snapchanged" or
-  // snapchanging) along axis |axis|.
+  // Get the current target for a snap event of |type| (either
+  // "scrollsnapchange" or snapchanging) along axis |axis|.
   Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
                                     cc::SnapAxis) const override;
 

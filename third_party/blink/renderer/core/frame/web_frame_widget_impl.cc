@@ -1303,7 +1303,7 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
   }
   if (ScrollableArea* scrollable_area =
           ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
-    scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+    scrollable_area->UpdateSnappedTargetsAndEnqueueScrollSnapChange();
     scrollable_area->SetImplSnapStrategy(nullptr);
   }
 
