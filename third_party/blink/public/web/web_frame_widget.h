@@ -242,6 +242,16 @@ class WebFrameWidget : public WebWidget {
   // UpdateAllLifecyclePhases() just before dumping pixels.
   virtual void PrepareForFinalLifecyclUpdateForTesting() = 0;
 
+  // Returns the current zoom level.  0 is "original size", and each increment
+  // above or below represents zooming 20% larger or smaller to default limits
+  // of 300% and 50% of original size, respectively.  Only plugins use
+  // non whole-numbers, since they might choose to have specific zoom level so
+  // that fixed-width content is fit-to-page-width, for example.
+  virtual double GetZoomLevel() = 0;
+  // Changes the zoom level to the specified level, clamping at the limits
+  // defined by the associated `webView`.
+  virtual void SetZoomLevel(double zoom_level) = 0;
+
  private:
   // This is a private virtual method so we don't expose cc::LayerTreeHost
   // outside of this class. Friend classes may be added in order to access it.

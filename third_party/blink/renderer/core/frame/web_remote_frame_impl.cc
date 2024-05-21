@@ -278,11 +278,11 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   // WebFrameWidget containing this frame, and this is true for regular frames
   // in the frame tree as well as for fenced frames, which are not in the frame
   // tree; hence the code to traverse up through FrameOwner.
-  WebFrameWidget* ancestor_widget = nullptr;
+  WebFrameWidgetImpl* ancestor_widget = nullptr;
   if (parent) {
     if (parent->IsWebLocalFrame()) {
       ancestor_widget =
-          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
+          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidgetImpl();
     }
   } else if (owner && owner->IsLocal()) {
     // Never gets to this point unless |owner| is a <fencedframe>
@@ -291,7 +291,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
     DCHECK(owner_element->IsHTMLFencedFrameElement());
     LocalFrame& local_frame =
         owner_element->GetDocument().GetFrame()->LocalFrameRoot();
-    ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
+    ancestor_widget =
+        WebLocalFrameImpl::FromFrame(local_frame)->FrameWidgetImpl();
   }
 
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
@@ -352,10 +353,10 @@ void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {
 }
 
 void WebRemoteFrameImpl::InitializeFrameVisualProperties(
-    WebFrameWidget* ancestor_widget,
+    WebFrameWidgetImpl* ancestor_widget,
     WebView* web_view) {
   FrameVisualProperties visual_properties;
-  visual_properties.zoom_level = web_view->ZoomLevel();
+  visual_properties.zoom_level = ancestor_widget->GetZoomLevel();
   visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
   visual_properties.is_pinch_gesture_active =
       ancestor_widget->PinchGestureActiveInMainFrame();

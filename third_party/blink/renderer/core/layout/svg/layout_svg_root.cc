@@ -143,7 +143,7 @@ double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
   // includes CSS zoom and the device scale factor (if use-zoom-for-dsf is
   // enabled). For this special-case, we only want to include the user's zoom
   // factor, as all other types of zoom should not scale a percentage-sized svg.
-  return GetFrame()->GetChromeClient().UserZoomFactor();
+  return GetFrame()->GetChromeClient().UserZoomFactor(GetFrame());
 }
 
 void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
