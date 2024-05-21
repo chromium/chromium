@@ -189,6 +189,10 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
 bool IsContentNotificationEnabled(bool user_signed_in,
                                   bool default_search_engine,
                                   PrefService* pref_service) {
+  if (user_signed_in && IsContentPushNotificationsProvisionalBypass()) {
+    return true;
+  }
+
   // Make sure all enabled types are checked since more than one types can be
   // enabled, and the UMA will only be active after checking the pref.
   bool promo_enabled = IsContentNotificationPromoEnabled(
@@ -198,8 +202,7 @@ bool IsContentNotificationEnabled(bool user_signed_in,
   bool set_up_list_enabled = IsContentNotificationSetUpListEnabled(
       user_signed_in, default_search_engine, pref_service);
 
-  return promo_enabled || provisional_enabled || set_up_list_enabled ||
-         IsContentPushNotificationsProvisionalBypass();
+  return promo_enabled || provisional_enabled || set_up_list_enabled;
 }
 
 bool IsContentNotificationRegistered(bool user_signed_in,
