@@ -11,6 +11,15 @@ p {
   word-break: break-all;
   inline-size: 305px;
 }
+.mc {
+  columns: 2 305px;
+  column-gap: 10px;
+  inline-size: 720px;
+  block-size: 80px;
+}
 </style>
 <p>zzz<ruby><span>mmm</span><rt><span>mmmmmm</span></ruby> <ruby><span>mm</span><rt><span>mmmm</span></ruby>zzz
+</p>
+
+<p class="mc">zzz<ruby><span>mmm</span><span>mm</span><rt><span>mmmmmm</span><span>mmmm</span></ruby>zzz
 </p>
