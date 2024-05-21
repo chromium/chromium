@@ -2653,6 +2653,32 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Active"/>
 </enum>
 
+<enum name="UnavailableErrorReason">
+  <summary>
+    Defined as UnavailableErrorReason in src/platform2/missive/util/errors.h
+  </summary>
+  <int value="0" label="CANNOT_CANCEL_A_JOB_THATS_ALREADY_RUNNING"/>
+  <int value="1" label="CANNOT_SCHEDULE_A_JOB_THATS_ALREADY_RUNNING"/>
+  <int value="2" label="CHROME_NOT_RESPONDING"/>
+  <int value="3" label="CLIENT_NOT_CONNECTED_TO_MISSIVE"/>
+  <int value="4" label="DAEMON_STILL_STARTING"/>
+  <int value="5" label="DBUS_ADAPTER_DESTRUCTED"/>
+  <int value="6" label="FAILED_TO_CREATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="7" label="FILE_NOT_OPEN"/>
+  <int value="8" label="MISSIVE_CLIENT_NO_DBUS_RESPONSE"/>
+  <int value="9" label="MISSIVE_HAS_BEEN_SHUT_DOWN"/>
+  <int value="10" label="NO_DBUS_RESPONSE"/>
+  <int value="11" label="REPORT_QUEUE_DESTRUCTED"/>
+  <int value="12" label="REPORT_QUEUE_PROVIDER_DESTRUCTED"/>
+  <int value="13" label="STORAGE_DIRECTORY_DOESNT_EXIST"/>
+  <int value="14" label="STORAGE_OBJECT_DOESNT_EXIST"/>
+  <int value="15" label="STORAGE_QUEUE_SHUTDOWN"/>
+  <int value="16" label="UNABLE_TO_BUILD_REPORT_QUEUE"/>
+  <int value="17" label="UPLOAD_CLIENT_DESTRUCTED"/>
+  <int value="18" label="UPLOAD_CLIENT_NO_DBUS_RESPONSE"/>
+  <int value="19" label="MAX_VALUE"/>
+</enum>
+
 <enum name="WiFiPCIStatus">
   <int value="0" label="(Bad status) NIC not detected in lspci"/>
   <int value="1"

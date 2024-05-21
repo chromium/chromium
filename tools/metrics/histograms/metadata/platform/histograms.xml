@@ -1431,6 +1431,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.UnavailableErrorReason"
+    enum="UnavailableErrorReason" expires_after="2025-06-01">
+  <owner>jrhilke@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded once each time reporting::error::UNAVAILABLE is returned in
+    src/platform2/missive/. There is a 1:1 relationship between the UMA values
+    and error messages used with reporting::error::UNAVAILABLE so that we can
+    understand exactly which parts of the code are failing.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2024-12-26">
   <owner>xuhong@chromium.org</owner>
