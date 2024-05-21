@@ -682,7 +682,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   EXPECT_EQ(u"test_annotation", image_succeeded->GetTextContentUTF16());
-  EXPECT_EQ(u"test_annotation",
+  EXPECT_EQ(u"image_name, test_annotation",
             image_succeeded_with_name->GetTextContentUTF16());
 }
 

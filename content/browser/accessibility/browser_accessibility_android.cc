@@ -737,8 +737,9 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
         break;
 
       case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-        text =
-            GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation);
+        AppendTextToString(
+            GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation),
+            &text);
         break;
 
       case ax::mojom::ImageAnnotationStatus::kNone:
