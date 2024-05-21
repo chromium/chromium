@@ -17,38 +17,37 @@ namespace base {
 
 namespace internal {
 
-#if BUILDFLAG(IS_ANDROID)
-// Use fdsan on android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// Platforms for which it is possible to track ownership of file descriptors.
+//
+// On Android, fdsan is used.
+//
+// On ChromeOS and Linux, file descriptor lifetime is guarded with a global
+// table and a hook into libc close().
 struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
   static int InvalidValue() { return -1; }
-  static void Free(int);
-  static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
-  static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
-};
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// On ChromeOS and Linux we guard FD lifetime with a global table and hook into
-// libc close() to perform checks.
-struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
-#else
-struct BASE_EXPORT ScopedFDCloseTraits {
-#endif
-  static int InvalidValue() {
-    return -1;
-  }
   static void Free(int fd);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
-  static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
-#endif
+  static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>& owner,
+                      int fd);
+  static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>& owner,
+                      int fd);
 };
+
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+
+struct BASE_EXPORT ScopedFDCloseTraits {
+  static int InvalidValue() { return -1; }
+  static void Free(int fd);
+};
+
 #endif
 
-// Functor for |ScopedFILE| (below).
+// Functor for `ScopedFILE` (below).
 struct ScopedFILECloser {
   inline void operator()(FILE* x) const {
-    if (x)
+    if (x) {
       fclose(x);
+    }
   }
 };
 
@@ -98,11 +97,11 @@ void BASE_EXPORT ResetFDOwnership();
 // should generally use base::File instead which can be constructed with a
 // handle, and in addition to handling ownership, has convenient cross-platform
 // file manipulation functions on it.
-typedef ScopedGeneric<int, internal::ScopedFDCloseTraits> ScopedFD;
+using ScopedFD = ScopedGeneric<int, internal::ScopedFDCloseTraits>;
 #endif
 
-// Automatically closes |FILE*|s.
-typedef std::unique_ptr<FILE, internal::ScopedFILECloser> ScopedFILE;
+// Automatically closes `FILE*`s.
+using ScopedFILE = std::unique_ptr<FILE, internal::ScopedFILECloser>;
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Queries the ownership status of an FD, i.e. whether it is currently owned by
