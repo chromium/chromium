@@ -720,11 +720,6 @@ constexpr base::FeatureParam<bool> kActionsInSuggestPromoteReviewsAction(
     false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
-// Android UI Revamp ->
-extern const base::FeatureParam<bool>
-    kOmniboxModernizeVisualUpdateMergeClipboardOnNTP;
-// <- Android UI Revamp
-// ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->
 extern const base::FeatureParam<int>
     kTouchDownTriggerForPrefetchMaxPrefetchesPerOmniboxSession;
