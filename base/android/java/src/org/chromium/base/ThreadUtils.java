@@ -47,14 +47,16 @@ public class ThreadUtils {
      */
     // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
-        private long mThreadId;
+        private Thread mThread;
 
         public ThreadChecker() {
             resetThreadId();
         }
 
         public void resetThreadId() {
-            mThreadId = BuildConfig.ENABLE_ASSERTS ? Process.myTid() : 0;
+            if (BuildConfig.ENABLE_ASSERTS) {
+                mThread = Thread.currentThread();
+            }
         }
 
         /**
@@ -62,8 +64,25 @@ public class ThreadUtils {
          * on.
          */
         public void assertOnValidThread() {
-            assert sThreadAssertsDisabledForTesting || mThreadId == Process.myTid()
-                    : "Must only be used on a single thread.";
+            if (BuildConfig.ENABLE_ASSERTS && !sThreadAssertsDisabledForTesting) {
+                Thread curThread = Thread.currentThread();
+                if (curThread != mThread) {
+                    Thread uiThread = getUiThreadLooper().getThread();
+                    if (curThread == uiThread) {
+                        assert false
+                                : "Background-only class called from UI thread (expected: "
+                                        + mThread
+                                        + ")";
+                    } else if (mThread == uiThread) {
+                        assert false : "UI-only class called from background thread: " + curThread;
+                    }
+                    assert false
+                            : "Method called from wrong background thread. Expected: "
+                                    + mThread
+                                    + " Actual: "
+                                    + curThread;
+                }
+            }
         }
     }
 
