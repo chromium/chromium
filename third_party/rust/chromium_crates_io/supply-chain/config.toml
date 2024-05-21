@@ -42,226 +42,226 @@ ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
 
 [policy."aho-corasick:1.1.3"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."anstyle:1.0.7"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."anyhow:1.0.83"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."base64:0.13.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."bitflags:2.5.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck:1.16.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck_derive:1.6.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytes:1.6.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cc:1.0.97"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."clap:4.5.4"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_builder:4.5.2"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."codespan-reporting:0.11.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cxx:1.0.122"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."cxxbridge-cmd:1.0.122"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cxxbridge-flags:1.0.122"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."cxxbridge-macro:1.0.122"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."either:1.11.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."fend-core:1.4.8"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."font-types:0.5.3"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.15"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."heck:0.4.1"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."hex-literal:0.4.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."hex:0.4.3"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."itertools:0.11.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."itoa:1.0.11"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."lazy_static:1.4.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."libc:0.2.154"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."link-cplusplus:1.0.9"]
 criteria = []
 
 [policy."log:0.4.21"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."memchr:2.7.2"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."minimal-lexical:0.2.1"]
 criteria = []
 
 [policy."nom:7.1.3"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."ppv-lite86:0.2.17"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."proc-macro2:1.0.82"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."prost-derive:0.12.5"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."prost:0.12.4"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."qr_code:2.0.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."quote:1.0.36"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rand_chacha:0.3.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rand_core:0.6.4"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rand_pcg:0.3.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."read-fonts:0.19.1"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.6"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."regex-syntax:0.8.3"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."regex:1.10.4"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rstest:0.17.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rstest_macros:0.17.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rstest_reuse:0.5.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustc-demangle-capi:0.1.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustc-demangle:0.1.24"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustc_version:0.4.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustversion:1.0.16"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."ryu:1.0.18"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."semver:1.0.23"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde:1.0.201"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_derive:1.0.201"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json:1.0.117"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.1"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."skrifa:0.19.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."static_assertions:1.1.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."strsim:0.11.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."strum:0.25.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."strum_macros:0.25.3"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."syn:1.0.109"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."syn:2.0.63"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."tinyvec:1.6.0"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-ident:1.0.12"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-linebreak:0.1.5"]
-criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-width:0.1.12"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."wasi:0.11.0+wasi-snapshot-preview1"]
 criteria = []
@@ -270,16 +270,16 @@ criteria = []
 criteria = []
 
 [policy."winapi-util:0.1.6"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."winapi-x86_64-pc-windows-gnu:0.4.0"]
 criteria = []
 
 [policy."winapi:0.3.9"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."wycheproof:0.4.0"]
-criteria = ["does-not-implement-crypto", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [[exemptions.cxx]]
 version = "1.0.122"
