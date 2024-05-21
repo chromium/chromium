@@ -10,7 +10,12 @@ found in the LICENSE file.
 
     <!-- Account-level passwords -->
     <Preference
-        android:key="passwords_account" 
+        android:key="passwords_account"
         android:title="@string/safety_check_passwords_safe" />
+
+    <!-- Update check -->
+    <Preference
+        android:key="update_check"
+        android:title="@string/safety_check_updates_title" />
 
 </PreferenceScreen>

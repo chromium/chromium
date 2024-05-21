@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,6 +41,14 @@ public class SafetyHubModuleViewBinder {
         }
     }
 
+    public static void bindUpdateCheckProperties(
+            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+        bindCommonProperties(model, preference, propertyKey);
+        if (SafetyHubModuleProperties.UPDATE_STATUS == propertyKey) {
+            updateUpdateCheckModule(preference, model);
+        }
+    }
+
     private static void updatePasswordCheckModule(Preference preference, PropertyModel model) {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
@@ -67,5 +76,45 @@ public class SafetyHubModuleViewBinder {
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
+    }
+
+    private static void updateUpdateCheckModule(Preference preference, PropertyModel model) {
+        UpdateStatusProvider.UpdateStatus updateStatus =
+                model.get(SafetyHubModuleProperties.UPDATE_STATUS);
+
+        if (updateStatus == null) {
+            preference.setIcon(
+                    SettingsUtils.getTintedIcon(
+                            preference.getContext(), model.get(SafetyHubModuleProperties.ICON)));
+            preference.setTitle(R.string.safety_check_updates_updated);
+            return;
+        }
+
+        switch (updateStatus.updateState) {
+            case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
+                preference.setIcon(
+                        SettingsUtils.getTintedIcon(
+                                preference.getContext(),
+                                R.drawable.ic_error,
+                                R.color.default_red_dark));
+                preference.setTitle(R.string.menu_update_unsupported_summary_default);
+                preference.setSummary(updateStatus.latestUnsupportedVersion);
+                break;
+            case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
+                preference.setIcon(
+                        SettingsUtils.getTintedIcon(
+                                preference.getContext(),
+                                R.drawable.ic_error,
+                                R.color.default_red_dark));
+                preference.setTitle(R.string.safety_check_updates_outdated);
+                break;
+            default:
+                preference.setIcon(
+                        SettingsUtils.getTintedIcon(
+                                preference.getContext(),
+                                model.get(SafetyHubModuleProperties.ICON)));
+                preference.setTitle(R.string.safety_check_updates_updated);
+                preference.setSummary(updateStatus.latestVersion);
+        }
     }
 }

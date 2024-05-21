@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,5 +54,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
         passwordManagerHelper.showPasswordCheckup(
                 context, PasswordCheckReferrer.SAFETY_CHECK, mModalDialogManagerSupplier, account);
+    }
+
+    @Override
+    public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
+        return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
     }
 }

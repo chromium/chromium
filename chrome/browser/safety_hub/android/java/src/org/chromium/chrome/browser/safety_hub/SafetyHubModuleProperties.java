@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -19,6 +20,8 @@ public class SafetyHubModuleProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<UpdateStatusProvider.UpdateStatus>
+            UPDATE_STATUS = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
         ICON, IS_VISIBLE, ON_CLICK_LISTENER
@@ -27,4 +30,8 @@ public class SafetyHubModuleProperties {
     public static final PropertyKey[] PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS =
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS, new PropertyKey[] {COMPROMISED_PASSWORDS_COUNT});
+
+    public static final PropertyKey[] UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS =
+            PropertyModel.concatKeys(
+                    COMMON_SAFETY_HUB_MODULE_KEYS, new PropertyKey[] {UPDATE_STATUS});
 }

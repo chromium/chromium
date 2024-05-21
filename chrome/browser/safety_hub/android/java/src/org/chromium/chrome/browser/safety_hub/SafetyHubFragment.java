@@ -18,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends ChromeBaseSettingsFragment {
     private static final String PREF_PASSWORDS = "passwords_account";
+    private static final String PREF_UPDATE = "update_check";
     private SafetyHubModuleDelegate mDelegate;
 
     @Override
@@ -25,6 +26,7 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         getActivity().setTitle(R.string.prefs_safety_check);
 
+        // Set up account-level password check preference.
         Preference passwordCheckPreference = findPreference(PREF_PASSWORDS);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
@@ -48,6 +50,22 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment {
                 passwordCheckPropertyModel,
                 passwordCheckPreference,
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
+
+        // Set up update check preference.
+        Preference updateCheckPreference = findPreference(PREF_UPDATE);
+
+        PropertyModel updateCheckPropertyModel =
+                new PropertyModel.Builder(
+                                SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
+                        .with(SafetyHubModuleProperties.ICON, R.drawable.ic_update_grey)
+                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                updateCheckPropertyModel,
+                updateCheckPreference,
+                SafetyHubModuleViewBinder::bindUpdateCheckProperties);
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {

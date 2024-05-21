@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -31,6 +33,17 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
     private static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
     private final Profile mProfile;
 
+    private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
+            status -> {
+                mUpdateStatus = status;
+            };
+
+    /*
+     * The current state of updates for Chrome. This can change during runtime and may be {@code
+     * null} if the status hasn't been determined yet.
+     */
+    private @Nullable UpdateStatusProvider.UpdateStatus mUpdateStatus;
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     SafetyHubFetchService(Profile profile) {
         assert profile != null;
@@ -40,6 +53,9 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
+
+        // Fetch latest update status.
+        UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
     }
 
     @Override
@@ -48,6 +64,8 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
+
+        UpdateStatusProvider.getInstance().removeObserver(mUpdateCallback);
     }
 
     /** See {@link ChromeActivitySessionTracker#onForegroundSessionStart()}. */
@@ -153,6 +171,13 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
 
             cancelFetchJob();
         }
+    }
+
+    /**
+     * @return The last fetched update status from Omaha if available.
+     */
+    public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
+        return mUpdateStatus;
     }
 
     @Override
