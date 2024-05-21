@@ -5610,6 +5610,11 @@ if (!is_android) {
       sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
       deps += [ "//components/os_crypt/sync:test_support" ]
     }
+
+    if (is_chromeos) {
+      sources += [ "../browser/webauthn/chromeos/passkey_browsertest.cc" ]
+      deps += [ "//chrome/browser/webauthn:test_support" ]
+    }
   }
 }
 

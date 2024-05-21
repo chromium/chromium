@@ -208,6 +208,7 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
       base::as_byte_span(unsealed_credential_secrets.private_key()),
       signed_over_data);
   if (!assertion_signature) {
+    FIDO_LOG(ERROR) << "Generating assertion signature failed";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
     return;
   }
@@ -224,15 +225,6 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
   responses.emplace_back(std::move(assertion_response));
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                           std::move(responses));
-}
-
-void PasskeyAuthenticator::GetPlatformCredentialInfoForRequest(
-    const CtapGetAssertionRequest& request,
-    const CtapGetAssertionOptions& options,
-    GetPlatformCredentialInfoForRequestCallback callback) {
-  std::move(callback).Run(
-      {},
-      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
 }
 
 void PasskeyAuthenticator::Cancel() {

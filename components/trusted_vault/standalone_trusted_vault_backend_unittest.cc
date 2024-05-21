@@ -36,6 +36,7 @@
 #include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_recovery_key_store_connection.h"
+#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -144,44 +145,6 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
   ~MockDelegate() override = default;
   MOCK_METHOD(void, NotifyRecoverabilityDegradedChanged, (), (override));
   MOCK_METHOD(void, NotifyStateChanged, (), (override));
-};
-
-class MockTrustedVaultConnection : public TrustedVaultConnection {
- public:
-  MockTrustedVaultConnection() = default;
-  ~MockTrustedVaultConnection() override = default;
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterAuthenticationFactor,
-              (const CoreAccountInfo& account_info,
-               const MemberKeysSource& member_keys_source,
-               const SecureBoxPublicKey& authentication_factor_public_key,
-               AuthenticationFactorType authentication_factor_type,
-               RegisterAuthenticationFactorCallback callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterDeviceWithoutKeys,
-              (const CoreAccountInfo& account_info,
-               const SecureBoxPublicKey& device_public_key,
-               RegisterAuthenticationFactorCallback callback),
-              (override));
-  MOCK_METHOD(
-      std::unique_ptr<Request>,
-      DownloadNewKeys,
-      (const CoreAccountInfo& account_info,
-       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
-       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-       DownloadNewKeysCallback callback),
-      (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadIsRecoverabilityDegraded,
-              (const CoreAccountInfo& account_info,
-               IsRecoverabilityDegradedCallback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadAuthenticationFactorsRegistrationState,
-              (const CoreAccountInfo& account_info,
-               DownloadAuthenticationFactorsRegistrationStateCallback callback),
-              (override));
 };
 
 class FakeRecoveryKeyProvider

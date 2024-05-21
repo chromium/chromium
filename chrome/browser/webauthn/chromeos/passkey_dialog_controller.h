@@ -43,6 +43,8 @@ class PasskeyDialogController
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& credentials() const;
   bool ready_for_ui() const;
 
+  PasskeyService::AccountState account_state_for_testing() const;
+
  private:
   void OnFetchAccountState(PasskeyService::AccountState state);
   void StartAuthenticatorRequest();

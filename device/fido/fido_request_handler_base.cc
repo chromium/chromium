@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -35,6 +36,24 @@
 #endif
 
 namespace device {
+
+namespace {
+bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
+  switch (authenticator.GetType()) {
+    case AuthenticatorType::kWinNative:
+    case AuthenticatorType::kTouchID:
+    case AuthenticatorType::kChromeOS:
+    case AuthenticatorType::kPhone:
+    case AuthenticatorType::kICloudKeychain:
+    case AuthenticatorType::kOther:
+      return false;
+    case AuthenticatorType::kEnclave:
+    case AuthenticatorType::kChromeOSPasskeys:
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+}  // namespace
 
 // TransportAvailabilityCallbackReadiness stores state that tracks whether
 // |FidoRequestHandlerBase| is ready to call
@@ -399,7 +418,10 @@ void FidoRequestHandlerBase::DiscoveryStarted(
       transport_availability_callback_readiness_->platform_discovery_succeeded =
           true;
       for (FidoAuthenticator* platform_authenticator : authenticators) {
-        if (platform_authenticator->GetType() == AuthenticatorType::kEnclave) {
+        if (IsGpmPasskeyAuthenticator(*platform_authenticator)) {
+          // GPM credential availability is checked in
+          // ChromeAuthenticatorRequestDelegate, so the authenticators don't
+          // implement GetPlatformCredentialStatus.
           continue;
         }
         transport_availability_info_.has_icloud_keychain |=

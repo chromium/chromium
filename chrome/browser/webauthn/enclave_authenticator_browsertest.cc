@@ -56,6 +56,7 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -94,6 +95,8 @@
 #if !defined(MEMORY_SANITIZER)
 
 namespace {
+
+using trusted_vault::MockTrustedVaultConnection;
 
 constexpr int32_t kSecretVersion = 417;
 constexpr uint8_t kSecurityDomainSecret[32] = {0};
@@ -371,58 +374,6 @@ struct TempDir {
 
  private:
   base::ScopedTempDir dir_;
-};
-
-class MockTrustedVaultConnection
-    : public trusted_vault::TrustedVaultConnection {
- public:
-  MockTrustedVaultConnection() = default;
-  ~MockTrustedVaultConnection() override = default;
-  MOCK_METHOD(
-      std::unique_ptr<Request>,
-      RegisterAuthenticationFactor,
-      (const CoreAccountInfo& account_info,
-       const trusted_vault::MemberKeysSource& member_key_source,
-       const trusted_vault::SecureBoxPublicKey&
-           authentication_factor_public_key,
-       trusted_vault::AuthenticationFactorType authentication_factor_type,
-       base::OnceCallback<
-           void(const trusted_vault::TrustedVaultRegistrationStatus,
-                /*key_version=*/int)> callback),
-      (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterDeviceWithoutKeys,
-              (const CoreAccountInfo& account_info,
-               const trusted_vault::SecureBoxPublicKey& device_public_key,
-               base::OnceCallback<
-                   void(const trusted_vault::TrustedVaultRegistrationStatus,
-                        /*key_version=*/int)> callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadNewKeys,
-              (const CoreAccountInfo& account_info,
-               const trusted_vault::TrustedVaultKeyAndVersion&
-                   last_trusted_vault_key_and_version,
-               std::unique_ptr<trusted_vault::SecureBoxKeyPair> device_key_pair,
-               base::OnceCallback<
-                   void(trusted_vault::TrustedVaultDownloadKeysStatus,
-                        const std::vector<std::vector<uint8_t>>& /*keys*/,
-                        int /*last_key_version*/)> callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadIsRecoverabilityDegraded,
-              (const CoreAccountInfo& account_info,
-               base::OnceCallback<
-                   void(trusted_vault::TrustedVaultRecoverabilityStatus)>),
-              (override));
-  MOCK_METHOD(
-      std::unique_ptr<Request>,
-      DownloadAuthenticationFactorsRegistrationState,
-      (const CoreAccountInfo& account_info,
-       base::OnceCallback<void(
-           trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
-           callback),
-      (override));
 };
 
 class EnclaveAuthenticatorBrowserTest : public SyncTest {

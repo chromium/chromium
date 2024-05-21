@@ -64,6 +64,12 @@ bool PasskeyDialogController::ready_for_ui() const {
   return account_state_.has_value();
 }
 
+PasskeyService::AccountState
+PasskeyDialogController::account_state_for_testing() const {
+  CHECK(account_state_.has_value());
+  return *account_state_;
+}
+
 void PasskeyDialogController::OnFetchAccountState(
     PasskeyService::AccountState state) {
   account_state_ = state;

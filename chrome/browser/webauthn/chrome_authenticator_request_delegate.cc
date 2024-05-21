@@ -689,6 +689,15 @@ ChromeAuthenticatorRequestDelegate::enclave_controller_for_testing() const {
   return enclave_controller_.get();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+chromeos::PasskeyDialogController&
+ChromeAuthenticatorRequestDelegate::chromeos_passkey_controller_for_testing()
+    const {
+  CHECK(chromeos_passkey_controller_);
+  return *chromeos_passkey_controller_;
+}
+#endif
+
 void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
     const std::string& rp_id) {
   dialog_model_->relying_party_id = rp_id;
@@ -850,7 +859,7 @@ ChromeAuthenticatorRequestDelegate::CreatePlatformDiscoveries() {
         std::make_unique<chromeos::PasskeyDiscovery>(GetRenderFrameHost()));
   }
 #endif
-  return {};
+  return discoveries;
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(

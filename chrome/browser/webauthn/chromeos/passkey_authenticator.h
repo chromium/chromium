@@ -43,10 +43,6 @@ class PasskeyAuthenticator : public device::FidoAuthenticator {
   void GetAssertion(device::CtapGetAssertionRequest request,
                     device::CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
-  void GetPlatformCredentialInfoForRequest(
-      const device::CtapGetAssertionRequest& request,
-      const device::CtapGetAssertionOptions& options,
-      GetPlatformCredentialInfoForRequestCallback callback) override;
   void Cancel() override;
   device::AuthenticatorType GetType() const override;
   std::string GetId() const override;

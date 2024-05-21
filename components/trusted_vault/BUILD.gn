@@ -163,6 +163,8 @@ static_library("test_support") {
     sources += [
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
+      "test/mock_trusted_vault_connection.cc",
+      "test/mock_trusted_vault_connection.h",
     ]
 
     public_deps += [
