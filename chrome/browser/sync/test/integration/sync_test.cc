@@ -293,11 +293,9 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(syncer::kSyncShortNudgeDelayForTest);
   }
 
-  // TODO(crbug.com/40122009): This is a temporary switch to allow having two
-  // profiles syncing the same account. Having a profile outside of the user
-  // directory isn't supported in Chrome.
-  if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir)) {
-    cl->AppendSwitch(switches::kAllowProfilesOutsideUserDir);
+  if (!cl->HasSwitch(
+          switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
+    cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -334,58 +332,36 @@ bool SyncTest::CreateProfile(int index) {
 // multiple profiles.
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (server_type_ == EXTERNAL_LIVE_SERVER &&
-      (num_clients_ > 1 || use_new_user_data_dir_)) {
-    scoped_temp_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
-    // For multi profile UI signin, profile paths should be outside user data
-    // dir to allow signing-in multiple profiles to same account. Otherwise, we
-    // get an error that the profile has already signed in on this device.
-    // Note: Various places in Chrome assume that all profiles are within the
-    // user data dir. We violate that assumption here, which can lead to weird
-    // issues, see https://crbug.com/801569 and the workaround in
-    // TearDownOnMainThread.
-    if (!scoped_temp_dirs_.back()->CreateUniqueTempDir()) {
-      ADD_FAILURE();
-      return false;
-    }
 
-    profile_path = scoped_temp_dirs_.back()->GetPath();
-  } else {
-    base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-    // Create new profiles in user data dir so that other profiles can know
-    // about it. This is needed in tests such as supervised user cases which
-    // assume browser->profile() as the custodian profile. Instead of creating
-    // a new directory, we use a deterministic name such that PRE_ tests (i.e.
-    // test that span browser restarts) can reuse the same directory and carry
-    // over state.
-    profile_path = user_data_dir.Append(GetProfileBaseName(index));
+  // Instead of creating a new directory, use a deterministic name such that
+  // PRE_ tests (i.e. tests that span browser restarts) can reuse the same
+  // directory and carry over state.
+  base::FilePath base_name = GetProfileBaseName(index);
+  if (use_new_user_data_dir_) {
+    base_name = base::FilePath::FromASCII(
+        "SyncIntegrationTestClientForClearServerData");
   }
+  profile_path = user_data_dir.Append(base_name);
 #endif
 
   BeforeSetupClient(index, profile_path);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Use default profile no matter running against an EXTERNAL_LIVE_SERVER or
-  // IN_PROCESS_FAKE_SERVER
   DCHECK_EQ(index, 0);
   Profile* profile = ProfileManager::GetLastUsedProfile();
-  InitializeProfile(index, profile);
 #else   // BUILDFLAG(IS_ANDROID)
-  if (server_type_ == EXTERNAL_LIVE_SERVER) {
-    // If running against an EXTERNAL_LIVE_SERVER, we signin profiles using real
-    // GAIA server. This requires creating profiles with no test hooks.
-    InitializeProfile(index, MakeProfileForUISignin(profile_path));
-  } else {
-    // Without need of real GAIA authentication, we create new test profiles.
-    Profile* profile =
-        g_browser_process->profile_manager()->GetProfile(profile_path);
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfile(profile_path);
 
+  if (server_type_ != EXTERNAL_LIVE_SERVER) {
     SetupMockGaiaResponsesForProfile(profile);
-    InitializeProfile(index, profile);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  InitializeProfile(index, profile);
 
   // Once profile initialization has kicked off, wait for it to finish.
   WaitForDataModels(GetProfile(index));

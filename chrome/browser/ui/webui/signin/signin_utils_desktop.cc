@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -85,6 +87,10 @@ SigninUIError CanOfferSignin(Profile* profile,
             continue;
           }
 
+          if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                  switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
+            continue;
+          }
           // For backward compatibility, need to check also the username of the
           // profile, since the GAIA ID may not have been set yet in the
           // ProfileAttributesStorage.  It will be set once the profile

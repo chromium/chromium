@@ -875,11 +875,7 @@ bool ProfileManager::IsAllowedProfilePath(const base::FilePath& path) const {
 }
 
 bool ProfileManager::CanCreateProfileAtPath(const base::FilePath& path) const {
-  bool is_allowed_path = IsAllowedProfilePath(path) ||
-                         base::CommandLine::ForCurrentProcess()->HasSwitch(
-                             switches::kAllowProfilesOutsideUserDir);
-
-  if (!is_allowed_path) {
+  if (!IsAllowedProfilePath(path)) {
     LOG(ERROR) << "Cannot create profile at path " << path.AsUTF8Unsafe();
     return false;
   }

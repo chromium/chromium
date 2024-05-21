@@ -39,7 +39,6 @@ namespace switches {
 extern const char kAcceptLang[];
 extern const char kAllowCrossOriginAuthPrompt[];
 extern const char kAllowHttpScreenCapture[];
-extern const char kAllowProfilesOutsideUserDir[];
 extern const char kAllowRunningInsecureContent[];
 extern const char kAllowSilentPush[];
 extern const char kApp[];
@@ -56,6 +55,7 @@ extern const char kAutoOpenDevToolsForTabs[];
 extern const char kAutoSelectDesktopCaptureSource[];
 extern const char kAutoSelectTabCaptureSourceByTitle[];
 extern const char kAutoSelectWindowCaptureSourceByTitle[];
+extern const char kBypassAccountAlreadyUsedByAnotherProfileCheck[];
 extern const char kCheckForUpdateIntervalSec[];
 extern const char kCipherSuiteBlacklist[];
 extern const char kCrashOnHangThreads[];
