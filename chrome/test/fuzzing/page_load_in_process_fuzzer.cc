@@ -137,8 +137,7 @@ PageLoadInProcessFuzzer::DoHandleHTTPRequest(
             << request.relative_url;
   for (const auto& network_resource : fuzz_case_.network_resource()) {
     if (network_resource.which_server() == which_server &&
-        (network_resource.path() == request.relative_url ||
-         (request.relative_url == "/" && network_resource.path().empty()))) {
+        request.relative_url.substr(1) == network_resource.path()) {
       std::unique_ptr<net::test_server::BasicHttpResponse> response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(
