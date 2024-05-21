@@ -277,7 +277,7 @@ void PickerZeroStateView::OnFetchRecentResults(
   if (!recent_section_view_) {
     recent_section_view_ = section_list_view_->AddSectionAt(0);
     recent_section_view_->AddTitleLabel(
-        GetSectionTitleForPickerSectionType(PickerSectionType::kRecentlyUsed));
+        GetSectionTitleForPickerSectionType(PickerSectionType::kNone));
   }
   for (const auto& result : results) {
     recent_section_view_->AddResult(

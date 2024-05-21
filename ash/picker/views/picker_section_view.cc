@@ -82,6 +82,10 @@ PickerSectionView::PickerSectionView(int section_width,
 PickerSectionView::~PickerSectionView() = default;
 
 void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
+  if (title_text.empty()) {
+    return;
+  }
+
   title_label_ = title_container_->AddChildView(
       views::Builder<views::Label>(
           bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2,

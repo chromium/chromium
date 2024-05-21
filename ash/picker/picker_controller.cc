@@ -189,9 +189,9 @@ InsertionContent GetInsertionContentForResult(
 }
 
 std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
-    PickerSectionType section_type,
     std::vector<PickerSearchResult> results) {
-  return {PickerSearchResultsSection(section_type, std::move(results),
+  return {PickerSearchResultsSection(PickerSectionType::kNone,
+                                     std::move(results),
                                      /*has_more_results*/ false)};
 }
 
@@ -381,38 +381,33 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      // TODO: b/330589902 - Use correct PickerSectionType for this.
       client_->GetSuggestedLinkResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults,
-                              PickerSectionType::kRecentlyUsed)
+          base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;
     case PickerCategory::kExpressions:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
       client_->GetRecentDriveFileResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults,
-                              PickerSectionType::kRecentlyUsed)
+          base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;
     case PickerCategory::kLocalFiles:
       client_->GetRecentLocalFileResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults,
-                              PickerSectionType::kRecentlyUsed)
+          base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;
     case PickerCategory::kDatesTimes:
-      std::move(callback).Run(CreateSingleSectionForCategoryResults(
-          PickerSectionType::kSuggestions, PickerSuggestedDateResults()));
+      std::move(callback).Run(
+          CreateSingleSectionForCategoryResults(PickerSuggestedDateResults()));
       break;
     case PickerCategory::kUnitsMaths:
-      std::move(callback).Run(CreateSingleSectionForCategoryResults(
-          PickerSectionType::kExamples, PickerMathExamples()));
+      std::move(callback).Run(
+          CreateSingleSectionForCategoryResults(PickerMathExamples()));
       break;
     case PickerCategory::kClipboard:
       clipboard_provider_->FetchResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults,
-                              PickerSectionType::kRecentlyUsed)
+          base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;
   }

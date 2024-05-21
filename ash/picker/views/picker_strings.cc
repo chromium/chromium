@@ -124,9 +124,8 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kCaseTransformations:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerCategoryType::kFormatting:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FORMATTING_CATEGORY_TYPE_SECTION_TITLE);
+    case PickerCategoryType::kNone:
+      return u"";
   }
 }
 
@@ -134,6 +133,8 @@ std::u16string GetSectionTitleForPickerSectionType(
     PickerSectionType section_type) {
   // TODO: b/325870358 - Finalize strings and use a GRD file.
   switch (section_type) {
+    case PickerSectionType::kNone:
+      return u"";
     case PickerSectionType::kCategories:
       return u"Matching categories";
     case PickerSectionType::kSuggestions:
@@ -148,10 +149,6 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"Matching Google Drive files";
     case PickerSectionType::kGifs:
       return u"Other expressions";
-    case PickerSectionType::kRecentlyUsed:
-      return u"Recently used";
-    case PickerSectionType::kExamples:
-      return u"Examples";
     case PickerSectionType::kEditorWrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(

@@ -111,10 +111,9 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
 
 PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   switch (type) {
+    case PickerSectionType::kNone:
     case PickerSectionType::kCategories:
     case PickerSectionType::kSuggestions:
-    case PickerSectionType::kRecentlyUsed:
-    case PickerSectionType::kExamples:
     case PickerSectionType::kEditorWrite:
     case PickerSectionType::kEditorRewrite:
       NOTREACHED_NORETURN();
@@ -133,8 +132,7 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
 
 std::vector<PickerSearchResult> GetMostRecentResult(
     std::vector<PickerSearchResultsSection> results) {
-  if (results.empty() ||
-      results[0].type() != PickerSectionType::kRecentlyUsed) {
+  if (results.empty() || results[0].type() != PickerSectionType::kNone) {
     return {};
   }
   base::span<const PickerSearchResult> search_results = results[0].results();

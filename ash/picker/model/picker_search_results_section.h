@@ -14,6 +14,7 @@
 namespace ash {
 
 enum class ASH_EXPORT PickerSectionType {
+  kNone,
   kCategories,
   kSuggestions,
   kExpressions,
@@ -21,8 +22,6 @@ enum class ASH_EXPORT PickerSectionType {
   kFiles,
   kDriveFiles,
   kGifs,
-  kRecentlyUsed,
-  kExamples,
   kEditorWrite,
   kEditorRewrite,
 };

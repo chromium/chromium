@@ -7200,19 +7200,16 @@ New install
         Search Clipboard
       </message>
       <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains general categories, i.e. expressions, browsing history, files.">
-        Search
+        Content
       </message>
       <message name="IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains editor categories">
         Editor
       </message>
       <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
-        Calculations
+        More
       </message>
       <message name="IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains case transformation actions.">
         Transform letter case
-      </message>
-      <message name="IDS_PICKER_FORMATTING_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains formatting categories, e.g. toggling caps lock.">
-        Formatting
       </message>
       <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
         You may want to insert

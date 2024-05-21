@@ -30,7 +30,7 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
       return PickerCategoryType::kCaseTransformations;
     case PickerCategory::kCapsOn:
     case PickerCategory::kCapsOff:
-      return PickerCategoryType::kFormatting;
+      return PickerCategoryType::kNone;
   }
 }
 
