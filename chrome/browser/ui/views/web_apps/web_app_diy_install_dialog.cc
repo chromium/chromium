@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -28,6 +27,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,10 +75,11 @@ void ShowDiyAppInstallDialog(
     return;
   }
 
-  WebAppInstallDialogCoordinator* dialog_coordinator =
-      WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
-  if (dialog_coordinator->IsShowing()) {
-    std::move(callback).Run(false, nullptr);
+  // Do not show the dialog if it is already being shown.
+  const web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (!manager || manager->IsDialogActive()) {
+    std::move(callback).Run(/*is_accepted=*/false, nullptr);
     return;
   }
 
@@ -134,7 +135,7 @@ void ShowDiyAppInstallDialog(
           .SetCloseActionCallback(base::BindOnce(
               &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
           .SetDialogDestroyingCallback(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+              &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
           .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
           .Build();
 
@@ -155,7 +156,6 @@ void ShowDiyAppInstallDialog(
   views::BubbleDialogDelegate* dialog_delegate =
       dialog->AsBubbleDialogDelegate();
   constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
-  dialog_coordinator->StartTracking(dialog_delegate);
 
   base::RecordAction(base::UserMetricsAction("WebAppDiyInstallShown"));
 

@@ -76,6 +76,10 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   void OnCancel();
   void OnClose();
 
+  // This is called when the dialog has been either accepted, cancelled, closed
+  // or destroyed without an user-action.
+  void OnDestroyed();
+
   // Takes care of enabling or disabling the dialog model's OK button for DIY
   // apps based on changes in the text field, and also keeps track of the text
   // field's contents.
@@ -106,6 +110,7 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   raw_ptr<feature_engagement::Tracker> tracker_;
   InstallDialogType dialog_type_;
   std::u16string text_field_contents_;
+  bool received_user_response_ = false;
 
   base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{this};
 };

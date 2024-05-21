@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
@@ -53,6 +52,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
@@ -60,6 +60,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -332,19 +333,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
     return pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
   }
 
-  void AwaitPwaInstallDialogClosed() {
-    auto* install_dialog_coordinator =
-        web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(
-            browser());
-    if (install_dialog_coordinator->IsShowing()) {
-      base::RunLoop run_loop;
-      install_dialog_coordinator->GetBubbleView()
-          ->RegisterDeleteDelegateCallback(run_loop.QuitClosure());
-      install_dialog_coordinator->GetBubbleView()->GetWidget()->CloseWithReason(
-          views::Widget::ClosedReason::kEscKeyPressed);
-      run_loop.Run();
-    }
-  }
 
  protected:
   bool IsUniversalInstallEnabled() { return GetParam(); }
@@ -472,15 +460,16 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(installable_web_contents, GetCurrentTab());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 
-  EXPECT_NE(ClickPWAInstallIconAndWaitForBubbleShown(), nullptr);
-
+  views::Widget* pwa_install_widget =
+      ClickPWAInstallIconAndWaitForBubbleShown();
+  EXPECT_NE(pwa_install_widget, nullptr);
   chrome::SelectNextTab(browser());
-  AwaitPwaInstallDialogClosed();
-  ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
+  views::test::WidgetDestroyedWaiter destroy_waiter(pwa_install_widget);
+  pwa_install_widget->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  destroy_waiter.Wait();
 
-  EXPECT_FALSE(
-      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser())
-          ->IsShowing());
+  ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 

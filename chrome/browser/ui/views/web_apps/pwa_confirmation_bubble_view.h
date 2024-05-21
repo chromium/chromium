@@ -39,12 +39,14 @@ class MlInstallOperationTracker;
 // PWAConfirmationBubbleView provides a bubble dialog for accepting or rejecting
 // the installation of a PWA (Progressive Web App) anchored off the PWA install
 // icon in the omnibox.
+// TODO(crbug.com/341254289): Completely remove after Universal Install has
+// launched to 100% on Stable.
 class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
  public:
   PWAConfirmationBubbleView(
       views::View* anchor_view,
       base::WeakPtr<content::WebContents> web_contents,
-      PageActionIconView* highlight_icon_button,
+      PageActionIconView* pwa_install_icon_view,
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       web_app::AppInstallationAcceptanceCallback callback,
@@ -62,6 +64,9 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kInstalledPWAEventId);
 
+  static bool IsShowing();
+  static PWAConfirmationBubbleView* GetBubble();
+
   // WidgetDelegate
   void OnWidgetInitialized() override;
 
@@ -77,6 +82,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
 
  private:
   base::WeakPtr<content::WebContents> web_contents_;
+  raw_ptr<PageActionIconView> pwa_install_icon_view_ = nullptr;
   std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   web_app::AppInstallationAcceptanceCallback callback_;

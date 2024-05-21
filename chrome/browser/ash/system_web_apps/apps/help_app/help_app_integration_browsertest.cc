@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -84,6 +83,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -791,13 +791,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // The active tab should be the `test_url` we opened.
   EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
 
-  // Wait for the PWA install dialog to show up. Internally, this is called the
-  // PWAConfirmationBubbleView (Not to be confused with the omnibox icon).
-  waiter.WaitIfNeededAndGet();
-
-  EXPECT_TRUE(
-      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser())
-          ->IsShowing());
+  // Wait for the PWA install dialog to show up.
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
 }
 
 // Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` crashes

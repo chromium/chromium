@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -138,18 +138,48 @@ void WebAppInstallDialogDelegate::OnAccept() {
   CHECK(callback_);
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
+  received_user_response_ = true;
+  base::UmaHistogramEnumeration(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked);
   std::move(callback_).Run(true, std::move(install_info_));
 }
 
 void WebAppInstallDialogDelegate::OnCancel() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
+  received_user_response_ = true;
+  base::UmaHistogramEnumeration(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCancelButtonClicked);
   MeasureIphOnDialogClose();
 }
 
 void WebAppInstallDialogDelegate::OnClose() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+  received_user_response_ = true;
+
+  // This could be hit by triggering the Esc key as well, unfortunately there is
+  // no way to listen to that without observing the low level widget.
+  base::UmaHistogramEnumeration(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  MeasureIphOnDialogClose();
+}
+
+void WebAppInstallDialogDelegate::OnDestroyed() {
+  // Only performs histogram measurement and other actions if the dialog was
+  // destroyed without user action, like a change in visibility or navigation to
+  // a different tab or destruction of the native widget that contains the
+  // dialog this delegate is assigned to.
+  if (received_user_response_) {
+    return;
+  }
+
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+  base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
+                                views::Widget::ClosedReason::kUnspecified);
   MeasureIphOnDialogClose();
 }
 

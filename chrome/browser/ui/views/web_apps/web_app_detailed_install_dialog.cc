@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
@@ -365,6 +366,14 @@ void ShowWebAppDetailedInstallDialog(
     AppInstallationAcceptanceCallback callback,
     std::vector<webapps::Screenshot> screenshots,
     PwaInProductHelpState iph_state) {
+  // Do not show the dialog if it is already being shown.
+  const web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (!manager || manager->IsDialogActive()) {
+    std::move(callback).Run(/*is_accepted=*/false, nullptr);
+    return;
+  }
+
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   PrefService* const prefs =
       Profile::FromBrowserContext(browser_context)->GetPrefs();
@@ -416,15 +425,17 @@ void ShowWebAppDetailedInstallDialog(
                 &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
             .SetCloseActionCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .SetDialogDestroyingCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     std::make_unique<ImageCarouselView>(screenshots),
                     views::BubbleDialogModelHost::FieldType::kControl))
-            .SetDialogDestroyingCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
             .Build();
   } else {
+    // TODO(crbug.com/341254289): Completely remove after Universal Install has
+    // launched to 100% on Stable.
     dialog_model =
         ui::DialogModel::Builder(std::move(delegate))
             .SetInternalName("WebAppDetailedInstallDialog")
@@ -441,14 +452,12 @@ void ShowWebAppDetailedInstallDialog(
                              l10n_util::GetStringUTF16(IDS_INSTALL)))
             .AddCancelButton(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
-            .SetCloseActionCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+            .SetDialogDestroyingCallback(base::BindOnce(
+                &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     std::make_unique<ImageCarouselView>(screenshots),
                     views::BubbleDialogModelHost::FieldType::kControl))
-            .SetDialogDestroyingCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
             .Build();
   }

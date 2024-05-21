@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -31,6 +30,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -120,8 +120,6 @@ void PwaInstallView::UpdateImpl() {
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
 
   auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
-  auto* web_app_install_dialog_coordinator =
-      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
 
   // May not be present e.g. in incognito mode.
   if (!manager) {
@@ -141,8 +139,9 @@ void PwaInstallView::UpdateImpl() {
     ResetSlideAnimation(false);
   }
 
-  SetVisible(is_probably_promotable ||
-             web_app_install_dialog_coordinator->IsShowing());
+  // TODO(crbug.com/341254289): Cleanup after Universal Install has launched to
+  // 100% on Stable.
+  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
 
   // See above about safety of this call.
   std::optional<webapps::WebAppBannerData> data =
@@ -228,13 +227,9 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
     return nullptr;
   }
 
-  auto* dialog_coordinator =
-      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
-  if (!dialog_coordinator) {
-    return nullptr;
-  }
-
-  auto* bubble = dialog_coordinator->GetBubbleView();
+  // TODO(crbug.com/341254289): Cleanup after Universal Install has launched to
+  // 100% on Stable.
+  auto* bubble = PWAConfirmationBubbleView::GetBubble();
   // Only return the active bubble if it's anchored to `this`. (This check takes
   // the more generic approach of verifying that it's the same widget as to
   // avoid depending too heavily on the exact details of how anchoring works.)

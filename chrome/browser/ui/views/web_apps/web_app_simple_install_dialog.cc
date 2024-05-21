@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -26,6 +25,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,10 +67,11 @@ void ShowSimpleInstallDialogForWebApps(
     return;
   }
 
-  WebAppInstallDialogCoordinator* dialog_coordinator =
-      WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
-  if (dialog_coordinator->IsShowing()) {
-    std::move(callback).Run(false, nullptr);
+  // Do not show the dialog if it is already being shown.
+  const web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (!manager || manager->IsDialogActive()) {
+    std::move(callback).Run(/*is_accepted=*/false, nullptr);
     return;
   }
 
@@ -123,7 +124,7 @@ void ShowSimpleInstallDialogForWebApps(
             .SetCloseActionCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .SetDialogDestroyingCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+                &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
             .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
@@ -141,9 +142,7 @@ void ShowSimpleInstallDialogForWebApps(
     if (icon) {
       dialog_delegate->SetAnchorView(icon);
     }
-
     constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
-    dialog_coordinator->StartTracking(dialog_delegate);
   } else {
     auto* dialog_view = new PWAConfirmationBubbleView(
         anchor_view, web_contents->GetWeakPtr(), icon, std::move(web_app_info),
@@ -155,7 +154,6 @@ void ShowSimpleInstallDialogForWebApps(
 
     views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
     dialog_delegate = dialog_view->AsBubbleDialogDelegate();
-    dialog_coordinator->StartTracking(dialog_delegate);
     if (icon) {
       icon->Update();
       DCHECK(icon->GetVisible());
