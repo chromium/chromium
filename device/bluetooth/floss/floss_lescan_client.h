@@ -106,15 +106,15 @@ struct DEVICE_BLUETOOTH_EXPORT ScanFilter {
 struct DEVICE_BLUETOOTH_EXPORT ScanResult {
   std::string name;
   std::string address;
-  uint8_t addr_type;
-  uint16_t event_type;
-  uint8_t primary_phy;
-  uint8_t secondary_phy;
-  uint8_t advertising_sid;
-  int8_t tx_power;
-  int8_t rssi;
-  uint16_t periodic_adv_int;
-  uint8_t flags;
+  uint8_t addr_type = 0;
+  uint16_t event_type = 0;
+  uint8_t primary_phy = 0;
+  uint8_t secondary_phy = 0;
+  uint8_t advertising_sid = 0;
+  int8_t tx_power = 0;
+  int8_t rssi = 0;
+  uint16_t periodic_adv_int = 0;
+  uint8_t flags = 0;
   std::vector<device::BluetoothUUID> service_uuids;
   std::map<std::string, std::vector<uint8_t>> service_data;
   std::map<uint16_t, std::vector<uint8_t>> manufacturer_data;
