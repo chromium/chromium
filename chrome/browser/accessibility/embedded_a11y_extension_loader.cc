@@ -32,8 +32,15 @@ std::optional<base::Value::Dict> LoadManifestOnFileThread(
   auto manifest =
       extensions::file_util::LoadManifest(path, manifest_filename, &error);
   if (!manifest) {
-    LOG(ERROR) << "Can't load " << path.Append(manifest_filename).AsUTF8Unsafe()
-               << ": " << error;
+    std::ostringstream errorStream;
+    errorStream << "Can't load "
+                << path.Append(manifest_filename).AsUTF8Unsafe() << ": "
+                << error;
+    LOG(ERROR) << errorStream.str();
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "helper_extension_failure", base::debug::CrashKeySize::Size64);
+    base::debug::SetCrashKeyString(crash_key, errorStream.str());
+    base::debug::DumpWithoutCrashing();
     return std::nullopt;
   }
   if (localize) {
@@ -259,8 +266,18 @@ void EmbeddedA11yExtensionLoader::InstallExtension(
     return;
   }
 
+// TODO(b/324143642): Extension manifest file should not be null.
+// Temporarily logging the error to prevent crashes while we diagnose why it's
+// null.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!manifest) {
+    LOG(ERROR) << "Unable to load extension manifest for extension "
+               << extension_id << "; Path: " << path;
+    return;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK(manifest) << "Unable to load extension manifest for extension "
-                  << extension_id;
+                  << extension_id << "; Path: " << path;
   std::string actual_id =
       component_loader->Add(std::move(manifest.value()), path);
   CHECK_EQ(actual_id, extension_id);
