@@ -20,11 +20,9 @@ const noPermissionToUnlockErrorMessage =
     'The extension does not have permission to unlock this session';
 
 const tests = {
-  'InSessionLoginLockManagedGuestSession': () => {
-    chrome.login.lockManagedGuestSession(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+  'InSessionLoginLockManagedGuestSession': async () => {
+    await chrome.login.lockManagedGuestSession();
+    chrome.test.succeed();
   },
   'InSessionLoginLockManagedGuestSessionNoPermission': () => {
     chrome.login.lockManagedGuestSession(() => {
@@ -40,7 +38,6 @@ const tests = {
   },
   'InSessionLoginNotifyExternalLogoutDone': () => {
     chrome.login.notifyExternalLogoutDone();
-    chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
   'InSessionLoginOnRequestExternalLogout': () => {
@@ -50,38 +47,30 @@ const tests = {
     });
     chrome.test.sendMessage('onRequestExternalLogoutInSessionMessage');
   },
-  'InSessionLoginScreenStorageStorePersistentData': () => {
-    chrome.loginScreenStorage.storePersistentData(
-        [extensionId1, extensionId2], data, () => {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+  'InSessionLoginScreenStorageStorePersistentData': async () => {
+    await chrome.loginScreenStorage.storePersistentData(
+        [extensionId1, extensionId2], data);
+    chrome.test.succeed();
   },
-  'InSessionLoginScreenStorageRetrievePersistentData': () => {
-    chrome.loginScreenStorage.retrievePersistentData(extensionId, data => {
-      chrome.test.assertNoLastError();
-      chrome.test.assertEq(loginScreenStorageResult, data);
-      chrome.test.succeed();
-    });
+  'InSessionLoginScreenStorageRetrievePersistentData': async () => {
+    const data =
+        await chrome.loginScreenStorage.retrievePersistentData(extensionId);
+    chrome.test.assertEq(loginScreenStorageResult, data);
+    chrome.test.succeed();
   },
-  'InSessionLoginScreenStorageStoreCredentials': () => {
-    chrome.loginScreenStorage.storeCredentials(
-        extensionId, credentials, () => {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+  'InSessionLoginScreenStorageStoreCredentials': async () => {
+    await chrome.loginScreenStorage.storeCredentials(extensionId, credentials);
+    chrome.test.succeed();
   },
-  'InSessionLoginScreenStorageRetrieveCredentials': () => {
-    chrome.loginScreenStorage.retrieveCredentials(credentials => {
-      chrome.test.assertNoLastError();
-      chrome.test.assertEq(loginScreenStorageResult, credentials);
-      chrome.test.succeed();
-    });
+  'InSessionLoginScreenStorageRetrieveCredentials': async () => {
+    const credentials = await chrome.loginScreenStorage.retrieveCredentials();
+    chrome.test.assertEq(loginScreenStorageResult, credentials);
+    chrome.test.succeed();
   }
-}
+};
 
-// |waitForTestName()| waits for the browser test to reply with a test name and
-// runs the specified test. The browser test logic can be found at
+// |waitForTestName()| waits for the browser test to reply with a test name
+// and runs the specified test. The browser test logic can be found at
 // chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc
 function waitForTestName(testName) {
   if (!tests.hasOwnProperty(testName) ||
