@@ -1,9 +1,0 @@
-per-file *.mojom=file://mojo/OWNERS
-
-# These mojom test files don't really require security review, but we need to
-# add these to please PRESUBMIT.
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# Anyone can update the unit test bundle data filelist.
-per-file validation_unittest_bundle_data.filelist=*

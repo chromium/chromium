@@ -1,5 +1,0 @@
-# TypeScript bindings generator
-per-file mojom_ts_generator.py=rbpotter@chromium.org
-
-# Rust bindings generator
-per-file mojom_rust_generator.py=file://build/rust/OWNERS

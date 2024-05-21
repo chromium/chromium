@@ -1,5 +1,0 @@
-const mojo = {
-  internal: { interfaceSupport: {} },
-  interfaceControl: {},
-  pipeControl: {},
-};

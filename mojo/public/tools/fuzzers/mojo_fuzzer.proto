@@ -1,7 +1,0 @@
-syntax = "proto2";
-
-package mojo_proto_fuzzer;
-
-message MojoFuzzerMessages {
-  repeated bytes messages = 1;
-}

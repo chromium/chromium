@@ -1,9 +1,0 @@
-include_rules = [
-  "+mojo/core/embedder",
-]
-
-specific_include_rules = {
-  "proto_wrapper(_unittest)?.cc": [
-    "+third_party/protobuf/src/google/protobuf/message_lite.h",
-  ],
-}
