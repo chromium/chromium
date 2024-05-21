@@ -301,6 +301,9 @@ BASE_DECLARE_FEATURE(kIOSSaveToDrive);
 // Feature flag enabling Save to Photos.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 
+// Feature flag enabling a fix for the Download manager mediator.
+BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
+
 // Enables the new UIEditMenuInteraction system to be used in place of
 // UIMenuController which was deprecated in iOS 16.
 // TODO(crbug.com/1489734) Remove Flag once the minimum iOS deployment version

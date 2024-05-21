@@ -135,6 +135,9 @@
 
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
+  if (base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground)) {
+    _mediator.StartObservingNotifications();
+  }
 
   self.presenter.baseViewController = self.baseViewController;
   self.presenter.presentedViewController = _viewController;
@@ -151,6 +154,9 @@
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
   _mediator.SetIdentityManager(nullptr);
+  if (base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground)) {
+    _mediator.StopObservingNotifications();
+  }
 
   if (_viewController) {
     [self.presenter dismissAnimated:self.animatesPresentation];

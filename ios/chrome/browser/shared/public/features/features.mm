@@ -327,6 +327,10 @@ BASE_FEATURE(kEnableUIEditMenuInteraction,
              "EnableUIEditMenuInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
+             "IOSDownloadNoUIUpdateInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin,
              "HistoryOptInForRestoreShortyAndReSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);

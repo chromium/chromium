@@ -79,6 +79,10 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Updates consumer.
   void UpdateConsumer();
 
+  // Start/stop listening for foregrounding notifications.
+  void StartObservingNotifications();
+  void StopObservingNotifications();
+
  private:
   // Moves the downloaded file to user's Documents if it exists.
   void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
@@ -120,6 +124,8 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
+  void AppWillEnterForeground();
+
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -128,6 +134,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   raw_ptr<web::DownloadTask> download_task_ = nullptr;
   raw_ptr<UploadTask> upload_task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
+  // Observers for NSNotificationCenter notifications.
+  __strong id<NSObject> application_foregrounding_observer_;
+
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };
 

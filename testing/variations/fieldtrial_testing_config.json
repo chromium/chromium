@@ -9638,6 +9638,21 @@
             ]
         }
     ],
+    "IOSDownloadNoUIUpdateInBackground": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDownloadNoUIUpdateInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnableColorLensAndVoiceIconsInHomeScreenWidget": [
         {
             "platforms": [
