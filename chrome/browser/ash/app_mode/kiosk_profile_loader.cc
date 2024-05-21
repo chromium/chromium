@@ -6,25 +6,32 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
+#include <utility>
 #include <variant>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
@@ -104,10 +111,7 @@ std::unique_ptr<CancellableJob> CheckCryptohome(
 class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
  public:
   enum class LoginError { kPolicyLoadFailed, kAllowlistCheckFailed };
-  using ErrorResult =
-      std::variant<LoginError,
-                   AuthFailure,
-                   KioskProfileLoader::OldEncryptionUserContext>;
+  using ErrorResult = std::variant<LoginError, AuthFailure>;
   using Result = base::expected<UserContext, ErrorResult>;
   using ResultCallback = base::OnceCallback<void(Result result)>;
 
@@ -160,7 +164,7 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
   }
   void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                bool has_incomplete_migration) override {
-    std::move(on_done_).Run(base::unexpected(std::move(user_context)));
+    NOTREACHED_NORETURN();
   }
 
   ResultCallback on_done_;
@@ -324,10 +328,6 @@ void KioskProfileLoader::LoginAsKioskAccount() {
                            std::get_if<AuthFailure>(&result.error())) {
               return self->ReturnError(
                   LoginFailureToKioskLaunchError(*auth_failure));
-            } else if (auto* user_context =
-                           std::get_if<OldEncryptionUserContext>(
-                               &result.error())) {
-              return self->ReturnError(std::move(*user_context));
             }
             NOTREACHED_NORETURN();
           },
@@ -349,12 +349,10 @@ void KioskProfileLoader::ReturnSuccess(Profile& profile) {
   std::move(on_done_).Run(&profile);
 }
 
-void KioskProfileLoader::ReturnError(ErrorResult result) {
+void KioskProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_.reset();
-  if (auto* error = std::get_if<KioskAppLaunchError::Error>(&result)) {
-    LogErrorToSyslog(*error);
-  }
+  LogErrorToSyslog(result);
   std::move(on_done_).Run(base::unexpected(std::move(result)));
 }
 

@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <variant>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_switches.h"
@@ -22,7 +21,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -53,7 +51,6 @@
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
-#include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -62,7 +59,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -731,13 +727,7 @@ void KioskLaunchController::OnAppDataUpdated() {
 }
 
 void KioskLaunchController::HandleProfileLoadError(
-    KioskProfileLoader::ErrorResult error) {
-  if (auto* user_context =
-          std::get_if<KioskProfileLoader::OldEncryptionUserContext>(&error)) {
-    return HandleOldEncryption(std::move(*user_context));
-  }
-
-  auto launch_error = std::get<KioskAppLaunchError::Error>(error);
+    KioskAppLaunchError::Error launch_error) {
   if (launch_error == KioskAppLaunchError::Error::kNone) {
     return;
   }
@@ -746,11 +736,6 @@ void KioskLaunchController::HandleProfileLoadError(
     observer.OnKioskProfileLoadFailed();
   }
   OnLaunchFailed(launch_error);
-}
-
-void KioskLaunchController::HandleOldEncryption(
-    std::unique_ptr<UserContext> user_context) {
-  NOTREACHED_NORETURN();
 }
 
 void KioskLaunchController::OnNetworkConfigRequested() {

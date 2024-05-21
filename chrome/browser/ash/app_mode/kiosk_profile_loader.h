@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_
 
 #include <memory>
-#include <string>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
@@ -26,10 +27,7 @@ class UserContext;
 // Helper class that implements `LoadProfile()`.
 class KioskProfileLoader : public CancellableJob {
  public:
-  using OldEncryptionUserContext = std::unique_ptr<UserContext>;
-  using ErrorResult =
-      std::variant<KioskAppLaunchError::Error, OldEncryptionUserContext>;
-  using Result = base::expected<Profile*, ErrorResult>;
+  using Result = base::expected<Profile*, KioskAppLaunchError::Error>;
   using ResultCallback = base::OnceCallback<void(Result result)>;
 
   [[nodiscard]] static std::unique_ptr<CancellableJob> Run(
@@ -50,7 +48,7 @@ class KioskProfileLoader : public CancellableJob {
   void LoginAsKioskAccount();
   void PrepareProfile(const UserContext& user_context);
   void ReturnSuccess(Profile& profile);
-  void ReturnError(ErrorResult result);
+  void ReturnError(KioskAppLaunchError::Error result);
 
   const AccountId account_id_;
   const KioskAppType app_type_;
@@ -71,7 +69,7 @@ class KioskProfileLoader : public CancellableJob {
 // 3. Prepare a `Profile` for the app.
 //
 // `on_done` will either be called with the resulting profile on success, or
-// with a `KioskProfileLoader::ErrorResult` on error.
+// with a `KioskAppLaunchError::Error` on error.
 //
 // The returned `unique_ptr` can be destroyed to cancel this task. In that case
 // `on_done` will not be called.

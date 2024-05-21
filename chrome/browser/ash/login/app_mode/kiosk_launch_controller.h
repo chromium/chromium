@@ -198,8 +198,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
 
   void StartAppLaunch(Profile& profile);
-  void HandleProfileLoadError(KioskProfileLoader::ErrorResult error);
-  void HandleOldEncryption(std::unique_ptr<UserContext> user_context);
+  void HandleProfileLoadError(KioskAppLaunchError::Error error);
 
   // Returns the `Data` struct used to populate the splash screen.
   AppLaunchSplashScreenView::Data GetSplashScreenAppData();
