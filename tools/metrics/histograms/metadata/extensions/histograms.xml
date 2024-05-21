@@ -1140,9 +1140,10 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.UpdateDynamicRulesStatus"
-    enum="UpdateDynamicRulesStatus" expires_after="2024-06-26">
+    enum="UpdateDynamicRulesStatus" expires_after="2025-06-26">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Indicates the result of an extension function call to add or remove dynamic
     rules. Logged every time an extension calls the addDynamicRules or
