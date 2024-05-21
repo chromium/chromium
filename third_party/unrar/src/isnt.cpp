@@ -46,7 +46,7 @@ static bool WMI_IsWindows10()
 
   IWbemServices *pSvc = NULL;
  
-  hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),NULL,NULL,NULL,NULL,0,0,&pSvc);
+  hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),NULL,NULL,NULL,0,NULL,NULL,&pSvc);
     
   if (FAILED(hres))
   {
@@ -68,30 +68,24 @@ static bool WMI_IsWindows10()
   hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT * FROM Win32_OperatingSystem"),
          WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
     
-  if (FAILED(hres))
+  if (FAILED(hres) || pEnumerator==NULL)
   {
     pSvc->Release();
     pLoc->Release();
     return false;
   }
 
+  bool Win10=false;
+
   IWbemClassObject *pclsObj = NULL;
   ULONG uReturn = 0;
-   
-  bool Win10=false;
-  while (pEnumerator!=NULL)
+  pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+  if (pclsObj!=NULL && uReturn>0)
   {
-    HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
-
-    if (uReturn==0)
-      break;
-
     VARIANT vtProp;
-
-    hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+    pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
     Win10|=wcsstr(vtProp.bstrVal,L"Windows 10")!=NULL;
     VariantClear(&vtProp);
-
     pclsObj->Release();
   }
 

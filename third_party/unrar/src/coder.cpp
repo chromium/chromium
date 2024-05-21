@@ -1,8 +1,8 @@
 
 
-inline unsigned int RangeCoder::GetChar()
+inline byte RangeCoder::GetChar()
 {
-  return(UnpackRead->GetChar());
+  return UnpackRead->GetChar();
 }
 
 
@@ -11,8 +11,8 @@ void RangeCoder::InitDecoder(Unpack *UnpackRead)
   RangeCoder::UnpackRead=UnpackRead;
 
   low=code=0;
-  range=uint(-1);
-  for (int i=0;i < 4;i++)
+  range=0xffffffff;
+  for (uint i = 0; i < 4; i++)
     code=(code << 8) | GetChar();
 }
 

@@ -2,18 +2,16 @@
 
 void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
 {
-  char NameA[NM];
-  WideToChar(FileName,NameA,ASIZE(NameA));
-
-  if (memchr(&Arc.SubHead.SubData[0],0,Arc.SubHead.SubData.Size())==NULL)
+  // There must be 0 byte between owner and group strings.
+  // Otherwise strlen call below wouldn't be safe.
+  if (memchr(Arc.SubHead.SubData.data(),0,Arc.SubHead.SubData.size())==NULL)
     return;
 
-  char *OwnerName=(char *)&Arc.SubHead.SubData[0];
+  char *OwnerName=(char *)Arc.SubHead.SubData.data();
   int OwnerSize=strlen(OwnerName)+1;
-  int GroupSize=Arc.SubHead.SubData.Size()-OwnerSize;
-  char GroupName[NM];
-  strncpy(GroupName,(char *)&Arc.SubHead.SubData[OwnerSize],GroupSize);
-  GroupName[GroupSize]=0;
+  int GroupSize=Arc.SubHead.SubData.size()-OwnerSize;
+  char *GroupName=(char *)&Arc.SubHead.SubData[OwnerSize];
+  std::string GroupStr(GroupName,GroupName+GroupSize);
 
   struct passwd *pw;
   if ((pw=getpwnam(OwnerName))==NULL)
@@ -25,7 +23,7 @@ void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
   uid_t OwnerID=pw->pw_uid;
 
   struct group *gr;
-  if ((gr=getgrnam(GroupName))==NULL)
+  if ((gr=getgrnam(GroupStr.c_str()))==NULL)
   {
     uiMsg(UIERROR_UOWNERGETGROUPID,Arc.FileName,GetWide(GroupName));
     ErrHandler.SetErrorCode(RARX_WARNING);
@@ -33,10 +31,14 @@ void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
   }
   uint Attr=GetFileAttr(FileName);
   gid_t GroupID=gr->gr_gid;
+
+  std::string NameA;
+  WideToChar(FileName,NameA);
+
 #if defined(SAVE_LINKS) && !defined(_APPLE)
-  if (lchown(NameA,OwnerID,GroupID)!=0)
+  if (lchown(NameA.c_str(),OwnerID,GroupID)!=0)
 #else
-  if (chown(NameA,OwnerID,GroupID)!=0)
+  if (chown(NameA.c_str(),OwnerID,GroupID)!=0)
 #endif
   {
     uiMsg(UIERROR_UOWNERSET,Arc.FileName,FileName);
@@ -46,11 +48,8 @@ void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
 }
 
 
-void SetUnixOwner(Archive &Arc,const wchar *FileName)
+void SetUnixOwner(Archive &Arc,const std::wstring &FileName)
 {
-  char NameA[NM];
-  WideToChar(FileName,NameA,ASIZE(NameA));
-
   // First, we try to resolve symbolic names. If they are missing or cannot
   // be resolved, we try to use numeric values if any. If numeric values
   // are missing too, function fails.
@@ -85,10 +84,14 @@ void SetUnixOwner(Archive &Arc,const wchar *FileName)
     else
       hd.UnixGroupID=gr->gr_gid;
   }
+
+  std::string NameA;
+  WideToChar(FileName,NameA);
+
 #if defined(SAVE_LINKS) && !defined(_APPLE)
-  if (lchown(NameA,hd.UnixOwnerID,hd.UnixGroupID)!=0)
+  if (lchown(NameA.c_str(),hd.UnixOwnerID,hd.UnixGroupID)!=0)
 #else
-  if (chown(NameA,hd.UnixOwnerID,hd.UnixGroupID)!=0)
+  if (chown(NameA.c_str(),hd.UnixOwnerID,hd.UnixGroupID)!=0)
 #endif
   {
     uiMsg(UIERROR_UOWNERSET,Arc.FileName,FileName);

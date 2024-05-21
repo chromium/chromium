@@ -84,7 +84,14 @@ Rijndael::Rijndael()
 {
   if (S5[0]==0)
     GenerateTables();
+  m_uRounds = 0;
   CBCMode = true; // Always true for RAR.
+#ifdef USE_SSE
+  AES_NI=false;
+#endif
+#ifdef USE_NEON_AES
+  AES_Neon=false;
+#endif
 }
 
 
@@ -93,6 +100,8 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
   // Check SIMD here instead of constructor, so if object is a part of some
   // structure memset'ed before use, these variables are not lost.
 #if defined(USE_SSE)
+
+#ifdef _MSC_VER
   int CPUInfo[4];
   __cpuid(CPUInfo, 0);
   if (CPUInfo[0]>=1) // Check the maximum supported cpuid function.
@@ -102,8 +111,24 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
   }
   else
     AES_NI=false;
-#elif defined(USE_NEON)
-  AES_Neon=(getauxval(AT_HWCAP) & HWCAP_AES)!=0;
+#elif defined(__GNUC__)
+  AES_NI=__builtin_cpu_supports("aes");
+#endif
+
+#elif defined(USE_NEON_AES)
+  #ifdef _APPLE
+    // getauxval isn't available in OS X
+    uint Value=0;
+    size_t Size=sizeof(Value);
+    int RetCode=sysctlbyname("hw.optional.arm.FEAT_AES",&Value,&Size,NULL,0);
+
+    // We treat sysctlbyname failure with -1 return code as AES presence,
+    // because "hw.optional.arm.FEAT_AES" was missing in OS X 11, but AES
+    // still was supported by Neon.
+    AES_Neon=RetCode!=0 || Value!=0;
+  #else
+    AES_Neon=(getauxval(AT_HWCAP) & HWCAP_AES)!=0;
+  #endif
 #endif
 
   // Other developers asked us to initialize it to suppress "may be used
@@ -156,7 +181,7 @@ void Rijndael::blockEncrypt(const byte *input,size_t inputLen,byte *outBuffer)
     blockEncryptSSE(input,numBlocks,outBuffer);
     return;
   }
-#elif defined(USE_NEON)
+#elif defined(USE_NEON_AES)
   if (AES_Neon)
   {
     blockEncryptNeon(input,numBlocks,outBuffer);
@@ -249,7 +274,7 @@ void Rijndael::blockEncryptSSE(const byte *input,size_t numBlocks,byte *outBuffe
 #endif
 
 
-#ifdef USE_NEON
+#ifdef USE_NEON_AES
 void Rijndael::blockEncryptNeon(const byte *input,size_t numBlocks,byte *outBuffer)
 {
   byte *prevBlock = m_initVector;
@@ -295,7 +320,7 @@ void Rijndael::blockDecrypt(const byte *input, size_t inputLen, byte *outBuffer)
     blockDecryptSSE(input,numBlocks,outBuffer);
     return;
   }
-#elif defined(USE_NEON)
+#elif defined(USE_NEON_AES)
   if (AES_Neon)
   {
     blockDecryptNeon(input,numBlocks,outBuffer);
@@ -392,7 +417,7 @@ void Rijndael::blockDecryptSSE(const byte *input, size_t numBlocks, byte *outBuf
 #endif
 
 
-#ifdef USE_NEON
+#ifdef USE_NEON_AES
 void Rijndael::blockDecryptNeon(const byte *input, size_t numBlocks, byte *outBuffer)
 {
   byte iv[16];
@@ -585,16 +610,16 @@ void TestRijndael()
   for (uint L=0;L<3;L++)
   {
     byte Out[16];
-    wchar Str[sizeof(Out)*2+1];
+    std::wstring Str;
 
     uint KeyLength=128+L*64;
     rij.Init(true,Key[L],KeyLength,IV);
     for (uint I=0;I<sizeof(PT);I+=16)
       rij.blockEncrypt(PT+I,16,Out);
-    BinToHex(Chk[L],16,NULL,Str,ASIZE(Str));
-    mprintf(L"\nAES-%d expected: %s",KeyLength,Str);
-    BinToHex(Out,sizeof(Out),NULL,Str,ASIZE(Str));
-    mprintf(L"\nAES-%d result:   %s",KeyLength,Str);
+    BinToHex(Chk[L],16,Str);
+    mprintf(L"\nAES-%d expected: %s",KeyLength,Str.c_str());
+    BinToHex(Out,sizeof(Out),Str);
+    mprintf(L"\nAES-%d result:   %s",KeyLength,Str.c_str());
     if (memcmp(Out,Chk[L],16)==0)
       mprintf(L" OK");
     else

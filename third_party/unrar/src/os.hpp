@@ -4,10 +4,6 @@
 #define FALSE 0
 #define TRUE  1
 
-#ifdef __EMX__
-  #define INCL_BASE
-#endif
-
 #if defined(RARDLL) && !defined(SILENT)
 #define SILENT
 #endif
@@ -15,14 +11,13 @@
 #include <new>
 #include <string>
 #include <vector>
+#include <deque>
+#include <memory> // For automatic pointers.
 
-
-#if defined(_WIN_ALL) || defined(_EMX)
-
-#define LITTLE_ENDIAN
-#define NM  2048
 
 #ifdef _WIN_ALL
+
+#define LITTLE_ENDIAN
 
 
 // We got a report that just "#define STRICT" is incompatible with
@@ -42,17 +37,9 @@
 #define _UNICODE // Set _T() macro to convert from narrow to wide strings.
 #endif
 
-#if 0
-// 2021.09.05: Allow newer Vista+ APIs like IFileOpenDialog for WinRAR,
-// but still keep SFX modules XP compatible.
-#define WINVER _WIN32_WINNT_VISTA
-#define _WIN32_WINNT _WIN32_WINNT_VISTA
-#else
 #define WINVER _WIN32_WINNT_WINXP
 #define _WIN32_WINNT _WIN32_WINNT_WINXP
-#endif
 #endif  // !defined(CHROMIUM_UNRAR)
-
 
 #if !defined(ZIPSFX) && !defined(CHROMIUM_UNRAR)
 #define RAR_SMP
@@ -75,30 +62,25 @@
 #include <wchar.h>
 #include <wctype.h>
 
+// For WMI requests.
+#include <comdef.h>
+#include <WbemIdl.h>
+#pragma comment(lib, "wbemuuid.lib")
 
-#endif // _WIN_ALL
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dos.h>
-
-#if !defined(_EMX) && !defined(_MSC_VER)
-  #include <dir.h>
-#endif
-#ifdef _MSC_VER
-  #include <direct.h>
-  #include <intrin.h>
+#include <direct.h>
+#include <intrin.h>
 
 #if !defined(CHROMIUM_UNRAR)
-  // Use SSE only for x86/x64, not ARM Windows.
-  #if defined(_M_IX86) || defined(_M_X64)
-    #define USE_SSE
-    #define SSE_ALIGNMENT 16
-  #endif
+// Use SSE only for x86/x64, not ARM Windows.
+#if defined(_M_IX86) || defined(_M_X64)
+  #define USE_SSE
+  #define SSE_ALIGNMENT 16
+#endif
 #endif  // CHROMIUM_UNRAR
-#else
-  #include <dirent.h>
-#endif // _MSC_VER
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -120,7 +102,7 @@
 
 
 #define SPATHDIVIDER L"\\"
-#define CPATHDIVIDER '\\'
+#define CPATHDIVIDER L'\\'
 #define MASKALL      L"*"
 
 #define READBINARY   "rb"
@@ -130,24 +112,12 @@
 #define WRITEBINARY  "wb"
 #define APPENDTEXT   "at"
 
-#if defined(_WIN_ALL)
-  #ifdef _MSC_VER
-    #define _stdfunction __cdecl
-    #define _forceinline __forceinline
-  #else
-    #define _stdfunction _USERENTRY
-    #define _forceinline inline
-  #endif
-#else
-  #define _stdfunction
-  #define _forceinline inline
-#endif
+#define _stdfunction __cdecl
+#define _forceinline __forceinline
 
-#endif // defined(_WIN_ALL) || defined(_EMX)
+#endif // _WIN_ALL
 
 #ifdef _UNIX
-
-#define NM  2048
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -156,7 +126,7 @@
 #if defined(__QNXNTO__)
   #include <sys/param.h>
 #endif
-#if defined(RAR_SMP) && defined(__APPLE__)
+#ifdef _APPLE
   #include <sys/sysctl.h>
 #endif
 #ifndef SFX_MODULE
@@ -179,6 +149,30 @@
 #include <utime.h>
 #include <locale.h>
 
+#if !defined(CHROMIUM_UNRAR)
+#ifdef __GNUC__
+  #if defined(__i386__) || defined(__x86_64__)
+    #include <x86intrin.h>
+    
+    #define USE_SSE
+    #define SSE_ALIGNMENT 16
+  #endif
+#endif
+#endif  // CHROMIUM_UNRAR
+
+#if defined(__aarch64__) && (defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_CRC32))
+#include <arm_neon.h>
+#ifndef _APPLE
+#include <sys/auxv.h>
+#include <asm/hwcap.h>
+#endif
+#ifdef __ARM_FEATURE_CRYPTO
+#define USE_NEON_AES
+#endif
+#ifdef __ARM_FEATURE_CRC32
+#define USE_NEON_CRC32
+#endif
+#endif
 
 #ifdef  S_IFLNK
 #define SAVE_LINKS
@@ -196,7 +190,7 @@
 
 
 #define SPATHDIVIDER L"/"
-#define CPATHDIVIDER '/'
+#define CPATHDIVIDER L'/'
 #define MASKALL      L"*"
 
 #define READBINARY   "r"
@@ -226,6 +220,10 @@
   #endif
 #endif
 
+#ifdef __VMS
+# define LITTLE_ENDIAN
+#endif
+
 // Unlike Apple x64, utimensat shall be available in all Apple M1 systems.
 #if _POSIX_C_SOURCE >= 200809L || defined(__APPLE__) && defined(__arm64__)
   #define UNIX_TIME_NS // Nanosecond time precision in Unix.
@@ -233,18 +231,11 @@
 
 #endif // _UNIX
 
-#if 0
-  #define MSGID_INT
-  typedef int MSGID;
-#else
   typedef const wchar* MSGID;
-#endif
 
 #ifndef SSE_ALIGNMENT // No SSE use and no special data alignment is required.
   #define SSE_ALIGNMENT 1
 #endif
-
-#define safebuf static
 
 // Solaris defines _LITTLE_ENDIAN or _BIG_ENDIAN.
 #if defined(_LITTLE_ENDIAN) && !defined(LITTLE_ENDIAN)
@@ -282,8 +273,8 @@
 // reassembling of values with shifts and ORs. Modern compilers recognize these
 // patterns and generate the unaligned load anyway.
 #if !defined(CHROMIUM_UNRAR)
-#if !defined(BIG_ENDIAN) && defined(_WIN_ALL) || defined(__i386__) || defined(__x86_64__)
-// Allow not aligned integer access, increases speed in some operations.
+#if !defined(BIG_ENDIAN) && defined(_WIN_ALL) || defined(__i386__) || defined(__x86_64__) || defined(__aarch64__)
+// Allow unaligned integer access, increases speed in some operations.
 #define ALLOW_MISALIGNED
 #endif
 #endif

@@ -9,6 +9,21 @@ wchar* PointToName(const wchar *Path)
 }
 
 
+std::wstring PointToName(const std::wstring &Path)
+{
+  return std::wstring(Path.substr(GetNamePos(Path)));
+}
+
+
+size_t GetNamePos(const std::wstring &Path)
+{
+  for (int I=(int)Path.size()-1;I>=0;I--)
+    if (IsPathDiv(Path[I]))
+      return I+1;
+  return IsDriveLetter(Path) ? 2 : 0;
+}
+
+
 wchar* PointToLastChar(const wchar *Path)
 {
   size_t Length=wcslen(Path);
@@ -16,94 +31,95 @@ wchar* PointToLastChar(const wchar *Path)
 }
 
 
-wchar* ConvertPath(const wchar *SrcPath,wchar *DestPath,size_t DestSize)
+wchar GetLastChar(const std::wstring &Path)
 {
-  const wchar *DestPtr=SrcPath;
+  return Path.empty() ? 0:Path.back();
+}
 
-  // Prevent \..\ in any part of path string.
-  for (const wchar *s=DestPtr;*s!=0;s++)
-    if (IsPathDiv(s[0]) && s[1]=='.' && s[2]=='.' && IsPathDiv(s[3]))
-      DestPtr=s+4;
+
+size_t ConvertPath(const std::wstring *SrcPath,std::wstring *DestPath)
+{
+  const std::wstring &S=*SrcPath; // To avoid *SrcPath[] everywhere.
+  size_t DestPos=0;
+
+  // Prevent \..\ in any part of path string and \.. at the end of string
+  for (size_t I=0;I<S.size();I++)
+    if (IsPathDiv(S[I]) && S[I+1]=='.' && S[I+2]=='.' &&
+        (IsPathDiv(S[I+3]) || S[I+3]==0))
+      DestPos=S[I+3]==0 ? I+3 : I+4;
 
   // Remove any amount of <d>:\ and any sequence of . and \ in the beginning of path string.
-  while (*DestPtr!=0)
+  while (DestPos<S.size())
   {
-    const wchar *s=DestPtr;
-    if (s[0]!=0 && IsDriveDiv(s[1]))
-      s+=2;
+    size_t I=DestPos;
+    if (I+1<S.size() && IsDriveDiv(S[I+1]))
+      I+=2;
 
     // Skip UNC Windows \\server\share\ or Unix //server/share/
-    if (IsPathDiv(s[0]) && IsPathDiv(s[1]))
+    if (IsPathDiv(S[I]) && IsPathDiv(S[I+1]))
     {
       uint SlashCount=0;
-      for (const wchar *t=s+2;*t!=0;t++)
-        if (IsPathDiv(*t) && ++SlashCount==2)
+      for (size_t J=I+2;J<S.size();J++)
+        if (IsPathDiv(S[J]) && ++SlashCount==2)
         {
-          s=t+1; // Found two more path separators after leading two.
+          I=J+1; // Found two more path separators after leading two.
           break;
         }
     }
-    for (const wchar *t=s;*t!=0;t++)
-      if (IsPathDiv(*t))
-        s=t+1;
+
+    // Skip any amount of .\ and ..\ in the beginning of path.
+    for (size_t J=I;J<S.size();J++)
+      if (IsPathDiv(S[J]))
+        I=J+1;
       else
-        if (*t!='.')
+        if (S[J]!='.')
           break;
-    if (s==DestPtr)
+    if (I==DestPos) // If nothing was removed.
       break;
-    DestPtr=s;
+    DestPos=I;
   }
 
-  // Code above does not remove last "..", doing here.
-  if (DestPtr[0]=='.' && DestPtr[1]=='.' && DestPtr[2]==0)
-    DestPtr+=2;
-  
-  if (DestPath!=NULL)
-  {
-    // SrcPath and DestPath can point to same memory area,
-    // so we use the temporary buffer for copying.
-    wchar TmpStr[NM];
-    wcsncpyz(TmpStr,DestPtr,ASIZE(TmpStr));
-    wcsncpyz(DestPath,TmpStr,DestSize);
-  }
-  return (wchar *)DestPtr;
+  // SrcPath and DestPath can point to same memory area, so we always create
+  // the new string with substr() here.
+  if (DestPath!=nullptr)
+    *DestPath=S.substr(DestPos);
+
+  return DestPos;
 }
 
 
-void SetName(wchar *FullName,const wchar *Name,size_t MaxSize)
+void SetName(std::wstring &FullName,const std::wstring &Name)
 {
-  wchar *NamePtr=PointToName(FullName);
-  wcsncpyz(NamePtr,Name,MaxSize-(NamePtr-FullName));
+  auto Pos=GetNamePos(FullName);
+  FullName.replace(Pos,std::wstring::npos,Name);
 }
 
 
-void SetExt(wchar *Name,const wchar *NewExt,size_t MaxSize)
+void SetExt(std::wstring &Name,std::wstring NewExt)
 {
-  if (Name==NULL || *Name==0)
-    return;
-  wchar *Dot=GetExt(Name);
-  if (Dot!=NULL)
-    *Dot=0;
-  if (NewExt!=NULL)
-  {
-    wcsncatz(Name,L".",MaxSize);
-    wcsncatz(Name,NewExt,MaxSize);
-  }
+  auto DotPos=GetExtPos(Name);
+  if (DotPos!=std::wstring::npos)
+    Name.erase(DotPos);
+  Name+=L"."+NewExt;
+}
+
+
+// Unlike SetExt(Name,L""), it removes the trailing dot too.
+void RemoveExt(std::wstring &Name)
+{
+  auto DotPos=GetExtPos(Name);
+  if (DotPos!=std::wstring::npos)
+    Name.erase(DotPos);
 }
 
 
 #ifndef SFX_MODULE
-void SetSFXExt(wchar *SFXName,size_t MaxSize)
+void SetSFXExt(std::wstring &SFXName)
 {
-  if (SFXName==NULL || *SFXName==0)
-    return;
-
-#ifdef _UNIX
-  SetExt(SFXName,L"sfx",MaxSize);
-#endif
-
-#if defined(_WIN_ALL) || defined(_EMX)
-  SetExt(SFXName,L"exe",MaxSize);
+#ifdef _WIN_ALL
+  SetExt(SFXName,L"exe");
+#elif defined(_UNIX)
+  SetExt(SFXName,L"sfx");
 #endif
 }
 #endif
@@ -116,24 +132,47 @@ wchar *GetExt(const wchar *Name)
 }
 
 
-// 'Ext' is an extension without the leading dot, like L"rar".
-bool CmpExt(const wchar *Name,const wchar *Ext)
+// 'Ext' is an extension with the leading dot, like L".rar", or empty string
+// if extension is missing.
+std::wstring GetExt(const std::wstring &Name)
 {
-  wchar *NameExt=GetExt(Name);
-  return NameExt!=NULL && wcsicomp(NameExt+1,Ext)==0;
+  auto ExtPos=GetExtPos(Name);
+  if (ExtPos==std::wstring::npos)
+    ExtPos=Name.size(); // If '.' is missing, return the empty string.
+  return Name.substr(ExtPos);
 }
 
 
-bool IsWildcard(const wchar *Str)
+// Returns the position of extension leading dot or std::wstring::npos
+// if extension is not present.
+std::wstring::size_type GetExtPos(const std::wstring &Name)
 {
-  if (Str==NULL)
-    return false;
+  auto NamePos=GetNamePos(Name);
+  auto DotPos=Name.rfind('.');
+  return DotPos<NamePos ? std::wstring::npos : DotPos;
+}
+
+
+// 'Ext' is an extension without the leading dot, like L"rar".
+bool CmpExt(const std::wstring &Name,const std::wstring &Ext)
+{
+  size_t ExtPos=GetExtPos(Name);
+  if (ExtPos==std::wstring::npos)
+    return Ext.empty();
+  // We need case insensitive compare, so can't use wstring::compare().
+  return wcsicomp(&Name[ExtPos+1],Ext.data())==0;
+}
+
+
+bool IsWildcard(const std::wstring &Str)
+{
+  size_t StartPos=0;
 #ifdef _WIN_ALL
   // Not treat the special NTFS \\?\d: path prefix as a wildcard.
-  if (Str[0]=='\\' && Str[1]=='\\' && Str[2]=='?' && Str[3]=='\\')
-    Str+=4;
+  if (Str.rfind(L"\\\\?\\",0)==0)
+    StartPos=4;
 #endif
-  return wcspbrk(Str,L"*?")!=NULL;
+  return Str.find_first_of(L"*?",StartPos)!=std::wstring::npos;
 }
 
 
@@ -157,85 +196,81 @@ bool IsDriveDiv(int Ch)
 }
 
 
-bool IsDriveLetter(const wchar *Path)
+bool IsDriveLetter(const std::wstring &Path)
 {
+  if (Path.size()<2)
+    return false;
   wchar Letter=etoupperw(Path[0]);
   return Letter>='A' && Letter<='Z' && IsDriveDiv(Path[1]);
 }
 
 
-int GetPathDisk(const wchar *Path)
+int GetPathDisk(const std::wstring &Path)
 {
   if (IsDriveLetter(Path))
-    return etoupperw(*Path)-'A';
+    return etoupperw(Path[0])-'A';
   else
     return -1;
 }
 
 
-void AddEndSlash(wchar *Path,size_t MaxLength)
+void AddEndSlash(std::wstring &Path)
 {
-  size_t Length=wcslen(Path);
-  if (Length>0 && Path[Length-1]!=CPATHDIVIDER && Length+1<MaxLength)
-  {
-    Path[Length]=CPATHDIVIDER;
-    Path[Length+1]=0;
-  }
+  if (!Path.empty() && Path.back()!=CPATHDIVIDER)
+    Path+=CPATHDIVIDER;
 }
 
 
-void MakeName(const wchar *Path,const wchar *Name,wchar *Pathname,size_t MaxSize)
+void MakeName(const std::wstring &Path,const std::wstring &Name,std::wstring &Pathname)
 {
-  // 'Path', 'Name' and 'Pathname' can point to same memory area. So we use
+  // 'Path', 'Name' and 'Pathname' can point to same string. So we use
   // the temporary buffer instead of constructing the name in 'Pathname'.
-  wchar OutName[NM];
-  wcsncpyz(OutName,Path,ASIZE(OutName));
+  std::wstring OutName=Path;
   // Do not add slash to d:, we want to allow relative paths like d:filename.
-  if (!IsDriveLetter(Path) || Path[2]!=0)
-    AddEndSlash(OutName,ASIZE(OutName));
-  wcsncatz(OutName,Name,ASIZE(OutName));
-  wcsncpyz(Pathname,OutName,MaxSize);
+  if (!IsDriveLetter(Path) || Path.size()>2)
+    AddEndSlash(OutName);
+  OutName+=Name;
+  Pathname=OutName;
 }
 
 
-// Returns file path including the trailing path separator symbol.
-void GetFilePath(const wchar *FullName,wchar *Path,size_t MaxLength)
+// Returns the file path including the trailing path separator symbol.
+// It is allowed for both parameters to point to the same string.
+void GetPathWithSep(const std::wstring &FullName,std::wstring &Path)
 {
-  if (MaxLength==0)
-    return;
-  size_t PathLength=Min(MaxLength-1,size_t(PointToName(FullName)-FullName));
-  wcsncpy(Path,FullName,PathLength);
-  Path[PathLength]=0;
+  if (std::addressof(FullName)!=std::addressof(Path))
+    Path=FullName;
+  Path.erase(GetNamePos(FullName));
 }
 
 
-// Removes name and returns file path without the trailing
-// path separator symbol.
-void RemoveNameFromPath(wchar *Path)
+// Removes name and returns file path without the trailing path separator.
+// But for names like d:\name return d:\ with trailing path separator.
+void RemoveNameFromPath(std::wstring &Path)
 {
-  wchar *Name=PointToName(Path);
-  if (Name>=Path+2 && (!IsDriveDiv(Path[1]) || Name>=Path+4))
-    Name--;
-  *Name=0;
+  auto NamePos=GetNamePos(Path);
+  if (NamePos>=2 && (!IsDriveDiv(Path[1]) || NamePos>=4))
+    NamePos--;
+  Path.erase(NamePos);
 }
 
 
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
-bool GetAppDataPath(wchar *Path,size_t MaxSize,bool Create)
+bool GetAppDataPath(std::wstring &Path,bool Create)
 {
   LPMALLOC g_pMalloc;
   SHGetMalloc(&g_pMalloc);
   LPITEMIDLIST ppidl;
-  *Path=0;
+  Path.clear();
   bool Success=false;
   if (SHGetSpecialFolderLocation(NULL,CSIDL_APPDATA,&ppidl)==NOERROR &&
-      SHGetPathFromIDList(ppidl,Path) && *Path!=0)
+      SHGetPathStrFromIDList(ppidl,Path) && !Path.empty())
   {
-    AddEndSlash(Path,MaxSize);
-    wcsncatz(Path,L"WinRAR",MaxSize);
+    AddEndSlash(Path);
+    Path+=L"WinRAR";
     Success=FileExist(Path);
     if (!Success && Create)
-      Success=MakeDir(Path,false,0)==MKDIR_SUCCESS;
+      Success=CreateDir(Path);
   }
   g_pMalloc->Free(ppidl);
   return Success;
@@ -243,24 +278,41 @@ bool GetAppDataPath(wchar *Path,size_t MaxSize,bool Create)
 #endif
 
 
-#if defined(_WIN_ALL) && !defined(SFX_MODULE)
-void GetRarDataPath(wchar *Path,size_t MaxSize,bool Create)
+#if defined(_WIN_ALL)
+bool SHGetPathStrFromIDList(PCIDLIST_ABSOLUTE pidl,std::wstring &Path)
 {
-  *Path=0;
+  std::vector<wchar> Buf(MAX_PATH);
+  bool Success=SHGetPathFromIDList(pidl,Buf.data())!=FALSE;
+  Path=Buf.data();
+  return Success;
+}
+#endif
+
+
+#if defined(_WIN_ALL) && !defined(SFX_MODULE)
+void GetRarDataPath(std::wstring &Path,bool Create)
+{
+  Path.clear();
 
   HKEY hKey;
   if (RegOpenKeyEx(HKEY_CURRENT_USER,L"Software\\WinRAR\\Paths",0,
                    KEY_QUERY_VALUE,&hKey)==ERROR_SUCCESS)
   {
-    DWORD DataSize=(DWORD)MaxSize,Type;
-    RegQueryValueEx(hKey,L"AppData",0,&Type,(BYTE *)Path,&DataSize);
-    RegCloseKey(hKey);
+    DWORD DataSize;
+    LSTATUS Code=RegQueryValueEx(hKey,L"AppData",NULL,NULL,NULL,&DataSize);
+    if (Code==ERROR_SUCCESS)
+    {
+      std::vector<wchar> PathBuf(DataSize/sizeof(wchar));
+      RegQueryValueEx(hKey,L"AppData",0,NULL,(BYTE *)PathBuf.data(),&DataSize);
+      Path=PathBuf.data();
+      RegCloseKey(hKey);
+    }
   }
 
-  if (*Path==0 || !FileExist(Path))
-    if (!GetAppDataPath(Path,MaxSize,Create))
+  if (Path.empty() || !FileExist(Path))
+    if (!GetAppDataPath(Path,Create))
     {
-      GetModuleFileName(NULL,Path,(DWORD)MaxSize);
+      Path=GetModuleFileStr();
       RemoveNameFromPath(Path);
     }
 }
@@ -268,7 +320,7 @@ void GetRarDataPath(wchar *Path,size_t MaxSize,bool Create)
 
 
 #ifndef SFX_MODULE
-bool EnumConfigPaths(uint Number,wchar *Path,size_t MaxSize,bool Create)
+bool EnumConfigPaths(uint Number,std::wstring &Path,bool Create)
 {
 #ifdef _UNIX
   static const wchar *ConfPath[]={
@@ -278,24 +330,24 @@ bool EnumConfigPaths(uint Number,wchar *Path,size_t MaxSize,bool Create)
   {
     char *EnvStr=getenv("HOME");
     if (EnvStr!=NULL)
-      CharToWide(EnvStr,Path,MaxSize);
+      CharToWide(EnvStr,Path);
     else
-      wcsncpyz(Path,ConfPath[0],MaxSize);
+      Path=ConfPath[0];
     return true;
   }
   Number--;
   if (Number>=ASIZE(ConfPath))
     return false;
-  wcsncpyz(Path,ConfPath[Number], MaxSize);
+  Path=ConfPath[Number];
   return true;
 #elif defined(_WIN_ALL)
   if (Number>1)
     return false;
   if (Number==0)
-    GetRarDataPath(Path,MaxSize,Create);
+    GetRarDataPath(Path,Create);
   else
   {
-    GetModuleFileName(NULL,Path,(DWORD)MaxSize);
+    Path=GetModuleFileStr();
     RemoveNameFromPath(Path);
   }
   return true;
@@ -307,13 +359,15 @@ bool EnumConfigPaths(uint Number,wchar *Path,size_t MaxSize,bool Create)
 
 
 #ifndef SFX_MODULE
-void GetConfigName(const wchar *Name,wchar *FullName,size_t MaxSize,bool CheckExist,bool Create)
+void GetConfigName(const std::wstring &Name,std::wstring &FullName,bool CheckExist,bool Create)
 {
-  *FullName=0;
-  for (uint I=0;EnumConfigPaths(I,FullName,MaxSize,Create);I++)
+  FullName.clear();
+  for (uint I=0;;I++)
   {
-    AddEndSlash(FullName,MaxSize);
-    wcsncatz(FullName,Name,MaxSize);
+    std::wstring ConfPath;
+    if (!EnumConfigPaths(I,ConfPath,Create))
+      break;
+    MakeName(ConfPath,Name,FullName);
     if (!CheckExist || WildFileExist(FullName))
       break;
   }
@@ -321,112 +375,107 @@ void GetConfigName(const wchar *Name,wchar *FullName,size_t MaxSize,bool CheckEx
 #endif
 
 
-// Returns a pointer to rightmost digit of volume number or to beginning
+// Returns the position to rightmost digit of volume number or beginning
 // of file name if numeric part is missing.
-wchar* GetVolNumPart(const wchar *ArcName)
+size_t GetVolNumPos(const std::wstring &ArcName)
 {
   // We do not want to increment any characters in path component.
-  ArcName=PointToName(ArcName);
+  size_t NamePos=GetNamePos(ArcName);
 
-  if (*ArcName==0)
-    return (wchar *)ArcName;
+  if (NamePos==ArcName.size())
+    return NamePos;
 
   // Pointing to last name character.
-  const wchar *ChPtr=ArcName+wcslen(ArcName)-1;
+  size_t Pos=ArcName.size()-1;
 
   // Skipping the archive extension.
-  while (!IsDigit(*ChPtr) && ChPtr>ArcName)
-    ChPtr--;
+  while (!IsDigit(ArcName[Pos]) && Pos>NamePos)
+    Pos--;
 
   // Skipping the numeric part of name.
-  const wchar *NumPtr=ChPtr;
-  while (IsDigit(*NumPtr) && NumPtr>ArcName)
-    NumPtr--;
+  size_t NumPos=Pos;
+  while (IsDigit(ArcName[NumPos]) && NumPos>NamePos)
+    NumPos--;
 
   // Searching for first numeric part in names like name.part##of##.rar.
   // Stop search on the first dot.
-  while (NumPtr>ArcName && *NumPtr!='.')
+  while (NumPos>NamePos && ArcName[NumPos]!='.')
   {
-    if (IsDigit(*NumPtr))
+    if (IsDigit(ArcName[NumPos]))
     {
       // Validate the first numeric part only if it has a dot somewhere 
       // before it.
-      const wchar *Dot=wcschr(ArcName,'.');
-      if (Dot!=NULL && Dot<NumPtr)
-        ChPtr=NumPtr;
+      auto DotPos=ArcName.find('.',NamePos);
+      if (DotPos!=std::wstring::npos && DotPos<NumPos)
+        Pos=NumPos;
       break;
     }
-    NumPtr--;
+    NumPos--;
   }
-  return (wchar *)ChPtr;
+  return Pos;
 }
 
 
-void NextVolumeName(wchar *ArcName,uint MaxLength,bool OldNumbering)
+void NextVolumeName(std::wstring &ArcName,bool OldNumbering)
 {
-  wchar *ChPtr;
-  if ((ChPtr=GetExt(ArcName))==NULL)
+  auto DotPos=GetExtPos(ArcName);
+  if (DotPos==std::wstring::npos)
   {
-    wcsncatz(ArcName,L".rar",MaxLength);
-    ChPtr=GetExt(ArcName);
+    ArcName+=L".rar";
+    DotPos=GetExtPos(ArcName);
   }
   else
-    if (ChPtr[1]==0 || wcsicomp(ChPtr,L".exe")==0 || wcsicomp(ChPtr,L".sfx")==0)
-      wcsncpyz(ChPtr,L".rar",MaxLength-(ChPtr-ArcName));
-
-  if (ChPtr==NULL || *ChPtr!='.' || ChPtr[1]==0)
-  {
-    // Normally we shall have some extension here. If we don't, it means
-    // the name has no extension and buffer has no free space to append one.
-    // Let's clear the name to prevent a new call with same name and return.
-    *ArcName=0;
-    return;
-  }
+    if (DotPos+1==ArcName.size() || CmpExt(ArcName,L"exe") || CmpExt(ArcName,L"sfx"))
+      SetExt(ArcName,L"rar");
 
   if (!OldNumbering)
   {
-    ChPtr=GetVolNumPart(ArcName);
+    size_t NumPos=GetVolNumPos(ArcName);
 
-    // We should not check for IsDigit(*ChPtr) here and should increment
+    // We should not check for IsDigit() here and should increment
     // even non-digits. If we got a corrupt archive with volume flag,
     // but without numeric part, we still need to modify its name somehow,
-    // so while (exist(name)) {NextVolumeName()} loops do not run infinitely.
-    while ((++(*ChPtr))=='9'+1)
+    // so "while (Exist()) {NextVolumeName();}" loops do not run infinitely.
+    while (++ArcName[NumPos]=='9'+1)
     {
-      *ChPtr='0';
-      ChPtr--;
-      if (ChPtr<ArcName || !IsDigit(*ChPtr))
+      ArcName[NumPos]='0';
+      if (NumPos==0)
+        break;
+      NumPos--;
+      if (!IsDigit(ArcName[NumPos]))
       {
         // Convert .part:.rar (.part9.rar after increment) to part10.rar.
-        for (wchar *EndPtr=ArcName+wcslen(ArcName);EndPtr!=ChPtr;EndPtr--)
-          *(EndPtr+1)=*EndPtr;
-        *(ChPtr+1)='1';
+        ArcName.insert(NumPos+1,1,'1');
         break;
       }
     }
   }
   else
-    if (!IsDigit(ChPtr[2]) || !IsDigit(ChPtr[3]))
-      wcsncpyz(ChPtr+2,L"00",MaxLength-(ChPtr-ArcName)-2); // From .rar to .r00.
+  {
+    // If extension is shorter than 3 characters, set it to "rar" to simplify
+    // further processing.
+    if (ArcName.size()-DotPos<3)
+      ArcName.replace(DotPos+1,std::wstring::npos,L"rar");
+
+    if (!IsDigit(ArcName[DotPos+2]) || !IsDigit(ArcName[DotPos+3]))
+      ArcName.replace(DotPos+2,std::wstring::npos,L"00"); // From .rar to .r00.
     else
     {
-      ChPtr+=wcslen(ChPtr)-1; // Set to last character.
-      while (++(*ChPtr)=='9'+1)
-        if (ChPtr<=ArcName || *(ChPtr-1)=='.')
+      auto NumPos=ArcName.size()-1;  // Set to last character.
+      while (++ArcName[NumPos]=='9'+1)
+        if (NumPos==0 || ArcName[NumPos-1]=='.')
         {
-          *ChPtr='a'; // From .999 to .a00 if started from .001 or for too short names.
+          ArcName[NumPos]='a'; // From .999 to .a00 if started from .001 or for too short names.
           break;
         }
         else
-        {
-          *ChPtr='0';
-          ChPtr--;
-        }
+          ArcName[NumPos--]='0';
     }
+  }
 }
 
 
-bool IsNameUsable(const wchar *Name)
+bool IsNameUsable(const std::wstring &Name)
 {
   // We were asked to apply Windows-like conversion in Linux in case
   // files are unpacked to Windows share. This code is invoked only
@@ -435,40 +484,39 @@ bool IsNameUsable(const wchar *Name)
 #ifdef _UNIX
   // Windows shares in Unix do not allow the drive letter,
   // so unlike Windows version, we check all characters here.
-  if (wcschr(Name,':')!=NULL)
+  if (Name.find(':')!=std::wstring::npos)
     return false;
 #else
-  if (Name[0]!=0 && Name[1]!=0 && wcschr(Name+2,':')!=NULL)
+  if (Name.find(':',2)!=std::wstring::npos)
     return false;
 #endif
-  for (const wchar *s=Name;*s!=0;s++)
+  for (size_t I=0;I<Name.size();I++)
   {
-    if ((uint)*s<32)
+    if ((uint)Name[I]<32)
       return false;
 
      // It is for Windows shares in Unix. We can create such names in Windows.
 #ifdef _UNIX
     // No spaces or dots before the path separator are allowed in Windows
-    // shares. But they are allowed and automtically removed at the end of
+    // shares. But they are allowed and automatically removed at the end of
     // file or folder name, so it is useless to replace them here.
     // Since such files or folders are created successfully, a supposed
     // conversion here would never be invoked.
-    if ((*s==' ' || *s=='.') && IsPathDiv(s[1]))
+    if ((Name[I]==' ' || Name[I]=='.') && IsPathDiv(Name[I+1]))
       return false;
 #endif
   }
-  return *Name!=0 && wcspbrk(Name,L"?*<>|\"")==NULL;
+  return !Name.empty() && Name.find_first_of(L"?*<>|\"")==std::wstring::npos;
 }
 
 
-
-
-void MakeNameUsable(wchar *Name,bool Extended)
+void MakeNameUsable(std::wstring &Name,bool Extended)
 {
-  for (wchar *s=Name;*s!=0;s++)
+  for (size_t I=0;I<Name.size();I++)
   {
-    if (wcschr(Extended ? L"?*<>|\"":L"?*",*s)!=NULL || Extended && (uint)*s<32)
-      *s='_';
+    if (wcschr(Extended ? L"?*<>|\"":L"?*",Name[I])!=NULL || 
+        Extended && (uint)Name[I]<32)
+      Name[I]='_';
 #ifdef _UNIX
     // We were asked to apply Windows-like conversion in Linux in case
     // files are unpacked to Windows share. This code is invoked only
@@ -478,26 +526,24 @@ void MakeNameUsable(wchar *Name,bool Extended)
     {
       // Windows shares in Unix do not allow the drive letter,
       // so unlike Windows version, we check all characters here.
-      if (*s==':')
-        *s='_';
+      if (Name[I]==':')
+        Name[I]='_';
 
       // No spaces or dots before the path separator are allowed on Windows
       // shares. But they are allowed and automatically removed at the end of
-      // file or folder name, so it is useless to replace them here.
+      // file or folder name, so we need to replace them only before
+      // the path separator, but not at the end of file name.
       // Since such files or folders are created successfully, a supposed
-      // conversion here would never be invoked.
-      if ((*s==' ' || *s=='.') && IsPathDiv(s[1]))
-        *s='_';
+      // conversion at the end of file name would never be invoked here.
+      // While converting dots, we preserve "." and ".." path components,
+      // such as when specifying ".." in the destination path.
+      if (IsPathDiv(Name[I+1]) && (Name[I]==' ' || Name[I]=='.' && I>0 &&
+          !IsPathDiv(Name[I-1]) && (Name[I-1]!='.' || I>1 && !IsPathDiv(Name[I-2]))))
+        Name[I]='_';
     }
 #else
-    if (s-Name>1 && *s==':')
-      *s='_';
-#if 0  // We already can create such files.
-    // Remove ' ' and '.' before path separator, but allow .\ and ..\.
-    if (IsPathDiv(s[1]) && (*s==' ' || *s=='.' && s>Name &&
-        !IsPathDiv(s[-1]) && (s[-1]!='.' || s>Name+1 && !IsPathDiv(s[-2]))))
-      *s='_';
-#endif
+    if (I>1 && Name[I]==':')
+      Name[I]='_';
 #endif
   }
 }
@@ -512,20 +558,38 @@ void UnixSlashToDos(const char *SrcName,char *DestName,size_t MaxLength)
 }
 
 
-void DosSlashToUnix(const char *SrcName,char *DestName,size_t MaxLength)
-{
-  size_t Copied=0;
-  for (;Copied<MaxLength-1 && SrcName[Copied]!=0;Copied++)
-    DestName[Copied]=SrcName[Copied]=='\\' ? '/':SrcName[Copied];
-  DestName[Copied]=0;
-}
-
-
 void UnixSlashToDos(const wchar *SrcName,wchar *DestName,size_t MaxLength)
 {
   size_t Copied=0;
   for (;Copied<MaxLength-1 && SrcName[Copied]!=0;Copied++)
     DestName[Copied]=SrcName[Copied]=='/' ? '\\':SrcName[Copied];
+  DestName[Copied]=0;
+}
+
+
+void UnixSlashToDos(const std::string &SrcName,std::string &DestName)
+{
+  // SrcName and DestName can point to same string, so no .clear() here.
+  DestName.resize(SrcName.size());
+  for (size_t I=0;I<SrcName.size();I++)
+    DestName[I]=SrcName[I]=='/' ? '\\':SrcName[I];
+}
+
+
+void UnixSlashToDos(const std::wstring &SrcName,std::wstring &DestName)
+{
+  // SrcName and DestName can point to same string, so no .clear() here.
+  DestName.resize(SrcName.size());
+  for (size_t I=0;I<SrcName.size();I++)
+    DestName[I]=SrcName[I]=='/' ? '\\':SrcName[I];
+}
+
+
+void DosSlashToUnix(const char *SrcName,char *DestName,size_t MaxLength)
+{
+  size_t Copied=0;
+  for (;Copied<MaxLength-1 && SrcName[Copied]!=0;Copied++)
+    DestName[Copied]=SrcName[Copied]=='\\' ? '/':SrcName[Copied];
   DestName[Copied]=0;
 }
 
@@ -539,148 +603,177 @@ void DosSlashToUnix(const wchar *SrcName,wchar *DestName,size_t MaxLength)
 }
 
 
-void ConvertNameToFull(const wchar *Src,wchar *Dest,size_t MaxSize)
+void DosSlashToUnix(const std::string &SrcName,std::string &DestName)
 {
-  if (Src==NULL || *Src==0)
+  // SrcName and DestName can point to same string, so no .clear() here.
+  DestName.resize(SrcName.size());
+  for (size_t I=0;I<SrcName.size();I++)
+    DestName[I]=SrcName[I]=='\\' ? '/':SrcName[I];
+}
+
+
+void DosSlashToUnix(const std::wstring &SrcName,std::wstring &DestName)
+{
+  // SrcName and DestName can point to same string, so no .clear() here.
+  DestName.resize(SrcName.size());
+  for (size_t I=0;I<SrcName.size();I++)
+    DestName[I]=SrcName[I]=='\\' ? '/':SrcName[I];
+}
+
+
+void ConvertNameToFull(const std::wstring &Src,std::wstring &Dest)
+{
+  if (Src.empty())
   {
-    if (MaxSize>0)
-      *Dest=0;
+    Dest.clear();
     return;
   }
 #ifdef _WIN_ALL
   {
-    wchar FullName[NM],*NamePtr;
-    DWORD Code=GetFullPathName(Src,ASIZE(FullName),FullName,&NamePtr);
-    if (Code==0 || Code>ASIZE(FullName))
+    DWORD Code=GetFullPathName(Src.c_str(),0,NULL,NULL); // Get the buffer size.
+    if (Code!=0)
     {
-      wchar LongName[NM];
-      if (GetWinLongPath(Src,LongName,ASIZE(LongName)))
-        Code=GetFullPathName(LongName,ASIZE(FullName),FullName,&NamePtr);
+      std::vector<wchar> FullName(Code);
+      Code=GetFullPathName(Src.c_str(),(DWORD)FullName.size(),FullName.data(),NULL);
+
+      if (Code>0 && Code<=FullName.size())
+      {
+        Dest=FullName.data();
+        return;
+      }
     }
-    if (Code!=0 && Code<ASIZE(FullName))
-      wcsncpyz(Dest,FullName,MaxSize);
-    else
-      if (Src!=Dest)
-        wcsncpyz(Dest,Src,MaxSize);
+
+    std::wstring LongName;
+    if (GetWinLongPath(Src,LongName)) // Failed with normal name, try long.
+    {
+      Code=GetFullPathName(LongName.c_str(),0,NULL,NULL); // Get the buffer size.
+      if (Code!=0)
+      {
+        std::vector<wchar> FullName(Code);
+        Code=GetFullPathName(LongName.c_str(),(DWORD)FullName.size(),FullName.data(),NULL);
+
+        if (Code>0 && Code<=FullName.size())
+        {
+          Dest=FullName.data();
+          return;
+        }
+      }
+    }
+    if (Src!=Dest)
+      Dest=Src; // Copy source to destination in case of failure.
   }
 #elif defined(_UNIX)
   if (IsFullPath(Src))
-    *Dest=0;
+    Dest.clear();
   else
   {
-    char CurDirA[NM];
-    if (getcwd(CurDirA,ASIZE(CurDirA))==NULL)
-      *CurDirA=0;
-    CharToWide(CurDirA,Dest,MaxSize);
-    AddEndSlash(Dest,MaxSize);
+    std::vector<char> CurDirA(MAXPATHSIZE);
+    if (getcwd(CurDirA.data(),CurDirA.size())==NULL)
+      CurDirA[0]=0;
+    CharToWide(CurDirA.data(),Dest);
+    AddEndSlash(Dest);
   }
-  wcsncatz(Dest,Src,MaxSize);
+  Dest+=Src;
 #else
-  wcsncpyz(Dest,Src,MaxSize);
+  Dest=Src;
 #endif
 }
 
 
-bool IsFullPath(const wchar *Path)
+bool IsFullPath(const std::wstring &Path)
 {
-/*
-  wchar PathOnly[NM];
-  GetFilePath(Path,PathOnly,ASIZE(PathOnly));
-  if (IsWildcard(PathOnly))
-    return true;
-*/
-#if defined(_WIN_ALL) || defined(_EMX)
-  return Path[0]=='\\' && Path[1]=='\\' || IsDriveLetter(Path) && IsPathDiv(Path[2]);
+#ifdef _WIN_ALL
+  return Path.size()>=2 && Path[0]=='\\' && Path[1]=='\\' || 
+         Path.size()>=3 && IsDriveLetter(Path) && IsPathDiv(Path[2]);
 #else
-  return IsPathDiv(Path[0]);
+  return Path.size()>=1 && IsPathDiv(Path[0]);
 #endif
 }
 
 
-bool IsFullRootPath(const wchar *Path)
+bool IsFullRootPath(const std::wstring &Path)
 {
   return IsFullPath(Path) || IsPathDiv(Path[0]);
 }
 
 
-void GetPathRoot(const wchar *Path,wchar *Root,size_t MaxSize)
+// Both source and destination can point to the same string.
+void GetPathRoot(const std::wstring &Path,std::wstring &Root)
 {
-  *Root=0;
   if (IsDriveLetter(Path))
-    swprintf(Root,MaxSize,L"%c:\\",*Path);
+    Root=Path.substr(0,2) + L"\\";
   else
     if (Path[0]=='\\' && Path[1]=='\\')
     {
-      const wchar *Slash=wcschr(Path+2,'\\');
-      if (Slash!=NULL)
+      size_t Slash=Path.find('\\',2);
+      if (Slash!=std::wstring::npos)
       {
         size_t Length;
-        if ((Slash=wcschr(Slash+1,'\\'))!=NULL)
-          Length=Slash-Path+1;
+        if ((Slash=Path.find('\\',Slash+1))!=std::wstring::npos)
+          Length=Slash+1;
         else
-          Length=wcslen(Path);
-        if (Length>=MaxSize)
-          Length=0;
-        wcsncpy(Root,Path,Length);
-        Root[Length]=0;
+          Length=Path.size();
+        Root=Path.substr(0,Length);
       }
     }
+    else
+      Root.clear();
 }
 
 
-int ParseVersionFileName(wchar *Name,bool Truncate)
+int ParseVersionFileName(std::wstring &Name,bool Truncate)
 {
   int Version=0;
-  wchar *VerText=wcsrchr(Name,';');
-  if (VerText!=NULL)
+  auto VerPos=Name.rfind(';');
+  if (VerPos!=std::wstring::npos && VerPos+1<Name.size())
   {
-    Version=atoiw(VerText+1);
+    Version=atoiw(&Name[VerPos+1]);
     if (Truncate)
-      *VerText=0;
+      Name.erase(VerPos);
   }
   return Version;
 }
 
 
 #if !defined(SFX_MODULE)
-// Get the name of first volume. Return the leftmost digit of volume number.
-wchar* VolNameToFirstName(const wchar *VolName,wchar *FirstName,size_t MaxSize,bool NewNumbering)
+// Get the name of first volume. Return the leftmost digit position of volume number.
+size_t VolNameToFirstName(const std::wstring &VolName,std::wstring &FirstName,bool NewNumbering)
 {
-  if (FirstName!=VolName)
-    wcsncpyz(FirstName,VolName,MaxSize);
-  wchar *VolNumStart=FirstName;
+  // Source and destination can point at the same string, so we use
+  // the intermediate variable.
+  std::wstring Name=VolName;
+  size_t VolNumStart=0;
   if (NewNumbering)
   {
     wchar N='1';
 
     // From the rightmost digit of volume number to the left.
-    for (wchar *ChPtr=GetVolNumPart(FirstName);ChPtr>FirstName;ChPtr--)
-      if (IsDigit(*ChPtr))
+    for (size_t Pos=GetVolNumPos(Name);Pos>0;Pos--)
+      if (IsDigit(Name[Pos]))
       {
-        *ChPtr=N; // Set the rightmost digit to '1' and others to '0'.
+        Name[Pos]=N; // Set the rightmost digit to '1' and others to '0'.
         N='0';
       }
       else
-        if (N=='0')
+        if (N=='0') // If we already set the rightmost '1' before.
         {
-          VolNumStart=ChPtr+1; // Store the position of leftmost digit in volume number.
+          VolNumStart=Pos+1; // Store the position of leftmost digit in volume number.
           break;
         }
   }
   else
   {
     // Old volume numbering scheme. Just set the extension to ".rar".
-    SetExt(FirstName,L"rar",MaxSize);
-    VolNumStart=GetExt(FirstName);
+    SetExt(Name,L"rar");
+    VolNumStart=GetExtPos(Name);
   }
-  if (!FileExist(FirstName))
+  if (!FileExist(Name))
   {
     // If the first volume, which name we just generated, does not exist,
     // check if volume with same name and any other extension is available.
     // It can help in case of *.exe or *.sfx first volume.
-    wchar Mask[NM];
-    wcsncpyz(Mask,FirstName,ASIZE(Mask));
-    SetExt(Mask,L"*",ASIZE(Mask));
+    std::wstring Mask=Name;
+    SetExt(Mask,L"*");
     FindFile Find;
     Find.SetMask(Mask);
     FindData FD;
@@ -689,32 +782,33 @@ wchar* VolNameToFirstName(const wchar *VolName,wchar *FirstName,size_t MaxSize,b
       Archive Arc;
       if (Arc.Open(FD.Name,0) && Arc.IsArchive(true) && Arc.FirstVolume)
       {
-        wcsncpyz(FirstName,FD.Name,MaxSize);
+        Name=FD.Name;
         break;
       }
     }
   }
+  FirstName=Name;
   return VolNumStart;
 }
 #endif
 
 
 #ifndef SFX_MODULE
-static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,uint ArcNumber,bool &ArcNumPresent)
+static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,uint ArcNumber,bool &ArcNumPresent)
 {
+  size_t Pos=0;
   bool Prefix=false;
-  if (*GenerateMask=='+')
+  if (GenerateMask[0]=='+')
   {
     Prefix=true;    // Add the time string before the archive name.
-    GenerateMask++; // Skip '+' in the beginning of time mask.
+    Pos++;          // Skip '+' in the beginning of time mask.
   }
 
-  wchar Mask[MAX_GENERATE_MASK];
-  wcsncpyz(Mask,*GenerateMask!=0 ? GenerateMask:L"yyyymmddhhmmss",ASIZE(Mask));
+  std::wstring Mask=!GenerateMask.empty() ? GenerateMask.substr(Pos):L"yyyymmddhhmmss";
 
   bool QuoteMode=false;
   uint MAsMinutes=0; // By default we treat 'M' as months.
-  for (uint I=0;Mask[I]!=0;I++)
+  for (uint I=0;I<Mask.size();I++)
   {
     if (Mask[I]=='{' || Mask[I]=='}')
     {
@@ -746,11 +840,8 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
       // Here we ensure that we have enough 'N' characters to fit all digits
       // of archive number. We'll replace them by actual number later
       // in this function.
-      if (NCount<Digits && wcslen(Mask)+Digits-NCount<ASIZE(Mask))
-      {
-        wmemmove(Mask+I+Digits,Mask+I+NCount,wcslen(Mask+I+NCount)+1);
-        wmemset(Mask+I,'N',Digits);
-      }
+      if (NCount<Digits)
+        Mask.insert(I,Digits-NCount,L'N');
       I+=Max(Digits,NCount)-1;
       ArcNumPresent=true;
       continue;
@@ -762,14 +853,14 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
   RarLocalTime rlt;
   CurTime.GetLocal(&rlt);
 
-  wchar Ext[NM],*Dot=GetExt(ArcName);
-  *Ext=0;
-  if (Dot==NULL)
-    wcsncpyz(Ext,*PointToName(ArcName)==0 ? L".rar":L"",ASIZE(Ext));
+  std::wstring Ext;
+  auto ExtPos=GetExtPos(ArcName);
+  if (ExtPos==std::wstring::npos)
+    Ext=PointToName(ArcName).empty() ? L".rar":L"";
   else
   {
-    wcsncpyz(Ext,Dot,ASIZE(Ext));
-    *Dot=0;
+    Ext=ArcName.substr(ExtPos);
+    ArcName.erase(ExtPos);
   }
 
   int WeekDay=rlt.wDay==0 ? 6:rlt.wDay-1;
@@ -783,27 +874,27 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
   if (StartWeekDay%7>=4)
     CurWeek++;
 
-  char Field[10][11];
+  const size_t FieldSize=11;
+  char Field[10][FieldSize];
 
-  snprintf(Field[0], sizeof(Field[0]), "%04u", rlt.Year);
-  snprintf(Field[1], sizeof(Field[1]), "%02u", rlt.Month);
-  snprintf(Field[2], sizeof(Field[2]), "%02u", rlt.Day);
-  snprintf(Field[3], sizeof(Field[3]), "%02u", rlt.Hour);
-  snprintf(Field[4], sizeof(Field[4]), "%02u", rlt.Minute);
-  snprintf(Field[5], sizeof(Field[5]), "%02u", rlt.Second);
-  snprintf(Field[6], sizeof(Field[6]), "%02u", (uint)CurWeek);
-  snprintf(Field[7], sizeof(Field[7]), "%u", (uint)WeekDay + 1);
-  snprintf(Field[8], sizeof(Field[8]), "%03u", rlt.yDay + 1);
-  snprintf(Field[9], sizeof(Field[9]), "%05u", ArcNumber);
-  
+  snprintf(Field[0],FieldSize,"%04u",rlt.Year);
+  snprintf(Field[1],FieldSize,"%02u",rlt.Month);
+  snprintf(Field[2],FieldSize,"%02u",rlt.Day);
+  snprintf(Field[3],FieldSize,"%02u",rlt.Hour);
+  snprintf(Field[4],FieldSize,"%02u",rlt.Minute);
+  snprintf(Field[5],FieldSize,"%02u",rlt.Second);
+  snprintf(Field[6],FieldSize,"%02u",(uint)CurWeek);
+  snprintf(Field[7],FieldSize,"%u",(uint)WeekDay+1);
+  snprintf(Field[8],FieldSize,"%03u",rlt.yDay+1);
+  snprintf(Field[9],FieldSize,"%05u",ArcNumber);
+
   const wchar *MaskChars=L"YMDHISWAEN";
 
   // How many times every modifier character was encountered in the mask.
-  int CField[sizeof(Field)/sizeof(Field[0])];
+  int CField[sizeof(Field)/sizeof(Field[0])]{};
 
-  memset(CField,0,sizeof(CField));
   QuoteMode=false;
-  for (uint I=0;Mask[I]!=0;I++)
+  for (uint I=0;I<Mask.size();I++)
   {
     if (Mask[I]=='{' || Mask[I]=='}')
     {
@@ -820,7 +911,7 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
   wchar DateText[MAX_GENERATE_MASK];
   *DateText=0;
   QuoteMode=false;
-  for (size_t I=0,J=0;Mask[I]!=0 && J<ASIZE(DateText)-1;I++)
+  for (size_t I=0,J=0;I<Mask.size() && J<ASIZE(DateText)-1;I++)
   {
     if (Mask[I]=='{' || Mask[I]=='}')
     {
@@ -868,31 +959,30 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
 
   if (Prefix)
   {
-    wchar NewName[NM];
-    GetFilePath(ArcName,NewName,ASIZE(NewName));
-    AddEndSlash(NewName,ASIZE(NewName));
-    wcsncatz(NewName,DateText,ASIZE(NewName));
-    wcsncatz(NewName,PointToName(ArcName),ASIZE(NewName));
-    wcsncpyz(ArcName,NewName,MaxSize);
+    std::wstring NewName;
+    GetPathWithSep(ArcName,NewName);
+    NewName+=DateText;
+    NewName+=PointToName(ArcName);
+    ArcName=NewName;
   }
   else
-    wcsncatz(ArcName,DateText,MaxSize);
-  wcsncatz(ArcName,Ext,MaxSize);
+    ArcName+=DateText;
+  ArcName+=Ext;
 }
 
 
-void GenerateArchiveName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,bool Archiving)
+void GenerateArchiveName(std::wstring &ArcName,const std::wstring &GenerateMask,bool Archiving)
 {
-  wchar NewName[NM];
+  std::wstring NewName;
 
   uint ArcNumber=1;
   while (true) // Loop for 'N' (archive number) processing.
   {
-    wcsncpyz(NewName,ArcName,ASIZE(NewName));
+    NewName=ArcName;
     
     bool ArcNumPresent=false;
 
-    GenArcName(NewName,ASIZE(NewName),GenerateMask,ArcNumber,ArcNumPresent);
+    GenArcName(NewName,GenerateMask,ArcNumber,ArcNumPresent);
     
     if (!ArcNumPresent)
       break;
@@ -903,103 +993,66 @@ void GenerateArchiveName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask
         // If we perform non-archiving operation, we need to use the last
         // existing archive before the first unused name. So we generate
         // the name for (ArcNumber-1) below.
-        wcsncpyz(NewName,NullToEmpty(ArcName),ASIZE(NewName));
-        GenArcName(NewName,ASIZE(NewName),GenerateMask,ArcNumber-1,ArcNumPresent);
+        NewName=ArcName;
+        GenArcName(NewName,GenerateMask,ArcNumber-1,ArcNumPresent);
       }
       break;
     }
     ArcNumber++;
   }
-  wcsncpyz(ArcName,NewName,MaxSize);
+  ArcName=NewName;
 }
 #endif
-
-
-wchar* GetWideName(const char *Name,const wchar *NameW,wchar *DestW,size_t DestSize)
-{
-  if (NameW!=NULL && *NameW!=0)
-  {
-    if (DestW!=NameW)
-      wcsncpy(DestW,NameW,DestSize);
-  }
-  else
-    if (Name!=NULL)
-      CharToWide(Name,DestW,DestSize);
-    else
-      *DestW=0;
-
-  // Ensure that we return a zero terminate string for security reasons.
-  if (DestSize>0)
-    DestW[DestSize-1]=0;
-
-  return DestW;
-}
 
 
 #ifdef _WIN_ALL
 // We should return 'true' even if resulting path is shorter than MAX_PATH,
 // because we can also use this function to open files with non-standard
 // characters, even if their path length is normal.
-bool GetWinLongPath(const wchar *Src,wchar *Dest,size_t MaxSize)
+bool GetWinLongPath(const std::wstring &Src,std::wstring &Dest)
 {
-  if (*Src==0)
+  if (Src.empty())
     return false;
-  const wchar *Prefix=L"\\\\?\\";
-  const size_t PrefixLength=4;
-  bool FullPath=IsDriveLetter(Src) && IsPathDiv(Src[2]);
-  size_t SrcLength=wcslen(Src);
+  const std::wstring Prefix=L"\\\\?\\";
+
+  bool FullPath=Src.size()>=3 && IsDriveLetter(Src) && IsPathDiv(Src[2]);
   if (IsFullPath(Src)) // Paths in d:\path\name format.
   {
     if (IsDriveLetter(Src))
     {
-      if (MaxSize<=PrefixLength+SrcLength)
-        return false;
-      wcsncpyz(Dest,Prefix,MaxSize);
-      wcsncatz(Dest,Src,MaxSize); // "\\?\D:\very long path".
+      Dest=Prefix+Src; // "\\?\D:\very long path".
       return true;
     }
     else
-      if (Src[0]=='\\' && Src[1]=='\\')
+      if (Src.size()>2 && Src[0]=='\\' && Src[1]=='\\')
       {
-        if (MaxSize<=PrefixLength+SrcLength+2)
-          return false;
-        wcsncpyz(Dest,Prefix,MaxSize);
-        wcsncatz(Dest,L"UNC",MaxSize);
-        wcsncatz(Dest,Src+1,MaxSize); // "\\?\UNC\server\share".
+        Dest=Prefix+L"UNC"+Src.substr(1);  // "\\?\UNC\server\share".
         return true;
       }
-    // We may be here only if we modify IsFullPath in the future.
+    // We can be here only if modify IsFullPath() in the future.
     return false;
   }
   else
   {
-    wchar CurDir[NM];
-    DWORD DirCode=GetCurrentDirectory(ASIZE(CurDir)-1,CurDir);
-    if (DirCode==0 || DirCode>ASIZE(CurDir)-1)
+    std::wstring CurDir;
+    if (!GetCurDir(CurDir))
       return false;
 
     if (IsPathDiv(Src[0])) // Paths in \path\name format.
     {
-      if (MaxSize<=PrefixLength+SrcLength+2)
-        return false;
-      wcsncpyz(Dest,Prefix,MaxSize);
-      CurDir[2]=0;
-      wcsncatz(Dest,CurDir,MaxSize); // Copy drive letter 'd:'.
-      wcsncatz(Dest,Src,MaxSize);
+      Dest=Prefix+CurDir[0]+L':'+Src;  // Copy drive letter 'd:'.
       return true;
     }
     else  // Paths in path\name format.
     {
-      AddEndSlash(CurDir,ASIZE(CurDir));
-      if (MaxSize<=PrefixLength+wcslen(CurDir)+SrcLength)
-        return false;
-      wcsncpyz(Dest,Prefix,MaxSize);
-      wcsncatz(Dest,CurDir,MaxSize);
+      Dest=Prefix+CurDir;
+      AddEndSlash(Dest);
 
+      size_t Pos=0;
       if (Src[0]=='.' && IsPathDiv(Src[1])) // Remove leading .\ in pathname.
-        Src+=2;
+        Pos=2;
 
-      wcsncatz(Dest,Src,MaxSize);
+      Dest+=Src.substr(Pos);
       return true;
     }
   }
@@ -1008,46 +1061,55 @@ bool GetWinLongPath(const wchar *Src,wchar *Dest,size_t MaxSize)
 
 
 // Convert Unix, OS X and Android decomposed chracters to Windows precomposed.
-void ConvertToPrecomposed(wchar *Name,size_t NameSize)
+void ConvertToPrecomposed(std::wstring &Name)
 {
-  wchar FileName[NM];
-  if (WinNT()>=WNT_VISTA && // MAP_PRECOMPOSED is not supported in XP.
-      FoldString(MAP_PRECOMPOSED,Name,-1,FileName,ASIZE(FileName))!=0)
-  {
-    FileName[ASIZE(FileName)-1]=0;
-    wcsncpyz(Name,FileName,NameSize);
-  }
+  if (WinNT()<WNT_VISTA) // MAP_PRECOMPOSED is not supported in XP.
+    return;
+  int Size=FoldString(MAP_PRECOMPOSED,Name.c_str(),-1,NULL,0);
+  if (Size<=0)
+    return;
+  std::vector<wchar> FileName(Size);
+  if (FoldString(MAP_PRECOMPOSED,Name.c_str(),-1,FileName.data(),(int)FileName.size())!=0)
+    Name=FileName.data();
 }
 
 
-void MakeNameCompatible(wchar *Name,size_t MaxSize)
+void MakeNameCompatible(std::wstring &Name)
 {
   // Remove trailing spaces and dots in file name and in dir names in path.
-  int Src=0,Dest=0;
-  while (true)
-  {
-    if (IsPathDiv(Name[Src]) || Name[Src]==0)
-      for (int I=Dest-1;I>0 && (Name[I]==' ' || Name[I]=='.');I--)
+  for (int I=0;I<(int)Name.size();I++)
+    if (I+1==Name.size() || IsPathDiv(Name[I+1]))
+      while (I>=0 && (Name[I]=='.' || Name[I]==' '))
       {
-        // Permit path1/./path2 and ../path1 paths.
-        if (Name[I]=='.' && (IsPathDiv(Name[I-1]) || Name[I-1]=='.' && I==1))
+        if (I==0 && Name[I]==' ')
+        {
+          // Windows 10 Explorer can't rename or delete " " files and folders.
+          Name[I]='_'; // Convert " /path" to "_/path".
           break;
-        Dest--;
+        }
+        if (Name[I]=='.')
+        {
+          // 2024.05.01: Permit ./path1, path1/./path2, ../path1,
+          // path1/../path2 and exotic Win32 d:.\path1, d:..\path1 paths
+          // requested by user. Leading dots are possible here if specified
+          // by user in the destination path.
+          if (I==0 || IsPathDiv(Name[I-1]) || I==2 && IsDriveLetter(Name))
+            break;
+          if (I>=1 && Name[I-1]=='.' && (I==1 || IsPathDiv(Name[I-2]) ||
+              I==3 && IsDriveLetter(Name)))
+            break;
+        }
+        Name.erase(I,1);
+        I--;
       }
-    Name[Dest]=Name[Src];
-    if (Name[Src]==0)
-      break;
-    Src++;
-    Dest++;
-  }
 
   // Rename reserved device names, such as aux.txt to _aux.txt.
   // We check them in path components too, where they are also prohibited.
-  for (uint I=0;Name[I]!=0;I++)
+  for (size_t I=0;I<Name.size();I++)
     if (I==0 || I>0 && IsPathDiv(Name[I-1]))
     {
       static const wchar *Devices[]={L"CON",L"PRN",L"AUX",L"NUL",L"COM#",L"LPT#"};
-      wchar *s=Name+I;
+      const wchar *s=&Name[I];
       bool MatchFound=false;
       for (uint J=0;J<ASIZE(Devices);J++)
         for (uint K=0;;K++)
@@ -1069,17 +1131,65 @@ void MakeNameCompatible(wchar *Name,size_t MaxSize)
                 break;
       if (MatchFound)
       {
-        wchar OrigName[NM];
-        wcsncpyz(OrigName,Name,ASIZE(OrigName));
-        if (MaxSize>I+1) // I+1, because we do not move the trailing 0.
-          memmove(s+1,s,(MaxSize-I-1)*sizeof(*s));
-        *s='_';
+        std::wstring OrigName=Name;
+        Name.insert(I,1,'_');
 #ifndef SFX_MODULE
         uiMsg(UIMSG_CORRECTINGNAME,nullptr);
         uiMsg(UIERROR_RENAMING,nullptr,OrigName,Name);
 #endif
       }
     }
+}
+#endif
+
+
+
+
+#ifdef _WIN_ALL
+std::wstring GetModuleFileStr()
+{
+  HMODULE hModule=nullptr;
+  
+  std::vector<wchar> Path(256);
+  while (Path.size()<=MAXPATHSIZE)
+  {
+    if (GetModuleFileName(hModule,Path.data(),(DWORD)Path.size())<Path.size())
+      break;
+    Path.resize(Path.size()*4);
+  }
+  return std::wstring(Path.data());
+}
+
+
+// Return the pathname of file in RAR or WinRAR folder.
+// 'Name' can point to non-existent file and include wildcards.
+std::wstring GetProgramFile(const std::wstring &Name)
+{
+  std::wstring FullName=GetModuleFileStr();
+  SetName(FullName,Name);
+  return FullName;
+}
+#endif
+
+
+#if defined(_WIN_ALL)
+bool SetCurDir(const std::wstring &Dir)
+{
+  return SetCurrentDirectory(Dir.c_str())!=0;
+}
+#endif
+
+
+#ifdef _WIN_ALL
+bool GetCurDir(std::wstring &Dir)
+{
+  DWORD BufSize=GetCurrentDirectory(0,NULL);
+  if (BufSize==0)
+    return false;
+  std::vector<wchar> Buf(BufSize);
+  DWORD Code=GetCurrentDirectory((DWORD)Buf.size(),Buf.data());
+  Dir=Buf.data();
+  return Code!=0;
 }
 #endif
 

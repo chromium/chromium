@@ -13,8 +13,18 @@ void CommandData::Init()
 {
   RAROptions::Init();
 
-  *Command=0;
-  *ArcName=0;
+  Command.clear();
+  ArcName.clear();
+  ExtrPath.clear();
+  TempPath.clear();
+  SFXModule.clear();
+  CommentFile.clear();
+  ArcPath.clear();
+  ExclArcPath.clear();
+  LogName.clear();
+  EmailTo.clear();
+  UseStdin.clear();
+
   FileLists=false;
   NoMoreSwitches=false;
 
@@ -30,57 +40,45 @@ void CommandData::Init()
   StoreArgs.Reset();
   Password.Clean();
   NextVolSizes.clear();
-}
-
-
-// Return the pointer to next position in the string and store dynamically
-// allocated command line parameter in Par.
-static const wchar *AllocCmdParam(const wchar *CmdLine,wchar **Par)
-{
-  const wchar *NextCmd=GetCmdParam(CmdLine,NULL,0);
-  if (NextCmd==NULL)
-    return NULL;
-  size_t ParSize=NextCmd-CmdLine+2; // Parameter size including the trailing zero.
-  *Par=(wchar *)malloc(ParSize*sizeof(wchar));
-  if (*Par==NULL)
-    return NULL;
-  return GetCmdParam(CmdLine,*Par,ParSize);
+#ifdef RARDLL
+  DllDestName.clear();
+#endif
 }
 
 
 #if !defined(SFX_MODULE)
 void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
 {
-  *Command=0;
+  Command.clear();
   NoMoreSwitches=false;
 #ifdef CUSTOM_CMDLINE_PARSER
   // In Windows we may prefer to implement our own command line parser
   // to avoid replacing \" by " in standard parser. Such replacing corrupts
   // destination paths like "dest path\" in extraction commands.
-  const wchar *CmdLine=GetCommandLine();
+  std::wstring CmdLine=GetCommandLine();
 
-  wchar *Par;
+  std::wstring Param;
+  std::wstring::size_type Pos=0;
+
   for (bool FirstParam=true;;FirstParam=false)
   {
-    if ((CmdLine=AllocCmdParam(CmdLine,&Par))==NULL)
+    if (!GetCmdParam(CmdLine,Pos,Param))
       break;
     if (!FirstParam) // First parameter is the executable name.
       if (Preprocess)
-        PreprocessArg(Par);
+        PreprocessArg(Param.data());
       else
-        ParseArg(Par);
-    free(Par);
+        ParseArg(Param.data());
   }
 #else
-  Array<wchar> Arg;
   for (int I=1;I<argc;I++)
   {
-    Arg.Alloc(strlen(argv[I])+1);
-    CharToWide(argv[I],&Arg[0],Arg.Size());
+    std::wstring Arg;
+    CharToWide(argv[I],Arg);
     if (Preprocess)
-      PreprocessArg(&Arg[0]);
+      PreprocessArg(Arg.data());
     else
-      ParseArg(&Arg[0]);
+      ParseArg(Arg.data());
   }
 #endif
   if (!Preprocess)
@@ -90,7 +88,7 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
 
 
 #if !defined(SFX_MODULE)
-void CommandData::ParseArg(wchar *Arg)
+void CommandData::ParseArg(const wchar *Arg)
 {
   if (IsSwitch(*Arg) && !NoMoreSwitches)
     if (Arg[1]=='-' && Arg[2]==0)
@@ -98,39 +96,52 @@ void CommandData::ParseArg(wchar *Arg)
     else
       ProcessSwitch(Arg+1);
   else
-    if (*Command==0)
+    if (Command.empty())
     {
-      wcsncpyz(Command,Arg,ASIZE(Command));
+      Command=Arg;
 
 
-      *Command=toupperw(*Command);
+      Command[0]=toupperw(Command[0]);
       // 'I' and 'S' commands can contain case sensitive strings after
       // the first character, so we must not modify their case.
       // 'S' can contain SFX name, which case is important in Unix.
-      if (*Command!='I' && *Command!='S')
+      if (Command[0]!='I' && Command[0]!='S')
         wcsupper(Command);
-      if (*Command=='P') // Enforce -idq for print command.
+      if (Command[0]=='P') // Enforce -idq for print command.
       {
         MsgStream=MSG_ERRONLY;
         SetConsoleMsgStream(MSG_ERRONLY);
       }
     }
     else
-      if (*ArcName==0)
-        wcsncpyz(ArcName,Arg,ASIZE(ArcName));
+      if (ArcName.empty())
+        ArcName=Arg;
       else
       {
         // Check if last character is the path separator.
         size_t Length=wcslen(Arg);
         wchar EndChar=Length==0 ? 0:Arg[Length-1];
-        bool EndSeparator=IsDriveDiv(EndChar) || IsPathDiv(EndChar);
+        // Check if trailing path separator like path\ is present.
+        bool FolderArg=IsDriveDiv(EndChar) || IsPathDiv(EndChar);
 
-        wchar CmdChar=toupperw(*Command);
+        // 2024.01.05: We were asked to support exotic d:. and d:.. paths.
+        if (IsDriveLetter(Arg) && Arg[2]=='.' && (Arg[3]==0 || Arg[3]=='.' && Arg[4]==0))
+          FolderArg=true;
+
+        // 2024.01.06: FindFile::FastFind check below fails in Windows 10 if
+        // "." or ".." points at disk root. So we enforce it for "." and ".."
+        // optionally preceded with some path like "..\..".
+        size_t L=Length;
+        if (L>0 && Arg[L-1]=='.' && (L==1 || L>=2 && (IsPathDiv(Arg[L-2]) ||
+            Arg[L-2]=='.' && (L==2 || L>=3 && IsPathDiv(Arg[L-3])))))
+          FolderArg=true;
+
+        wchar CmdChar=toupperw(Command[0]);
         bool Add=wcschr(L"AFUM",CmdChar)!=NULL;
         bool Extract=CmdChar=='X' || CmdChar=='E';
         bool Repair=CmdChar=='R' && Command[1]==0;
-        if (EndSeparator && !Add)
-          wcsncpyz(ExtrPath,Arg,ASIZE(ExtrPath));
+        if (FolderArg && !Add)
+          ExtrPath=Arg;
         else
           if ((Add || CmdChar=='T') && (*Arg!='@' || ListMode==RCLM_REJECT_LISTS))
             FileArgs.AddString(Arg);
@@ -147,10 +158,10 @@ void CommandData::ParseArg(wchar *Arg)
 
             }
             else // We use 'destpath\' when extracting and reparing.
-              if (Found && FileData.IsDir && (Extract || Repair) && *ExtrPath==0)
+              if (Found && FileData.IsDir && (Extract || Repair) && ExtrPath.empty())
               {
-                wcsncpyz(ExtrPath,Arg,ASIZE(ExtrPath));
-                AddEndSlash(ExtrPath,ASIZE(ExtrPath));
+                ExtrPath=Arg;
+                AddEndSlash(ExtrPath);
               }
               else
                 FileArgs.AddString(Arg);
@@ -178,12 +189,12 @@ void CommandData::ParseDone()
 #if !defined(SFX_MODULE)
 void CommandData::ParseEnvVar()
 {
-  char *EnvStr=getenv("RAR");
-  if (EnvStr!=NULL)
+  char *EnvVar=getenv("RAR");
+  if (EnvVar!=NULL)
   {
-    Array<wchar> EnvStrW(strlen(EnvStr)+1);
-    CharToWide(EnvStr,&EnvStrW[0],EnvStrW.Size());
-    ProcessSwitchesString(&EnvStrW[0]);
+    std::wstring EnvStr;
+    CharToWide(EnvVar,EnvStr);
+    ProcessSwitchesString(EnvStr);
   }
 }
 #endif
@@ -192,7 +203,7 @@ void CommandData::ParseEnvVar()
 
 #if !defined(SFX_MODULE)
 // Preprocess those parameters, which must be processed before the rest of
-// command line. Return 'false' to stop further processing.
+// command line.
 void CommandData::PreprocessArg(const wchar *Arg)
 {
   if (IsSwitch(Arg[0]) && !NoMoreSwitches)
@@ -201,7 +212,7 @@ void CommandData::PreprocessArg(const wchar *Arg)
     if (Arg[0]=='-' && Arg[1]==0) // Switch "--".
       NoMoreSwitches=true;
     if (wcsicomp(Arg,L"cfg-")==0)
-      ConfigDisabled=true;
+      ProcessSwitch(Arg);
     if (wcsnicomp(Arg,L"ilog",4)==0)
     {
       // Ensure that correct log file name is already set
@@ -213,13 +224,13 @@ void CommandData::PreprocessArg(const wchar *Arg)
     {
       // Process -sc before reading any file lists.
       ProcessSwitch(Arg);
-      if (*LogName!=0)
+      if (!LogName.empty())
         InitLogOptions(LogName,ErrlogCharset);
     }
   }
   else
-    if (*Command==0)
-      wcsncpy(Command,Arg,ASIZE(Command)); // Need for rar.ini.
+    if (Command.empty())
+      Command=Arg; // Need for rar.ini.
 }
 #endif
 
@@ -237,10 +248,10 @@ void CommandData::ReadConfig()
         Str++;
       if (wcsnicomp(Str,L"switches=",9)==0)
         ProcessSwitchesString(Str+9);
-      if (*Command!=0)
+      if (!Command.empty())
       {
         wchar Cmd[16];
-        wcsncpyz(Cmd,Command,ASIZE(Cmd));
+        wcsncpyz(Cmd,Command.c_str(),ASIZE(Cmd));
         wchar C0=toupperw(Cmd[0]);
         wchar C1=toupperw(Cmd[1]);
         if (C0=='I' || C0=='L' || C0=='M' || C0=='S' || C0=='V')
@@ -260,14 +271,19 @@ void CommandData::ReadConfig()
 
 
 #if !defined(SFX_MODULE)
-void CommandData::ProcessSwitchesString(const wchar *Str)
+void CommandData::ProcessSwitchesString(const std::wstring &Str)
 {
-  wchar *Par;
-  while ((Str=AllocCmdParam(Str,&Par))!=NULL)
+  std::wstring Par;
+  std::wstring::size_type Pos=0;
+  while (GetCmdParam(Str,Pos,Par))
   {
-    if (IsSwitch(*Par))
-      ProcessSwitch(Par+1);
-    free(Par);
+    if (IsSwitch(Par[0]))
+      ProcessSwitch(&Par[1]);
+    else
+    {
+      mprintf(St(MSwSyntaxError),Par.c_str());
+      ErrHandler.Exit(RARX_USERERROR);
+    }
   }
 }
 #endif
@@ -330,13 +346,12 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               break;
           }
           break;
-        case 'N': // Reserved for archive name.
-          break;
         case 'O':
           AddArcOnly=true;
           break;
         case 'P':
-          wcsncpyz(ArcPath,Switch+2,ASIZE(ArcPath));
+          // Convert slashes here than before every comparison.
+          SlashToNative(Switch+2,ArcPath);
           break;
         case 'S':
           SyncFiles=true;
@@ -347,7 +362,14 @@ void CommandData::ProcessSwitch(const wchar *Switch)
       }
       break;
     case 'C':
-      if (Switch[2]==0)
+      if (Switch[2]!=0)
+      {
+          if (wcsicomp(Switch+1,L"FG-")==0)
+            ConfigDisabled=true;
+          else
+            BadSwitch(Switch);
+      }
+      else
         switch(toupperw(Switch[1]))
         {
           case '-':
@@ -359,10 +381,15 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           case 'L':
             ConvertNames=NAMES_LOWERCASE;
             break;
+          default:
+            BadSwitch(Switch);
+            break;
         }
       break;
     case 'D':
-      if (Switch[2]==0)
+      if (Switch[2]!=0)
+        BadSwitch(Switch);
+      else
         switch(toupperw(Switch[1]))
         {
           case 'S':
@@ -373,6 +400,9 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             break;
           case 'F':
             DeleteFiles=true;
+            break;
+          default:
+            BadSwitch(Switch);
             break;
         }
       break;
@@ -395,7 +425,11 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               ExclPath=EXCL_ABSPATH;
               break;
             case '4':
-              wcsncpyz(ExclArcPath,Switch+3,ASIZE(ExclArcPath));
+              // Convert slashes here than before every comparison.
+              SlashToNative(Switch+3,ExclArcPath);
+              break;
+            default:
+              BadSwitch(Switch);
               break;
           }
           break;
@@ -431,7 +465,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           else
             if (!Password.IsSet())
             {
-              uiGetPassword(UIPASSWORD_GLOBAL,NULL,&Password,NULL);
+              uiGetPassword(UIPASSWORD_GLOBAL,L"",&Password,NULL);
               eprintf(L"\n");
             }
           break;
@@ -443,7 +477,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
     case 'I':
       if (wcsnicomp(Switch+1,L"LOG",3)==0)
       {
-        wcsncpyz(LogName,Switch[4]!=0 ? Switch+4:DefLogName,ASIZE(LogName));
+        LogName=Switch[4]!=0 ? Switch+4:DefLogName;
         break;
       }
       if (wcsnicomp(Switch+1,L"SND",3)==0)
@@ -461,7 +495,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
       }
       if (wcsnicomp(Switch+1,L"EML",3)==0)
       {
-        wcsncpyz(EmailTo,Switch[4]!=0 ? Switch+4:L"@",ASIZE(EmailTo));
+        EmailTo=Switch[4]!=0 ? Switch+4:L"@";
         break;
       }
       if (wcsicomp(Switch+1,L"M")==0) // For compatibility with pre-WinRAR 6.0 -im syntax. Replaced with -idv.
@@ -568,12 +602,14 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                 }
                 switch(toupperw(*(Str++)))
                 {
-                  case 'T': Type=FILTER_PPM;         break;
+//                  case 'T': Type=FILTER_TEXT;        break;
                   case 'E': Type=FILTER_E8;          break;
                   case 'D': Type=FILTER_DELTA;       break;
-                  case 'A': Type=FILTER_AUDIO;       break;
-                  case 'C': Type=FILTER_RGB;         break;
-                  case 'R': Type=FILTER_ARM;         break;
+//                  case 'A': Type=FILTER_AUDIO;       break;
+//                  case 'C': Type=FILTER_RGB;         break;
+//                  case 'R': Type=FILTER_ARM;         break;
+                  case 'L': Type=FILTER_LONGRANGE;   break;
+                  case 'X': Type=FILTER_EXHAUSTIVE;  break;
                 }
                 if (*Str=='+' || *Str=='-')
                   State=*(Str++)=='+' ? FILTER_FORCE:FILTER_DISABLE;
@@ -586,6 +622,44 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         case 'M':
           break;
         case 'D':
+          {
+            bool SetDictLimit=toupperw(Switch[2])=='X';
+
+            uint64 Size=atoiw(Switch+(SetDictLimit ? 3 : 2));
+            wchar LastChar=toupperw(Switch[wcslen(Switch)-1]);
+            if (IsDigit(LastChar))
+              LastChar=SetDictLimit ? 'G':'M'; // Treat -md128 as -md128m and -mdx32 as -mdx32g.
+            switch(LastChar)
+            {
+              case 'K':
+                Size*=1024;
+                break;
+              case 'M':
+                Size*=1024*1024;
+                break;
+              case 'G':
+                Size*=1024*1024*1024;
+                break;
+              default:
+                BadSwitch(Switch);
+            }
+
+            // 2023.07.22: For 4 GB and less we also check that it is power of 2,
+            // so archives are compatible with RAR 5.0+.
+            // We allow Size>PACK_MAX_DICT here, so we can use -md[x] to unpack
+            // archives created by future versions with higher PACK_MAX_DICTþ
+            uint Flags;
+            if ((Size=Archive::GetWinSize(Size,Flags))==0 ||
+                Size<=0x100000000ULL && !IsPow2(Size))
+              BadSwitch(Switch);
+            else
+              if (SetDictLimit)
+                WinSizeLimit=Size;
+              else
+              {
+                WinSize=Size;
+              }
+          }
           break;
         case 'E':
           if (toupperw(Switch[2])=='S' && Switch[3]==0)
@@ -593,25 +667,20 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           break;
         case 'S':
           {
-            wchar StoreNames[1024];
-            wcsncpyz(StoreNames,(Switch[2]==0 ? DefaultStoreList:Switch+2),ASIZE(StoreNames));
-            wchar *Names=StoreNames;
-            while (*Names!=0)
+            std::wstring StoreNames=(Switch[2]==0 ? DefaultStoreList:Switch+2);
+            size_t Pos=0;
+            while (Pos<StoreNames.size())
             {
-              wchar *End=wcschr(Names,';');
-              if (End!=NULL)
-                *End=0;
-              if (*Names=='.')
-                Names++;
-              wchar Mask[NM];
-              if (wcspbrk(Names,L"*?.")==NULL)
-                swprintf(Mask,ASIZE(Mask),L"*.%ls",Names);
-              else
-                wcsncpyz(Mask,Names,ASIZE(Mask));
+              if (StoreNames[Pos]=='.')
+                Pos++;
+              size_t EndPos=StoreNames.find(';',Pos);
+              std::wstring Mask=StoreNames.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
+              if (Mask.find_first_of(L"*?.")==std::wstring::npos)
+                Mask.insert(0,L"*.");
               StoreArgs.AddString(Mask);
-              if (End==NULL)
+              if (EndPos==std::wstring::npos)
                 break;
-              Names=End+1;
+              Pos=EndPos+1;
             }
           }
           break;
@@ -668,8 +737,19 @@ void CommandData::ProcessSwitch(const wchar *Switch)
 #ifdef SAVE_LINKS
         case 'L':
           SaveSymLinks=true;
-          if (toupperw(Switch[2])=='A')
-            AbsoluteLinks=true;
+          for (uint I=2;Switch[I]!=0;I++)
+            switch(toupperw(Switch[I]))
+            {
+              case 'A':
+                AbsoluteLinks=true;
+                break;
+              case '-':
+                SkipSymLinks=true;
+                break;
+              default:
+                BadSwitch(Switch);
+                break;
+            }
           break;
 #endif
 #ifdef _WIN_ALL
@@ -679,8 +759,8 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           break;
 #endif
         case 'P':
-          wcsncpyz(ExtrPath,Switch+2,ASIZE(ExtrPath));
-          AddEndSlash(ExtrPath,ASIZE(ExtrPath));
+          ExtrPath=Switch+2;
+          AddEndSlash(ExtrPath);
           break;
         case 'R':
           Overwrite=OVERWRITE_AUTORENAME;
@@ -701,7 +781,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
     case 'P':
       if (Switch[1]==0)
       {
-        uiGetPassword(UIPASSWORD_GLOBAL,NULL,&Password,NULL);
+        uiGetPassword(UIPASSWORD_GLOBAL,L"",&Password,NULL);
         eprintf(L"\n");
       }
       else
@@ -790,15 +870,15 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             break;
           case 'I':
             ProhibitConsoleInput();
-            wcsncpyz(UseStdin,Switch[2] ? Switch+2:L"stdin",ASIZE(UseStdin));
+            UseStdin=Switch[2] ? Switch+2:L"stdin";
             break;
           case 'L':
             if (IsDigit(Switch[2]))
-              FileSizeLess=atoilw(Switch+2);
+              FileSizeLess=GetVolSize(Switch+2,1);
             break;
           case 'M':
             if (IsDigit(Switch[2]))
-              FileSizeMore=atoilw(Switch+2);
+              FileSizeMore=GetVolSize(Switch+2,1);
             break;
           case 'C':
             {
@@ -913,8 +993,8 @@ void CommandData::ProcessSwitch(const wchar *Switch)
       }
       break;
     case 'W':
-      wcsncpyz(TempPath,Switch+1,ASIZE(TempPath));
-      AddEndSlash(TempPath,ASIZE(TempPath));
+      TempPath=Switch+1;
+      AddEndSlash(TempPath);
       break;
     case 'Y':
       AllYes=true;
@@ -923,10 +1003,10 @@ void CommandData::ProcessSwitch(const wchar *Switch)
       if (Switch[1]==0)
       {
         // If comment file is not specified, we read data from stdin.
-        wcsncpyz(CommentFile,L"stdin",ASIZE(CommentFile));
+        CommentFile=L"stdin";
       }
       else
-        wcsncpyz(CommentFile,Switch+1,ASIZE(CommentFile));
+        CommentFile=Switch+1;
       break;
     case '?' :
       OutHelp(RARX_SUCCESS);
@@ -943,7 +1023,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
 void CommandData::BadSwitch(const wchar *Switch)
 {
   mprintf(St(MUnknownOption),Switch);
-  mprintf(L"\n");
   ErrHandler.Exit(RARX_USERERROR);
 }
 #endif
@@ -954,34 +1033,36 @@ void CommandData::ProcessCommand()
 #ifndef SFX_MODULE
 
   const wchar *SingleCharCommands=L"FUADPXETK";
-  if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || *ArcName==0)
-    OutHelp(*Command==0 ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
+  if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || ArcName.empty())
+    OutHelp(Command.empty() ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
 
-  const wchar *ArcExt=GetExt(ArcName);
+  size_t ExtPos=GetExtPos(ArcName);
 #ifdef _UNIX
-  if (ArcExt==NULL && (!FileExist(ArcName) || IsDir(GetFileAttr(ArcName))))
-    wcsncatz(ArcName,L".rar",ASIZE(ArcName));
+  // If we want to update an archive without extension, in Windows we can use
+  // "arcname." and it will be treated as "arcname". In Unix "arcname"
+  // and "arcname." are two different names, so we check if "arcname" exists
+  // and do not append ".rar", allowing user to update such archive.
+  if (ExtPos==std::wstring::npos && (!FileExist(ArcName) || IsDir(GetFileAttr(ArcName))))
+    ArcName+=L".rar";
 #else
-  if (ArcExt==NULL)
-    wcsncatz(ArcName,L".rar",ASIZE(ArcName));
+  if (ExtPos==std::wstring::npos)
+    ArcName+=L".rar";
 #endif
   // Treat arcname.part1 as arcname.part1.rar.
-  if (ArcExt!=NULL && wcsnicomp(ArcExt,L".part",5)==0 && IsDigit(ArcExt[5]) &&
-      !FileExist(ArcName))
+  if (ExtPos!=std::wstring::npos && wcsnicomp(&ArcName[ExtPos],L".part",5)==0 &&
+      IsDigit(ArcName[ExtPos+5]) && !FileExist(ArcName))
   {
-    wchar Name[NM];
-    wcsncpyz(Name,ArcName,ASIZE(Name));
-    wcsncatz(Name,L".rar",ASIZE(Name));
+    std::wstring Name=ArcName+L".rar";
     if (FileExist(Name))
-      wcsncpyz(ArcName,Name,ASIZE(ArcName));
+      ArcName=Name;
   }
 
-  if (wcschr(L"AFUMD",*Command)==NULL && *UseStdin==0)
+  if (wcschr(L"AFUMD",Command[0])==NULL && UseStdin.empty())
   {
     if (GenerateArcName)
     {
       const wchar *Mask=*GenerateMask!=0 ? GenerateMask:DefGenerateMask;
-      GenerateArchiveName(ArcName,ASIZE(ArcName),Mask,false);
+      GenerateArchiveName(ArcName,Mask,false);
     }
 
     StringList ArcMasks;
@@ -1020,7 +1101,7 @@ void CommandData::ProcessCommand()
 }
 
 
-void CommandData::AddArcName(const wchar *Name)
+void CommandData::AddArcName(const std::wstring &Name)
 {
   ArcNames.AddString(Name);
 }
@@ -1032,9 +1113,15 @@ bool CommandData::GetArcName(wchar *Name,int MaxSize)
 }
 
 
+bool CommandData::GetArcName(std::wstring &Name)
+{
+  return ArcNames.GetString(Name);
+}
+
+
 bool CommandData::IsSwitch(int Ch)
 {
-#if defined(_WIN_ALL) || defined(_EMX)
+#ifdef _WIN_ALL
   return Ch=='-' || Ch=='/';
 #else
   return Ch=='-';
@@ -1060,7 +1147,7 @@ uint CommandData::GetExclAttr(const wchar *Str,bool &Dir)
       case 'V':
         Attr|=S_IFCHR;
         break;
-#elif defined(_WIN_ALL) || defined(_EMX)
+#elif defined(_WIN_ALL)
       case 'R':
         Attr|=0x1;
         break;
@@ -1082,21 +1169,6 @@ uint CommandData::GetExclAttr(const wchar *Str,bool &Dir)
 #endif
 
 
-
-
-#ifndef SFX_MODULE
-bool CommandData::CheckWinSize()
-{
-  // Define 0x100000000 as macro to avoid troubles with older compilers.
-  const uint64 MaxDictSize=INT32TO64(1,0);
-  // Limit the dictionary size to 4 GB.
-  for (uint64 I=0x10000;I<=MaxDictSize;I*=2)
-    if (WinSize==I)
-      return true;
-  WinSize=0x400000;
-  return false;
-}
-#endif
 
 
 #ifndef SFX_MODULE
@@ -1128,3 +1200,36 @@ void CommandData::ReportWrongSwitches(RARFORMAT Format)
   }
 }
 #endif
+
+
+int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
+{
+  int64 Size=0,FloatingDivider=0;
+  for (uint I=0;S[I]!=0;I++)
+    if (IsDigit(S[I]))
+    {
+      Size=Size*10+S[I]-'0';
+      FloatingDivider*=10;
+    }
+    else
+      if (S[I]=='.')
+        FloatingDivider=1;
+
+  if (*S!=0)
+  {
+    const wchar *ModList=L"bBkKmMgGtT";
+    const wchar *Mod=wcschr(ModList,S[wcslen(S)-1]);
+    if (Mod==NULL)
+      Size*=DefMultiplier;
+    else
+      for (ptrdiff_t I=2;I<=Mod-ModList;I+=2)
+        Size*=((Mod-ModList)&1)!=0 ? 1000:1024;
+  }
+  if (FloatingDivider!=0)
+    Size/=FloatingDivider;
+  return Size;
+}
+
+
+
+

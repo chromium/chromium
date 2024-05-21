@@ -114,7 +114,7 @@ void QuickOpen::Load(uint64 BlockPos)
   RawDataPos=0;
   ReadBufSize=0;
   ReadBufPos=0;
-  LastReadHeader.Reset();
+  LastReadHeader.clear();
   LastReadHeaderPos=0;
 
   ReadBuffer();
@@ -126,7 +126,7 @@ bool QuickOpen::Read(void *Data,size_t Size,size_t &Result)
   if (!Loaded)
     return false;
   // Find next suitable cached block.
-  while (LastReadHeaderPos+LastReadHeader.Size()<=SeekPos)
+  while (LastReadHeaderPos+LastReadHeader.size()<=SeekPos)
     if (!ReadNext())
       break;
   if (!Loaded)
@@ -138,9 +138,9 @@ bool QuickOpen::Read(void *Data,size_t Size,size_t &Result)
     return false;
   }
 
-  if (SeekPos>=LastReadHeaderPos && SeekPos+Size<=LastReadHeaderPos+LastReadHeader.Size())
+  if (SeekPos>=LastReadHeaderPos && SeekPos+Size<=LastReadHeaderPos+LastReadHeader.size())
   {
-    memcpy(Data,LastReadHeader+size_t(SeekPos-LastReadHeaderPos),Size);
+    memcpy(Data,&LastReadHeader[size_t(SeekPos-LastReadHeaderPos)],Size);
     Result=Size;
     SeekPos+=Size;
     UnsyncSeekPos=true;
@@ -292,8 +292,8 @@ bool QuickOpen::ReadNext()
   size_t HeaderSize=(size_t)Raw.GetV();
   if (HeaderSize>MAX_HEADER_SIZE_RAR5)
     return false;
-  LastReadHeader.Alloc(HeaderSize);
-  Raw.GetB(&LastReadHeader[0],HeaderSize);
+  LastReadHeader.resize(HeaderSize);
+  Raw.GetB(LastReadHeader.data(),HeaderSize);
   // Calculate the absolute position as offset from quick open service header.
   LastReadHeaderPos=QOHeaderPos-Offset;
   return true;

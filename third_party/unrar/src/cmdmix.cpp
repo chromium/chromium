@@ -103,7 +103,7 @@ void CommandData::OutHelp(RAR_EXIT ExitCode)
     if (CmpMSGID(Help[I],MCHelpSwOW))
       continue;
 #endif
-#if !defined(_WIN_ALL) && !defined(_EMX)
+#ifndef _WIN_ALL
     if (CmpMSGID(Help[I],MCHelpSwAC))
       continue;
 #endif

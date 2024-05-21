@@ -42,20 +42,27 @@
 
 
 // RAR 5.0 file compression flags.
-#define FCI_ALGO_BIT0       0x0001 // Version of compression algorithm.
-#define FCI_ALGO_BIT1       0x0002 // 0 .. 63.
-#define FCI_ALGO_BIT2       0x0004
-#define FCI_ALGO_BIT3       0x0008
-#define FCI_ALGO_BIT4       0x0010
-#define FCI_ALGO_BIT5       0x0020
-#define FCI_SOLID           0x0040 // Solid flag.
-#define FCI_METHOD_BIT0     0x0080 // Compression method.
-#define FCI_METHOD_BIT1     0x0100 // 0 .. 5 (6 and 7 are not used).
-#define FCI_METHOD_BIT2     0x0200
-#define FCI_DICT_BIT0       0x0400 // Dictionary size.
-#define FCI_DICT_BIT1       0x0800 // 128 KB .. 4 GB.
-#define FCI_DICT_BIT2       0x1000
-#define FCI_DICT_BIT3       0x2000
+#define FCI_ALGO_BIT0       0x00000001 // Version of compression algorithm.
+#define FCI_ALGO_BIT1       0x00000002 // 0 .. 63.
+#define FCI_ALGO_BIT2       0x00000004
+#define FCI_ALGO_BIT3       0x00000008
+#define FCI_ALGO_BIT4       0x00000010
+#define FCI_ALGO_BIT5       0x00000020
+#define FCI_SOLID           0x00000040 // Solid flag.
+#define FCI_METHOD_BIT0     0x00000080 // Compression method.
+#define FCI_METHOD_BIT1     0x00000100 // 0 .. 5 (6 and 7 are not used).
+#define FCI_METHOD_BIT2     0x00000200
+#define FCI_DICT_BIT0       0x00000400 // Dictionary size.
+#define FCI_DICT_BIT1       0x00000800 // 128 KB .. 1 TB.
+#define FCI_DICT_BIT2       0x00001000
+#define FCI_DICT_BIT3       0x00002000
+#define FCI_DICT_BIT4       0x00004000
+#define FCI_DICT_FRACT0     0x00008000 // Dictionary fraction in 1/32 of size.
+#define FCI_DICT_FRACT1     0x00010000
+#define FCI_DICT_FRACT2     0x00020000
+#define FCI_DICT_FRACT3     0x00040000
+#define FCI_DICT_FRACT4     0x00080000
+#define FCI_RAR5_COMPAT     0x00100000 // RAR7 compression flags and RAR5 compression algorithm.
 
 // Main header extra field values.
 #define MHEXTRA_LOCATOR       0x01 // Position of quick list and other blocks.

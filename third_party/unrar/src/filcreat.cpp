@@ -3,7 +3,7 @@
 // If NewFile==NULL, we delete created file after user confirmation.
 // It is useful if we need to overwrite an existing folder or file,
 // but need user confirmation for that.
-bool FileCreate(CommandData *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
+bool FileCreate(CommandData *Cmd,File *NewFile,std::wstring &Name,
                 bool *UserReject,int64 FileSize,RarTime *FileTime,bool WriteOnly)
 {
   if (UserReject!=NULL)
@@ -29,7 +29,7 @@ bool FileCreate(CommandData *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
     // autorename below can change the name, so we need to check it again.
     ShortNameChanged=false;
 #endif
-    UIASKREP_RESULT Choice=uiAskReplaceEx(Cmd,Name,MaxNameSize,FileSize,FileTime,(NewFile==NULL ? UIASKREP_F_NORENAME:0));
+    UIASKREP_RESULT Choice=uiAskReplaceEx(Cmd,Name,FileSize,FileTime,(NewFile==NULL ? UIASKREP_F_NORENAME:0));
 
     if (Choice==UIASKREP_R_REPLACE)
       break;
@@ -56,85 +56,70 @@ bool FileCreate(CommandData *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
 }
 
 
-bool GetAutoRenamedName(wchar *Name,size_t MaxNameSize)
-{
-  wchar NewName[NM];
-  size_t NameLength=wcslen(Name);
-  wchar *Ext=GetExt(Name);
-  if (Ext==NULL)
-    Ext=Name+NameLength;
-  for (uint FileVer=1;;FileVer++)
-  {
-    swprintf(NewName,ASIZE(NewName),L"%.*ls(%u)%ls",uint(Ext-Name),Name,FileVer,Ext);
-    if (!FileExist(NewName))
-    {
-      wcsncpyz(Name,NewName,MaxNameSize);
-      break;
-    }
-    if (FileVer>=1000000)
-      return false;
-  }
-  return true;
-}
-
-
 #if defined(_WIN_ALL)
 // If we find a file, which short name is equal to 'Name', we try to change
 // its short name, while preserving the long name. It helps when unpacking
 // an archived file, which long name is equal to short name of already
 // existing file. Otherwise we would overwrite the already existing file,
 // even though its long name does not match the name of unpacking file.
-bool UpdateExistingShortName(const wchar *Name)
+bool UpdateExistingShortName(const std::wstring &Name)
 {
-  wchar LongPathName[NM];
-  DWORD Res=GetLongPathName(Name,LongPathName,ASIZE(LongPathName));
-  if (Res==0 || Res>=ASIZE(LongPathName))
+  DWORD Res=GetLongPathName(Name.c_str(),NULL,0);
+  if (Res==0)
     return false;
-  wchar ShortPathName[NM];
-  Res=GetShortPathName(Name,ShortPathName,ASIZE(ShortPathName));
-  if (Res==0 || Res>=ASIZE(ShortPathName))
+  std::vector<wchar> LongPathBuf(Res);
+  Res=GetLongPathName(Name.c_str(),LongPathBuf.data(),(DWORD)LongPathBuf.size());
+  if (Res==0 || Res>=LongPathBuf.size())
     return false;
-  wchar *LongName=PointToName(LongPathName);
-  wchar *ShortName=PointToName(ShortPathName);
+  Res=GetShortPathName(Name.c_str(),NULL,0);
+  if (Res==0)
+    return false;
+  std::vector<wchar> ShortPathBuf(Res);
+  Res=GetShortPathName(Name.c_str(),ShortPathBuf.data(),(DWORD)ShortPathBuf.size());
+  if (Res==0 || Res>=ShortPathBuf.size())
+    return false;
+  std::wstring LongPathName=LongPathBuf.data();
+  std::wstring ShortPathName=ShortPathBuf.data();
+  
+  std::wstring LongName=PointToName(LongPathName);
+  std::wstring ShortName=PointToName(ShortPathName);
 
   // We continue only if file has a short name, which does not match its
   // long name, and this short name is equal to name of file which we need
   // to create.
-  if (*ShortName==0 || wcsicomp(LongName,ShortName)==0 ||
+  if (ShortName.empty() || wcsicomp(LongName,ShortName)==0 ||
       wcsicomp(PointToName(Name),ShortName)!=0)
     return false;
 
   // Generate the temporary new name for existing file.
-  wchar NewName[NM];
-  *NewName=0;
-  for (int I=0;I<10000 && *NewName==0;I+=123)
+  std::wstring NewName;
+  for (uint I=0;I<10000 && NewName.empty();I+=123)
   {
     // Here we copy the path part of file to create. We'll make the temporary
     // file in the same folder.
-    wcsncpyz(NewName,Name,ASIZE(NewName));
+    NewName=Name;
 
     // Here we set the random name part.
-    swprintf(PointToName(NewName),ASIZE(NewName),L"rtmp%d",I);
+    SetName(NewName,std::wstring(L"rtmp") + std::to_wstring(I));
     
     // If such file is already exist, try next random name.
     if (FileExist(NewName))
-      *NewName=0;
+      NewName.clear();
   }
 
   // If we could not generate the name not used by any other file, we return.
-  if (*NewName==0)
+  if (NewName.empty())
     return false;
   
   // FastFind returns the name without path, but we need the fully qualified
   // name for renaming, so we use the path from file to create and long name
   // from existing file.
-  wchar FullName[NM];
-  wcsncpyz(FullName,Name,ASIZE(FullName));
-  SetName(FullName,LongName,ASIZE(FullName));
+  std::wstring FullName=Name;
+  SetName(FullName,LongName);
   
   // Rename the existing file to randomly generated name. Normally it changes
   // the short name too.
-  if (!MoveFile(FullName,NewName))
+  if (!MoveFile(FullName.c_str(),NewName.c_str()))
     return false;
 
   // Now we need to create the temporary empty file with same name as
@@ -149,7 +134,7 @@ bool UpdateExistingShortName(const wchar *Name)
   // Now we rename the existing file from temporary name to original long name.
   // Since its previous short name is occupied by another file, it should
   // get another short name.
-  MoveFile(NewName,FullName);
+  MoveFile(NewName.c_str(),FullName.c_str());
 
   if (Created)
   {
@@ -157,9 +142,9 @@ bool UpdateExistingShortName(const wchar *Name)
     KeepShortFile.Close();
     KeepShortFile.Delete();
   }
-  // We successfully changed the short name. Maybe sometimes we'll simplify
-  // this function by use of SetFileShortName Windows API call.
-  // But SetFileShortName is not available in older Windows.
+  // We successfully changed the short name. We do not use the simpler
+  // SetFileShortName Windows API call, because it requires SE_RESTORE_NAME
+  // privilege.
   return true;
 }
 #endif

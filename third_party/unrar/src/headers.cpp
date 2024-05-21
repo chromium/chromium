@@ -2,7 +2,7 @@
 
 void FileHeader::Reset(size_t SubDataSize)
 {
-  SubData.Alloc(SubDataSize);
+  SubData.resize(SubDataSize);
   BaseBlock::Reset();
   FileHash.Init(HASH_NONE);
   mtime.Reset();
@@ -37,6 +37,7 @@ void FileHeader::Reset(size_t SubDataSize)
 }
 
 
+/*
 FileHeader& FileHeader::operator = (FileHeader &hd)
 {
   SubData.Reset();
@@ -45,6 +46,7 @@ FileHeader& FileHeader::operator = (FileHeader &hd)
   SubData=hd.SubData;
   return *this;
 }
+*/
 
 
 void MainHeader::Reset()

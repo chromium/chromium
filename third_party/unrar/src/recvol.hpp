@@ -8,7 +8,7 @@ class RecVolumes3
 {
   private:
     File *SrcFile[256];
-    Array<byte> Buf;
+    std::vector<byte> Buf;
 
 #ifdef RAR_SMP
     ThreadPool *RSThreadPool;
@@ -16,16 +16,16 @@ class RecVolumes3
   public:
     RecVolumes3(CommandData *Cmd,bool TestOnly);
     ~RecVolumes3();
-    void Make(CommandData *Cmd,wchar *ArcName);
-    bool Restore(CommandData *Cmd,const wchar *Name,bool Silent);
-    void Test(CommandData *Cmd,const wchar *Name);
+    void Make(CommandData *Cmd,std::wstring ArcName);
+    bool Restore(CommandData *Cmd,const std::wstring &Name,bool Silent);
+    void Test(CommandData *Cmd,const std::wstring &Name);
 };
 
 
 struct RecVolItem
 {
   File *f;
-  wchar Name[NM];
+  std::wstring Name;
   uint CRC;
   uint64 FileSize;
   bool New;   // Newly created RAR volume.
@@ -52,7 +52,7 @@ class RecVolumes5
     void ProcessRS(CommandData *Cmd,uint MaxRead,bool Encode);
     uint ReadHeader(File *RecFile,bool FirstRev);
 
-    Array<RecVolItem> RecItems;
+    std::vector<RecVolItem> RecItems;
 
     byte *RealReadBuffer; // Real pointer returned by 'new'.
     byte *ReadBuffer;     // Pointer aligned for SSE instructions.
@@ -78,11 +78,11 @@ class RecVolumes5
   public:
     RecVolumes5(CommandData *Cmd,bool TestOnly);
     ~RecVolumes5();
-    bool Restore(CommandData *Cmd,const wchar *Name,bool Silent);
-    void Test(CommandData *Cmd,const wchar *Name);
+    bool Restore(CommandData *Cmd,const std::wstring &Name,bool Silent);
+    void Test(CommandData *Cmd,const std::wstring &Name);
 };
 
-bool RecVolumesRestore(CommandData *Cmd,const wchar *Name,bool Silent);
-void RecVolumesTest(CommandData *Cmd,Archive *Arc,const wchar *Name);
+bool RecVolumesRestore(CommandData *Cmd,const std::wstring &Name,bool Silent);
+void RecVolumesTest(CommandData *Cmd,Archive *Arc,const std::wstring &Name);
 
 #endif

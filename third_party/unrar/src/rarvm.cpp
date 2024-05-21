@@ -246,7 +246,7 @@ bool RarVM::ExecuteStandardFilter(VM_StandardFilters FilterType)
             }
             else
               Predicted=PrevByte;
-            DestData[I]=PrevByte=(byte)(Predicted-*(SrcData++));
+            PrevByte=DestData[I]=(byte)(Predicted-*(SrcData++));
           }
         }
         for (uint I=PosR,Border=DataSize-2;I<Border;I+=3)

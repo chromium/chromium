@@ -8,41 +8,42 @@ class CmdExtract
   private:
     struct ExtractRef
     {
-      wchar *RefName;
-      wchar *TmpName;
+      std::wstring RefName;
+      std::wstring TmpName;
       uint64 RefCount;
     };
-    Array<ExtractRef> RefList;
+    std::vector<ExtractRef> RefList;
 
     struct AnalyzeData
     {
-      wchar StartName[NM];
+      std::wstring StartName;
       uint64 StartPos;
-      wchar EndName[NM];
+      std::wstring EndName;
       uint64 EndPos;
-    } *Analyze;
+    } Analyze;
 
     bool ArcAnalyzed;
 
     void FreeAnalyzeData();
     EXTRACT_ARC_CODE ExtractArchive();
-    bool ExtractFileCopy(File &New,wchar *ArcName,const wchar *RedirName,wchar *NameNew,wchar *NameExisting,size_t NameExistingSize,int64 UnpSize);
-    void ExtrPrepareName(Archive &Arc,const wchar *ArcFileName,wchar *DestName,size_t DestSize);
+    bool ExtractFileCopy(File &New,const std::wstring &ArcName,const std::wstring &RedirName,const std::wstring &NameNew,const std::wstring &NameExisting,int64 UnpSize);
+    void ExtrPrepareName(Archive &Arc,const std::wstring &ArcFileName,std::wstring &DestName);
 #ifdef RARDLL
     bool ExtrDllGetPassword();
 #else
-    bool ExtrGetPassword(Archive &Arc,const wchar *ArcFileName,RarCheckPassword *CheckPwd);
+    bool ExtrGetPassword(Archive &Arc,const std::wstring &ArcFileName,RarCheckPassword *CheckPwd);
 #endif
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
     void ConvertDosPassword(Archive &Arc,SecPassword &DestPwd);
 #endif
-    void ExtrCreateDir(Archive &Arc,const wchar *ArcFileName);
+    void ExtrCreateDir(Archive &Arc,const std::wstring &ArcFileName);
     bool ExtrCreateFile(Archive &Arc,File &CurFile);
-    bool CheckUnpVer(Archive &Arc,const wchar *ArcFileName);
+    bool CheckUnpVer(Archive &Arc,const std::wstring &ArcFileName);
 #ifndef SFX_MODULE
-    void AnalyzeArchive(const wchar *ArcName,bool Volume,bool NewNumbering);
-    void GetFirstVolIfFullSet(const wchar *SrcName,bool NewNumbering,wchar *DestName,size_t DestSize);
+    void AnalyzeArchive(const std::wstring &ArcName,bool Volume,bool NewNumbering);
+    void GetFirstVolIfFullSet(const std::wstring &SrcName,bool NewNumbering,std::wstring &DestName);
 #endif
+    bool CheckWinLimit(Archive &Arc,std::wstring &ArcFileName);
 
     RarTime StartTime; // Time when extraction started.
 
@@ -65,12 +66,12 @@ class CmdExtract
     // any wrong password hints.
     bool AnySolidDataUnpackedWell;
 
-    wchar ArcName[NM];
+    std::wstring ArcName;
 
     bool GlobalPassword;
     bool PrevProcessed; // If previous file was successfully extracted or tested.
-    wchar DestFileName[NM];
-    bool PasswordCancelled;
+    std::wstring DestFileName;
+    bool SuppressNoFilesMessage;
 
     // In Windows it is set to true if at least one symlink with ".."
     // in target was extracted.

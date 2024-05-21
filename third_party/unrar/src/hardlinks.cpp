@@ -1,4 +1,4 @@
-bool ExtractHardlink(CommandData *Cmd,wchar *NameNew,wchar *NameExisting,size_t NameExistingSize)
+bool ExtractHardlink(CommandData *Cmd,const std::wstring &NameNew,const std::wstring &NameExisting)
 {
   if (!FileExist(NameExisting))
   {
@@ -10,7 +10,7 @@ bool ExtractHardlink(CommandData *Cmd,wchar *NameNew,wchar *NameExisting,size_t 
   CreatePath(NameNew,true,Cmd->DisableNames);
 
 #ifdef _WIN_ALL
-  bool Success=CreateHardLink(NameNew,NameExisting,NULL)!=0;
+  bool Success=CreateHardLink(NameNew.c_str(),NameExisting.c_str(),NULL)!=0;
   if (!Success)
   {
     uiMsg(UIERROR_HLINKCREATE,NameNew);
@@ -19,10 +19,10 @@ bool ExtractHardlink(CommandData *Cmd,wchar *NameNew,wchar *NameExisting,size_t 
   }
   return Success;
 #elif defined(_UNIX)
-  char NameExistingA[NM],NameNewA[NM];
-  WideToChar(NameExisting,NameExistingA,ASIZE(NameExistingA));
-  WideToChar(NameNew,NameNewA,ASIZE(NameNewA));
-  bool Success=link(NameExistingA,NameNewA)==0;
+  std::string NameExistingA,NameNewA;
+  WideToChar(NameExisting,NameExistingA);
+  WideToChar(NameNew,NameNewA);
+  bool Success=link(NameExistingA.c_str(),NameNewA.c_str())==0;
   if (!Success)
   {
     uiMsg(UIERROR_HLINKCREATE,NameNew);

@@ -2,39 +2,43 @@
 
 const char *NullToEmpty(const char *Str)
 {
-  return Str==NULL ? "":Str;
+  return Str==nullptr ? "":Str;
 }
 
 
 const wchar *NullToEmpty(const wchar *Str)
 {
-  return Str==NULL ? L"":Str;
+  return Str==nullptr ? L"":Str;
 }
 
 
-void IntToExt(const char *Src,char *Dest,size_t DestSize)
+void IntToExt(const std::string &Src,std::string &Dest)
 {
 #ifdef _WIN_ALL
-  // OemToCharBuff does not stop at 0, so let's check source length.
-  size_t SrcLength=strlen(Src)+1;
-  if (DestSize>SrcLength)
-    DestSize=SrcLength;
-  OemToCharBuffA(Src,Dest,(DWORD)DestSize);
-  Dest[DestSize-1]=0;
+  if (std::addressof(Src)!=std::addressof(Dest))
+    Dest=Src;
+  // OemToCharA use seems to be discouraged. So we use OemToCharBuffA,
+  // which doesn't stop at 0 and converts the entire passed length.
+  OemToCharBuffA(&Dest[0],&Dest[0],(DWORD)Dest.size());
+
+  std::string::size_type Pos=Dest.find('\0'); // Avoid zeroes inside of Dest.
+  if (Pos!=std::string::npos)
+    Dest.erase(Pos);
+  
 #else
-  if (Dest!=Src)
-    strncpyz(Dest,Src,DestSize);
+  if (std::addressof(Src)!=std::addressof(Dest))
+    Dest=Src;
 #endif
 }
 
 
 // Convert archived names and comments to Unicode.
 // Allows user to select a code page in GUI.
-void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Encoding)
+void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
 {
 #if defined(_WIN_ALL) // Console Windows RAR.
   if (Encoding==ACTW_UTF8)
-    UtfToWide(Src,Dest,DestSize);
+    UtfToWide(Src,Dest);
   else
   {
 #if defined(CHROMIUM_UNRAR)
@@ -44,34 +48,39 @@ void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Enc
       // codepage using CP_OEMCP and MultiByteToWideChar from kernel32.dll
       // instead, as we're also attempting to map to wide chars.
       const size_t SrcLength = strlen(Src) + 1;
-      (void)::MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED | MB_USEGLYPHCHARS,
-                                  Src, SrcLength, Dest, DestSize);
+      const int size =
+          MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED | MB_USEGLYPHCHARS, Src,
+                              SrcLength, nullptr, 0);
+      if (size <= 0) {
+        Dest.clear();
+      } else {
+        Dest.resize(size);
+        (void)::MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED | MB_USEGLYPHCHARS,
+                                    Src, SrcLength, &Dest[0], size);
+      }
     } else {
-      CharToWide(Src, Dest, DestSize);
+      CharToWide(Src, Dest);
     }
 #else
-    Array<char> NameA;
+    std::string NameA;
     if (Encoding==ACTW_OEM)
     {
-      NameA.Alloc(DestSize+1);
-      IntToExt(Src,&NameA[0],NameA.Size());
-      Src=&NameA[0];
+      IntToExt(Src,NameA);
+      Src=NameA.data();
     }
-    CharToWide(Src,Dest,DestSize);
+    CharToWide(Src,Dest);
 #endif  // defined(CHROMIUM_UNRAR)
   }
 #else // RAR for Unix.
   if (Encoding==ACTW_UTF8)
-    UtfToWide(Src,Dest,DestSize);
+    UtfToWide(Src,Dest);
   else
-    CharToWide(Src,Dest,DestSize);
+    CharToWide(Src,Dest);
 #endif
-  // Ensure that we return a zero terminate string for security reason.
-  // While [Jni]CharToWide might already do it, be protected in case of future
-  // changes in these functions.
-  if (DestSize>0)
-    Dest[DestSize-1]=0;
+  TruncateAtZero(Dest); // Ensure there are no zeroes inside of string.
 }
+
+
 
 
 
@@ -127,11 +136,31 @@ wchar* RemoveEOL(wchar *Str)
 }
 
 
+void RemoveEOL(std::wstring &Str)
+{
+  while (!Str.empty())
+  {
+    wchar c=Str.back();
+    if (c=='\r' || c=='\n' || c==' ' || c=='\t')
+      Str.pop_back();
+    else
+      break;
+  }
+}
+
+
 wchar* RemoveLF(wchar *Str)
 {
   for (int I=(int)wcslen(Str)-1;I>=0 && (Str[I]=='\r' || Str[I]=='\n');I--)
     Str[I]=0;
   return Str;
+}
+
+
+void RemoveLF(std::wstring &Str)
+{
+  for (int I=(int)Str.size()-1;I>=0 && (Str[I]=='\r' || Str[I]=='\n');I--)
+    Str.erase(I);
 }
 
 
@@ -190,30 +219,18 @@ bool IsAlpha(int ch)
 
 
 
-void BinToHex(const byte *Bin,size_t BinSize,char *HexA,wchar *HexW,size_t HexSize)
+void BinToHex(const byte *Bin,size_t BinSize,std::wstring &Hex)
 {
-  uint A=0,W=0; // ASCII and Unicode hex output positions.
+  Hex.clear();
   for (uint I=0;I<BinSize;I++)
   {
     uint High=Bin[I] >> 4;
     uint Low=Bin[I] & 0xf;
-    uint HighHex=High>9 ? 'a'+High-10:'0'+High;
-    uint LowHex=Low>9 ? 'a'+Low-10:'0'+Low;
-    if (HexA!=NULL && A<HexSize-2) // Need space for 2 chars and final zero.
-    {
-      HexA[A++]=(char)HighHex;
-      HexA[A++]=(char)LowHex;
-    }
-    if (HexW!=NULL && W<HexSize-2) // Need space for 2 chars and final zero.
-    {
-      HexW[W++]=HighHex;
-      HexW[W++]=LowHex;
-    }
+    uint HighHex=High>9 ? 'a'+High-10 : '0'+High;
+    uint LowHex=Low>9 ? 'a'+Low-10 : '0'+Low;
+    Hex+=HighHex;
+    Hex+=LowHex;
   }
-  if (HexA!=NULL && HexSize>0)
-    HexA[A]=0;
-  if (HexW!=NULL && HexSize>0)
-    HexW[W]=0;
 }
 
 
@@ -231,22 +248,25 @@ uint GetDigits(uint Number)
 #endif
 
 
-bool LowAscii(const char *Str)
+bool LowAscii(const std::string &Str)
 {
-  for (size_t I=0;Str[I]!=0;I++)
-    if (/*(byte)Str[I]<32 || */(byte)Str[I]>127)
+  for (char Ch : Str)
+  {
+    // We convert char to byte in case char is signed.
+    if (/*(uint)Ch<32 || */(byte)Ch>127)
       return false;
+  }
   return true;
 }
 
 
-bool LowAscii(const wchar *Str)
+bool LowAscii(const std::wstring &Str)
 {
-  for (size_t I=0;Str[I]!=0;I++)
+  for (wchar Ch : Str)
   {
     // We convert wchar_t to uint just in case if some compiler
     // uses signed wchar_t.
-    if (/*(uint)Str[I]<32 || */(uint)Str[I]>127)
+    if (/*(uint)Ch<32 || */(uint)Ch>127)
       return false;
   }
   return true;
@@ -263,6 +283,12 @@ int wcsicompc(const wchar *s1,const wchar *s2) // For path comparison.
 }
 
 
+int wcsicompc(const std::wstring &s1,const std::wstring &s2)
+{
+  return wcsicompc(s1.c_str(),s2.c_str());
+}
+
+
 int wcsnicompc(const wchar *s1,const wchar *s2,size_t n)
 {
 #if defined(_UNIX)
@@ -270,6 +296,12 @@ int wcsnicompc(const wchar *s1,const wchar *s2,size_t n)
 #else
   return wcsnicomp(s1,s2,n);
 #endif
+}
+
+
+int wcsnicompc(const std::wstring &s1,const std::wstring &s2,size_t n)
+{
+  return wcsnicompc(s1.c_str(),s2.c_str(),n);
 }
 
 
@@ -397,88 +429,164 @@ void fmtitoa(int64 n,wchar *Str,size_t MaxSize)
 }
 
 
-const wchar* GetWide(const char *Src)
+std::wstring GetWide(const char *Src)
 {
-  const size_t MaxLength=NM;
-  static wchar StrTable[4][MaxLength];
-  static uint StrNum=0;
-  if (++StrNum >= ASIZE(StrTable))
-    StrNum=0;
-  wchar *Str=StrTable[StrNum];
-  CharToWide(Src,Str,MaxLength);
-  Str[MaxLength-1]=0;
+  std::wstring Str;
+  CharToWide(Src,Str);
   return Str;
 }
 
 
 // Parse string containing parameters separated with spaces.
-// Support quote marks. Param can be NULL to return the pointer to next
-// parameter, which can be used to estimate the buffer size for Param.
-const wchar* GetCmdParam(const wchar *CmdLine,wchar *Param,size_t MaxSize)
+// Support quote marks. Accepts and updates the current position in the string.
+// Returns false if there is nothing to parse.
+bool GetCmdParam(const std::wstring &CmdLine,std::wstring::size_type &Pos,std::wstring &Param)
 {
-  while (IsSpace(*CmdLine))
-    CmdLine++;
-  if (*CmdLine==0)
-    return NULL;
+  Param.clear();
 
-  size_t ParamSize=0;
+  while (IsSpace(CmdLine[Pos]))
+    Pos++;
+  if (Pos==CmdLine.size())
+    return false;
+
   bool Quote=false;
-  while (*CmdLine!=0 && (Quote || !IsSpace(*CmdLine)))
+  while (Pos<CmdLine.size() && (Quote || !IsSpace(CmdLine[Pos])))
   {
-    if (*CmdLine=='\"')
+    if (CmdLine[Pos]=='\"')
     {
-      if (CmdLine[1]=='\"')
+      if (CmdLine[Pos+1]=='\"')
       {
         // Insert the quote character instead of two adjoining quote characters.
-        if (Param!=NULL && ParamSize<MaxSize-1)
-          Param[ParamSize++]='\"';
-        CmdLine++;
+        Param+='\"';
+        Pos++;
       }
       else
         Quote=!Quote;
     }
     else
-      if (Param!=NULL && ParamSize<MaxSize-1)
-        Param[ParamSize++]=*CmdLine;
-    CmdLine++;
+      Param+=CmdLine[Pos];
+    Pos++;
   }
-  if (Param!=NULL)
-    Param[ParamSize]=0;
-  return CmdLine;
+  return true;
 }
+
+
 
 
 #ifndef RARDLL
 // For compatibility with existing translations we use %s to print Unicode
 // strings in format strings and convert them to %ls here. %s could work
 // without such conversion in Windows, but not in Unix wprintf.
-void PrintfPrepareFmt(const wchar *Org,wchar *Cvt,size_t MaxSize)
+void PrintfPrepareFmt(const wchar *Org,std::wstring &Cvt)
 {
-  uint Src=0,Dest=0;
-  while (Org[Src]!=0 && Dest<MaxSize-1)
+  size_t Src=0;
+  while (Org[Src]!=0)
   {
     if (Org[Src]=='%' && (Src==0 || Org[Src-1]!='%'))
     {
-      uint SPos=Src+1;
+      size_t SPos=Src+1;
       // Skipping a possible width specifier like %-50s.
       while (IsDigit(Org[SPos]) || Org[SPos]=='-')
         SPos++;
-      if (Org[SPos]=='s' && Dest<MaxSize-(SPos-Src+1))
+      if (Org[SPos]=='s')
       {
         while (Src<SPos)
-          Cvt[Dest++]=Org[Src++];
-        Cvt[Dest++]='l';
+          Cvt.push_back(Org[Src++]);
+        Cvt.push_back('l');
       }
     }
 #ifdef _WIN_ALL
     // Convert \n to \r\n in Windows. Important when writing to log,
     // so other tools like Notebook can view resulting log properly.
     if (Org[Src]=='\n' && (Src==0 || Org[Src-1]!='\r'))
-      Cvt[Dest++]='\r';
+      Cvt.push_back('\r');
 #endif
 
-    Cvt[Dest++]=Org[Src++];
+    Cvt.push_back(Org[Src++]);
   }
-  Cvt[Dest]=0;
+}
+
+
+// Print output to std::wstring.
+std::wstring wstrprintf(const wchar *fmt,...)
+{
+  va_list arglist;
+  va_start(arglist,fmt);
+  std::wstring s=vwstrprintf(fmt,arglist);
+  va_end(arglist);
+  return s;
+}
+
+
+std::wstring vwstrprintf(const wchar *fmt,va_list arglist)
+{
+  std::wstring fmtw;
+  PrintfPrepareFmt(fmt,fmtw);
+
+  // We also tried to use _vscwprintf in MSVC to calculate the required buffer
+  // size and allocate the exactly such size, but it seemed to be a little
+  // slower than approach below.
+  
+  const size_t MaxAllocSize=0x10000; // Prevent the excessive allocation.
+
+  // vswprintf returns only the error status without required buffer size,
+  // so we try different buffer sizes. Start from reasonably small size
+  // to reduce the zero initialization cost, but still large enough to fit
+  // most of strings and avoid additional loop iterations.
+  std::wstring Msg(256,L'\0');
+  while (true)
+  {
+    va_list argscopy;
+    va_copy(argscopy, arglist);
+    int r=vswprintf(&Msg[0],Msg.size(),fmtw.c_str(),argscopy);
+    va_end(argscopy);
+    if (r>=0 || Msg.size()>MaxAllocSize)
+      break;
+    Msg.resize(Msg.size()*4);
+  }
+  std::wstring::size_type ZeroPos=Msg.find(L'\0');
+  if (ZeroPos!=std::wstring::npos)
+    Msg.resize(ZeroPos); // Remove excessive zeroes at the end.
+  
+  return Msg;
 }
 #endif
+
+
+#ifdef _WIN_ALL
+bool ExpandEnvironmentStr(std::wstring &Str)
+{
+  DWORD ExpCode=ExpandEnvironmentStrings(Str.c_str(),nullptr,0);
+  if (ExpCode==0)
+    return false;
+  std::vector<wchar> Buf(ExpCode);
+  ExpCode=ExpandEnvironmentStrings(Str.c_str(),Buf.data(),(DWORD)Buf.size());
+  if (ExpCode==0 || ExpCode>Buf.size())
+    return false;
+  Str=Buf.data();
+  return true;
+}
+#endif
+
+
+void TruncateAtZero(std::wstring &Str)
+{
+  std::wstring::size_type Pos=Str.find(L'\0');
+  if (Pos!=std::wstring::npos)
+    Str.erase(Pos);
+}
+
+
+void ReplaceEsc(std::wstring &Str)
+{
+  std::wstring::size_type Pos=0;
+  while (true)
+  {
+    Pos=Str.find(L'\033',Pos);
+    if (Pos==std::wstring::npos)
+      break;
+    Str[Pos]=L'\'';
+    Str.insert(Pos+1,L"\\033'");
+    Pos+=6;
+  }
+}

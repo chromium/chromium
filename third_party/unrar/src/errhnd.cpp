@@ -28,7 +28,7 @@ void ErrorHandler::MemoryError()
 }
 
 
-void ErrorHandler::OpenError(const wchar *FileName)
+void ErrorHandler::OpenError(const std::wstring &FileName)
 {
 #ifndef SILENT
   OpenErrorMsg(FileName);
@@ -37,7 +37,7 @@ void ErrorHandler::OpenError(const wchar *FileName)
 }
 
 
-void ErrorHandler::CloseError(const wchar *FileName)
+void ErrorHandler::CloseError(const std::wstring &FileName)
 {
   if (!UserBreak)
   {
@@ -53,7 +53,7 @@ void ErrorHandler::CloseError(const wchar *FileName)
 }
 
 
-void ErrorHandler::ReadError(const wchar *FileName)
+void ErrorHandler::ReadError(const std::wstring &FileName)
 {
 #ifndef SILENT
   ReadErrorMsg(FileName);
@@ -64,13 +64,13 @@ void ErrorHandler::ReadError(const wchar *FileName)
 }
 
 
-void ErrorHandler::AskRepeatRead(const wchar *FileName,bool &Ignore,bool &Retry,bool &Quit)
+void ErrorHandler::AskRepeatRead(const std::wstring &FileName,bool &Ignore,bool &Retry,bool &Quit)
 {
   SetErrorCode(RARX_READ);
 #if !defined(SILENT) && !defined(SFX_MODULE)
   if (!Silent)
   {
-    uiMsg(UIERROR_FILEREAD,UINULL,FileName);
+    uiMsg(UIERROR_FILEREAD,L"",FileName);
     SysErrMsg();
     if (ReadErrIgnoreAll)
       Ignore=true;
@@ -90,7 +90,7 @@ void ErrorHandler::AskRepeatRead(const wchar *FileName,bool &Ignore,bool &Retry,
 }
 
 
-void ErrorHandler::WriteError(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::WriteError(const std::wstring &ArcName,const std::wstring &FileName)
 {
 #ifndef SILENT
   WriteErrorMsg(ArcName,FileName);
@@ -102,7 +102,7 @@ void ErrorHandler::WriteError(const wchar *ArcName,const wchar *FileName)
 
 
 #ifdef _WIN_ALL
-void ErrorHandler::WriteErrorFAT(const wchar *FileName)
+void ErrorHandler::WriteErrorFAT(const std::wstring &FileName)
 {
   SysErrMsg();
   uiMsg(UIERROR_NTFSREQUIRED,FileName);
@@ -113,7 +113,7 @@ void ErrorHandler::WriteErrorFAT(const wchar *FileName)
 #endif
 
 
-bool ErrorHandler::AskRepeatWrite(const wchar *FileName,bool DiskFull)
+bool ErrorHandler::AskRepeatWrite(const std::wstring &FileName,bool DiskFull)
 {
 #ifndef SILENT
   if (!Silent)
@@ -131,7 +131,7 @@ bool ErrorHandler::AskRepeatWrite(const wchar *FileName,bool DiskFull)
 }
 
 
-void ErrorHandler::SeekError(const wchar *FileName)
+void ErrorHandler::SeekError(const std::wstring &FileName)
 {
   if (!UserBreak)
   {
@@ -146,13 +146,16 @@ void ErrorHandler::SeekError(const wchar *FileName)
 
 void ErrorHandler::GeneralErrMsg(const wchar *fmt,...)
 {
+#ifndef RARDLL
   va_list arglist;
   va_start(arglist,fmt);
-  wchar Msg[1024];
-  vswprintf(Msg,ASIZE(Msg),fmt,arglist);
+
+  std::wstring Msg=vwstrprintf(fmt,arglist);
   uiMsg(UIERROR_GENERALERRMSG,Msg);
   SysErrMsg();
+
   va_end(arglist);
+#endif
 }
 
 
@@ -163,13 +166,13 @@ void ErrorHandler::MemoryErrorMsg()
 }
 
 
-void ErrorHandler::OpenErrorMsg(const wchar *FileName)
+void ErrorHandler::OpenErrorMsg(const std::wstring &FileName)
 {
-  OpenErrorMsg(NULL,FileName);
+  OpenErrorMsg(L"",FileName);
 }
 
 
-void ErrorHandler::OpenErrorMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::OpenErrorMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_FILEOPEN,ArcName,FileName);
   SysErrMsg();
@@ -181,13 +184,13 @@ void ErrorHandler::OpenErrorMsg(const wchar *ArcName,const wchar *FileName)
 }
 
 
-void ErrorHandler::CreateErrorMsg(const wchar *FileName)
+void ErrorHandler::CreateErrorMsg(const std::wstring &FileName)
 {
-  CreateErrorMsg(NULL,FileName);
+  CreateErrorMsg(L"",FileName);
 }
 
 
-void ErrorHandler::CreateErrorMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::CreateErrorMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_FILECREATE,ArcName,FileName);
   SysErrMsg();
@@ -195,13 +198,13 @@ void ErrorHandler::CreateErrorMsg(const wchar *ArcName,const wchar *FileName)
 }
 
 
-void ErrorHandler::ReadErrorMsg(const wchar *FileName)
+void ErrorHandler::ReadErrorMsg(const std::wstring &FileName)
 {
-  ReadErrorMsg(NULL,FileName);
+  ReadErrorMsg(L"",FileName);
 }
 
 
-void ErrorHandler::ReadErrorMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::ReadErrorMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_FILEREAD,ArcName,FileName);
   SysErrMsg();
@@ -209,7 +212,7 @@ void ErrorHandler::ReadErrorMsg(const wchar *ArcName,const wchar *FileName)
 }
 
 
-void ErrorHandler::WriteErrorMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::WriteErrorMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_FILEWRITE,ArcName,FileName);
   SysErrMsg();
@@ -217,21 +220,21 @@ void ErrorHandler::WriteErrorMsg(const wchar *ArcName,const wchar *FileName)
 }
 
 
-void ErrorHandler::ArcBrokenMsg(const wchar *ArcName)
+void ErrorHandler::ArcBrokenMsg(const std::wstring &ArcName)
 {
   uiMsg(UIERROR_ARCBROKEN,ArcName);
   SetErrorCode(RARX_CRC);
 }
 
 
-void ErrorHandler::ChecksumFailedMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::ChecksumFailedMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_CHECKSUM,ArcName,FileName);
   SetErrorCode(RARX_CRC);
 }
 
 
-void ErrorHandler::UnknownMethodMsg(const wchar *ArcName,const wchar *FileName)
+void ErrorHandler::UnknownMethodMsg(const std::wstring &ArcName,const std::wstring &FileName)
 {
   uiMsg(UIERROR_UNKNOWNMETHOD,ArcName,FileName);
   ErrHandler.SetErrorCode(RARX_FATAL);
@@ -334,9 +337,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
   if (Code==RARX_USERBREAK && !EnableBreak)
     return;
 #if !defined(SILENT)
-  // Do not write "aborted" when just displaying online help.
-  if (Code!=RARX_SUCCESS && Code!=RARX_USERERROR)
-    mprintf(L"\n%s\n",St(MProgAborted));
+  if (Code!=RARX_SUCCESS)
+    if (Code==RARX_USERERROR) // Do not write "aborted" when just displaying the online help.
+      mprintf(L"\n"); // For consistency with other errors, which print the final "\n".
+    else
+      mprintf(L"\n%s\n",St(MProgAborted));
 #endif
   SetErrorCode(Code);
 #if defined(UNRAR_NO_EXCEPTIONS)
@@ -347,24 +352,33 @@ void ErrorHandler::Throw(RAR_EXIT Code)
 }
 
 
-bool ErrorHandler::GetSysErrMsg(wchar *Msg,size_t Size)
+bool ErrorHandler::GetSysErrMsg(std::wstring &Msg)
 {
 #ifndef SILENT
 #ifdef _WIN_ALL
   int ErrType=GetLastError();
   if (ErrType!=0)
-    return FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                         NULL,ErrType,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
-                         Msg,(DWORD)Size,NULL)!=0;
+  {
+    wchar *Buf=nullptr;
+    if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|
+          FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_ALLOCATE_BUFFER,
+          NULL,ErrType,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
+          (LPTSTR)&Buf,0,NULL)!=0)
+    {
+      Msg=Buf;
+      LocalFree(Buf);
+      return true;
+    }
+  }
 #endif
 
-#if defined(_UNIX) || defined(_EMX)
+#ifdef _UNIX
   if (errno!=0)
   {
     char *err=strerror(errno);
     if (err!=NULL)
     {
-      CharToWide(err,Msg,Size);
+      CharToWide(err,Msg);
       return true;
     }
   }
@@ -377,31 +391,26 @@ bool ErrorHandler::GetSysErrMsg(wchar *Msg,size_t Size)
 void ErrorHandler::SysErrMsg()
 {
 #ifndef SILENT
-  wchar Msg[1024];
-  if (!GetSysErrMsg(Msg,ASIZE(Msg)))
+  std::wstring Msg;
+  if (!GetSysErrMsg(Msg))
     return;
 #ifdef _WIN_ALL
-  wchar *CurMsg=Msg;
-  while (CurMsg!=NULL) // Print string with \r\n as several strings to multiple lines.
+  // Print string with \r\n as several strings to multiple lines.
+  size_t Pos=0;
+  while (Pos!=std::wstring::npos)
   {
-    while (*CurMsg=='\r' || *CurMsg=='\n')
-      CurMsg++;
-    if (*CurMsg==0)
+    while (Msg[Pos]=='\r' || Msg[Pos]=='\n')
+      Pos++;
+    if (Pos==Msg.size())
       break;
-    wchar *EndMsg=wcschr(CurMsg,'\r');
-    if (EndMsg==NULL)
-      EndMsg=wcschr(CurMsg,'\n');
-    if (EndMsg!=NULL)
-    {
-      *EndMsg=0;
-      EndMsg++;
-    }
+    size_t EndPos=Msg.find_first_of(L"\r\n",Pos);
+    std::wstring CurMsg=Msg.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
     uiMsg(UIERROR_SYSERRMSG,CurMsg);
-    CurMsg=EndMsg;
+    Pos=EndPos;
   }
 #endif
 
-#if defined(_UNIX) || defined(_EMX)
+#ifdef _UNIX
   uiMsg(UIERROR_SYSERRMSG,Msg);
 #endif
 

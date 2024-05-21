@@ -16,7 +16,6 @@
 #include "unicode.hpp"
 #include "errhnd.hpp"
 #include "secpassword.hpp"
-#include "array.hpp"
 #include "strlist.hpp"
 #include "timefn.hpp"
 #include "sha1.hpp"
@@ -85,9 +84,6 @@
 
 #include "global.hpp"
 
-#if 0
-#include "benchmark.hpp"
-#endif
 
 
 

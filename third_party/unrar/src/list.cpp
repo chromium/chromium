@@ -1,7 +1,6 @@
 #include "rar.hpp"
 
 static void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bool Technical,bool Bare,bool DisableNames);
-static void ListSymLink(Archive &Arc);
 static void ListFileAttr(uint A,HOST_SYSTEM_TYPE HostType,wchar *AttrStr,size_t AttrSize);
 static void ListOldSubHeader(Archive &Arc);
 static void ListNewSubHeader(CommandData *Cmd,Archive &Arc);
@@ -15,8 +14,8 @@ void ListArchive(CommandData *Cmd)
   bool Bare=(Cmd->Command[1]=='B');
   bool Verbose=(Cmd->Command[0]=='V');
 
-  wchar ArcName[NM];
-  while (Cmd->GetArcName(ArcName,ASIZE(ArcName)))
+  std::wstring ArcName;
+  while (Cmd->GetArcName(ArcName))
   {
     if (Cmd->ManualPassword)
       Cmd->Password.Clean(); // Clean user entered password before processing next archive.
@@ -35,33 +34,31 @@ void ListArchive(CommandData *Cmd)
         if (!Bare)
         {
           Arc.ViewComment();
-          mprintf(L"\n%s: %s",St(MListArchive),Arc.FileName);
+          mprintf(L"\n%s: %s",St(MListArchive),Arc.FileName.c_str());
 
           mprintf(L"\n%s: ",St(MListDetails));
-          uint SetCount=0;
           const wchar *Fmt=Arc.Format==RARFMT14 ? L"RAR 1.4":(Arc.Format==RARFMT15 ? L"RAR 4":L"RAR 5");
-          mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", Fmt);
+          mprintf(L"%s", Fmt);
           if (Arc.Solid)
-            mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListSolid));
+            mprintf(L", %s", St(MListSolid));
           if (Arc.SFXSize>0)
-            mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListSFX));
+            mprintf(L", %s", St(MListSFX));
           if (Arc.Volume)
             if (Arc.Format==RARFMT50)
             {
               // RAR 5.0 archives store the volume number in main header,
               // so it is already available now.
-              if (SetCount++ > 0)
-                mprintf(L", ");
+              mprintf(L", ");
               mprintf(St(MVolumeNumber),Arc.VolNumber+1);
             }
             else
-              mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListVolume));
+              mprintf(L", %s", St(MListVolume));
           if (Arc.Protected)
-            mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListRR));
+            mprintf(L", %s", St(MListRR));
           if (Arc.Locked)
-            mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListLock));
+            mprintf(L", %s", St(MListLock));
           if (Arc.Encrypted)
-            mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListEncHead));
+            mprintf(L", %s", St(MListEncHead));
 
           if (!Arc.MainHead.OrigName.empty())
             mprintf(L"\n%s: %s",St(MOrigName),Arc.MainHead.OrigName.c_str());
@@ -100,7 +97,7 @@ void ListArchive(CommandData *Cmd)
           switch(HeaderType)
           {
             case HEAD_FILE:
-              FileMatched=Cmd->IsProcessFile(Arc.FileHead,NULL,MATCH_WILDSUBPATH,0,NULL,0)!=0;
+              FileMatched=Cmd->IsProcessFile(Arc.FileHead,NULL,MATCH_WILDSUBPATH,0,NULL)!=0;
               if (FileMatched)
               {
                 ListFileHeader(Arc,Arc.FileHead,TitleShown,Verbose,Technical,Bare,Cmd->DisableNames);
@@ -155,7 +152,7 @@ void ListArchive(CommandData *Cmd)
         ArcCount++;
 
 #ifndef NOVOLUME
-        if (Cmd->VolSize!=0 && (Arc.FileHead.SplitAfter ||
+        if (Cmd->VolSize==VOLSIZE_AUTO && (Arc.FileHead.SplitAfter ||
             Arc.GetHeaderType()==HEAD_ENDARC && Arc.EndArcHead.NextVolume) &&
             MergeArchive(Arc,NULL,false,Cmd->Command[0]))
           Arc.Seek(0,SEEK_SET);
@@ -166,7 +163,7 @@ void ListArchive(CommandData *Cmd)
       else
       {
         if (Cmd->ArcNames.ItemsCount()<2 && !Bare)
-          mprintf(St(MNotRAR),Arc.FileName);
+          mprintf(St(MNotRAR),Arc.FileName.c_str());
         break;
       }
     }
@@ -219,7 +216,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
   if (DisableNames)
     return;
 
-  wchar *Name=hd.FileName;
+  const wchar *Name=hd.FileName.c_str();
   RARFORMAT Format=Arc.Format;
 
   if (Bare)
@@ -266,9 +263,8 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     if (!FileBlock && Arc.SubHead.CmpName(SUBHEAD_TYPE_STREAM))
     {
       mprintf(L"\n%12ls: %ls",St(MListType),St(MListStream));
-      wchar StreamName[NM];
-      GetStreamNameNTFS(Arc,StreamName,ASIZE(StreamName));
-      mprintf(L"\n%12ls: %ls",St(MListTarget),StreamName);
+      std::wstring StreamName=GetStreamNameNTFS(Arc);
+      mprintf(L"\n%12ls: %ls",St(MListTarget),StreamName.c_str());
     }
     else
     {
@@ -292,25 +288,27 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
       if (hd.RedirType!=FSREDIR_NONE)
         if (Format==RARFMT15)
         {
-          char LinkTargetA[NM];
+          std::string LinkTargetA;
           if (Arc.FileHead.Encrypted)
           {
             // Link data are encrypted. We would need to ask for password
             // and initialize decryption routine to display the link target.
-            strncpyz(LinkTargetA,"*<-?->",ASIZE(LinkTargetA));
+            LinkTargetA="*<-?->";
           }
           else
           {
-            int DataSize=(int)Min(hd.PackSize,ASIZE(LinkTargetA)-1);
-            Arc.Read(LinkTargetA,DataSize);
-            LinkTargetA[DataSize > 0 ? DataSize : 0] = 0;
+            size_t DataSize=(size_t)Min(hd.PackSize,MAXPATHSIZE);
+            std::vector<char> Buf(DataSize+1);
+            Arc.Read(Buf.data(),DataSize);
+            Buf[DataSize] = 0;
+            LinkTargetA=Buf.data();
           }
-          wchar LinkTarget[NM];
-          CharToWide(LinkTargetA,LinkTarget,ASIZE(LinkTarget));
-          mprintf(L"\n%12ls: %ls",St(MListTarget),LinkTarget);
+          std::wstring LinkTarget;
+          CharToWide(LinkTargetA,LinkTarget);
+          mprintf(L"\n%12ls: %ls",St(MListTarget),LinkTarget.c_str());
         }
         else
-          mprintf(L"\n%12ls: %ls",St(MListTarget),hd.RedirName);
+          mprintf(L"\n%12ls: %ls",St(MListTarget),hd.RedirName.c_str());
     }
     if (!hd.Dir)
     {
@@ -341,11 +339,11 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
         hd.FileHash.CRC32);
     if (hd.FileHash.Type==HASH_BLAKE2)
     {
-      wchar BlakeStr[BLAKE2_DIGEST_SIZE*2+1];
-      BinToHex(hd.FileHash.Digest,BLAKE2_DIGEST_SIZE,NULL,BlakeStr,ASIZE(BlakeStr));
+      std::wstring BlakeStr;
+      BinToHex(hd.FileHash.Digest,BLAKE2_DIGEST_SIZE,BlakeStr);
       mprintf(L"\n%12ls: %ls",
         hd.UseHashKey ? L"BLAKE2 MAC":hd.SplitAfter ? L"Pack-BLAKE2":L"BLAKE2",
-        BlakeStr);
+        BlakeStr.c_str());
     }
 
     const wchar *HostOS=L"";
@@ -362,11 +360,22 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     if (*HostOS!=0)
       mprintf(L"\n%12ls: %ls",St(MListHostOS),HostOS);
 
-    mprintf(L"\n%12ls: RAR %ls(v%d) -m%d -md=%d%s",St(MListCompInfo),
+    std::wstring WinSize;
+    if (!hd.Dir)
+      if (hd.WinSize%1073741824==0)
+        WinSize=L" -md=" + std::to_wstring(hd.WinSize/1073741824) + L"g";
+      else
+        if (hd.WinSize%1048576==0)
+          WinSize=L" -md=" + std::to_wstring(hd.WinSize/1048576) + L"m";
+        else
+          if (hd.WinSize>=1024)
+            WinSize=L" -md=" + std::to_wstring(hd.WinSize/1024) + L"k";
+          else
+            WinSize=L" -md=?";
+
+    mprintf(L"\n%12ls: RAR %ls(v%d) -m%d%s",St(MListCompInfo),
             Format==RARFMT15 ? L"1.5":L"5.0",
-            hd.UnpVer==VER_UNKNOWN ? 0 : hd.UnpVer,hd.Method,
-            hd.WinSize>=0x100000 ? hd.WinSize/0x100000:hd.WinSize/0x400,
-            hd.WinSize>=0x100000 ? L"M":L"K");
+            hd.UnpVer==VER_UNKNOWN ? 0 : hd.UnpVer,hd.Method,WinSize.c_str());
 
     if (hd.Solid || hd.Encrypted)
     {
@@ -379,7 +388,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
 
     if (hd.Version)
     {
-      uint Version=ParseVersionFileName(Name,false);
+      uint Version=ParseVersionFileName(hd.FileName,false);
       if (Version!=0)
         mprintf(L"\n%12ls: %u",St(MListFileVer),Version);
     }
@@ -388,13 +397,13 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     {
       mprintf(L"\n%12ls: ",L"Unix owner");
       if (*hd.UnixOwnerName!=0)
-        mprintf(L"%ls",GetWide(hd.UnixOwnerName));
+        mprintf(L"%ls",GetWide(hd.UnixOwnerName).c_str());
       else
         if (hd.UnixOwnerNumeric)
           mprintf(L"#%d",hd.UnixOwnerID);
       mprintf(L":");
       if (*hd.UnixGroupName!=0)
-        mprintf(L"%ls",GetWide(hd.UnixGroupName));
+        mprintf(L"%ls",GetWide(hd.UnixGroupName).c_str());
       else
         if (hd.UnixGroupNumeric)
           mprintf(L"#%d",hd.UnixGroupID);
@@ -422,31 +431,11 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
         mprintf(L"%02x%02x..%02x  ",S[0],S[1],S[31]);
       }
       else
-        mprintf(L"????????  ");
+        mprintf(hd.Dir ? L"          ":L"????????  "); // Missing checksum is ok for folder, not for file.
   }
   mprintf(L"%ls",Name);
 }
 
-/*
-void ListSymLink(Archive &Arc)
-{
-  if (Arc.FileHead.HSType==HSYS_UNIX && (Arc.FileHead.FileAttr & 0xF000)==0xA000)
-    if (Arc.FileHead.Encrypted)
-    {
-      // Link data are encrypted. We would need to ask for password
-      // and initialize decryption routine to display the link target.
-      mprintf(L"\n%22ls %ls",L"-->",L"*<-?->");
-    }
-    else
-    {
-      char FileName[NM];
-      uint DataSize=(uint)Min(Arc.FileHead.PackSize,sizeof(FileName)-1);
-      Arc.Read(FileName,DataSize);
-      FileName[DataSize]=0;
-      mprintf(L"\n%22ls %ls",L"-->",GetWide(FileName));
-    }
-}
-*/
 
 void ListFileAttr(uint A,HOST_SYSTEM_TYPE HostType,wchar *AttrStr,size_t AttrSize)
 {

@@ -246,26 +246,26 @@ void ComprDataIO::GetUnpackedData(byte **Data,size_t *Size)
 }
 
 
-void ComprDataIO::SetEncryption(bool Encrypt,CRYPT_METHOD Method,
+// Return true if encryption or decryption mode is set correctly.
+bool ComprDataIO::SetEncryption(bool Encrypt,CRYPT_METHOD Method,
      SecPassword *Password,const byte *Salt,const byte *InitV,
      uint Lg2Cnt,byte *HashKey,byte *PswCheck)
 {
-#ifndef RAR_NOCRYPT
+#ifdef RAR_NOCRYPT
+  return false;
+#else
   if (Encrypt)
+  {
     Encryption=Crypt->SetCryptKeys(true,Method,Password,Salt,InitV,Lg2Cnt,HashKey,PswCheck);
+    return Encryption;
+  }
   else
+  {
     Decryption=Decrypt->SetCryptKeys(false,Method,Password,Salt,InitV,Lg2Cnt,HashKey,PswCheck);
+    return Decryption;
+  }
 #endif
 }
-
-
-#if !defined(SFX_MODULE) && !defined(RAR_NOCRYPT)
-void ComprDataIO::SetAV15Encryption()
-{
-  Decryption=true;
-  Decrypt->SetAV15Encryption();
-}
-#endif
 
 
 #if !defined(SFX_MODULE) && !defined(RAR_NOCRYPT)
@@ -299,11 +299,15 @@ void ComprDataIO::AdjustTotalArcSize(Archive *Arc)
   // packed size to beginning of these blocks. Earlier we already calculated
   // the total size based on entire archive sizes. We also set LastArcSize
   // to start of first trailing block, to add it later to ProcessedArcSize.
-  int64 ArcLength=Arc->IsSeekable() ? Arc->FileLength() : 0;
-  if (Arc->MainHead.QOpenOffset!=0) // QO is always preceding RR record.
+  uint64 ArcLength=Arc->IsSeekable() ? Arc->FileLength() : 0;
+  // QO is always preceding RR record.
+  // Also we check QO and RR to be less than archive length to prevent
+  // negative "ArcLength-LastArcSize" and possible signed integer overflow
+  // when calculating TotalArcSize.
+  if (Arc->MainHead.QOpenOffset>0 && Arc->MainHead.QOpenOffset<ArcLength)
     LastArcSize=Arc->MainHead.QOpenOffset;
   else
-    if (Arc->MainHead.RROffset!=0)
+    if (Arc->MainHead.RROffset>0 && Arc->MainHead.RROffset<ArcLength)
       LastArcSize=Arc->MainHead.RROffset;
     else
     {

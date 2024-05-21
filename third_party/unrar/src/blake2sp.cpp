@@ -20,7 +20,7 @@ void blake2sp_init( blake2sp_state *S )
 
   blake2s_init_param( &S->R, 0, 1 ); // Init root.
 
-  for( uint i = 0; i < PARALLELISM_DEGREE; ++i )
+  for( uint32 i = 0; i < PARALLELISM_DEGREE; ++i )
     blake2s_init_param( &S->S[i], i, 0 ); // Init leaf.
 
   S->R.last_node = 1;
@@ -49,6 +49,8 @@ void Blake2ThreadData::Update()
     if (_SSE_Version>=SSE_SSE && inlen__ >= 2 * PARALLELISM_DEGREE * BLAKE2S_BLOCKBYTES)
       _mm_prefetch((char*)(in__ +  PARALLELISM_DEGREE * BLAKE2S_BLOCKBYTES), _MM_HINT_T0);
 #endif
+    // We tried to _forceinline blake2s_update and blake2s_compress_sse,
+    // but it didn't improve performance.
     blake2s_update( S, in__, BLAKE2S_BLOCKBYTES );
     in__ += PARALLELISM_DEGREE * BLAKE2S_BLOCKBYTES;
     inlen__ -= PARALLELISM_DEGREE * BLAKE2S_BLOCKBYTES;

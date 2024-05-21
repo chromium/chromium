@@ -27,7 +27,7 @@ class Archive:public File
 {
   private:
     void UpdateLatestTime(FileHeader *CurBlock);
-    void ConvertNameCase(wchar *Name);
+    void ConvertNameCase(std::wstring &Name);
     void ConvertFileHeader(FileHeader *hd);
     size_t ReadHeader14();
     size_t ReadHeader15();
@@ -36,9 +36,9 @@ class Archive:public File
     void RequestArcPassword(RarCheckPassword *SelPwd);
     void UnexpEndArcMsg();
     void BrokenHeaderMsg();
-    void UnkEncVerMsg(const wchar *Name,const wchar *Info);
-    bool DoGetComment(Array<wchar> *CmtData);
-    bool ReadCommentData(Array<wchar> *CmtData);
+    void UnkEncVerMsg(const std::wstring &Name,const std::wstring &Info);
+    bool DoGetComment(std::wstring &CmtData);
+    bool ReadCommentData(std::wstring &CmtData);
 
 #if !defined(RAR_NOCRYPT)
     CryptData HeadersCrypt;
@@ -63,7 +63,7 @@ class Archive:public File
     // archive. This is used to extract the contents while in a sandbox.
     FileHandle hTempFile;
 #endif
-  
+
   public:
     Archive(CommandData *InitCmd=NULL);
     ~Archive();
@@ -74,9 +74,9 @@ class Archive:public File
     size_t SearchRR();
     size_t ReadHeader();
     void CheckArc(bool EnableBroken);
-    void CheckOpen(const wchar *Name);
-    bool WCheckOpen(const wchar *Name);
-    bool GetComment(Array<wchar> *CmtData);
+    void CheckOpen(const std::wstring &Name);
+    bool WCheckOpen(const std::wstring &Name);
+    bool GetComment(std::wstring &CmtData);
     void ViewComment();
     void SetLatestTime(RarTime *NewTime);
     void SeekToNext();
@@ -86,20 +86,17 @@ class Archive:public File
     void VolSubtractHeaderSize(size_t SubSize);
     uint FullHeaderSize(size_t Size);
     int64 GetStartPos();
-    void AddSubData(byte *SrcData,uint64 DataSize,File *SrcFile,
+    void AddSubData(const byte *SrcData,uint64 DataSize,File *SrcFile,
          const wchar *Name,uint Flags);
-    bool ReadSubData(Array<byte> *UnpData,File *DestFile,bool TestMode);
+    bool ReadSubData(std::vector<byte> *UnpData,File *DestFile,bool TestMode);
     HEADER_TYPE GetHeaderType() {return CurHeaderType;}
     CommandData* GetCommandData() {return Cmd;}
     void SetSilentOpen(bool Mode) {SilentOpen=Mode;}
-#if 0
-    void GetRecoveryInfo(bool Required,int64 *Size,int *Percent);
-#endif
 #ifdef USE_QOPEN
-    bool Open(const wchar *Name,uint Mode=FMF_READ);
-    int Read(void *Data,size_t Size);
-    void Seek(int64 Offset,int Method);
-    int64 Tell();
+    bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
+    int Read(void *Data,size_t Size) override;
+    void Seek(int64 Offset,int Method) override;
+    int64 Tell() override;
     void QOpenUnload() {QOpen.Unload();}
     void SetProhibitQOpen(bool Mode) {ProhibitQOpen=Mode;}
 #endif
@@ -107,6 +104,11 @@ class Archive:public File
     void SetTempFileHandle(FileHandle hF);
     FileHandle GetTempFileHandle();
 #endif
+    static uint64 GetWinSize(uint64 Size,uint &Flags);
+
+    // Needed to see wstring based Open from File. Otherwise compiler finds
+    // Open in Archive and doesn't check the base class overloads.
+    using File::Open;
 
     BaseBlock ShortBlock;
     MarkHeader MarkHead;
@@ -146,12 +148,16 @@ class Archive:public File
 
     uint VolNumber;
     int64 VolWrite;
+
+    // Total size of files adding to archive. Might also include the size of
+    // files repacked in solid archive.
     uint64 AddingFilesSize;
+
     uint64 AddingHeadersSize;
 
     bool NewArchive;
 
-    wchar FirstVolumeName[NM];
+    std::wstring FirstVolumeName;
 };
 
 

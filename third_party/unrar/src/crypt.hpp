@@ -79,7 +79,7 @@ class CryptData
     void DecryptBlock20(byte *Buf);
 
     void SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt);
-    void SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt,const byte *InitV,uint Lg2Cnt,byte *HashKey,byte *PswCheck);
+    bool SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt,const byte *InitV,uint Lg2Cnt,byte *HashKey,byte *PswCheck);
 
     KDF3CacheItem KDF3Cache[4];
     uint KDF3CachePos;
@@ -103,7 +103,6 @@ class CryptData
     bool SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,SecPassword *Password,
          const byte *Salt,const byte *InitV,uint Lg2Cnt,
          byte *HashKey,byte *PswCheck);
-    void SetAV15Encryption();
     void SetCmt13Encryption();
     void EncryptBlock(byte *Buf,size_t Size);
     void DecryptBlock(byte *Buf,size_t Size);

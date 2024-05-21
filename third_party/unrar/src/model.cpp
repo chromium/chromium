@@ -353,13 +353,13 @@ inline void ModelPPM::UpdateModel()
     else 
     {
       cf=4+(cf >= 9*sf)+(cf >= 12*sf)+(cf >= 15*sf);
-      pc->U.SummFreq += cf;
+      pc->U.SummFreq += (ushort)cf;
     }
     p=pc->U.Stats+ns1;
     p->Successor=Successor;
     p->Symbol = fs.Symbol;
-    p->Freq = cf;
-    pc->NumStats=++ns1;
+    p->Freq = (byte)cf;
+    pc->NumStats=(ushort)++ns1;
   }
   MaxContext=MinContext=fs.Successor;
   return;
@@ -556,7 +556,7 @@ inline bool RARPPM_CONTEXT::decodeSymbol2(ModelPPM *Model)
       Model->CharMask[(*pps)->Symbol]=Model->EscCount; 
       pps++;
     } while ( --i );
-    psee2c->Summ += Model->Coder.SubRange.scale;
+    psee2c->Summ += (ushort)Model->Coder.SubRange.scale;
     Model->NumMasked = NumStats;
   }
   return true;

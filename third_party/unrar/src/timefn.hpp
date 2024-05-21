@@ -70,7 +70,7 @@ class RarTime
     void Adjust(int64 ns);
 };
 
-const wchar *GetMonthName(int Month);
-bool IsLeapYear(int Year);
+const wchar *GetMonthName(uint Month);
+bool IsLeapYear(uint Year);
 
 #endif

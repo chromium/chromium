@@ -83,7 +83,7 @@ class File
   protected:
     bool OpenShared; // Set by 'Archive' class.
   public:
-    wchar FileName[NM];
+    std::wstring FileName;
 
     FILE_ERRORTYPE ErrorType;
 
@@ -91,9 +91,6 @@ class File
     FileHandle hOpenFile;
 #endif  // defined(CHROMIUM_UNRAR)
 
-
-    byte *SeekBuf; // To read instead of seek for stdin files.
-    static const size_t SeekBufSize=0x10000;
   public:
     File();
     virtual ~File();
@@ -101,15 +98,15 @@ class File
 
     // Several functions below are 'virtual', because they are redefined
     // by Archive for QOpen and by MultiFile for split files in WinRAR.
-    virtual bool Open(const wchar *Name,uint Mode=FMF_READ);
-    void TOpen(const wchar *Name);
-    bool WOpen(const wchar *Name);
-    bool Create(const wchar *Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
-    void TCreate(const wchar *Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
-    bool WCreate(const wchar *Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
+    virtual bool Open(const std::wstring &Name,uint Mode=FMF_READ);
+    void TOpen(const std::wstring &Name);
+    bool WOpen(const std::wstring &Name);
+    bool Create(const std::wstring &Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
+    void TCreate(const std::wstring &Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
+    bool WCreate(const std::wstring &Name,uint Mode=FMF_UPDATE|FMF_SHAREREAD);
     virtual bool Close(); // 'virtual' for MultiFile class.
     bool Delete();
-    bool Rename(const wchar *NewName);
+    bool Rename(const std::wstring &NewName);
     bool Write(const void *Data,size_t Size);
     virtual int Read(void *Data,size_t Size);
     int DirectRead(void *Data,size_t Size);
@@ -123,13 +120,13 @@ class File
     void Flush();
     void SetOpenFileTime(RarTime *ftm,RarTime *ftc=NULL,RarTime *fta=NULL);
     void SetCloseFileTime(RarTime *ftm,RarTime *fta=NULL);
-    static void SetCloseFileTimeByName(const wchar *Name,RarTime *ftm,RarTime *fta);
+    static void SetCloseFileTimeByName(const std::wstring &Name,RarTime *ftm,RarTime *fta);
 #ifdef _UNIX
     static void StatToRarTime(struct stat &st,RarTime *ftm,RarTime *ftc,RarTime *fta);
 #endif
     void GetOpenFileTime(RarTime *ftm,RarTime *ftc=NULL,RarTime *fta=NULL);
     virtual bool IsOpened() {return hFile!=FILE_BAD_HANDLE;} // 'virtual' for MultiFile class.
-    int64 FileLength();
+    virtual int64 FileLength(); // 'virtual' for MultiFile class.
     void SetHandleType(FILE_HANDLETYPE Type) {HandleType=Type;}
     void SetLineInputMode(bool Mode) {LineInput=Mode;}
     FILE_HANDLETYPE GetHandleType() {return HandleType;}
@@ -151,7 +148,7 @@ class File
     // the file handle to unrar. This handle is then used to read the file.
     void SetFileHandle(FileHandle file);
 #endif  // defined(CHROMIUM_UNRAR)
-  
+
 #ifdef _UNIX
     int GetFD()
     {
@@ -164,14 +161,9 @@ class File
 #endif
     static size_t CopyBufferSize()
     {
-#ifdef _WIN_ALL
-      // USB flash performance is poor with 64 KB buffer, 256+ KB resolved it.
-      // For copying from HDD to same HDD the best performance was with 256 KB
-      // buffer in XP and with 1 MB buffer in Win10.
-      return WinNT()==WNT_WXP ? 0x40000:0x100000;
-#else
-      return 0x100000;
-#endif
+      // Values in 0x100000 - 0x400000 range are ok, but multithreaded CRC32
+      // seems to benefit from 0x400000, especially on ARM CPUs.
+      return 0x400000;
     }
 };
 

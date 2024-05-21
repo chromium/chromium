@@ -69,8 +69,8 @@ SecPassword::~SecPassword()
 void SecPassword::Clean()
 {
   PasswordSet=false;
-  if (Password.size()>0)
-    cleandata(&Password[0],Password.size()*sizeof(Password[0]));
+  if (!Password.empty())
+    cleandata(Password.data(),Password.size()*sizeof(Password[0]));
 }
  
 
@@ -79,7 +79,7 @@ void SecPassword::Clean()
 // So we use our own function for this purpose.
 void cleandata(void *data,size_t size)
 {
-  if (data==NULL || size==0)
+  if (data==nullptr || size==0)
     return;
 #if defined(_WIN_ALL) && defined(_MSC_VER)
   SecureZeroMemory(data,size);
@@ -117,6 +117,14 @@ void SecPassword::Get(wchar *Psw,size_t MaxSize)
   }
   else
     *Psw=0;
+}
+
+
+void SecPassword::Get(std::wstring &Psw)
+{
+  wchar PswBuf[MAXPASSWORD];
+  Get(PswBuf,ASIZE(PswBuf));
+  Psw=PswBuf;
 }
 
 

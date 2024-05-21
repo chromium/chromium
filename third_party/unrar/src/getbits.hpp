@@ -34,8 +34,7 @@ class BitInput
     uint getbits()
     {
 #if defined(LITTLE_ENDIAN) && defined(ALLOW_MISALIGNED)
-      uint32 BitField=*(uint32*)(InBuf+InAddr);
-      BitField=ByteSwap32(BitField);
+      uint32 BitField=RawGetBE4(InBuf+InAddr);
       BitField >>= (16-InBit);
 #else
       uint BitField=(uint)InBuf[InAddr] << 16;
@@ -51,18 +50,20 @@ class BitInput
     // Bit at (InAddr,InBit) has the highest position in returning data.
     uint getbits32()
     {
-#if defined(LITTLE_ENDIAN) && defined(ALLOW_MISALIGNED)
-      uint32 BitField=*(uint32*)(InBuf+InAddr);
-      BitField=ByteSwap32(BitField);
-#else
-      uint BitField=(uint)InBuf[InAddr] << 24;
-      BitField|=(uint)InBuf[InAddr+1] << 16;
-      BitField|=(uint)InBuf[InAddr+2] << 8;
-      BitField|=(uint)InBuf[InAddr+3];
-#endif
+      uint BitField=RawGetBE4(InBuf+InAddr);
       BitField <<= InBit;
       BitField|=(uint)InBuf[InAddr+4] >> (8-InBit);
       return BitField & 0xffffffff;
+    }
+
+    // Return 64 bits from current position in the buffer.
+    // Bit at (InAddr,InBit) has the highest position in returning data.
+    uint64 getbits64()
+    {
+      uint64 BitField=RawGetBE8(InBuf+InAddr);
+      BitField <<= InBit;
+      BitField|=(uint)InBuf[InAddr+8] >> (8-InBit);
+      return BitField;
     }
     
     void faddbits(uint Bits);

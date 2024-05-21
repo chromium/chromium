@@ -18,7 +18,12 @@ void Unpack::Unpack5(bool Solid)
 
   while (true)
   {
-    UnpPtr&=MaxWinMask;
+    UnpPtr=WrapUp(UnpPtr);
+
+    // To combine this code with WrapUp above, we also need to set FirstWinDone
+    // in CopyString. Performance gain is questionable in this case.
+    FirstWinDone|=(PrevPtr>UnpPtr);
+    PrevPtr=UnpPtr;
 
     if (Inp.InAddr>=ReadBorder)
     {
@@ -42,7 +47,8 @@ void Unpack::Unpack5(bool Solid)
         break;
     }
 
-    if (((WriteBorder-UnpPtr) & MaxWinMask)<=MAX_INC_LZ_MATCH && WriteBorder!=UnpPtr)
+    // WriteBorder==UnpPtr means that we have MaxWinSize data ahead.
+    if (WrapDown(WriteBorder-UnpPtr)<=MAX_INC_LZ_MATCH && WriteBorder!=UnpPtr)
     {
       UnpWriteBuf();
       if (WrittenFileSize>DestUnpSize)
@@ -67,7 +73,8 @@ void Unpack::Unpack5(bool Solid)
     {
       uint Length=SlotToLength(Inp,MainSlot-262);
 
-      uint DBits,Distance=1,DistSlot=DecodeNumber(Inp,&BlockTables.DD);
+      size_t Distance=1;
+      uint DBits,DistSlot=DecodeNumber(Inp,&BlockTables.DD);
       if (DistSlot<4)
       {
         DBits=0;
@@ -76,7 +83,7 @@ void Unpack::Unpack5(bool Solid)
       else
       {
         DBits=DistSlot/2 - 1;
-        Distance+=(2 | (DistSlot & 1)) << DBits;
+        Distance+=size_t(2 | (DistSlot & 1)) << DBits;
       }
 
       if (DBits>0)
@@ -85,11 +92,23 @@ void Unpack::Unpack5(bool Solid)
         {
           if (DBits>4)
           {
-            Distance+=((Inp.getbits32()>>(36-DBits))<<4);
+            // It is also possible to always use getbits64() here.
+            if (DBits>36)
+              Distance+=( ( size_t(Inp.getbits64() ) >> (68-DBits) ) << 4 );
+            else
+              Distance+=( ( size_t(Inp.getbits32() ) >> (36-DBits) ) << 4 );
             Inp.addbits(DBits-4);
           }
           uint LowDist=DecodeNumber(Inp,&BlockTables.LDD);
           Distance+=LowDist;
+ 
+          // Distance can be 0 for multiples of 4 GB as result of size_t
+          // overflow in 32-bit build. Its lower 32-bit can also erroneously
+          // fit into dictionary after truncating upper 32-bits. Replace such
+          // invalid distances with -1, so CopyString sets 0 data for them.
+          // DBits>=30 also as DistSlot>=62 indicate distances >=0x80000001.
+          if (sizeof(Distance)==4 && DBits>=30)
+            Distance=(size_t)-1;
         }
         else
         {
@@ -112,7 +131,7 @@ void Unpack::Unpack5(bool Solid)
       InsertOldDist(Distance);
       LastLength=Length;
       if (Fragmented)
-        FragWindow.CopyString(Length,Distance,UnpPtr,MaxWinMask);
+        FragWindow.CopyString(Length,Distance,UnpPtr,FirstWinDone,MaxWinSize);
       else
         CopyString(Length,Distance);
       continue;
@@ -128,7 +147,7 @@ void Unpack::Unpack5(bool Solid)
     {
       if (LastLength!=0)
         if (Fragmented)
-          FragWindow.CopyString(LastLength,OldDist[0],UnpPtr,MaxWinMask);
+          FragWindow.CopyString(LastLength,OldDist[0],UnpPtr,FirstWinDone,MaxWinSize);
         else
           CopyString(LastLength,OldDist[0]);
       continue;
@@ -136,7 +155,7 @@ void Unpack::Unpack5(bool Solid)
     if (MainSlot<262)
     {
       uint DistNum=MainSlot-258;
-      uint Distance=OldDist[DistNum];
+      size_t Distance=OldDist[DistNum];
       for (uint I=DistNum;I>0;I--)
         OldDist[I]=OldDist[I-1];
       OldDist[0]=Distance;
@@ -145,7 +164,7 @@ void Unpack::Unpack5(bool Solid)
       uint Length=SlotToLength(Inp,LengthSlot);
       LastLength=Length;
       if (Fragmented)
-        FragWindow.CopyString(Length,Distance,UnpPtr,MaxWinMask);
+        FragWindow.CopyString(Length,Distance,UnpPtr,FirstWinDone,MaxWinSize);
       else
         CopyString(Length,Distance);
       continue;
@@ -196,20 +215,25 @@ bool Unpack::ReadFilter(BitInput &Inp,UnpackFilter &Filter)
 
 bool Unpack::AddFilter(UnpackFilter &Filter)
 {
-  if (Filters.Size()>=MAX_UNPACK_FILTERS)
+  if (Filters.size()>=MAX_UNPACK_FILTERS)
   {
     UnpWriteBuf(); // Write data, apply and flush filters.
-    if (Filters.Size()>=MAX_UNPACK_FILTERS)
+    if (Filters.size()>=MAX_UNPACK_FILTERS)
       InitFilters(); // Still too many filters, prevent excessive memory use.
   }
 
   // If distance to filter start is that large that due to circular dictionary
   // mode now it points to old not written yet data, then we set 'NextWindow'
   // flag and process this filter only after processing that older data.
-  Filter.NextWindow=WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<=Filter.BlockStart;
+  Filter.NextWindow=WrPtr!=UnpPtr && WrapDown(WrPtr-UnpPtr)<=Filter.BlockStart;
 
-  Filter.BlockStart=uint((Filter.BlockStart+UnpPtr)&MaxWinMask);
-  Filters.Push(Filter);
+  // In malformed archive Filter.BlockStart can be many times larger
+  // than window size, so here we must use the reminder instead of
+  // subtracting the single window size as WrapUp can do. So the result
+  // is always within the window. Since we add and not subtract here,
+  // reminder always provides the valid result in valid archives.
+  Filter.BlockStart=(Filter.BlockStart+UnpPtr)%MaxWinSize;
+  Filters.push_back(Filter);
   return true;
 }
 
@@ -255,10 +279,10 @@ bool Unpack::UnpReadBuf()
 void Unpack::UnpWriteBuf()
 {
   size_t WrittenBorder=WrPtr;
-  size_t FullWriteSize=(UnpPtr-WrittenBorder)&MaxWinMask;
+  size_t FullWriteSize=WrapDown(UnpPtr-WrittenBorder);
   size_t WriteSizeLeft=FullWriteSize;
   bool NotAllFiltersProcessed=false;
-  for (size_t I=0;I<Filters.Size();I++)
+  for (size_t I=0;I<Filters.size();I++)
   {
     // Here we apply filters to data which we need to write.
     // We always copy data to another memory block before processing.
@@ -282,29 +306,29 @@ void Unpack::UnpWriteBuf()
       // filter block start and filter storing position cannot exceed
       // the dictionary size. So if we covered the filter block start with
       // our write here, we can safely assume that filter is applicable
-      // to next block on no further wrap arounds is possible.
-      if (((flt->BlockStart-WrPtr)&MaxWinMask)<=FullWriteSize)
+      // to next block and no further wrap arounds is possible.
+      if (WrapDown(flt->BlockStart-WrPtr)<=FullWriteSize)
         flt->NextWindow=false;
       continue;
     }
-    uint BlockStart=flt->BlockStart;
+    size_t BlockStart=flt->BlockStart;
     uint BlockLength=flt->BlockLength;
-    if (((BlockStart-WrittenBorder)&MaxWinMask)<WriteSizeLeft)
+    if (WrapDown(BlockStart-WrittenBorder)<WriteSizeLeft)
     {
       if (WrittenBorder!=BlockStart)
       {
         UnpWriteArea(WrittenBorder,BlockStart);
         WrittenBorder=BlockStart;
-        WriteSizeLeft=(UnpPtr-WrittenBorder)&MaxWinMask;
+        WriteSizeLeft=WrapDown(UnpPtr-WrittenBorder);
       }
       if (BlockLength<=WriteSizeLeft)
       {
         if (BlockLength>0) // We set it to 0 also for invalid filters.
         {
-          uint BlockEnd=(BlockStart+BlockLength)&MaxWinMask;
+          size_t BlockEnd=WrapUp(BlockStart+BlockLength);
 
-          FilterSrcMemory.Alloc(BlockLength);
-          byte *Mem=&FilterSrcMemory[0];
+          FilterSrcMemory.resize(BlockLength);
+          byte *Mem=FilterSrcMemory.data();
           if (BlockStart<BlockEnd || BlockEnd==0)
           {
             if (Fragmented)
@@ -337,7 +361,7 @@ void Unpack::UnpWriteBuf()
           UnpSomeRead=true;
           WrittenFileSize+=BlockLength;
           WrittenBorder=BlockEnd;
-          WriteSizeLeft=(UnpPtr-WrittenBorder)&MaxWinMask;
+          WriteSizeLeft=WrapDown(UnpPtr-WrittenBorder);
         }
       }
       else
@@ -349,7 +373,7 @@ void Unpack::UnpWriteBuf()
         // Since Filter start position can only increase, we quit processing
         // all following filters for this data block and reset 'NextWindow'
         // flag for them.
-        for (size_t J=I;J<Filters.Size();J++)
+        for (size_t J=I;J<Filters.size();J++)
         {
           UnpackFilter *flt=&Filters[J];
           if (flt->Type!=FILTER_NONE)
@@ -365,7 +389,7 @@ void Unpack::UnpWriteBuf()
 
   // Remove processed filters from queue.
   size_t EmptyCount=0;
-  for (size_t I=0;I<Filters.Size();I++)
+  for (size_t I=0;I<Filters.size();I++)
   {
     if (EmptyCount>0)
       Filters[I-EmptyCount]=Filters[I];
@@ -373,7 +397,7 @@ void Unpack::UnpWriteBuf()
       EmptyCount++;
   }
   if (EmptyCount>0)
-    Filters.Alloc(Filters.Size()-EmptyCount);
+    Filters.resize(Filters.size()-EmptyCount);
 
   if (!NotAllFiltersProcessed) // Only if all filters are processed.
   {
@@ -385,12 +409,12 @@ void Unpack::UnpWriteBuf()
   // We prefer to write data in blocks not exceeding UNPACK_MAX_WRITE
   // instead of potentially huge MaxWinSize blocks. It also allows us
   // to keep the size of Filters array reasonable.
-  WriteBorder=(UnpPtr+Min(MaxWinSize,UNPACK_MAX_WRITE))&MaxWinMask;
+  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,UNPACK_MAX_WRITE));
 
   // Choose the nearest among WriteBorder and WrPtr actual written border.
   // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.
   if (WriteBorder==UnpPtr || 
-      WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<((WriteBorder-UnpPtr)&MaxWinMask))
+      WrPtr!=UnpPtr && WrapDown(WrPtr-UnpPtr)<WrapDown(WriteBorder-UnpPtr))
     WriteBorder=WrPtr;
 }
 
@@ -464,8 +488,8 @@ byte* Unpack::ApplyFilter(byte *Data,uint DataSize,UnpackFilter *Flt)
         // values here, since RAR5 uses only 5 bits to store channel.
         uint Channels=Flt->Channels,SrcPos=0;
 
-        FilterDstMemory.Alloc(DataSize);
-        byte *DstData=&FilterDstMemory[0];
+        FilterDstMemory.resize(DataSize);
+        byte *DstData=FilterDstMemory.data();
 
         // Bytes from same channels are grouped to continual data blocks,
         // so we need to place them back to their interleaving positions.
@@ -492,13 +516,13 @@ void Unpack::UnpWriteArea(size_t StartPtr,size_t EndPtr)
 
   if (Fragmented)
   {
-    size_t SizeToWrite=(EndPtr-StartPtr) & MaxWinMask;
+    size_t SizeToWrite=WrapDown(EndPtr-StartPtr);
     while (SizeToWrite>0)
     {
       size_t BlockSize=FragWindow.GetBlockSize(StartPtr,SizeToWrite);
       UnpWriteData(&FragWindow[StartPtr],BlockSize);
       SizeToWrite-=BlockSize;
-      StartPtr=(StartPtr+BlockSize) & MaxWinMask;
+      StartPtr=WrapUp(StartPtr+BlockSize);
     }
   }
   else
@@ -541,7 +565,7 @@ bool Unpack::ReadBlockHeader(BitInput &Inp,UnpackBlockHeader &Header)
       return false;
   Inp.faddbits((8-Inp.InBit)&7);
 
-  byte BlockFlags=Inp.fgetbits()>>8;
+  byte BlockFlags=byte(Inp.fgetbits()>>8);
   Inp.faddbits(8);
   uint ByteCount=((BlockFlags>>3)&3)+1; // Block size byte count.
 
@@ -564,14 +588,24 @@ bool Unpack::ReadBlockHeader(BitInput &Inp,UnpackBlockHeader &Header)
 
   Header.BlockSize=BlockSize;
   byte CheckSum=byte(0x5a^BlockFlags^BlockSize^(BlockSize>>8)^(BlockSize>>16));
+
+  // 2024.01.04: In theory the valid block can have Header.BlockSize == 0
+  // and Header.TablePresent == false in case the only block purpose is to
+  // store Header.LastBlockInFile flag if it didn't fit into previous block.
+  // So we do not reject Header.BlockSize == 0. Though currently RAR doesn't
+  // seem to issue such zero length blocks.
   if (CheckSum!=SavedCheckSum)
     return false;
 
   Header.BlockStart=Inp.InAddr;
+
+  // We called Inp.faddbits(8) above, thus Header.BlockStart can't be 0 here.
+  // So there is no overflow even if Header.BlockSize is 0.
   ReadBorder=Min(ReadBorder,Header.BlockStart+Header.BlockSize-1);
 
   Header.LastBlockInFile=(BlockFlags & 0x40)!=0;
   Header.TablePresent=(BlockFlags & 0x80)!=0;
+
   return true;
 }
 
@@ -610,8 +644,8 @@ bool Unpack::ReadTables(BitInput &Inp,UnpackBlockHeader &Header,UnpackBlockTable
 
   MakeDecodeTables(BitLength,&Tables.BD,BC);
 
-  byte Table[HUFF_TABLE_SIZE];
-  const uint TableSize=HUFF_TABLE_SIZE;
+  byte Table[HUFF_TABLE_SIZEX];
+  const uint TableSize=ExtraDist ? HUFF_TABLE_SIZEX:HUFF_TABLE_SIZEB;
   for (uint I=0;I<TableSize;)
   {
     if (!Inp.ExternalBuffer && Inp.InAddr>ReadTop-5)
@@ -674,14 +708,15 @@ bool Unpack::ReadTables(BitInput &Inp,UnpackBlockHeader &Header,UnpackBlockTable
   if (!Inp.ExternalBuffer && Inp.InAddr>ReadTop)
     return false;
   MakeDecodeTables(&Table[0],&Tables.LD,NC);
-  MakeDecodeTables(&Table[NC],&Tables.DD,DC);
-  MakeDecodeTables(&Table[NC+DC],&Tables.LDD,LDC);
-  MakeDecodeTables(&Table[NC+DC+LDC],&Tables.RD,RC);
+  uint DCodes=ExtraDist ? DCX : DCB;
+  MakeDecodeTables(&Table[NC],&Tables.DD,DCodes);
+  MakeDecodeTables(&Table[NC+DCodes],&Tables.LDD,LDC);
+  MakeDecodeTables(&Table[NC+DCodes+LDC],&Tables.RD,RC);
   return true;
 }
 
 
 void Unpack::InitFilters()
 {
-  Filters.SoftReset();
+  Filters.clear();
 }

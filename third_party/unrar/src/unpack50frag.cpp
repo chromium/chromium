@@ -1,8 +1,16 @@
 #include "base/process/memory.h"
+
+#if defined(UNRAR_NO_EXCEPTIONS)
+#define UNRAR_FATAL_BAD_ALLOC(size) base::TerminateBecauseOutOfMemory(size)
+#else
+#define UNRAR_FATAL_BAD_ALLOC(size) throw std::bad_alloc()
+#endif
+
 FragmentedWindow::FragmentedWindow()
 {
   memset(Mem,0,sizeof(Mem));
   memset(MemSize,0,sizeof(MemSize));
+  LastAllocated=0;
 }
 
 
@@ -14,6 +22,7 @@ FragmentedWindow::~FragmentedWindow()
 
 void FragmentedWindow::Reset()
 {
+  LastAllocated=0;
   for (uint I=0;I<ASIZE(Mem);I++)
     if (Mem[I]!=NULL)
     {
@@ -48,11 +57,7 @@ void FragmentedWindow::Init(size_t WinSize)
       Size-=Size/32;
     }
     if (NewMem==NULL)
-#if defined(UNRAR_NO_EXCEPTIONS)
-      base::TerminateBecauseOutOfMemory(Size);
-#else
-       throw std::bad_alloc();
-#endif  // defined(UNRAR_NO_EXCEPTIONS)
+      UNRAR_FATAL_BAD_ALLOC(Size);
 
     // Clean the window to generate the same output when unpacking corrupt
     // RAR files, which may access to unused areas of sliding dictionary.
@@ -64,11 +69,9 @@ void FragmentedWindow::Init(size_t WinSize)
     BlockNum++;
   }
   if (TotalSize<WinSize) // Not found enough free blocks.
-#if defined(UNRAR_NO_EXCEPTIONS)
-      base::TerminateBecauseOutOfMemory(WinSize);
-#else
-       throw std::bad_alloc();
-#endif  // defined(UNRAR_NO_EXCEPTIONS)
+    UNRAR_FATAL_BAD_ALLOC(WinSize);
+
+  LastAllocated=WinSize;
 }
 
 
@@ -83,15 +86,32 @@ byte& FragmentedWindow::operator [](size_t Item)
 }
 
 
-void FragmentedWindow::CopyString(uint Length,uint Distance,size_t &UnpPtr,size_t MaxWinMask)
+void FragmentedWindow::CopyString(uint Length,size_t Distance,size_t &UnpPtr,bool FirstWinDone,size_t MaxWinSize)
 {
   size_t SrcPtr=UnpPtr-Distance;
+  if (Distance>UnpPtr)
+  {
+    SrcPtr+=MaxWinSize;
+
+    if (Distance>MaxWinSize || !FirstWinDone)
+    {
+      while (Length-- > 0)
+      {
+        (*this)[UnpPtr]=0;
+        if (++UnpPtr>=MaxWinSize)
+          UnpPtr-=MaxWinSize;
+      }
+      return;
+    }
+  }
+
   while (Length-- > 0)
   {
-    (*this)[UnpPtr]=(*this)[SrcPtr++ & MaxWinMask];
-    // We need to have masked UnpPtr after quit from loop, so it must not
-    // be replaced with '(*this)[UnpPtr++ & MaxWinMask]'
-    UnpPtr=(UnpPtr+1) & MaxWinMask;
+    (*this)[UnpPtr]=(*this)[SrcPtr];
+    if (++SrcPtr>=MaxWinSize)
+      SrcPtr-=MaxWinSize;
+    if (++UnpPtr>=MaxWinSize)
+      UnpPtr-=MaxWinSize;
   }
 }
 

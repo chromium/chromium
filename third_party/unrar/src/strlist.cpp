@@ -9,18 +9,20 @@ StringList::StringList()
 void StringList::Reset()
 {
   Rewind();
-  StringData.Reset();
+  StringData.clear();
   StringsCount=0;
   SavePosNumber=0;
 }
 
 
+/*
 void StringList::AddStringA(const char *Str)
 {
-  Array<wchar> StrW(strlen(Str));
-  CharToWide(Str,&StrW[0],StrW.Size());
-  AddString(&StrW[0]);
+  std::wstring StrW;
+  CharToWide(Str,StrW);
+  AddString(StrW);
 }
+*/
 
 
 void StringList::AddString(const wchar *Str)
@@ -28,22 +30,30 @@ void StringList::AddString(const wchar *Str)
   if (Str==NULL)
     Str=L"";
 
-  size_t PrevSize=StringData.Size();
-  StringData.Add(wcslen(Str)+1);
+  size_t PrevSize=StringData.size();
+  StringData.resize(PrevSize+wcslen(Str)+1);
   wcscpy(&StringData[PrevSize],Str);
 
   StringsCount++;
 }
 
 
+void StringList::AddString(const std::wstring &Str)
+{
+  AddString(Str.c_str());
+}
+
+
+/*
 bool StringList::GetStringA(char *Str,size_t MaxLength)
 {
-  Array<wchar> StrW(MaxLength);
-  if (!GetString(&StrW[0],StrW.Size()))
+  std::wstring StrW;
+  if (!GetString(StrW))
     return false;
-  WideToChar(&StrW[0],Str,MaxLength);
+  WideToChar(StrW.c_str(),Str,MaxLength);
   return true;
 }
+*/
 
 
 bool StringList::GetString(wchar *Str,size_t MaxLength)
@@ -56,6 +66,16 @@ bool StringList::GetString(wchar *Str,size_t MaxLength)
 }
 
 
+bool StringList::GetString(std::wstring &Str)
+{
+  wchar *StrPtr;
+  if (!GetString(&StrPtr))
+    return false;
+  Str=StrPtr;
+  return true;
+}
+
+
 #ifndef SFX_MODULE
 bool StringList::GetString(wchar *Str,size_t MaxLength,int StringNum)
 {
@@ -64,6 +84,22 @@ bool StringList::GetString(wchar *Str,size_t MaxLength,int StringNum)
   bool RetCode=true;
   while (StringNum-- >=0)
     if (!GetString(Str,MaxLength))
+    {
+      RetCode=false;
+      break;
+    }
+  RestorePosition();
+  return RetCode;
+}
+
+
+bool StringList::GetString(std::wstring &Str,int StringNum)
+{
+  SavePosition();
+  Rewind();
+  bool RetCode=true;
+  while (StringNum-- >=0)
+    if (!GetString(Str))
     {
       RetCode=false;
       break;
@@ -84,7 +120,7 @@ wchar* StringList::GetString()
 
 bool StringList::GetString(wchar **Str)
 {
-  if (CurPos>=StringData.Size()) // No more strings left unprocessed.
+  if (CurPos>=StringData.size()) // No more strings left unprocessed.
   {
     if (Str!=NULL)
       *Str=NULL;
@@ -107,7 +143,7 @@ void StringList::Rewind()
 
 
 #ifndef SFX_MODULE
-bool StringList::Search(const wchar *Str,bool CaseSensitive)
+bool StringList::Search(const std::wstring &Str,bool CaseSensitive)
 {
   SavePosition();
   Rewind();
@@ -115,8 +151,8 @@ bool StringList::Search(const wchar *Str,bool CaseSensitive)
   wchar *CurStr;
   while (GetString(&CurStr))
   {
-    if (Str!=NULL && CurStr!=NULL)
-      if ((CaseSensitive ? wcscmp(Str,CurStr):wcsicomp(Str,CurStr))!=0)
+    if (CurStr!=NULL)
+      if (CaseSensitive && Str!=CurStr || !CaseSensitive && wcsicomp(Str,CurStr)!=0)
         continue;
     Found=true;
     break;

@@ -21,10 +21,12 @@ class PackDef
     static const uint LOW_DIST_REP_COUNT = 16;
 
     static const uint NC    = 306; /* alphabet = {0, 1, 2, ..., NC - 1} */
-    static const uint DC    = 64;
+    static const uint DCB   = 64; // Base distance codes up to 4 GB.
+    static const uint DCX   = 80; // Extended distance codes up to 1 TB.
     static const uint LDC   = 16;
     static const uint RC    = 44;
-    static const uint HUFF_TABLE_SIZE = NC + DC + RC + LDC;
+    static const uint HUFF_TABLE_SIZEB = NC + DCB + RC + LDC;
+    static const uint HUFF_TABLE_SIZEX = NC + DCX + RC + LDC;
     static const uint BC    = 20;
 
     static const uint NC30  = 299; /* alphabet = {0, 1, 2, ..., NC - 1} */
@@ -43,10 +45,6 @@ class PackDef
     // Largest alphabet size among all values listed above.
     static const uint LARGEST_TABLE_SIZE = 306;
 
-    enum {
-      CODE_HUFFMAN, CODE_LZ, CODE_REPEATLZ, CODE_CACHELZ, CODE_STARTFILE,
-      CODE_ENDFILE, CODE_FILTER, CODE_FILTERDATA
-    };
 };
 
 
@@ -54,7 +52,10 @@ enum FilterType {
   // These values must not be changed, because we use them directly
   // in RAR5 compression and decompression code.
   FILTER_DELTA=0, FILTER_E8, FILTER_E8E9, FILTER_ARM, 
-  FILTER_AUDIO, FILTER_RGB, FILTER_ITANIUM, FILTER_PPM, FILTER_NONE
+  FILTER_AUDIO, FILTER_RGB, FILTER_ITANIUM, FILTER_TEXT, 
+  
+  // These values can be changed.
+  FILTER_LONGRANGE,FILTER_EXHAUSTIVE,FILTER_NONE
 };
 
 #endif

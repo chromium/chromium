@@ -5,7 +5,7 @@
 
 typedef uint8_t          byte;   // Unsigned 8 bits.
 typedef uint16_t         ushort; // Preferably 16 bits, but can be more.
-typedef unsigned int     uint;   // 32 bits or more.
+typedef unsigned int     uint;   // Preferably 32 bits, likely can be more.
 typedef uint32_t         uint32; // 32 bits exactly.
 typedef int32_t          int32;  // Signed 32 bits exactly.
 typedef uint64_t         uint64; // 64 bits exactly.

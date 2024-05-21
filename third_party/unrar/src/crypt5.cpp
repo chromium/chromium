@@ -128,20 +128,12 @@ void pbkdf2(const byte *Pwd, size_t PwdLength,
 }
 
 
-void CryptData::SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,
+bool CryptData::SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,
      const byte *Salt,const byte *InitV,uint Lg2Cnt,byte *HashKey,
      byte *PswCheck)
 {
   if (Lg2Cnt>CRYPT5_KDF_LG2_COUNT_MAX)
-  {
-    // Initialize these fields to prevent uninitialized data access warnings
-    // by analyzing tools when accessing returned data.
-    if (HashKey!=nullptr)
-      memset(HashKey,0,SHA256_DIGEST_SIZE);
-    if (PswCheck!=nullptr)
-      memset(PswCheck,0,SIZE_PSWCHECK);
-    return;
-  }
+    return false;
 
   byte Key[32],PswCheckValue[SHA256_DIGEST_SIZE],HashKeyValue[SHA256_DIGEST_SIZE];
   bool Found=false;
@@ -194,6 +186,7 @@ void CryptData::SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,
     rin.Init(Encrypt, Key, 256, InitV);
 
   cleandata(Key,sizeof(Key));
+  return true;
 }
 
 
@@ -208,6 +201,7 @@ void ConvertHashToMAC(HashValue *Value,byte *Key)
     Value->CRC32=0;
     for (uint I=0;I<ASIZE(Digest);I++)
       Value->CRC32^=Digest[I] << ((I & 3) * 8);
+    Value->CRC32&=0xffffffff; // In case the variable size is larger than 32-bit.
   }
   if (Value->Type==HASH_BLAKE2)
   {

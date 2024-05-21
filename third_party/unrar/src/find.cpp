@@ -2,7 +2,6 @@
 
 FindFile::FindFile()
 {
-  *FindMask=0;
   FirstCall=true;
 #ifdef _WIN_ALL
   hFind=INVALID_HANDLE_VALUE;
@@ -24,9 +23,9 @@ FindFile::~FindFile()
 }
 
 
-void FindFile::SetMask(const wchar *Mask)
+void FindFile::SetMask(const std::wstring &Mask)
 {
-  wcsncpyz(FindMask,Mask,ASIZE(FindMask));
+  FindMask=Mask;
   FirstCall=true;
 }
 
@@ -34,7 +33,7 @@ void FindFile::SetMask(const wchar *Mask)
 bool FindFile::Next(FindData *fd,bool GetSymLink)
 {
   fd->Error=false;
-  if (*FindMask==0)
+  if (FindMask.empty())
     return false;
 #ifdef _WIN_ALL
   if (FirstCall)
@@ -48,14 +47,14 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
 #else
   if (FirstCall)
   {
-    wchar DirName[NM];
-    wcsncpyz(DirName,FindMask,ASIZE(DirName));
+    std::wstring DirName;
+    DirName=FindMask;
     RemoveNameFromPath(DirName);
-    if (*DirName==0)
-      wcsncpyz(DirName,L".",ASIZE(DirName));
-    char DirNameA[NM];
-    WideToChar(DirName,DirNameA,ASIZE(DirNameA));
-    if ((dirp=opendir(DirNameA))==NULL)
+    if (DirName.empty())
+      DirName=L".";
+    std::string DirNameA;
+    WideToChar(DirName,DirNameA);
+    if ((dirp=opendir(DirNameA.c_str()))==NULL)
     {
       fd->Error=(errno!=ENOENT);
       return false;
@@ -63,32 +62,31 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
   }
   while (1)
   {
-    wchar Name[NM];
+    std::wstring Name;
     struct dirent *ent=readdir(dirp);
     if (ent==NULL)
       return false;
     if (strcmp(ent->d_name,".")==0 || strcmp(ent->d_name,"..")==0)
       continue;
-    if (!CharToWide(ent->d_name,Name,ASIZE(Name)))
-      uiMsg(UIERROR_INVALIDNAME,UINULL,Name);
+    if (!CharToWide(std::string(ent->d_name),Name))
+      uiMsg(UIERROR_INVALIDNAME,L"",Name);
 
     if (CmpName(FindMask,Name,MATCH_NAMES))
     {
-      wchar FullName[NM];
-      wcsncpyz(FullName,FindMask,ASIZE(FullName));
-      *PointToName(FullName)=0;
-      if (wcslen(FullName)+wcslen(Name)>=ASIZE(FullName)-1)
+      std::wstring FullName=FindMask;
+      FullName.erase(GetNamePos(FullName));
+      if (FullName.size()+Name.size()>=MAXPATHSIZE)
       {
         uiMsg(UIERROR_PATHTOOLONG,FullName,L"",Name);
         return false;
       }
-      wcsncatz(FullName,Name,ASIZE(FullName));
+      FullName+=Name;
       if (!FastFind(FullName,fd,GetSymLink))
       {
         ErrHandler.OpenErrorMsg(FullName);
         continue;
       }
-      wcsncpyz(fd->Name,FullName,ASIZE(fd->Name));
+      fd->Name=FullName;
       break;
     }
   }
@@ -98,14 +96,14 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
   fd->IsLink=IsLink(fd->FileAttr);
 
   FirstCall=false;
-  wchar *NameOnly=PointToName(fd->Name);
-  if (wcscmp(NameOnly,L".")==0 || wcscmp(NameOnly,L"..")==0)
+  std::wstring NameOnly=PointToName(fd->Name);
+  if (NameOnly==L"." || NameOnly==L"..")
     return Next(fd);
   return true;
 }
 
 
-bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
+bool FindFile::FastFind(const std::wstring &FindMask,FindData *fd,bool GetSymLink)
 {
   fd->Error=false;
 #ifndef _UNIX
@@ -118,16 +116,16 @@ bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
     return false;
   FindClose(hFind);
 #elif defined(_UNIX)
-  char FindMaskA[NM];
-  WideToChar(FindMask,FindMaskA,ASIZE(FindMaskA));
+  std::string FindMaskA;
+  WideToChar(FindMask,FindMaskA);
 
   struct stat st;
   if (GetSymLink)
   {
 #ifdef SAVE_LINKS
-    if (lstat(FindMaskA,&st)!=0)
+    if (lstat(FindMaskA.c_str(),&st)!=0)
 #else
-    if (stat(FindMaskA,&st)!=0)
+    if (stat(FindMaskA.c_str(),&st)!=0)
 #endif
     {
       fd->Error=(errno!=ENOENT);
@@ -135,7 +133,7 @@ bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
     }
   }
   else
-    if (stat(FindMaskA,&st)!=0)
+    if (stat(FindMaskA.c_str(),&st)!=0)
     {
       fd->Error=(errno!=ENOENT);
       return false;
@@ -145,7 +143,7 @@ bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
 
   File::StatToRarTime(st,&fd->mtime,&fd->ctime,&fd->atime);
 
-  wcsncpyz(fd->Name,FindMask,ASIZE(fd->Name));
+  fd->Name=FindMask;
 #endif
   fd->Flags=0;
   fd->IsDir=IsDir(fd->FileAttr);
@@ -156,17 +154,17 @@ bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
 
 
 #ifdef _WIN_ALL
-HANDLE FindFile::Win32Find(HANDLE hFind,const wchar *Mask,FindData *fd)
+HANDLE FindFile::Win32Find(HANDLE hFind,const std::wstring &Mask,FindData *fd)
 {
   WIN32_FIND_DATA FindData;
   if (hFind==INVALID_HANDLE_VALUE)
   {
-    hFind=FindFirstFile(Mask,&FindData);
+    hFind=FindFirstFile(Mask.c_str(),&FindData);
     if (hFind==INVALID_HANDLE_VALUE)
     {
-      wchar LongMask[NM];
-      if (GetWinLongPath(Mask,LongMask,ASIZE(LongMask)))
-        hFind=FindFirstFile(LongMask,&FindData);
+      std::wstring LongMask;
+      if (GetWinLongPath(Mask,LongMask))
+        hFind=FindFirstFile(LongMask.c_str(),&FindData);
     }
     if (hFind==INVALID_HANDLE_VALUE)
     {
@@ -190,8 +188,8 @@ HANDLE FindFile::Win32Find(HANDLE hFind,const wchar *Mask,FindData *fd)
 
   if (hFind!=INVALID_HANDLE_VALUE)
   {
-    wcsncpyz(fd->Name,Mask,ASIZE(fd->Name));
-    SetName(fd->Name,FindData.cFileName,ASIZE(fd->Name));
+    fd->Name=Mask;
+    SetName(fd->Name,FindData.cFileName);
     fd->Size=INT32TO64(FindData.nFileSizeHigh,FindData.nFileSizeLow);
     fd->FileAttr=FindData.dwFileAttributes;
     fd->ftCreationTime=FindData.ftCreationTime;

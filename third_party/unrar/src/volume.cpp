@@ -1,8 +1,8 @@
 #include "rar.hpp"
 
 #ifdef RARDLL
-static bool DllVolChange(CommandData *Cmd,wchar *NextName,size_t NameSize);
-static bool DllVolNotify(CommandData *Cmd,wchar *NextName);
+bool DllVolChange(CommandData *Cmd,std::wstring &NextName);
+static bool DllVolNotify(CommandData *Cmd,const std::wstring &NextName);
 #endif
 
 
@@ -35,9 +35,8 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
 
   Arc.Close();
 
-  wchar NextName[NM];
-  wcsncpyz(NextName,Arc.FileName,ASIZE(NextName));
-  NextVolumeName(NextName,ASIZE(NextName),!Arc.NewNumbering);
+  std::wstring NextName=Arc.FileName;
+  NextVolumeName(NextName,!Arc.NewNumbering);
 
 #if !defined(SFX_MODULE) && !defined(RARDLL)
   bool RecoveryDone=false;
@@ -56,7 +55,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   // the next file might not be fully decoded yet. They write chunks of data
   // and then close the file again until the next chunk comes in.
 
-  if (Cmd->VolumePause && !uiAskNextVolume(NextName,ASIZE(NextName)))
+  if (Cmd->VolumePause && !uiAskNextVolume(NextName))
     FailedOpen=true;
 #endif
 
@@ -76,18 +75,17 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
       {
         // Checking for new style volumes renamed by user to old style
         // name format. Some users did it for unknown reason.
-        wchar AltNextName[NM];
-        wcsncpyz(AltNextName,Arc.FileName,ASIZE(AltNextName));
-        NextVolumeName(AltNextName,ASIZE(AltNextName),true);
+        std::wstring AltNextName=Arc.FileName;
+        NextVolumeName(AltNextName,true);
         OldSchemeTested=true;
         if (Arc.Open(AltNextName,OpenMode))
         {
-          wcsncpyz(NextName,AltNextName,ASIZE(NextName));
+          NextName=AltNextName;
           break;
         }
       }
 #ifdef RARDLL
-      if (!DllVolChange(Cmd,NextName,ASIZE(NextName)))
+      if (!DllVolChange(Cmd,NextName))
       {
         FailedOpen=true;
         break;
@@ -109,7 +107,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
         break;
       }
 #ifndef SILENT
-      if (Cmd->AllYes || !uiAskNextVolume(NextName,ASIZE(NextName)))
+      if (Cmd->AllYes || !uiAskNextVolume(NextName))
 #endif
       {
         FailedOpen=true;
@@ -128,7 +126,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   }
 
   if (Command=='T' || Command=='X' || Command=='E')
-    mprintf(St(Command=='T' ? MTestVol:MExtrVol),Arc.FileName);
+    mprintf(St(Command=='T' ? MTestVol:MExtrVol),Arc.FileName.c_str());
 
 
   Arc.CheckArc(true);
@@ -158,7 +156,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   }
   if (ShowFileName && !Cmd->DisableNames)
   {
-    mprintf(St(MExtrPoints),Arc.FileHead.FileName);
+    mprintf(St(MExtrPoints),Arc.FileHead.FileName.c_str());
     if (!Cmd->DisablePercentage)
       mprintf(L"     ");
   }
@@ -190,45 +188,65 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
 
 
 #ifdef RARDLL
-bool DllVolChange(CommandData *Cmd,wchar *NextName,size_t NameSize)
+bool DllVolChange(CommandData *Cmd,std::wstring &NextName)
 {
   bool DllVolChanged=false,DllVolAborted=false;
 
   if (Cmd->Callback!=NULL)
   {
-    wchar OrgNextName[NM];
-    wcsncpyz(OrgNextName,NextName,ASIZE(OrgNextName));
-    if (Cmd->Callback(UCM_CHANGEVOLUMEW,Cmd->UserData,(LPARAM)NextName,RAR_VOL_ASK)==-1)
+    std::wstring OrgNextName=NextName;
+
+    std::vector<wchar> NameBuf(MAXPATHSIZE);
+    std::copy(NextName.data(), NextName.data() + NextName.size() + 1, NameBuf.begin());
+
+    if (Cmd->Callback(UCM_CHANGEVOLUMEW,Cmd->UserData,(LPARAM)NameBuf.data(),RAR_VOL_ASK)==-1)
       DllVolAborted=true;
     else
-      if (wcscmp(OrgNextName,NextName)!=0)
+    {
+      NextName=NameBuf.data();
+      if (OrgNextName!=NextName)
         DllVolChanged=true;
       else
       {
-        char NextNameA[NM],OrgNextNameA[NM];
-        WideToChar(NextName,NextNameA,ASIZE(NextNameA));
-        strncpyz(OrgNextNameA,NextNameA,ASIZE(OrgNextNameA));
-        if (Cmd->Callback(UCM_CHANGEVOLUME,Cmd->UserData,(LPARAM)NextNameA,RAR_VOL_ASK)==-1)
+        std::string NextNameA;
+        WideToChar(NextName,NextNameA);
+        std::string OrgNextNameA=NextNameA;
+
+        std::vector<char> NameBufA(MAXPATHSIZE);
+        std::copy(NextNameA.data(), NextNameA.data() + NextNameA.size() + 1, NameBufA.begin());
+
+        if (Cmd->Callback(UCM_CHANGEVOLUME,Cmd->UserData,(LPARAM)NameBufA.data(),RAR_VOL_ASK)==-1)
           DllVolAborted=true;
         else
-          if (strcmp(OrgNextNameA,NextNameA)!=0)
+        {
+          NextNameA=NameBufA.data();
+          if (OrgNextNameA!=NextNameA)
           {
             // We can damage some Unicode characters by U->A->U conversion,
             // so set Unicode name only if we see that ANSI name is changed.
-            CharToWide(NextNameA,NextName,NameSize);
+            CharToWide(NextNameA,NextName);
             DllVolChanged=true;
           }
+        }
       }
+    }
   }
   if (!DllVolChanged && Cmd->ChangeVolProc!=NULL)
   {
-    char NextNameA[NM];
-    WideToChar(NextName,NextNameA,ASIZE(NextNameA));
-    int RetCode=Cmd->ChangeVolProc(NextNameA,RAR_VOL_ASK);
+    std::string NextNameA;
+    WideToChar(NextName,NextNameA);
+
+    std::vector<char> NameBufA(MAXPATHSIZE);
+    std::copy(NextNameA.data(), NextNameA.data() + NextNameA.size() + 1, NameBufA.begin());
+
+    int RetCode=Cmd->ChangeVolProc(NameBufA.data(),RAR_VOL_ASK);
     if (RetCode==0)
       DllVolAborted=true;
     else
-      CharToWide(NextNameA,NextName,NameSize);
+    {
+      NextNameA=NameBufA.data();
+      CharToWide(NextNameA,NextName);
+    }
   }
 
   // We quit only on 'abort' condition, but not on 'name not changed'.
@@ -246,20 +264,21 @@ bool DllVolChange(CommandData *Cmd,wchar *NextName,size_t NameSize)
 
 
 #ifdef RARDLL
-bool DllVolNotify(CommandData *Cmd,wchar *NextName)
+static bool DllVolNotify(CommandData *Cmd,const std::wstring &NextName)
 {
-  char NextNameA[NM];
-  WideToChar(NextName,NextNameA,ASIZE(NextNameA));
+  std::string NextNameA;
+  WideToChar(NextName,NextNameA);
+
   if (Cmd->Callback!=NULL)
   {
-    if (Cmd->Callback(UCM_CHANGEVOLUMEW,Cmd->UserData,(LPARAM)NextName,RAR_VOL_NOTIFY)==-1)
+    if (Cmd->Callback(UCM_CHANGEVOLUMEW,Cmd->UserData,(LPARAM)NextName.data(),RAR_VOL_NOTIFY)==-1)
       return false;
-    if (Cmd->Callback(UCM_CHANGEVOLUME,Cmd->UserData,(LPARAM)NextNameA,RAR_VOL_NOTIFY)==-1)
+    if (Cmd->Callback(UCM_CHANGEVOLUME,Cmd->UserData,(LPARAM)NextNameA.data(),RAR_VOL_NOTIFY)==-1)
       return false;
   }
   if (Cmd->ChangeVolProc!=NULL)
   {
-    int RetCode=Cmd->ChangeVolProc(NextNameA,RAR_VOL_NOTIFY);
+    int RetCode=Cmd->ChangeVolProc((char *)NextNameA.data(),RAR_VOL_NOTIFY);
     if (RetCode==0)
       return false;
   }
