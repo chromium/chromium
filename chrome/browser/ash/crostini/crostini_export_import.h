@@ -281,7 +281,7 @@ class CrostiniExportImport : public KeyedService,
       operation_data_storage_;
   // Trackers must have unique-per-profile identifiers.
   // A non-static member on a profile-keyed-service will suffice.
-  int next_status_tracker_id_;
+  int next_status_tracker_id_ = 0;
   base::ObserverList<Observer> observers_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniExportImport> weak_ptr_factory_{this};
