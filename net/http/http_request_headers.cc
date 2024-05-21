@@ -178,7 +178,7 @@ void HttpRequestHeaders::AddHeaderFromString(std::string_view header_line) {
     return;
   }
 
-  const std::string_view header_key(header_line.data(), key_end_index);
+  const std::string_view header_key = header_line.substr(0, key_end_index);
   if (!HttpUtil::IsValidHeaderName(header_key)) {
     LOG(DFATAL) << "\"" << header_line << "\" has invalid header key.";
     return;
@@ -187,8 +187,7 @@ void HttpRequestHeaders::AddHeaderFromString(std::string_view header_line) {
   const std::string::size_type value_index = key_end_index + 1;
 
   if (value_index < header_line.size()) {
-    std::string_view header_value(header_line.data() + value_index,
-                                  header_line.size() - value_index);
+    std::string_view header_value = header_line.substr(value_index);
     header_value = HttpUtil::TrimLWS(header_value);
     if (!HttpUtil::IsValidHeaderValue(header_value)) {
       LOG(DFATAL) << "\"" << header_line << "\" has invalid header value.";
