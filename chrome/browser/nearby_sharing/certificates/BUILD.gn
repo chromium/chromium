@@ -32,7 +32,6 @@ source_set("certificates") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts",
     "//chrome/browser/nearby_sharing/local_device_data",
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/components/nearby/common/scheduling",

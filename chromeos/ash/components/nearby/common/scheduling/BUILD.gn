@@ -24,7 +24,6 @@ source_set("scheduling") {
 
   deps = [
     "//base",
-    "//chrome/browser/nearby_sharing/logging",
     "//components/cross_device/logging:logging",
     "//components/prefs",
     "//content/public/browser",

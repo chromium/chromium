@@ -12,7 +12,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 #include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"

@@ -4,31 +4,6 @@
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
-source_set("logging") {
-  sources = [
-    "log_buffer.cc",
-    "log_buffer.h",
-    "logging.cc",
-    "logging.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser/nearby_sharing/common",
-    "//chromeos/ash/components/nearby/common/proto",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "logging_unittest.cc" ]
-
-  deps = [
-    ":logging",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-}
-
 source_set("util") {
   sources = [
     "proto_to_dictionary_conversion.cc",

@@ -4242,7 +4242,6 @@ source_set("ash") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/policy:onc",

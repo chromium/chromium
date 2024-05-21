@@ -24,7 +24,6 @@ source_set("local_device_data") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//components/cross_device/logging:logging",

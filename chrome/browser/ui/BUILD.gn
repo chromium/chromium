@@ -3850,7 +3850,6 @@ static_library("ui") {
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/nearby_sharing/contacts",
       "//chrome/browser/nearby_sharing/local_device_data",
-      "//chrome/browser/nearby_sharing/logging",
       "//chrome/browser/nearby_sharing/logging:util",
       "//chrome/browser/policy:onc",
       "//chrome/browser/push_notification:push_notification",

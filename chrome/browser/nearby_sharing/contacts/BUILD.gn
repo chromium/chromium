@@ -23,7 +23,6 @@ source_set("contacts") {
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/local_device_data",
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//chromeos/ash/services/nearby/public/mojom",

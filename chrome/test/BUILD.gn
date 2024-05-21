@@ -8840,7 +8840,6 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/local_device_data",
       "//chrome/browser/nearby_sharing/local_device_data:test_support",
       "//chrome/browser/nearby_sharing/local_device_data:unit_tests",
-      "//chrome/browser/nearby_sharing/logging:unit_tests",
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",

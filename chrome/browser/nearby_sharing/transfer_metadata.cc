@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 
 // static

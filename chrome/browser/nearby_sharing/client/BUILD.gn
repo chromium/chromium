@@ -16,7 +16,6 @@ source_set("client") {
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/common/client",
     "//components/cross_device/logging:logging",
     "//components/signin/public/identity_manager",

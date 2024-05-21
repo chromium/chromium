@@ -38,7 +38,6 @@ source_set("nearby") {
   ]
 
   deps = [
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/presence/conversions:conversions",
     "//chromeos/services/network_config/public/mojom",
     "//components/cross_device/nearby:nearby",
