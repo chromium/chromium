@@ -26,7 +26,6 @@ The general pipeline is:
 """
 
 import argparse
-import collections
 import logging
 import re
 import sys

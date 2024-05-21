@@ -455,24 +455,6 @@ class OrderfileUpdater:
     print('Download: https://sandbox.google.com/storage/%s/%s' %
           (bucket, _GenerateHash(filename)))
 
-  def _GetHashFilePathAndContents(self, filename):
-    """Gets the name and content of the hash file created from uploading the
-    given file.
-
-    Args:
-      filename: (str) The file that was uploaded to cloud storage.
-
-    Returns:
-      A tuple of the hash file name, relative to the reository root, and the
-      content, which should be the sha1 hash of the file
-      ('base_file.sha1', hash)
-    """
-    abs_hash_filename = filename + '.sha1'
-    rel_hash_filename = os.path.relpath(
-        abs_hash_filename, self._repository_root)
-    with open(abs_hash_filename, 'r') as f:
-      return (rel_hash_filename, f.read())
-
   def _GitStash(self):
     """Git stash the current clank tree.
 
@@ -739,8 +721,8 @@ class OrderfileGenerator:
 
   def _SaveForDebugging(self, filename: str):
     """Uploads the file to cloud storage or saves to a temporary location."""
-    file_sha1 = _GenerateHash(filename)
     if not self._options.buildbot:
+      file_sha1 = _GenerateHash(filename)
       self._SaveFileLocally(filename, file_sha1)
     else:
       print('Uploading file for debugging: ' + filename)
