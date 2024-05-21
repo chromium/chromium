@@ -638,9 +638,13 @@
       // Should remove the promo section completely in case it was showing
       // before with another action.
       self.shouldShowSignInPromo = NO;
-      _signinPromoViewMediator.signinPromoAction =
-          SigninPromoAction::kReviewAccountSettings;
-      self.shouldShowSignInPromo = YES;
+      if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+        // TODO(crbug.com/339472472): There is crash if the settings are
+        // opened from the incognito tab.
+        _signinPromoViewMediator.signinPromoAction =
+            SigninPromoAction::kReviewAccountSettings;
+        self.shouldShowSignInPromo = YES;
+      }
     } else {
       // If the user is signed-in with the promo (thus opted-in for Reading List
       // account storage), the promo should stay visible during the initial sync
