@@ -256,17 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.DirectRenderer.SkippedNonRootRenderPassOutputSize"
-    units="pixels" expires_after="2024-06-30">
-  <owner>magchen@chromium.org</owner>
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Pixel size for a skipped nonroot render pass output surface. Recorded in Viz
-    DirectRenderer draw frame.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.AdpfHintUs" units="microseconds"
     expires_after="2024-09-01">
   <owner>boliu@chromium.org</owner>
