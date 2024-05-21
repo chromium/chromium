@@ -337,10 +337,21 @@ CSSNumericValue* CSSNumericValue::parse(
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
     const auto& math_function = To<CSSMathFunctionValue>(value);
-    if (math_function.HasAnchorFunctions()) {
+    // We don't currently have a spec or implementation for a typed OM
+    // representation of anchor functions or sizing keywords (in calc-size()).
+    // So we should not attempt to produce such a representation.  Do this
+    // exactly for anchor functions, but handle sizing keywords by rejecting
+    // any calc-size() function (even if it doesn't have sizing keywords),
+    // since the use of sizing keywords is the main use of such functions.
+    auto is_calc_size = [](const CSSMathExpressionNode* expression) {
+      const auto* operation = DynamicTo<CSSMathExpressionOperation>(expression);
+      return operation && operation->IsCalcSize();
+    };
+    const CSSMathExpressionNode* expression = math_function.ExpressionNode();
+    if (math_function.HasAnchorFunctions() || is_calc_size(expression)) {
       return nullptr;
     }
-    return CalcToNumericValue(*math_function.ExpressionNode());
+    return CalcToNumericValue(*expression);
   }
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
