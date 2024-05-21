@@ -85,7 +85,7 @@ class TargetDeviceBootstrapController
 
   using Payload = absl::variant<absl::monostate,
                                 ErrorCode,
-                                QRCode::PixelData,
+                                QRCode,
                                 PinString,
                                 EmailString,
                                 mojom::WifiCredentials,

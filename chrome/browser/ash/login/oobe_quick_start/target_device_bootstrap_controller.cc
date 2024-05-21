@@ -98,10 +98,10 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   if (use_pin_authentication || session_context_.is_resume_after_update()) {
     status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
   } else {
-    auto qr_code = std::make_unique<QRCode>(session_context_.advertising_id(),
-                                            session_context_.shared_secret());
     status_.step = Step::ADVERTISING_WITH_QR_CODE;
-    status_.payload.emplace<QRCode::PixelData>(qr_code->pixel_data());
+    QRCode qr_code{session_context_.advertising_id(),
+                   session_context_.shared_secret()};
+    status_.payload = std::move(qr_code);
   }
 
   connection_broker_->StartAdvertising(

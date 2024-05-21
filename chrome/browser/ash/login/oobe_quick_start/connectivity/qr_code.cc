@@ -23,9 +23,7 @@ constexpr char kDeviceTypeQueryParamValue[] = "7";
 }  // namespace
 
 QRCode::QRCode(AdvertisingId advertising_id, SharedSecret shared_secret)
-    : advertising_id_(advertising_id), shared_secret_(shared_secret) {
-  GeneratePixelData();
-}
+    : advertising_id_(advertising_id), shared_secret_(shared_secret) {}
 
 QRCode::QRCode(const QRCode& other) = default;
 
@@ -33,30 +31,30 @@ QRCode& QRCode::operator=(const QRCode& other) = default;
 
 QRCode::~QRCode() = default;
 
-void QRCode::GeneratePixelData() {
-  std::vector<uint8_t> blob = GetQRCodeData();
-  auto generated_code = qr_code_generator::GenerateCode(blob);
-  CHECK(generated_code.has_value()) << "generated_code has no value";
-  auto res =
-      PixelData{generated_code->data.begin(), generated_code->data.end()};
-  CHECK_EQ(res.size(), static_cast<size_t>(generated_code->qr_size *
-                                           generated_code->qr_size));
-  pixel_data_ = res;
-}
-
-std::vector<uint8_t> QRCode::GetQRCodeData() {
+std::string QRCode::GetQRCodeURLString() {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
   std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
   url::EncodeURIComponent(shared_secret_base64,
                           &shared_secret_base64_uriencoded);
+  return base::StrCat({"https://signin.google/qs/", advertising_id_.ToString(),
+                       "?key=", shared_secret_base64_uriencoded.view(),
+                       "&t=", kDeviceTypeQueryParamValue});
+}
 
-  std::string url =
-      base::StrCat({"https://signin.google/qs/", advertising_id_.ToString(),
-                    "?key=", shared_secret_base64_uriencoded.view(),
-                    "&t=", kDeviceTypeQueryParamValue});
-
-  return std::vector<uint8_t>(url.begin(), url.end());
+QRCode::PixelData QRCode::GetPixelData() {
+  std::string url_string = GetQRCodeURLString();
+  std::vector<uint8_t> blob =
+      std::vector<uint8_t>(url_string.begin(), url_string.end());
+  base::expected<qr_code_generator::GeneratedCode, qr_code_generator::Error>
+      generated_code = qr_code_generator::GenerateCode(blob);
+  CHECK(generated_code.has_value()) << "generated_code has no value";
+  auto res =
+      PixelData{generated_code->data.begin(), generated_code->data.end()};
+  CHECK_EQ(res.size(), static_cast<size_t>(generated_code->qr_size *
+                                           generated_code->qr_size))
+      << "unexpected size for QR code data";
+  return res;
 }
 
 }  // namespace ash::quick_start

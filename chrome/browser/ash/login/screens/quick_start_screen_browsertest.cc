@@ -495,6 +495,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   const int qr_code_size = WizardController::default_controller()
                                ->quick_start_controller()
                                ->GetQrCode()
+                               .GetPixelData()
                                .size();
 
   // Get the number of cells per row/column (CELL_COUNT) exposed on <canvas>

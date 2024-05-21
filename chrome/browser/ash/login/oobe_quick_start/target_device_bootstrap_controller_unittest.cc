@@ -235,8 +235,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingAndMaybeGetQRCode) {
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -258,8 +258,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::ADVERTISING_WITHOUT_QR_CODE);
-  EXPECT_FALSE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_FALSE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_start_advertising_calls());
   ASSERT_TRUE(fake_target_device_connection_broker_
@@ -310,14 +310,14 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   // Status shouldn't change.
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
@@ -340,8 +340,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
   BootstrapConnection();
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
@@ -470,8 +470,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
       kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
@@ -527,8 +527,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionFailsIfUserNotVerified) {
       kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
@@ -550,8 +550,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       std::nullopt);
@@ -762,8 +762,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
       kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
-  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   bootstrap_controller_->StopAdvertising();
   fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
@@ -822,8 +822,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::ADVERTISING_WITHOUT_QR_CODE);
-  EXPECT_FALSE(absl::holds_alternative<QRCode::PixelData>(
-      fake_observer_->last_status.payload));
+  EXPECT_FALSE(
+      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);

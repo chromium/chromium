@@ -130,7 +130,7 @@ class QuickStartController
 
   // Accessors methods to be used by the UI for retrieving data. It is an error
   // to retrieve these values when they do not exist.
-  QRCode::PixelData GetQrCode() { return qr_code_data_.value(); }
+  QRCode GetQrCode() { return qr_code_.value(); }
   std::string GetPin() { return pin_.value(); }
   std::string GetDiscoverableName() { return discoverable_name_.value(); }
   UserInfo GetUserInfo() { return user_info_; }
@@ -247,7 +247,7 @@ class QuickStartController
   std::optional<std::string> discoverable_name_;
 
   // QR Code to be shown on the UI when requested.
-  std::optional<QRCode::PixelData> qr_code_data_;
+  std::optional<QRCode> qr_code_;
 
   // PIN to be shown on the UI when requested.
   std::optional<std::string> pin_;

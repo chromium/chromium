@@ -24,20 +24,12 @@ class QRCode {
   QRCode& operator=(const QRCode& other);
   ~QRCode();
 
-  PixelData pixel_data() { return pixel_data_; }
+  std::string GetQRCodeURLString();
+  PixelData GetPixelData();
 
  private:
-  friend class QRCodeTest;
-
-  void GeneratePixelData();
-
-  // Returns a deep link URL as a vector of bytes that will form the QR code
-  // used to authenticate the connection.
-  std::vector<uint8_t> GetQRCodeData();
-
   AdvertisingId advertising_id_;
   SharedSecret shared_secret_;
-  PixelData pixel_data_;
 };
 
 }  // namespace ash::quick_start

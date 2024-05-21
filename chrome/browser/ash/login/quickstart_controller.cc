@@ -418,9 +418,9 @@ void QuickStartController::OnStatusChanged(
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
-      CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload))
+      CHECK(absl::holds_alternative<QRCode>(status.payload))
           << "Missing expected QR Code data";
-      qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
+      qr_code_ = absl::get<QRCode>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
       return;
     case Step::ADVERTISING_WITHOUT_QR_CODE:
@@ -771,8 +771,8 @@ void QuickStartController::FinishAccountCreation() {
 
 void QuickStartController::ResetState() {
   entry_point_.reset();
-  qr_code_data_.reset();
   fallback_url_.reset();
+  qr_code_.reset();
   pin_.reset();
   user_info_ = UserInfo();
   gaia_creds_ = TargetDeviceBootstrapController::GaiaCredentials();

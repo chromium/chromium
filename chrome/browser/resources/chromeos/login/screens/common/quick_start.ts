@@ -227,13 +227,15 @@ export class QuickStartScreen extends QuickStartScreenBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  setQRCode(qrCode: boolean[]): void {
+  setQRCode(qrCodeData: boolean[], qrCodeURL: string): void {
     this.getQuickStartBluetoothDialog().hideDialog();
     this.usePinInsteadOfQrForVerification = false;
     this.setUIStep(QuickStartUiState.VERIFICATION);
     flush();
 
-    this.qrCodeCanvas?.setData(qrCode);
+    this.qrCodeCanvas?.setData(qrCodeData);
+    this.shadowRoot?.querySelector('#qrCodeCanvas')
+        ?.setAttribute('qr-code-url', qrCodeURL);
     this.qrCodeAvailable = true;
   }
 
