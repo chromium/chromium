@@ -843,36 +843,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
-      // GAIA password changed.
-      id: 'gaia-password-changed',
-      kind: ScreenKind.OTHER,
-      handledSteps: 'password',
-      data: {
-        email: 'someone@example.com',
-      },
-      states: [
-        {
-          // No error
-          id: 'no-error',
-          trigger: (screen) => {
-            screen.onBeforeShow({
-              email: 'someone@example.com',
-            });
-          },
-        },
-        {
-          // Has error
-          id: 'has-error',
-          trigger: (screen) => {
-            screen.onBeforeShow({
-              email: 'someone@example.com',
-              showError: true,
-            });
-          },
-        },
-      ],
-    },
-    {
       id: 'ad-password-change',
       kind: ScreenKind.OTHER,
       handledSteps: 'password',

@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
@@ -529,8 +528,6 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<GestureNavigationScreenHandler>());
 
   AddScreenHandler(std::make_unique<MarketingOptInScreenHandler>());
-
-  AddScreenHandler(std::make_unique<GaiaPasswordChangedScreenHandler>());
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
                                                        error_screen));

@@ -64,7 +64,6 @@ import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
 // AUTHENTICATION SCREENS USED DURING THE LOGIN FLOW
 import './screens/osauth/cryptohome_recovery.js';
-import './screens/osauth/gaia_password_changed.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
 import './screens/login/encryption_migration.js';
@@ -232,7 +231,6 @@ export const loginScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'cryptohome-recovery-element', id: 'cryptohome-recovery'},
   {tag: 'encryption-migration-element', id: 'encryption-migration'},
-  {tag: 'gaia-password-changed-element', id: 'gaia-password-changed'},
   {
     tag: 'lacros-data-backward-migration-element',
     id: 'lacros-data-backward-migration',

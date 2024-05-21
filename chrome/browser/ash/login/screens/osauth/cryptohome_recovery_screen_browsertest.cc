@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
-#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -25,10 +25,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -36,7 +34,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
-#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

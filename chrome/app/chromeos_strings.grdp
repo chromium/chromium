@@ -1724,18 +1724,6 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_INCORRECT_OLD_PASSWORD" desc="Error that is shown when incorrect old password was supplied for user cryptohome migration.">
     Incorrect password
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_TITLE" desc="Title for the password changed dialog box">
-    To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password.
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_PASSWORD" desc="Text of the link that lets user skip old password input on the password changed dialog in the GAIA flow">
-    Forgot your old password?
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_PROCEED_ANYWAY" desc="Button to proceed without providing old password on the password changed dialog in the GAIA flow">
-    You may proceed, but only your synced data and settings will be restored. All local data will be lost.
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_TRY_AGAIN" desc="Label for the retry button on the proceed anyway step in the the GAIA password changed flow">
-    Try again
-  </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE" desc="Title for the data loss warning screen if the user decided not to recover local data">
     Local data will be deleted
   </message>

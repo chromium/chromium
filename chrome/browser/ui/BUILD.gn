@@ -3306,8 +3306,6 @@ static_library("ui") {
       "webui/ash/login/fingerprint_setup_screen_handler.h",
       "webui/ash/login/gaia_info_screen_handler.cc",
       "webui/ash/login/gaia_info_screen_handler.h",
-      "webui/ash/login/gaia_password_changed_screen_handler.cc",
-      "webui/ash/login/gaia_password_changed_screen_handler.h",
       "webui/ash/login/gaia_screen_handler.cc",
       "webui/ash/login/gaia_screen_handler.h",
       "webui/ash/login/gesture_navigation_screen_handler.cc",

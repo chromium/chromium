@@ -146,7 +146,6 @@ build_webui("build") {
     "screens/osauth/cryptohome_recovery_setup.ts",
     "screens/osauth/factor_setup_success.ts",
     "screens/osauth/fingerprint_setup.ts",
-    "screens/osauth/gaia_password_changed.ts",
     "screens/osauth/local_password_setup.ts",
     "screens/osauth/local_data_loss_warning.ts",
     "screens/osauth/enter_old_password.ts",
