@@ -402,6 +402,13 @@ BASE_FEATURE(kBlitRequestsForViewTransition,
              "BlitRequestsForViewTransition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes BeginFrame issue to use LastUsedBeginFrameArgs() instead of the
+// current set of BeginFrameArgs.
+// TODO(b/333940735): Should be removed if the issue isn't fixed.
+BASE_FEATURE(kUseLastBeginFrameArgs,
+             "UseLastBeginFrameArgs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
 namespace viz {
@@ -458,13 +459,19 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
 void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
     BeginFrameObserver* obs,
     const BeginFrameArgs& args) {
+  BeginFrameArgs last_args = obs->LastUsedBeginFrameArgs();
+
   // We should use |last_args| for margin calculation with
   // |obs->LastUsedBeginFrameArgs()| cached during last OnBeginFrame, as the
   // passed in |args| is updated if interval changes since last frame.
-  BeginFrameArgs last_args = obs->LastUsedBeginFrameArgs();
+  auto args_for_margin =
+      base::FeatureList::IsEnabled(features::kUseLastBeginFrameArgs) ? last_args
+                                                                     : args;
+
   const base::TimeDelta double_tick_margin =
-      max_vrr_interval_.has_value() ? base::TimeDelta()
-                                    : last_args.interval / kDoubleTickDivisor;
+      max_vrr_interval_.has_value()
+          ? base::TimeDelta()
+          : args_for_margin.interval / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
       (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
