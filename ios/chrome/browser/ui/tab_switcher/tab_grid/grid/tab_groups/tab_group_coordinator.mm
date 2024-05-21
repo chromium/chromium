@@ -255,6 +255,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
+        didChangeItemCount:(NSUInteger)count {
+  // No-op.
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
   // No-op.
 }

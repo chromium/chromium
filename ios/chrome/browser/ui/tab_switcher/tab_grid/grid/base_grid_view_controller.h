@@ -47,6 +47,10 @@ class WebStateID;
 // Tells the delegate that an item was moved.
 - (void)gridViewControllerDidMoveItem:
     (BaseGridViewController*)gridViewController;
+// Tells the delegate that the the number of items in `gridViewController`
+// changed to `count`.
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+        didChangeItemCount:(NSUInteger)count;
 // Tells the delegate that the item with `itemID` was removed.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID;

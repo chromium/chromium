@@ -29,6 +29,12 @@ class WebStateID;
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(web::WebStateID)itemID;
 
+// Tells the delegate that the the number of items in `pinnedTabsViewController`
+// changed to `count`.
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+              didChangeItemCount:(NSUInteger)count;
+
 // Tells the delegate that the item with `itemID` was moved.
 - (void)pinnedTabsViewControllerDidMoveItem:
     (PinnedTabsViewController*)pinnedTabsViewController;

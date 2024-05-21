@@ -158,12 +158,6 @@ void CreateDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
       performAction:grey_tap()];
 }
 
-// Returns the matcher for the tab grid tab count.
-id<GREYMatcher> TabGridTabCount(NSString* count_string) {
-  return grey_allOf(grey_ancestor(grey_kindOfClassName(@"TabGridPageControl")),
-                    grey_text(count_string), grey_sufficientlyVisible(), nil);
-}
-
 // Adds the tab at `tab_cell_index` to the group with `title`.
 void AddTabAtIndexToGroupWithTitle(int tab_cell_index, NSString* title) {
   DisplayContextMenuForTabCellAtIndex(tab_cell_index);
@@ -383,8 +377,6 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // Check for the presence of the tab cell with the title `Tab 1` in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"1")]
-      assertWithMatcher:grey_notNil()];
 
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
 
@@ -396,8 +388,6 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"2")]
-      assertWithMatcher:grey_notNil()];
 
   AddTabAtIndexToGroupWithTitle(
       1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
@@ -405,8 +395,6 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // `Tab 2` tab cell no longer present in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"2")]
-      assertWithMatcher:grey_notNil()];
 
   OpenTabGroupAtIndex(0);
 

@@ -319,8 +319,13 @@ TabGridPage ThirdTabGridPage() {
 // the text in both labels (the regular and the  "selected" versions that's
 // visible when the slider is over a segment), and an ivar to store values that
 // are set before the labels are created.
-- (void)setTabCount:(NSUInteger)tabCount {
-  _tabCount = tabCount;
+- (void)setRegularTabCount:(NSUInteger)regularTabCount {
+  _regularTabCount = regularTabCount;
+  [self updateRegularLabels];
+}
+
+- (void)setPinnedTabCount:(NSUInteger)pinnedTabCount {
+  _pinnedTabCount = pinnedTabCount;
   [self updateRegularLabels];
 }
 
@@ -672,7 +677,7 @@ TabGridPage ThirdTabGridPage() {
 
   // Update the label text, in case these properties have been set before the
   // views were set up.
-  self.tabCount = _tabCount;
+  self.regularTabCount = _regularTabCount;
 
   // Mark the control's layout as dirty so the the guides will be computed, then
   // force a layout now so it won't be triggered later (perhaps during an
@@ -691,10 +696,11 @@ TabGridPage ThirdTabGridPage() {
 
 // Updates the labels displaying the regular tab count.
 - (void)updateRegularLabels {
+  NSUInteger totalTabsCount = self.regularTabCount + self.pinnedTabCount;
   self.regularLabel.attributedText =
-      TextForTabCount(_tabCount, kLabelSize * kLabelSizeToFontSize);
-  self.regularSelectedLabel.attributedText =
-      TextForTabCount(_tabCount, kSelectedLabelSize * kLabelSizeToFontSize);
+      TextForTabCount(totalTabsCount, kLabelSize * kLabelSizeToFontSize);
+  self.regularSelectedLabel.attributedText = TextForTabCount(
+      totalTabsCount, kSelectedLabelSize * kLabelSizeToFontSize);
 }
 
 // Creates a label for use in this control.
