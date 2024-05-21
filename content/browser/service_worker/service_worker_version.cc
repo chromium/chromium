@@ -1039,7 +1039,11 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
 
 void ServiceWorkerVersion::RemoveControlleeFromBackForwardCacheMap(
     const std::string& client_uuid) {
-  DCHECK(IsBackForwardCacheEnabled());
+  CHECK(IsBackForwardCacheEnabled());
+  // TODO(crbug.com/341322515): Investigate why sometimes
+  // `bfcache_controllee_map_` does not contain the client.
+  SCOPED_CRASH_KEY_BOOL("ServiceWorkerBfcache", "in_controllee_map",
+                        base::Contains(controllee_map_, client_uuid));
   CHECK(base::Contains(bfcached_controllee_map_, client_uuid));
   bfcached_controllee_map_.erase(client_uuid);
 }
