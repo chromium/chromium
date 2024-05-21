@@ -16,20 +16,14 @@
 
 namespace {
 
-// Number of URLs of the same cluster that a window needs to contain in order
-// for the entry point to stay valid.
-constexpr int kEligibleWindowUrlCountForValidation = 2;
-// Number of URLs of the same cluster that a window needs to contain in order
-// for the entry point to trigger for navigation.
-constexpr int kEligibleWindowUrlCountForNavigationTriggering = 3;
+constexpr int kEligibleWindowUrlCountForNavigation = 3;
 
-bool CheckWindowContainsEntryPointURLs(
+bool IsNavigationEligibleForEntryPoint(
     TabStripModel* tab_strip_model,
-    commerce::EntryPointInfo entry_point_info,
-    size_t threshold) {
+    commerce::EntryPointInfo entry_point_info) {
   std::set<GURL> similar_urls =
       entry_point_info.similar_candidate_products_urls;
-  if (similar_urls.size() < threshold) {
+  if (similar_urls.size() < kEligibleWindowUrlCountForNavigation) {
     return false;
   }
   std::set<GURL> eligible_urls_in_current_window;
@@ -37,26 +31,14 @@ bool CheckWindowContainsEntryPointURLs(
     GURL tab_url = tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL();
     if (similar_urls.find(tab_url) != similar_urls.end()) {
       eligible_urls_in_current_window.insert(tab_url);
-      if (eligible_urls_in_current_window.size() >= threshold) {
+      if (eligible_urls_in_current_window.size() >=
+          kEligibleWindowUrlCountForNavigation) {
         return true;
       }
     }
   }
-  return eligible_urls_in_current_window.size() >= threshold;
-}
-
-bool IsWindowValidForEntryPoint(TabStripModel* tab_strip_model,
-                                commerce::EntryPointInfo entry_point_info) {
-  return CheckWindowContainsEntryPointURLs(
-      tab_strip_model, entry_point_info, kEligibleWindowUrlCountForValidation);
-}
-
-bool IsNavigationEligibleForEntryPoint(
-    TabStripModel* tab_strip_model,
-    commerce::EntryPointInfo entry_point_info) {
-  return CheckWindowContainsEntryPointURLs(
-      tab_strip_model, entry_point_info,
-      kEligibleWindowUrlCountForNavigationTriggering);
+  return eligible_urls_in_current_window.size() >=
+         kEligibleWindowUrlCountForNavigation;
 }
 
 }  // namespace
@@ -84,9 +66,6 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::Type::kRemoved) {
-    MaybeHideEntryPoint();
-  }
   // Filter out non-tab-selection events.
   if (change.type() != TabStripModelChange::Type::kSelectionOnly ||
       !selection.active_tab_changed() || !selection.old_contents ||
@@ -109,10 +88,8 @@ void ProductSpecificationsEntryPointController::TabChangedAt(
     content::WebContents* contents,
     int index,
     TabChangeType change_type) {
-  if (change_type == TabChangeType::kAll &&
-      contents->GetLastCommittedURL() != last_committed_url_) {
+  if (change_type == TabChangeType::kAll) {
     last_committed_url_ = contents->GetLastCommittedURL();
-    MaybeHideEntryPoint();
   }
 }
 
@@ -170,17 +147,6 @@ void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
   current_entry_point_info_ = entry_point_info;
   for (auto& observer : observers_) {
     observer.ShowEntryPointWithTitle(entry_point_info->title);
-  }
-}
-
-void ProductSpecificationsEntryPointController::MaybeHideEntryPoint() {
-  if (!current_entry_point_info_.has_value() ||
-      IsWindowValidForEntryPoint(browser_->tab_strip_model(),
-                                 current_entry_point_info_.value())) {
-    return;
-  }
-  for (auto& observer : observers_) {
-    observer.HideEntryPoint();
   }
 }
 }  // namespace commerce
