@@ -39,7 +39,8 @@ public class BottomBarConfigCreator {
                     ButtonId.PIH_BASIC,
                     104,
                     ButtonId.ADD_NOTES);
-
+    private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
+            List.of(ButtonId.SAVE, ButtonId.PIH_BASIC, ButtonId.SHARE);
     private final Context mContext;
 
     /** Returns true if the id of the custom button param is supported. */
@@ -88,11 +89,13 @@ public class BottomBarConfigCreator {
     BottomBarConfig create(
             List<Integer> encodedLayoutList, List<CustomButtonParams> customButtonParams) {
         if (encodedLayoutList.isEmpty()) {
-            throw new IllegalArgumentException("The list is empty or has wrong format");
+            Log.e(TAG, "The list is empty or has wrong format");
+            return createDefaultConfig(customButtonParams);
         }
 
         if (encodedLayoutList.size() < 2) {
-            throw new IllegalArgumentException("The list doesn't have enough parameters");
+            Log.e(TAG, "The list doesn't have enough parameters");
+            return createDefaultConfig(customButtonParams);
         }
 
         List<Integer> buttonIdList =
@@ -102,14 +105,16 @@ public class BottomBarConfigCreator {
                 buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
 
         if (validButtonListSize != buttonIdList.size()) {
-            throw new IllegalArgumentException("The list has non-valid button ids");
+            Log.e(TAG, "The list has non-valid button ids");
+            return createDefaultConfig(customButtonParams);
         }
 
         // 0 aka no spotlight is not encoded in ButtonId so it must be checked separately
         int spotlitButton = encodedLayoutList.get(0);
 
         if (!isValidButtonId(spotlitButton) && spotlitButton != 0) {
-            throw new IllegalArgumentException("The spotlight button id is not supported");
+            Log.e(TAG, "The spotlight button id is not supported");
+            return createDefaultConfig(customButtonParams);
         }
 
         return new BottomBarConfig(
@@ -215,6 +220,12 @@ public class BottomBarConfigCreator {
                     return null;
                 }
         }
+    }
+
+    private BottomBarConfig createDefaultConfig(List<CustomButtonParams> customButtonParams) {
+        return new BottomBarConfig(
+                /* spotlightId= */ null,
+                createButtonConfigList(DEFAULT_BUTTON_ID_LIST, customButtonParams));
     }
 
     /**
