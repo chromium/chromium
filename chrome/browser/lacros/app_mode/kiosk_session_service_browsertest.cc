@@ -4,22 +4,29 @@
 
 #include <memory>
 
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
-
 #include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/base_window.h"
 #include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -76,6 +83,30 @@ void CreateKioskAppWindowAndWaitInitialized() {
                                       WindowOpenDisposition::NEW_POPUP,
                                       /*restore_id=*/0);
   EXPECT_TRUE(kiosk_initialized.Wait());
+  EXPECT_NE(
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
+      nullptr);
+}
+
+[[nodiscard]] bool WaitUntilBrowserClosed(Browser* browser) {
+  TestBrowserClosedWaiter waiter(browser);
+  return waiter.WaitUntilClosed();
+}
+
+bool DidSessionCloseNewWindow() {
+  chromeos::KioskBrowserSession* session =
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting();
+  base::test::TestFuture<bool> future;
+  session->SetOnHandleBrowserCallbackForTesting(future.GetRepeatingCallback());
+  return future.Take();
+}
+
+Browser* CreateBrowserWithWindowOfType(WindowOpenDisposition window_type) {
+  Browser* browser = web_app::CreateWebApplicationWindow(
+      &GetProfile(), kWebAppUrl, window_type,
+      /*restore_id=*/0);
+  browser->window()->Show();
+  return browser;
 }
 
 }  // namespace
@@ -136,10 +167,6 @@ IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
       nullptr);
 
   CreateKioskAppWindowAndWaitInitialized();
-
-  EXPECT_NE(
-      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
-      nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest, VerifyInstallUrl) {
@@ -173,4 +200,46 @@ IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
   EXPECT_TRUE(
       GetProfile().GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
           GURL(kWebAppUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       AnyNewBrowsersInKioskNotAllowedByDefault) {
+  EXPECT_FALSE(
+      GetProfile().GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed));
+  CreateKioskAppWindowAndWaitInitialized();
+
+  Browser* popup_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_POPUP);
+  EXPECT_TRUE(WaitUntilBrowserClosed(popup_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* const new_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_TRUE(WaitUntilBrowserClosed(new_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       NewPopupBrowserInKioskAllowedByPolicy) {
+  GetProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  CreateKioskAppWindowAndWaitInitialized();
+
+  CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_POPUP);
+
+  EXPECT_FALSE(DidSessionCloseNewWindow());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       NewRegularBrowserInKioskNotAllowedEvenByPolicy) {
+  GetProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  CreateKioskAppWindowAndWaitInitialized();
+
+  // `kNewWindowsInKioskAllowed` policy allows to open only popup windows. All
+  // other windows will be closed.
+  Browser* const new_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_WINDOW);
+
+  EXPECT_TRUE(WaitUntilBrowserClosed(new_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
+
 #include <memory>
 #include <tuple>
 #include <utility>
