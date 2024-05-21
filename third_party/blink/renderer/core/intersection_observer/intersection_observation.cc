@@ -100,7 +100,10 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
       cached_rects_backup.emplace(cached_rects_);
 #else
-      return 0;
+      // This is equivalent to a full update.
+      last_run_time_ = timestamp;
+      needs_update_ = false;
+      return 1;
 #endif
     }
   }
@@ -148,7 +151,9 @@ int64_t IntersectionObservation::ComputeIntersection(
     }
     CHECK_EQ(last_is_visible_, geometry.IsVisible());
     cached_rects_ = cached_rects_backup.value();
-    return 0;
+    last_run_time_ = timestamp;
+    needs_update_ = false;
+    return 1;
   }
 #endif
 
