@@ -1,5 +1,0 @@
-include_rules = [
-  "+ppapi/c/private",
-  "+ppapi/c/trusted",
-  "+ppapi/cpp/private",
-]

@@ -1,8 +1,0 @@
-How to package PNaCl translator components (llc, ld, native libs) for Chrome.
-
-Run gyp w/ GYP_DEFINES "target_arch=arm", ia32, x64, etc. to compile the
-PNaCl shim for each architecture.  Running gyp will also run the
-python script in this directory once for each architecture, and set up
-a target-specific set of translators.  Zip up the multi-CRX, upload,
-do QA, and publish. See internal wiki "PNaCl Translator in Chrome" for
-convenience scripts and more details.

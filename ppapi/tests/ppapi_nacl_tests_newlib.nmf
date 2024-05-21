@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-64": {"url": "ppapi_nacl_tests_newlib_x64.nexe"},
-    "x86-32": {"url": "ppapi_nacl_tests_newlib_x32.nexe"},
-    "arm": {"url": "ppapi_nacl_tests_newlib_arm.nexe"},
-    "mips32": {"url": "ppapi_nacl_tests_newlib_mips32.nexe"}
-  }
-}
