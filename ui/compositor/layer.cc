@@ -885,8 +885,8 @@ void Layer::ConvertPointToLayer(const Layer* source,
       out << "[";
       out << layer->name();
       while (layer->parent()) {
-        out << "]-[" << layer->name();
         layer = layer->parent();
+        out << "]-[" << layer->name();
       }
       out << "]";
       return out.str();

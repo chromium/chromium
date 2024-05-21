@@ -624,8 +624,8 @@ void Window::ConvertPointToTarget(const Window* source,
       out << "[";
       out << window->GetName();
       while (window->parent()) {
-        out << "]-[" << window->GetName();
         window = window->parent();
+        out << "]-[" << window->GetName();
       }
       out << "]";
       return out.str();
