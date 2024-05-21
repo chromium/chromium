@@ -65,6 +65,42 @@ message NigoriKeyBag {
   repeated NigoriKey key = 2;
 }
 
+// Information about the experiment group to auto-upgrade users to trusted vault
+// passphrase type.
+message TrustedVaultAutoUpgradeExperimentGroup {
+  // Each cohort can be ramped in different stages (e.g. 1%, 10%, 100%).
+  // Every ramp stage is differentiated with its own entry in the enum.
+  enum Cohort {
+    COHORT_UNSPECIFIED = 0;
+    // Used for testing the auto-upgrade metrics & infrastructure only.
+    TEST_COHORT_1 = 1;
+    // Evaluation group for the first eligibility criteria (Android device
+    // with LSKF, Gaia PWD public key & between 5 and 50 passwords).
+    ANDROID_LSKF_GAIA_PASSWORD_5_50_PASSWORDS_EVALUATION = 2;
+  }
+
+  // ID of cohort account belongs to. Only use IDs defined within enum |Cohort|.
+  // An int is used instead of the enum so we can better handle unknown values
+  // coming from later versions.
+  optional int32 cohort = 1;
+
+  // Within each cohort, there are multiple experiment groups, and each group
+  // has an associated type.
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TREATMENT = 1;
+    CONTROL = 2;
+    VALIDATION = 3;
+  }
+
+  optional Type type = 2;
+
+  // For each cohort and group type, there may be zero, one or more groups.
+  // To support the case where two or more exists, the index below can be used.
+  // This is primarily intended for validation groups.
+  optional int32 type_index = 3;
+}
+
 // Properties of nigori sync object.
 message NigoriSpecifics {
   // Encrypted proto of type EncryptionKeys.
@@ -241,33 +277,6 @@ message NigoriSpecifics {
   reserved 49;
   reserved "encrypt_os_preferences";
 
-  // Information useful for auto-upgrade to trusted vault.
-  message AutoUpgradeDebugInfo {
-    enum AutoUpgradeExperimentGroup {
-      AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED = 0;
-      TREATMENT = 1;
-      CONTROL = 2;
-      VALIDATION = 3;
-    }
-    // Experiment group of an account after it was processed by
-    // auto-upgrade.
-    optional AutoUpgradeExperimentGroup auto_upgrade_experiment_group = 1;
-
-    // Each cohort can be ramped in different stages (e.g. 1%, 10%, 100%).
-    // Every ramp stage is differentiated with its own entry in the enum.
-    enum AutoUpgradeCohort {
-      AUTO_UPGRADE_COHORT_UNSPECIFIED = 0;
-      // Used for testing the auto-upgrade metrics & infrastructure only.
-      TEST_GROUP = 1;
-      // Evaluation group for the first eligibility criteria (Android device
-      // with LSKF, Gaia PWD public key & between 5 and 50 passwords).
-      ANDROID_LSKF_GAIA_PASSWORD_5_50_PASSWORDS_EVALUATION = 2;
-    }
-    // ID of cohort account belongs to. Only use IDs defined within
-    // AutoUpgradeCohort enum.
-    optional int32 auto_upgrade_cohort_id = 2;
-  }
-
   // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
   message TrustedVaultDebugInfo {
     // The time (in milliseconds since Unix epoch) at which the trusted vault
@@ -277,13 +286,17 @@ message NigoriSpecifics {
     // The version (aka key epoch) corresponding to the Nigori keybag.
     optional int32 key_version = 2;
 
-    // DebugInfo written by a process that auto-upgrades to trusted vault.
-    optional AutoUpgradeDebugInfo auto_upgrade_debug_info = 3;
+    reserved 3, 4;
+
+    // Experiment group assignment (if any) related to auto-upgrading users into
+    // trusted vault passphrase.
+    optional TrustedVaultAutoUpgradeExperimentGroup
+        auto_upgrade_experiment_group = 5;
 
     // The time (in milliseconds since Unix epoch) last update of the auto
-    // upgrade debug info was made.
+    // upgrade experiment group was made.
     optional int64
-      auto_upgrade_debug_info_modification_time_unix_epoch_millis = 4;
+        auto_upgrade_experiment_group_modification_time_unix_epoch_millis = 6;
   }
 
   optional TrustedVaultDebugInfo trusted_vault_debug_info = 50;

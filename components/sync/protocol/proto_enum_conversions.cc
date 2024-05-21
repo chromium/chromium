@@ -139,19 +139,17 @@ const char* ProtoEnumToString(
   return "";
 }
 
-const char* ProtoEnumToString(sync_pb::NigoriSpecifics::
-    AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup
-        auto_upgrade_experiment_group) {
-  ASSERT_ENUM_BOUNDS(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
-    AutoUpgradeExperimentGroup, AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED,
-        VALIDATION);
+const char* ProtoEnumToString(
+    sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, Type,
+                     TYPE_UNSPECIFIED, VALIDATION);
 
-  switch (auto_upgrade_experiment_group) {
-    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
-        AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED);
-    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, TREATMENT);
-    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, CONTROL);
-    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, VALIDATION);
+  switch (type) {
+    ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup,
+              TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, TREATMENT);
+    ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, CONTROL);
+    ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, VALIDATION);
   }
   NOTREACHED_IN_MIGRATION();
   return "";

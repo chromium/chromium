@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 namespace {
@@ -16,28 +17,51 @@ namespace {
 // Arbitrary and generious limit for the cohort ID.
 constexpr int kMaxCohortId = 100;
 
+// Arbitrary and generous limit for the group type index.
+constexpr int kMaxGroupTypeIndex = 50;
+
+const char* GetGroupTypeName(
+    sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type type) {
+  switch (type) {
+    case sync_pb::TrustedVaultAutoUpgradeExperimentGroup::TYPE_UNSPECIFIED:
+      return "";
+    case sync_pb::TrustedVaultAutoUpgradeExperimentGroup::TREATMENT:
+      return "Treatment";
+    case sync_pb::TrustedVaultAutoUpgradeExperimentGroup::CONTROL:
+      return "Control";
+    case sync_pb::TrustedVaultAutoUpgradeExperimentGroup::VALIDATION:
+      return "Validation";
+  }
+  NOTREACHED_NORETURN();
+}
+
 std::string GetGroupName(
-    sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup
-        group,
-    int cohort_id) {
-  if (cohort_id <= 0 || cohort_id > kMaxCohortId) {
+    int cohort,
+    sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type type,
+    int type_index) {
+  if (cohort <= 0 || cohort > kMaxCohortId) {
     // Invalid cohort ID.
     return std::string();
   }
 
-  switch (group) {
-    case sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::
-        AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED:
-      return std::string();
-    case sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::TREATMENT:
-      return base::StringPrintf("Treatment_%d", cohort_id);
-    case sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL:
-      return base::StringPrintf("Control_%d", cohort_id);
-    case sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::VALIDATION:
-      return base::StringPrintf("Validation_%d", cohort_id);
+  if (type_index < 0 || type_index > kMaxGroupTypeIndex) {
+    // Invalid type index.
+    return std::string();
   }
 
-  NOTREACHED_NORETURN();
+  const char* type_str = GetGroupTypeName(type);
+  if (!*type_str) {
+    // Invalid type.
+    return std::string();
+  }
+
+  std::string type_index_str;
+  if (type_index > 0) {
+    type_index_str = base::StringPrintf("%d", type_index);
+  }
+
+  return base::StringPrintf("Cohort%d_%s%s", cohort, type_str,
+                            type_index_str.c_str());
 }
 
 }  // namespace
@@ -51,11 +75,10 @@ std::string TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
 // static
 TrustedVaultAutoUpgradeSyntheticFieldTrialGroup
 TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
-    sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup
-        group,
-    int cohort_id) {
+    const sync_pb::TrustedVaultAutoUpgradeExperimentGroup& proto) {
   TrustedVaultAutoUpgradeSyntheticFieldTrialGroup instance;
-  instance.name_ = GetGroupName(group, cohort_id);
+  instance.name_ =
+      GetGroupName(proto.cohort(), proto.type(), proto.type_index());
   return instance;
 }
 

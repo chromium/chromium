@@ -22,6 +22,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
@@ -391,6 +392,8 @@ base::Value::Dict ConstructAboutInformation(
       section_encryption->AddStringStat("Trusted Vault Migration Time");
   Stat<int>* trusted_vault_key_version =
       section_encryption->AddIntStat("Trusted Vault Version/Epoch");
+  Stat<std::string>* trusted_vault_auto_upgrade_experiment_group =
+      section_encryption->AddStringStat("Trusted Vault Auto Upgrade Group");
 
   Section* section_last_session = section_list.AddSection(
       "Status from Last Completed Session", /*is_sensitive=*/false);
@@ -553,6 +556,16 @@ base::Value::Dict ConstructAboutInformation(
           full_status.trusted_vault_debug_info.migration_time()));
       trusted_vault_key_version->Set(
           full_status.trusted_vault_debug_info.key_version());
+    }
+
+    if (full_status.trusted_vault_debug_info
+            .has_auto_upgrade_experiment_group()) {
+      const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup group =
+          TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
+              full_status.trusted_vault_debug_info
+                  .auto_upgrade_experiment_group());
+      trusted_vault_auto_upgrade_experiment_group->Set(
+          group.is_valid() ? group.name() : std::string("Invalid"));
     }
   }
 

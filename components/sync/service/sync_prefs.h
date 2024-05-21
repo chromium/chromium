@@ -18,7 +18,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -27,6 +26,10 @@ class PrefValueMap;
 namespace signin {
 class GaiaIdHash;
 }  // namespace signin
+
+namespace sync_pb {
+class TrustedVaultAutoUpgradeExperimentGroup;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -202,14 +205,13 @@ class SyncPrefs {
   void SetCachedPassphraseType(PassphraseType passphrase_type);
   void ClearCachedPassphraseType();
 
-  // The user's AutoUpgradeDebugInfo, determined the first time the engine is
-  // successfully initialized.
-  std::optional<sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo>
-  GetCachedTrustedVaultAutoUpgradeDebugInfo() const;
-  void SetCachedTrustedVaultAutoUpgradeDebugInfo(
-      const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo&
-          auto_upgrade_debug_info);
-  void ClearCachedTrustedVaultAutoUpgradeDebugInfo();
+  // The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first
+  // time the engine is successfully initialized.
+  std::optional<sync_pb::TrustedVaultAutoUpgradeExperimentGroup>
+  GetCachedTrustedVaultAutoUpgradeExperimentGroup() const;
+  void SetCachedTrustedVaultAutoUpgradeExperimentGroup(
+      const sync_pb::TrustedVaultAutoUpgradeExperimentGroup& group);
+  void ClearCachedTrustedVaultAutoUpgradeExperimentGroup();
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.

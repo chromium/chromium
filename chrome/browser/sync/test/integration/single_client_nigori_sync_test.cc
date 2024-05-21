@@ -816,12 +816,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
       /*keystore_key_params=*/kKeystoreKeyParams);
 
-  sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo* auto_upgrade_debug_info =
+  sync_pb::TrustedVaultAutoUpgradeExperimentGroup* experiment_group =
       nigori_specifics.mutable_trusted_vault_debug_info()
-          ->mutable_auto_upgrade_debug_info();
-  auto_upgrade_debug_info->set_auto_upgrade_cohort_id(7);
-  auto_upgrade_debug_info->set_auto_upgrade_experiment_group(
-      sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL);
+          ->mutable_auto_upgrade_experiment_group();
+  experiment_group->set_cohort(7);
+  experiment_group->set_type(
+      sync_pb::TrustedVaultAutoUpgradeExperimentGroup::CONTROL);
 
   SetNigoriInFakeServer(nigori_specifics, GetFakeServer());
 
@@ -829,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
 
   EXPECT_TRUE(ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(),
-      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, "Control_7"));
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName,
+      "Cohort7_Control"));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
@@ -839,7 +840,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
   // Upon browser restart, the group should be re-registered automatically.
   EXPECT_TRUE(ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(),
-      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, "Control_7"));
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName,
+      "Cohort7_Control"));
 }
 
 IN_PROC_BROWSER_TEST_F(

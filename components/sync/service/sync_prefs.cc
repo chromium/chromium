@@ -70,21 +70,21 @@ constexpr int kMigratedPart1ButNot2 = 1;
 constexpr int kMigratedPart2AndFullyDone = 2;
 
 // Encodes a protobuf instance of type
-// sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo in a way that can be safely
+// sync_pb::TrustedVaultAutoUpgradeExperimentGroup in a way that can be safely
 // stored in prefs, i.e. using base64 encoding.
-std::string EncodeTrustedVaultAutoUpgradeDebugInfoToString(
-    const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo& debug_info) {
-  return base::Base64Encode(debug_info.SerializeAsString());
+std::string EncodeTrustedVaultAutoUpgradeExperimentGroupToString(
+    const sync_pb::TrustedVaultAutoUpgradeExperimentGroup& group) {
+  return base::Base64Encode(group.SerializeAsString());
 }
 
-// Does the opposite of EncodeTrustedVaultAutoUpgradeDebugInfoToString(), i.e.
-// transforms from a string representation to a protobuf instance.
-sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo
-DecodeTrustedVaultAutoUpgradeDebugInfoFromString(
-    const std::string& encoded_debug_info) {
-  sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo proto;
+// Does the opposite of EncodeTrustedVaultAutoUpgradeExperimentGroupToString(),
+// i.e. transforms from a string representation to a protobuf instance.
+sync_pb::TrustedVaultAutoUpgradeExperimentGroup
+DecodeTrustedVaultAutoUpgradeExperimentGroupFromString(
+    const std::string& encoded_group) {
+  sync_pb::TrustedVaultAutoUpgradeExperimentGroup proto;
   std::string serialized_proto;
-  if (!base::Base64Decode(encoded_debug_info, &serialized_proto)) {
+  if (!base::Base64Decode(encoded_group, &serialized_proto)) {
     return proto;
   }
   proto.ParseFromString(serialized_proto);
@@ -201,10 +201,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::internal::kSyncCachedPassphraseType,
       sync_pb::NigoriSpecifics_PassphraseType_UNKNOWN);
-  // The user's AutoUpgradeDebugInfo, determined the first time the engine is
-  // successfully initialized.
+  // The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first
+  // time the engine is successfully initialized.
   registry->RegisterStringPref(
-      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeExperimentGroup, "");
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
@@ -591,30 +591,29 @@ void SyncPrefs::ClearCachedPassphraseType() {
   pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
 }
 
-std::optional<sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo>
-SyncPrefs::GetCachedTrustedVaultAutoUpgradeDebugInfo() const {
+std::optional<sync_pb::TrustedVaultAutoUpgradeExperimentGroup>
+SyncPrefs::GetCachedTrustedVaultAutoUpgradeExperimentGroup() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string& encoded_debug_info = pref_service_->GetString(
-      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
-  if (encoded_debug_info.empty()) {
+  const std::string& encoded_group = pref_service_->GetString(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeExperimentGroup);
+  if (encoded_group.empty()) {
     return std::nullopt;
   }
-  return DecodeTrustedVaultAutoUpgradeDebugInfoFromString(encoded_debug_info);
+  return DecodeTrustedVaultAutoUpgradeExperimentGroupFromString(encoded_group);
 }
 
-void SyncPrefs::SetCachedTrustedVaultAutoUpgradeDebugInfo(
-    const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo&
-        auto_upgrade_debug_info) {
+void SyncPrefs::SetCachedTrustedVaultAutoUpgradeExperimentGroup(
+    const sync_pb::TrustedVaultAutoUpgradeExperimentGroup& group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(
-      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo,
-      EncodeTrustedVaultAutoUpgradeDebugInfoToString(auto_upgrade_debug_info));
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeExperimentGroup,
+      EncodeTrustedVaultAutoUpgradeExperimentGroupToString(group));
 }
 
-void SyncPrefs::ClearCachedTrustedVaultAutoUpgradeDebugInfo() {
+void SyncPrefs::ClearCachedTrustedVaultAutoUpgradeExperimentGroup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(
-      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeExperimentGroup);
 }
 
 void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
