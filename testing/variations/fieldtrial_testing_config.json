@@ -12243,26 +12243,6 @@
             ]
         }
     ],
-    "MinorModeRestrictionsForHistorySyncOptInDesktopStudy": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "LowDeadlineWithPreconnect_20240411",
-                    "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "400"
-                    },
-                    "enable_features": [
-                        "MinorModeRestrictionsForHistorySyncOptIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "MinorModeRestrictionsForHistorySyncOptInIosStudy": [
         {
             "platforms": [

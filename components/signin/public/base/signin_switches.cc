@@ -136,9 +136,18 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+// Desktop is being launched (enabled by default), remaining platforms still
+// pending.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_ENABLED_BY_DEFAULT
+#else
+#define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             MINOR_MODE_FEATURE_DEFAULT_STATUS);
 
 constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
 #if BUILDFLAG(IS_ANDROID)
