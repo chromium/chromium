@@ -939,23 +939,29 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
   const base::TimeTicks last_active_time_ticks = contents->GetLastActiveTime();
   tab_data->last_active_time_ticks = last_active_time_ticks;
+
+  // last_active_time_for_testing can affect pixel tests depending on when the
+  // view pops up. To make it consistent, override the string to something
+  // constant.
   tab_data->last_active_elapsed_text =
-      GetLastActiveElapsedText(last_active_time_ticks);
+      disable_last_active_time_for_testing_
+          ? "0"
+          : GetLastActiveElapsedText(last_active_time_ticks);
 
-    std::vector<TabAlertState> alert_states =
-        chrome::GetTabAlertStatesForContents(contents);
-    // Currently, we only report media alert states.
-    base::ranges::copy_if(alert_states.begin(), alert_states.end(),
-                          std::back_inserter(tab_data->alert_states),
-                          [](TabAlertState alert) {
-                            return alert == TabAlertState::MEDIA_RECORDING ||
-                                   alert == TabAlertState::AUDIO_RECORDING ||
-                                   alert == TabAlertState::VIDEO_RECORDING ||
-                                   alert == TabAlertState::AUDIO_PLAYING ||
-                                   alert == TabAlertState::AUDIO_MUTING;
-                          });
+  std::vector<TabAlertState> alert_states =
+      chrome::GetTabAlertStatesForContents(contents);
+  // Currently, we only report media alert states.
+  base::ranges::copy_if(alert_states.begin(), alert_states.end(),
+                        std::back_inserter(tab_data->alert_states),
+                        [](TabAlertState alert) {
+                          return alert == TabAlertState::MEDIA_RECORDING ||
+                                 alert == TabAlertState::AUDIO_RECORDING ||
+                                 alert == TabAlertState::VIDEO_RECORDING ||
+                                 alert == TabAlertState::AUDIO_PLAYING ||
+                                 alert == TabAlertState::AUDIO_MUTING;
+                        });
 
-    return tab_data;
+  return tab_data;
 }
 
 tab_search::mojom::RecentlyClosedTabPtr

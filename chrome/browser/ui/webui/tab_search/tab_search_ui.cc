@@ -247,6 +247,10 @@ void TabSearchUI::CreatePageHandler(
   // per instance of the TabSearchUI.
   page_handler_ = std::make_unique<TabSearchPageHandler>(
       std::move(receiver), std::move(page), web_ui(), this, &metrics_reporter_);
+
+  if (!page_handler_creation_callback_.is_null()) {
+    std::move(page_handler_creation_callback_).Run();
+  }
 }
 
 bool TabSearchUI::ShowTabOrganizationFRE() {

@@ -138,6 +138,10 @@ class TabSearchPageHandler
   // SettingsEnabledObserver
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
+  void disable_last_active_elapsed_text_for_testing() {
+    disable_last_active_time_for_testing_ = true;
+  }
+
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
@@ -235,6 +239,8 @@ class TabSearchPageHandler
   // will only be shown once all tabs are ready.
   bool organization_ready_to_show_ = false;
   bool search_ready_to_show_ = false;
+
+  bool disable_last_active_time_for_testing_ = false;
 
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>

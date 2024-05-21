@@ -60,6 +60,11 @@ class TabSearchUI : public TopChromeWebUIController,
 
   static constexpr std::string GetWebUIName() { return "TabSearch"; }
 
+  void set_page_handler_creation_callback_for_testing(
+      base::OnceClosure callback) {
+    page_handler_creation_callback_ = std::move(callback);
+  }
+
  private:
   // tab_search::mojom::PageHandlerFactory
   void CreatePageHandler(
@@ -77,6 +82,8 @@ class TabSearchUI : public TopChromeWebUIController,
       this};
 
   WebuiLoadTimer webui_load_timer_;
+
+  base::OnceClosure page_handler_creation_callback_;
 
   // A timer used to track the duration between when the WebUI is constructed
   // and when the TabSearchPageHandler is constructed.
