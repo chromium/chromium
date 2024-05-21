@@ -1,6 +1,6 @@
 {
-  "version": "34.25",
-  "log_list_timestamp": "2024-05-20T12:54:28Z",
+  "version": "35.1",
+  "log_list_timestamp": "2024-05-21T12:56:08Z",
   "operators": [
     {
       "name": "Google",
@@ -234,8 +234,12 @@
           "url": "https://sabre.ct.comodo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2017-10-10T00:38:10Z"
+            "readonly": {
+              "timestamp": "2024-05-06T12:53:20Z",
+              "final_tree_head": {
+                "sha256_root_hash": "rBTMeBSKemBB90yJ598PhN+iLHApXbJpHhlCuNcUfgg=",
+                "tree_size": 546099878
+              }
             }
           }
         },
