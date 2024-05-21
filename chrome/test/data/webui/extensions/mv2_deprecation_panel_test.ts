@@ -35,6 +35,20 @@ suite('ExtensionsMV2DeprecationPanel', function() {
     return flushTasks();
   });
 
+  /**
+   * Returns the only extension in the panel. Will fail if there are no
+   * extensions, or more than one.
+   */
+  function getExtension(): Element {
+    const extensionRows =
+        panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
+    assertEquals(1, extensionRows.length);
+    const extension = extensionRows[0];
+    assertTrue(!!extension);
+    return extension;
+  }
+
+
   test('header content is always visible', function() {
     assertTrue(isVisible(
         panelElement.shadowRoot!.querySelector('.panel-header-text')));
@@ -46,12 +60,11 @@ suite('ExtensionsMV2DeprecationPanel', function() {
     // Verify there is one extension row for the extension added at setup.
     let extensionRows =
         panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
-    assertEquals(extensionRows.length, 1);
-    assertEquals(
-        extensionRows[0]
-            ?.querySelector('.panel-extension-info')
-            ?.textContent?.trim(),
-        'Extension A');
+    assertEquals(1, extensionRows.length);
+    let infoA =
+        extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
+    assertTrue(!!infoA);
+    assertEquals('Extension A', infoA.textContent!.trim());
 
     // Add a new extension to the panel.
     panelElement.push('extensions', createExtensionInfo({
@@ -64,16 +77,14 @@ suite('ExtensionsMV2DeprecationPanel', function() {
     extensionRows =
         panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
     assertEquals(extensionRows.length, 2);
-    assertEquals(
-        extensionRows[0]
-            ?.querySelector('.panel-extension-info')
-            ?.textContent?.trim(),
-        'Extension A');
-    assertEquals(
-        extensionRows[1]
-            ?.querySelector('.panel-extension-info')
-            ?.textContent?.trim(),
-        'Extension B');
+    infoA =
+        extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
+    assertTrue(!!infoA);
+    assertEquals('Extension A', infoA.textContent!.trim());
+    const infoB =
+        extensionRows[1]!.querySelector<HTMLElement>('.panel-extension-info');
+    assertTrue(!!infoB);
+    assertEquals('Extension B', infoB.textContent!.trim());
   });
 
   test(
@@ -94,14 +105,9 @@ suite('ExtensionsMV2DeprecationPanel', function() {
       'find alternative button is visible if extension has recommendations' +
           'url, and opens url when clicked',
       async function() {
-        let extension =
-            panelElement.shadowRoot!
-                .querySelectorAll<HTMLElement>('.panel-extension-row')
-                ?.[0];
-        assertTrue(!!extension);
-
         // Find alternative button is hidden when the extension doesn't have a
         // recommendations url.
+        let extension = getExtension();
         let findAlternativeButton = extension.querySelector<CrButtonElement>(
             '.find-alternative-button');
         assertFalse(isVisible(findAlternativeButton));
@@ -119,13 +125,9 @@ suite('ExtensionsMV2DeprecationPanel', function() {
                          }));
         await flushTasks();
 
-        extension = panelElement.shadowRoot!
-                        .querySelectorAll<HTMLElement>('.panel-extension-row')
-                        ?.[0];
-        assertTrue(!!extension);
-
         // Find alternative button is visible when the extension has a
         // recommendations url.
+        extension = getExtension();
         findAlternativeButton = extension.querySelector<CrButtonElement>(
             '.find-alternative-button');
         assertTrue(isVisible(findAlternativeButton));
@@ -142,13 +144,8 @@ suite('ExtensionsMV2DeprecationPanel', function() {
       'remove action is visible if extension can be removed, and triggers' +
           'the extension removal when clicked',
       async function() {
-        let extension =
-            panelElement.shadowRoot!
-                .querySelectorAll<HTMLElement>('.panel-extension-row')
-                ?.[0];
-        assertTrue(!!extension);
-
         // Open the extension's action menu button.
+        let extension = getExtension();
         let actionButton =
             extension.querySelector<CrIconButtonElement>('cr-icon-button');
         assertTrue(!!actionButton);
@@ -180,10 +177,7 @@ suite('ExtensionsMV2DeprecationPanel', function() {
 
         // Open the extension's action menu button again, since clicking on the
         // action closed the menu.
-        extension = panelElement.shadowRoot!
-                        .querySelectorAll<HTMLElement>('.panel-extension-row')
-                        ?.[0];
-        assertTrue(!!extension);
+        extension = getExtension();
         actionButton =
             extension.querySelector<CrIconButtonElement>('cr-icon-button');
         assertTrue(!!actionButton);
@@ -199,13 +193,8 @@ suite('ExtensionsMV2DeprecationPanel', function() {
       'keep action menu button triggers a warning dismissal for the extension' +
           'when clicked',
       async function() {
-        const extension =
-            panelElement.shadowRoot!
-                .querySelectorAll<HTMLElement>('.panel-extension-row')
-                ?.[0];
-        assertTrue(!!extension);
-
         // Open the extension's action menu button.
+        const extension = getExtension();
         const actionButton =
             extension.querySelector<CrIconButtonElement>('cr-icon-button');
         assertTrue(!!actionButton);
