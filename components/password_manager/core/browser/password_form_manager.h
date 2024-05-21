@@ -170,8 +170,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetInsecureCredentials() const override;
+  base::span<const PasswordForm> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool IsMovableToAccountStore() const override;
 

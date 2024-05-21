@@ -21,12 +21,12 @@ namespace password_manager {
 constexpr auto kMaxTimeSinceLastCheck = base::Minutes(30);
 
 PostSaveCompromisedHelper::PostSaveCompromisedHelper(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        compromised,
+    const base::span<const PasswordForm> compromised,
     const std::u16string& current_username) {
-  for (const PasswordForm* credential : compromised) {
-    if (credential->username_value == current_username)
-      current_leak_ = *credential;
+  for (const PasswordForm& credential : compromised) {
+    if (credential.username_value == current_username) {
+      current_leak_ = credential;
+    }
   }
 }
 

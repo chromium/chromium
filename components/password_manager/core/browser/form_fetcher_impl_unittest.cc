@@ -307,9 +307,8 @@ class FormFetcherImplTestBase : public testing::Test {
     }
   }
 
-  void DeliverPasswordStoreResults(
-      LoginsResultOrError profile_store_results,
-      LoginsResultOrError account_store_results) {
+  void DeliverPasswordStoreResults(LoginsResultOrError profile_store_results,
+                                   LoginsResultOrError account_store_results) {
     store_consumer()->OnGetPasswordStoreResultsOrErrorFrom(
         profile_mock_store_.get(), std::move(profile_store_results));
     if (account_mock_store_) {
@@ -561,9 +560,9 @@ TEST_P(FormFetcherImplTest, InsecureCredentials) {
   std::vector<PasswordForm> results = {form};
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
                               /*account_store_results=*/{});
-  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
-              UnorderedElementsAre(
-                  Pointee(CreateLeakedCredential(form, leaked_metadata))));
+  EXPECT_THAT(
+      form_fetcher_->GetInsecureCredentials(),
+      UnorderedElementsAre(CreateLeakedCredential(form, leaked_metadata)));
 }
 
 // Test that multiple calls of Fetch() are handled gracefully, and that they
@@ -947,7 +946,7 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
       form_fetcher_->GetFederatedMatches(),
       UnorderedElementsAre(Pointee(federated), Pointee(android_federated)));
   EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
-              UnorderedElementsAre(Pointee(federated)));
+              UnorderedElementsAre(federated));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 
   ASSERT_TRUE(
@@ -968,8 +967,7 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
   EXPECT_THAT(
       clone->GetFederatedMatches(),
       UnorderedElementsAre(Pointee(federated), Pointee(android_federated)));
-  EXPECT_THAT(clone->GetInsecureCredentials(),
-              UnorderedElementsAre(Pointee(federated)));
+  EXPECT_THAT(clone->GetInsecureCredentials(), UnorderedElementsAre(federated));
   MockConsumer consumer;
   EXPECT_CALL(consumer, OnFetchCompleted);
   clone->AddConsumer(&consumer);
@@ -1001,8 +999,7 @@ TEST_P(FormFetcherImplTest, Clone_Insecure) {
                               /*account_store_results=*/{});
 
   auto clone = form_fetcher_->Clone();
-  EXPECT_THAT(clone->GetInsecureCredentials(),
-              UnorderedElementsAre(Pointee(form)));
+  EXPECT_THAT(clone->GetInsecureCredentials(), UnorderedElementsAre(form));
 }
 
 // Check that removing consumers stops them from receiving store updates.
@@ -1294,10 +1291,9 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   DeliverPasswordStoreResults(std::move(profile_results),
                               std::move(account_results));
 
-  EXPECT_THAT(
-      form_fetcher_->GetInsecureCredentials(),
-      testing::UnorderedElementsAre(Pointee(profile_form_insecure_credential),
-                                    Pointee(account_form_insecure_credential)));
+  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
+              testing::UnorderedElementsAre(profile_form_insecure_credential,
+                                            account_form_insecure_credential));
 }
 
 TEST_P(FormFetcherImplTest, ProfileBackendErrorResetsOnNewFetch) {

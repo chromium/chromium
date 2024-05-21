@@ -271,8 +271,7 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
           Return(base::span<const password_manager::InteractionsStats>()));
   EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(std::vector<raw_ptr<const password_manager::PasswordForm,
-                                           VectorExperimental>>()));
+      .WillOnce(Return(base::span<const password_manager::PasswordForm>()));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(*password_form));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -1247,8 +1246,9 @@ TEST_F(ManagePasswordsUIControllerTest, ManualFallbackForSaving_UseFallback) {
         base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
             true /*is_main_frame_secure*/, source_id, /*pref_service=*/nullptr);
     std::vector<PasswordForm> matches = {test_local_form()};
-    if (is_update)
+    if (is_update) {
       matches.push_back(test_local_form());
+    }
     auto test_form_manager =
         CreateFormManagerWithBestMatches(matches, &submitted_form());
     EXPECT_CALL(*test_form_manager, GetMetricsRecorder)
@@ -1835,9 +1835,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   // Pretend that the current credential was insecure but with the updated
   // password not anymore.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(
-          Return(std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{
-              &credential}));
+      .WillOnce(Return(std::vector<PasswordForm>{credential}));
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
@@ -1879,9 +1877,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   // Pretend that the current credential was insecure.
   PasswordForm credential = CreateInsecureCredential(test_local_form());
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(
-          Return(std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{
-              &credential}));
+      .WillOnce(Return(std::vector<PasswordForm>{credential}));
 
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
@@ -1928,9 +1924,7 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   PasswordForm credential = CreateInsecureCredential(test_local_form());
   // Pretend that the current credential was insecure.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(
-          Return(std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{
-              &credential}));
+      .WillOnce(Return(std::vector<PasswordForm>{credential}));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.

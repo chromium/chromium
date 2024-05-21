@@ -294,7 +294,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
        password_manager::InsecurityMetadata(
            base::Time(), password_manager::IsMuted(false),
            password_manager::TriggerBackendNotification(false))});
-  fetcher_.set_insecure_credentials({&insecure_credential_});
+  fetcher_.set_insecure_credentials({insecure_credential_});
 
   fetcher_.NotifyFetchCompleted();
 

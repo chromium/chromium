@@ -39,8 +39,7 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-FakeFormFetcher::GetInsecureCredentials() const {
+base::span<const PasswordForm> FakeFormFetcher::GetInsecureCredentials() const {
   return insecure_credentials_;
 }
 

@@ -44,8 +44,7 @@ class FakeFormFetcher : public FormFetcher {
   State GetState() const override;
 
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetInsecureCredentials() const override;
+  base::span<const PasswordForm> GetInsecureCredentials() const override;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
   GetNonFederatedMatches() const override;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
@@ -79,9 +78,7 @@ class FakeFormFetcher : public FormFetcher {
     federated_ = federated;
   }
 
-  void set_insecure_credentials(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          credentials) {
+  void set_insecure_credentials(const std::vector<PasswordForm>& credentials) {
     insecure_credentials_ = credentials;
   }
 
@@ -109,8 +106,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       non_federated_same_scheme_;
   std::vector<PasswordForm> best_matches_;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      insecure_credentials_;
+  std::vector<PasswordForm> insecure_credentials_;
   bool is_blocklisted_ = false;
   std::optional<PasswordStoreBackendError> profile_store_backend_error_;
   std::optional<PasswordStoreBackendError> account_store_backend_error_;
