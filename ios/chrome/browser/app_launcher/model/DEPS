@@ -1,7 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/tabs/model/tab_helper_delegate_installer.h",
-  "+ios/chrome/browser/mailto_handler/model",
-  "+ios/chrome/browser/overlays/model/public",
-  "+ios/chrome/browser/policy_url_blocking/model",
-  "+ios/chrome/browser/reading_list/model",
-]

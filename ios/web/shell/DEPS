@@ -1,8 +1,0 @@
-include_rules = [
-  # web shell must use only public API or own headers.
-  "-ios/web",
-  "+ios/web/common",
-  "+ios/web/public",
-  "+ios/web/shell",
-]
-

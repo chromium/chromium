@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
-]

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "search_engine_choice_learn_more_view_controller.mm": [
-    "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
-  ]
-}

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/page_info/core",
-  "+ios/chrome/browser/optimization_guide/model",
-  "+ios/chrome/browser/search_engines/model",
-]

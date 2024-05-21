@@ -1,9 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/find_in_page/model/features.h",
-  "+ios/chrome/browser/mailto_handler/model",
-  "+ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h",
-  "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
-  "+ios/chrome/browser/web/model",
-  "+ios/chrome/browser/voice/model",
-  "+ios/chrome/browser/shared/ui/symbols/symbols.h",
-]

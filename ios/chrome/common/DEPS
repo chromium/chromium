@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/physical_web/data_source",
-  "+components/version_info",
-  "+net",
-  "-ios/chrome",
-  "+ios/chrome/common",
-]

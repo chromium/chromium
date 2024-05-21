@@ -1,6 +1,0 @@
-# Please prefer to use more specific OWNERS where possible. Don't
-# be reluctant to re-delegate to another OWNER, when a change seems
-# like it needs extra review, or is related to the Omnibox.
-marq@chromium.org
-rohitrao@chromium.org
-gambard@chromium.org

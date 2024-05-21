@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/tab_insertion/model",
-  "+ios/chrome/browser/web/model",
-  "+ios/chrome/browser/safe_browsing/model",
-]

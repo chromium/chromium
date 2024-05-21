@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/first_run/model",
-  "+ios/chrome/browser/feature_engagement/model",
-  "+ios/chrome/browser/url_loading/model",
-]

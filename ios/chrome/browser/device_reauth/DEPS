@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/device_reauth",
-  "+components/keyed_service/core",
-]

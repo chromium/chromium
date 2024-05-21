@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/grit",
-  "+components/sync",
-  "+ui/base",
-]

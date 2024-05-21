@@ -1,3 +1,0 @@
-include_rules = [
-    "+ios/chrome/browser/tab_insertion/model",
-]

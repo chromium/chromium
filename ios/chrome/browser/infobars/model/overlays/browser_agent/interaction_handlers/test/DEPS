@@ -1,9 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove this dependency.
-  "^mock_ios_add_to_reading_list_infobar_delegate.h": [
-    "+ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h",
-  ],
-  "^mock_autofill_save_card_infobar_delegate_mobile.h": [
-    "+ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h",
-  ],
-}

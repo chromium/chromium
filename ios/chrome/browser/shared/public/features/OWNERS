@@ -1,4 +1,0 @@
-# Only for adding and removing flags.
-per-file features.*=*
-per-file system_flags*=*
-

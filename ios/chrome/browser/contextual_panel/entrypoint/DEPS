@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/location_bar",
-]

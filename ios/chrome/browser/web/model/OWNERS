@@ -1,6 +1,0 @@
-gambard@chromium.org
-
-# This directory needs to be carved into subdirs with more specific OWNERS.
-
-per-file https_only_mode*=file://ios/components/security_interstitials/OWNERS
-per-file lookalike*=file://ios/components/security_interstitials/OWNERS

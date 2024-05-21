@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/tabs/model/tab_title_util.h",
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/web_view/test",
-  "+net/test",
-]

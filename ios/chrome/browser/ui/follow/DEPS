@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h",
-]

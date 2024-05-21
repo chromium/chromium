@@ -1,4 +1,0 @@
-# Only for adding and removing flags.
-per-file BUILD.gn=*
-per-file about_flags.*=*
-per-file ios_chrome_flag_descriptions.*=*

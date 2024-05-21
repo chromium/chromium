@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/incognito_reauth",
-  "+ios/chrome/browser/ui/lens",
-  "+ios/chrome/browser/ui/sharing",
-]

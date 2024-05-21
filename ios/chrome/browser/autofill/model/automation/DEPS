@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove this dependency.
-  "^automation_action.mm": [
-    "+ios/chrome/browser/ui/infobars/infobar_constants.h",
-  ],
-}
-

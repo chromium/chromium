@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/autofill",
-  "+ios/chrome/browser/ui/settings/cells",
-]

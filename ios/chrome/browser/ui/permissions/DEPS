@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/page_info/core/page_info_action.h",
-]

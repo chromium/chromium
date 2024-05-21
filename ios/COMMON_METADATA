@@ -1,8 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile"
-}
-team_email: "ios-directory-owners@chromium.org"
-os: IOS
-buganizer_public: {
-  component_id: 1457074
-}

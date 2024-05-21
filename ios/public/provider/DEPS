@@ -1,5 +1,0 @@
-include_rules = [
-  # Make individual subdirectories declare DEPS on other ios/public/provider
-  # subdirectories to ensure that there are no layering violations.
-  "-ios/public/provider",
-]

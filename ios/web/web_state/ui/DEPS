@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/safe_browsing/core/common/features.h",
-  "+ios/components/security_interstitials/https_only_mode/feature.h"
-]

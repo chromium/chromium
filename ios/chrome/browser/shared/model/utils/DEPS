@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/first_run/model/first_run.h",
-]

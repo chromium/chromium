@@ -1,6 +1,0 @@
-include_rules = [
-  "-url",
-  "+ios/chrome/browser/ui/util",
-  "+ios/chrome/browser/ui/favicon",
-  "+ios/chrome/browser/ui/ntp",
-]

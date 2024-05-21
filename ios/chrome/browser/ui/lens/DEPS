@@ -1,3 +1,0 @@
-include_rules = [
-    "+components/lens/lens_metrics.h",
-]

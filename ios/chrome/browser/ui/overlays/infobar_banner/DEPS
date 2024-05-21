@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/infobars/banners",
-  "+ios/chrome/browser/ui/infobars/presentation",
-]

@@ -1,4 +1,0 @@
-include_rules = [
-  "+ui/base/resource/data_pack.h",
-  "+ui/base/resource/resource_handle.h",
-]

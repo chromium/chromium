@@ -1,6 +1,0 @@
-gambard@chromium.org
-rohitrao@chromium.org
-
-# These are for the common case of adding or renaming files. If you're doing
-# structural changes, please get a review from an OWNER.
-per-file BUILD.gn=*

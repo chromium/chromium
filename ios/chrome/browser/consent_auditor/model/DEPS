@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/consent_auditor",
-  "+ios/chrome/browser/sync/model",
-]
