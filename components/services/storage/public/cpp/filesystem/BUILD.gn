@@ -21,8 +21,6 @@ component("filesystem") {
     "//mojo/public/cpp/bindings",
   ]
 
-  deps = [ "//components/crash/core/common:crash_key" ]
-
   defines = [ "IS_STORAGE_SERVICE_FILESYSTEM_SUPPORT_IMPL" ]
 }
 

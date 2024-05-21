@@ -20,8 +20,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1644,23 +1642,10 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   constexpr static const int kNumOpenTries = 2;
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
-    {
-      SCOPED_CRASH_KEY_STRING256("crbug/340398745", "data_path",
-                                 data_path_.AsUTF8Unsafe());
-      SCOPED_CRASH_KEY_BOOL("crbug/340398745", "first_attempt",
-                            is_first_attempt);
-      SCOPED_CRASH_KEY_BOOL(
-          "crbug/340398745", "sharding",
-          base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores));
-      SCOPED_CRASH_KEY_NUMBER("crbug/340398745", "store_open_count",
-                              backing_store_open_count_);
-
-      std::tie(backing_store, status, data_loss_info, disk_full) =
-          OpenAndVerifyIndexedDBBackingStore(
-              data_path_, database_path, blob_path, lock_manager.get(),
-              is_first_attempt, create_if_missing);
-    }
-
+    std::tie(backing_store, status, data_loss_info, disk_full) =
+        OpenAndVerifyIndexedDBBackingStore(data_path_, database_path, blob_path,
+                                           lock_manager.get(), is_first_attempt,
+                                           create_if_missing);
     if (is_first_attempt) [[likely]] {
       first_try_status = status;
     }
@@ -1727,7 +1712,6 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
 
   lock_manager_ = std::move(lock_manager);
   backing_store_ = std::move(backing_store);
-  backing_store_open_count_++;
   backing_store_->set_bucket_context(this);
   delegate().on_files_written.Run(/*flushed=*/true);
   return {leveldb::Status::OK(), IndexedDBDatabaseError(), data_loss_info};

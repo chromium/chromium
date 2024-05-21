@@ -1,4 +1,0 @@
-include_rules = [
-  # TODO(crbug.com/340398745): remove after fixing.
-  "+components/crash/core/common/crash_key.h",
-]

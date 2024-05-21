@@ -509,9 +509,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // True if there's already a task queued to call `RunTasks()`.
   bool task_run_queued_ = false;
 
-  // Debug field. TODO(crbug/340398745): remove.
-  size_t backing_store_open_count_ = 0;
-
   mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
