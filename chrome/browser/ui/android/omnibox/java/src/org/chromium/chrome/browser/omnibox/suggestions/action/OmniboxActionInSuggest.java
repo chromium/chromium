@@ -39,7 +39,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 nativeInstance,
                 hint,
                 accessibilityHint,
-                ICON_MAP.get(actionType, null));
+                ICON_MAP.get(actionType, DEFAULT_ICON));
         this.actionType = actionType;
         mActionUri = actionUri;
     }

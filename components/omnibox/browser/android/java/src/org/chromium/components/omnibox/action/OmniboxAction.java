@@ -8,12 +8,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.R;
 
 /**
@@ -37,9 +37,13 @@ public abstract class OmniboxAction {
     }
 
     /** The default action icon. */
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static final ChipIcon DEFAULT_ICON =
             new ChipIcon(R.drawable.action_default, /* tintWithTextColor= */ false);
+
+    /** ChipIcon instance specifying no icon should be shown. */
+    protected static final ChipIcon NO_ICON =
+            new ChipIcon(ChipView.INVALID_ICON_ID, /* tintWithTextColor= */ false);
 
     /** The type of an underlying action. */
     public final @OmniboxActionId int actionId;
@@ -61,12 +65,12 @@ public abstract class OmniboxAction {
             long nativeInstance,
             @NonNull String hint,
             @NonNull String accessibilityHint,
-            @Nullable ChipIcon icon) {
+            @NonNull ChipIcon icon) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
         this.hint = hint;
         this.accessibilityHint = accessibilityHint;
-        this.icon = icon != null ? icon : DEFAULT_ICON;
+        this.icon = icon;
         mNativeInstance = nativeInstance;
     }
 

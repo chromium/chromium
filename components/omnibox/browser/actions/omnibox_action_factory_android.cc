@@ -60,6 +60,18 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
           base::android::ConvertUTF8ToJavaString(env, action_uri)));
 }
 
+base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxAnswerAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint) {
+  return base::android::ScopedJavaGlobalRef<jobject>(
+      Java_OmniboxActionFactory_buildOmniboxAnswerAction(
+          env, g_java_factory.Get(), instance,
+          base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+}
+
 // Convert a vector of OmniboxActions to Java counterpart.
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,

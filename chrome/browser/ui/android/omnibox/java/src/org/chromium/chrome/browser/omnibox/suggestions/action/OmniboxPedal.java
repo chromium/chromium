@@ -36,7 +36,9 @@ public class OmniboxPedal extends OmniboxAction {
                 nativeInstance,
                 hint,
                 accessibilityHint,
-                pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
+                pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME
+                        ? DINO_GAME_ICON
+                        : OmniboxAction.DEFAULT_ICON);
         this.pedalId = pedalId;
     }
 
