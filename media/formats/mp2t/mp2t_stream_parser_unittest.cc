@@ -4,6 +4,8 @@
 
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 
+#include <openssl/aes.h>
+#include <openssl/evp.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,9 +13,7 @@
 #include <memory>
 #include <string>
 
-#include <openssl/aes.h>
-#include <openssl/evp.h>
-
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -88,11 +88,10 @@ std::string DecryptSampleAES(const std::string& key,
                               reinterpret_cast<const uint8_t*>(iv.data()), 0),
             1);
   EVP_CIPHER_CTX_set_padding(ctx.get(), 0);
-  const size_t output_size = input_size;
-  std::unique_ptr<char[]> output(new char[output_size]);
+  auto output = base::HeapArray<char>::Uninit(input_size);
   uint8_t* in_ptr = const_cast<uint8_t*>(input);
-  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(output.get());
-  size_t bytes_remaining = output_size;
+  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(output.data());
+  size_t bytes_remaining = output.size();
 
   while (bytes_remaining) {
     int unused;
@@ -115,7 +114,7 @@ std::string DecryptSampleAES(const std::string& key,
     }
   }
 
-  result.assign(output.get(), output_size);
+  result.assign(output.begin(), output.end());
   return result;
 }
 

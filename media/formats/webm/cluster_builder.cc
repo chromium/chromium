@@ -62,8 +62,8 @@ enum {
   kInitialBufferSize = 32768,
 };
 
-Cluster::Cluster(std::unique_ptr<uint8_t[]> data, int size)
-    : data_(std::move(data)), size_(size) {}
+Cluster::Cluster(base::HeapArray<uint8_t> data, int bytes_used)
+    : data_(std::move(data)), bytes_used_(bytes_used) {}
 Cluster::~Cluster() = default;
 
 ClusterBuilder::ClusterBuilder() { Reset(); }
@@ -75,7 +75,7 @@ void ClusterBuilder::SetClusterTimecode(int64_t cluster_timecode) {
   cluster_timecode_ = cluster_timecode;
 
   // Write the timecode into the header.
-  uint8_t* buf = buffer_.get() + kClusterTimecodeOffset;
+  uint8_t* buf = buffer_.data() + kClusterTimecodeOffset;
   for (int i = 7; i >= 0; --i) {
     buf[i] = cluster_timecode & 0xff;
     cluster_timecode >>= 8;
@@ -88,11 +88,12 @@ void ClusterBuilder::AddSimpleBlock(int track_num,
                                     const uint8_t* data,
                                     int size) {
   int block_size = size + 4;
-  int bytes_needed = sizeof(kSimpleBlockHeader) + block_size;
-  if (bytes_needed > (buffer_size_ - bytes_used_))
+  size_t bytes_needed = sizeof(kSimpleBlockHeader) + block_size;
+  if (bytes_needed > (buffer_.size() - bytes_used_)) {
     ExtendBuffer(bytes_needed);
+  }
 
-  uint8_t* buf = buffer_.get() + bytes_used_;
+  uint8_t* buf = buffer_.data() + bytes_used_;
   int block_offset = bytes_used_;
   memcpy(buf, kSimpleBlockHeader, sizeof(kSimpleBlockHeader));
   UpdateUInt64(block_offset + kSimpleBlockSizeOffset, block_size);
@@ -133,7 +134,7 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
                                            const uint8_t* data,
                                            int size) {
   int block_size = size + 4;
-  int bytes_needed = block_size;
+  size_t bytes_needed = block_size;
   if (include_block_duration) {
     bytes_needed += sizeof(kBlockGroupHeader);
   } else {
@@ -145,10 +146,11 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
 
   int block_group_size = bytes_needed - 9;
 
-  if (bytes_needed > (buffer_size_ - bytes_used_))
+  if (bytes_needed > (buffer_.size() - bytes_used_)) {
     ExtendBuffer(bytes_needed);
+  }
 
-  uint8_t* buf = buffer_.get() + bytes_used_;
+  uint8_t* buf = buffer_.data() + bytes_used_;
   int block_group_offset = bytes_used_;
   if (include_block_duration) {
     memcpy(buf, kBlockGroupHeader, sizeof(kBlockGroupHeader));
@@ -226,29 +228,27 @@ std::unique_ptr<Cluster> ClusterBuilder::FinishWithUnknownSize() {
 }
 
 void ClusterBuilder::Reset() {
-  buffer_size_ = kInitialBufferSize;
-  buffer_.reset(new uint8_t[buffer_size_]);
-  memcpy(buffer_.get(), kClusterHeader, sizeof(kClusterHeader));
+  buffer_ = base::HeapArray<uint8_t>::Uninit(kInitialBufferSize);
+  memcpy(buffer_.data(), kClusterHeader, sizeof(kClusterHeader));
   bytes_used_ = sizeof(kClusterHeader);
   cluster_timecode_ = -1;
 }
 
-void ClusterBuilder::ExtendBuffer(int bytes_needed) {
-  int new_buffer_size = 2 * buffer_size_;
+void ClusterBuilder::ExtendBuffer(size_t bytes_needed) {
+  size_t new_buffer_size = 2 * buffer_.size();
 
   while ((new_buffer_size - bytes_used_) < bytes_needed)
     new_buffer_size *= 2;
 
-  std::unique_ptr<uint8_t[]> new_buffer(new uint8_t[new_buffer_size]);
+  auto new_buffer = base::HeapArray<uint8_t>::Uninit(new_buffer_size);
 
-  memcpy(new_buffer.get(), buffer_.get(), bytes_used_);
+  memcpy(new_buffer.data(), buffer_.data(), bytes_used_);
   buffer_ = std::move(new_buffer);
-  buffer_size_ = new_buffer_size;
 }
 
 void ClusterBuilder::UpdateUInt64(int offset, int64_t value) {
-  DCHECK_LE(offset + 7, buffer_size_);
-  uint8_t* buf = buffer_.get() + offset;
+  DCHECK_LE(offset + 7u, buffer_.size());
+  uint8_t* buf = buffer_.data() + offset;
 
   // Fill the last 7 bytes of size field in big-endian order.
   for (int i = 7; i > 0; i--) {
