@@ -47,23 +47,23 @@ export class CertificateListV2Element extends PolymerElement {
       certSource: Number,
       headerText: String,
       hideExport: Boolean,
-      expanded: Boolean,
-      certificates: Array,
+      expanded_: Boolean,
+      certificates_: Array,
     };
   }
 
-  private certSource: CertificateSource;
-  private headerText: string;
-  private hideExport: boolean = false;
-  private expanded: boolean = true;
-  private certificates: SummaryCertInfo[] = [];
+  certSource: CertificateSource;
+  headerText: string;
+  hideExport: boolean = false;
+  private expanded_: boolean = true;
+  private certificates_: SummaryCertInfo[] = [];
 
   override ready() {
     super.ready();
     CertificatesV2BrowserProxy.getInstance()
         .handler.getCertificates(this.certSource)
         .then((results: {certs: SummaryCertInfo[]}) => {
-          this.certificates = results.certs;
+          this.certificates_ = results.certs;
         });
   }
 

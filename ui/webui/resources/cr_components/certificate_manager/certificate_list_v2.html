@@ -14,7 +14,7 @@
 </style>
 
 <cr-expand-button class="cr-row first"
-    expanded="{{expanded}}">
+    expanded="{{expanded_}}">
   <div class="header-row">
     [[headerText]]
     <cr-button class="action-button certs-export-button"
@@ -24,8 +24,8 @@
     </cr-button>
   </div>
 </cr-expand-button>
-<cr-collapse id="certs" class="cert-list" opened="[[expanded]]">
-  <template is="dom-repeat" items="[[certificates]]">
+<cr-collapse id="certs" class="cert-list" opened="[[expanded_]]">
+  <template is="dom-repeat" items="[[certificates_]]">
     <certificate-entry-v2
         cert-source="[[certSource]]"
         display-name="[[item.displayName]]"
