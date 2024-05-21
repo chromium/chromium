@@ -2981,6 +2981,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3184536091884214176">Configurer ou gérer des imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette appli est bloquée}one{Cette appli est bloquée}other{Certaines applis sont bloquées}}</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
+<translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne glissante</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
@@ -9034,7 +9035,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7788948939674438635">Ne pas autoriser les sites à verrouiller votre clavier</translation>
 <translation id="7789963078219276159">L'arrière-plan par défaut de la page d'accueil a été remplacé par <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR dans les PDF</translation>
-<translation id="7790737481627460475">Fichiers sur ce Chromebook</translation>
 <translation id="7791269138074599214">Mode de saisie</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome actuellement utilisé</translation>
 <translation id="7791436592012979144">Défilement inversé activé</translation>

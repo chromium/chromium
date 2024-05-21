@@ -2978,6 +2978,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3184536091884214176">Konfiguro ose menaxho printerët CUPS. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ky aplikacion është bllokuar}other{Disa aplikacione janë bllokuar}}</translation>
 <translation id="3187472288455401631">Matja e reklamave</translation>
+<translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3188465121994729530">Mesatarja e lëvizshme</translation>
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
@@ -9026,7 +9027,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7788948939674438635">Mos lejo që sajtet të kyçin tastierën</translation>
 <translation id="7789963078219276159">Sfondi i faqes së nisjes është ndryshuar në <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR për PDF</translation>
-<translation id="7790737481627460475">Skedarët në këtë Chromebook</translation>
 <translation id="7791269138074599214">Metoda e hyrjes</translation>
 <translation id="7791429245559955092">Ky aplikacion do të instalohet në profilin tënd të Chrome të përdorur aktualisht.</translation>
 <translation id="7791436592012979144">Lëvizja në të kundërt u aktivizua</translation>

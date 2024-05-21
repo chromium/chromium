@@ -125,7 +125,7 @@
 <translation id="1228893227497259893">Туура эмес объект аныктагыч</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматтык түрдө аныкталды)</translation>
 <translation id="1232569758102978740">Аты жок</translation>
-<translation id="1236081509407217141">VR'га уруксат берилсинби?</translation>
+<translation id="1236081509407217141">VR'га уруксат бересизби?</translation>
 <translation id="1240347957665416060">Түзмөгүңүздүн аталышы</translation>
 <translation id="124116460088058876">Дагы тилдер</translation>
 <translation id="1243027604378859286">Автор:</translation>
@@ -718,7 +718,7 @@
 <translation id="2300306941146563769">Жүктөлүп берилген жок</translation>
 <translation id="2301098101308036335">Кайсы вебсайттардын качан ачылганы.</translation>
 <translation id="230286397113210245">"Жашыруун терезени ачуу" баскычы. Жаңы жашыруун терезени ачып, купуя түрдө карап чыгуу үчүн иштетиңиз</translation>
-<translation id="2306124309679506798">Сүңгүтүүчү пайдаланууга уруксат берилсинби?</translation>
+<translation id="2306124309679506798">Сүңгүтүүчү пайдаланууга уруксат бересизби?</translation>
 <translation id="2312234273148520048">Татымалдар</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> азыраак. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
 <translation id="2316159751672436664">ChromeOS параметрлеринде атайын мүмкүнчүлүктөр куралдарын жекелештирүү</translation>
@@ -1320,7 +1320,7 @@
 <translation id="3515972145999192222">Эрежени бузгандыктан <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтын уюмуңуз бөгөттөп койгон. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Бир нече объектти тейлөө</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
-<translation id="3525435918300186947">MIDI түзмөктөрүңүздү көзөмөлдөөгө жана кайра программалоого уруксат берилсинби?</translation>
+<translation id="3525435918300186947">MIDI түзмөктөрүңүздү көзөмөлдөөгө жана кайра программалоого уруксат бересизби?</translation>
 <translation id="3527181387426738155">Музыка жана аудио</translation>
 <translation id="3528171143076753409">Сервердин тастыктамасы ишенимдүү эмес.</translation>
 <translation id="3528485271872257980">Күңүрт күрөң</translation>
@@ -2014,7 +2014,7 @@
 <translation id="4877047577339061095">Үй сактагычы жана текчелер</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Жок}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> деп издөө</translation>
-<translation id="4877521229462766300">Кыстарылган мазмунга уруксат берилсинби?</translation>
+<translation id="4877521229462766300">Кыстарылган мазмунга уруксат бересизби?</translation>
 <translation id="4879491255372875719">Автоматтык (демейки)</translation>
 <translation id="4880827082731008257">Издөө таржымалы</translation>
 <translation id="4881695831933465202">Ачуу</translation>
@@ -2104,7 +2104,7 @@
 <translation id="5035135400558156732">Багбанчылык</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Арип өлчөмү</translation>
-<translation id="5039804452771397117">Уруксат берүү</translation>
+<translation id="5039804452771397117">Ооба</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5043480802608081735">Сиз көчүргөн шилтеме</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
@@ -2455,7 +2455,7 @@
 <translation id="5720705177508910913">Учурдагы колдонуучу</translation>
 <translation id="5720895412771013401">Компьютерлер</translation>
 <translation id="572328651809341494">Акыркы өтмөктөр</translation>
-<translation id="5723873695528696965">MIDI түзмөктөрүңүздү көзөмөлдөөгө жана кайра программалоого уруксат берилсинби?</translation>
+<translation id="5723873695528696965">MIDI түзмөктөрүңүздү көзөмөлдөөгө жана кайра программалоого уруксат бересизби?</translation>
 <translation id="5725297205162868298">Ыкчам баскыч @ символу менен башталбайт: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5729442113829771034">Башталгыч билим берүү</translation>
 <translation id="5730040223043577876">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chrome аны өзгөртүүнү сунуштайт.</translation>
@@ -3016,7 +3016,7 @@
 <translation id="6820143000046097424">ырааттуу порттор</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6825578344716086703">Сиз <ph name="DOMAIN" /> доменин ачканга аракет кылдыңыз, бирок сервер ишенимдүү эмес алгоритмди (мисалы, SHA-1) камтыган кол коюлган тастыктама көрсөтүп жатат. Башкача айтканда, сервер берген коопсуздук дайындары бурмаланган жана сервердин өзү дагы жасалма болуп калышы мүмкүн. Сиз алдамчылар менен байланышып жаткан болушуңуз мүмкүн.</translation>
-<translation id="6826993739343257035">AR'га уруксат берилсинби?</translation>
+<translation id="6826993739343257035">AR'га уруксат бересизби?</translation>
 <translation id="6828150717884939426">Чалуу</translation>
 <translation id="6828866289116430505">Генетика</translation>
 <translation id="6831043979455480757">Которуу</translation>

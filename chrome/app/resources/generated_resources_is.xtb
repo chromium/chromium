@@ -2994,6 +2994,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3184536091884214176">Setja upp eða hafa umsjón með CUPS-prenturum. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Þetta forrit er á bannlista}one{Sum forrit eru á bannlista}other{Sum forrit eru á bannlista}}</translation>
 <translation id="3187472288455401631">Auglýsingamælingar</translation>
+<translation id="3188257591659621405">Skrárnar mínar</translation>
 <translation id="3188465121994729530">Hlaupandi meðaltal</translation>
 <translation id="3189187154924005138">Stór bendill</translation>
 <translation id="3190558889382726167">Aðgangsorð vistað</translation>
@@ -9045,7 +9046,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7788948939674438635">Ekki leyfa vefsvæðum að læsa lyklaborðinu</translation>
 <translation id="7789963078219276159">Bakgrunni upphafssíðu hefur verið breytt í <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Textagreining PDF-skráa</translation>
-<translation id="7790737481627460475">Skrár í þessari Chromebook</translation>
 <translation id="7791269138074599214">Innsláttaraðferð</translation>
 <translation id="7791429245559955092">Þetta forrit verður sett upp á Chrome-prófílnum sem þú ert að nota</translation>
 <translation id="7791436592012979144">Kveikt á flettingu aftur á bak</translation>

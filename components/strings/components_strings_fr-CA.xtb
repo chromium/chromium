@@ -1335,6 +1335,7 @@
 <translation id="353816159217417898">Écran (paginé)</translation>
 <translation id="3542628208405253498">Image de la carte</translation>
 <translation id="3542768452570884558">Ouvrir le lien dans une nouvelle fenêtre</translation>
+<translation id="3547442767634383572">L'aperçu du profil professionnel</translation>
 <translation id="3547746132308051926">20 po x 24 po</translation>
 <translation id="3552155506104542239">Avertissement : Cette politique entre en conflit avec la politique <ph name="POLICY_NAME" /> et n'aura aucun effet sur les applications Android. Sinon, cette politique fonctionne comme prévu.</translation>
 <translation id="3552297013052089404">Police sans empattement</translation>
@@ -2199,6 +2200,7 @@
 <translation id="5230733896359313003">Adresse de livraison</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Le profil géré, le navigateur et certains renseignements sur l'appareil sont accessibles à votre administrateur. Il peut voir les renseignements suivants :</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="5239119062986868403">Prix habituel</translation>
@@ -2212,6 +2214,7 @@
 <translation id="52517543715119994">En savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="5251803541071282808">Politique provenant du nuage</translation>
 <translation id="5254043433801397071">Optimiser le contenu d'impression</translation>
+<translation id="5255583962255635076">Les politiques de navigateur appliquées dans votre profil professionnel</translation>
 <translation id="5255690596502591079">Prendre une capture d'écran quand même</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Détails supplémentaires :
 <translation id="7421067045979951561">gestionnaires de protocoles</translation>
 <translation id="7422347648202898039">Étiquettes (sécurité)</translation>
 <translation id="7423283032694727565">Bouton Gérer les témoins, activez-le pour gérer vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
+<translation id="742435751935045381">Applis et extensions installées dans votre profil professionnel</translation>
 <translation id="7424421098814895617">L'option Supprimer l'adresse a été sélectionnée</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7425878584435172632">Arts et design visuels</translation>
@@ -3878,6 +3882,7 @@ Détails supplémentaires :
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Le microphone est autorisé cette fois</translation>
+<translation id="8421158157346464398">Renseignements relatifs à votre profil professionnel (tels que le nom d'utilisateur de votre profil professionnel)</translation>
 <translation id="8422228580902424274">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que votre mot de passe ou votre numéro de téléphone ou de carte de crédit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
@@ -4245,6 +4250,7 @@ Détails supplémentaires :
 <translation id="9164742147345933553">os://indicateurs</translation>
 <translation id="9165305804774426672">Les sites que vous visitez peuvent également déterminer ce qui vous intéresse en fonction de votre activité sur ceux-ci. Par exemple, si vous visitez un site qui vend des chaussures de course de fond, le site peut déterminer que vous vous intéressez aux marathons.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et sur la mesure des annonces</translation>
+<translation id="9167054383925257837">Renseignements sur le navigateur et le système d'exploitation de l'appareil (tels que les versions du navigateur et du système d'exploitation)</translation>
 <translation id="9167594211215946097">accéder directement à vos imprimantes</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si des modes de paiement sont enregistrés</translation>
 <translation id="9169664750068251925">Toujours bloquer pour ce site</translation>

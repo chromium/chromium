@@ -2980,6 +2980,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3184536091884214176">Konfiguratu edo instalatu CUPS inprimagailuak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplikazioa blokeatuta dago}other{Zenbait aplikazio blokeatuta daude}}</translation>
 <translation id="3187472288455401631">Iragarkien neurketa</translation>
+<translation id="3188257591659621405">Nire fitxategiak</translation>
 <translation id="3188465121994729530">Batez besteko mugimendua</translation>
 <translation id="3189187154924005138">Kurtsore handia</translation>
 <translation id="3190558889382726167">Gorde da pasahitza</translation>
@@ -9025,7 +9026,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7788948939674438635">Ez eman baimena webguneei teklatua blokeatzeko</translation>
 <translation id="7789963078219276159"><ph name="CATEGORY" /> jarri dira orri nagusiko atzeko planoan.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Chromebook honetako fitxategiak</translation>
 <translation id="7791269138074599214">Idazketa-metodoa</translation>
 <translation id="7791429245559955092">Aplikazio hau orain darabilzun Chrome-ko profilean instalatuko da</translation>
 <translation id="7791436592012979144">Gaituta dago gora edo behera alderantziz egiteko aukera</translation>

@@ -2993,6 +2993,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ứng dụng này đã bị chặn}other{Một số ứng dụng đã bị chặn}}</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
+<translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3188465121994729530">Trung bình động</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
@@ -4744,7 +4745,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4503748371388753124">Máy tính của bạn chứa một thiết bị bảo mật Mô-đun nền tảng đáng tin cậy (TPM) dùng để triển khai nhiều tính năng bảo mật thiết yếu trong ChromeOS Flex. Hãy truy cập Trung tâm trợ giúp Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Đã cho phép các cookie}=1{Đã cho phép các cookie nhưng có 1 trường hợp ngoại lệ}other{Đã cho phép các cookie nhưng có {COUNT} trường hợp ngoại lệ}}</translation>
 <translation id="4504940961672722399">Sử dụng tiện ích này bằng cách nhấp vào biểu tượng này hoặc bằng cách nhấn <ph name="EXTENSION_SHORTCUT" />.</translation>
-<translation id="4505469832694348179">Tải Chrome xuống bằng mã QR này rồi đăng nhập vào Tài khoản Google của bạn.</translation>
+<translation id="4505469832694348179">Quét mã QR này để tải Chrome xuống rồi đăng nhập vào Tài khoản Google của bạn.</translation>
 <translation id="450552327874992444">Từ đã được thêm</translation>
 <translation id="4507373251891673233">Bạn đã chặn tất cả tiện ích từ <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Nhấp vào "Thêm lối tắt"</translation>
@@ -9045,7 +9046,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7788948939674438635">Không cho phép các trang web khoá bàn phím</translation>
 <translation id="7789963078219276159">Nền của trang chủ đã được đổi thành <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Nhận dạng ký tự quang học (OCR) dành cho PDF</translation>
-<translation id="7790737481627460475">Tệp trên Chromebook này</translation>
 <translation id="7791269138074599214">Phương thức nhập</translation>
 <translation id="7791429245559955092">Ứng dụng này sẽ được cài đặt trên hồ sơ Chrome mà bạn đang sử dụng</translation>
 <translation id="7791436592012979144">Đã bật chế độ cuộn ngược</translation>

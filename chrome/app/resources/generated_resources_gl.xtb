@@ -2979,6 +2979,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3184536091884214176">Configurar ou xestionar impresoras CUPS. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta aplicación está bloqueada}other{Algunhas aplicacións están bloqueadas}}</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
+<translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3188465121994729530">Media de movemento</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Gardouse o contrasinal</translation>
@@ -9028,7 +9029,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7788948939674438635">Non permitir que os sitios bloqueen o teclado</translation>
 <translation id="7789963078219276159">O fondo da páxina de inicio cambiouse por <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR para PDF</translation>
-<translation id="7790737481627460475">Ficheiros neste Chromebook</translation>
 <translation id="7791269138074599214">Método de introdución de texto</translation>
 <translation id="7791429245559955092">Esta aplicación instalarase no perfil de Chrome que usas actualmente</translation>
 <translation id="7791436592012979144">Activouse o desprazamento inverso</translation>

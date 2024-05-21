@@ -2993,6 +2993,7 @@
 <translation id="3184536091884214176">CUPS பிரிண்டர்களை அமைத்தல் அல்லது நிர்வகித்தல். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{இந்த ஆப்ஸ் தடுக்கப்பட்டுள்ளது}other{சில ஆப்ஸ் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="3187472288455401631">விளம்பர அளவீடு</translation>
+<translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
 <translation id="3188465121994729530">நகரும் சராசரி</translation>
 <translation id="3189187154924005138">பெரிய கர்சர்</translation>
 <translation id="3190558889382726167">கடவுச்சொல் சேமிக்கப்பட்டது</translation>
@@ -9044,7 +9045,6 @@
 <translation id="7788948939674438635">கீபோர்டை லாக் செய்ய தளங்களை அனுமதிக்காதே</translation>
 <translation id="7789963078219276159">தொடக்கப் பக்கத்தின் பின்னணித் தோற்றம் <ph name="CATEGORY" /> வகைக்கு மாற்றப்பட்டது.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">இந்த Chromebookகில் உள்ள ஃபைல்கள்</translation>
 <translation id="7791269138074599214">உள்ளீட்டு முறை</translation>
 <translation id="7791429245559955092">இந்த ஆப்ஸ் நீங்கள் தற்போது பயன்படுத்தும் Chrome சுயவிவரத்தில் நிறுவப்படும்</translation>
 <translation id="7791436592012979144">தலைகீழாக நகர்த்துதல் இயக்கப்பட்டுள்ளது</translation>

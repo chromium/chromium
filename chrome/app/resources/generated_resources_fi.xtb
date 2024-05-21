@@ -2992,6 +2992,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3184536091884214176">Ota käyttöön tai hallinnoi CUPS-tulostimia. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Tämä sovellus on estetty}other{Osa sovelluksista on estetty}}</translation>
 <translation id="3187472288455401631">Mainosten mittaus</translation>
+<translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3188465121994729530">Liukuva keskiarvo</translation>
 <translation id="3189187154924005138">Suuri kohdistin</translation>
 <translation id="3190558889382726167">Salasana on tallennettu</translation>
@@ -9038,7 +9039,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7788948939674438635">Älä salli sivustojen lukita näppäimistöä</translation>
 <translation id="7789963078219276159">Aloitussivun taustakuvaksi on vaihdettu <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF-tekstintunnistus</translation>
-<translation id="7790737481627460475">Tiedostot tällä Chromebookilla</translation>
 <translation id="7791269138074599214">Syöttötapa</translation>
 <translation id="7791429245559955092">Sovellus asennetaan tällä hetkellä käyttämääsi Chrome-profiiliin</translation>
 <translation id="7791436592012979144">Käänteinen vieritys käytössä</translation>

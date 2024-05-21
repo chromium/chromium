@@ -180,6 +180,7 @@ Si no se define esta política, no se permitirán excepciones de <ph name="DEVIC
 <translation id="1107538157073168076">Inhabilitar extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">No mostrar la pantalla de configuración del tamaño de visualización al iniciar sesión</translation>
+<translation id="1111824532252882775">Habilitado: los controles de desplazamientos se pueden enfocar de forma predeterminada.</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
 <translation id="1118093128235245168">Permitir que los sitios pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Ajustes de notificaciones</translation>
@@ -6865,6 +6866,7 @@ Si no se define esta política, los usuarios podrán activar o desactivar la fun
 <translation id="6452882999388592166">Si se habilita, la extensión del componente CryptoToken integrada se cargará al iniciar el navegador. Si se inhabilita o no se le asigna ningún valor, CryptoToken no se cargará cuando se inicie el navegador. Esta política está pensada como una solución temporal para los sitios que no funcionan por no haber definido `chrome.runtime`, que es un efecto secundario de haber eliminado CryptoToken en M106. Los sitios web no deben depender de que `chrome.runtime` se defina incondicionalmente.</translation>
 <translation id="6453641799812499182">Permite habilitar las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Habilitar el inicio de sesión forzoso de <ph name="PRODUCT_NAME" /></translation>
+<translation id="6454450724849956537">Habilitar el enfoque de los controles de desplazamientos con teclado</translation>
 <translation id="645467061280066516">Si se habilita esta política, se establecerá la página Nueva pestaña como la página principal del usuario, independientemente de la ubicación de la URL de la página principal. Si se inhabilita esta política, la página principal del usuario nunca será la página Nueva pestaña, a menos que se defina chrome://newtab como la URL de su página principal.
 
 Si se define esta política, los usuarios no podrán cambiar su tipo de página principal en <ph name="PRODUCT_NAME" />. Si no se define, los usuarios podrán elegir si quieren establecer la página Nueva pestaña como su página principal.
@@ -8931,6 +8933,13 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
+<translation id="8033450879690820321">Esta política proporciona un mecanismo temporal para inhabilitar el nuevo comportamiento de enfoque de los controles de desplazamientos con teclado.
+
+Si esta política se habilita o no se define, los controles de desplazamiento sin elementos secundarios enfocables se podrán enfocar mediante el teclado de forma predeterminada. Además, los controles de desplazamiento se pueden enfocar tanto al hacer clic como mediante programación de forma predeterminada.
+
+Si esta política se inhabilita, los controles de desplazamiento no se podrán enfocar de forma predeterminada.
+
+Esta política es una solución temporal y se eliminará en la versión M135.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8036284429246268475">Si se habilita esta política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas introducidos forman parte de alguna filtración de datos.
 
@@ -9472,6 +9481,7 @@ El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
           Si no se establece esta política, se utilizará el procesador predeterminado para todos los sitios web, como se especifica en la política "ChromeFrameRendererSettings".
 
           Puedes consultar ejemplos de patrones en la página https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8489169564515126823">Inhabilitado: los controles de desplazamientos no se pueden enfocar de forma predeterminada.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Inhabilitar almacenamiento del historial de navegación</translation>
 <translation id="8499172469244085141">Configuración predeterminada (los usuarios pueden modificarla)</translation>

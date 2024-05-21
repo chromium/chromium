@@ -2504,6 +2504,7 @@
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
+<translation id="2809946454624727734">آپ اپنے محفوظ کردہ پتوں میں اس تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2812049959647166806">‏Thunderbolt تعاون یافتہ نہیں ہے</translation>
 <translation id="2812171980080389735">محفوظ کردہ نیٹ ورکس اور پاس ورڈز تاکہ آپ فوری طور پر منسلک کر سکیں</translation>
@@ -2718,6 +2719,7 @@
 <translation id="2976557544729462544">کچھ آلات کو مناسب طریقے سے یا مکمل کارکردگی کے ساتھ کام کرنے کے لئے ڈیٹا تک رسائی کے تحفظ کو غیر فعال کرنے کی ضرورت ہوتی ہے۔</translation>
 <translation id="2976639738101799892">‏ہر بار براؤز کرتے وقت Google تلاش اور Google اسمارٹس کی سہولت حاصل کریں</translation>
 <translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
+<translation id="2979493931538961252">‏جب آپ کی Chromebook آف لائن ہو اور ہاٹ اسپاٹس دستیاب ہوں</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
 <translation id="2979893796619951531">سائٹ خارج کریں</translation>
 <translation id="2981033191524548279">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے، اسے دوبارہ ریبوٹ کرنے اور دوبارہ کوشش کر کے ٹھیک کیا جا سکتا ہے۔</translation>
@@ -2982,6 +2984,7 @@
 <translation id="3184536091884214176">‏ترتیب دیں یا CUPS پرنٹرز کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{یہ ایپ مسدود ہے}other{کچھ ایپس مسدود ہیں}}</translation>
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
+<translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3188465121994729530">اوسط کی منتقلی</translation>
 <translation id="3189187154924005138">بڑا کرسر</translation>
 <translation id="3190558889382726167">پاس ورڈ محفوظ ہوگیا</translation>
@@ -3152,6 +3155,7 @@
 <translation id="3317521105713541270">گروپس بنائیں</translation>
 <translation id="3317678681329786349">کیمرا اور مائیکروفون مسدود ہے</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے تصویر میں موجود ٹیکسٹ کا ترجمہ کریں</translation>
+<translation id="3319863571062685443">آپ کا پتہ محفوظ کیا گیا ہے</translation>
 <translation id="3320271870899888245">‏OneDrive سے منسلک نہیں ہو سکتا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3320630259304269485">محفوظ براؤزنگ (خطرناک سائٹس سے تحفظ) اور سیکیورٹی کی دیگر ترتیبات</translation>
 <translation id="3321460131042519426">الفاظ ملفوف کرنے فعال کریں</translation>
@@ -3394,6 +3398,7 @@
 <translation id="3508492320654304609">آپ کا سائن ان ڈیٹا حذف نہیں ہو سکا</translation>
 <translation id="3508920295779105875">کوئی دوسرا فولڈر منتخب کریں…</translation>
 <translation id="3509379002674019679">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔</translation>
+<translation id="3510471875518562537">‏اپنے iPhone پر اس پتہ کا استعمال کریں</translation>
 <translation id="3511200754045804813">دوبارہ اسکین کریں</translation>
 <translation id="3511307672085573050">لنک پ&amp;تہ کاپی کریں</translation>
 <translation id="351152300840026870">مقررہ چوڑائی کا فونٹ</translation>
@@ -4165,6 +4170,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{‏# رابطہ دستیاب نہیں ہے۔ اس کے ساتھ 'قریبی آلات کے ساتھ اشتراک' کا استعمال کرنے کیلئے، اس کے Google اکاؤنٹ سے وابستہ ای میل پتے کو اپنے رابطوں میں شامل کریں۔}other{‏# رابطے دستیاب نہیں ہیں۔ ان کے ساتھ 'قریبی آلات کے ساتھ اشتراک' کا استعمال کرنے کیلئے، ان کے Google اکاؤنٹس سے وابستہ ای میل پتوں کو اپنے رابطوں میں شامل کریں۔}}</translation>
 <translation id="4050225813016893843">تصدیق کا طریقہ</translation>
 <translation id="4050534976465737778">‏یہ یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، وہ ایک دوسرے کے قریب ہیں اور ان کے بلوٹوتھ آن ہیں۔ اگر آپ کسی ایسے Chromebook کے ساتھ اشتراک کر رہے ہیں جو آپ کے رابطوں میں نہیں ہے تو یہ یقینی بنائیں کہ اس میں قریبی آلات کی مرئیت آن ہے (اسٹیٹس ایریا کھولیں، پھر قریبی آلات کی مرئیت کا انتخاب کریں)۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">آخری بار استعمال کردہ اندراج کے طریقے پر سوئچ کرنے کیلئے <ph name="KEY_CODES" /> دبائیں</translation>
 <translation id="4051177682900543628">‏search + دائیں تیر کا نشان</translation>
 <translation id="4052120076834320548">چھوٹا</translation>
 <translation id="4052913941260326985">‏QR کوڈ بنائیں</translation>
@@ -5996,6 +6002,7 @@
 <translation id="5486261815000869482">پاس ورڈ کی توثیق کریں</translation>
 <translation id="5486561344817861625">براؤزر کو دوبارہ شروع کرنے کی نقل کریں</translation>
 <translation id="5486748931874756433">یہ تبدیلی اس وقت لاگو ہوگی جب آپ اگلی اپ ڈیٹ حاصل کریں گے اور اپنے <ph name="DEVICE_TYPE" /> کو دوبارہ شروع کریں گے۔ اس تبدیلی کو لوٹايا نہیں جا سکتا اور اس کا اطلاق اس آلہ کے تمام صارفین پر ہوتا ہے۔</translation>
+<translation id="5487214759202665349">‏اپنے iPhone پر اس پتہ کا استعمال کریں</translation>
 <translation id="5487460042548760727">پروفائل کا نام <ph name="PROFILE_NAME" /> میں تبدیل کریں</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' کاپی ہو گیا</translation>
 <translation id="5488508217173274228">مرموزکاری کے اختیارات مطابقت پذیر بنائیں</translation>
@@ -6561,6 +6568,7 @@
 <translation id="5910363049092958439">تصویر مح&amp;فوظ کریں بطور…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آف لائن ہے</translation>
 <translation id="5911030830365207728">Google Translate</translation>
+<translation id="5911497236110691522">اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="KEY_CODES" /> دبائیں</translation>
 <translation id="5911533659001334206">شارٹ کٹ ناظر</translation>
 <translation id="5911545422157959623">بُک مارکس مہمان وضع میں دستیاب نہیں ہیں</translation>
 <translation id="5914724413750400082">ماڈیولس (<ph name="MODULUS_NUM_BITS" /> بٹس):
@@ -8524,6 +8532,7 @@
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> سے کال کریں</translation>
 <translation id="7429415133937917139">‏ریفریش کے قابل بریل ڈسپلے کے آؤٹ پٹ کو
         ChromeVox پینل میں اسکرین کے اوپر نقل کرتا ہے</translation>
+<translation id="7429568074268678162">‏<ph name="FILENAME" /> خطرناک ہو سکتا ہے۔ اگر آپ چاہتے ہیں کہ Chrome اس کی تصدیق کرے تو ایک پاس ورڈ شامل کریں یا اسے براہ راست ڈاؤن لوڈ کریں۔</translation>
 <translation id="7431719494109538750">‏کوئی HID آلہ نہیں ملا</translation>
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7432200167665670017">‏آپ کے منتظم نے "<ph name="EXTENSION_NAME" />" کو مسدود کر دیا ہے - ایپ ID <ph name="EXTENSION_ID" /></translation>
@@ -8940,6 +8949,7 @@
 <translation id="7730683939467795481">یہ صفحہ "<ph name="EXTENSION_NAME" />" ایکسٹینشن کے ذریعے تبدیل کیا گیا</translation>
 <translation id="7732702411411810416">یقینی بنائیں کہ آپ انٹرنیٹ سے منسلک ہیں اور دوبارہ کوشش کریں</translation>
 <translation id="773511996612364297">تلفظ کے نشانات</translation>
+<translation id="7736119438443237821">آپ اس آلے پر اپنی پاس کیز تک رسائی کو ہٹانے والے ہیں</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" کے ساتھ جوڑا بنایا جا رہا ہے ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> کی ہدایت موصول ہو گئی</translation>
 <translation id="7737846262459425222">‏آپ اسے کسی بھی وقت ترتیبات &gt; Google اسسٹنٹ &gt; اسکرین کے سیاق و سباق میں تبدیل کر سکتے ہیں۔</translation>
@@ -9030,7 +9040,6 @@
 <translation id="7788948939674438635">سائٹس کو اپنے کی بورڈ کو مقفل کرنے کی اجازت نہ دیں</translation>
 <translation id="7789963078219276159">ابتدائی صفحہ کا پس منظر <ph name="CATEGORY" /> میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">‏اس Chromebook پر موجود فائلز</translation>
 <translation id="7791269138074599214">اندراج کا طریقہ</translation>
 <translation id="7791429245559955092">‏یہ ایپلیکیشن آپ کی فی الحال استعمال کردہ Chrome پروفائل پر انسٹال ہو جائے گی</translation>
 <translation id="7791436592012979144">معکوس اسکرولنگ فعال ہے</translation>
@@ -9538,6 +9547,7 @@
 <translation id="8151748163667572916">فوری ہاٹ اسپاٹ آف کریں</translation>
 <translation id="8154790740888707867">کوئی فائل نہیں ہے</translation>
 <translation id="815491593104042026">‏افوہ، توثیق ناکام ہو گئی کیونکہ اسے ایک غیر محفوظ ‎URL (<ph name="BLOCKED_URL" />)‎ استعمال کرنے کیلئے کنفیگر کیا گیا تھا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="8155214519979960765">اس آلہ پر پاس کی کے ساتھ دوبارہ سائن ان کرنے کے لیے، آپ کو اس بات کی تصدیق کرنی ہوگی کہ یہ آپ ہی ہیں۔ اگر آپ کے پاس کوئی دوسرا سائن ان اختیار ہے، جیسے کہ پاس ورڈ، تو آپ اس کی بجائے اسے سائن ان کرنے کے لیے استعمال کر سکتے ہیں۔</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈز نہیں ملے}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="8157248655669507702">‏eSIM پروفائل انسٹال کرنے کے لیے موبائل ڈیٹا فعال کریں</translation>
 <translation id="8157704005178149728">نگرانی ترتیب دی جا رہی ہے</translation>
@@ -9826,6 +9836,7 @@
 <translation id="8371695176452482769">اب بولیں</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{سائٹ کی آواز بند کریں}other{سائٹس کی آواز بند کریں}}</translation>
 <translation id="8372441176515901959">درخواست برخاست کریں</translation>
+<translation id="8372678064309688510">آپ کا پتہ محفوظ کیا گیا ہے</translation>
 <translation id="8373652277231415614">‏Crostini کی اشتراک کردہ ڈائرکٹریز</translation>
 <translation id="8374243500935816406">سائٹس کو اپنے تمام ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہ دیں</translation>
 <translation id="8376137163494131156">‏ہمیں بتائیں کہ Google Cast کے ساتھ کیا ہو رہا ہے۔</translation>

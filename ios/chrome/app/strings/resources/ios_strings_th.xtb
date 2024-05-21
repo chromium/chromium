@@ -47,7 +47,7 @@
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
 <translation id="1264156759663453185">ข้อความที่เลือกมีจำนวนเยอะเกินไปสำหรับการแปลข้อความบางส่วน</translation>
 <translation id="1264974993859112054">กีฬา</translation>
-<translation id="1265739287306757398">เรียนรู้วิธี</translation>
+<translation id="1265739287306757398">ดูวิธีการ</translation>
 <translation id="1272079795634619415">หยุด</translation>
 <translation id="1273416271143914096">{count,plural, =1{รหัสผ่าน {count} รายการ}other{รหัสผ่าน {count} รายการ}}</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
@@ -99,6 +99,7 @@
 <translation id="1506063256525392513">ช่วยให้คุณถ่ายและอัปโหลดรูปภาพ รวมถึงสแกนคิวอาร์โค้ดได้</translation>
 <translation id="1509486075633541495">ลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
+<translation id="1520027731907768768">รับการแจ้งเตือนเมื่อราคาผลิตภัณฑ์ที่ติดตามต่ำลง</translation>
 <translation id="152234381334907219">ไม่เคยบันทึก</translation>
 <translation id="1523341279170789507">อนุญาตคุกกี้ทั้งหมด</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>

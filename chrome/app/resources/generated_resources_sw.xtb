@@ -2990,6 +2990,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3184536091884214176">Dhibiti au weka mipangilio ya printa za CUPS. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Programu hii imezuiwa}other{Baadhi ya programu zimezuiwa}}</translation>
 <translation id="3187472288455401631">Upimaji wa matangazo</translation>
+<translation id="3188257591659621405">Faili zangu</translation>
 <translation id="3188465121994729530">Wastani Unaosonga</translation>
 <translation id="3189187154924005138">Kiteuzi kikubwa</translation>
 <translation id="3190558889382726167">Nenosiri limehifadhiwa</translation>
@@ -9039,7 +9040,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7788948939674438635">Usiruhusu tovuti zifunge kibodi yako</translation>
 <translation id="7789963078219276159">Mandhari ya ukurasa wa kwanza yamebadilishwa kuwa <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Utambuzi wa Maandishi (OCR) katika PDF</translation>
-<translation id="7790737481627460475">Faili kwenye Chromebook hii</translation>
 <translation id="7791269138074599214">Mbinu ya kuingiza data</translation>
 <translation id="7791429245559955092">Programu hii itawekwa kwenye wasifu wa Chrome unaotumia sasa</translation>
 <translation id="7791436592012979144">Usogezaji nyuma umewashwa</translation>

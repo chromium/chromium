@@ -2985,6 +2985,7 @@
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{यो एप ब्लक गरिएको छ}other{यी एप ब्लक गरिएका छन्}}</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3187556136478864255">तपाईं <ph name="BEGIN_LINK" />Google Home एप<ph name="END_LINK" />मा आफ्नो कास्टिङ डिभाइस देख्न सक्नुहुन्छ?</translation>
+<translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3188465121994729530">औसत चलायमान</translation>
 <translation id="3189187154924005138">ठुलो कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेभ गरियो</translation>
@@ -9044,7 +9045,6 @@
 <translation id="7788948939674438635">किबोर्ड लक गर्न साइटहरूलाई अनुमति नदिनुहोस्</translation>
 <translation id="7789963078219276159">सुरुवातको पृष्ठको पृष्ठभूमि परिवर्तन गरी <ph name="CATEGORY" /> पारिएको छ।</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">यो Chromebook मा भएका फाइलहरू</translation>
 <translation id="7791269138074599214">इनपुट विधि</translation>
 <translation id="7791429245559955092">यो एप तपाईंले हाल प्रयोग गरिरहनुभएको Chrome प्रोफाइलमा इन्स्टल गरिने छ</translation>
 <translation id="7791436592012979144">उल्टो स्क्रोल गर्ने सुविधा अन गरिएको छ</translation>

@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Dibuang</translation>
 <translation id="1437543266176261764">Dijalankan dalam <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
+<translation id="1460751212339734034">Jimatkan masa, kurangkan menaip</translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
 <translation id="1477626028522505441">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh masalah pelayan.</translation>
 <translation id="1480287803138246127">Sesetengah sejarah anda mungkin tidak dipaparkan di sini. Untuk melihat semua sejarah Chrome anda, buka sejarah Chrome penuh.</translation>
@@ -841,6 +842,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5264813352784073502">24 jam yang lalu</translation>
 <translation id="5271967389191913893">Peranti tidak dapat membuka kandungan yang hendak dimuat turun.</translation>
 <translation id="5292796745632149097">Hantar ke</translation>
+<translation id="5301876394151419436">Anda log masuk sebagai <ph name="EMAIL" />. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5316947901395241499">Penyimpanan kata laluan dimatikan oleh pentadbir anda</translation>
@@ -1541,6 +1543,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8526855376374973824">Aliran kebenaran pemberitahuan</translation>
 <translation id="8540136935098276800">Masukkan URL yang diformatkan dengan betul</translation>
 <translation id="854522910157234410">Buka halaman ini</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Tab tidak aktif (1)}other{Tab tidak aktif (#)}}</translation>
 <translation id="8551513938758868521">Kunci tab Inkognito apabila anda meninggalkan Chrome</translation>
 <translation id="8551524210492420949">Menyinggung perasaan atau tidak selamat</translation>
 <translation id="8559961053328923750">Chrome mengehadkan jumlah data yang boleh dikongsi laman itu melalui penyemak imbas untuk mengukur prestasi iklan</translation>
@@ -1644,6 +1647,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9102803872260866941">Tab pratonton dibuka</translation>
 <translation id="9102864637938129124">Laman dan pengiklan boleh mengetahui prestasi iklan. Tetapan ini dihidupkan.</translation>
 <translation id="9104217018994036254">Senarai peranti untuk berkongsi tab.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Tidak digunakan selama 1 hari atau lebih lama}other{Tidak digunakan selama # hari atau lebih lama}}</translation>
 <translation id="9106148373857059373">Aliran penyimpanan penanda halaman ditutup</translation>
 <translation id="9108312223223904744">Telefon sebagai Sokongan Kunci Keselamatan</translation>
 <translation id="9108808586816295166">DNS selamat mungkin tidak tersedia sepanjang masa</translation>

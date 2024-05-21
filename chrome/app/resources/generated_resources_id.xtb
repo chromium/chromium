@@ -2993,6 +2993,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3184536091884214176">Siapkan atau kelola printer CUPS. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplikasi ini diblokir}other{Beberapa aplikasi diblokir}}</translation>
 <translation id="3187472288455401631">Pengukuran iklan</translation>
+<translation id="3188257591659621405">File saya</translation>
 <translation id="3188465121994729530">Rata-rata Perpindahan</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Sandi tersimpan</translation>
@@ -9042,7 +9043,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7788948939674438635">Jangan izinkan situs mengunci keyboard Anda</translation>
 <translation id="7789963078219276159">Latar belakang halaman awal telah diubah menjadi <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR PDF</translation>
-<translation id="7790737481627460475">File di Chromebook ini</translation>
 <translation id="7791269138074599214">Metode input</translation>
 <translation id="7791429245559955092">Aplikasi ini akan diinstal di profil Chrome yang saat ini Anda gunakan</translation>
 <translation id="7791436592012979144">Scroll terbalik diaktifkan</translation>

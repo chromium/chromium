@@ -2993,6 +2993,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3184536091884214176">CUPS принтерлерин жөндөө же башкаруу. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Бул колдонмо бөгөттөлдү}other{Айрым колдонмолор бөгөттөлдү}}</translation>
 <translation id="3187472288455401631">Жарнамалардын майнаптуулугун талдоо</translation>
+<translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="3188465121994729530">Жылма ортоломо</translation>
 <translation id="3189187154924005138">Чоң курсор</translation>
 <translation id="3190558889382726167">Сырсөз сакталды</translation>
@@ -3078,7 +3079,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> жүктөлүп алынууда, <ph name="PERCENT_REMAINING" />% калды</translation>
 <translation id="3254516606912442756">Убакыт алкагын автоматтык түрдө аныктоо өчүрүлдү</translation>
 <translation id="3255747772218936245">Жаңыртууну орнотуу</translation>
-<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> кеңейтүүгө уруксат берилсинби?</translation>
+<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> кеңейтүүгө уруксат бересизби?</translation>
 <translation id="325797067711573598">Шектүү жүктөп алуу аракети бөгөттөлдү</translation>
 <translation id="3259723213051400722">Кайталап көрүңүз.</translation>
 <translation id="3261090393424563833">Көрсөткүчтү жогорулатуу</translation>
@@ -3139,7 +3140,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3301554464236215299">Бул файл аз жүктөлүп алынат жана кооптуу болушу мүмкүн</translation>
 <translation id="33022249435934718">GDI маркерлери</translation>
 <translation id="3302388252085547855">Негиз киргизиңиз...</translation>
-<translation id="3303795387212510132">Колдонмого <ph name="PROTOCOL_SCHEME" /> шилтемелерин ачууга уруксат берилсинби?</translation>
+<translation id="3303795387212510132">Колдонмого <ph name="PROTOCOL_SCHEME" /> шилтемелерин ачууга уруксат бересизби?</translation>
 <translation id="3303818374450886607">Көчүрмөлөр</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> арзандатуу</translation>
@@ -4637,7 +4638,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4412992751769744546">Үчнчү жактн кукилрне урукст брүү</translation>
 <translation id="4413087696295876280">ChromeOS Flex түзмөгү тууралуу маалыматты жана нерселерди окуу</translation>
 <translation id="44137799675104237">Текстти кадимки үн менен угуңуз</translation>
-<translation id="44141919652824029">"<ph name="APP_NAME" />" колдонмосуна туташкан USB түзмөктөрүңүздүн тизмесин алууга уруксат берилсинби?</translation>
+<translation id="44141919652824029">"<ph name="APP_NAME" />" колдонмосуна туташкан USB түзмөктөрүңүздүн тизмесин алууга уруксат бересизби?</translation>
 <translation id="4414232939543644979">Жаңы &amp;Жашыруун терезе</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> өчкөн жок. Кайталап көрүңүз.</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> түзмөгүңүздү колдоно берсеңиз болот.</translation>
@@ -5424,7 +5425,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5037676449506322593">Баарын тандоо</translation>
 <translation id="5038818366306248416">Буга чейин <ph name="ORIGIN" /> сайтында бардык кеңейтүүлөргө тыюу салууну тандагансыз</translation>
 <translation id="5039071832298038564">Түзмөктүн тармагы тууралуу маалымат</translation>
-<translation id="5039804452771397117">Уруксат берүү</translation>
+<translation id="5039804452771397117">Ооба</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5040823038948176460">Кошумча мазмун параметрлери</translation>
 <translation id="5041509233170835229">Chrome колдонмосу</translation>
@@ -7526,7 +7527,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6655190889273724601">Иштеп чыгуучу режими</translation>
 <translation id="6655458902729017087">Аккаунттарды жашыруу</translation>
 <translation id="6657180931610302174">Колдонуучунун аты кошулсунбу?</translation>
-<translation id="6657240842932274095">Системдик кызматтарга жайгашкан жериңизди колдонууга уруксат берилсинби?</translation>
+<translation id="6657240842932274095">Системдик кызматтарга жайгашкан жериңизди колдонууга уруксат бересизби?</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659213950629089752">Бул түзмөк "<ph name="NAME" />" кеңейтүүсү менен чоңойтулган</translation>
 <translation id="6659594942844771486">Өтмөк</translation>
@@ -9042,7 +9043,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7788948939674438635">Сайттар баскычтопту кулпулабасын</translation>
 <translation id="7789963078219276159">Башкы беттин фону <ph name="CATEGORY" /> болуп өзгөрдү.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Бул Chromebook түзмөгүндөгү файлдар</translation>
 <translation id="7791269138074599214">Киргизүү ыкмасы</translation>
 <translation id="7791429245559955092">Бул колдонмо учурда колдонулуп жаткан Chrome профилиңизге орнотулат</translation>
 <translation id="7791436592012979144">Артка сыдыруу иштетилди</translation>

@@ -2993,6 +2993,7 @@
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
 <translation id="3187472288455401631">廣告成效評估</translation>
+<translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
@@ -9036,7 +9037,6 @@
 <translation id="7788948939674438635">不允許網站鎖定鍵盤</translation>
 <translation id="7789963078219276159">起始網頁背景改咗做<ph name="CATEGORY" />。</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">此 Chromebook 上的檔案</translation>
 <translation id="7791269138074599214">輸入方法</translation>
 <translation id="7791429245559955092">此應用程式將安裝在你目前使用的 Chrome 個人檔案中</translation>
 <translation id="7791436592012979144">已啟用反向捲動功能</translation>

@@ -8,6 +8,7 @@
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
+<translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">เชิญผู้อื่น</translation>
 <translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{สร้างเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
@@ -39,6 +40,7 @@
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
+<translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">ไอคอนสี<ph name="COLOR_NAME" />ของกลุ่มแท็บ</translation>
 <translation id="3194464645767632461">การให้คะแนน</translation>
@@ -52,6 +54,7 @@
 <translation id="3882834874697329510">หากต้องการรับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่ ให้เปิดการแจ้งเตือนในการตั้งค่า</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บ}other{จัดกลุ่มแท็บ}}</translation>
+<translation id="3969565576924904454">เปิด <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">รับการแจ้งเตือน</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{สร้างเมื่อ <ph name="NUM_DAYS_ONE" /> วันที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_DAYS_MANY" /> วันที่ผ่านมา}}</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>

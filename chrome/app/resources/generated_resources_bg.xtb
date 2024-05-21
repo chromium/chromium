@@ -2989,6 +2989,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3184536091884214176">Настройване или управление на принтери, използващи CUPS. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Това приложение е блокирано}other{Някои приложения са блокирани}}</translation>
 <translation id="3187472288455401631">Измерване на рекламите</translation>
+<translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3188465121994729530">Пълзяща средна стойност</translation>
 <translation id="3189187154924005138">Голям курсор</translation>
 <translation id="3190558889382726167">Паролата бе запазена</translation>
@@ -9041,7 +9042,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7788948939674438635">Да не се разрешава на сайтовете да заключват клавиатурата</translation>
 <translation id="7789963078219276159">Фонът на началната страница бе променен на „<ph name="CATEGORY" />“.</translation>
 <translation id="7790689625219600437">OCR на PDF файлове</translation>
-<translation id="7790737481627460475">Файлове на този Chromebook</translation>
 <translation id="7791269138074599214">Метод на въвеждане</translation>
 <translation id="7791429245559955092">Това приложение ще бъде инсталирано в понастоящем използвания от вас потребителски профил в Chrome</translation>
 <translation id="7791436592012979144">Обратното превъртане е активирано</translation>

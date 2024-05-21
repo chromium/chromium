@@ -2503,6 +2503,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers que vous téléchargez apparaissent ici</translation>
+<translation id="2809946454624727734">Vous pouvez y accéder dans vos Adresses enregistrées.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Les connexions Thunderbolt ne sont pas prises en charge</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés pour que vous puissiez vous connecter instantanément</translation>
@@ -2719,6 +2720,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2976557544729462544">Certains appareils nécessitent la désactivation de la protection d'accès aux données pour fonctionner correctement ou à plein rendement.</translation>
 <translation id="2976639738101799892">Obtenez la recherche Google et les fonctionnalités intelligentes de Google chaque fois que vous naviguez</translation>
 <translation id="2977480621796371840">Supprimer du groupe</translation>
+<translation id="2979493931538961252">Lorsque votre Chromebook est hors ligne et que des points d'accès sans fil sont disponibles</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2979893796619951531">Exclure le site</translation>
 <translation id="2981033191524548279">Malheureusement, un problème est survenu. Veuillez soumettre vos commentaires en indiquant #bruschetta dans la description. Le code d'erreur est <ph name="ERROR" />. Ce problème peut être résolu en redémarrant l'appareil et en réessayant.</translation>
@@ -2983,6 +2985,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette application est bloquée}one{Cette application est bloquée}other{Certaines applications sont bloquées}}</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
+<translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne mobile</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
@@ -3153,6 +3156,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3317521105713541270">Créer des groupes</translation>
 <translation id="3317678681329786349">La caméra et le microphone sont bloqués</translation>
 <translation id="3319306431415395200">Traduire le texte de l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="3319863571062685443">Votre adresse est enregistrée</translation>
 <translation id="3320271870899888245">Impossible de se connecter à OneDrive. Réessayez.</translation>
 <translation id="3320630259304269485">Navigation sécurisée (protection contre les sites dangereux) et autres paramètres de sécurité</translation>
 <translation id="3321460131042519426">Activer le retour à la ligne</translation>
@@ -3395,6 +3399,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
 <translation id="3508920295779105875">Choisir un autre dossier...</translation>
 <translation id="3509379002674019679">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites ainsi qu'aux applications.</translation>
+<translation id="3510471875518562537">Utiliser cette adresse sur votre iPhone</translation>
 <translation id="3511200754045804813">Nouvelle recherche</translation>
 <translation id="3511307672085573050">Copier l'adr&amp;esse du lien</translation>
 <translation id="351152300840026870">Police à largeur fixe</translation>
@@ -4166,6 +4171,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}one{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}other{# contacts ne sont pas accessibles. Pour utiliser la fonctionnalité Partage à proximité avec ces personnes, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.}}</translation>
 <translation id="4050225813016893843">Méthode d'authentification</translation>
 <translation id="4050534976465737778">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé. Si vous effectuez le partage avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que le partage à proximité est activé sur celui-ci. Pour ce faire, ouvrez la zone de notifications, puis sélectionnez le partage à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">Pour passer à la dernière méthode d'entrée, appuyez sur <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">rechercher+flèche vers la droite</translation>
 <translation id="4052120076834320548">Très petite</translation>
 <translation id="4052913941260326985">Créer un code QR</translation>
@@ -5998,6 +6004,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5486261815000869482">Confirmation du mot de passe</translation>
 <translation id="5486561344817861625">Simuler le redémarrage du navigateur</translation>
 <translation id="5486748931874756433">Cette modification entrera en vigueur lorsque vous recevrez la prochaine mise à jour et redémarrerez votre <ph name="DEVICE_TYPE" />. Cette modification est irréversible et s'applique à tous les utilisateurs de cet appareil.</translation>
+<translation id="5487214759202665349">Utiliser cette adresse sur votre iPhone</translation>
 <translation id="5487460042548760727">Renommer le profil <ph name="PROFILE_NAME" /></translation>
 <translation id="5488093641312826914">« <ph name="COPIED_ITEM_NAME" /> » copié</translation>
 <translation id="5488508217173274228">Synchroniser les options de chiffrement</translation>
@@ -6563,6 +6570,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors ligne</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
+<translation id="5911497236110691522">Pour passer à la prochaine méthode d'entrée, appuyez sur <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">Visualiseur de raccourcis</translation>
 <translation id="5911545422157959623">Les favoris ne sont pas accessibles en mode Invité</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
@@ -8528,6 +8536,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7427798576651127129">Appel de <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simule la sortie d'un afficheur braille actualisable
         dans le panneau ChromeVox, dans le haut de l'écran</translation>
+<translation id="7429568074268678162">Le fichier <ph name="FILENAME" /> pourrait être dangereux. Ajoutez un mot de passe si vous souhaitez que Chrome le vérifie ou vous pouvez le télécharger directement.</translation>
 <translation id="7431719494109538750">Aucun appareil HID trouvé</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7432200167665670017">Votre administrateur a bloqué « <ph name="EXTENSION_NAME" /> » – Identifiant de l'application <ph name="EXTENSION_ID" /></translation>
@@ -8944,6 +8953,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7730683939467795481">Cette page a été modifiée par l'extension « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="7732702411411810416">Assurez-vous que vous êtes connecté à Internet et réessayez.</translation>
 <translation id="773511996612364297">Accents</translation>
+<translation id="7736119438443237821">Vous êtes sur le point de retirer l'accès à vos clés d'accès sur cet appareil</translation>
 <translation id="7737115349420013392">Association avec « <ph name="DEVICE_NAME" /> » en cours…</translation>
 <translation id="7737203573077018777">Instruction <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> reçue</translation>
 <translation id="7737846262459425222">Vous pouvez modifier cette option en tout temps dans Paramètres &gt; Assistant Google &gt; Contexte à l'écran.</translation>
@@ -9034,7 +9044,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7788948939674438635">Ne pas autoriser les sites à verrouiller votre clavier</translation>
 <translation id="7789963078219276159">La catégorie d'image pour l'arrière-plan de la page d'accueil est maintenant <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">ROC des PDF</translation>
-<translation id="7790737481627460475">Fichiers sur ce Chromebook</translation>
 <translation id="7791269138074599214">Méthode d'entrée</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome que vous utilisez actuellement</translation>
 <translation id="7791436592012979144">Défilement inversé activé</translation>
@@ -9542,6 +9551,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8151748163667572916">Désactiver le point d'accès sans fil immédiat</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="815491593104042026">Oups… L'authentification a échoué, car elle a été configurée pour utiliser une adresse URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez communiquer avec votre administrateur.</translation>
+<translation id="8155214519979960765">Pour vous reconnecter avec une clé d'accès sur cet appareil, vous devrez confirmer votre identité. Si vous disposez d'une autre option de connexion, comme un mot de passe, vous pouvez l'utiliser pour vous connecter à la place.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Aucun mot de passe compromis n'a été trouvé}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8157248655669507702">Activez les données cellulaires pour installer un profil de carte eSIM</translation>
 <translation id="8157704005178149728">Configuration de la supervision en cours…</translation>
@@ -9830,6 +9840,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8371695176452482769">Parlez maintenant</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Désactiver le son sur le site}one{Désactiver le son sur le site}other{Désactiver le son sur les sites}}</translation>
 <translation id="8372441176515901959">Ignorer la demande</translation>
+<translation id="8372678064309688510">Votre adresse est enregistrée</translation>
 <translation id="8373652277231415614">Répertoires partagés de Crostini</translation>
 <translation id="8374243500935816406">Ne pas autoriser les sites à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8376137163494131156">Dites-nous ce qui se passe avec la technologie Google Cast.</translation>

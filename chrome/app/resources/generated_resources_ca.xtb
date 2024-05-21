@@ -2980,6 +2980,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3184536091884214176">Configura o gestiona les impressores CUPS. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aquesta aplicació està bloquejada}other{Algunes aplicacions estan bloquejades}}</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
+<translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3188465121994729530">Mitjana variable</translation>
 <translation id="3189187154924005138">Cursor gran</translation>
 <translation id="3190558889382726167">S'ha desat la contrasenya</translation>
@@ -9028,7 +9029,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7788948939674438635">No permetis que els llocs web bloquegin el teclat</translation>
 <translation id="7789963078219276159">El fons de la pàgina d'inici s'ha canviat a <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR de PDF</translation>
-<translation id="7790737481627460475">Fitxers en aquest Chromebook</translation>
 <translation id="7791269138074599214">Mètode d'introducció de text</translation>
 <translation id="7791429245559955092">Aquesta aplicació s'instal·larà al perfil de Chrome que utilitzes actualment</translation>
 <translation id="7791436592012979144">El desplaçament invers està activat</translation>

@@ -2502,6 +2502,7 @@
 <translation id="2806372837663997957">მოწყობილობა, რომელთანაც გაზიარებას ცდილობთ, არ დაეთანხმა</translation>
 <translation id="2806891468525657116">მალსახმობი უკვე არსებობს</translation>
 <translation id="2807517655263062534">თქვენ მიერ ჩამოტვირთული ფაილები აქ გამოჩნდება</translation>
+<translation id="2809946454624727734">მასზე წვდომა შენახული მისამართებიდან შეგიძლიათ.</translation>
 <translation id="2811205483104563968">ანგარიშები</translation>
 <translation id="2812049959647166806">Thunderbolt მხარდაუჭერელია</translation>
 <translation id="2812171980080389735">შენახული ქსელები და პაროლები, რომ მყისიერად დაუკავშირდეთ</translation>
@@ -2716,6 +2717,7 @@
 <translation id="2976557544729462544">ზოგიერთი მოწყობილობის სათანადო ან სრული წარმადობით მუშაობისთვის აუცილებელია მონაცემებზე წვდომის დაცვის გათიშვა.</translation>
 <translation id="2976639738101799892">ისარგებლეთ Google Search-ითა და Google-ის გონიერი ფუნქციებით ვების ყოველი დათვალიერებისას</translation>
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
+<translation id="2979493931538961252">როდესაც თქვენი Chromebook ხაზგარეშეა და უსადენო ქსელი არ არის ხელმისაწვდომი</translation>
 <translation id="2979639724566107830">ახალ ფანჯარაში გახსნა</translation>
 <translation id="2979893796619951531">საიტის გამორიცხვა</translation>
 <translation id="2981033191524548279">სამწუხაროდ, წარმოიქმნა შეფერხება. გამოგვეხმაურეთ ჰეშთეგით #bruschetta აღწერილობაში. შეცდომის კოდია <ph name="ERROR" />. აღნიშნულის გამოსწორება შესაძლებელია გადატვირთვითა და ხელახლა ცდით.</translation>
@@ -2980,6 +2982,7 @@
 <translation id="3184536091884214176">CUPS პრინტერების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ეს აპი დაბლოკილია}other{ზოგიერთი აპი დაბლოკილია}}</translation>
 <translation id="3187472288455401631">რეკლამის ეფექტურობის გაზომვა</translation>
+<translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3188465121994729530">საშუალო გადაადგილება</translation>
 <translation id="3189187154924005138">დიდი კურსორი</translation>
 <translation id="3190558889382726167">პაროლი შენახულია</translation>
@@ -3150,6 +3153,7 @@
 <translation id="3317521105713541270">ჯგუფების შექმნა</translation>
 <translation id="3317678681329786349">კამერა და მიკროფონი დაბლოკილია</translation>
 <translation id="3319306431415395200">სურათში ტექსტის თარგმნა <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
+<translation id="3319863571062685443">თქვენი მისამართი შენახულია</translation>
 <translation id="3320271870899888245">OneDrive-თან დაკავშირება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="3320630259304269485">Safe Browsing (სახიფათო საიტებისგან დაცვა) და უსაფრთხოებასთან დაკავშირებული სხვა პარამეტრები</translation>
 <translation id="3321460131042519426">სიტყვების გადატანის ჩართვა</translation>
@@ -3392,6 +3396,7 @@
 <translation id="3508492320654304609">თქვენი სისტემაში შესვლის მონაცემების წაშლა ვერ მოხერხდა</translation>
 <translation id="3508920295779105875">აირჩიეთ სხვა საქაღალდე...</translation>
 <translation id="3509379002674019679">შექმენით, შეინახეთ და მართეთ თქვენი პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში.</translation>
+<translation id="3510471875518562537">ეს მისამართი გამოიყენეთ თქვენს iPhone-ში</translation>
 <translation id="3511200754045804813">ხელახლა სკანირება</translation>
 <translation id="3511307672085573050">ბმულის მისა&amp;მართის კოპირება</translation>
 <translation id="351152300840026870">ფიქსირებული სიგანის შრიფტი</translation>
@@ -4163,6 +4168,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{# კონტაქტი მიუწვდომელია. მასთან მახლობლად გაზიარება რომ გამოიყენოთ, თქვენს კონტაქტებს დაამატეთ ელფოსტის მისამართი, რომელიც დაკავშირებულია მის Google ანგარიშთან.}other{# კონტაქტი მიუწვდომელია. მათთან მახლობლად გაზიარება რომ გამოიყენოთ, თქვენს კონტაქტებს დაამატეთ ელფოსტის მისამართები, რომელიც დაკავშირებულია მათ Google ანგარიშებთან.}}</translation>
 <translation id="4050225813016893843">ავტორიზაციის მეთოდი</translation>
 <translation id="4050534976465737778">დარწმუნდით, რომ ორივე მოწყობილობა განბლოკილია, ახლოსაა ერთმანეთთან და მათზე ჩართულია Bluetooth. თუ აზიარებთ Chromebook-თან, რომელიც თქვენს კონტაქტებში არ არის, მასზე ჩართული უნდა იყოს ახლომახლო ხილვადობა (გახსენით სტატუსის არე, შემდეგ კი ჩართეთ ახლომახლო ხილვადობა). <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">შეყვანის ბოლოს გამოყენებულ მეთოდზე გადასართავად დააჭირეთ შემდეგს: <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">search + მარჯვნივ მიმართული ისარი</translation>
 <translation id="4052120076834320548">ძალიან პატარა</translation>
 <translation id="4052913941260326985">QR &amp;კოდის შექმნა</translation>
@@ -5995,6 +6001,7 @@
 <translation id="5486261815000869482">დაადასტურეთ პაროლი</translation>
 <translation id="5486561344817861625">ბრაუზერის გადატვირთვის სიმულაცია</translation>
 <translation id="5486748931874756433">ეს ცვლილება ამოქმედდება მომდევნო განახლების შემდეგ <ph name="DEVICE_TYPE" />-ის გადატვირთვისას. ამ ცვლილებას უკან ვერ დააბრუნებთ და ის ვრცელდება ამ მოწყობილობის ყველა მომხმარებელზე.</translation>
+<translation id="5487214759202665349">ეს მისამართი გამოიყენეთ თქვენს iPhone-ში</translation>
 <translation id="5487460042548760727">პროფილის გადარქმევა „<ph name="PROFILE_NAME" />“-ზე</translation>
 <translation id="5488093641312826914">„<ph name="COPIED_ITEM_NAME" />“ დაკოპირდა</translation>
 <translation id="5488508217173274228">დაშიფვრის ვარიანტების სინქრონიზაცია</translation>
@@ -6560,6 +6567,7 @@
 <translation id="5910363049092958439">გამოსახულების შენ&amp;ახვა, როგორც…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ხაზგარეშეა</translation>
 <translation id="5911030830365207728">Google Translate</translation>
+<translation id="5911497236110691522">შეყვანის მომდევნო მეთოდზე გადასართავად დააჭირეთ შემდეგს: <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">მალსახმობების მნახველი</translation>
 <translation id="5911545422157959623">სანიშნეები მიუწვდომელია სტუმრის რეჟიმში</translation>
 <translation id="5914724413750400082">მოდული (<ph name="MODULUS_NUM_BITS" /> ბიტი):
@@ -8522,6 +8530,7 @@
 <translation id="7427348830195639090">ფონის გვერდი: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">ზარი <ph name="DEVICE_NAME" />-ისგან</translation>
 <translation id="7429415133937917139">მოახდენს ბრაილის განახლებადი ეკრანის გამოტანის სიმულირებას ChromeVox პანელში, რომელიც ეკრანის ზედა ნაწილშია მოცემული</translation>
+<translation id="7429568074268678162"><ph name="FILENAME" /> შეიძლება სახიფათო იყოს. დაამატეთ პაროლი, თუკი გსურთ, რომ Chrome-მა შეამოწმოს ის, ან შეგიძლიათ, პირდაპირ ჩამოტვირთოთ.</translation>
 <translation id="7431719494109538750">HID მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="7431991332293347422">მართეთ თქვენი დათვალიერების ისტორიის გამოყენების ხერხები Search-ისა და სხვა სერვისების პერსონალიზებისთვის</translation>
 <translation id="7432200167665670017">თქვენმა ადმინისტრატორმა დაბლოკა „<ph name="EXTENSION_NAME" />“ — აპის ID: <ph name="EXTENSION_ID" /></translation>
@@ -8938,6 +8947,7 @@
 <translation id="7730683939467795481">ეს გვერდი შეიცვალა „<ph name="EXTENSION_NAME" />“ გაფართოების მიერ</translation>
 <translation id="7732702411411810416">დარწმუნდით, რომ დაკავშირებული ხართ ინტერნეტთან და ცადეთ ხელახლა</translation>
 <translation id="773511996612364297">მახვილის ნიშნები</translation>
+<translation id="7736119438443237821">თქვენ აპირებთ, ამ მოწყობილობაზე ამოშალოთ წვდომა თქვენს წვდომის გასაღებებზე</translation>
 <translation id="7737115349420013392">მიმდინარეობს „<ph name="DEVICE_NAME" />“-თან დაწყვილება...</translation>
 <translation id="7737203573077018777">მიღებულია <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> ინსტრუქცია</translation>
 <translation id="7737846262459425222">ამის შეცვლა ნებისმიერ დროს შეგიძლიათ აქ: პარამეტრები &gt; Google ასისტენტი &gt; ეკრანის კონტექსტი.</translation>
@@ -9028,7 +9038,6 @@
 <translation id="7788948939674438635">საიტებისთვის თქვენი კლავიატურის ჩაკეტვის აკრძალვა</translation>
 <translation id="7789963078219276159">საწყისი გვერდის ფონად აირჩა <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Chromebook-ზე არსებული ფაილები</translation>
 <translation id="7791269138074599214">შეყვანის მეთოდი</translation>
 <translation id="7791429245559955092">ეს აპლიკაცია დაინსტალირდება თქვენ მიერ ამჟამად გამოყენებულ Chrome პროფილში</translation>
 <translation id="7791436592012979144">უკუგადაადგილება ჩართულია</translation>
@@ -9536,6 +9545,7 @@
 <translation id="8151748163667572916">მყისიერი უსადენო ქსელის გამორთვა</translation>
 <translation id="8154790740888707867">ფაილი არ არის</translation>
 <translation id="815491593104042026">უი! ავთენტიფიკაცია ვერ განხორციელდა, რადგან იგი დაკონფიგურირდა არაუსაფრთხო URL-ის (<ph name="BLOCKED_URL" />) გამოსაყენებლად. დაუკავშირდით ადმინისტრატორს.</translation>
+<translation id="8155214519979960765">ამ მოწყობილობაზე ისევ წვდომის გასაღებით შესვლისთვის უნდა დაადასტუროთ, რომ ეს თქვენ ხართ. თუ შესვლის სხვა ისეთი ვარიანტი გაქვთ, როგორიცაა პაროლი, შესვლისთვის მისი გამოყენება შეგიძლიათ.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{გატეხილი პაროლები არ მოიძებნა}=1{{COUNT} გატეხილი პაროლი}other{{COUNT} გატეხილი პაროლი}}</translation>
 <translation id="8157248655669507702">eSIM პროფილის ინსტალაციისთვის ჩართეთ მობილური ინტერნეტი</translation>
 <translation id="8157704005178149728">მიმდინარეობს ზედამხედველობის დაყენება</translation>
@@ -9824,6 +9834,7 @@
 <translation id="8371695176452482769">ილაპარაკეთ</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{საიტის დადუმება}other{საიტების დადუმება}}</translation>
 <translation id="8372441176515901959">მოთხოვნის დახურვა</translation>
+<translation id="8372678064309688510">თქვენი მისამართი შენახულია</translation>
 <translation id="8373652277231415614">Crostini-ს გაზიარებული კატალოგები</translation>
 <translation id="8374243500935816406">თქვენს ყველა ეკრანზე ფანჯრების მართვის აკრძალვა საიტებისთვის</translation>
 <translation id="8376137163494131156">გვაცნობეთ, რა სჭირს Google Cast-ს.</translation>

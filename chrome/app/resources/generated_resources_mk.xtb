@@ -2994,6 +2994,7 @@
 <translation id="3184536091884214176">Поставете ги или управувајте со печатачите за CUPS. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Апликацијава е блокирана}one{Некои апликации се блокирани}other{Некои апликации се блокирани}}</translation>
 <translation id="3187472288455401631">Мерење реклами</translation>
+<translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3188465121994729530">Движечки просек</translation>
 <translation id="3189187154924005138">Голем курсор</translation>
 <translation id="3190558889382726167">Лозинката е зачувана</translation>
@@ -9045,7 +9046,6 @@
 <translation id="7788948939674438635">Не им дозволувај на сајтовите да ја заклучуваат тастатурата</translation>
 <translation id="7789963078219276159">Заднината на почетната страница е сменета во <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Датотеки во овој Chromebook</translation>
 <translation id="7791269138074599214">Метод за внесување</translation>
 <translation id="7791429245559955092">Апликацијава ќе се инсталира на профилот на Chrome што го користите тековно</translation>
 <translation id="7791436592012979144">Лизгањето наназад е овозможено</translation>

@@ -2982,6 +2982,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3184536091884214176">Nastaviť alebo spravovať tlačiarne CUPS. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Táto aplikácia je blokovaná}few{Niektoré aplikácie sú blokované}many{Niektoré aplikácie sú blokované}other{Niektoré aplikácie sú blokované}}</translation>
 <translation id="3187472288455401631">Meranie reklám</translation>
+<translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3188465121994729530">Kĺzavý priemer</translation>
 <translation id="3189187154924005138">Veľký kurzor</translation>
 <translation id="3190558889382726167">Heslo bolo uložené</translation>
@@ -9035,7 +9036,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7788948939674438635">Nepovoliť webom uzamykať klávesnicu</translation>
 <translation id="7789963078219276159">Pozadie úvodnej stránky bolo zmenené na: <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Súbory v tomto Chromebooku</translation>
 <translation id="7791269138074599214">Metóda vstupu</translation>
 <translation id="7791429245559955092">Táto aplikácia bude nainštalovaná vo vašom momentálne používanom profile Chromu</translation>
 <translation id="7791436592012979144">Obrátené posúvanie je zapnuté</translation>

@@ -2982,6 +2982,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3184536091884214176">Iestatīt vai pārvaldīt CUPS printerus. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Šī lietotne ir bloķēta}zero{Dažas lietotnes ir bloķētas}one{Dažas lietotnes ir bloķētas}other{Dažas lietotnes ir bloķētas}}</translation>
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
+<translation id="3188257591659621405">Mani faili</translation>
 <translation id="3188465121994729530">Pārvietotais vidējais</translation>
 <translation id="3189187154924005138">Liels kursors</translation>
 <translation id="3190558889382726167">Parole ir saglabāta</translation>
@@ -9032,7 +9033,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7788948939674438635">Neļaut vietnēm bloķēt tastatūru</translation>
 <translation id="7789963078219276159">Sākumlapas fons tika nomainīts uz <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Optiskā rakstzīmju atpazīšana PDF failos</translation>
-<translation id="7790737481627460475">Faili šajā Chromebook datorā</translation>
 <translation id="7791269138074599214">Ievades metode</translation>
 <translation id="7791429245559955092">Šī lietojumprogramma tiks instalēta jūsu pašlaik izmantotajā Chrome profilā.</translation>
 <translation id="7791436592012979144">Ritināšana pretējā virzienā ir iespējota</translation>

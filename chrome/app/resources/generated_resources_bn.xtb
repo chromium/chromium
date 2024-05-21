@@ -2994,6 +2994,7 @@
 <translation id="3184536091884214176">CUPS প্রিন্টার সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{এই অ্যাপ ব্লক করা আছে}one{কিছু অ্যাপ ব্লক করা আছে}other{কিছু অ্যাপ ব্লক করা আছে}}</translation>
 <translation id="3187472288455401631">বিজ্ঞাপন পরিমাপ</translation>
+<translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3188465121994729530">সরানোর গড়</translation>
 <translation id="3189187154924005138">বড় কার্সর</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
@@ -9048,7 +9049,6 @@
 <translation id="7788948939674438635">সাইটকে আপনার কীবোর্ড লক করার অনুমতি দেবেন না</translation>
 <translation id="7789963078219276159">স্টার্ট পেজের ব্যাকগ্রাউন্ড পরিবর্তন করে <ph name="CATEGORY" /> করা হয়েছে।</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">এই Chromebook-এর ফাইল</translation>
 <translation id="7791269138074599214">ইনপুট পদ্ধতি</translation>
 <translation id="7791429245559955092">এই অ্যাপ্লিকেশন আপনার বর্তমানে ব্যবহার করা Chrome প্রোফাইলে ইনস্টল করা হবে</translation>
 <translation id="7791436592012979144">রিভার্স স্ক্রলিং চালু করা হয়েছে</translation>

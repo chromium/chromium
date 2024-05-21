@@ -2992,6 +2992,7 @@
 <translation id="3184536091884214176">CUPS प्रिंटर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{हे ॲप ब्लॉक केले आहे}other{काही अ‍ॅप्स ब्लॉक केली आहेत}}</translation>
 <translation id="3187472288455401631">जाहिरात मापन</translation>
+<translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3188465121994729530">हलविण्याची सरासरी</translation>
 <translation id="3189187154924005138">मोठा कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेव्ह केला</translation>
@@ -9039,7 +9040,6 @@
 <translation id="7788948939674438635">साइटना तुमचा कीबोर्ड लॉक करण्याची अनुमती देऊ नका</translation>
 <translation id="7789963078219276159">पेज बॅकग्राउंड सुरू करा <ph name="CATEGORY" /> असे बदलले गेले आहे.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">या Chromebook वरील फाइल</translation>
 <translation id="7791269138074599214">इनपुट पद्धत</translation>
 <translation id="7791429245559955092">हे अ‍ॅप्लिकेशन तुम्ही सध्या वापरत असलेल्या Chrome प्रोफाइलवर इंस्टॉल केले जाईल</translation>
 <translation id="7791436592012979144">रिव्हर्स स्क्रोलिंग सुरू केले आहे</translation>

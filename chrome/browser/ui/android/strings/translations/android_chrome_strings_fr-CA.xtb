@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Supprimés</translation>
 <translation id="1437543266176261764">En cours d'exécution dans <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans vos favoris</translation>
+<translation id="1460751212339734034">Gagnez du temps, tapez moins</translation>
 <translation id="1466383950273130737">Choisir la langue de Chrome</translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
 <translation id="1480287803138246127">Une partie de votre historique peut ne pas s'afficher ici. Pour consulter tout votre historique de Chrome, ouvrez l'historique complet.</translation>
@@ -830,6 +831,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5264813352784073502">dernières 24 heures</translation>
 <translation id="5271967389191913893">L'appareil ne peut pas ouvrir le contenu à télécharger.</translation>
 <translation id="5292796745632149097">Envoyer à</translation>
+<translation id="5301876394151419436">Vous êtes connecté en tant que <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5316947901395241499">L'enregistrement des mots de passe est désactivé par votre administrateur</translation>
@@ -1523,6 +1525,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8526855376374973824">Flux d'autorisation des notifications</translation>
 <translation id="8540136935098276800">Entrez une URL au format correct</translation>
 <translation id="854522910157234410">Ouvrir cette page</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Onglet inactif (1)}one{Onglet inactif (#)}other{Onglets inactifs (#)}}</translation>
 <translation id="8551513938758868521">Verrouiller les onglets de navigation privée en quittant Chrome</translation>
 <translation id="8551524210492420949">Choquant ou dangereux</translation>
 <translation id="8559961053328923750">Chrome limite la quantité totale de données que les sites peuvent transmettre au moyen du navigateur pour mesurer la performance des annonces</translation>
@@ -1626,6 +1629,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9102803872260866941">L'onglet d'aperçu est ouvert</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est activé.</translation>
 <translation id="9104217018994036254">La liste d'appareils avec lesquels partager un onglet.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Non utilisés pendant 1 jour ou plus}one{Non utilisés pendant # jour ou plus}other{Non utilisés pendant # jours ou plus}}</translation>
 <translation id="9106148373857059373">Flux d'enregistrement des favoris fermé</translation>
 <translation id="9108312223223904744">Assistance pour l'utilisation du téléphone comme clé de sécurité</translation>
 <translation id="9108808586816295166">Le DNS sécurisé pourrait ne pas être accessible en tout temps</translation>

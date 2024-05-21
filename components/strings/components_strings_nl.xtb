@@ -1331,6 +1331,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="353816159217417898">Scherm (gepagineerd)</translation>
 <translation id="3542628208405253498">Kaartafbeelding</translation>
 <translation id="3542768452570884558">Link openen in nieuw venster</translation>
+<translation id="3547442767634383572">Overzicht van werkprofiel</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
 <translation id="3552155506104542239">Waarschuwing: Dit beleid is in strijd met <ph name="POLICY_NAME" /> en heeft geen invloed op Android-apps. Verder werkt dit beleid zoals bedoeld.</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
@@ -2194,6 +2195,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5230733896359313003">Verzendadres</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Je beheerder heeft toegang tot je beheerde profiel, browser en bepaalde apparaatgegevens. Die kan informatie zien zoals:</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5238301240406177137">Opslaan in account</translation>
 <translation id="5239119062986868403">Gebruikelijke prijs</translation>
@@ -2207,6 +2209,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="52517543715119994">Meer informatie over Chrome-functies</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">Afdrukcontent optimaliseren</translation>
+<translation id="5255583962255635076">Toegepast browserbeleid in je werkprofiel</translation>
 <translation id="5255690596502591079">Toch vastleggen</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te kopiëren naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te kopiëren naar <ph name="DESTINATION_NAME" />}}</translation>
@@ -3326,6 +3329,7 @@ Aanvullende informatie:
 <translation id="7421067045979951561">protocolhandlers</translation>
 <translation id="7422347648202898039">Labels (beveiliging)</translation>
 <translation id="7423283032694727565">Knop Cookies beheren. Activeer deze om je cookievoorkeuren te beheren in de Chrome-instellingen.</translation>
+<translation id="742435751935045381">Geïnstalleerde apps en extensies in je werkprofiel</translation>
 <translation id="7424421098814895617">De optie Adres verwijderen is geselecteerd</translation>
 <translation id="7425037327577270384">Help me met schrijven</translation>
 <translation id="7425878584435172632">Visuele kunst en visueel ontwerp</translation>
@@ -3872,6 +3876,7 @@ Aanvullende informatie:
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfoon deze keer toegestaan</translation>
+<translation id="8421158157346464398">Informatie over je werkprofiel (zoals de gebruikersnaam van je werkprofiel)</translation>
 <translation id="8422228580902424274">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoord, telefoon of creditcardnummer openbaar maakt.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Wijzigen</translation>
@@ -4239,6 +4244,7 @@ Aanvullende informatie:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt die hardloopschoenen voor lange afstanden verkoopt, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
 <translation id="9166851138617700776">Meer over door sites voorgestelde advertenties en advertentiemetingen</translation>
+<translation id="9167054383925257837">Informatie over browser en apparaat-OS (zoals de browser- en OS-versies)</translation>
 <translation id="9167594211215946097">Rechtstreeks toegang hebben tot je printers</translation>
 <translation id="9168814207360376865">Toestaan dat sites controleren of je betaalmethoden hebt opgeslagen</translation>
 <translation id="9169664750068251925">Altijd blokkeren op deze site</translation>

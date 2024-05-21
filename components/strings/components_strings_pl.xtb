@@ -1335,6 +1335,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="353816159217417898">Ekran (z podziałem na strony)</translation>
 <translation id="3542628208405253498">Obraz na karcie</translation>
 <translation id="3542768452570884558">Otwórz link w nowym oknie</translation>
+<translation id="3547442767634383572">ogólne informacje o profilu służbowym;</translation>
 <translation id="3547746132308051926">20 x 24 cale</translation>
 <translation id="3552155506104542239">Ostrzeżenie: ta zasada jest w konflikcie z zasadą <ph name="POLICY_NAME" /> i nie będzie miała wpływu na aplikacje na Androida. Gdy konflikt nie występuje, zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
@@ -2199,6 +2200,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5230733896359313003">Adres wysyłki</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Administrator ma dostęp do niektórych informacji dotyczących profilu zarządzanego, przeglądarki i urządzenia. Obejmuje to:</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5238301240406177137">Zapisz na koncie</translation>
 <translation id="5239119062986868403">Typowa cena</translation>
@@ -2212,6 +2214,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="52517543715119994">Poznaj funkcje Chrome</translation>
 <translation id="5251803541071282808">Chmura</translation>
 <translation id="5254043433801397071">Optymalizuj zawartość wydruku</translation>
+<translation id="5255583962255635076">zasady przeglądarki zastosowane w profilu służbowym.</translation>
 <translation id="5255690596502591079">Wykonaj mimo to</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się kopiowania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Dodatkowe informacje:
 <translation id="7421067045979951561">obsługa protokołów</translation>
 <translation id="7422347648202898039">Etykiety (bezpieczeństwo)</translation>
 <translation id="7423283032694727565">Przycisk Zarządzaj plikami cookie; aktywuj, aby zarządzać opcjami plików cookie w ustawieniach Chrome</translation>
+<translation id="742435751935045381">aplikacje i rozszerzenia zainstalowane w profilu służbowym,</translation>
 <translation id="7424421098814895617">Wybrano opcję usunięcia adresu</translation>
 <translation id="7425037327577270384">Pomóż mi w pisaniu</translation>
 <translation id="7425878584435172632">Sztuki wizualne i projektowanie</translation>
@@ -3878,6 +3882,7 @@ Dodatkowe informacje:
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
+<translation id="8421158157346464398">informacje o profilu służbowym (np. nazwa użytkownika),</translation>
 <translation id="8422228580902424274">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasło, numer telefonu czy numer karty kredytowej.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Zmień</translation>
@@ -4245,6 +4250,7 @@ Dodatkowe informacje:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Witryny, które odwiedzasz, mogą też określać Twoje zainteresowania na podstawie Twojej aktywności w danej witrynie. Na przykład jeśli odwiedzasz stronę internetową, na której można kupić buty do biegania na długie dystanse, może ona uznać, że interesują Cię maratony.</translation>
 <translation id="9166851138617700776">Więcej informacji o reklamach sugerowanych przez witryny i pomiarze skuteczności reklam</translation>
+<translation id="9167054383925257837">informacje o przeglądarce i systemie operacyjnym urządzenia (np. nazwa przeglądarki i wersja systemu operacyjnego),</translation>
 <translation id="9167594211215946097">Mieć bezpośredni dostęp do drukarek</translation>
 <translation id="9168814207360376865">Zezwalaj stronom na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169664750068251925">Zawsze blokuj w tej witrynie</translation>

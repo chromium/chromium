@@ -2996,6 +2996,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3184536091884214176">Nustatykite arba tvarkykite CUPS spausdintuvus. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ši programa užblokuota}one{Kelios programos užblokuotos}few{Kelios programos užblokuotos}many{Kelios programos užblokuotos}other{Kelios programos užblokuotos}}</translation>
 <translation id="3187472288455401631">Skelbimų vertinimas</translation>
+<translation id="3188257591659621405">Mano failai</translation>
 <translation id="3188465121994729530">Slankusis vidurkis</translation>
 <translation id="3189187154924005138">Didelis žymeklis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
@@ -9053,7 +9054,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7788948939674438635">Neleisti svetainėms užrakinti klaviatūros</translation>
 <translation id="7789963078219276159">Pradžios puslapio fonas pakeistas į <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Failai šiame „Chromebook“</translation>
 <translation id="7791269138074599214">Įvesties metodas</translation>
 <translation id="7791429245559955092">Ši programa bus įdiegta šiuo metu naudojamame „Chrome“ profilyje.</translation>
 <translation id="7791436592012979144">Atvirkštinis slinkimas įgalintas</translation>

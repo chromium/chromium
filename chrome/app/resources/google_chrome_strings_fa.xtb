@@ -123,6 +123,7 @@
 <translation id="2770231113462710648">تغییر مرورگر پیش‌فرض به:</translation>
 <translation id="2775140325783767197">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
+<translation id="2825024317344269723">‏سایت خطرناک. ‫Chrome اعلان‌ها را برداشت.</translation>
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2847461019998147611">‏نمایش Google Chrome به این زبان</translation>
 <translation id="2853415089995957805">‏‫Chrome صفحه‌هایی را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بارگیری شوند</translation>
@@ -184,6 +185,7 @@
 <translation id="3583751698304738917">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chrome دیگری به سیستم وارد شده‌اید</translation>
 <translation id="3595784445906693824">‏در نمایه جدید به سیستم Chrome وارد می‌شوید؟</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
+<translation id="3609788354808247807">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت</translation>
 <translation id="3622797965165704966">‏اکنون استفاده از Chrome با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
 <translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="3667616615096815454">نصب نشد، برنامه برای سرور ناشناس است.</translation>
@@ -329,6 +331,7 @@
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
 <translation id="5947104538377036631">‏میان‌بر Chrome</translation>
+<translation id="5953954252731207958">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6014316319780893079">‏با <ph name="BEGIN_LINK" />ابزارهای Chrome<ph name="END_LINK" />، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
@@ -343,6 +346,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
+<translation id="6200139057479872438">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت</translation>
 <translation id="6235018212288296708">‏قانون ورودی برای Google Chrome به منظور اجازه به ترافیک mDNS.</translation>
 <translation id="624230925347970731">‏Chrome به‌زودی بسته می‌شود</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
@@ -440,6 +444,7 @@
 <translation id="7651907282515937834">‏نشان‌واره Chrome Enterprise</translation>
 <translation id="76531479118467370">‏‫Chrome این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
 <translation id="7655455401911432608">‏سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
+<translation id="7661924425853052955">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت</translation>
 <translation id="7668816516367091728">کارهایی مثل ترجمه، محاسبه، و غیره را مستقیماً از نوار نشانی انجام دهید</translation>
 <translation id="769538538642757151">‏اگر موردی نیاز به بررسی داشته باشد، Chrome به شما اطلاع می‌دهد</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>

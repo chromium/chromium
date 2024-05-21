@@ -2981,6 +2981,7 @@
 <translation id="3184536091884214176">Наладжванне прынтараў CUPS і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Гэта праграма заблакіравана}one{Некаторыя праграмы заблакіраваны}few{Некаторыя праграмы заблакіраваны}many{Некаторыя праграмы заблакіраваны}other{Некаторыя праграмы заблакіраваны}}</translation>
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
+<translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3188465121994729530">Рухомае сярэдняе</translation>
 <translation id="3189187154924005138">Вялікі курсор</translation>
 <translation id="3190558889382726167">Пароль захаваны</translation>
@@ -9033,7 +9034,6 @@
 <translation id="7788948939674438635">Забараніць сайтам блакіраваць клавіятуру</translation>
 <translation id="7789963078219276159">Фон пачатковай старонкі зменены. Цяпер гэта <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Аптычнае распазнаванне сімвалаў (OCR) у файлах PDF</translation>
-<translation id="7790737481627460475">Файлы на гэтай прыладзе Chromebook</translation>
 <translation id="7791269138074599214">Спосаб уводу</translation>
 <translation id="7791429245559955092">Гэта праграма будзе ўсталявана ў бягучым профілі Chrome</translation>
 <translation id="7791436592012979144">Прагортка ў адваротным кірунку ўключана</translation>

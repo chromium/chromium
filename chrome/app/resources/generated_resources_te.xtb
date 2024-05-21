@@ -2991,6 +2991,7 @@
 <translation id="3184536091884214176">CUPS ప్రింటర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ఈ యాప్ బ్లాక్ చేయబడింది}other{కొన్ని యాప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="3187472288455401631">యాడ్ మెజర్‌మెంట్</translation>
+<translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="3188465121994729530">తరలించే సగటు</translation>
 <translation id="3189187154924005138">పెద్ద కర్సర్</translation>
 <translation id="3190558889382726167">పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
@@ -9040,7 +9041,6 @@
 <translation id="7788948939674438635">మీ కీబోర్డ్‌ను లాక్ చేయడానికి సైట్‌లను అనుమతించవద్దు</translation>
 <translation id="7789963078219276159">ప్రారంభ పేజీ నేపథ్యం <ph name="CATEGORY" />కు మార్చబడింది.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">ఈ Chromebookలోని ఫైల్స్</translation>
 <translation id="7791269138074599214">ఇన్‌పుట్ పద్ధతి</translation>
 <translation id="7791429245559955092">మీరు ప్రస్తుతం ఉపయోగిస్తున్న Chrome ప్రొఫైల్‌లో ఈ అప్లికేషన్ ఇన్‌స్టాల్ చేయబడుతుంది</translation>
 <translation id="7791436592012979144">రివర్స్ స్క్రోలింగ్ ఎనేబుల్ చేయబడింది</translation>

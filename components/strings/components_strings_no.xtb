@@ -1335,6 +1335,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="353816159217417898">Skjerm (med sider)</translation>
 <translation id="3542628208405253498">Kortbilde</translation>
 <translation id="3542768452570884558">Åpne linken i et nytt vindu</translation>
+<translation id="3547442767634383572">Oversikt over jobbprofilen</translation>
 <translation id="3547746132308051926">20 x 24 tommer</translation>
 <translation id="3552155506104542239">Advarsel: Denne regelen er i konflikt med <ph name="POLICY_NAME" /> og har ingen innvirkning på Android-apper. Ellers fungerer denne regelen som den skal.</translation>
 <translation id="3552297013052089404">Sans-serif-skrifttype</translation>
@@ -2199,6 +2200,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5230733896359313003">Leveringsadresse</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Den administrerte profilen, nettleseren og noe enhetsinformasjon er tilgjengelig for administratoren din. Administratoren kan for eksempel se</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="5239119062986868403">Vanlig pris</translation>
@@ -2212,6 +2214,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="52517543715119994">Lær om Chrome-funksjoner</translation>
 <translation id="5251803541071282808">Nettsky</translation>
 <translation id="5254043433801397071">Optimaliser utskriftsinnhold</translation>
+<translation id="5255583962255635076">Gjeldende nettleserregler i jobbprofilen din</translation>
 <translation id="5255690596502591079">Ta opp likevel</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratorreglene anbefaler ikke at du kopierer denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du kopierer disse filene til <ph name="DESTINATION_NAME" />}}</translation>
@@ -3331,6 +3334,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7421067045979951561">protokollbehandlere</translation>
 <translation id="7422347648202898039">Etiketter (sikkerhet)</translation>
 <translation id="7423283032694727565">Knappen «Administrer informasjonskapsler» – aktiver for å administrere preferansene dine for informasjonskapsler i Chrome-innstillingene</translation>
+<translation id="742435751935045381">installerte apper og utvidelser i jobbprofilen</translation>
 <translation id="7424421098814895617">Alternativet for sletting av adresse er valgt</translation>
 <translation id="7425037327577270384">Hjelp meg å skrive</translation>
 <translation id="7425878584435172632">Visuell kunst og design</translation>
@@ -3877,6 +3881,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon er tillatt denne gangen</translation>
+<translation id="8421158157346464398">informasjon om jobbprofilen (for eksempel brukernavnet for jobbprofilen)</translation>
 <translation id="8422228580902424274">Angripere på nettstedet du prøver å besøke, kan lure deg til å installere programvare eller oppgi ting som passordet, telefonnummeret eller kredittkortnummeret ditt.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Endre</translation>
@@ -4245,6 +4250,7 @@ Mer informasjon:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Nettsteder du besøker, kan også fastslå hva du liker, basert på aktiviteten din på nettstedet. Hvis du for eksempel besøker et nettsted som selger joggesko for langdistanseturer, kan det hende at nettstedet bestemmer seg for at du er interessert i å løpe maraton.</translation>
 <translation id="9166851138617700776">Mer om annonser som er foreslått av nettsteder og annonsemåling</translation>
+<translation id="9167054383925257837">informasjon om enhetens nettleser og OS (for eksempel nettleser- og OS-versjonen)</translation>
 <translation id="9167594211215946097">få direkte tilgang til skriverne dine</translation>
 <translation id="9168814207360376865">Tillatt nettsteder å sjekke om du har noen lagrede betalingsmåter</translation>
 <translation id="9169664750068251925">Blokkér alltid på dette nettstedet</translation>

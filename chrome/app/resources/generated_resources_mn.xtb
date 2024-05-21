@@ -2989,6 +2989,7 @@
 <translation id="3184536091884214176">CUPS хэвлэгчийг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Энэ аппыг блоклосон байна}other{Зарим аппыг блоклосон байна}}</translation>
 <translation id="3187472288455401631">Зарын хэмжигдэхүүн</translation>
+<translation id="3188257591659621405">Миний файл</translation>
 <translation id="3188465121994729530">Дундаж үзүүлэлт</translation>
 <translation id="3189187154924005138">Том курсор</translation>
 <translation id="3190558889382726167">Нууц үгийг хадгалсан</translation>
@@ -9036,7 +9037,6 @@
 <translation id="7788948939674438635">Сайтуудад таны гарыг түгжихийг бүү зөвшөөр</translation>
 <translation id="7789963078219276159">Эхлүүлэх хуудасны арын дэвсгэрийг <ph name="CATEGORY" /> болгож өөрчиллөө.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Энэ Chromebook дээрх файлууд</translation>
 <translation id="7791269138074599214">Оруулах арга</translation>
 <translation id="7791429245559955092">Энэ аппликэйшнийг таны одоогоор ашиглаж буй Chrome-н профайлд суулгана</translation>
 <translation id="7791436592012979144">Урвуу гүйлгэхийг идэвхжүүлсэн</translation>

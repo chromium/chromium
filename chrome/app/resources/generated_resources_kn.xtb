@@ -2986,6 +2986,7 @@
 <translation id="3184536091884214176">CUPS ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಅಥವಾ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ಈ ಆ್ಯಪ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
+<translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3188465121994729530">ಸರಿಸುವಿಕೆ ಸರಾಸರಿ</translation>
 <translation id="3189187154924005138">ದೊಡ್ಡ ಕರ್ಸರ್</translation>
 <translation id="3190558889382726167">ಪಾಸ್‌ವರ್ಡ್ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -9040,7 +9041,6 @@
 <translation id="7788948939674438635">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7789963078219276159">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು <ph name="CATEGORY" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">ಈ Chromebook ನಲ್ಲಿ ಫೈಲ್‌ಗಳು</translation>
 <translation id="7791269138074599214">ಇನ್‌ಪುಟ್ ವಿಧಾನ</translation>
 <translation id="7791429245559955092">ನೀವು ಪ್ರಸ್ತುತ ಬಳಸುತ್ತಿರುವ Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಈ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="7791436592012979144">ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>

@@ -2982,6 +2982,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3184536091884214176">CUPS printerlarni sozlash va boshqarish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Bu ilova bloklandi}other{Ayrim ilovalar bloklandi}}</translation>
 <translation id="3187472288455401631">Reklamalarni baholash</translation>
+<translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3188465121994729530">O‘zgaruvchan o‘rtacha qiymat</translation>
 <translation id="3189187154924005138">Katta kursor</translation>
 <translation id="3190558889382726167">Parol saqlandi</translation>
@@ -9030,7 +9031,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7788948939674438635">Saytlarga klaviaturani qulflashni taqiqlash</translation>
 <translation id="7789963078219276159">Bosh sahifa fon rasmi almashtirildi: <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Mazkur Chromebook fayllari</translation>
 <translation id="7791269138074599214">Kiritish uslubi</translation>
 <translation id="7791429245559955092">Bu ilova joriy Chrome profiliga oʻrnatiladi</translation>
 <translation id="7791436592012979144">Teskari varaqlash yoniq</translation>

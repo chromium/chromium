@@ -127,6 +127,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2770231113462710648">Guqula isiphequluli esizenzakalelayo sibe yi-:</translation>
 <translation id="2775140325783767197">I-Chrome ayikwazi ukuhlola amaphasiwedi akho. Zama ukuhlola ukuxhumeka kwakho ku-inthanethi.</translation>
 <translation id="2799223571221894425">Qalisa kabusha</translation>
+<translation id="2825024317344269723">Isayithi eyingozi. I-Chrome isuse izaziso.</translation>
 <translation id="2846251086934905009">Iphutha lokufaka: Isifaki asiqedanga. Ukufakwa kukhanseliwe.</translation>
 <translation id="2847461019998147611">Bonisa i-Google Chrome ngalolu limi</translation>
 <translation id="2853415089995957805">I-Chrome ilayisha kusengaphambili amakhasi okungenzeka uwavakashele, ukuze alayishe ngokushesha lapho uwavakashela</translation>
@@ -188,6 +189,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3583751698304738917">Usuvele ungene ngemvume njengo-<ph name="USER_EMAIL_ADDRESS" /> kwenye iphrofayela ye-Chrome</translation>
 <translation id="3595784445906693824">Ngena ngemvume ku-Chrome kuphrofayela entsha?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chrome ukuze kusetshenziswe isibuyekezo}=1{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chrome ukuze usebenzise isibuyekezo. Iwindi lakho le-Incognito ngeke liphinde livuleke.}one{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chrome ukuze usebenzise isibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}other{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chrome ukuze usebenzise isibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}}</translation>
+<translation id="3609788354808247807">Awukavakashi kamuva nje. I-Chrome isuse i-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Manje sekulula ukusebenzisa i-Chrome nge-Akhawunti yakho ye-Google nakumakhompyutha abiwe.</translation>
 <translation id="3635073343384702370">I-Chrome ingahlola amaphasiwedi akho uma uwalondolozile</translation>
 <translation id="3667616615096815454">Ayikwazi ukufaka, uhlelo lokusebenza alwaziwa kuseva.</translation>
@@ -337,6 +339,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5941711191222866238">Nciphisa</translation>
 <translation id="5941830788786076944">Yenza i-Google Chrome ibe isiphequluli sokuzenzakalelayo</translation>
 <translation id="5947104538377036631">Isinqamuleli se-Chrome</translation>
+<translation id="5953954252731207958">Awukavakashi kamuva nje. I-Chrome isuse i-<ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Iyadawuniloda... Kusele amahora angu-<ph name="HOURS" /></translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Ngamathuluzi avela ku-Chrome<ph name="END_LINK" />, ungabhrawuza ngokuphepha uhlale ulawula</translation>
 <translation id="6022659036123304283">Yenza i-Chrome kube eyakho</translation>
@@ -351,6 +354,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - I-Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Ukufaka kuhlulekile ngenxa yephutha langaphakathi leseva yokubuyekeza.</translation>
+<translation id="6200139057479872438">Awukavakashi kamuva nje. I-Chrome isuse i-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Umyalo obophezeleke ngaphakathi we-Google Chrome ukuze kuvunyelwe ithrafikhi ye-mDNS.</translation>
 <translation id="624230925347970731">I-Chrome izovala maduze</translation>
 <translation id="6247557882553405851">Umphathi Wephasiwedi ye-Google</translation>
@@ -448,6 +452,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="7651907282515937834">Ilogo yebhizinisi le-Chrome</translation>
 <translation id="76531479118467370">I-Chrome ivimbele lokhu kudawuniloda ngoba uvale Ukuphequlula Okuphephile futhi ifayela alikwazi ukuqinisekiswa</translation>
 <translation id="7655455401911432608">Umlando wakho wokubhrawuza, irekhodi lamasayithi owavakashele usebenzisa i-Chrome kule divayisi.</translation>
+<translation id="7661924425853052955">Awukavakashi kamuva nje. I-Chrome isuse i-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="COUNT" /> ngaphezulu</translation>
 <translation id="7668816516367091728">Yenza imisebenzi efana nokuhumusha, ukubala, nokuningi ngokuqondile kusukela kubha yekheli</translation>
 <translation id="769538538642757151">I-Chrome izokwazisa uma kukhona okudinga ukubuyekezwa kwakho</translation>
 <translation id="7747138024166251722">Isifaki asikwazanga ukudala umkhombandlela wesikhashana. Sicela uhlolele isikhala esikhululekile sediski nemvume ukuze ufake isofthiwe.</translation>

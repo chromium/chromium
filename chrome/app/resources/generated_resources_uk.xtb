@@ -2996,6 +2996,7 @@
 <translation id="3184536091884214176">Налаштувати принтери CUPS та керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Цей додаток заблоковано}one{Деякі додатки заблоковано}few{Деякі додатки заблоковано}many{Деякі додатки заблоковано}other{Деякі додатки заблоковано}}</translation>
 <translation id="3187472288455401631">Оцінка ефективності реклами</translation>
+<translation id="3188257591659621405">Мої файли</translation>
 <translation id="3188465121994729530">Середня швидкість переміщення курсора</translation>
 <translation id="3189187154924005138">Великий курсор</translation>
 <translation id="3190558889382726167">Пароль збережено</translation>
@@ -9048,7 +9049,6 @@
 <translation id="7788948939674438635">Заборонити сайтам блокувати клавіатуру</translation>
 <translation id="7789963078219276159">Фон початкової сторінки було змінено. Тепер це <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Оптичне розпізнавання символів у файлах PDF</translation>
-<translation id="7790737481627460475">Файли на цьому пристрої Chromebook</translation>
 <translation id="7791269138074599214">Метод введення</translation>
 <translation id="7791429245559955092">Цей додаток буде встановлено в профілі Chrome, який ви зараз використовуєте.</translation>
 <translation id="7791436592012979144">Зворотне прокручування ввімкнено</translation>

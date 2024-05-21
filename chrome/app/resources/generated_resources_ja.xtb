@@ -2974,6 +2974,7 @@
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{このアプリはブロックされています}other{一部のアプリはブロックされています}}</translation>
 <translation id="3187472288455401631">広告の測定</translation>
+<translation id="3188257591659621405">マイファイル</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
@@ -9013,7 +9014,6 @@
 <translation id="7788948939674438635">サイトにキーボードのロックを許可しない</translation>
 <translation id="7789963078219276159">スタートページの背景が<ph name="CATEGORY" />に変更されました。</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">この Chromebook のファイル</translation>
 <translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
 <translation id="7791436592012979144">逆スクロールは有効です</translation>

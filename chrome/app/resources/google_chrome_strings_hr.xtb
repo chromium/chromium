@@ -59,6 +59,7 @@
 <translation id="1873233029667955273">Google Chrome nije vaš zadani preglednik</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastario</translation>
+<translation id="1907925560334657849">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chrome</translation>
 <translation id="1919130412786645364">Dopusti prijavu u Chrome</translation>
 <translation id="1953553007165777902">Preuzimanje... Još <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome funkcionira na različitim platformama kako bi vam pružio poznati doživljaj bez obzira na uređaj</translation>
@@ -123,6 +124,7 @@
 <translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
+<translation id="2825024317344269723">Opasna web-lokacija. Chrome je uklonio obavijesti.</translation>
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
 <translation id="2847461019998147611">Prikaži Google Chrome na tom jeziku</translation>
 <translation id="2853415089995957805">Chrome predučitava stranice koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite</translation>
@@ -184,6 +186,7 @@
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom profilu u Chromeu</translation>
 <translation id="3595784445906693824">Želite li se prijaviti u Chrome s novim profilom?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja}=1{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
+<translation id="3609788354808247807">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Upotreba Chromea s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
 <translation id="3635073343384702370">Chrome može provjeriti vaše zaporke kad ih spremite</translation>
 <translation id="3667616615096815454">Nije moguće instalirati, aplikacija nije poznata poslužitelju.</translation>
@@ -329,6 +332,7 @@
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Neka Google Chrome bude zadani preglednik.</translation>
 <translation id="5947104538377036631">Prečac za Chrome</translation>
+<translation id="5953954252731207958">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Preuzimanje... Još <ph name="HOURS" /> h</translation>
 <translation id="6014316319780893079">Uz <ph name="BEGIN_LINK" />Chromeove alate<ph name="END_LINK" /> možete sigurno pregledavati i zadržati kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
@@ -343,6 +347,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne pogreške poslužitelja ažuriranja.</translation>
+<translation id="6200139057479872438">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Ulazno pravilo kako bi Google Chrome dopustio mDNS promet.</translation>
 <translation id="624230925347970731">Chrome će se uskoro zatvoriti</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
@@ -406,6 +411,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7098166902387133879">Google Chrome upotrebljava vaš mikrofon.</translation>
 <translation id="7099479769133613710">Ponovo pokrenite da biste ažurirali &amp;Chrome OS</translation>
+<translation id="7100085796996987445">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chrome</translation>
 <translation id="7106741999175697885">Upravitelj zadacima - Google Chrome:</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja.}=1{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Anonimni se prozor neće ponovno otvoriti.}one{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="7155997830309522122">Ako jeste, uredite zaporku spremljenu u Chromeu kako bi odgovarala vašoj novoj zaporki.</translation>
@@ -440,6 +446,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome je blokirao ovo preuzimanje jer ste isključili sigurno pregledavanje i datoteka se ne može potvrditi</translation>
 <translation id="7655455401911432608">Vaša povijest pregledavanja, zapisnik web-lokacija koje ste posjetili u Chromeu na ovom uređaju.</translation>
+<translation id="7661924425853052955">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Odrađujte zadatke kao što su, među ostalima, prevođenje i izračun izravno iz adresne trake</translation>
 <translation id="769538538642757151">Chrome će vas obavijestiti ako nešto trebate pregledati</translation>
 <translation id="7747138024166251722">Program za instalaciju nije izradio privremeni direktorij. Provjerite ima li slobodnog prostora na disku i postoji li dopuštenje za instalaciju softvera.</translation>

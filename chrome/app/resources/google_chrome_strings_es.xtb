@@ -127,6 +127,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2770231113462710648">Cambiar navegador predeterminado por:</translation>
 <translation id="2775140325783767197">Chrome no puede comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2825024317344269723">Sitio peligroso. Chrome ha eliminado las notificaciones.</translation>
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2847461019998147611">Mostrar Google Chrome en este idioma</translation>
 <translation id="2853415089995957805">Chrome precarga páginas que probablemente visites para que se carguen más rápido cuando accedas a ellas</translation>
@@ -188,6 +189,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3583751698304738917">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chrome</translation>
 <translation id="3595784445906693824">¿Iniciar sesión en Chrome con un perfil nuevo?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar una actualización}=1{Tu administrador pide que reinicies Chrome para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
+<translation id="3609788354808247807">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
@@ -337,6 +339,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="5947104538377036631">Acceso directo de Chrome</translation>
+<translation id="5953954252731207958">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION" />.</translation>
 <translation id="6003112304606738118">Descargando... Horas restantes: <ph name="HOURS" />.</translation>
 <translation id="6014316319780893079">Las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
@@ -351,6 +354,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> ‑ Google Chrome Beta</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
+<translation id="6200139057479872438">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="6235018212288296708">Regla entrante para que Google Chrome permita tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará dentro de poco</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
@@ -448,6 +452,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ha bloqueado esta descarga porque has desactivado Navegación segura y el archivo no se puede verificar</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
+<translation id="7661924425853052955">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="7668816516367091728">Haz tareas directamente desde la barra de direcciones, como traducir, calcular y más</translation>
 <translation id="769538538642757151">Chrome te avisará si tienes que revisar algo</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>

@@ -58,6 +58,7 @@
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
+<translation id="1907925560334657849">Aby udostępnić okno, pozwól Chrome na nagrywanie ekranu w Preferencjach systemowych</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome działa na różnych platformach, dzięki czemu możesz korzystać z tych samych funkcji niezależnie od urządzenia</translation>
@@ -122,6 +123,7 @@
 <translation id="2770231113462710648">Zmień przeglądarkę domyślną na:</translation>
 <translation id="2775140325783767197">Chrome nie może sprawdzić Twoich haseł. Sprawdź połączenie z internetem.</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
+<translation id="2825024317344269723">Niebezpieczna witryna. Przeglądarka Chrome usunęła powiadomienia.</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
 <translation id="2847461019998147611">Wyświetlaj Google Chrome w tym języku</translation>
 <translation id="2853415089995957805">Chrome wstępnie wczytuje strony, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały</translation>
@@ -183,6 +185,7 @@
 <translation id="3583751698304738917">Jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /> w innym profilu Chrome</translation>
 <translation id="3595784445906693824">Czy chcesz zalogować się w Chrome w nowym profilu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację}=1{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. Okno incognito nie otworzy się ponownie.}few{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzą się ponownie.}many{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okien incognito nie otworzy się ponownie.}other{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
+<translation id="3609788354808247807">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Korzystanie z Chrome na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
 <translation id="3635073343384702370">Chrome może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="3667616615096815454">Nie można zainstalować aplikacji. Serwer jej nie rozpoznaje.</translation>
@@ -328,6 +331,7 @@
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5941830788786076944">Ustaw Google Chrome jako domyślną przeglądarkę</translation>
 <translation id="5947104538377036631">Skrót w Chrome</translation>
+<translation id="5953954252731207958">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION" />.</translation>
 <translation id="6003112304606738118">Pobieram… Pozostało: <ph name="HOURS" /> godz.</translation>
 <translation id="6014316319780893079">Dzięki <ph name="BEGIN_LINK" />narzędziom Chrome<ph name="END_LINK" /> możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
 <translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
@@ -342,6 +346,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
+<translation id="6200139057479872438">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="6235018212288296708">Reguła dla ruchu przychodzącego w Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
@@ -405,6 +410,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7088681679121566888">Masz aktualną wersję Chrome</translation>
 <translation id="7098166902387133879">Google Chrome używa Twojego mikrofonu.</translation>
 <translation id="7099479769133613710">Uruchom ponownie, aby zaktualizować &amp;Chrome OS</translation>
+<translation id="7100085796996987445">Aby udostępnić ekran, pozwól Chrome na nagrywanie ekranu w Preferencjach systemowych</translation>
 <translation id="7106741999175697885">Menedżer zadań – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji.}=1{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. Okno incognito nie otworzy się ponownie.}few{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzą się ponownie.}many{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okien incognito nie otworzy się ponownie.}other{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="7155997830309522122">Jeśli tak, zaktualizuj je w Chrome, by zapisane hasło było takie samo.</translation>
@@ -439,6 +445,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Pobieranie zostało zablokowane przez Chrome, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
 <translation id="7655455401911432608">Twoja historia przeglądania, czyli rejestr witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
+<translation id="7661924425853052955">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Wykonuj zadania, takie jak np. tłumaczenie czy obliczanie, bezpośrednio z poziomu paska adresu</translation>
 <translation id="769538538642757151">Jeśli coś będzie wymagało sprawdzenia, Chrome Cię o tym poinformuje</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>

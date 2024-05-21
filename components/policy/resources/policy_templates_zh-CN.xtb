@@ -180,6 +180,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1107538157073168076">停用数据洞见扩展程序</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1111324374369583989">不在用户登录期间显示“显示大小”设置界面</translation>
+<translation id="1111824532252882775">已启用：滚动条默认可聚焦。</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -6787,6 +6788,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6452882999388592166">如果此政策已启用，系统会在浏览器启动时加载内置的 CryptoToken 组件扩展程序。如果此政策已停用或未设置，系统不会在浏览器启动时加载 CryptoToken。此政策旨在作为一种临时的变通方案，用于处理因未定义“chrome.runtime”（这是由于在 M106 中移除 CryptoToken 所致的不良后果）而无法正常运行的网站。网站不得依赖于无条件定义的“chrome.runtime”。</translation>
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能</translation>
 <translation id="645425387487868471">为 <ph name="PRODUCT_NAME" /> 启用强制登录功能</translation>
+<translation id="6454450724849956537">启用键盘可聚焦滚动条</translation>
 <translation id="645467061280066516">如果已启用此政策，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果已停用此政策，系统绝不会使用“新标签页”页面作为用户的主页，除非用户将主页网址设为 chrome://newtab。
 
 如果您已设置此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
@@ -8832,6 +8834,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
+<translation id="8033450879690820321">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
+
+如果此政策已启用或未设置，默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。此外，默认情况下，滚动条可点击聚焦和程序化地聚焦。
+
+如果已停用此政策，默认情况下，滚动条不可聚焦。
+
+此政策是一种临时的变通方案，将在 M135 中移除。</translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8036284429246268475">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 检查所输入的用户名和密码是否已泄露。
 
@@ -9359,6 +9368,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果此政策未设置，系统将对所有网站使用通过“ChromeFrameRendererSettings”政策指定的默认呈现器。
 
           要查看示例格式，请访问 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
+<translation id="8489169564515126823">已停用：滚动条默认不可聚焦。</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">停用保存浏览器历史记录的功能</translation>
 <translation id="8499172469244085141">默认设置（用户可以覆盖）</translation>

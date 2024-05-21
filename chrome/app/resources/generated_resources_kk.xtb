@@ -2977,6 +2977,7 @@
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Бұл қолданба бөгелді}other{Кейбір қолданба бөгелді}}</translation>
 <translation id="3187472288455401631">Жарнама көрсеткіштерін өлшеу</translation>
+<translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3188465121994729530">Орташа мәнді жылжыту</translation>
 <translation id="3189187154924005138">Үлкен көрсеткі</translation>
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
@@ -9022,7 +9023,6 @@
 <translation id="7788948939674438635">Сайттарға пернетақтаны құлыптауға рұқсат бермеу</translation>
 <translation id="7789963078219276159">Бастапқы бет фоны <ph name="CATEGORY" /> санатына өзгереді.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Бұл Chromebook-тағы файлдар</translation>
 <translation id="7791269138074599214">Енгізу әдісі</translation>
 <translation id="7791429245559955092">Бұл қолданба қолданыстағы Chrome профиліңізге орнатылады.</translation>
 <translation id="7791436592012979144">Кері айналдыру қосулы</translation>

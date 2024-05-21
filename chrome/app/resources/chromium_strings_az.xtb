@@ -71,6 +71,8 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="2174917724755363426">Quraşdırma tamamlanmayıb. Ləğv etmək istədiyinizə əminsiniz?</translation>
 <translation id="2185166961232948079">Chromium - Şəbəkəyə Giriş - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Yeniləmə yoxlaması xətası: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2210682093923538346">Təhlükəli sayt. Chromium bildirişləri sildi.</translation>
+<translation id="2240214816234246077">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Paylaşılan kompüteriniz varsa, kompüterin paylaşıldığı şəxslər ayrı-ayrılıqda istifadə edə və Chromium'u istədikləri kimi quraşdıra bilər.</translation>
 <translation id="2313870531055795960">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="2329088755516916767">Aktiv olduqda Chromium səhifələri əvvəlcədən yükləyərək baxış və axtarışı sürətləndirir.</translation>
@@ -267,6 +269,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
 <translation id="569897634095159764">İnternetə qoşulmaq olmur. Proksi serveri identifikasiya tələb edir.</translation>
+<translation id="5761096224651992291">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5800158606660203929">Chromium-u fərdiləşdirin və idarə edin. Chromium-u defolt kimi ayarlayın.</translation>
 <translation id="5809516625706423866">İnternetə qoşulmaq olmur. HTTP 401 üçün icazə verilməyib. Proksi konfiqurasiyasını yoxlayın.</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
@@ -352,6 +355,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6729124504294600478">Fərdiləşdirmə və digər funksiyaları əldə etmək üçün Chromium-u Veb və Tətbiq fəaliyyəti, habelə əlaqələndirilmiş Google xidmətlərinə daxil edin</translation>
 <translation id="6734291798041940871">Chromium kompüterinizdəki bütün istifadəçilər üçün artıq quraşdırılıb.</translation>
 <translation id="673636774878526923">Bütün cihazlarınızda Chromium elementlərinə giriş etmək üçün daxil olun və sinxronizasiyanı aktiv edin.</translation>
+<translation id="674245979920622322">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="COUNT" /> icazə</translation>
 <translation id="67706546131546258">Chromium bu faylı skan etməyi tövsiyə edir, çünki o, təhlükəli ola bilər.</translation>
 <translation id="6779406956731413166">ChromiumOS əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı ilə<ph name="END_LINK_CROS_OSS" /> mümkün oldu.</translation>
 <translation id="6847869444787758381">Chromium parollarınızın oğurlanıb-oğurlanmadığı haqqında Sizə məlumat verir</translation>
@@ -401,6 +405,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 dəqiqəyə yenidən başlayacaq}other{Chromium # dəqiqəyə yenidən başlayacaq}}</translation>
 <translation id="7582945390259497898">Chromium maraqlarınızı təxmin edə bilər. Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chromium'dan maraqlarınızı görməyi tələb edə bilər.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Quraşdırıcısı</translation>
+<translation id="7585391435984513350">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium kameranızı və mikrofonunuzu işlədir.</translation>
 <translation id="7617377681829253106">Chromium daha da keyfiyyətli oldu</translation>
 <translation id="7649070708921625228">Yardım</translation>

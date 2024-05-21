@@ -2504,6 +2504,7 @@
 <translation id="2806372837663997957">તમે જે ડિવાઇસ સાથે શેર કરવાનો પ્રયાસ કરો છો, તેણે વિનંતી સ્વીકારી નથી</translation>
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="2807517655263062534">તમે ડાઉનલોડ કરેલી ફાઇલો અહીં દેખાશે</translation>
+<translation id="2809946454624727734">તમે તેને તમારા સાચવેલા ઍડ્રેસમાં ઍક્સેસ કરી શકો છો.</translation>
 <translation id="2811205483104563968">એકાઉન્ટ</translation>
 <translation id="2812049959647166806">Thunderboltની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="2812171980080389735">નેટવર્ક અને પાસવર્ડ સાચવ્યાં જેથી કરીને તમે ઝટપટ કનેક્ટ કરી શકો</translation>
@@ -2718,6 +2719,7 @@
 <translation id="2976557544729462544">અમુક ડિવાઇસ યોગ્ય રીતે કે સંપૂર્ણ કાર્યક્ષમતાએ કામ કરે તે માટે તમારે ડેટા ઍક્સેસની સુરક્ષા બંધ કરવાની જરૂર છે.</translation>
 <translation id="2976639738101799892">તમે બ્રાઉઝ કરો ત્યારે દર વખતે Google Search અને Google સ્માર્ટની સહાય મેળવો</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
+<translation id="2979493931538961252">જ્યારે તમારી Chromebook ઑફલાઇન હોય અને હૉટસ્પૉટ ઉપલબ્ધ હોય</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2979893796619951531">સાઇટને બાકાત રાખો</translation>
 <translation id="2981033191524548279">માફ કરશો, કંઈક ખોટું થયું. કૃપા કરીને વર્ણનમાં #bruschetta વડે પ્રતિસાદ ફાઇલ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે, રીબૂટ કરીને અથવા ફરીથી પ્રયાસ કરીને આને ઠીક કરી શકાય છે.</translation>
@@ -2987,6 +2989,7 @@
 <translation id="3187556136478864255">શું તમે
     <ph name="BEGIN_LINK" />
     Google Home ઍપ<ph name="END_LINK" />માં તમારા કાસ્ટ કરી શકતા ડિવાઇસને જોઈ શકો છો?</translation>
+<translation id="3188257591659621405">મારી ફાઇલો</translation>
 <translation id="3188465121994729530">ચલ સરેરાશ</translation>
 <translation id="3189187154924005138">મોટું કર્સર</translation>
 <translation id="3190558889382726167">પાસવર્ડ સાચવ્યો</translation>
@@ -3157,6 +3160,7 @@
 <translation id="3317521105713541270">ગ્રૂપ બનાવો</translation>
 <translation id="3317678681329786349">કૅમેરા અને માઇક્રોફોન બ્લૉક કર્યા</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબીમાંની ટેક્સ્ટનો અનુવાદ કરો</translation>
+<translation id="3319863571062685443">તમારું ઍડ્રેસ સાચવવામાં આવ્યું છે</translation>
 <translation id="3320271870899888245">OneDrive સાથે કનેક્ટ કરી શકતા નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="3320630259304269485">Safe Browsing (જોખમકારક સાઇટથી સુરક્ષા) અને અન્ય સુરક્ષા સેટિંગ</translation>
 <translation id="3321460131042519426">એકસાથે રાખો ચાલુ કરો</translation>
@@ -3400,6 +3404,7 @@
 <translation id="3508492320654304609">તમારો સાઇન ઇન ડેટા ડિલીટ કરી શકાયો નથી</translation>
 <translation id="3508920295779105875">બીજું ફોલ્ડર પસંદ કરો...</translation>
 <translation id="3509379002674019679">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો.</translation>
+<translation id="3510471875518562537">તમારા iPhone પર આ ઍડ્રેસનો ઉપયોગ કરો</translation>
 <translation id="3511200754045804813">ફરીથી સ્કૅન કરો</translation>
 <translation id="3511307672085573050">લિંક સર&amp;નામાંની કૉપિ કરો</translation>
 <translation id="351152300840026870">નિશ્ચિત-પહોળાઇ ફૉન્ટ</translation>
@@ -4171,6 +4176,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{# સંપર્ક ઉપલબ્ધ નથી. તેમની સાથે 'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે સંકળાયેલું ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.}one{# સંપર્ક ઉપલબ્ધ નથી. તેમની સાથે 'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે સંકળાયેલા ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.}other{# સંપર્ક ઉપલબ્ધ નથી. તેમની સાથે 'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે સંકળાયેલા ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.}}</translation>
 <translation id="4050225813016893843">પ્રમાણીકરણ પદ્ધતિ</translation>
 <translation id="4050534976465737778">ખાતરી કરો કે બન્ને ડિવાઇસ અનલૉક કરેલા અને નજીક જ હોય તેમજ તેમાં બ્લૂટૂથની સુવિધા ચાલુ કરેલી હોય. જો તમે તમારા સંપર્કોમાં ન હોય એવી Chromebook સાથે શેર કરી રહ્યાં હો, તો ખાતરી કરો કે તેમાં 'નજીકની દૃશ્યતા' સુવિધા ચાલુ કરી હોય (સ્ટેટસ એરિયા ખોલો અને તેના પછી 'નજીકની દૃશ્યતા' પસંદ કરો). <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">છેલ્લે ઉપયોગમાં લીધેલી ઇનપુટ પદ્ધતિ પર સ્વિચ કરવા માટે, <ph name="KEY_CODES" /> દબાવો</translation>
 <translation id="4051177682900543628">search + જમણી ઍરો કી</translation>
 <translation id="4052120076834320548">નાનું</translation>
 <translation id="4052913941260326985">&amp;QR કોડ બનાવો</translation>
@@ -6007,6 +6013,7 @@
 <translation id="5486261815000869482">પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="5486561344817861625">બ્રાઉઝર પુનઃપ્રારંભનું અનુકરણ કરો</translation>
 <translation id="5486748931874756433">જ્યારે તમે આગલી અપડેટ મેળવો અને તમારી <ph name="DEVICE_TYPE" /> ફરી શરૂ કરો, ત્યારે આ ફેરફાર લાગુ થશે. આ ફેરફાર રદ કરી શકાશે નહીં તેમજ તે આ ડિવાઇસના બધા વપરાશકર્તાઓને લાગુ થાય છે.</translation>
+<translation id="5487214759202665349">તમારા iPhone પર આ ઍડ્રેસનો ઉપયોગ કરો</translation>
 <translation id="5487460042548760727">પ્રોફાઇલનું નામ બદલીને <ph name="PROFILE_NAME" /> કરો</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' કૉપિ કરી</translation>
 <translation id="5488508217173274228">સિંક એન્ક્રિપ્શનના વિકલ્પો</translation>
@@ -6578,6 +6585,7 @@
 <translation id="5910363049092958439">છબીને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ઑફલાઇન છે</translation>
 <translation id="5911030830365207728">Google Translate</translation>
+<translation id="5911497236110691522">આગલી ઇનપુટ પદ્ધતિ પર સ્વિચ કરવા માટે, <ph name="KEY_CODES" /> દબાવો</translation>
 <translation id="5911533659001334206">શૉર્ટકટ દર્શક</translation>
 <translation id="5911545422157959623">અતિથિ મોડમાં બુકમાર્ક ઉપલબ્ધ નથી</translation>
 <translation id="5914724413750400082">મૉડ્યૂલ્સ (<ph name="MODULUS_NUM_BITS" /> બિટ્સ):
@@ -8547,6 +8555,7 @@ USB ડિવાઇસ</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> તરફથી કૉલ</translation>
 <translation id="7429415133937917139">રિફ્રેશ કરી શકાય તેવા બ્રેઇલ ડિસ્પ્લેના આઉટપુટની નકલ
     સ્ક્રીનની ટોચ પર આવેલા ChromeVox પૅનલમાં રજૂ કરે છે</translation>
+<translation id="7429568074268678162"><ph name="FILENAME" /> જોખમી હોઈ શકે છે. જો તમે Chrome દ્વારા તેને ચકાસવા માગતા હો, તો પાસવર્ડ ઉમેરો અથવા તમે તેને સીધી ડાઉનલોડ કરી શકો છો.</translation>
 <translation id="7431719494109538750">કોઈ HID ડિવાઇસ મળ્યું નથી</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7432200167665670017">તમારા વ્યવસ્થાપકે "<ph name="EXTENSION_NAME" />"ને બ્લૉક કરેલું છે - ઍપ ID <ph name="EXTENSION_ID" /></translation>
@@ -8963,6 +8972,7 @@ USB ડિવાઇસ</translation>
 <translation id="7730683939467795481">પેજને "<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા બદલવામાં આવ્યું હતું</translation>
 <translation id="7732702411411810416">તમે ઇન્ટરનેટ સાથે કનેક્ટ થયા હોવાની ખાતરી કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="773511996612364297">ઍક્સેન્ટ માટેના ચિહ્નો</translation>
+<translation id="7736119438443237821">તમે આ ડિવાઇસ પર તમારી પાસકીનો ઍક્સેસ કાઢી નાખવા જઈ રહ્યાં છો</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"ની સાથે જોડી બનાવો…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
 <translation id="7737846262459425222">તમે આને કોઈપણ સમયે સેટિંગ &gt; Google Assistant &gt; સ્ક્રીન સંદર્ભમાં જઈને બદલી શકો છો.</translation>
@@ -9052,7 +9062,6 @@ USB ડિવાઇસ</translation>
 <translation id="7788948939674438635">સાઇટને તમારા કીબોર્ડને લૉક કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7789963078219276159">આરંભ પેજનું બૅકગ્રાઉન્ડ બદલીને <ph name="CATEGORY" /> કરવામાં આવ્યું છે.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">આ Chromebookમાંની ફાઇલો</translation>
 <translation id="7791269138074599214">ઇનપુટ પદ્ધતિ</translation>
 <translation id="7791429245559955092">આ ઍપ્લિકેશન તમારી હાલમાં ઉપયોગમાં લેવાતી Chrome પ્રોફાઇલ પર ઇન્સ્ટૉલ કરવામાં આવશે</translation>
 <translation id="7791436592012979144">રિવર્સ સ્ક્રોલિંગ ચાલુ કર્યું</translation>
@@ -9556,6 +9565,7 @@ USB ડિવાઇસ</translation>
 <translation id="8151748163667572916">ઇન્સ્ટન્ટ હૉટસ્પૉટ બંધ કરો</translation>
 <translation id="8154790740888707867">કોઇ ફાઇલ નથી</translation>
 <translation id="815491593104042026">અરેરે!  પ્રમાણીકરણ નિષ્ફળ થયું કારણ કે તે બિન-સુરક્ષિત URL નો ઉપયોગ કરવા માટે ગોઠવાયેલું હતું (<ph name="BLOCKED_URL" />).  કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="8155214519979960765">આ ડિવાઇસ પર પાસકી વડે ફરીથી સાઇન ઇન કરવા માટે, એ તમે જ છો તેની તમારે ચકાસણી કરવી જરૂરી રહેશે. જો તમારી પાસે પાસવર્ડ જેવો સાઇન-ઇન કરવાનો અન્ય વિકલ્પ હોય, તો તમે સાઇન ઇન કરવા માટે, તેના બદલે એ વિકલ્પનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ મળ્યો નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="8157248655669507702">ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરવા માટે મોબાઇલ ડેટા ચાલુ કરો</translation>
 <translation id="8157704005178149728">નિરીક્ષણનું સેટઅપ કરી રહ્યાં છીએ</translation>
@@ -9844,6 +9854,7 @@ USB ડિવાઇસ</translation>
 <translation id="8371695176452482769">હવે બોલો</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{સાઇટને મ્યૂટ કરો}one{સાઇટને મ્યૂટ કરો}other{સાઇટને મ્યૂટ કરો}}</translation>
 <translation id="8372441176515901959">વિનંતી કરવાનું છોડી દો</translation>
+<translation id="8372678064309688510">તમારું ઍડ્રેસ સાચવવામાં આવ્યું છે</translation>
 <translation id="8373652277231415614">Crostiniએ શેર કરેલી ડિરેક્ટરી</translation>
 <translation id="8374243500935816406">સાઇટને તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="8376137163494131156">Google Cast માં શું થઈ રહ્યું છે તે અમને જણાવો.</translation>

@@ -2982,6 +2982,7 @@
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Это приложение заблокировано}one{Некоторые приложения заблокированы}few{Некоторые приложения заблокированы}many{Некоторые приложения заблокированы}other{Некоторые приложения заблокированы}}</translation>
 <translation id="3187472288455401631">Оценка эффективности рекламы</translation>
+<translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3188465121994729530">Скользящее среднее</translation>
 <translation id="3189187154924005138">Большой курсор</translation>
 <translation id="3190558889382726167">Пароль сохранен</translation>
@@ -9037,7 +9038,6 @@
 <translation id="7788948939674438635">Запретить сайтам блокировать клавиатуру</translation>
 <translation id="7789963078219276159">Фон стартовой страницы изменен на изображение "<ph name="CATEGORY" />".</translation>
 <translation id="7790689625219600437">Оптическое распознавание символов (OCR) в PDF-файлах</translation>
-<translation id="7790737481627460475">Файлы на устройстве Chromebook</translation>
 <translation id="7791269138074599214">Способ ввода</translation>
 <translation id="7791429245559955092">Это приложение будет установлено в текущем профиле Chrome.</translation>
 <translation id="7791436592012979144">Прокрутка в обратную сторону включена</translation>

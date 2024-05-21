@@ -2502,6 +2502,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
+<translation id="2809946454624727734">Je kunt het vinden in je opgeslagen adressen.</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
 <translation id="2812171980080389735">Opgeslagen netwerken en wachtwoorden zodat je meteen verbinding kunt maken</translation>
@@ -2716,6 +2717,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2976557544729462544">Sommige apparaten werken alleen correct of optimaal als je beveiliging voor gegevenstoegang uitzet.</translation>
 <translation id="2976639738101799892">Google Zoeken en slimme Google-functies standaard instellen voor als je browset</translation>
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
+<translation id="2979493931538961252">Als je Chromebook offline is en er hotspots beschikbaar zijn</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2979893796619951531">Site uitsluiten</translation>
 <translation id="2981033191524548279">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />. Je kunt dit probleem misschien oplossen door opnieuw op te starten en het nogmaals te proberen.</translation>
@@ -2980,6 +2982,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3184536091884214176">CUPS-printers instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Deze app is geblokkeerd}other{Sommige apps zijn geblokkeerd}}</translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
+<translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3188465121994729530">Voortschrijdend gemiddelde</translation>
 <translation id="3189187154924005138">Grote cursor</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
@@ -3150,6 +3153,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3317521105713541270">Groepen maken</translation>
 <translation id="3317678681329786349">Camera en microfoon geblokkeerd</translation>
 <translation id="3319306431415395200">Tekst in afbeelding vertalen met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="3319863571062685443">Je adres is opgeslagen</translation>
 <translation id="3320271870899888245">Kan niet koppelen aan OneDrive. Probeer het opnieuw.</translation>
 <translation id="3320630259304269485">Safe Browsing (bescherming tegen gevaarlijke sites) en andere beveiligingsinstellingen</translation>
 <translation id="3321460131042519426">Tekstterugloop aanzetten</translation>
@@ -3392,6 +3396,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3508492320654304609">Je inloggegevens kunnen niet worden verwijderd</translation>
 <translation id="3508920295779105875">Een andere map kiezen...</translation>
 <translation id="3509379002674019679">Maak, bewaar en beheer je wachtwoorden zodat je makkelijk kunt inloggen bij sites en apps.</translation>
+<translation id="3510471875518562537">Dit adres gebruiken op je iPhone</translation>
 <translation id="3511200754045804813">Opnieuw scannen</translation>
 <translation id="3511307672085573050">Linkadr&amp;es kopiëren</translation>
 <translation id="351152300840026870">Lettertype met vaste breedte</translation>
@@ -4163,6 +4168,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact is niet beschikbaar. Als je Dichtbij delen met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij dit Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar Als je Dichtbij delen met ze wilt gebruiken, voeg je de e-mailadressen die bij hun Google-accounts horen aan je contacten toe.}}</translation>
 <translation id="4050225813016893843">Verificatiemethode</translation>
 <translation id="4050534976465737778">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. Als je content deelt met een Chromebook die niet in je contacten staat, zorg je dat 'Dichtbij aan' aanstaat (open het statusgedeelte en selecteer dan Dichtbij aan). <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">Als je wilt overschakelen naar de laatstgebruikte invoermethode, druk je op <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">zoeken + pijl-rechts</translation>
 <translation id="4052120076834320548">Heel klein</translation>
 <translation id="4052913941260326985">&amp;QR-code maken</translation>
@@ -5993,6 +5999,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5486261815000869482">Wachtwoord bevestigen</translation>
 <translation id="5486561344817861625">Opnieuw starten van browser simuleren</translation>
 <translation id="5486748931874756433">Deze wijziging wordt toegepast als je de volgende update krijgt en je <ph name="DEVICE_TYPE" /> opnieuw opstart. Deze wijziging kan niet ongedaan worden gemaakt en geldt voor alle gebruikers van dit apparaat.</translation>
+<translation id="5487214759202665349">Dit adres gebruiken op je iPhone</translation>
 <translation id="5487460042548760727">Naam van profiel wijzigen in <ph name="PROFILE_NAME" /></translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' gekopieerd</translation>
 <translation id="5488508217173274228">Opties voor versleuteling synchroniseren</translation>
@@ -6556,6 +6563,7 @@ Als je dit uitzet, gebruikt Android alleen het IP-adres voor de locatie. Dit kan
 <translation id="5910363049092958439">Af&amp;beelding opslaan als...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911030830365207728">Google Translate</translation>
+<translation id="5911497236110691522">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">Sneltoetsenviewer</translation>
 <translation id="5911545422157959623">Bookmarks zijn niet beschikbaar in de gastmodus</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" />-bits):
@@ -8516,6 +8524,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7427348830195639090">Achtergrondpagina: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simuleert de uitvoer van een vernieuwbare brailleleesregel in het ChromeVox-venster bovenaan het scherm</translation>
+<translation id="7429568074268678162"><ph name="FILENAME" /> is misschien gevaarlijk. Voeg een wachtwoord toe als je wilt dat Chrome het verifieert. Je kunt het bestand ook rechtstreeks downloaden.</translation>
 <translation id="7431719494109538750">Geen HID-apparaten gevonden</translation>
 <translation id="7431991332293347422">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken en meer te personaliseren</translation>
 <translation id="7432200167665670017">Je beheerder heeft <ph name="EXTENSION_NAME" /> geblokkeerd (app-ID <ph name="EXTENSION_ID" />)</translation>
@@ -8932,6 +8941,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7730683939467795481">Deze pagina is gewijzigd door de extensie '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="7732702411411810416">Zorg dat je verbinding hebt met internet en probeer het opnieuw</translation>
 <translation id="773511996612364297">Accenttekens</translation>
+<translation id="7736119438443237821">Je staat op het punt om de toegang tot je toegangssleutels in te trekken voor dit apparaat</translation>
 <translation id="7737115349420013392">Koppelen met '<ph name="DEVICE_NAME" />'…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instructie ontvangen</translation>
 <translation id="7737846262459425222">Je kunt dit altijd wijzigen via Instellingen &gt; Google Assistent &gt; Schermcontext.</translation>
@@ -9020,7 +9030,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7788948939674438635">Niet toestaan dat sites je toetsenbord vergrendelen</translation>
 <translation id="7789963078219276159">Achtergrond van homepage is gewijzigd in <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Pdf-OCR</translation>
-<translation id="7790737481627460475">Bestanden op deze Chromebook</translation>
 <translation id="7791269138074599214">Invoermethode</translation>
 <translation id="7791429245559955092">Deze app wordt geïnstalleerd in je huidige gebruikte Chrome-profiel</translation>
 <translation id="7791436592012979144">Omgekeerd scrollen staat aan</translation>
@@ -9529,6 +9538,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8151748163667572916">Instant hotspot uitzetten</translation>
 <translation id="8154790740888707867">Geen bestand</translation>
 <translation id="815491593104042026">De verificatie is mislukt omdat er een onbeveiligde URL (<ph name="BLOCKED_URL" />) wordt gebruikt. Neem contact op met je beheerder.</translation>
+<translation id="8155214519979960765">Als je weer wilt inloggen met een toegangssleutel op dit apparaat, moet je laten verifiëren dat jij het bent. Heb je een andere inlogoptie, zoals een wachtwoord, dan kun je daarmee inloggen.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Geen gehackte wachtwoorden gevonden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8157248655669507702">Zet mobiele data aan om een e-simkaartprofiel te installeren</translation>
 <translation id="8157704005178149728">Toezicht instellen</translation>
@@ -9817,6 +9827,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8371695176452482769">Begin nu te spreken</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="8372441176515901959">Verzoek afwijzen</translation>
+<translation id="8372678064309688510">Je adres is opgeslagen</translation>
 <translation id="8373652277231415614">Gedeelde directory's voor Crostini</translation>
 <translation id="8374243500935816406">Niet toestaan dat sites vensters beheren op al je schermen</translation>
 <translation id="8376137163494131156">Vertel ons hoe goed Google Cast werkt.</translation>

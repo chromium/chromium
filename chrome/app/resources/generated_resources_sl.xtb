@@ -2996,6 +2996,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3184536091884214176">Nastavitev ali upravljanje tiskalnikov CUPS. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta aplikacija je blokirana}one{Nekatere aplikacije so blokirane}two{Nekatere aplikacije so blokirane}few{Nekatere aplikacije so blokirane}other{Nekatere aplikacije so blokirane}}</translation>
 <translation id="3187472288455401631">Merjenje oglasov</translation>
+<translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3188465121994729530">Drseče povprečje</translation>
 <translation id="3189187154924005138">Velik kazalec</translation>
 <translation id="3190558889382726167">Geslo je shranjeno</translation>
@@ -9054,7 +9055,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7788948939674438635">Spletnim mestom ni dovoljeno zaklepanje tipkovnice</translation>
 <translation id="7789963078219276159">Ozadje začetne strani je spremenjeno v <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">Optično prepoznavanje PDF-ja</translation>
-<translation id="7790737481627460475">Datoteke v tem Chromebooku</translation>
 <translation id="7791269138074599214">Način vnosa</translation>
 <translation id="7791429245559955092">Ta aplikacija bo nameščena v trenutno uporabljenem profilu za Chrome</translation>
 <translation id="7791436592012979144">Obratno pomikanje je omogočeno</translation>

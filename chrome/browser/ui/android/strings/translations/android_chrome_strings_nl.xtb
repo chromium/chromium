@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Verwijderd</translation>
 <translation id="1437543266176261764">Wordt uitgevoerd in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Orden je gevolgde producten in Bookmarks</translation>
+<translation id="1460751212339734034">Bespaar tijd en typ minder</translation>
 <translation id="1466383950273130737">Kies de taal voor Chromium</translation>
 <translation id="1477626028522505441">Downloaden van <ph name="FILE_NAME" /> is mislukt door serverproblemen.</translation>
 <translation id="1480287803138246127">Een deel van je geschiedenis wordt hier misschien niet getoond. Open de volledige Chrome-geschiedenis om al je Chrome-geschiedenis te bekijken.</translation>
@@ -830,6 +831,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5264813352784073502">afgelopen 24 uur</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
+<translation id="5301876394151419436">Je bent ingelogd als <ph name="EMAIL" />. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="5304593522240415983">Dit veld mag niet leeg zijn</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5316947901395241499">Wachtwoord opslaan is uitgezet door je beheerder</translation>
@@ -1523,6 +1525,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8526855376374973824">Proces voor meldingsrechten</translation>
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>
 <translation id="854522910157234410">Deze pagina openen</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Inactief tabblad (1)}other{Inactieve tabbladen (#)}}</translation>
 <translation id="8551513938758868521">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
 <translation id="8551524210492420949">Beledigend of onveilig</translation>
 <translation id="8559961053328923750">Chrome beperkt de totale hoeveelheid gegevens die sites via de browser kunnen delen om de advertentieprestaties te meten</translation>
@@ -1626,6 +1629,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9102803872260866941">Voorbeeldtabblad is geopend</translation>
 <translation id="9102864637938129124">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat aan.</translation>
 <translation id="9104217018994036254">Lijst met apparaten om een tabblad mee te delen.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{1 dag of langer niet gebruikt}other{# dagen of langer niet gebruikt}}</translation>
 <translation id="9106148373857059373">Proces voor bookmark opslaan is gesloten</translation>
 <translation id="9108312223223904744">Telefoon als ondersteuning voor beveiligingssleutel</translation>
 <translation id="9108808586816295166">Beveiligde DNS is mogelijk niet altijd beschikbaar</translation>

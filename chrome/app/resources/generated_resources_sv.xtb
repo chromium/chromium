@@ -2993,6 +2993,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3184536091884214176">Konfigurera eller hantera CUPS-skrivare. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Den här appen har blockerats}other{Vissa appar har blockerats}}</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
+<translation id="3188257591659621405">Mina filer</translation>
 <translation id="3188465121994729530">Glidande medelvärde</translation>
 <translation id="3189187154924005138">Stor markör</translation>
 <translation id="3190558889382726167">Lösenordet sparades</translation>
@@ -9043,7 +9044,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7788948939674438635">Tillåt inte att webbplatser låser tangentbordet</translation>
 <translation id="7789963078219276159">Startsidans bakgrundsbild har ändrats till <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR för PDF-filer</translation>
-<translation id="7790737481627460475">Filer på denna Chromebook</translation>
 <translation id="7791269138074599214">Inmatningsmetod</translation>
 <translation id="7791429245559955092">Appen installeras på den Chrome-profil som du använder just nu</translation>
 <translation id="7791436592012979144">Omvänd scrollning har aktiverats</translation>

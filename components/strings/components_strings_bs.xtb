@@ -1335,6 +1335,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="353816159217417898">Platno (paginirano)</translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
+<translation id="3547442767634383572">pregled poslovnog profila</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
 <translation id="3552155506104542239">Upozorenje: ova pravila su u suprotnosti s pravilima <ph name="POLICY_NAME" /> i neće uticati na Android aplikacije. U suprotnom, ova pravila funkcioniraju kako je predviđeno.</translation>
 <translation id="3552297013052089404">Font Sans-serif</translation>
@@ -2199,6 +2200,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5230733896359313003">Adresa za isporuku</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Upravljani profil, preglednik i neki podaci o uređaju dostupni su vašem administratoru. Oni mogu vidjeti informacije kao što su:</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5238301240406177137">Sačuvajte na račun</translation>
 <translation id="5239119062986868403">Uobičajena cijena</translation>
@@ -2212,6 +2214,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="52517543715119994">Saznajte više o funkcijama Chromea</translation>
 <translation id="5251803541071282808">Oblak</translation>
 <translation id="5254043433801397071">Optimiziranje sadržaja za štampanje</translation>
+<translation id="5255583962255635076">pravila preglednika koja se primjenjuju na vašem poslovnom profilu</translation>
 <translation id="5255690596502591079">Ipak snimi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Prema administratorskim pravilima nije preporučeno kopiranje ovog fajla na <ph name="DESTINATION_NAME" />}one{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Dodatni detalji:
 <translation id="7421067045979951561">obrađivači protokola</translation>
 <translation id="7422347648202898039">Naljepnice (sigurnost)</translation>
 <translation id="7423283032694727565">Dugme Upravljaj kolačićima, aktivirajte da upravljate postavkama za kolačiće u postavkama Chromea</translation>
+<translation id="742435751935045381">Instalirane aplikacije i proširenja na vašem poslovnom profilu</translation>
 <translation id="7424421098814895617">Odabrana je opcija brisanja adrese</translation>
 <translation id="7425037327577270384">Pomozi mi da napišem</translation>
 <translation id="7425878584435172632">Likovna umjetnost i dizajn</translation>
@@ -3878,6 +3882,7 @@ Dodatni detalji:
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
+<translation id="8421158157346464398">Podaci o poslovnom profilu (na primjer korisničko ime poslovnog profila)</translation>
 <translation id="8422228580902424274">Napadači na web lokaciji koju pokušavate posjetiti mogu vas prevariti da instalirate softver ili otkrijete svoje podatke kao što su lozinka, broj telefona ili broj kreditne kartice.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Izmijeni</translation>
@@ -4246,6 +4251,7 @@ Dodatni detalji:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Web lokacije koje posjetite također mogu utvrditi šta vam se sviđa na osnovu vaše aktivnosti na web lokaciji. Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može zaključiti da vas zanima trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu web lokacije i mjerenju oglasa</translation>
+<translation id="9167054383925257837">Podaci o pregledniku i OS-u uređaja (npr. verzije preglednika i OS-a).</translation>
 <translation id="9167594211215946097">imati direktan pristup vašim štampačima</translation>
 <translation id="9168814207360376865">Dozvoli web lokacijama da provjere imate li sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvijek blokiraj na ovoj web lokaciji</translation>

@@ -3001,6 +3001,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3187556136478864255">Látja az átküldő eszközt a
     <ph name="BEGIN_LINK" />
     Google Home alkalmazásban<ph name="END_LINK" />?</translation>
+<translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3188465121994729530">Mozgás átlaga</translation>
 <translation id="3189187154924005138">Nagy kurzor</translation>
 <translation id="3190558889382726167">A jelszó mentése megtörtént</translation>
@@ -9062,7 +9063,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7788948939674438635">A webhelyek nem zárolhatják a billentyűzetet</translation>
 <translation id="7789963078219276159">A kezdőoldal háttérképe a következőre változott: <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Fájlok ezen a Chromebookon</translation>
 <translation id="7791269138074599214">Beviteli mód</translation>
 <translation id="7791429245559955092">Ez az alkalmazás a jelenleg használt Chrome-profilba lesz telepítve</translation>
 <translation id="7791436592012979144">Fordított görgetés bekapcsolva</translation>

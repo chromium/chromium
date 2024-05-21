@@ -2996,6 +2996,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3184536091884214176">Gosod neu reoli argraffwyr CUPS. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Mae'r ap hwn wedi'i rwystro}zero{Mae rhai apiau wedi'u rhwystro}two{Mae rhai apiau wedi'u rhwystro}few{Mae rhai apiau wedi'u rhwystro}many{Mae rhai apiau wedi'u rhwystro}other{Mae rhai apiau wedi'u rhwystro}}</translation>
 <translation id="3187472288455401631">Mesur hysbysebion</translation>
+<translation id="3188257591659621405">Fy ffeiliau</translation>
 <translation id="3188465121994729530">Cyfartaledd Symudol</translation>
 <translation id="3189187154924005138">Cyrchwr mawr</translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
@@ -9053,7 +9054,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7788948939674438635">Peidio â chaniatáu i wefannau gloi eich bysellfwrdd</translation>
 <translation id="7789963078219276159">Mae cefndir y dudalen gychwynnol wedi newid i <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR PDF</translation>
-<translation id="7790737481627460475">Ffeiliau ar y Chromebook hwn</translation>
 <translation id="7791269138074599214">Dull mewnbynnu</translation>
 <translation id="7791429245559955092">Bydd yr ap hwn yn cael ei osod ar eich proffil Chrome a ddefnyddir ar hyn o bryd</translation>
 <translation id="7791436592012979144">Mae sgrolio tuag yn ôl wedi'i alluogi</translation>

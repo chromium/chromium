@@ -2984,6 +2984,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3184536091884214176">Nastavení nebo správa tiskáren CUPS. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Tato aplikace je blokována}few{Některé aplikace jsou blokovány}many{Některé aplikace jsou blokovány}other{Některé aplikace jsou blokovány}}</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
+<translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3188465121994729530">Plovoucí průměr</translation>
 <translation id="3189187154924005138">Velký kurzor</translation>
 <translation id="3190558889382726167">Heslo uloženo</translation>
@@ -9040,7 +9041,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7788948939674438635">Nepovolovat webům zamykat klávesnici</translation>
 <translation id="7789963078219276159">Pozadí úvodní stránky bylo změněno na: <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR pro PDF</translation>
-<translation id="7790737481627460475">Soubory v tomto Chromebooku</translation>
 <translation id="7791269138074599214">Metoda zadávání dat</translation>
 <translation id="7791429245559955092">Tato aplikace bude nainstalována do vašeho aktuálně používaného profilu Chrome</translation>
 <translation id="7791436592012979144">Opačné posouvání je zapnuté</translation>

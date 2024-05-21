@@ -1336,6 +1336,7 @@
 <translation id="353816159217417898">شاشة (مقسمة إلى صفحات)</translation>
 <translation id="3542628208405253498">صورة البطاقة</translation>
 <translation id="3542768452570884558">فتح الرابط في نافذة جديدة</translation>
+<translation id="3547442767634383572">نظرة عامة على ملف العمل</translation>
 <translation id="3547746132308051926">20 × 24 بوصة</translation>
 <translation id="3552155506104542239">‏تحذير: تتعارض هذه السياسة مع سياسة "<ph name="POLICY_NAME" />" ولن تؤثّر في تطبيقات Android. بخلاف ذلك، تعمل هذه السياسة على النحو المقصود.</translation>
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
@@ -2202,6 +2203,7 @@
 <translation id="5230733896359313003">عنوان الشحن</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">يمكن للمشرف الوصول إلى الملف الشخصي المُدار والمتصفّح وبعض معلومات الجهاز. ويمكنه الاطّلاع على معلومات مثل:</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5238301240406177137">الحفظ في الحساب</translation>
 <translation id="5239119062986868403">السعر العادي</translation>
@@ -2215,6 +2217,7 @@
 <translation id="52517543715119994">‏التعرّف على ميزات Chrome</translation>
 <translation id="5251803541071282808">السحابة الإلكترونية</translation>
 <translation id="5254043433801397071">أدوات تحسين أداء محتوى الطباعة</translation>
+<translation id="5255583962255635076">سياسات المتصفّح المطبَّقة في ملف العمل</translation>
 <translation id="5255690596502591079">التقاط على أي حال</translation>
 <translation id="5255833070095767006">350 × 460 ملم</translation>
 <translation id="5257739419779698609">{0,plural, =1{لا تنصح سياسة المشرف بنسخ هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنسخ هذين الملفين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
@@ -3335,6 +3338,7 @@
 <translation id="7421067045979951561">معالجات البروتوكول</translation>
 <translation id="7422347648202898039">تصنيفات (أَمنية)</translation>
 <translation id="7423283032694727565">‏زر إدارة ملفات تعريف الارتباط: انقر على هذا الزر لإدارة إعداداتك المفضّلة المتعلقة بملفات تعريف الارتباط في إعدادات Chrome.</translation>
+<translation id="742435751935045381">التطبيقات والإضافات المثبَّتة في ملف العمل</translation>
 <translation id="7424421098814895617">تم تحديد خيار حذف العنوان.</translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
 <translation id="7425878584435172632">فنون بصرية وتصميم</translation>
@@ -3883,6 +3887,7 @@
 التفاصيل الإضافية:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">تم السماح باستخدام الميكروفون هذه المرّة.</translation>
+<translation id="8421158157346464398">معلومات ملف العمل (مثل اسم المستخدم في ملف العمل)</translation>
 <translation id="8422228580902424274">إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج معيّنة أو الكشف عن بيانات مثل كلمة المرور أو الهاتف أو رقم بطاقة الائتمان.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغيير</translation>
@@ -4252,6 +4257,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">يمكن أيضًا للمواقع الإلكترونية التي تزورها تحديد المواضيع التي تعجبك استنادًا إلى الأنشطة التي تجريها على هذه المواقع. على سبيل المثال، إذا انتقلت إلى موقع إلكتروني يبيع أحذية الجري لمسافات طويلة، قد يحدِّد هذا الموقع الإلكتروني أنّك مهتم بسباقات الماراثون.</translation>
 <translation id="9166851138617700776">مزيد من المعلومات عن الإعلانات المقترَحة من المواقع الإلكترونية وقياس أداء الإعلانات</translation>
+<translation id="9167054383925257837">معلومات المتصفّح ونظام التشغيل على الجهاز (مثل إصدارَي المتصفّح ونظام التشغيل)</translation>
 <translation id="9167594211215946097">الحصول على إذن الوصول المباشر إلى الطابعات</translation>
 <translation id="9168814207360376865">السماح للمواقع الإلكترونية بالتحقُّق ممّا إذا كانت لديك طرق دفع محفوظة أم لا</translation>
 <translation id="9169664750068251925">الحظر دومًا على هذا الموقع</translation>

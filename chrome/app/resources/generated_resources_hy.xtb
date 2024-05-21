@@ -2980,6 +2980,7 @@
 <translation id="3184536091884214176">CUPS տպիչների կարգավորում և կառավարում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Այս հավելվածն արգելափակված է}one{Այս հավելվածն արգելափակված է}other{Որոշ հավելվածներ արգելափակված են}}</translation>
 <translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
+<translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3188465121994729530">Սահող միջին</translation>
 <translation id="3189187154924005138">Մեծ նշորդ</translation>
 <translation id="3190558889382726167">Գաղտնաբառը պահվեց</translation>
@@ -9026,7 +9027,6 @@
 <translation id="7788948939674438635">Չթույլատրել կայքերին կողպել ստեղնաշարը</translation>
 <translation id="7789963078219276159">Գլխավոր էջի ֆոնը վերակայվել է <ph name="CATEGORY" /> ֆոնով։</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Ֆայլեր այս Chromebook-ում</translation>
 <translation id="7791269138074599214">Մուտքագրման եղանակը</translation>
 <translation id="7791429245559955092">Այս հավելվածը կտեղադրվի Chrome պրոֆիլում, որը ներկայումս օգտագործում եք</translation>
 <translation id="7791436592012979144">Հետադարձ ոլորումը միացված է</translation>

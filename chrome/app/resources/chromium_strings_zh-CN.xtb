@@ -69,6 +69,8 @@
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="2185166961232948079">Chromium - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">更新检查错误：<ph name="UPDATE_CHECK_ERROR" />。</translation>
+<translation id="2210682093923538346">危险网站。Chromium 移除了通知权限。</translation>
+<translation id="2240214816234246077">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />权限</translation>
 <translation id="2241627712206172106">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chromium。</translation>
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2329088755516916767">开启此设置后，Chromium 会预加载网页，以便您更快速地浏览和搜索。</translation>
@@ -267,6 +269,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
+<translation id="5761096224651992291">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
 <translation id="5800158606660203929">自定义和控制 Chromium。将 Chromium 设为默认浏览器。</translation>
 <translation id="5809516625706423866">无法连接到互联网。发生 HTTP 401 Unauthorized 错误，请检查您的代理配置。</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
@@ -352,6 +355,7 @@
 <translation id="6729124504294600478">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chromium</translation>
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的账号，然后开启同步功能。</translation>
+<translation id="674245979920622322">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
@@ -403,6 +407,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 将在 1 分钟后重新启动}other{Chromium 将在 # 分钟后重新启动}}</translation>
 <translation id="7582945390259497898">Chromium 可以推测出您的兴趣。之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
+<translation id="7585391435984513350">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION" />权限</translation>
 <translation id="761356813943268536">Chromium 正在使用您的摄像头和麦克风。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
 <translation id="7649070708921625228">帮助</translation>

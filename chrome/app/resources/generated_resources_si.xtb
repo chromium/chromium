@@ -2989,6 +2989,7 @@
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{මෙම යෙදුම අවහිර කර ඇත}one{සමහර යෙදුම් අවහිර කර ඇත}other{සමහර යෙදුම් අවහිර කර ඇත}}</translation>
 <translation id="3187472288455401631">වෙළඳ දැන්වීම් මිනුම</translation>
 <translation id="3187556136478864255">ඔබට <ph name="BEGIN_LINK" />Google Home යෙදුම<ph name="END_LINK" /> තුළ ඔබේ විකාශ උපාංගය දැකිය හැකිද?</translation>
+<translation id="3188257591659621405">මගේ ගොනු</translation>
 <translation id="3188465121994729530">ගෙනයෑම් සාමාන්‍යය</translation>
 <translation id="3189187154924005138">විශාල කර්සරය</translation>
 <translation id="3190558889382726167">මුරපදය සුරැකිණි</translation>
@@ -9050,7 +9051,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7788948939674438635">ඔබේ යතුරුපුවරුව අගුළු දැමීමට අඩවි වලට ඉඩ නොදෙන්න</translation>
 <translation id="7789963078219276159">ආරම්භක පිටු පසුබිම <ph name="CATEGORY" /> ලෙස වෙනස් විය.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">මෙම Chromebook මත ඇති ගොනු</translation>
 <translation id="7791269138074599214">ආදාන ක්‍රමය</translation>
 <translation id="7791429245559955092">මෙම යෙදුම ඔබේ දැනට භාවිත කරන Chrome පැතිකඩ මත ස්ථාපන කරනු ලැබේ.</translation>
 <translation id="7791436592012979144">ප්‍රතිලෝම අනුචලනය සබල කර ඇත</translation>

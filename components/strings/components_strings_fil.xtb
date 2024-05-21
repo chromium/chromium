@@ -1335,6 +1335,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="353816159217417898">Screen (May Page)</translation>
 <translation id="3542628208405253498">Larawan sa card</translation>
 <translation id="3542768452570884558">Buksan ang Link sa Bagong Window</translation>
+<translation id="3547442767634383572">Pangkalahatang-ideya ng profile sa trabaho</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
 <translation id="3552155506104542239">Babala: Sumasalungat ang patakarang ito sa <ph name="POLICY_NAME" /> at hindi ito magkakaroon ng epekto sa mga Android app. Kung hindi man, gagana ang patakarang ito na gaya ng inaasahan.</translation>
 <translation id="3552297013052089404">Sans-serif Font</translation>
@@ -2199,6 +2200,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5230733896359313003">Address na Padadalhan</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Naa-access ng iyong administrator ang pinapamahalaang profile, browser, at ilang impormasyon ng device. Makikita niya ang impormasyong tulad ng sumusunod:</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5238301240406177137">I-save sa Account</translation>
 <translation id="5239119062986868403">Karaniwang Presyo</translation>
@@ -2212,6 +2214,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="52517543715119994">Alamin ang tungkol sa mga feature ng Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">I-optimize ang content ng print</translation>
+<translation id="5255583962255635076">Mga nalalapat na patakaran sa iyong profile sa trabaho</translation>
 <translation id="5255690596502591079">I-capture pa rin</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Mga karagdagang detalye:
 <translation id="7421067045979951561">mga tagapangasiwa ng protocol</translation>
 <translation id="7422347648202898039">Mga Label (Security)</translation>
 <translation id="7423283032694727565">Button na Pamahalaan ang cookies, i-activate para mapamahalaan ang iyong mga preference sa cookie sa mga setting ng Chrome</translation>
+<translation id="742435751935045381">Mga naka-install na app at extension sa iyong profile sa trabaho</translation>
 <translation id="7424421098814895617">Napili ang opsyong i-delete ang address</translation>
 <translation id="7425037327577270384">Tulungan akong magsulat</translation>
 <translation id="7425878584435172632">Visual Art at Disenyo</translation>
@@ -3878,6 +3882,7 @@ Mga karagdagang detalye:
 Mga karagdagang detalye:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Pinapayagan ang mikropono sa ngayon</translation>
+<translation id="8421158157346464398">Impormasyon ng profile sa trabaho (tulad ng iyong username sa profile sa trabaho)</translation>
 <translation id="8422228580902424274">Posibleng linlangin ka ng mga attacker sa site na sinusubukan mong bisitahin na mag-install ng software o magbunyag ng mga bagay tulad ng iyong password, numero ng telepono, o numero ng credit card.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Baguhin</translation>
@@ -4246,6 +4251,7 @@ Mga karagdagang detalye:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Puwede ring matukoy ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagbebenta ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
 <translation id="9166851138617700776">Higit pa tungkol sa mga ad na iminumungkahi ng site at pagsukat ng ad</translation>
+<translation id="9167054383925257837">Impormasyon ng browser at OS ng device (tulad ng mga bersyon ng browser at OS)</translation>
 <translation id="9167594211215946097">Magkaroon ng direktang access sa mga printer mo</translation>
 <translation id="9168814207360376865">Payagan ang mga site na tingnan kung may mga naka-save kang paraan ng pagbabayad</translation>
 <translation id="9169664750068251925">Palaging i-block sa site na ito</translation>

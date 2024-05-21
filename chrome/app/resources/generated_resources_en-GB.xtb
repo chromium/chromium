@@ -2993,6 +2993,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{This app is blocked}other{Some apps are blocked}}</translation>
 <translation id="3187472288455401631">Ads measurement</translation>
+<translation id="3188257591659621405">My files</translation>
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
@@ -9043,7 +9044,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7788948939674438635">Don't allow sites to lock your keyboard</translation>
 <translation id="7789963078219276159">Start page background has been changed to <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">Files on this Chromebook</translation>
 <translation id="7791269138074599214">Input method</translation>
 <translation id="7791429245559955092">This application will be installed on your currently-used Chrome profile</translation>
 <translation id="7791436592012979144">Reverse scrolling enabled</translation>

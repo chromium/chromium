@@ -2995,6 +2995,7 @@
 <translation id="3184536091884214176">CUPS 프린터를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{앱이 차단됨}other{일부 앱이 차단됨}}</translation>
 <translation id="3187472288455401631">광고 측정</translation>
+<translation id="3188257591659621405">내 파일</translation>
 <translation id="3188465121994729530">이동 평균</translation>
 <translation id="3189187154924005138">큰 커서</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
@@ -9043,7 +9044,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7788948939674438635">사이트에서 키보드 잠금이 허용되지 않음</translation>
 <translation id="7789963078219276159">시작 페이지 배경화면이 <ph name="CATEGORY" />(으)로 변경되었습니다.</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">이 Chromebook의 파일</translation>
 <translation id="7791269138074599214">입력 방법</translation>
 <translation id="7791429245559955092">이 애플리케이션이 현재 사용하는 Chrome 프로필에 설치됩니다</translation>
 <translation id="7791436592012979144">역방향 스크롤 사용 설정됨</translation>

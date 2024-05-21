@@ -2993,6 +2993,7 @@
 <translation id="3184536091884214176">Ρυθμίστε ή διαχειριστείτε εκτυπωτές CUPS. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Αυτή η εφαρμογή έχει αποκλειστεί}other{Ορισμένες εφαρμογές έχουν αποκλειστεί}}</translation>
 <translation id="3187472288455401631">Μέτρηση διαφημίσεων</translation>
+<translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3188465121994729530">Μετακίνηση μέσου όρου</translation>
 <translation id="3189187154924005138">Μεγάλος δείκτης ποντικιού</translation>
 <translation id="3190558889382726167">Ο κωδικός πρόσβασης αποθηκεύτηκε</translation>
@@ -9044,7 +9045,6 @@
 <translation id="7788948939674438635">Να μην επιτρέπεται στους ιστοτόπους το κλείδωμα του πληκτρολογίου σας</translation>
 <translation id="7789963078219276159">Το φόντο της αρχικής σελίδας άλλαξε σε <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR PDF</translation>
-<translation id="7790737481627460475">Αρχεία σε αυτό το Chromebook</translation>
 <translation id="7791269138074599214">Μέθοδος εισαγωγής</translation>
 <translation id="7791429245559955092">Αυτή η εφαρμογή θα εγκατασταθεί στο προφίλ Chrome που χρησιμοποιείτε αυτή τη στιγμή.</translation>
 <translation id="7791436592012979144">Η αντίστροφη κύλιση ενεργοποιήθηκε</translation>

@@ -465,6 +465,7 @@
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
 <translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
+<translation id="1346403631707626730">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK1" />详细了解指标<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347512539447549782">Linux 存储空间</translation>
@@ -1917,6 +1918,7 @@
 <translation id="2405887402346713222">设备和组件序列号</translation>
 <translation id="2406153734066939945">删除这份个人资料及其数据？</translation>
 <translation id="2407671304279211586">选择 DNS 提供商</translation>
+<translation id="240789602312469910">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2409268599591722235">开始使用</translation>
@@ -2077,6 +2079,7 @@
 <translation id="2497852260688568942">您的管理员已停用同步</translation>
 <translation id="2498539833203011245">最小化</translation>
 <translation id="2498765460639677199">最大</translation>
+<translation id="2499065671910214321">使用位置信息。允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">已屏蔽相应权限以保护您的隐私</translation>
 <translation id="2501173422421700905">待批证书</translation>
 <translation id="2501278716633472235">返回</translation>
@@ -2339,6 +2342,7 @@
 <translation id="2704606927547763573">已复制</translation>
 <translation id="270516211545221798">触控板速度</translation>
 <translation id="2705736684557713153">滚动到屏幕底部，如果看到“即时网络共享”，请将其开启。如果未看到该功能，则表示您已设置完毕。</translation>
+<translation id="2706304388244371417">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。此类备份内容包含应用数据。备份内容将上传到 Google 平台并使用您孩子的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="2707024448553392710">正在下载组件</translation>
 <translation id="270921614578699633"> </translation>
 <translation id="2709516037105925701">自动填充</translation>
@@ -2873,11 +2877,13 @@
 <translation id="3094521107841754472">价格已从 <ph name="PREVIOUS_PRICE" /> 变为 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主账号同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{关闭了 1 个可能有害的扩展程序。您也可移除它。}other{关闭了 {NUM_EXTENSIONS} 个可能有害的扩展程序。您也可移除它们。}}</translation>
+<translation id="3100071818310370858">使用位置信息。允许具备位置信息权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">暗光</translation>
 <translation id="3101709781009526431">日期和时间</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3103451787721578293">请输入上传此数据的原因：</translation>
 <translation id="3103512663951238230">Alt+点击</translation>
+<translation id="3104948640446684649">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">上次失败的更新</translation>
 <translation id="3105796011181310544">改回 Google？</translation>
 <translation id="3105820656234755131">密码已更新</translation>
@@ -2972,6 +2978,8 @@
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
+<translation id="3187556136478864255">您是否能在 <ph name="BEGIN_LINK" />Google Home 应用<ph name="END_LINK" />中看到自己的投放设备？</translation>
+<translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
@@ -3226,6 +3234,7 @@
 <translation id="3391721320619127327">ChromeOS Flex 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3393582007140394275">无法投放屏幕。</translation>
+<translation id="3394072120086516913">PC 使用有线网络，投放设备使用 Wi-Fi</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
 <translation id="3396442984945202128">验证身份</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
@@ -4482,6 +4491,7 @@
 <translation id="4314561087119792062">添加新的接入点名称 (APN)</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4316850752623536204">开发者网站</translation>
+<translation id="43176328751044557">{NUM_SITES,plural, =1{撤消了 1 个网站的权限}other{撤消了 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="4317733381297736564">应用内购买</translation>
 <translation id="4317820549299924617">验证失败</translation>
 <translation id="4319441675152393296">点击此扩展程序的图标即可读取和更改 <ph name="HOST" /> 数据</translation>
@@ -4798,6 +4808,7 @@
 <translation id="4559617833001311418">此网站正在使用您的动态传感器或光传感器。</translation>
 <translation id="4560728518401799797">“<ph name="FOLDER_TITLE" />”书签的更多相关选项</translation>
 <translation id="4561893854334016293">近期未更改过任何权限</translation>
+<translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4562155266774382038">忽略建议</translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
@@ -5733,6 +5744,7 @@
 <translation id="5288106344236929384">更多操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的通行密钥选项</translation>
 <translation id="5288678174502918605">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="52895863590846877">不是<ph name="LANGUAGE" />网页</translation>
+<translation id="5290020561438336792">PC 和投放设备使用不同的 Wi-Fi 网络（例如分别为 2.4GHz 与 5GHz）</translation>
 <translation id="52912272896845572">私有密钥文件无效。</translation>
 <translation id="5291739252352359682">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）。音频和字幕的处理工作都会在设备上完成，相关数据绝不会外泄。</translation>
 <translation id="529175790091471945">将此设备格式化</translation>
@@ -6214,9 +6226,12 @@
 <translation id="5646558797914161501">商务人士</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
+<translation id="5649182603113127372">使用位置信息。允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="5650537073531199882">填写表单</translation>
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
 <translation id="5654669866168491665">详细了解在屏蔽第三方 Cookie 后可能无法正常运行的网站</translation>
+<translation id="5654848283274615843">{NUM_SITES,plural, =1{为保护您的隐私，已撤消某个网站的权限}other{为保护您的隐私，已撤消某些网站的权限}}</translation>
 <translation id="565515993087783098">如果取消保存此网络，系统也会移除 Passpoint 订阅及其关联网络。</translation>
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="5655823808357523308">调整屏幕显示颜色的方式</translation>
@@ -6329,6 +6344,7 @@
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5747785204778348146">开发者版本 - 不稳定</translation>
 <translation id="5747809636523347288">粘贴并转到 <ph name="URL" /></translation>
+<translation id="5749214722697335450">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK1" />详细了解指标<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">检查网络共享就绪与否</translation>
 <translation id="5753570386948603678">从历史记录中删除</translation>
@@ -6364,6 +6380,7 @@
     如果您关闭位置信息服务，则 Android 将只会使用 IP 地址确定您所在的位置。这可能会影响 Google 地图等应用使用的位置信息的精确度。</translation>
 <translation id="5778491106820461378">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 账号。您向网站和应用授予的权限可能会应用于所有账号。如果不想让网站或应用获取您的账号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5780011244986845107">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久读取权限吗？</translation>
+<translation id="5780940414249100901">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">进程优先级</translation>
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781865261247219930">向“<ph name="EXTENSION_NAME" />”发送命令</translation>
@@ -7056,6 +7073,7 @@
 <translation id="6294759976468837022">自动扫描速度</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6295855836753816081">正在保存…</translation>
+<translation id="6297986260307280218">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">此设置会影响这里列出的网站。在域名前插入“[*.]”可以为整个域创建例外情况。例如，添加“[*.]google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="6298962879096096191">使用 Google Play 安装 Android 应用</translation>
 <translation id="6300177430812514606">不允许完成数据收发操作</translation>
@@ -8096,6 +8114,7 @@
 <translation id="710047887584828070">正在分享此标签页的内容</translation>
 <translation id="710224247908684995">某个扩展程序关闭了安全浏览功能</translation>
 <translation id="7102832101143475489">此请求已超时</translation>
+<translation id="7103944802169726298">PC 和投放设备使用的是同一个 Wi-Fi 网络</translation>
 <translation id="710640343305609397">打开网络设置</translation>
 <translation id="7107609441453408294">在所有音响设备上播放相同的音频</translation>
 <translation id="7108338896283013870">隐藏</translation>
@@ -9018,7 +9037,6 @@
 <translation id="7788948939674438635">不允许网站锁定键盘</translation>
 <translation id="7789963078219276159">初始页背景已更改为 <ph name="CATEGORY" />。</translation>
 <translation id="7790689625219600437">PDF OCR</translation>
-<translation id="7790737481627460475">此 Chromebook 上的文件</translation>
 <translation id="7791269138074599214">输入法</translation>
 <translation id="7791429245559955092">系统会将此应用安装到您当前使用的 Chrome 个人资料中</translation>
 <translation id="7791436592012979144">已启用反向滚动</translation>
@@ -10249,10 +10267,12 @@
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
+<translation id="8698432579173128320">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。备份内容将上传到 Google 平台并使用您的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
 <translation id="8700066369485012242">请告诉我们您允许在此网站上使用第三方 Cookie 的原因</translation>
+<translation id="8700087567921985940">使用位置信息。允许具备位置信息权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">启动器键 + 退格键</translation>
 <translation id="8702278591052316269">包含隐藏的已存标签页分组的菜单</translation>
 <translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
@@ -10505,6 +10525,7 @@
 <translation id="8881020143150461183">请重试。如需技术支持，请联系<ph name="CARRIER_NAME" />。</translation>
 <translation id="888256071122006425">鼠标和触控板设置</translation>
 <translation id="8883273463630735858">启用触控板加速</translation>
+<translation id="8883478023074930307">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理自己的数据<ph name="END_BOLD" />：为保护您的隐私，一旦网站的保留时长超过 4 周，系统便会自动从列表中删除相应网站。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="8884570509232205463">现在，您的设备会在<ph name="UNLOCK_TIME" /> 锁定。</translation>
 <translation id="8885449336974696155">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 ChromeOS</translation>
@@ -10934,6 +10955,7 @@
 <translation id="919686179725692564">详细了解如何备份您的应用</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9199695835892108985">重置所有串行端口权限？</translation>
+<translation id="9199853905755292769">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201117361710210082">之前看过</translation>

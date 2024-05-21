@@ -2977,6 +2977,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3184536091884214176">Configura o administra impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Se bloqueó esta app}other{Se bloquearon algunas apps.}}</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
+<translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3188465121994729530">Promedio móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
@@ -8229,7 +8230,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
 <translation id="7210257969463271891">Las apps web que instales aparecerán aquí</translation>
-<translation id="7210432570808024354">Presiona y arrastra para mover elementos</translation>
+<translation id="7210432570808024354">Presionar y arrastrar para mover elementos</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
@@ -9027,7 +9028,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7788948939674438635">No permitir que los sitios bloqueen tu teclado</translation>
 <translation id="7789963078219276159">El fondo de la página de inicio se cambió a <ph name="CATEGORY" />.</translation>
 <translation id="7790689625219600437">OCR de PDF</translation>
-<translation id="7790737481627460475">Archivos en esta Chromebook</translation>
 <translation id="7791269138074599214">Método de entrada</translation>
 <translation id="7791429245559955092">Esta aplicación se instalará en el perfil de Chrome que usas actualmente</translation>
 <translation id="7791436592012979144">Se habilitó el desplazamiento inverso</translation>
