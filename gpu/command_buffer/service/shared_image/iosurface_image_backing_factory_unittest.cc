@@ -373,6 +373,37 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest,
   EXPECT_NE(texture_0.Get(), texture_1.Get());
 }
 
+// Test to verify handling of failure to begin access.
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_FailureToBeginAccess) {
+  wgpu::Device device = CreateDevice();
+
+  gfx::Size size(1, 1);
+  uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                   SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT;
+  auto factory_ref = CreateSharedImage(size, usage);
+
+  auto rep = shared_image_representation_factory_.ProduceDawn(
+      factory_ref->mailbox(), device, backend_type(), {}, context_state_);
+
+  device.Destroy();
+
+  auto scoped_access = rep->BeginScopedAccess(
+      wgpu::TextureUsage::CopySrc,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  if (backend_type() == wgpu::BackendType::Metal) {
+    // The BeginAccess() call should have returned an empty texture, in which
+    // case SharedImageRepresentation will return null for the scoped access.
+    EXPECT_FALSE(scoped_access);
+  } else {
+    // The BeginAccess() call should have created an error texture.
+    EXPECT_TRUE(scoped_access);
+    EXPECT_TRUE(scoped_access->texture());
+    EXPECT_TRUE(
+        dawn::native::CheckIsErrorForTesting(scoped_access->texture().Get()));
+  }
+}
+
 // Test to check interaction between Dawn and skia GL representations.
 TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
   // Create a Dawn device
