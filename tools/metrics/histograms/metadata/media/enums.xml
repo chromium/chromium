@@ -1010,6 +1010,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed using photo stream"/>
 </enum>
 
+<enum name="LacrosBundledWidevine">
+  <int value="0" label="None found"/>
+  <int value="1" label="Lacros bundled"/>
+  <int value="2" label="Ash bundled"/>
+</enum>
+
 <enum name="MakeAudioInputStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>

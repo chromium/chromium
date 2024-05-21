@@ -46,6 +46,10 @@
 #include <gnu/libc-version.h>
 #endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/metrics/histogram_functions.h"
+#include "content/public/common/content_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -57,6 +61,29 @@ namespace {
 using Robustness = content::CdmInfo::Robustness;
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LacrosBundledWidevine {
+  kNone = 0,
+  kLacros = 1,
+  kAsh = 2,
+  kMaxValue = kAsh,
+};
+
+// Record which Widevine CDM was loaded for Lacros.
+void ReportLacrosUMA(LacrosBundledWidevine value) {
+  // Only recorded by the browser process. If recorded by the pre-zygote
+  // process, then all processes will end up with this value reported.
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+  if (process_type.empty()) {
+    base::UmaHistogramEnumeration("Media.EME.Widevine.LacrosBundledCdm", value);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if (BUILDFLAG(BUNDLE_WIDEVINE_CDM) ||            \
      BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
@@ -135,6 +162,7 @@ std::unique_ptr<content::CdmInfo> GetAshBundledWidevine() {
   if (base::FeatureList::IsEnabled(media::kLacrosUseAshWidevine)) {
     const auto* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kCrosWidevineBundledDir)) {
+      ReportLacrosUMA(LacrosBundledWidevine::kAsh);
       base::FilePath install_dir =
           command_line->GetSwitchValuePath(switches::kCrosWidevineBundledDir);
       return CreateCdmInfoFromWidevineDirectory(install_dir);
@@ -147,8 +175,10 @@ std::unique_ptr<content::CdmInfo> GetAshBundledWidevine() {
   // with Lacros if available.
   // TODO(b/332962687): Remove Lacros bundled Widevine CDM once all versions of
   // Ash updated to set the command line argument.
+  ReportLacrosUMA(LacrosBundledWidevine::kLacros);
   return GetBundledWidevine();
 #else
+  ReportLacrosUMA(LacrosBundledWidevine::kNone);
   return nullptr;
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 }
