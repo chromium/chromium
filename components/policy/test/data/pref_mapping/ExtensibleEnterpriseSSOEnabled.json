@@ -1,7 +1,7 @@
 [
   {
     "os": [
-      "mac"
+      "macos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensible_enterprise_sso.enabled",
