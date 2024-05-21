@@ -159,7 +159,8 @@ gfx::Size UserConsentView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // View should match width of the context menu.
   auto width = context_menu_bounds().width();
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void UserConsentView::OnFocus() {

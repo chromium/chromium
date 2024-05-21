@@ -199,7 +199,7 @@ int GlanceableTrayBubbleView::GetHeightForWidth(int width) const {
   // Let the layout manager calculate the preferred height instead of using the
   // one from TrayBubbleView, which doesn't take the layout manager and margin
   // settings into consider.
-  return std::min(views::View::GetHeightForWidth(width),
+  return std::min(GetLayoutManager()->GetPreferredHeightForWidth(this, width),
                   CalculateMaxTrayBubbleHeight(shelf_->GetWindow()));
 }
 

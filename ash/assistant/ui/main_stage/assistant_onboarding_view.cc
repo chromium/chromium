@@ -131,7 +131,8 @@ AssistantOnboardingView::~AssistantOnboardingView() {
 
 gfx::Size AssistantOnboardingView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
+  return gfx::Size(
+      INT_MAX, GetLayoutManager()->GetPreferredHeightForWidth(this, INT_MAX));
 }
 
 void AssistantOnboardingView::ChildPreferredSizeChanged(views::View* child) {

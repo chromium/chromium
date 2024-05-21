@@ -137,7 +137,8 @@ gfx::Size RichControlsContainerView::CalculatePreferredSize(
   width += controls_width_;
 
   width = std::max(width, GetMinBubbleWidth());
-  return gfx::Size(width, views::View::GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 const std::u16string& RichControlsContainerView::GetTitleForTesting() {
