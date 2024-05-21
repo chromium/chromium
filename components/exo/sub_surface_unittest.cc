@@ -65,6 +65,8 @@ TEST_F(SubSurfaceTest, PlaceAbove) {
   ASSERT_EQ(2u, parent->window()->children().size());
   EXPECT_EQ(surface1->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface2->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().back().first);
 
   sub_surface2->PlaceAbove(parent.get());
   sub_surface1->PlaceAbove(non_sibling_surface.get());  // Invalid
@@ -75,12 +77,25 @@ TEST_F(SubSurfaceTest, PlaceAbove) {
   // order to take effect.
   EXPECT_EQ(surface1->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface2->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().back().first);
 
   parent->Commit();
 
   // surface1 should now be stacked above surface2.
   EXPECT_EQ(surface2->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface1->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().back().first);
+
+  sub_surface1->PlaceAbove(parent.get());
+  parent->Commit();
+
+  // surface2 should now be stacked above surface1.
+  EXPECT_EQ(surface1->window(), parent->window()->children()[0]);
+  EXPECT_EQ(surface2->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().back().first);
 }
 
 TEST_F(SubSurfaceTest, PlaceBelow) {
@@ -97,6 +112,8 @@ TEST_F(SubSurfaceTest, PlaceBelow) {
   ASSERT_EQ(2u, parent->window()->children().size());
   EXPECT_EQ(surface1->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface2->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().back().first);
 
   sub_surface2->PlaceBelow(parent.get());               // Invalid
   sub_surface2->PlaceBelow(non_sibling_surface.get());  // Invalid
@@ -107,12 +124,16 @@ TEST_F(SubSurfaceTest, PlaceBelow) {
   // order to take effect.
   EXPECT_EQ(surface1->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface2->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().back().first);
 
   parent->Commit();
 
   // surface1 should now be stacked above surface2.
   EXPECT_EQ(surface2->window(), parent->window()->children()[0]);
   EXPECT_EQ(surface1->window(), parent->window()->children()[1]);
+  EXPECT_EQ(surface2.get(), parent->sub_surfaces().front().first);
+  EXPECT_EQ(surface1.get(), parent->sub_surfaces().back().first);
 }
 
 TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
