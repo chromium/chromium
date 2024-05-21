@@ -62,6 +62,6 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.0">
-        <include layout="@layout/tab_grid_card_item"/>
+       <include layout="@layout/tab_grid_card_item_layout"/>
     </FrameLayout>
 </org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView>
