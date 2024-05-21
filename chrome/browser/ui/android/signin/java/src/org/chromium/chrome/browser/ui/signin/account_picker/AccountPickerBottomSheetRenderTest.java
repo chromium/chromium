@@ -124,7 +124,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(7)
+                    .setRevision(8)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
@@ -287,6 +287,22 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForWebSigninEntryPoint_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "expanded_sheet_replace_sync_with_signin_promos_enabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForSendTabToSelfEntryPoint(boolean nightModeEnabled)
             throws IOException {
@@ -297,6 +313,23 @@ public class AccountPickerBottomSheetRenderTest {
         expandBottomSheet();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet_for_send_tab_to_self");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForSendTabToSelfEntryPoint_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "expanded_sheet_for_send_tab_to_self_replace_sync_with_signin_promos_enabled");
     }
 
     @Test
@@ -317,11 +350,41 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForBookmarksEntryPoint_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "expanded_sheet_for_bookmarks_replace_sync_with_signin_promos_enabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSignInInProgressView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         buildAndShowCollapsedBottomSheet();
-        clickContinueButtonAndCheckSigninInProgressView();
+        clickContinueButtonAndCheckSigninInProgressView("signin_in_progress_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSignInInProgressView_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndCheckSigninInProgressView(
+                "signin_in_progress_sheet_replace_sync_with_signin_promos_enabled");
     }
 
     @Test
@@ -335,7 +398,7 @@ public class AccountPickerBottomSheetRenderTest {
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
         mAccountPickerDelegate.setSwitchToTryAgainView(false);
-        clickContinueButtonAndCheckSigninInProgressView();
+        clickContinueButtonAndCheckSigninInProgressView("signin_in_progress_sheet");
     }
 
     @Test
@@ -354,6 +417,22 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninGeneralErrorView_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountPickerDelegate.setSwitchToTryAgainView(true);
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "signin_general_error_sheet_replace_sync_with_signin_promos_enabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -362,6 +441,22 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninAuthErrorView_replaceSyncWithSigninPromosEnabled(boolean nightModeEnabled)
+            throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountPickerDelegate.setSwitchToAuthErrorView(true);
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "signin_auth_error_sheet_replace_sync_with_signin_promos_enabled");
     }
 
     @Test
@@ -388,6 +483,35 @@ public class AccountPickerBottomSheetRenderTest {
                 mCoordinator.getBottomSheetViewForTesting(), "confirm_management_sheet");
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures({
+        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
+    public void testConfirmManagementView_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountPickerDelegate.setAccountManaged(true);
+        buildAndShowCollapsedBottomSheet();
+
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
+        CriteriaHelper.pollUiThread(
+                bottomSheetView.findViewById(R.id.account_picker_confirm_management_description)
+                        ::isShown);
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "confirm_management_sheet_replace_sync_with_signin_promos_enabled");
+    }
+
     private void clickContinueButtonAndWaitForErrorView() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -404,7 +528,7 @@ public class AccountPickerBottomSheetRenderTest {
                 });
     }
 
-    private void clickContinueButtonAndCheckSigninInProgressView() throws IOException {
+    private void clickContinueButtonAndCheckSigninInProgressView(String testId) throws IOException {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -425,8 +549,7 @@ public class AccountPickerBottomSheetRenderTest {
                             .findViewById(R.id.account_picker_signin_spinner_view)
                             .setVisibility(View.INVISIBLE);
                 });
-        mRenderTestRule.render(
-                mCoordinator.getBottomSheetViewForTesting(), "signin_in_progress_sheet");
+        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), testId);
     }
 
     private void expandBottomSheet() {

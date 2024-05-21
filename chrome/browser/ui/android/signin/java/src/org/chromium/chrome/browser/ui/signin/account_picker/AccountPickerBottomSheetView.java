@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -86,6 +87,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
     private final ButtonCompat mDismissButton;
+    private final Space mDismissButtonGoneMarginSpace;
 
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
@@ -120,6 +122,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_dismiss_button);
+        mDismissButtonGoneMarginSpace =
+                mViewFlipper
+                        .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
+                        .findViewById(R.id.account_picker_dismiss_button_gone_margin_space);
 
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
@@ -223,10 +229,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
 
         if (cancelButton == 0) {
-            mDismissButton.setVisibility(View.GONE);
+            showDismissButton(false);
         } else {
             mDismissButton.setText(cancelButton);
-            mDismissButton.setVisibility(View.VISIBLE);
+            showDismissButton(true);
         }
     }
 
@@ -339,6 +345,16 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
     }
 
+    private void showDismissButton(boolean shouldShow) {
+        if (shouldShow) {
+            mDismissButton.setVisibility(View.VISIBLE);
+            mDismissButtonGoneMarginSpace.setVisibility(View.GONE);
+        } else {
+            mDismissButton.setVisibility(View.GONE);
+            mDismissButtonGoneMarginSpace.setVisibility(View.VISIBLE);
+        }
+    }
+
     // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
     private void revampSelectedAccountView() {
         Context context = mSelectedAccountView.getContext();
@@ -348,7 +364,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         int padding = ViewUtils.dpToPx(context, 16);
         mSelectedAccountView.setPadding(padding, padding, padding, padding);
         int horizontalMargin = ViewUtils.dpToPx(context, 24);
-        int bottomMargin = ViewUtils.dpToPx(context, 16);
+        int bottomMargin = ViewUtils.dpToPx(context, 12);
         MarginLayoutParams params = (MarginLayoutParams) mSelectedAccountView.getLayoutParams();
         params.setMargins(
                 /* left= */ horizontalMargin,
