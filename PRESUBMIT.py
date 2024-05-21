@@ -1966,6 +1966,67 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
+_DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
+  'Used a predicate related to signin::ConsentLevel::kSync which will always '
+  'return false in the future (crbug.com/40066949). Prefer using a predicate '
+  'that also supports signin::ConsentLevel::kSignin when appropriate. It is '
+  'safe to ignore this warning if you are just moving an existing call, or if '
+  'you want special handling for users in the legacy state. In doubt, reach '
+  'out to //components/sync/OWNERS.'
+)
+
+# C++ functions related to signin::ConsentLevel::kSync which are deprecated.
+_DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS : Sequence[BanRule] = (
+    BanRule(
+      'HasSyncConsent',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+    BanRule(
+      'CanSyncFeatureStart',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+    BanRule(
+      'IsSyncFeatureEnabled',
+      (
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      ),
+      False,
+    ),
+    BanRule(
+      'IsSyncFeatureActive',
+      (
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      ),
+      False,
+    ),
+)
+
+# Java functions related to signin::ConsentLevel::kSync which are deprecated.
+_DEPRECATED_SYNC_CONSENT_JAVA_FUNCTIONS : Sequence[BanRule] = (
+    BanRule(
+      'hasSyncConsent',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+    BanRule(
+      'canSyncFeatureStart',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+    BanRule(
+      'isSyncFeatureEnabled',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+    BanRule(
+      'isSyncFeatureActive',
+      _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+      False,
+    ),
+)
+
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
     BanRule(
         'handle<shared_buffer>',
@@ -2733,6 +2794,26 @@ def CheckNoBannedFunctions(input_api, output_api):
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
             for ban_rule in _BANNED_CPP_FUNCTIONS:
+                CheckForMatch(f, line_num, line, ban_rule)
+
+    # As of 05/2024, iOS fully migrated ConsentLevel::kSync to kSignin, and
+    # Android is in the process of preventing new users from entering kSync.
+    # So the warning is restricted to those platforms.
+    ios_pattern = input_api.re.compile('(^|[\W_])ios[\W_]')
+    file_filter = lambda f: (f.LocalPath().endswith(('.cc', '.mm', '.h')) and
+                             ('android' in f.LocalPath() or
+                             # Simply checking for an 'ios' substring would
+                             # catch unrelated cases, use a regex.
+                              ios_pattern.search(f.LocalPath())))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
+        for line_num, line in f.ChangedContents():
+            for ban_rule in _DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS:
+                CheckForMatch(f, line_num, line, ban_rule)
+
+    file_filter = lambda f: f.LocalPath().endswith(('.java'))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
+        for line_num, line in f.ChangedContents():
+            for ban_rule in _DEPRECATED_SYNC_CONSENT_JAVA_FUNCTIONS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
     file_filter = lambda f: f.LocalPath().endswith(('.mojom'))

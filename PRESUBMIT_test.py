@@ -5331,5 +5331,65 @@ class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
     warnings = PRESUBMIT.CheckTodoBugReferences(input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
 
+class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
+  """Test the presubmit for deprecated ConsentLevel::kSync functions."""
+
+  def testCppMobilePlatformPath(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('chrome/browser/android/file.cc', ['OtherFunction']),
+      MockFile('chrome/android/file.cc', ['HasSyncConsent']),
+      MockFile('ios/file.mm', ['CanSyncFeatureStart']),
+      MockFile('components/foo/ios/file.cc', ['IsSyncFeatureEnabled']),
+      MockFile('components/foo/delegate_android.cc', ['IsSyncFeatureActive']),
+      MockFile('components/foo/delegate_ios.cc', ['IsSyncFeatureActive']),
+      MockFile('components/foo/android_delegate.cc', ['IsSyncFeatureActive']),
+      MockFile('components/foo/ios_delegate.cc', ['IsSyncFeatureActive']),
+    ]
+
+    results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+    self.assertEqual(1, len(results))
+    self.assertFalse('chrome/browser/android/file.cc' in results[0].message),
+    self.assertTrue('chrome/android/file.cc' in results[0].message),
+    self.assertTrue('ios/file.mm' in results[0].message),
+    self.assertTrue('components/foo/ios/file.cc' in results[0].message),
+    self.assertTrue('components/foo/delegate_android.cc' in results[0].message),
+    self.assertTrue('components/foo/delegate_ios.cc' in results[0].message),
+    self.assertTrue('components/foo/android_delegate.cc' in results[0].message),
+    self.assertTrue('components/foo/ios_delegate.cc' in results[0].message),
+
+  def testCppNonMobilePlatformPath(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('chrome/browser/file.cc', ['HasSyncConsent']),
+      MockFile('bios/file.cc', ['HasSyncConsent']),
+      MockFile('components/kiosk/file.cc', ['HasSyncConsent']),
+    ]
+
+    results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+    self.assertEqual(0, len(results))
+
+  def testJavaPath(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('components/foo/file1.java', ['otherFunction']),
+      MockFile('components/foo/file2.java', ['hasSyncConsent']),
+      MockFile('chrome/foo/file3.java', ['canSyncFeatureStart']),
+      MockFile('chrome/foo/file4.java', ['isSyncFeatureEnabled']),
+      MockFile('chrome/foo/file5.java', ['isSyncFeatureActive']),
+    ]
+
+    results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+    self.assertEqual(1, len(results))
+    self.assertFalse('components/foo/file1.java' in results[0].message),
+    self.assertTrue('components/foo/file2.java' in results[0].message),
+    self.assertTrue('chrome/foo/file3.java' in results[0].message),
+    self.assertTrue('chrome/foo/file4.java' in results[0].message),
+    self.assertTrue('chrome/foo/file5.java' in results[0].message),
+
+
 if __name__ == '__main__':
   unittest.main()
