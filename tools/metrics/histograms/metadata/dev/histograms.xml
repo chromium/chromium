@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LighthouseCategoryUsed"
-    enum="DevToolsLighthouseCategoryUsed" expires_after="2024-09-14">
+    enum="DevToolsLighthouseCategoryUsed" expires_after="2024-11-17">
   <owner>asraine@chromium.org</owner>
   <owner>paulirish@chromium.org</owner>
   <owner>cjamcl@chromium.org</owner>

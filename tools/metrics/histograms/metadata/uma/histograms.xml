@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Histogram.MismatchedConstructionArguments"
-    enum="HistogramNameHash" expires_after="2024-09-15">
+    enum="HistogramNameHash" expires_after="2024-11-17">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2024-09-15">
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2024-11-17">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -957,7 +957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2024-11-10">
+    expires_after="2024-11-17">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

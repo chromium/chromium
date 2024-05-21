@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
-    enum="CrosCrashSenderRemoveReason" expires_after="2024-09-15">
+    enum="CrosCrashSenderRemoveReason" expires_after="2024-11-17">
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -651,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>nicholasbishop@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -805,7 +805,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Platform.Libhwsec.PinWeaverManager.SyncHashTree.ReplayLogResult{ReplayType}"
-    enum="HwsecPinWeaverLogReplayResultEnum" expires_after="2024-09-15">
+    enum="HwsecPinWeaverLogReplayResultEnum" expires_after="2024-11-17">
   <owner>chensa@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.KeyDeliveryResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-07-10">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-11-17">
   <owner>jrhilke@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.ModemRecoveryState"
-    enum="ModemfwdModemRecoveryState" expires_after="2024-09-15">
+    enum="ModemfwdModemRecoveryState" expires_after="2024-11-17">
   <owner>ujjwalpande@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Report state of modem recovery operation.</summary>
@@ -1832,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Storage.Nvme.PercentageUsed" units="%"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -2132,7 +2132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TakeOwnershipResult"
-    enum="TPMTakeOwnershipResult" expires_after="2024-09-15">
+    enum="TPMTakeOwnershipResult" expires_after="2024-11-17">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -2564,7 +2564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.{GSC}.MatchingBoardId" enum="Cr50CrosRlzCodes"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>vbendeb@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

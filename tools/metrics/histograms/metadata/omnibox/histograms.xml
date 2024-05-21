@@ -1589,7 +1589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchSuggest.Requests"
-    enum="SearchSuggestRequestEvent" expires_after="2024-09-15">
+    enum="SearchSuggestRequestEvent" expires_after="2024-11-17">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>cch@chromium.org</owner>

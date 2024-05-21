@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.BlocklistedFeature"
-    enum="WebSchedulerTrackedFeature" expires_after="2024-09-15">
+    enum="WebSchedulerTrackedFeature" expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.BrowsingInstanceNotSwappedReason"
     enum="BackForwardCacheBrowsingInstanceNotSwappedReason"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.NotRestoredReason"
-    enum="BackForwardCacheNotRestoredReason" expires_after="2024-09-15">
+    enum="BackForwardCacheNotRestoredReason" expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.Renderer"
-    enum="BackForwardCacheRendererEvictionReason" expires_after="2024-09-15">
+    enum="BackForwardCacheRendererEvictionReason" expires_after="2024-11-17">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.TimeUntilProcessKilled" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature"
-    enum="WebSchedulerTrackedFeature" expires_after="2024-09-15">
+    enum="WebSchedulerTrackedFeature" expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisabledForRenderFrameHostReason2"
     enum="BackForwardCacheDisabledForRenderFrameHostReason2"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1227,7 +1227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -1784,7 +1784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.{Stage}ToCompositorCreation" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>

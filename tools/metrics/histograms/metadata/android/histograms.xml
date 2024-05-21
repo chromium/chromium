@@ -1410,7 +1410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DynamicTopChrome.TabStripTransition.Finished"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1465,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ExplicitViewIntentFinishedNewTabbedActivity"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>aishwaryarj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -2852,7 +2852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime3" units="ms"
-    expires_after="2024-09-13">
+    expires_after="2024-11-17">
   <owner>ender@chromium.org</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
@@ -2903,7 +2903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime3" units="ms"
-    expires_after="2024-09-13">
+    expires_after="2024-11-17">
   <owner>ender@chromium.org</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
@@ -3171,7 +3171,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.NumPrefetchesStartedInOmniboxSession.{AndroidNavigationPrefetchOnly}"
-    units="count" expires_after="2024-09-15">
+    units="count" expires_after="2024-11-17">
   <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -4098,7 +4098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogContentSelected"
-    enum="SelectFileDialogContent" expires_after="2024-09-15">
+    enum="SelectFileDialogContent" expires_after="2024-11-17">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -4110,7 +4110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogImgCount" units="images"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -4122,7 +4122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogScope" enum="SelectFileDialogScope"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>peter@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -4494,7 +4494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.DelayTempStripRemovalTimedOut"
-    enum="BooleanTimedOut" expires_after="2024-09-15">
+    enum="BooleanTimedOut" expires_after="2024-11-17">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>
@@ -4593,7 +4593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToBufferSwapAfterInitializeTabState"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>
@@ -4608,7 +4608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>
@@ -4623,7 +4623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>gauravjj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>

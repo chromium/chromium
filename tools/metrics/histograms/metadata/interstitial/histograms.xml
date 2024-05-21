@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

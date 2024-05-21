@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.DocumentInheritedStorageAccess"
-    enum="BooleanInherited" expires_after="2024-09-15">
+    enum="BooleanInherited" expires_after="2024-11-17">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -583,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBErrors" units="count"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.DocumentServiceBind.IsSecureFrame"
-    enum="BooleanSecure" expires_after="2024-08-26">
+    enum="BooleanSecure" expires_after="2024-11-17">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

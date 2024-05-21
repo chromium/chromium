@@ -712,7 +712,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-09-15">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -742,7 +742,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-09-15">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -756,7 +756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.Off.FillingAcceptance{AutofillFormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2024-09-15">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CreditCard.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1961,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ExtendedMenu.EditAddress"
-    enum="BooleanAutofillEditAddress" expires_after="2024-09-15">
+    enum="BooleanAutofillEditAddress" expires_after="2024-11-17">
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2381,7 +2381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormForest.GetBrowserFormOfRendererForm.Duration"
-    units="microseconds" expires_after="2024-09-15">
+    units="microseconds" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2395,7 +2395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration"
-    units="microseconds" expires_after="2024-09-15">
+    units="microseconds" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2409,7 +2409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Duration"
-    units="microseconds" expires_after="2024-09-15">
+    units="microseconds" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2421,7 +2421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Visits"
-    units="node-visits" expires_after="2024-09-15">
+    units="node-visits" expires_after="2024-11-17">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4007,7 +4007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.NewProfileEditedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-09-15">
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-11-17">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
@@ -4395,7 +4395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -4406,7 +4406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNameWasEdited" enum="Boolean"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -6413,7 +6413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.WebView.Provider.PackageName"
-    enum="AutofillProviderPackageName" expires_after="2024-09-15">
+    enum="AutofillProviderPackageName" expires_after="2024-11-17">
   <owner>alexmitra@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

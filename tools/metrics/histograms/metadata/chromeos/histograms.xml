@@ -1578,7 +1578,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.DiagnosticResult.{Routine}"
-    enum="CrosHealthdDiagnosticResult" expires_after="2024-09-15">
+    enum="CrosHealthdDiagnosticResult" expires_after="2024-11-17">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
@@ -1649,7 +1649,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
-    enum="CrosHealthdTelemetryResult" expires_after="2024-09-15">
+    enum="CrosHealthdTelemetryResult" expires_after="2024-11-17">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
@@ -2634,7 +2634,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
-    enum="RgbKeyboardCapabilityType" expires_after="2024-09-15">
+    enum="RgbKeyboardCapabilityType" expires_after="2024-11-17">
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
@@ -3258,7 +3258,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Changed"
-    enum="SimulateRightClickModifier" expires_after="2024-09-15">
+    enum="SimulateRightClickModifier" expires_after="2024-11-17">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3273,7 +3273,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Initial"
-    enum="SimulateRightClickModifier" expires_after="2024-09-15">
+    enum="SimulateRightClickModifier" expires_after="2024-11-17">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -4113,7 +4113,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jorgelo@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>

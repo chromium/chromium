@@ -314,7 +314,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2024-09-01">
+    units="count" expires_after="2024-11-17">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -403,7 +403,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternWildcard"
-    enum="ContentType" expires_after="2024-09-15">
+    enum="ContentType" expires_after="2024-11-17">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -431,7 +431,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternWildcard"
-    enum="ContentType" expires_after="2024-09-15">
+    enum="ContentType" expires_after="2024-11-17">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3133,7 +3133,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-09-15">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-11-17">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3680,7 +3680,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3928,7 +3928,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jkokatsu@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4011,7 +4011,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}2"
-    enum="ExtensionLocation" expires_after="2024-09-01">
+    enum="ExtensionLocation" expires_after="2024-11-17">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

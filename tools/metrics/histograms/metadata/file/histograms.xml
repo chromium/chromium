@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DownloadDestination.IsGoogleDrive.Started"
-    enum="BooleanEnabled" expires_after="2024-09-15">
+    enum="BooleanEnabled" expires_after="2024-11-17">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1684,7 +1684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ViewingFileType.Offline" enum="ViewFileType"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ViewingFileType.Online" enum="ViewFileType"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

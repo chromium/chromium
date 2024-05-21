@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency.{RequestContext}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -416,7 +416,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.{RequestContext}"
-    enum="OptimizationGuideFetcherRequestStatus" expires_after="2024-09-15">
+    enum="OptimizationGuideFetcherRequestStatus" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.IsPredictionModelValid.{OptimizationTarget}"
-    enum="BooleanValid" expires_after="2024-09-15">
+    enum="BooleanValid" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.{ModelExecutionFeature}"
-    enum="FeatureCurrentlyEnabledResult" expires_after="2024-09-15">
+    enum="FeatureCurrentlyEnabledResult" expires_after="2024-11-17">
   <owner>tbansal@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -569,7 +569,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -806,7 +806,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceTextSafetyModelMetadataValidity"
-    enum="OnDeviceTextSafetyModelMetadataValidity" expires_after="2024-09-15">
+    enum="OnDeviceTextSafetyModelMetadataValidity" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
   <summary>
@@ -818,7 +818,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.Result.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.ServerError.{ModelExecutionFeature}"
-    enum="OptimizationGuideModelExecutionError" expires_after="2024-09-15">
+    enum="OptimizationGuideModelExecutionError" expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -843,7 +843,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.SettingsVisibilityResult.{ModelExecutionFeature}"
-    enum="FeaturesSettingsVisibilityResult" expires_after="2024-09-15">
+    enum="FeaturesSettingsVisibilityResult" expires_after="2024-11-17">
   <owner>tbansal@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -881,7 +881,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutionFetcher.FetchLatency.{ModelExecutionFeature}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelExecutionFetcher.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-09-15">
+    enum="NetErrorCodes" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelExecutionFetcher.Status"
-    enum="HttpResponseCode" expires_after="2024-09-15">
+    enum="HttpResponseCode" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.DidTimeout.{OptimizationTarget}"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -940,7 +940,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionLatency.{OptimizationTarget}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -954,7 +954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionStatus.{OptimizationTarget}"
-    enum="OptimizationGuideExecutionStatus" expires_after="2024-09-15">
+    enum="OptimizationGuideExecutionStatus" expires_after="2024-11-17">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -998,7 +998,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelAvailableToLoad.{OptimizationTarget}"
-    enum="BooleanAvailable" expires_after="2024-09-15">
+    enum="BooleanAvailable" expires_after="2024-11-17">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1015,7 +1015,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
-    enum="BooleanCreated" expires_after="2024-09-15">
+    enum="BooleanCreated" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1100,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable.{OptimizationTarget}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1113,7 +1113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelQuality.UserFeedback.{ModelExecutionFeature}"
-    enum="OptimizationGuideUserFeedback" expires_after="2024-09-15">
+    enum="OptimizationGuideUserFeedback" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <summary>
@@ -1136,7 +1136,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-09-15">
+    enum="NetErrorCodes" expires_after="2024-11-17">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1146,7 +1146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelQualityLogsUploaderService.Status"
-    enum="HttpResponseCode" expires_after="2024-09-15">
+    enum="HttpResponseCode" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <summary>
@@ -1170,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"
-    enum="OptimizationGuideOptimizationFilterStatus" expires_after="2024-09-15">
+    enum="OptimizationGuideOptimizationFilterStatus" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1445,7 +1445,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionManager.ModelAvailableAtRegistration.{OptimizationTarget}"
-    enum="BooleanAvailable" expires_after="2024-09-15">
+    enum="BooleanAvailable" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit.{OptimizationTarget}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1622,7 +1622,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status.{OptimizationTarget}"
-    enum="HttpResponseCode" expires_after="2024-09-15">
+    enum="HttpResponseCode" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1638,7 +1638,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelLoadedVersion.{OptimizationTarget}"
-    units="version number" expires_after="2024-09-15">
+    units="version number" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1662,7 +1662,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelStore.ModelCount.{OptimizationTarget}"
-    units="counts" expires_after="2024-09-15">
+    units="counts" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1686,7 +1686,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PredictionModelStore.ModelRemovalReason.{OptimizationTarget}"
     enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1698,7 +1698,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelStore.TotalDirectorySize.{OptimizationTarget}"
-    units="MB" expires_after="2024-09-15">
+    units="MB" expires_after="2024-11-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1710,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelUpdateVersion.{OptimizationTarget}"
-    units="version number" expires_after="2024-09-15">
+    units="version number" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1722,7 +1722,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelValidationLatency.{OptimizationTarget}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

@@ -905,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeConfigurationTime.{StorageType}{SyncModelType}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -970,7 +970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeMemoryKB{SyncModelType}" units="KB"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1368,7 +1368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SelectedTypesInTransportMode" enum="SyncModelTypes"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
-    enum="FaviconAvailabilityStatus" expires_after="2024-09-15">
+    enum="FaviconAvailabilityStatus" expires_after="2024-11-17">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1516,7 +1516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1858,7 +1858,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2"
     enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>mmrashad@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>

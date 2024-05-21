@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.TotalDamage" units="%"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.ExcessPixelsClipped"
-    units="pixels" expires_after="2024-09-15">
+    units="pixels" expires_after="2024-11-17">
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
-    units="microseconds" expires_after="2024-09-15">
+    units="microseconds" expires_after="2024-11-17">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1158,7 +1158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding3.AllSequences" units="%"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1203,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding3.{Thread}{Sequence}"
-    units="%" expires_after="2024-09-15">
+    units="%" expires_after="2024-11-17">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

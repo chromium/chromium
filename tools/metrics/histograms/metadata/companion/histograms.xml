@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.FullLoad.Latency" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.NavigationLoad.Latency" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

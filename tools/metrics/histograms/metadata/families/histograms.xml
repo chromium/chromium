@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
-    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-09-15">
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-11-17">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekday" units="Hour of day"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekend" units="Hour of day"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2024-09-15">
+    enum="FamilyLinkWebFilterType" expires_after="2024-11-17">
   <owner>fernandex@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>

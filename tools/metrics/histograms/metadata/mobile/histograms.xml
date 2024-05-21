@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Keyboard.LensSupportStatus" enum="IOSLensSupportStatus"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
-    enum="BooleanEnabled" expires_after="2024-09-15">
+    enum="BooleanEnabled" expires_after="2024-11-17">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the origin was already in the provisionally unsubscribed
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
-    units="notifications" expires_after="2024-09-15">
+    units="notifications" expires_after="2024-11-17">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records the number of notifications that were suspended, each time the user

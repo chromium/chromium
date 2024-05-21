@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Crypto.TPMDuration.Virtual.{Operation}{SignatureAlgorithm}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMSupport2" enum="TPMSupport"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>agl@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMSupportType" enum="TPMType"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskType}"
-    enum="UnexportableKeyServiceResult" expires_after="2024-09-15">
+    enum="UnexportableKeyServiceResult" expires_after="2024-11-17">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-11-17">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
@@ -1501,7 +1501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Dns.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
@@ -1516,7 +1516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.FailureTime" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1527,7 +1527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.SuccessTime" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1769,7 +1769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -1787,7 +1787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesSent2" units="bytes"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -1802,7 +1802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2"
-    units="bytes" expires_after="2024-09-15">
+    units="bytes" expires_after="2024-11-17">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -1836,7 +1836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent2"
-    units="bytes" expires_after="2024-09-15">
+    units="bytes" expires_after="2024-11-17">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2543,7 +2543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicHandshakeState" enum="QuicHandshakeState"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2573,7 +2573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicMultiPort.AltPortFailureWhenPathDegradingVsGeneral"
-    units="%" expires_after="2024-09-15">
+    units="%" expires_after="2024-11-17">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2743,7 +2743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncRead" enum="Boolean"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3563,7 +3563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.NumDefaultPathDegrading" units="times"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4588,7 +4588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2024-11-17">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -4658,7 +4658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
-    units="IPCs" expires_after="2024-09-15">
+    units="IPCs" expires_after="2024-11-17">
   <owner>carlscab@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -4703,7 +4703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.TopFrameOriginOK"
-    enum="BooleanMatched" expires_after="2024-09-15">
+    enum="BooleanMatched" expires_after="2024-11-17">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -5129,7 +5129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.OnSettings.{StreamState}StreamCount2"
-    units="count" expires_after="2024-09-15">
+    units="count" expires_after="2024-11-17">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>

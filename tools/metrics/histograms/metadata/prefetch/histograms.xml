@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2024-09-15">
+    enum="HttpResponseCode" expires_after="2024-11-17">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

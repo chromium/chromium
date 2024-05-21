@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadSizeMiB" units="MiB"
-    expires_after="2024-09-15">
+    expires_after="2024-11-17">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
