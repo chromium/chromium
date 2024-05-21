@@ -376,7 +376,13 @@ bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
 bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
     content::BrowserContext* context,
     const Extension* extension) const {
-  CHECK(extension);
+  if (!extension) {
+    // TODO(crbug.com/339908207): Create tests for this once crash is confirmed
+    // fixed.
+    // An extension may have been unloaded when this runs.
+    return false;
+  }
+
   auto activation_token = GetCurrentActivationToken(extension->id());
 
   if (!activation_token) {
