@@ -50,18 +50,13 @@ constexpr char kCookieControlsActivatedSiteDataAccessHistogram[] =
 class MockCookieControlsObserver
     : public content_settings::CookieControlsObserver {
  public:
-  MOCK_METHOD(void,
-              OnStatusChanged,
+  MOCK_METHOD(void, OnStatusChanged,
               (/*controls_visible*/ bool,
-               /*protections_on*/ bool,
-               CookieControlsEnforcement,
-               CookieBlocking3pcdStatus,
-               base::Time));
-  MOCK_METHOD(void,
-              OnCookieControlsIconStatusChanged,
+               /*protections_on*/ bool, CookieControlsEnforcement,
+               CookieBlocking3pcdStatus, base::Time));
+  MOCK_METHOD(void, OnCookieControlsIconStatusChanged,
               (/*icon_visible*/ bool,
-               /*protections_on*/ bool,
-               CookieBlocking3pcdStatus,
+               /*protections_on*/ bool, CookieBlocking3pcdStatus,
                /*should_highlight*/ bool));
   MOCK_METHOD(void, OnFinishedPageReloadWithChangedSettings, ());
 };
@@ -132,10 +127,8 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness,
   }
 
   void ValidateCookieControlsActivatedUKM(
-      bool fed_cm_initiated,
-      bool storage_access_api_requested,
-      int page_refresh_count,
-      bool repeated_activation,
+      bool fed_cm_initiated, bool storage_access_api_requested,
+      int page_refresh_count, bool repeated_activation,
       blink::mojom::EngagementLevel site_engagement_level,
       ThirdPartySiteDataAccessType site_data_access_type) {
     auto entries = ukm_recorder_->GetEntriesByName(
@@ -1332,6 +1325,21 @@ TEST_P(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest,
+       FrequentPageReloadsWithoutUpdateBeingCalled) {
+  NavigateAndCommit(GURL("https://example.com"));
+  // Call the entry point animated function without setting up the observer.
+  cookie_controls()->OnEntryPointAnimated();
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // A setting is not recorded.
+  base::Value stored_value =
+      hcsm->GetWebsiteSetting(GURL("https://example.com"), GURL(),
+                              ContentSettingsType::COOKIE_CONTROLS_METADATA);
+  EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 

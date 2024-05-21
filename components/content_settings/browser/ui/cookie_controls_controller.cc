@@ -276,6 +276,12 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
 }
 
 void CookieControlsController::OnEntryPointAnimated() {
+  // sanity check if WebContents was instantiated (update method called before)
+  // TODO(b/341972754): refactor this to be handled properly via update method
+  // for all Android corner cases.
+  if (GetWebContents() == nullptr) {
+    return;
+  }
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
   metadata.Set(kEntryPointAnimatedKey, base::Value(true));
