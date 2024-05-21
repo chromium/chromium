@@ -168,7 +168,7 @@ class GerritAPI:
         query = ' '.join([
             f'project:"{self.project_config.gerrit_project}"',
             f'branch:{self.project_config.gerrit_branch}',
-            'is:submittable',
+            'is:open',
             '-is:wip',
         ])
         open_cls = self.query_cls(query, limit, output_options)
