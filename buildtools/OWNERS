@@ -1,9 +1,0 @@
-set noparent
-thakis@chromium.org
-thomasanderson@chromium.org
-
-# Chrome Build Team members
-file://infra/config/groups/chrome-build/OWNERS
-
-# For the libc++ autoroller.
-per-file deps_revisions.gni=*
