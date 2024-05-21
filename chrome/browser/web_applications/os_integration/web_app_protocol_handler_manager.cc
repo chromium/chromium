@@ -133,26 +133,4 @@ WebAppProtocolHandlerManager::GetDisallowedHandlersForProtocol(
   return protocol_handlers;
 }
 
-void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
-    const webapps::AppId& app_id,
-    ResultCallback callback) {
-  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  const std::vector<apps::ProtocolHandlerInfo> handlers =
-      GetAppProtocolHandlerInfos(app_id);
-  RegisterProtocolHandlersWithOs(
-      app_id, provider_->registrar_unsafe().GetAppShortName(app_id),
-      profile_->GetPath(), handlers, std::move(callback));
-}
-
-void WebAppProtocolHandlerManager::UnregisterOsProtocolHandlers(
-    const webapps::AppId& app_id,
-    base::OnceCallback<void(Result)> callback) {
-  UnregisterProtocolHandlersWithOs(app_id, profile_->GetPath(),
-                                   std::move(callback));
-}
-
 }  // namespace web_app

@@ -2587,20 +2587,6 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     info->file_handlers = file_handlers;
     webapps::AppId app_id =
         web_app::test::InstallWebApp(browser()->profile(), std::move(info));
-
-    auto& protocol_handler_manager =
-        provider()
-            ->os_integration_manager()
-            .protocol_handler_manager_for_testing();
-
-    base::RunLoop run_loop;
-    protocol_handler_manager.RegisterOsProtocolHandlers(
-        app_id, base::BindLambdaForTesting([&](web_app::Result result) {
-          EXPECT_EQ(web_app::Result::kOk, result);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
     return app_id;
   }
 
