@@ -932,6 +932,15 @@ template("test_runner_script") {
         "--robolectric-runtime-deps-dir",
         "@WrappedPath(${_rebased_robolectric_runtime_deps_dir})",
       ]
+      if (build_with_chromium) {
+        _allowlist = "//testing/android/junit/shadows-allowlist.txt"
+        data += [ _allowlist ]
+        _rebased_allowlist = rebase_path(_allowlist, root_build_dir)
+        executable_args += [
+          "--shadows-allowlist",
+          "@WrappedPath($_rebased_allowlist)",
+        ]
+      }
       if (use_jacoco_coverage) {
         # Set a default coverage output directory (can be overridden by user
         # passing the same flag).

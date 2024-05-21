@@ -345,11 +345,13 @@ In summary:
 * Use real dependencies when feasible and fast. Use Mockito’s `@Mock` most
   of the time, but write fakes for frequently used dependencies.
 
-* Do not use Robolectric Shadows for Chromium code. Instead, use
-  `setForTesting()` methods so that it is clear that test hooks exist.
-  * When `setForTesting()` methods alter global state, use
-    [`ResettersForTesting.register()`] to ensure that the state is reset
-    between tests. Omit resetting them via `@After` methods.
+* Do not use Robolectric Shadows for Chromium code.
+  * Shadows make code harder to refactor.
+  * Prefer to refactor code to make it more testable.
+  * When you really need to use a test double for a static method, add a
+    `setFooForTesting() [...]` method to make the test contract explicit.
+    * Use [`ResettersForTesting.register()`] from within `ForTesting()`
+      methods to ensure that state is reset between tests.
 
 * Use Robolectric when possible (when tests do not require native). Other
   times, use on-device tests with one of the following annotations:
