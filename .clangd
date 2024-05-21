@@ -1,7 +1,0 @@
-# Disable include-cleaner checks, as Chromium doesn't enforce them and they
-# just create noise when working with clangd.
-Diagnostics:
-  UnusedIncludes: None
-  MissingIncludes: None
-CompileFlags:
-  Remove: [-cfg=*, -exec_root=*, -inputs=*, -DUNSAFE_BUFFERS_BUILD]
