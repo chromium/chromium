@@ -176,6 +176,8 @@ export class GestureHandler {
       case MacroName.KEY_PRESS_LEFT:
       case MacroName.KEY_PRESS_RIGHT:
       case MacroName.KEY_PRESS_UP:
+      case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
+      case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return new KeyPressMacro(name);
       default:
         return;

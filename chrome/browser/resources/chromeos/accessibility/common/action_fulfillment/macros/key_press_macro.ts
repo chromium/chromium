@@ -36,6 +36,14 @@ export class KeyPressMacro extends Macro {
       case MacroName.KEY_PRESS_UP:
         this.key_ = KeyCode.UP;
         break;
+      case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
+        // The MEDIA_LAUNCH_APP1 key is bound to the kToggleOverview accelerator
+        // action in accelerators.cc.
+        this.key_ = KeyCode.MEDIA_LAUNCH_APP1;
+        break;
+      case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
+        this.key_ = KeyCode.MEDIA_PLAY_PAUSE;
+        break;
       default:
         console.error('Macro ' + macroName + ' is not a key press macro.');
     }

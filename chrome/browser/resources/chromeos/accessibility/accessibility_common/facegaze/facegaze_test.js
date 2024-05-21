@@ -662,13 +662,18 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
           .set(FacialGesture.EYE_SQUINT_RIGHT, MacroName.KEY_PRESS_UP)
           .set(FacialGesture.MOUTH_SMILE, MacroName.KEY_PRESS_DOWN)
           .set(FacialGesture.MOUTH_UPPER_UP, MacroName.KEY_PRESS_LEFT)
-          .set(FacialGesture.EYES_BLINK, MacroName.KEY_PRESS_RIGHT);
+          .set(FacialGesture.EYES_BLINK, MacroName.KEY_PRESS_RIGHT)
+          .set(FacialGesture.JAW_OPEN, MacroName.KEY_PRESS_TOGGLE_OVERVIEW)
+          .set(
+              FacialGesture.MOUTH_PUCKER, MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE);
   const gestureToConfidence = new Map()
                                   .set(FacialGesture.EYE_SQUINT_LEFT, 0.7)
                                   .set(FacialGesture.EYE_SQUINT_RIGHT, 0.7)
                                   .set(FacialGesture.MOUTH_SMILE, 0.7)
                                   .set(FacialGesture.MOUTH_UPPER_UP, 0.7)
-                                  .set(FacialGesture.EYES_BLINK, 0.7);
+                                  .set(FacialGesture.EYES_BLINK, 0.7)
+                                  .set(FacialGesture.JAW_OPEN, 0.7)
+                                  .set(FacialGesture.MOUTH_PUCKER, 0.7);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withGestureToMacroName(gestureToMacroName)
@@ -701,7 +706,13 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
                            gestures.blinkLeft ? gestures.blinkLeft : 0.3)
                        .addGestureWithConfidence(
                            MediapipeFacialGesture.EYE_BLINK_RIGHT,
-                           gestures.blinkRight ? gestures.blinkRight : 0.3);
+                           gestures.blinkRight ? gestures.blinkRight : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.JAW_OPEN,
+                           gestures.jawOpen ? gestures.jawOpen : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.MOUTH_PUCKER,
+                           gestures.mouthPucker ? gestures.mouthPucker : 0.3);
     this.processFaceLandmarkerResult(
         result, /*triggerMouseControllerInterval=*/ true);
     return this.mockAccessibilityPrivate.syntheticKeyEvents_;
@@ -792,4 +803,36 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
       chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
       keyEvents[9].type);
   assertEquals(KeyCode.LEFT, keyEvents[9].keyCode);
+
+  // Jaw open for toggle overview key press.
+  keyEvents = makeResultAndProcess({jawOpen: .75});
+  assertEquals(11, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[10].type);
+  assertEquals(KeyCode.MEDIA_LAUNCH_APP1, keyEvents[10].keyCode);
+
+  // Jaw close for toggle overview key release.
+  keyEvents = makeResultAndProcess({});
+  assertEquals(12, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[11].type);
+  assertEquals(KeyCode.MEDIA_LAUNCH_APP1, keyEvents[11].keyCode);
+
+  // Mouth pucker for media play/pause key press.
+  keyEvents = makeResultAndProcess({mouthPucker: .75});
+  assertEquals(13, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[12].type);
+  assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[12].keyCode);
+
+  // Stop mouth pucker for media play/pause key release.
+  keyEvents = makeResultAndProcess({});
+  assertEquals(14, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[13].type);
+  assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[13].keyCode);
 });
