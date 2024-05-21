@@ -40,8 +40,9 @@ std::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
     return std::nullopt;
   }
 
-  return base::span<uint8_t>(static_cast<uint8_t*>(data),
-                             base::checked_cast<size_t>(size));
+  // SAFETY: This relies on the ByteBuffer to be internally valid.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(static_cast<uint8_t*>(data),
+                                            base::checked_cast<size_t>(size)));
 }
 
 }  // namespace base::android
