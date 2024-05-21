@@ -75,7 +75,7 @@ void FastCheckoutViewImpl::Show(
   std::vector<base::android::ScopedJavaLocalRef<jobject>> credit_cards_array;
   credit_cards_array.reserve(credit_cards.size());
   for (const autofill::CreditCard* card : credit_cards) {
-    autofill_profiles_array.push_back(CreateFastCheckoutCreditCard(
+    credit_cards_array.push_back(CreateFastCheckoutCreditCard(
         env, *card, g_browser_process->GetApplicationLocale()));
   }
 
