@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.updater builder group."""
 
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -109,6 +109,7 @@ updater_mac_builder(
             "release_try_builder",
         ],
     ),
+    cpu = cpu.ARM64,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
