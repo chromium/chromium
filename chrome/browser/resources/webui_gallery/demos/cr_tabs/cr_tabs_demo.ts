@@ -5,50 +5,58 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
-import '../demo.css.js';
 
 import type {CrTabsElement} from '//resources/cr_elements/cr_tabs/cr_tabs.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_tabs_demo.html.js';
+import {getCss} from './cr_tabs_demo.css.js';
+import {getHtml} from './cr_tabs_demo.html.js';
 
-interface CrTabsDemoElement {
+export interface CrTabsDemoElement {
   $: {
     tabs: CrTabsElement,
   };
 }
 
-class CrTabsDemoElement extends PolymerElement {
+export class CrTabsDemoElement extends CrLitElement {
   static get is() {
     return 'cr-tabs-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selectedTabIndex_: Number,
-      tabNames_: Array,
+      selectedTabIndex_: {type: Number},
+      tabNames_: {type: Array},
     };
   }
 
-  private selectedTabIndex_ = 0;
-  private tabNames_: string[] = ['Tab 1', 'Tab 2', 'Tab 3'];
+  protected selectedTabIndex_: number = 0;
+  protected tabNames_: string[] = ['Tab 1', 'Tab 2', 'Tab 3'];
 
-  private onAddClick_() {
-    this.push('tabNames_', 'Added');
-    this.$.tabs.requestUpdate();
+  protected onAddClick_() {
+    this.tabNames_.push('Added');
+    this.tabNames_ = this.tabNames_.slice();
   }
 
-  private onAddAt1Click_() {
-    this.splice('tabNames_', 1, 0, 'Added at 1');
-    this.$.tabs.requestUpdate();
+  protected onAddAt1Click_() {
+    this.tabNames_.splice(1, 0, 'Added at 1');
+    this.tabNames_ = this.tabNames_.slice();
   }
 
-  private onSelectAt1Click_() {
+  protected onSelectAt1Click_() {
     this.selectedTabIndex_ = 1;
+  }
+
+  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
+    this.selectedTabIndex_ = e.detail.value;
   }
 }
 

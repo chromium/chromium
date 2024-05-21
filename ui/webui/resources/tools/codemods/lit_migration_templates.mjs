@@ -25,18 +25,18 @@ const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
 `;
 
 const LISTENER_BINDING_REGEX =
-    /on-(?<eventName>[a-zA-Z-]+)="(?<listenerName>[a-zA-Z_]+)"/g;
+    /on-(?<eventName>[a-zA-Z-]+)="(?<listenerName>[a-zA-Z0-9_]+)"/g;
 
 // Regular expression to parse 2-way bindings like value="{{myValue_}}",
 // and extract 'value' and 'myValue_' into captured groups for further
 // processing.
 const LISTENER_BIDNING_TWO_WAY_REGEX =
-    /(?<childProp>[a-z-]+)="\{\{(?<parentProp>[a-zA-Z_]+)\}\}"/g;
+    /(?<childProp>[a-z-]+)="\{\{(?<parentProp>[a-zA-Z0-9_]+)\}\}"/g;
 
 // Regular expression to extract any "${this.foo}" ocurrences in the HTML
 // template, referring to TS methods or member variables.
 const TS_REFERENCE_REGEX =
-    /"\$\{this\.(?<reference>[a-zA-Z_]+)\}"/g;
+    /"\$\{this\.(?<reference>[a-zA-Z0-9_]+)\}"/g;
 
 // Replaces part of a string with a the provided replacement string.
 function replaceRange(string, start, end, replacement) {

@@ -7,46 +7,50 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toast/cr_toast_manager.js';
-import '../demo.css.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {getToastManager} from '//resources/cr_elements/cr_toast/cr_toast_manager.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_toast_demo.html.js';
+import {getCss} from './cr_toast_demo.css.js';
+import {getHtml} from './cr_toast_demo.html.js';
 
-interface CrToastDemoElement {
+export interface CrToastDemoElement {
   $: {
     toast: CrToastElement,
   };
 }
 
-class CrToastDemoElement extends PolymerElement {
+export class CrToastDemoElement extends CrLitElement {
   static get is() {
     return 'cr-toast-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      message_: String,
-      duration_: Number,
-      showDismissButton_: Boolean,
+      message_: {type: String},
+      duration_: {type: Number},
+      showDismissButton_: {type: Boolean},
     };
   }
 
-  private duration_: number = 0;
-  private message_: string = 'Hello, world';
-  private showDismissButton_: boolean = false;
+  protected duration_: number = 0;
+  protected message_: string = 'Hello, world';
+  protected showDismissButton_: boolean = false;
 
-  private onHideToastClick_() {
+  protected onHideToastClick_() {
     this.$.toast.hide();
   }
 
-  private onShowToastManagerClick_() {
+  protected onShowToastManagerClick_() {
     getToastManager().showForStringPieces([
       {value: '\'', collapsible: false},
       {
@@ -59,8 +63,20 @@ class CrToastDemoElement extends PolymerElement {
     ]);
   }
 
-  private onShowToastClick_() {
+  protected onShowToastClick_() {
     this.$.toast.show();
+  }
+
+  protected onMessageChanged_(e: CustomEvent<{value: string}>) {
+    this.message_ = e.detail.value;
+  }
+
+  protected onShowDismissButtonChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showDismissButton_ = e.detail.value;
+  }
+
+  protected onDurationChanged_(e: CustomEvent<{value: number}>) {
+    this.duration_ = e.detail.value;
   }
 }
 

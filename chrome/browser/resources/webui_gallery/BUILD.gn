@@ -23,11 +23,15 @@ build_webui("build") {
     "demos/cr_dialog/cr_dialog_demo.css",
     "demos/cr_icons/cr_icons_demo.css",
     "demos/cr_input/cr_input_demo.css",
+    "demos/cr_slider/cr_slider_demo.css",
+    "demos/cr_tabs/cr_tabs_demo.css",
+    "demos/cr_toast/cr_toast_demo.css",
     "demos/demo.css",
     "demos/demo_lit.css",
     "demos/md_select/md_select_demo.css",
     "demos/nav_menu/nav_menu_demo.css",
     "demos/progress_indicators/progress_indicator_demo.css",
+    "demos/side_panel/sp_components_demo.css",
   ]
 
   # Files holding a Polymer or native custom element definition AND have an
@@ -77,7 +81,7 @@ build_webui("build") {
   ]
 
   ts_path_mappings =
-      [ "chrome://webui-gallery/shared/*|" +
+      [ "//webui-gallery/shared/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]

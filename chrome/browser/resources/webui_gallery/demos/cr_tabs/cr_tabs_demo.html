@@ -1,39 +1,25 @@
-<style include="demo">
-  cr-tabs,
-  cr-page-selector {
-    width: 100%;
-  }
-
-  .tab-contents {
-    align-items: center;
-    display: flex;
-    height: 150px;
-    justify-content: center;
-  }
-</style>
-
 <h1>cr-tabs</h1>
 <div class="demos">
-  <cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
+  <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
+      .selected="${this.selectedTabIndex_}"
+      @selected-changed="${this.onSelectedTabIndexChanged_}">
   </cr-tabs>
-  <cr-page-selector selected="[[selectedTabIndex_]]">
-    <template is="dom-repeat" items="[[tabNames_]]" as="tabName">
-      <div class="tab-contents">
-        [[tabName]] contents
-      </div>
-    </template>
+  <cr-page-selector .selected="${this.selectedTabIndex_}">
+    ${this.tabNames_.map(tabName => html`
+      <div class="tab-contents">${tabName} contents</div>
+    `)}
   </cr-page-selector>
 </div>
 
 <div class="demos">
   <div class="row">
-    <cr-button on-click="onAddClick_">Add</cr-button>
-    <cr-button on-click="onAddAt1Click_">Add at 1</cr-button>
-    <cr-button on-click="onSelectAt1Click_">Select at 1</cr-button>
+    <cr-button @click="${this.onAddClick_}">Add</cr-button>
+    <cr-button @click="${this.onAddAt1Click_}">Add at 1</cr-button>
+    <cr-button @click="${this.onSelectAt1Click_}">Select at 1</cr-button>
   </div>
 </div>
 
 <div>
-  Tab Count: [[tabNames_.length]],
-  Selected Tab: [[selectedTabIndex_]]
+  Tab Count: ${this.tabNames_.length},
+  Selected Tab: ${this.selectedTabIndex_}
 </div>

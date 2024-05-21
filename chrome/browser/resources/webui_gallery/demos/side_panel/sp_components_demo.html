@@ -1,48 +1,3 @@
-<style include="md-select sp-shared-style demo">
-  #urlCountSlider {
-    width: 200px;
-  }
-
-  .side-panel-demo {
-    background: var(--color-side-panel-content-background);
-    border: solid 1px var(--cr-separator-color);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    padding: var(--sp-body-padding) 0;
-    height: 500px;
-    width: 304px;
-  }
-
-  .side-panel-demo:has(sp-footer) {
-    padding-block-end: 0;
-  }
-
-  sp-heading {
-    padding: 0;
-  }
-
-  #scroller {
-    display: flex;
-    flex-direction: column;
-    height: 200px;
-    min-height: 0;
-  }
-
-  .card-content {
-    align-items: center;
-    display: flex;
-    height: 300px;
-    justify-content: center;
-    width: 100%;
-  }
-
-  #emptyStateDemo {
-    align-items: center;
-    gap: 0;
-  }
-</style>
-
 <h1>Side panel shared components</h1>
 <div class="demos">
   Shared UI elements that are only accessible to WebUIs in
@@ -52,24 +7,28 @@
 <div class="demos">
   <div class="row center">
     <label id="urlCountLabel">Number of url items</label>
-    <cr-slider id="urlCountSlider" min="1" max="30" value="[[urlCount_]]"
-        on-cr-slider-value-changed="onUrlCountChanged_"
+    <cr-slider id="urlCountSlider" min="1" max="30" .value="${this.urlCount_}"
+        @cr-slider-value-changed="${this.onUrlCountChanged_}"
         aria-labelledby="urlCountLabel">
     </cr-slider>
   </div>
-  <cr-checkbox checked="{{hideBackButton_}}">
+  <cr-checkbox ?checked="${this.hideBackButton_}"
+      @checked-changed="${this.onHideBackButtonChanged_}">
     Hide back button in heading
   </cr-checkbox>
-  <cr-checkbox checked="{{showBadges_}}">Show item badges</cr-checkbox>
+  <cr-checkbox ?checked="${this.showBadges_}"
+      @checked-changed="${this.onShowBadgesChanged_}">
+    Show item badges
+  </cr-checkbox>
   <div class="row center">
     <label id="itemSizeLabel">Item size</label>
     <select id="itemSizeSelect" class="md-select"
         aria-labelledby="itemSizeLabel"
-        value="[[itemSize_]]"
-        on-change="onItemSizeChanged_">
-      <template is="dom-repeat" items="[[itemSizeOptions_]]">
-        <option value="[[item]]">[[item]]</option>
-      </template>
+        .value="${this.itemSize_}"
+        @change="${this.onItemSizeChanged_}">
+      ${this.itemSizeOptions_.map(item => html`
+        <option .value="${item}">${item}</option>
+      `)}
     </select>
   </div>
 </div>
@@ -77,23 +36,24 @@
 <h2>Scrollable container with cards</h2>
 <div id="scroller" class="side-panel-demo sp-scroller">
   <div class="sp-card">
-    <sp-heading hide-back-button="[[hideBackButton_]]">
+    <sp-heading ?hide-back-button="${this.hideBackButton_}"
+        back-button-aria-label="$i18n{backButton}">
       <h3 slot="heading">Heading</h3>
     </sp-heading>
 
-    <template is="dom-repeat" items="[[urls_]]">
-      <cr-url-list-item title="[[item.title]]"
-          description="[[item.url]]"
-          url="[[item.url]]"
-          size="[[itemSize_]]">
-        <template is="dom-if" if="[[showBadges_]]" restamp>
+    ${this.urls_.map(item => html`
+      <cr-url-list-item title="${item.title}"
+          description="${item.url}"
+          .url="${item.url}"
+          .size="${this.itemSize_}">
+        ${this.showBadges_ ? html`
           <sp-list-item-badge slot="badges">
             <cr-icon icon="cr:info-outline"></cr-icon>
             <span>2 Notes</span>
           </sp-list-item-badge>
-        </template>
+        ` : ''}
       </cr-url-list-item>
-    </template>
+    `)}
   </div>
   <hr class="sp-cards-separator">
   <div class="sp-card">

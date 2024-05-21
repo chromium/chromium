@@ -13,6 +13,7 @@
 #include "chrome/grit/webui_gallery_resources.h"
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -40,6 +41,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   // TODO(colehorvitz): Promote to a place where it can be easily registered
   // by many WebUIs.
   source->AddString("opensInNewTab", "Opens in new tab");
+  source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
 
   // Add shared SidePanel resources so that those elements can be demonstrated
   // as well.

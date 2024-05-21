@@ -4,19 +4,12 @@
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
-import '../demo.css.js';
 
 import type {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_slider_demo.html.js';
-
-interface CrSliderDemoElement {
-  $: {
-    basicSlider: CrSliderElement,
-    tickedSlider: CrSliderElement,
-  };
-}
+import {getCss} from './cr_slider_demo.css.js';
+import {getHtml} from './cr_slider_demo.html.js';
 
 function createTicks(
     min: number, increment: number, steps: number): SliderTick[] {
@@ -31,31 +24,42 @@ function createTicks(
   return ticks;
 }
 
-class CrSliderDemoElement extends PolymerElement {
+export interface CrSliderDemoElement {
+  $: {
+    basicSlider: CrSliderElement,
+    tickedSlider: CrSliderElement,
+  };
+}
+
+export class CrSliderDemoElement extends CrLitElement {
   static get is() {
     return 'cr-slider-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      basicValue_: Number,
-      disabledTicks_: Array,
-      showMarkers_: Boolean,
-      tickedValue_: Number,
-      ticks_: Array,
+      basicValue_: {type: Number},
+      disabledTicks_: {type: Array},
+      showMarkers_: {type: Boolean},
+      tickedValue_: {type: Number},
+      ticks_: {type: Array},
     };
   }
 
-  private basicValue_: number = 5;
-  private showMarkers_: boolean = false;
-  private tickedValue_: number = 0;
-  private ticks_: SliderTick[] = createTicks(0, 5, 5);
+  protected basicValue_: number = 5;
+  protected showMarkers_: boolean = false;
+  protected tickedValue_: number = 0;
+  protected ticks_: SliderTick[] = createTicks(0, 5, 5);
 
-  private getMarkerCount_(): number {
+  protected getMarkerCount_(): number {
     if (!this.showMarkers_) {
       return 0;
     }
@@ -63,16 +67,20 @@ class CrSliderDemoElement extends PolymerElement {
     return this.ticks_.length;
   }
 
-  private getTickValue_(): number {
+  protected getTickValue_(): number {
     return this.ticks_[this.tickedValue_]!.value;
   }
 
-  private onBasicValueChanged_() {
+  protected onBasicValueChanged_() {
     this.basicValue_ = this.$.basicSlider.value;
   }
 
-  private onTickedValueChanged_() {
+  protected onTickedValueChanged_() {
     this.tickedValue_ = this.$.tickedSlider.value;
+  }
+
+  protected onShowMarkersChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showMarkers_ = e.detail.value;
   }
 }
 
