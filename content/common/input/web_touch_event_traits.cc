@@ -38,6 +38,9 @@ void WebTouchEventTraits::ResetType(WebInputEvent::Type type,
   event->dispatch_type = type == WebInputEvent::Type::kTouchCancel
                              ? WebInputEvent::DispatchType::kEventNonBlocking
                              : WebInputEvent::DispatchType::kBlocking;
+  event->touch_start_or_first_touch_move &=
+      (type == WebInputEvent::Type::kTouchStart ||
+       type == WebInputEvent::Type::kTouchMove);
   event->SetTimeStamp(timestamp);
 }
 
