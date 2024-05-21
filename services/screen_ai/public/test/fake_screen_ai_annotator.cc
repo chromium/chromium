@@ -59,4 +59,6 @@ FakeScreenAIAnnotator::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+void FakeScreenAIAnnotator::SetClientType(mojom::OcrClientType) {}
+
 }  // namespace screen_ai::test

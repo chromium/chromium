@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace app_list {
 namespace {
@@ -215,7 +216,8 @@ ImageAnnotationWorker::ImageAnnotationWorker(
     CHECK(profile);
     // `OpticalCharacterRecognizer` should be created on the UI thread.
     optical_character_recognizer_ =
-        screen_ai::OpticalCharacterRecognizer::Create(profile);
+        screen_ai::OpticalCharacterRecognizer::Create(
+            profile, screen_ai::mojom::OcrClientType::kLocalSearch);
   }
 }
 

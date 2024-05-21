@@ -33,12 +33,14 @@ class OpticalCharacterRecognizer
   // `status_callback` when service initialization status is known.
   static scoped_refptr<screen_ai::OpticalCharacterRecognizer>
   CreateWithStatusCallback(Profile* profile,
+                           mojom::OcrClientType client_type,
                            base::OnceCallback<void(bool)> status_callback);
 
   // Creates OCR using ScreenAI service instance for `profile`. If needed,
   // triggers download and initialization of the component.
   static scoped_refptr<screen_ai::OpticalCharacterRecognizer> Create(
-      Profile* profile);
+      Profile* profile,
+      mojom::OcrClientType client_type);
 
   // Creates OCR for testing. The object will not be connected to ScreenAI
   // service and always returns empty results.
@@ -73,7 +75,8 @@ class OpticalCharacterRecognizer
   virtual void FlushForTesting() {}
 
  protected:
-  explicit OpticalCharacterRecognizer(Profile* profile);
+  explicit OpticalCharacterRecognizer(Profile* profile,
+                                      mojom::OcrClientType client_type);
   ~OpticalCharacterRecognizer() override;
 
   // OCR Service is ready to use.
@@ -96,6 +99,8 @@ class OpticalCharacterRecognizer
   // while this object still exists, or after it is used in
   // `OnOCRInitializationCallback`.
   raw_ptr<Profile> profile_;
+
+  mojom::OcrClientType client_type_;
 
   // For calls from another sequence, this object keeps a pointer to the task
   // scheduler of the other sequence to return the result.

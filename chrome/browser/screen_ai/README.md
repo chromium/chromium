@@ -11,6 +11,9 @@ See `services/screen_ai/README.md` for more.
 ## How to Use for OCR
 Depending on your use case restrictions, choose one of the following
 approaches.
+1. If you are adding a new client for OCR, add a new enum value to
+   `screen_ai::mojom::OcrClientType`, otherwise choose an appropriate one from
+   it for the next steps.
 1. Using `OpticalCharacterRecognizer:CreateWithStatusCallback`, create an OCR
     object, and wait until the callback is called. This will trigger download
     and startup of the service (if needed) and reports the result.\
@@ -29,6 +32,8 @@ approaches.
    in a callback.\
    Once you know the service is ready, trigger connection to it in your process
    by connecting to `screen_ai:mojom:ScreenAIAnnotator` interface.\
+   Before calling any of the `PerformOCR` functions, call `SetClient` once to
+   set the client type.\
    For an example see `components/pdf/renderer/pdf_ocr_helper.cc`.
 
 ## How to use Main Content Extraction

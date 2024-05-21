@@ -17,7 +17,8 @@ FakeOpticalCharacterRecognizer::Create(bool return_empty) {
 
 FakeOpticalCharacterRecognizer::FakeOpticalCharacterRecognizer(
     bool return_empty)
-    : OpticalCharacterRecognizer(/*profile=*/nullptr),
+    : OpticalCharacterRecognizer(/*profile=*/nullptr,
+                                 mojom::OcrClientType::kTest),
       return_empty_(return_empty) {
   ready_ = true;
 }

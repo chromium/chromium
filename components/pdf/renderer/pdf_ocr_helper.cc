@@ -47,6 +47,8 @@ PdfOcrHelper::PdfOcrHelper(
   CHECK(features::IsPdfOcrEnabled());
   render_frame.GetBrowserInterfaceBroker()->GetInterface(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
+  screen_ai_annotator_->SetClientType(
+      screen_ai::mojom::OcrClientType::kPdfViewer);
 }
 
 PdfOcrHelper::~PdfOcrHelper() {

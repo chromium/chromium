@@ -36,27 +36,33 @@ namespace screen_ai {
 
 // static
 scoped_refptr<screen_ai::OpticalCharacterRecognizer>
-OpticalCharacterRecognizer::Create(Profile* profile) {
+OpticalCharacterRecognizer::Create(Profile* profile,
+                                   mojom::OcrClientType client_type) {
   CHECK(profile);
-  return CreateWithStatusCallback(profile, base::NullCallbackAs<void(bool)>());
+  return CreateWithStatusCallback(profile, client_type,
+                                  base::NullCallbackAs<void(bool)>());
 }
 
 // static
 scoped_refptr<screen_ai::OpticalCharacterRecognizer>
 OpticalCharacterRecognizer::CreateWithStatusCallback(
     Profile* profile,
+    mojom::OcrClientType client_type,
     base::OnceCallback<void(bool)> status_callback) {
   CHECK(profile);
-  auto ocr =
-      base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
+  auto ocr = base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(
+      profile, client_type);
   ocr->Initialize(std::move(status_callback));
   return ocr;
 }
 
-OpticalCharacterRecognizer::OpticalCharacterRecognizer(Profile* profile)
+OpticalCharacterRecognizer::OpticalCharacterRecognizer(
+    Profile* profile,
+    mojom::OcrClientType client_type)
     : RefCountedDeleteOnSequence<OpticalCharacterRecognizer>(
           content::GetUIThreadTaskRunner()),
-      profile_(profile) {
+      profile_(profile),
+      client_type_(client_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Tests may pass an empty profile.
   if (profile_) {
@@ -110,6 +116,7 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
     router->BindScreenAIAnnotator(
         screen_ai_annotator_->BindNewPipeAndPassReceiver());
     screen_ai_annotator_->reset_on_disconnect();
+    (*screen_ai_annotator_)->SetClientType(client_type_);
   }
 
   // Profile is not needed any more.

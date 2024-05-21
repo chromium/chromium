@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -36,6 +37,36 @@
 namespace screen_ai {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OcrClientTypeForMetrics {
+  kTest = 0,
+  kPdfViewer = 1,
+  kLocalSearch = 2,
+  kCameraApp = 3,
+  kPdfSearchify = 4,
+  kMediaApp = 5,
+  kMaxValue = kMediaApp
+};
+
+OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
+  switch (client_type) {
+    case mojom::OcrClientType::kTest:
+      CHECK_IS_TEST();
+      return OcrClientTypeForMetrics::kTest;
+    case mojom::OcrClientType::kPdfViewer:
+      return OcrClientTypeForMetrics::kPdfViewer;
+    case mojom::OcrClientType::kLocalSearch:
+      return OcrClientTypeForMetrics::kLocalSearch;
+    case mojom::OcrClientType::kCameraApp:
+      return OcrClientTypeForMetrics::kCameraApp;
+    case mojom::OcrClientType::kPdfSearchify:
+      return OcrClientTypeForMetrics::kPdfSearchify;
+    case mojom::OcrClientType::kMediaApp:
+      return OcrClientTypeForMetrics::kMediaApp;
+  }
+}
 
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
     const std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
@@ -138,7 +169,10 @@ ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIServiceFactory> receiver)
     : factory_receiver_(this, std::move(receiver)),
       ocr_receiver_(this),
-      main_content_extraction_receiver_(this) {}
+      main_content_extraction_receiver_(this) {
+  screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
+      &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
+}
 
 ScreenAIService::~ScreenAIService() = default;
 
@@ -345,6 +379,11 @@ void ScreenAIService::ExtractSemanticLayout(
 std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
                                             bool a11y_tree_request) {
+  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
+  CHECK(entry != ocr_client_types_.end()) << "OCR client type is not set.";
+  base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
+                                GetClientType(entry->second));
+
   base::TimeTicks start_time = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
@@ -382,6 +421,10 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   }
 
   return result;
+}
+
+void ScreenAIService::SetClientType(mojom::OcrClientType client_type) {
+  ocr_client_types_[screen_ai_annotators_.current_receiver()] = client_type;
 }
 
 void ScreenAIService::PerformOcrAndReturnAnnotation(
@@ -494,6 +537,13 @@ void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
           .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
           .Record(ukm_recorder);
     }
+  }
+}
+
+void ScreenAIService::ReceiverDisconnected() {
+  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
+  if (entry != ocr_client_types_.end()) {
+    ocr_client_types_.erase(entry);
   }
 }
 

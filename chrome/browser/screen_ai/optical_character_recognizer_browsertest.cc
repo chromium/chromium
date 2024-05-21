@@ -164,7 +164,8 @@ class OpticalCharacterRecognizerTest
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr =
-      screen_ai::OpticalCharacterRecognizer::Create(browser()->profile());
+      screen_ai::OpticalCharacterRecognizer::Create(
+          browser()->profile(), mojom::OcrClientType::kTest);
   base::RunLoop run_loop;
   // This step can be slow.
   WaitForStatus(ocr, &run_loop, /*remaining_tries=*/25);
@@ -180,13 +181,14 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), base::BindOnce(
-                                    [](base::RunLoop* run_loop,
-                                       bool expected_result, bool successful) {
-                                      EXPECT_EQ(expected_result, successful);
-                                      run_loop->Quit();
-                                    },
-                                    &run_loop, IsOcrAvailable()));
+          browser()->profile(), mojom::OcrClientType::kTest,
+          base::BindOnce(
+              [](base::RunLoop* run_loop, bool expected_result,
+                 bool successful) {
+                EXPECT_EQ(expected_result, successful);
+                run_loop->Quit();
+              },
+              &run_loop, IsOcrAvailable()));
   run_loop.Run();
   EXPECT_TRUE(ocr);
 }
@@ -198,13 +200,14 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR) {
   base::RunLoop init_run_loop;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), base::BindOnce(
-                                    [](base::RunLoop* run_loop,
-                                       bool expected_result, bool successful) {
-                                      EXPECT_EQ(expected_result, successful);
-                                      run_loop->Quit();
-                                    },
-                                    &init_run_loop, IsOcrAvailable()));
+          browser()->profile(), mojom::OcrClientType::kTest,
+          base::BindOnce(
+              [](base::RunLoop* run_loop, bool expected_result,
+                 bool successful) {
+                EXPECT_EQ(expected_result, successful);
+                run_loop->Quit();
+              },
+              &init_run_loop, IsOcrAvailable()));
   init_run_loop.Run();
 
   // Perform OCR.
@@ -227,13 +230,14 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_WithResults) {
   base::RunLoop init_run_loop;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), base::BindOnce(
-                                    [](base::RunLoop* run_loop,
-                                       bool expected_result, bool successful) {
-                                      EXPECT_EQ(expected_result, successful);
-                                      run_loop->Quit();
-                                    },
-                                    &init_run_loop, IsOcrAvailable()));
+          browser()->profile(), mojom::OcrClientType::kTest,
+          base::BindOnce(
+              [](base::RunLoop* run_loop, bool expected_result,
+                 bool successful) {
+                EXPECT_EQ(expected_result, successful);
+                run_loop->Quit();
+              },
+              &init_run_loop, IsOcrAvailable()));
   init_run_loop.Run();
 
   // Perform OCR.

@@ -31,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
@@ -81,6 +82,7 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   }
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
       Profile::FromBrowserContext(base::to_address(browser_context_)),
+      screen_ai::mojom::OcrClientType::kMediaApp,
       base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());

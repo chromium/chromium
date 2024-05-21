@@ -19,6 +19,16 @@ enum Direction {
   DIRECTION_TOP_TO_BOTTOM,
 };
 
+// Clients of the OCR service.
+enum OcrClientType {
+  kTest,
+  kPdfViewer,
+  kLocalSearch,
+  kCameraApp,
+  kPdfSearchify,
+  kMediaApp,
+};
+
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
 struct VisualAnnotation {
   array<LineBox> lines;
@@ -112,6 +122,9 @@ interface ScreenAIAnnotator {
   // of the underling proto.
   PerformOcrAndReturnAnnotation(skia.mojom.BitmapN32 image) =>
     (VisualAnnotation visual_annotation);
+
+  // Sets OCR client type for metrics.
+  SetClientType(OcrClientType client_type);
 };
 
 // This interface sends accessibility messages from the Screen AI Service to

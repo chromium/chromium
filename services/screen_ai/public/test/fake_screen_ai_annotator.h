@@ -33,6 +33,8 @@ class FakeScreenAIAnnotator : public mojom::ScreenAIAnnotator {
       const ::SkBitmap& image,
       PerformOcrAndReturnAnnotationCallback callback) override;
 
+  void SetClientType(mojom::OcrClientType client_type) override;
+
   mojo::PendingRemote<mojom::ScreenAIAnnotator> BindNewPipeAndPassRemote();
 
  private:

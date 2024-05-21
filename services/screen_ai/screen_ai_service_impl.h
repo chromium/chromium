@@ -73,6 +73,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
                              ExtractSemanticLayoutCallback callback) override;
 
   // mojom::ScreenAIAnnotator:
+  void SetClientType(mojom::OcrClientType client) override;
+
+  // mojom::ScreenAIAnnotator:
   void PerformOcrAndReturnAXTreeUpdate(
       const SkBitmap& image,
       PerformOcrAndReturnAXTreeUpdateCallback callback) override;
@@ -142,10 +145,15 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       const SkBitmap& image,
       bool a11y_tree_request);
 
+  void ReceiverDisconnected();
+
   mojo::Receiver<mojom::ScreenAIServiceFactory> factory_receiver_;
   mojo::Receiver<mojom::OCRService> ocr_receiver_;
   mojo::Receiver<mojom::MainContentExtractionService>
       main_content_extraction_receiver_;
+
+  // Client type for each OCR receiver.
+  std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
 
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;
