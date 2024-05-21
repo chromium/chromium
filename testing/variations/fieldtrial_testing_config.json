@@ -12887,21 +12887,6 @@
             ]
         }
     ],
-    "NotificationGesturesUpdate": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NotificationGesturesUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "NotificationOneTapUnsubscribe": [
         {
             "platforms": [

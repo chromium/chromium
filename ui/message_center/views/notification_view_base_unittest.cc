@@ -1,6 +1,9 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "ui/message_center/views/notification_view_base.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -12,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -29,7 +31,6 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
-#include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/native_theme/native_theme.h"
@@ -1177,26 +1178,6 @@ TEST_F(NotificationViewBaseTest, ShowTimestamp) {
                    ->GetVisible());
 }
 
-class NotificationViewBaseWithNotificationGestureUpdateTest
-    : public NotificationViewBaseTest {
- public:
-  NotificationViewBaseWithNotificationGestureUpdateTest() = default;
-  NotificationViewBaseWithNotificationGestureUpdateTest(
-      const NotificationViewBaseTest&) = delete;
-  NotificationViewBaseTest& operator=(const NotificationViewBaseTest&) = delete;
-
-  // Overridden from ViewsTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kNotificationGesturesUpdate}, {});
-
-    NotificationViewBaseTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SlideOutWithMessageCenterView \
   DISABLED_SlideOutWithMessageCenterView
@@ -1206,8 +1187,7 @@ class NotificationViewBaseWithNotificationGestureUpdateTest
 // Tests slide out behavior when the `MessageCenterView` exists. The
 // notification's popup should be dismissed but the notification should not be
 // removed.
-TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
-       MAYBE_SlideOutWithMessageCenterView) {
+TEST_F(NotificationViewBaseTest, MAYBE_SlideOutWithMessageCenterView) {
   SetHasMessageCenterView(/*has_message_center_view=*/true);
 
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
@@ -1237,8 +1217,7 @@ TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
 #else
 #define MAYBE_SlideOutByTrackpad SlideOutByTrackpad
 #endif
-TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
-       MAYBE_SlideOutByTrackpad) {
+TEST_F(NotificationViewBaseTest, MAYBE_SlideOutByTrackpad) {
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

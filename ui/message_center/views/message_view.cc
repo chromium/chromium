@@ -12,7 +12,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -77,10 +76,7 @@ MessageView::MessageView(const Notification& notification)
       timestamp_(notification.timestamp()),
       slide_out_controller_(this, this) {
   SetNotifyEnterExitOnChild(true);
-
-  if (features::IsNotificationGesturesUpdateEnabled()) {
-    slide_out_controller_.set_trackpad_gestures_enabled(true);
-  }
+  slide_out_controller_.set_trackpad_gestures_enabled(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
@@ -412,8 +408,7 @@ void MessageView::OnSlideOut() {
   }
 
   auto* message_center = MessageCenter::Get();
-  if (features::IsNotificationGesturesUpdateEnabled() &&
-      message_center->FindPopupNotificationById(notification_id_copy)) {
+  if (message_center->FindPopupNotificationById(notification_id_copy)) {
     message_center->MarkSinglePopupAsShown(notification_id_copy,
                                            /*mark_notification_as_read=*/true);
     return;

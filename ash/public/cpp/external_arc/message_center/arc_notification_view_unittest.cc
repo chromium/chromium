@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+
 #include <memory>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_surface.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
@@ -25,7 +26,6 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -228,7 +228,6 @@ class ArcNotificationViewTest : public AshTestBase {
       nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ArcNotificationViewTest, Events) {
@@ -398,26 +397,7 @@ TEST_F(ArcNotificationViewTest, ChangeContentHeight) {
   EXPECT_EQ("1000x1000", size.ToString());
 }
 
-class NotificationGestureUpdateTest : public ArcNotificationViewTest {
- public:
-  NotificationGestureUpdateTest() = default;
-  NotificationGestureUpdateTest(const NotificationGestureUpdateTest&) = delete;
-  NotificationGestureUpdateTest& operator=(
-      const NotificationGestureUpdateTest&) = delete;
-
-  // Overridden from ViewsTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kNotificationGesturesUpdate}, {});
-
-    ArcNotificationViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(NotificationGestureUpdateTest, TrackPadGestureSlideOut) {
+TEST_F(ArcNotificationViewTest, TrackPadGestureSlideOut) {
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
