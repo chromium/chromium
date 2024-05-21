@@ -42,25 +42,15 @@ import java.lang.annotation.RetentionPolicy;
 public class MinorModeHelper implements IdentityManager.Observer {
 
     /** Screen modes indicated by capability. */
-    @IntDef({
-        ScreenMode.UNSUPPORTED,
-        ScreenMode.PENDING,
-        ScreenMode.RESTRICTED,
-        ScreenMode.UNRESTRICTED,
-        ScreenMode.DEADLINED
-    })
+    @IntDef({ScreenMode.PENDING, ScreenMode.RESTRICTED, ScreenMode.UNRESTRICTED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenMode {
-        int UNSUPPORTED = 0;
         // Screen mode is pending resolution to RESTRICTED or UNRESTRICTED.
-        int PENDING = 1;
-        // The UI must be presented in minor-mode aware way because determined by the capability.
-        int RESTRICTED = 2;
+        int PENDING = 0;
+        // The UI must be presented in minor-mode aware way.
+        int RESTRICTED = 1;
         // The UI does not need to be presented in minor-mode aware way.
-        int UNRESTRICTED = 3;
-        // The UI must be presented in minor-mode aware way because the time to load the
-        // capabilities was exceeded.
-        int DEADLINED = 4;
+        int UNRESTRICTED = 2;
     }
 
     /** Controls the actual UI Update. */
@@ -85,9 +75,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int SYNC_NOT_EQUAL_WEIGHTED = 1;
         int HISTORY_SYNC_EQUAL_WEIGHTED = 2;
         int HISTORY_SYNC_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
-        int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 4;
     };
 
     public @interface SyncButtonClicked {
@@ -103,8 +91,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
         int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
         int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
-        int SYNC_SETTINGS_UNKNOWN_WEIGHTED = 10;
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 8;
     };
 
     private static final int CAPABILITY_TIMEOUT_MS =
@@ -206,7 +193,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         // updated due to a capability change and not due to a timeout.
         if (!sDisableHistorySyncOptInTimeout) {
             PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT, this::onDeadline, CAPABILITY_TIMEOUT_MS);
+                    TaskTraits.UI_DEFAULT, this::defaultToRestricted, CAPABILITY_TIMEOUT_MS);
         }
     }
 
@@ -224,8 +211,8 @@ public class MinorModeHelper implements IdentityManager.Observer {
         executeUiChanges(screenModeFromCapabilities(accountInfo.getAccountCapabilities()));
     }
 
-    private void onDeadline() {
-        executeUiChanges(ScreenMode.DEADLINED);
+    private void defaultToRestricted() {
+        executeUiChanges(ScreenMode.RESTRICTED);
     }
 
     /** Executes ui changes defined in {@link mUiUpdater}, but does this only once. */
