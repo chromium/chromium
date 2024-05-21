@@ -54,6 +54,10 @@ class InputMethodUserDataServiceImpl
       const std::string& dictionary_name,
       RenameJapaneseDictionaryCallback callback) override;
 
+  void DeleteJapaneseDictionary(
+      uint64_t dict_id,
+      DeleteJapaneseDictionaryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 

@@ -52,4 +52,7 @@ interface InputMethodUserDataService {
   // Rename the Japanese dictionary specified by the dict_id.
   RenameJapaneseDictionary(uint64 dict_id, string dictionary_name)
       => (Status status);
+
+  // Delete the Japanese dictionary specified by the dict_id.
+  DeleteJapaneseDictionary(uint64 dict_id) => (Status status);
 };
