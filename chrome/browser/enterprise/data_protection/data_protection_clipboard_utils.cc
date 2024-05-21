@@ -185,8 +185,44 @@ bool SkipDataControlOrContentAnalysisChecks(
   return false;
 }
 
+std::string GetClipboardSourceString(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination) {
+  if (!base::FeatureList::IsEnabled(kEnableSourceInPasteReports)) {
+    return "";
+  }
+
+  if (!source.browser_context()) {
+    return "CLIPBOARD";
+  }
+
+  if (source.browser_context() && source.browser_context()->IsOffTheRecord()) {
+    return "INCOGNITO";
+  }
+
+  if (source.data_transfer_endpoint() &&
+      source.data_transfer_endpoint()->IsUrlType() &&
+      source.data_transfer_endpoint()->GetURL()) {
+    if (source.browser_context() != destination.browser_context()) {
+      return "OTHER_PROFILE";
+    }
+
+    // Reaching this line implies that the `DataTransferEndpoint` for `source`
+    // is none of the special sources (OS clipboard, incognito, other profile)
+    // and that it is a URL endpoint, so in that case the URL is simply returned
+    // as a string.
+    return source.data_transfer_endpoint()->GetURL()->spec();
+  }
+
+  // This can be reached if the `DataTransferEndpoint` is not a URL and not null
+  // only on CrOS. For now there are no special values for those CrOS-only
+  // endpoints so we just fallback to "CLIPBOARD".
+  return "CLIPBOARD";
+}
+
 void PasteIfAllowedByContentAnalysis(
     content::WebContents* web_contents,
+    const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
@@ -216,6 +252,7 @@ void PasteIfAllowedByContentAnalysis(
 
   dialog_data.reason =
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
+  dialog_data.clipboard_source = GetClipboardSourceString(source, destination);
 
   if (is_files) {
     dialog_data.paths = std::move(clipboard_paste_data.file_paths);
@@ -268,9 +305,9 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
-  PasteIfAllowedByContentAnalysis(destination.web_contents(), destination,
-                                  metadata, std::move(clipboard_paste_data),
-                                  std::move(callback));
+  PasteIfAllowedByContentAnalysis(
+      destination.web_contents(), source, destination, metadata,
+      std::move(clipboard_paste_data), std::move(callback));
 }
 
 void PasteIfAllowedByDataControls(
@@ -323,9 +360,9 @@ void PasteIfAllowedByDataControls(
     clipboard_paste_data = GetLastReplacedClipboardData().clipboard_paste_data;
   }
 
-  PasteIfAllowedByContentAnalysis(destination.web_contents(), destination,
-                                  metadata, std::move(clipboard_paste_data),
-                                  std::move(callback));
+  PasteIfAllowedByContentAnalysis(
+      destination.web_contents(), source, destination, metadata,
+      std::move(clipboard_paste_data), std::move(callback));
 }
 
 void OnDlpRulesCheckDone(
@@ -439,6 +476,10 @@ void IsCopyRestrictedByDialog(
 }
 
 }  // namespace
+
+BASE_FEATURE(kEnableSourceInPasteReports,
+             "EnableSourceInPasteReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void PasteIfAllowedByPolicy(
     const content::ClipboardEndpoint& source,

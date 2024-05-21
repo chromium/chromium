@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 
+#include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace enterprise_data_protection {
+
+// Controls attaching the source of a clipboard interaction to scanning requests
+// and to reported events.
+// TODO(b/325454406): Clean up this experiment when needed.
+BASE_DECLARE_FEATURE(kEnableSourceInPasteReports);
 
 // This function checks if a paste is allowed to proceed according to the
 // following policies:

@@ -207,7 +207,10 @@ void ContentAnalysisDelegate::BypassWarnings(
       content_size += entry.size();
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
+        profile_, /*url*/ url_, /*tab_url*/ url_,
+        /*source*/ data_.clipboard_source,
+        /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
+        "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         GetContentTransferMethod(), access_point_, content_size, text_response_,
         user_justification);
@@ -218,8 +221,10 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.image_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, "", "", "Image data", std::string(),
-        /*mime_type*/ std::string(),
+        profile_, /*url*/ url_, /*tab_url*/ url_,
+        /*source*/ data_.clipboard_source, /*destination*/ url_.spec(),
+        "Image data", /*download_digest_sha256*/ "",
+        /*mime_type*/ "",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         GetContentTransferMethod(), access_point_, data_.image.size(),
         image_response_, user_justification);
@@ -575,7 +580,10 @@ void ContentAnalysisDelegate::StringRequestCallback(
             text_complies);
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
+      profile_, /*url*/ url_, /*tab_url*/ url_,
+      /*source*/ data_.clipboard_source,
+      /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
+      "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       GetContentTransferMethod(), access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
@@ -619,8 +627,10 @@ void ContentAnalysisDelegate::ImageRequestCallback(
   result_.image_result = image_complies;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, "", "", "Image data", std::string(),
-      /*mime_type*/ std::string(),
+      profile_, /*url*/ url_, /*tab_url*/ url_,
+      /*source*/ data_.clipboard_source,
+      /*destination*/ url_.spec(), "Image data", /*download_digest_sha256*/ "",
+      /*mime_type*/ "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       GetContentTransferMethod(), access_point_, data_.image.size(), result,
       response,
@@ -828,6 +838,10 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(BULK_DATA_ENTRY, request.get());
+    request->set_destination(url_.spec());
+    if (!data_.clipboard_source.empty()) {
+      request->set_source(data_.clipboard_source);
+    }
     UploadTextForDeepScanning(std::move(request));
   }
 }
