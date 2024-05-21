@@ -760,6 +760,24 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
     ASSERT_TRUE(called);
     EXPECT_FALSE(succeeded);
   }
+
+  // Test a nullptr result.
+  {
+    main_frame_ptr->AddJsResultForFunctionCall(nullptr,
+                                               "passwords.fillPasswordForm");
+    __block bool called = false;
+    __block BOOL succeeded = false;
+    [helper fillPasswordFormWithFillData:fill_data
+                                 inFrame:main_frame_ptr
+                        triggeredOnField:username_field_id
+                       completionHandler:^(BOOL success) {
+                         called = true;
+                         succeeded = success;
+                       }];
+    WaitForBackgroundTasks();
+    ASSERT_TRUE(called);
+    EXPECT_FALSE(succeeded);
+  }
 }
 
 // Tests that extractPasswordFormData extracts wanted form on page with mutiple
