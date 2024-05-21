@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/shortcuts/document_icon_fetcher.h"
-
 #include <memory>
 
 #include "base/base_paths.h"
@@ -12,11 +10,10 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
+#include "chrome/browser/shortcuts/document_icon_fetcher_task.h"
 #include "chrome/browser/shortcuts/image_test_utils.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +42,16 @@ class DocumentIconFetcherTest : public InProcessBrowserTest {
     return default_favicon_server_.GetURL("/index.html");
   }
 
+  FetchIconsFromDocumentResult RunIconFetchingTaskForCurrentWebContents() {
+    base::test::TestFuture<FetchIconsFromDocumentResult> future;
+    DocumentIconFetcherTask icon_fetcher_task(
+        *browser()->tab_strip_model()->GetActiveWebContents(),
+        future.GetCallback());
+    icon_fetcher_task.StartIconFetching();
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
+  }
+
  private:
   net::EmbeddedTestServer default_favicon_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};
@@ -54,14 +61,11 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, PageNoIcons) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL(kPageNoIcons)));
 
-  base::test::TestFuture<FetchIconsFromDocumentResult> future;
-  DocumentIconFetcher::FetchIcons(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
-      future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get().has_value());
+  FetchIconsFromDocumentResult result =
+      RunIconFetchingTaskForCurrentWebContents();
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(
-      future.Get().value(),
+      result.value(),
       testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, U'P'))));
 }
 
@@ -69,14 +73,10 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, IconMetadata) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
 
-  base::test::TestFuture<FetchIconsFromDocumentResult> future;
-
-  DocumentIconFetcher::FetchIcons(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
-      future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  ASSERT_TRUE(future.Get().has_value());
-  std::vector<SkBitmap> images = future.Get().value();
+  FetchIconsFromDocumentResult result =
+      RunIconFetchingTaskForCurrentWebContents();
+  ASSERT_TRUE(result.has_value());
+  std::vector<SkBitmap> images = result.value();
 
   SkBitmap expected_green;
   ASSERT_OK_AND_ASSIGN(expected_green,
@@ -95,13 +95,10 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, DefaultFavicon) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetPageWithDefaultFavicon()));
 
-  base::test::TestFuture<FetchIconsFromDocumentResult> future;
-  DocumentIconFetcher::FetchIcons(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
-      future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get().has_value());
-  std::vector<SkBitmap> images = future.Get().value();
+  FetchIconsFromDocumentResult result =
+      RunIconFetchingTaskForCurrentWebContents();
+  ASSERT_TRUE(result.has_value());
+  std::vector<SkBitmap> images = result.value();
   SkBitmap expected_16;
   ASSERT_OK_AND_ASSIGN(
       expected_16, LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL(
@@ -115,19 +112,20 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, DefaultFavicon) {
                           gfx::test::EqualsBitmap(expected_32)));
 }
 
-IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, WebContentsClosed) {
+IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest,
+                       TaskDestroyedDoesNotDropCallback) {
   base::test::TestFuture<FetchIconsFromDocumentResult> future;
-  chrome::NewTab(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
-  DocumentIconFetcher::FetchIcons(
+  auto icon_fetcher_task = std::make_unique<DocumentIconFetcherTask>(
       *browser()->tab_strip_model()->GetActiveWebContents(),
       future.GetCallback());
-  chrome::CloseTab(browser());
+
+  // Task destruction should not drop the callback.
+  icon_fetcher_task.reset();
   ASSERT_TRUE(future.Wait());
-  EXPECT_THAT(
-      future.Get(),
-      base::test::ErrorIs(FetchIconsForDocumentError::kDocumentDestroyed));
+  EXPECT_THAT(future.Get(),
+              base::test::ErrorIs(FetchIconsForDocumentError::kTaskDestroyed));
 }
 
 }  // namespace

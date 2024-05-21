@@ -10,7 +10,7 @@
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/platform_util.h"  // nogncheck (crbug.com/335727004)
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/shortcuts/document_icon_fetcher.h"
+#include "chrome/browser/shortcuts/document_icon_fetcher_task.h"
 #include "chrome/browser/shortcuts/icon_badging.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 #include "chrome/common/chrome_features.h"
@@ -101,15 +101,18 @@ void CreateShortcutForCurrentWebContentsTask::FetchIcons(
   callback_ = std::move(callback);
   Observe(&web_contents);
 
-  DocumentIconFetcher::FetchIcons(
+  icon_fetcher_task_ = std::make_unique<DocumentIconFetcherTask>(
       web_contents, base::BindOnce(&CreateShortcutForCurrentWebContentsTask::
                                        OnIconsFetchedStartBadgingAndShowDialog,
                                    weak_ptr_factory_.GetWeakPtr()));
+  icon_fetcher_task_->StartIconFetching();
 }
 
 void CreateShortcutForCurrentWebContentsTask::
     OnIconsFetchedStartBadgingAndShowDialog(
         FetchIconsFromDocumentResult result) {
+  CHECK(icon_fetcher_task_);
+  icon_fetcher_task_.reset();
   if (!result.has_value()) {
     OnMetadataFetchCompleteSelfDestruct(
         base::unexpected(ShortcutCreationTaskResult::kIconFetchingFailed));

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_SHORTCUTS_CREATE_SHORTCUT_FOR_CURRENT_WEB_CONTENTS_TASK_H_
 #define CHROME_BROWSER_SHORTCUTS_CREATE_SHORTCUT_FOR_CURRENT_WEB_CONTENTS_TASK_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
+#include "chrome/browser/shortcuts/document_icon_fetcher_task.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -94,6 +96,7 @@ class CreateShortcutForCurrentWebContentsTask
 
   ShortcutsDialogCallback dialog_callback_;
   base::OnceCallback<void(ShortcutCreationTaskResult task_result)> callback_;
+  std::unique_ptr<DocumentIconFetcherTask> icon_fetcher_task_;
   base::WeakPtrFactory<CreateShortcutForCurrentWebContentsTask>
       weak_ptr_factory_{this};
 };

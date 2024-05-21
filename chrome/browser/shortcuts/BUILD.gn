@@ -22,10 +22,8 @@ source_set("shortcuts") {
 
     sources += [
       "create_shortcut_for_current_web_contents_task.cc",
-      "document_icon_fetcher.cc",
-      "document_icon_fetcher.h",
-      "fetch_icons_from_document_task.cc",
-      "fetch_icons_from_document_task.h",
+      "document_icon_fetcher_task.cc",
+      "document_icon_fetcher_task.h",
       "icon_badging.cc",
       "icon_badging.h",
       "shortcut_creator.cc",
