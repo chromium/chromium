@@ -849,8 +849,6 @@ def AddJUnitTestOptions(parser):
       '--resource-apk',
       required=True,
       help='Path to .ap_ containing binary resources for Robolectric.')
-  parser.add_argument('--shadows-allowlist',
-                      help='Path to Allowlist file for Shadows.')
 
 
 def AddLinkerTestOptions(parser):

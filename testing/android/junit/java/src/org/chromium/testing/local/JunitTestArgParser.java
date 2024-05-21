@@ -4,8 +4,6 @@
 
 package org.chromium.testing.local;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +12,6 @@ public class JunitTestArgParser {
     final Set<String> mPackageFilters = new HashSet<>();
     final Set<Class<?>> mRunnerFilters = new HashSet<>();
     final Set<String> mGtestFilters = new HashSet<>();
-    Allowlist mShadowsAllowlist = Allowlist.allowAll();
     boolean mListTests;
     String mJsonConfig;
     String mJsonOutput;
@@ -38,8 +35,6 @@ public class JunitTestArgParser {
                         parsed.mJsonOutput = args[++i];
                     } else if ("json-config".equals(argName)) {
                         parsed.mJsonConfig = args[++i];
-                    } else if ("shadows-allowlist".equals(argName)) {
-                        parsed.mShadowsAllowlist = Allowlist.fromFile(Path.of(args[++i]));
                     } else {
                         System.out.println("Ignoring flag: \"" + argName + "\"");
                     }
@@ -48,9 +43,6 @@ public class JunitTestArgParser {
                     System.exit(1);
                 } catch (ClassNotFoundException e) {
                     System.err.println("Class not found. (" + e + ")");
-                    System.exit(1);
-                } catch (IOException e) {
-                    e.printStackTrace();
                     System.exit(1);
                 }
             } else {
