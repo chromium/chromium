@@ -11,6 +11,8 @@ component("cpp") {
   sources = [
     "appid_util.cc",
     "appid_util.h",
+    "service_adaptor.cc",
+    "service_adaptor.h",
     "service_connection.cc",
     "service_connection.h",
   ]
@@ -57,6 +59,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "appid_util_unittest.cc",
+    "service_adaptor_unittest.cc",
     "service_connection_unittest.cc",
   ]
   deps = [
