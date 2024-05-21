@@ -987,8 +987,10 @@ class PlaceholderUpdateRelaunchBrowserTest
       notification_observation_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(PlaceholderUpdateRelaunchBrowserTest,
-                       UpdatePlaceholderRelaunchClosePreventedAppSucceeds) {
+// TODO(b:341035409): Flaky.
+IN_PROC_BROWSER_TEST_F(
+    PlaceholderUpdateRelaunchBrowserTest,
+    DISABLED_UpdatePlaceholderRelaunchClosePreventedAppSucceeds) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This may be needed due to side-effects previously run lacros tests.
   ClearAllNotifications();
