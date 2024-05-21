@@ -39,6 +39,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -122,6 +123,10 @@ class ImeListItemView : public views::Button {
       tri_view->AddView(TriView::Container::END, checked_image);
     }
     SetAccessibleName(label_view->GetText());
+    GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
   }
   ImeListItemView(const ImeListItemView&) = delete;
   ImeListItemView& operator=(const ImeListItemView&) = delete;

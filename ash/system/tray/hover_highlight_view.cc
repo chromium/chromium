@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -81,6 +82,11 @@ void HoverHighlightView::AddRightView(views::View* view,
   right_view_->SetEnabled(GetEnabled());
   tri_view_->AddView(TriView::Container::END, right_view_);
   tri_view_->SetContainerVisible(TriView::Container::END, true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  GetViewAccessibility().SetName(GetAccessibleName());
+  GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
 }
 
 void HoverHighlightView::AddAdditionalRightView(views::View* view) {
@@ -96,6 +102,13 @@ void HoverHighlightView::SetRightViewVisible(bool visible) {
 
   tri_view_->SetContainerVisible(TriView::Container::END, visible);
   right_view_->SetVisible(visible);
+
+  if (!visible ||
+      (accessibility_state_ != AccessibilityState::CHECKED_CHECKBOX &&
+       accessibility_state_ != AccessibilityState::UNCHECKED_CHECKBOX)) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  }
+
   DeprecatedLayoutImmediately();
 }
 
@@ -211,6 +224,17 @@ void HoverHighlightView::SetExpandable(bool expandable) {
 void HoverHighlightView::SetAccessibilityState(
     AccessibilityState accessibility_state) {
   accessibility_state_ = accessibility_state;
+
+  if (accessibility_state_ == AccessibilityState::CHECKED_CHECKBOX) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kTrue);
+  } else if (accessibility_state_ == AccessibilityState::UNCHECKED_CHECKBOX) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  }
+
   if (accessibility_state_ != AccessibilityState::DEFAULT) {
     NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   }
