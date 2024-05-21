@@ -318,12 +318,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost> host_;
 
   // Any thread can access these variables.
-  scoped_refptr<MainThreadEventQueue> input_event_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner>
       compositor_thread_default_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner>
       compositor_thread_input_blocking_task_runner_;
+  scoped_refptr<MainThreadEventQueue> input_event_queue_;
 
   // The touch action that InputHandlerProxy has asked us to allow. This should
   // only be accessed on the compositor thread!

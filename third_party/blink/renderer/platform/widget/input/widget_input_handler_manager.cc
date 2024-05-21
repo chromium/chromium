@@ -235,11 +235,6 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
       frame_widget_input_handler_(std::move(frame_widget_input_handler)),
       widget_scheduler_(std::move(widget_scheduler)),
       widget_is_embedded_(widget_ && widget_->is_embedded()),
-      input_event_queue_(base::MakeRefCounted<MainThreadEventQueue>(
-          this,
-          widget_scheduler_->InputTaskRunner(),
-          widget_scheduler_,
-          /*allow_raf_aligned_input=*/!never_composited)),
       main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
       compositor_thread_default_task_runner_(
           compositor_thread_scheduler
@@ -249,6 +244,12 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           compositor_thread_scheduler
               ? compositor_thread_scheduler->InputTaskRunner()
               : nullptr),
+      input_event_queue_(base::MakeRefCounted<MainThreadEventQueue>(
+          this,
+          InputThreadTaskRunner(),
+          widget_scheduler_->InputTaskRunner(),
+          widget_scheduler_,
+          /*allow_raf_aligned_input=*/!never_composited)),
       allow_scroll_resampling_(allow_scroll_resampling) {
 #if BUILDFLAG(IS_ANDROID)
   if (compositor_thread_default_task_runner_) {

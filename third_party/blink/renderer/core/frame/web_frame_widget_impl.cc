@@ -3882,7 +3882,7 @@ void WebFrameWidgetImpl::SetHasPointerRawUpdateEventHandlers(
     bool has_handlers) {
   widget_base_->widget_input_handler_manager()
       ->input_event_queue()
-      ->HasPointerRawUpdateEventHandlers(has_handlers);
+      ->SetHasPointerRawUpdateEventHandlers(has_handlers);
 }
 
 void WebFrameWidgetImpl::SetNeedsLowLatencyInput(bool needs_low_latency) {
