@@ -1263,7 +1263,11 @@ proto_library("sharing_log_proto") {
   sources =
       [ "${proto_in_dir}/sharing/proto/analytics/nearby_sharing_log.proto" ]
   proto_out_dir = "third_party/nearby"
-  import_dirs = [ "../../third_party/protobuf/src" ]
+  proto_deps = [ ":sharing_enums_proto" ]
+  link_deps = [ ":sharing_enums_proto" ]
+
+  # For built-in protos, specifically duration.proto.
+  import_dirs = [ "//third_party/protobuf/src" ]
 }
 
 # src/presence/proto
