@@ -374,6 +374,9 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorReplacedByButtonMode: {
       return FederatedAuthRequestIssueReasonEnum::ReplacedByButtonMode;
     }
+    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque: {
+      return FederatedAuthRequestIssueReasonEnum::RelyingPartyOriginIsOpaque;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED_NORETURN();
     }

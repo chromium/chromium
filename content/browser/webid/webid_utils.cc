@@ -303,6 +303,9 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
     }
+    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque: {
+      return "FedCM is not supported on an opaque origin.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }

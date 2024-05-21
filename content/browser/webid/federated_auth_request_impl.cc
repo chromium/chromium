@@ -238,6 +238,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp:
     case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
     case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
+    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -253,6 +254,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     }
     case FederatedAuthRequestResult::kErrorTooManyRequests:
     case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
+    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kErrorCanceled: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
@@ -864,6 +866,15 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   } else {
     rp_mode_ = RpMode::kWidget;
+  }
+
+  if (origin().opaque()) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque,
+        TokenStatus::kRpOriginIsOpaque,
+        /*token_error=*/std::nullopt,
+        /*should_delay_callback=*/false);
+    return;
   }
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
