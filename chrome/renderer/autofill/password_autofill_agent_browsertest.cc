@@ -346,6 +346,10 @@ const char kFormTagHostsShadowDomInputs[] =
     "</form>"
     "</body>";
 
+constexpr std::string_view kUnownedFieldsWithPasswordDisabled =
+    "<input type='text' id='username'>"
+    "<input type='password' disabled id='password'>";
+
 // Sets the "readonly" attribute of `element` to the value given by `read_only`.
 void SetElementReadOnly(WebInputElement& element, bool read_only) {
   element.SetAttribute(WebString::FromUTF8("readonly"),
@@ -1611,42 +1615,135 @@ TEST_F(PasswordAutofillAgentTest,
   CheckIfEventsAreCalled(event_checkers, true);
 }
 
-// Tests that `FillSuggestion` properly fills the username and password.
-TEST_F(PasswordAutofillAgentTest, FillSuggestion) {
+// Tests that `FillSuggestion` properly fills the username and password on
+// focused `username_element_`.
+TEST_F(PasswordAutofillAgentTest, FillSuggestionOnUsernameField) {
   // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
 
-  for (const auto& selected_element : {username_element_, password_element_}) {
-    SimulateElementClick(selected_element);
-    // Neither field should be autocompleted.
-    CheckTextFieldsDOMState(std::string(), false, std::string(), false);
+  SimulateElementClick(username_element_);
 
-    // If the password field is not autocompletable, it should not be affected.
-    SetElementReadOnly(password_element_, true);
-    password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
-                                                     kAlicePassword16);
-    CheckTextFieldsDOMState(std::string(), false, std::string(), false);
-    SetElementReadOnly(password_element_, false);
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(/*username=*/std::string(),
+                          /*username_autofilled=*/false,
+                          /*password=*/std::string(),
+                          /*password_autofilled=*/false);
 
-    // After filling with the suggestion, both fields should be autocompleted.
-    password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
-                                                     kAlicePassword16);
-    CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
-    size_t username_length = strlen(kAliceUsername);
-    CheckUsernameSelection(username_length, username_length);
+  // If the username field is not autocompletable, no element will be filled.
+  SetElementReadOnly(username_element_, /*read_only=*/true);
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(/*username=*/std::string(),
+                          /*username_autofilled=*/false,
+                          /*password=*/std::string(),
+                          /*password_autofilled=*/false);
+  SetElementReadOnly(username_element_, /*read_only=*/false);
 
-    // Try Filling with a suggestion with password different from the one that
-    // was initially sent to the renderer.
-    password_autofill_agent_->FillPasswordSuggestion(kBobUsername16,
-                                                     kCarolPassword16);
-    CheckTextFieldsDOMState(kBobUsername, true, kCarolPassword, true);
-    username_length = strlen(kBobUsername);
-    CheckUsernameSelection(username_length, username_length);
+  // If the password field is not autocompletable, only username will be filled.
+  SetElementReadOnly(password_element_, /*read_only=*/true);
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(kAliceUsername, /*username_autofilled=*/true,
+                          /*password=*/std::string(),
+                          /*password_autofilled=*/false);
+  size_t username_length = strlen(kAliceUsername);
+  CheckUsernameSelection(username_length, username_length);
+  SetElementReadOnly(password_element_, /*read_only=*/false);
+  ResetFieldState(&username_element_);
 
-    ClearUsernameAndPasswordFieldValues();
-  }
+  // After filling with the suggestion, both fields should be autocompleted.
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(kAliceUsername, /*username_autofilled=*/true,
+                          kAlicePassword, /*password_autofilled=*/true);
+  username_length = strlen(kAliceUsername);
+  CheckUsernameSelection(username_length, username_length);
+
+  // Try filling with a suggestion with password different from the one that
+  // was initially sent to the renderer.
+  password_autofill_agent_->FillPasswordSuggestion(kBobUsername16,
+                                                   kCarolPassword16);
+  CheckTextFieldsDOMState(kBobUsername, /*username_autofilled=*/true,
+                          kCarolPassword, /*password_autofilled=*/true);
+  username_length = strlen(kBobUsername);
+  CheckUsernameSelection(username_length, username_length);
+}
+
+// Avoid filling suggestion on username if the password field is disabled and
+// there is no <form> tag.
+TEST_F(PasswordAutofillAgentTest,
+       NoFillSuggestionOnNoFormTagAndPasswordDisabled) {
+  LoadHTML(kUnownedFieldsWithPasswordDisabled);
+  UpdateUsernameAndPasswordElements();
+
+  // Simulate the browser sending the login info, but set `wait_for_username`
+  // to prevent the form from being immediately filled.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  SimulateElementClick(username_element_);
+
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+}
+
+// Tests that `FillSuggestion` properly fills the username and password on
+// focused `password_element_`.
+TEST_F(PasswordAutofillAgentTest, FillSuggestionOnPasswordField) {
+  // Simulate the browser sending the login info, but set `wait_for_username`
+  // to prevent the form from being immediately filled.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  SimulateElementClick(password_element_);
+
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+
+  // If the password field is not autocompletable, no filling will be made.
+  SetElementReadOnly(password_element_, /*read_only=*/true);
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  SetElementReadOnly(password_element_, /*read_only=*/false);
+
+  // If the username field is not autocompletable, only password field will be
+  // filled.
+  SetElementReadOnly(username_element_, /*read_only=*/true);
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(/*username=*/std::string(),
+                          /*username_autofilled=*/false, kAlicePassword,
+                          /*password_autofilled=*/true);
+  SetElementReadOnly(username_element_, /*read_only=*/false);
+  ResetFieldState(&username_element_);
+
+  // After filling with the suggestion, both fields should be autocompleted.
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(kAliceUsername, /*username_autofilled=*/true,
+                          kAlicePassword, /*password_autofilled=*/true);
+  size_t username_length = strlen(kAliceUsername);
+  CheckUsernameSelection(username_length, username_length);
+
+  // Try filling with a suggestion with password different from the one that
+  // was initially sent to the renderer.
+  password_autofill_agent_->FillPasswordSuggestion(kBobUsername16,
+                                                   kCarolPassword16);
+  CheckTextFieldsDOMState(kBobUsername, /*username_autofilled=*/true,
+                          kCarolPassword, /*password_autofilled=*/true);
+  username_length = strlen(kBobUsername);
+  CheckUsernameSelection(username_length, username_length);
 }
 
 // Tests that `FillSuggestion` properly fills the username and password when the
@@ -1711,69 +1808,114 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
 }
 
-// Tests that `FillSuggestion` properly fills the password if the username field
-// is read-only.
-TEST_F(PasswordAutofillAgentTest, FillSuggestionIfUsernameReadOnly) {
-  // Simulate the browser sending the login info.
-  SetElementReadOnly(username_element_, true);
-  SimulateOnFillPasswordForm(fill_data_);
-
-  SimulateElementClick(password_element_);
-  // Neither field should be autocompleted.
-  CheckTextFieldsDOMState(std::string(), false, std::string(), false);
-
-  // Username field is not autocompletable, it should not be affected.
-  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
-                                                   kAlicePassword16);
-  CheckTextFieldsDOMState(std::string(), false, kAlicePassword, true);
-
-  // Try Filling with a suggestion with password different from the one that
-  // was initially sent to the renderer.
-  password_autofill_agent_->FillPasswordSuggestion(kBobUsername16,
-                                                   kCarolPassword16);
-  CheckTextFieldsDOMState(std::string(), false, kCarolPassword, true);
-
-  ClearUsernameAndPasswordFieldValues();
-}
-
-// Tests that `PreviewSuggestion` properly previews the username and password.
-TEST_F(PasswordAutofillAgentTest, PreviewSuggestion) {
+// Tests that `PreviewSuggestion` properly previews the username and password on
+// `username_element_` focus.
+TEST_F(PasswordAutofillAgentTest, PreviewSuggestionOnUsernameField) {
   // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
 
-  for (const auto& selected_element : {username_element_, password_element_}) {
-    // Neither field should be autocompleted.
-    CheckTextFieldsDOMState(std::string(), false, std::string(), false);
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
 
-    // If the password field is not autocompletable, it should not be affected.
-    SetElementReadOnly(password_element_, true);
-    password_autofill_agent_->PreviewSuggestion(
-        selected_element, kAliceUsername16, kAlicePassword16);
-    CheckTextFieldsSuggestedState(std::string(), false, std::string(), false);
-    SetElementReadOnly(password_element_, false);
+  // If the password field is not autocompletable, the preview must be available
+  // only on username.
+  SetElementReadOnly(password_element_, /*read_only=*/true);
+  password_autofill_agent_->PreviewSuggestion(
+      username_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(kAliceUsername, /*username_autofilled=*/true,
+                                /*password=*/std::string(),
+                                /*password_autofilled=*/false);
+  SetElementReadOnly(password_element_, /*read_only=*/false);
+  password_autofill_agent_->ClearPreviewedForm();
 
-    // After selecting the suggestion, both fields should be previewed with
-    // suggested values.
-    password_autofill_agent_->PreviewSuggestion(
-        selected_element, kAliceUsername16, kAlicePassword16);
-    CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
-    // Since the suggestion is previewed as a placeholder, there should be no
-    // selected text.
-    CheckUsernameSelection(0, 0);
+  // If the username field is not autocompletable, the preview must not be shown
+  // on any field.
+  SetElementReadOnly(username_element_, /*read_only=*/true);
+  password_autofill_agent_->PreviewSuggestion(
+      username_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  SetElementReadOnly(username_element_, /*read_only=*/false);
 
-    // Try previewing with a password different from the one that was initially
-    // sent to the renderer.
-    password_autofill_agent_->PreviewSuggestion(
-        selected_element, kBobUsername16, kCarolPassword16);
-    CheckTextFieldsSuggestedState(kBobUsername, true, kCarolPassword, true);
-    // Since the suggestion is previewed as a placeholder, there should be no
-    // selected text.
-    CheckUsernameSelection(0, 0);
+  // After selecting the preview, both fields should be previewed with
+  // suggested values.
+  password_autofill_agent_->PreviewSuggestion(
+      username_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(kAliceUsername, /*username_autofilled=*/true,
+                                kAlicePassword, /*password_autofilled=*/true);
+  // Since the suggestion is previewed as a placeholder, there should be no
+  // selected text.
+  CheckUsernameSelection(/*start=*/0, /*end=*/0);
 
-    ClearUsernameAndPasswordFieldValues();
-  }
+  // Try previewing with a password different from the one that was initially
+  // sent to the renderer.
+  password_autofill_agent_->PreviewSuggestion(username_element_, kBobUsername16,
+                                              kCarolPassword16);
+  CheckTextFieldsSuggestedState(kBobUsername, /*username_autofilled=*/true,
+                                kCarolPassword, /*password_autofilled=*/true);
+  // Since the suggestion is previewed as a placeholder, there should be no
+  // selected text.
+  CheckUsernameSelection(/*start=*/0, /*end=*/0);
+}
+
+// Tests that `PreviewSuggestion` properly previews the username and password on
+// `password_element_` focus.
+TEST_F(PasswordAutofillAgentTest, PreviewSuggestionOnPasswordField) {
+  // Simulate the browser sending the login info, but set `wait_for_username` to
+  // prevent the form from being immediately filled.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(/*username=*/std::string(),
+                          /*username_autofilled=*/false,
+                          /*password=*/std::string(),
+                          /*password_autofilled=*/false);
+
+  // If the password field is not autocompletable, there must be no preview
+  // available.
+  SetElementReadOnly(password_element_, /*read_only=*/true);
+  password_autofill_agent_->PreviewSuggestion(
+      password_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  SetElementReadOnly(password_element_, /*read_only=*/false);
+
+  // If the username field is not autocompletable, the preview must be shown
+  // only on the password field.
+  SetElementReadOnly(username_element_, /*read_only=*/true);
+  password_autofill_agent_->PreviewSuggestion(
+      password_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(/*username=*/std::string(),
+                                /*username_autofilled=*/false, kAlicePassword,
+                                /*password_autofilled=*/true);
+  SetElementReadOnly(username_element_, /*read_only=*/false);
+
+  // After previewing the suggestion, both fields should be previewed with
+  // suggested values.
+  password_autofill_agent_->PreviewSuggestion(
+      password_element_, kAliceUsername16, kAlicePassword16);
+  CheckTextFieldsSuggestedState(kAliceUsername, /*username_autofilled=*/true,
+                                kAlicePassword, /*password_autofilled=*/true);
+  // Since the suggestion is previewed as a placeholder, there should be no
+  // selected text.
+  CheckUsernameSelection(/*start=*/0, /*end=*/0);
+
+  // Try previewing with a password different from the one that was initially
+  // sent to the renderer.
+  password_autofill_agent_->PreviewSuggestion(password_element_, kBobUsername16,
+                                              kCarolPassword16);
+  CheckTextFieldsSuggestedState(kBobUsername, /*username_autofilled=*/true,
+                                kCarolPassword, /*password_autofilled=*/true);
+  // Since the suggestion is previewed as a placeholder, there should be no
+  // selected text.
+  CheckUsernameSelection(/*start=*/0, /*end=*/0);
 }
 
 // Tests that `PreviewSuggestion` doesn't change non-empty non-autofilled
@@ -1800,33 +1942,6 @@ TEST_F(PasswordAutofillAgentTest,
                                               kCarolPassword16);
   CheckTextFieldsSuggestedState(std::string(), false, kCarolPassword, true);
   CheckTextFieldsDOMState("user1", false, std::string(), true);
-}
-
-// Tests that `PreviewSuggestion` properly previews the password if username is
-// read-only.
-TEST_F(PasswordAutofillAgentTest, PreviewSuggestionIfUsernameReadOnly) {
-  // Simulate the browser sending the login info.
-  SetElementReadOnly(username_element_, true);
-  SimulateOnFillPasswordForm(fill_data_);
-
-  for (const auto& selected_element : {username_element_, password_element_}) {
-    // Neither field should be autocompleted.
-    CheckTextFieldsDOMState(std::string(), false, std::string(), false);
-
-    // Username field is not autocompletable, it should not be affected.
-    password_autofill_agent_->PreviewSuggestion(
-        selected_element, kAliceUsername16, kAlicePassword16);
-    // Password field must be autofilled.
-    CheckTextFieldsSuggestedState(std::string(), false, kAlicePassword, true);
-
-    // Try previewing with a password different from the one that was initially
-    // sent to the renderer.
-    password_autofill_agent_->PreviewSuggestion(
-        selected_element, kBobUsername16, kCarolPassword16);
-    CheckTextFieldsSuggestedState(std::string(), false, kCarolPassword, true);
-
-    ClearUsernameAndPasswordFieldValues();
-  }
 }
 
 // Tests that `PreviewSuggestion` properly sets the username selection range.

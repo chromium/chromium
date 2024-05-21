@@ -380,6 +380,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // be filled. If the username exists, it should be passed as `user_input`. If
   // there is no username, pass the password field in `user_input`. In the
   // latter case, no username value will be shown in the pop-up.
+  // Suggestion will be shown only on editable fields.
   void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
                            AutofillSuggestionTriggerSource trigger_source);
@@ -398,6 +399,22 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                                   blink::WebInputElement* username_element,
                                   blink::WebInputElement* password_element,
                                   PasswordInfo** password_info);
+
+  // Returns true if at least one of the found username or password field is
+  // fillable.
+  bool IsUsernameOrPasswordFillable(
+      const blink::WebInputElement& username_element,
+      const blink::WebInputElement& password_element,
+      PasswordInfo* password_info);
+
+  // Finds the PasswordInfo, username and password fields corresponding to the
+  // passed in `element` and returns true if there is at least one field that
+  // can be filled by a password suggestion.
+  bool HasElementsToFill(const blink::WebInputElement& trigger_element,
+                         UseFallbackData use_fallback_data,
+                         blink::WebInputElement* username_element,
+                         blink::WebInputElement* password_element,
+                         PasswordInfo** password_info);
 
   // Cleans up the state when document is shut down, e.g. when committing a new
   // document or closing the frame.

@@ -42,6 +42,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -785,7 +786,7 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
                          AutofillSuggestionTriggerSource::kTextFieldDidChange);
 }
 
-// LINT.IfChange()
+// LINT.IfChange
 
 void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
     const WebInputElement& element) {
@@ -853,7 +854,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
   auto element = focused_element().DynamicTo<WebInputElement>();
-  if (element.IsNull() || focused_element().IsReadOnly()) {
+  if (element.IsNull() || !IsElementEditable(element)) {
     return;
   }
 
@@ -861,10 +862,8 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
 
-  if (!FindPasswordInfoForElement(element, UseFallbackData(true),
-                                  &username_element, &password_element,
-                                  &password_info) ||
-      (!password_element.IsNull() && !IsElementEditable(password_element))) {
+  if (!HasElementsToFill(element, UseFallbackData(true), &username_element,
+                         &password_element, &password_info)) {
     return;
   }
 
@@ -889,7 +888,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     DoFillField(username_element, username);
   }
 
-  if (!password_element.IsNull()) {
+  if (!password_element.IsNull() && IsElementEditable(password_element)) {
     FillPasswordFieldAndSave(password_element, password);
 
     // TODO(crbug.com/40223173): As Touch-To-Fill and auto-submission don't
@@ -989,7 +988,7 @@ void PasswordAutofillAgent::PreviewSuggestion(
     const std::u16string& password) {
   // The element in context of the suggestion popup.
   const WebInputElement element = control_element.DynamicTo<WebInputElement>();
-  if (element.IsNull()) {
+  if (element.IsNull() || !IsElementEditable(element)) {
     return;
   }
 
@@ -997,10 +996,8 @@ void PasswordAutofillAgent::PreviewSuggestion(
   WebInputElement password_element;
   PasswordInfo* password_info;
 
-  if (!FindPasswordInfoForElement(element, UseFallbackData(true),
-                                  &username_element, &password_element,
-                                  &password_info) ||
-      (!password_element.IsNull() && !IsElementEditable(password_element))) {
+  if (!HasElementsToFill(element, UseFallbackData(true), &username_element,
+                         &password_element, &password_info)) {
     return;
   }
 
@@ -1011,7 +1008,7 @@ void PasswordAutofillAgent::PreviewSuggestion(
 
     DoPreviewField(username_element, username, /*is_password=*/false);
   }
-  if (!password_element.IsNull()) {
+  if (!password_element.IsNull() && IsElementEditable(password_element)) {
     DoPreviewField(password_element, password, /*is_password=*/true);
   }
 }
@@ -1098,6 +1095,40 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
     }
   }
   return true;
+}
+
+bool PasswordAutofillAgent::IsUsernameOrPasswordFillable(
+    const WebInputElement& username_element,
+    const WebInputElement& password_element,
+    PasswordInfo* password_info) {
+  if (!username_element.IsNull() && IsElementEditable(username_element) &&
+      password_element.IsNull()) {
+    return true;
+  }
+  if (!password_element.IsNull() && IsElementEditable(password_element)) {
+    return true;
+  }
+  // Password field might be disabled before entering valid username.
+  // For such cases, check that the password field is under <form> tag.
+  // Otherwise, username and password element might not be related.
+  return !username_element.IsNull() && IsElementEditable(username_element) &&
+         (password_info != nullptr &&
+          !password_info->fill_data.form_renderer_id.is_null());
+}
+
+bool PasswordAutofillAgent::HasElementsToFill(
+    const WebInputElement& trigger_element,
+    UseFallbackData use_fallback_data,
+    WebInputElement* username_element,
+    WebInputElement* password_element,
+    PasswordInfo** password_info) {
+  if (!FindPasswordInfoForElement(trigger_element, use_fallback_data,
+                                  username_element, password_element,
+                                  password_info)) {
+    return false;
+  }
+  return IsUsernameOrPasswordFillable(*username_element, *password_element,
+                                      *password_info);
 }
 
 void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
@@ -1649,9 +1680,12 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     }
   }
 
-  // Check that all fillable elements are editable.
-  if (!element.IsTextField() || !IsElementEditable(element) ||
-      (!password_element.IsNull() && !IsElementEditable(password_element))) {
+  if (!element.IsTextField() || !IsElementEditable(element)) {
+    return false;
+  }
+  // Check that at least one fillable element is editable.
+  if (!IsUsernameOrPasswordFillable(username_element, password_element,
+                                    password_info)) {
     return false;
   }
 
@@ -1757,14 +1791,21 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   FindPasswordInfoForElement(user_input, UseFallbackData(false),
                              &username_element, &password_element,
                              &password_info);
+  size_t username_element_index = GetIndexOfElement(form, username_element);
+  if (username_element.IsNull() || !IsElementEditable(username_element)) {
+    username_element_index = form.fields.size();
+  }
+  size_t password_element_index = GetIndexOfElement(form, password_element);
+  if (password_element.IsNull() || !IsElementEditable(password_element)) {
+    password_element_index = form.fields.size();
+  }
 
   const bool show_webauthn_credentials =
       field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      field.renderer_id(), form, trigger_source,
-      GetIndexOfElement(form, username_element),
-      GetIndexOfElement(form, password_element), field.text_direction(),
-      typed_username, show_webauthn_credentials,
+      field.renderer_id(), form, trigger_source, username_element_index,
+      password_element_index, field.text_direction(), typed_username,
+      show_webauthn_credentials,
       render_frame()->ElementBoundsInWindow(user_input)));
 }
 
