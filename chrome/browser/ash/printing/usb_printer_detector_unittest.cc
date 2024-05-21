@@ -7,7 +7,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/test/mock_session_controller.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,6 +19,7 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -69,10 +74,23 @@ class UsbPrinterDetectorTest : public testing::Test {
   };
 
   UsbPrinterDetectorTest() {
+    ON_CALL(this->session_controller_, IsScreenLocked).WillByDefault([this]() {
+      return this->screen_locked_;
+    });
+    ON_CALL(this->session_controller_, AddObserver)
+        .WillByDefault([this](ash::SessionObserver* observer) {
+          this->observer_ = observer;
+        });
+    ON_CALL(this->session_controller_, RemoveObserver)
+        .WillByDefault([this](ash::SessionObserver* observer) {
+          this->observer_ = nullptr;
+        });
+
     mojo::PendingRemote<device::mojom::UsbDeviceManager> manager;
     usb_manager_.AddReceiver(manager.InitWithNewPipeAndPassReceiver());
 
-    detector_ = UsbPrinterDetector::CreateForTesting(std::move(manager));
+    detector_ = UsbPrinterDetector::CreateForTesting(std::move(manager),
+                                                     &session_controller_);
     detector_->RegisterPrintersFoundCallback(
         base::BindRepeating(&FakePrinterDetectorClient::OnPrintersFound,
                             base::Unretained(&detector_client_)));
@@ -86,6 +104,9 @@ class UsbPrinterDetectorTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  bool screen_locked_ = false;
+  raw_ptr<ash::SessionObserver> observer_ = nullptr;
+  testing::NiceMock<ash::MockSessionController> session_controller_;
   std::unique_ptr<UsbPrinterDetector> detector_;
   FakePrinterDetectorClient detector_client_;
   device::FakeUsbDeviceManager usb_manager_;
@@ -132,6 +153,28 @@ TEST_F(UsbPrinterDetectorTest, OnPrintersFoundCallback) {
 
   detector_client_.WaitForPrinters();
   EXPECT_EQ(0u, detector_->GetPrinters().size());
+}
+
+// New printers are not announced as long as the screen is locked.
+TEST_F(UsbPrinterDetectorTest, NewPrintersHoldWhenTheScreenIsLocked) {
+  screen_locked_ = true;
+
+  usb_manager_.AddDevice(fake_printer_);
+  usb_manager_.AddDevice(fake_printer_ipp_);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, detector_->GetPrinters().size());
+
+  ASSERT_NE(observer_, nullptr);
+  observer_->OnLockStateChanged(screen_locked_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, detector_->GetPrinters().size());
+
+  screen_locked_ = false;
+  observer_->OnLockStateChanged(screen_locked_);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, detector_->GetPrinters().size());
 }
 
 }  // namespace

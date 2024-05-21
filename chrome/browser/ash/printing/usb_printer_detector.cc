@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
@@ -40,14 +42,54 @@
 namespace ash {
 namespace {
 
+// Helper class, redirect calls to SessionController provided as a constructor's
+// parameter. If the parameter is nullptr, the pointer returned by
+// ash::SessionController::Get() is used (if not nullptr).
+class SessionControllerWrapper {
+ public:
+  explicit SessionControllerWrapper(SessionController* session_controller)
+      : session_controller_(session_controller) {}
+  SessionControllerWrapper(const SessionControllerWrapper&) = delete;
+  SessionControllerWrapper& operator=(const SessionControllerWrapper&) = delete;
+
+  void AddObserver(SessionObserver* observer) const {
+    if (SessionController* controller = GetSessionController(); controller) {
+      controller->AddObserver(observer);
+    }
+  }
+  void RemoveObserver(SessionObserver* observer) const {
+    if (SessionController* controller = GetSessionController(); controller) {
+      controller->RemoveObserver(observer);
+    }
+  }
+  bool IsScreenLocked() const {
+    if (SessionController* controller = GetSessionController(); controller) {
+      return controller->IsScreenLocked();
+    }
+    return false;
+  }
+
+ private:
+  SessionController* GetSessionController() const {
+    if (session_controller_) {
+      return session_controller_;
+    }
+    return SessionController::Get();
+  }
+  raw_ptr<SessionController> session_controller_;
+};
+
 // The PrinterDetector that drives the flow for setting up a USB printer to use
 // CUPS backend.
 class UsbPrinterDetectorImpl : public UsbPrinterDetector,
-                               public device::mojom::UsbDeviceManagerClient {
+                               public device::mojom::UsbDeviceManagerClient,
+                               public ash::SessionObserver {
  public:
   explicit UsbPrinterDetectorImpl(
-      mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager)
-      : device_manager_(std::move(device_manager)) {
+      mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager,
+      ash::SessionController* session_controller = nullptr)
+      : device_manager_(std::move(device_manager)),
+        session_controller_(session_controller) {
     device_manager_.set_disconnect_handler(
         base::BindOnce(&UsbPrinterDetectorImpl::OnDeviceManagerConnectionError,
                        weak_factory_.GetWeakPtr()));
@@ -57,10 +99,13 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
         client_receiver_.BindNewEndpointAndPassRemote(),
         base::BindOnce(&UsbPrinterDetectorImpl::OnGetDevices,
                        weak_factory_.GetWeakPtr()));
+
+    session_controller_.AddObserver(this);
   }
 
   ~UsbPrinterDetectorImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    session_controller_.RemoveObserver(this);
   }
 
   // PrinterDetector override.
@@ -74,8 +119,8 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
   std::vector<DetectedPrinter> GetPrinters() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     std::vector<DetectedPrinter> printers_list;
-    printers_list.reserve(printers_.size());
-    for (const auto& entry : printers_) {
+    printers_list.reserve(printers_ready_.size());
+    for (const auto& entry : printers_ready_) {
       printers_list.push_back(entry.second);
     }
     return printers_list;
@@ -94,7 +139,8 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     device_manager_.reset();
     client_receiver_.reset();
-    printers_.clear();
+    printers_ready_.clear();
+    printers_locked_screen_.clear();
   }
 
   void DoAddDevice(const device::mojom::UsbDeviceInfo& device_info) {
@@ -143,9 +189,13 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     entry.ppd_search_data.printer_id = std::move(printer_id);
 
     // Add detected printer.
-    printers_[guid] = entry;
-    if (on_printers_found_callback_) {
-      on_printers_found_callback_.Run(GetPrinters());
+    if (session_controller_.IsScreenLocked()) {
+      printers_locked_screen_[guid] = entry;
+    } else {
+      printers_ready_[guid] = entry;
+      if (on_printers_found_callback_) {
+        on_printers_found_callback_.Run(GetPrinters());
+      }
     }
   }
 
@@ -163,7 +213,22 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     if (!UsbDeviceIsPrinter(*device_info)) {
       return;
     }
-    printers_.erase(device_info->guid);
+    if (printers_ready_.erase(device_info->guid)) {
+      if (on_printers_found_callback_) {
+        on_printers_found_callback_.Run(GetPrinters());
+      }
+    } else {
+      printers_locked_screen_.erase(device_info->guid);
+    }
+  }
+
+  // ash::SessionObserver implementation.
+  void OnLockStateChanged(bool locked) override {
+    if (locked || printers_locked_screen_.empty()) {
+      return;
+    }
+    printers_ready_.merge(printers_locked_screen_);
+    printers_locked_screen_.clear();
     if (on_printers_found_callback_) {
       on_printers_found_callback_.Run(GetPrinters());
     }
@@ -171,14 +236,20 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
 
   SEQUENCE_CHECKER(sequence_);
 
-  // Map from USB GUID to DetectedPrinter for all detected printers.
-  std::map<std::string, DetectedPrinter> printers_;
+  // Map from USB GUID to DetectedPrinter for all detected printers. Printers
+  // detected when the screen is locked are saved in `printers_locked_screen_`.
+  // They are later moved to `printers_ready_` when the screen is unlocked.
+  // This is required because locking the screen activates usbguard that blocks
+  // access to USB ports, so we have to defer installation of USB printers.
+  std::map<std::string, DetectedPrinter> printers_ready_;
+  std::map<std::string, DetectedPrinter> printers_locked_screen_;
 
   OnPrintersFoundCallback on_printers_found_callback_;
 
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient>
       client_receiver_{this};
+  SessionControllerWrapper session_controller_;
   base::WeakPtrFactory<UsbPrinterDetectorImpl> weak_factory_{this};
 };
 
@@ -194,8 +265,10 @@ std::unique_ptr<UsbPrinterDetector> UsbPrinterDetector::Create() {
 }
 
 std::unique_ptr<UsbPrinterDetector> UsbPrinterDetector::CreateForTesting(
-    mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager) {
-  return std::make_unique<UsbPrinterDetectorImpl>(std::move(usb_manager));
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
+    ash::SessionController* session_controller) {
+  return std::make_unique<UsbPrinterDetectorImpl>(std::move(usb_manager),
+                                                  session_controller);
 }
 
 }  // namespace ash

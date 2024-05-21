@@ -590,6 +590,8 @@ source_set("test_support") {
     "test/mock_projector_client.h",
     "test/mock_projector_controller.cc",
     "test/mock_projector_controller.h",
+    "test/mock_session_controller.cc",
+    "test/mock_session_controller.h",
     "test/test_cast_config_controller.cc",
     "test/test_cast_config_controller.h",
     "test/test_desk_profiles_delegate.cc",

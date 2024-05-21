@@ -13,6 +13,8 @@
 
 namespace ash {
 
+class SessionController;
+
 // Observes device::UsbService for addition of USB printers, and implements the
 // PrinterDetector interface to export this to print system consumers.
 class UsbPrinterDetector : public PrinterDetector {
@@ -21,7 +23,8 @@ class UsbPrinterDetector : public PrinterDetector {
   static std::unique_ptr<UsbPrinterDetector> Create();
 
   static std::unique_ptr<UsbPrinterDetector> CreateForTesting(
-      mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager);
+      mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
+      ash::SessionController* session_controller);
 
   UsbPrinterDetector(const UsbPrinterDetector&) = delete;
   UsbPrinterDetector& operator=(const UsbPrinterDetector&) = delete;
