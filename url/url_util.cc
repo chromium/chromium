@@ -123,6 +123,9 @@ struct SchemeRegistry {
       kAndroidScheme,
       // Temporarily opted-out. See https://crrev.com/c/5539140.
       kChromiumXCallback,
+      // Temporarily opted-out. See https://crrev.com/c/5547181.
+      kAlmanac,
+      kCrosApps,
   };
 
   // Schemes with a predefined default custom handler.

@@ -21,6 +21,8 @@ inline constexpr char16_t kAboutSrcdocPath16[] = u"srcdoc";
 
 inline constexpr char kAboutScheme[] = "about";
 inline constexpr char16_t kAboutScheme16[] = u"about";
+inline constexpr char kAlmanac[] = "almanac";
+inline constexpr char16_t kAlmanac16[] = u"almanac";
 inline constexpr char kAndroidScheme[] = "android";
 inline constexpr char16_t kAndroidScheme16[] = u"android";
 inline constexpr char kBlobScheme[] = "blob";
@@ -31,6 +33,8 @@ inline constexpr char kContentScheme[] = "content";
 inline constexpr char16_t kContentScheme16[] = u"content";
 inline constexpr char kContentIDScheme[] = "cid";
 inline constexpr char16_t kContentIDScheme16[] = u"cid";
+inline constexpr char kCrosApps[] = "cros-apps";
+inline constexpr char16_t kCrosApps16[] = u"cros-apps";
 inline constexpr char kDataScheme[] = "data";
 inline constexpr char16_t kDataScheme16[] = u"data";
 inline constexpr char kFileScheme[] = "file";
