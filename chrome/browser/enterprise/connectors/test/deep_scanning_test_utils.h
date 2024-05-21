@@ -145,7 +145,7 @@ class EventReportValidator {
       const std::string& expected_trigger,
       const std::string& expected_reason,
       const std::set<std::string>* expected_mimetypes,
-      int64_t expected_content_size,
+      std::optional<int64_t> expected_content_size,
       const std::string& expected_result,
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,

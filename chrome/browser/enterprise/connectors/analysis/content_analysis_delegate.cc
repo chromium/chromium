@@ -45,6 +45,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -831,6 +832,12 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
   }
 }
 
+bool ContentAnalysisDelegate::ShouldNotUploadLargePage(size_t page_size) {
+  return data_.settings.cloud_or_local_settings.is_cloud_analysis() &&
+         page_size > BinaryUploadService::kMaxUploadSizeBytes &&
+         data_.settings.block_large_files;
+}
+
 void ContentAnalysisDelegate::PrepareImageRequest() {
   // The request is considered complete if there is no image or if the image is
   // too large compared to the maximum size.
@@ -878,7 +885,18 @@ void ContentAnalysisDelegate::PreparePageRequest() {
     if (!page_content_type_.empty()) {
       request->set_content_type(page_content_type_);
     }
-    UploadPageForDeepScanning(std::move(request));
+    if (ShouldNotUploadLargePage(page_size_bytes_)) {
+      // The request shouldn't be finished early synchronously so that
+      // `UploadData()` can return "false" to `CreateForWebContents()` and let
+      // it initialize the tab modal dialog.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentAnalysisDelegate::FinishLargeDataRequestEarly,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                         BinaryUploadService::Result::FILE_TOO_LARGE));
+    } else {
+      UploadPageForDeepScanning(std::move(request));
+    }
   }
 }
 
@@ -1076,6 +1094,22 @@ void ContentAnalysisDelegate::AckAllRequests() {
       upload_service->MaybeAcknowledge(std::move(ack));
     }
   }
+}
+
+void ContentAnalysisDelegate::FinishLargeDataRequestEarly(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    safe_browsing::BinaryUploadService::Result result) {
+  // We add the request here in case we never actually uploaded anything, so
+  // it wasn't added in OnGetRequestData
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
+      request->per_profile_request(), /*access_token*/ "", /*upload_info*/
+      "Skipped - Large data blocked", request->content_analysis_request());
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
+      /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
+      enterprise_connectors::ContentAnalysisResponse());
+
+  request->FinishRequest(result,
+                         enterprise_connectors::ContentAnalysisResponse());
 }
 
 std::string ContentAnalysisDelegate::GetContentTransferMethod() const {
