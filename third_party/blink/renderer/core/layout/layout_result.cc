@@ -242,6 +242,9 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   if (builder->is_text_box_trim_applied_) {
     EnsureRareData()->set_text_box_trim_is_applied();
   }
+  if (builder->is_block_end_trimmed_) {
+    EnsureRareData()->set_is_block_end_trimmed();
+  }
 
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
     EnsureRareData()->tallest_unbreakable_block_size =

@@ -143,6 +143,7 @@ class CORE_EXPORT FragmentBuilder {
 
   bool IsTextBoxTrimApplied() const { return is_text_box_trim_applied_; }
   void SetIsTextBoxTrimApplied() { is_text_box_trim_applied_ = true; }
+  void SetIsBlockEndTrimmed() { is_block_end_trimmed_ = true; }
 
   const UnpositionedListMarker& GetUnpositionedListMarker() const {
     return unpositioned_list_marker_;
@@ -625,6 +626,7 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_text_box_trim_applied_ = false;
+  bool is_block_end_trimmed_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
   bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;

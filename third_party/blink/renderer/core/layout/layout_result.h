@@ -117,6 +117,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ && rare_data_->text_box_trim_is_applied();
   }
 
+  bool IsBlockEndTrimmed() const {
+    return rare_data_ && rare_data_->is_block_end_trimmed();
+  }
+
   // Return true if this is an orthogonal writing-mode root that depends on the
   // size of the initial containing block.
   bool HasOrthogonalFallbackInlineSize() const {
@@ -630,6 +634,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
     using TextBoxTrimIsAppliedFlag =
         DataUnionTypeValue::DefineNextValue<bool, 1>;
+    using IsBlockEndTrimmedFlag =
+        TextBoxTrimIsAppliedFlag::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -717,6 +723,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     void set_text_box_trim_is_applied() {
       bit_field.set<TextBoxTrimIsAppliedFlag>(true);
+    }
+
+    bool is_block_end_trimmed() const {
+      return bit_field.get<IsBlockEndTrimmedFlag>();
+    }
+    void set_is_block_end_trimmed() {
+      bit_field.set<IsBlockEndTrimmedFlag>(true);
     }
 
     template <typename DataType>
