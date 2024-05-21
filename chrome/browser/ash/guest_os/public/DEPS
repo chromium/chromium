@@ -24,4 +24,5 @@ include_rules = [
   "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/profiles",
   "+chrome/test/base",
+  "+chrome/common/chrome_features.h",
 ]
