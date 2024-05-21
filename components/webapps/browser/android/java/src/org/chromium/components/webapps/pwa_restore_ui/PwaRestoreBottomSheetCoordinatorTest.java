@@ -165,12 +165,28 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).expandSheet();
 
-        coordinator.onBackButtonClicked();
+        coordinator.onDialogBackButtonClicked();
 
-        // Clicking the Back button results in the sheet going back to peeking state.
+        // Clicking the Dialog Back button results in the sheet going back to peeking state.
         Assert.assertEquals(
                 ViewState.PREVIEW,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).collapseSheet(eq(true));
+
+        coordinator.onReviewButtonClicked();
+
+        // Clicking the Review button (again) results in the sheet expanding.
+        Assert.assertEquals(
+                ViewState.VIEW_PWA_LIST,
+                coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
+        verify(mBottomSheetControllerMock, times(2)).expandSheet();
+
+        coordinator.onOsBackButtonClicked();
+
+        // Clicking the OS Back button results in the sheet going back to peeking state.
+        Assert.assertEquals(
+                ViewState.PREVIEW,
+                coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
+        verify(mBottomSheetControllerMock, times(2)).collapseSheet(eq(true));
     }
 }
