@@ -29,9 +29,9 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/legacy/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_status.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 

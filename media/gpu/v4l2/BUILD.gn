@@ -17,6 +17,8 @@ source_set("v4l2") {
   sources = [
     "legacy/v4l2_video_decode_accelerator.cc",
     "legacy/v4l2_video_decode_accelerator.h",
+    "legacy/v4l2_video_decoder_backend_stateful.cc",
+    "legacy/v4l2_video_decoder_backend_stateful.h",
     "stateless/device.cc",
     "stateless/device.h",
     "stateless/h264_delegate.cc",
@@ -57,8 +59,6 @@ source_set("v4l2") {
     "v4l2_video_decoder.h",
     "v4l2_video_decoder_backend.cc",
     "v4l2_video_decoder_backend.h",
-    "v4l2_video_decoder_backend_stateful.cc",
-    "v4l2_video_decoder_backend_stateful.h",
     "v4l2_video_decoder_backend_stateless.cc",
     "v4l2_video_decoder_backend_stateless.h",
     "v4l2_video_decoder_delegate_h264.cc",

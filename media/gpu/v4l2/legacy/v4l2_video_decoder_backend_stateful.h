@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
-#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
+#ifndef MEDIA_GPU_V4L2_LEGACY_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
+#define MEDIA_GPU_V4L2_LEGACY_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
 
 #include <memory>
 #include <optional>
@@ -178,4 +178,4 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
+#endif  // MEDIA_GPU_V4L2_LEGACY_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
