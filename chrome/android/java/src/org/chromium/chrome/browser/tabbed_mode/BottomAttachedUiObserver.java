@@ -325,7 +325,7 @@ public class BottomAttachedUiObserver
     // Omnibox Suggestions
 
     @Override
-    public void onOmniboxSuggestionsVisibilityChanged(boolean visible) {
+    public void onOmniboxSessionStateChange(boolean visible) {
         mOmniboxSuggestionsVisible = visible;
         updateBottomAttachedColor();
     }

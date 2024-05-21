@@ -1524,21 +1524,19 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void hideSuggestions_informsVisualStateObserver() {
+    public void clearSuggestions_informsVisualStateObserver() {
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
 
-        mMediator.hideSuggestions();
-        verify(mVisualStateObserver).onOmniboxSuggestionsVisibilityChanged(eq(false));
+        mMediator.clearSuggestions();
     }
 
     @Test
     public void propagateOmniboxSessionStateChange_informsVisualStateObserver() {
         mMediator.propagateOmniboxSessionStateChange(true);
-        verify(mVisualStateObserver, atLeastOnce()).onOmniboxSuggestionsVisibilityChanged(eq(true));
+        verify(mVisualStateObserver, atLeastOnce()).onOmniboxSessionStateChange(eq(true));
 
         mMediator.propagateOmniboxSessionStateChange(false);
-        verify(mVisualStateObserver, atLeastOnce())
-                .onOmniboxSuggestionsVisibilityChanged(eq(false));
+        verify(mVisualStateObserver, atLeastOnce()).onOmniboxSessionStateChange(eq(false));
     }
 }

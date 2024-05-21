@@ -84,8 +84,8 @@ public class AutocompleteCoordinator
 
     /** An observer watching for changes to the visual state of the omnibox suggestions. */
     public interface OmniboxSuggestionsVisualStateObserver {
-        /** Called when the visibility of the omnibox suggestions changes. */
-        void onOmniboxSuggestionsVisibilityChanged(boolean visible);
+        /** Called when the Omnibox session state changes. */
+        void onOmniboxSessionStateChange(boolean isActive);
 
         /** Called when the background color of the omnibox suggestions changes. */
         void onOmniboxSuggestionsBackgroundColorChanged(@ColorInt int color);

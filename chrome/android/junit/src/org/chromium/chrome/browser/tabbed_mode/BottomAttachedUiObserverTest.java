@@ -305,18 +305,18 @@ public class BottomAttachedUiObserverTest {
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR);
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(true);
         mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR, false);
 
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(false);
         mColorChangeObserver.assertState(null, false);
 
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR_2);
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(true);
         mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR_2, false);
 
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(false);
         mColorChangeObserver.assertState(null, false);
     }
 
@@ -346,11 +346,11 @@ public class BottomAttachedUiObserverTest {
         // Show omnibox suggestions.
         mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
                 OMNIBOX_SUGGESTIONS_COLOR);
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(true);
         mColorChangeObserver.assertState(OMNIBOX_SUGGESTIONS_COLOR, false);
 
         // Hide omnibox suggestions.
-        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(false);
         mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false);
 
         // Hide bottom sheet.

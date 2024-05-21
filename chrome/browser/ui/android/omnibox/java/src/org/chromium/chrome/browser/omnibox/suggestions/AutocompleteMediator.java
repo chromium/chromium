@@ -454,7 +454,7 @@ class AutocompleteMediator
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
             // a consequence the omnibox is unfocused).
-            hideSuggestions();
+            clearSuggestions();
         }
     }
 
@@ -815,7 +815,7 @@ class AutocompleteMediator
         mIsInZeroPrefixContext = TextUtils.isEmpty(textWithoutAutocomplete);
 
         if (mIsInZeroPrefixContext) {
-            hideSuggestions();
+            clearSuggestions();
             startCachedZeroSuggest();
         } else {
             // There may be no tabs when searching form omnibox in overview mode. In that case,
@@ -1087,28 +1087,28 @@ class AutocompleteMediator
         if (isActive != wasActive) {
             mIgnoreOmniboxItemSelection |= isActive; // Reset to default value.
             mOmniboxSuggestionsVisualStateObserver.ifPresent(
-                    (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(isActive));
+                    (observer) -> observer.onOmniboxSessionStateChange(isActive));
         }
     }
 
     /**
-     * Hides the omnibox suggestion popup.
+     * Clear the list of suggestions.
      *
-     * <p>Signals the autocomplete controller to stop generating omnibox suggestions.
+     * <p>This call is used to terminate the Autocomplete session and hide the suggestions list
+     * while the Omnibox session is active.
      *
-     * @see AutocompleteController#stop(boolean)
+     * <p>This call *does not* terminate the Omnibox session.
+     *
+     * @see the {@link AutocompleteController#stop(boolean)}
      */
     @VisibleForTesting
-    void hideSuggestions() {
+    void clearSuggestions() {
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
         dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         mDropdownViewInfoListManager.clear();
         mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
-
-        mOmniboxSuggestionsVisualStateObserver.ifPresent(
-                (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(false));
     }
 
     /**
@@ -1343,7 +1343,7 @@ class AutocompleteMediator
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO(crbug.com/329702834): Ensuring showing Suggestions when activity resumes.
         if (!isTopResumedActivity) {
-            hideSuggestions();
+            clearSuggestions();
             mDelegate.clearOmniboxFocus();
         }
     }
