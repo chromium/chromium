@@ -11,7 +11,7 @@ script can be run in standalone mode to check for existing violations.
 Example command:
 
 $ git ls-files third_party/blink \
-    | python third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py
+    | python3 third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py
 """
 
 from __future__ import print_function
@@ -2341,7 +2341,7 @@ def main():
                     print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
-        except IOError as e:
+        except (IOError, UnicodeDecodeError) as e:
             print('could not open %s: %s' % (path, e))
 
 
