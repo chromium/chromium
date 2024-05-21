@@ -248,60 +248,14 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
        logo->metadata.type == LogoType::SIMPLE);
 
   if (is_eligible_for_share_button) {
-    const base::Value::Dict* share_button = ddljson->FindDict("share_button");
     const std::string* short_link_ptr = ddljson->FindString("short_link");
     // The short link in the doodle proto is an incomplete URL with the format
     // //g.co/*, //doodle.gle/* or //google.com?doodle=*.
     // Complete the URL if possible.
-    if (share_button && short_link_ptr && short_link_ptr->find("//") == 0) {
+    if (short_link_ptr && short_link_ptr->find("//") == 0) {
       std::string short_link_str = *short_link_ptr;
       short_link_str.insert(0, "https:");
       logo->metadata.short_link = GURL(std::move(short_link_str));
-      if (logo->metadata.short_link.is_valid()) {
-        if (std::optional<int> offset_x = share_button->FindInt("offset_x")) {
-          logo->metadata.share_button_x = *offset_x;
-        }
-        if (std::optional<int> offset_y = share_button->FindInt("offset_y")) {
-          logo->metadata.share_button_y = *offset_y;
-        }
-        if (std::optional<double> opacity =
-                share_button->FindDouble("opacity")) {
-          logo->metadata.share_button_opacity = *opacity;
-        }
-        if (const std::string* icon = share_button->FindString("icon_image")) {
-          logo->metadata.share_button_icon = *icon;
-        }
-        if (const std::string* bg_color =
-                share_button->FindString("background_color")) {
-          logo->metadata.share_button_bg = *bg_color;
-        }
-      }
-    }
-    const base::Value::Dict* dark_share_button =
-        ddljson->FindDict("dark_share_button");
-    if (dark_share_button) {
-      if (logo->metadata.short_link.is_valid()) {
-        if (std::optional<int> offset_x =
-                dark_share_button->FindInt("offset_x")) {
-          logo->metadata.dark_share_button_x = *offset_x;
-        }
-        if (std::optional<int> offset_y =
-                dark_share_button->FindInt("offset_y")) {
-          logo->metadata.dark_share_button_y = *offset_y;
-        }
-        if (std::optional<double> opacity =
-                dark_share_button->FindDouble("opacity")) {
-          logo->metadata.dark_share_button_opacity = *opacity;
-        }
-        if (const std::string* icon =
-                dark_share_button->FindString("icon_image")) {
-          logo->metadata.dark_share_button_icon = *icon;
-        }
-        if (const std::string* bg_color =
-                dark_share_button->FindString("background_color")) {
-          logo->metadata.dark_share_button_bg = *bg_color;
-        }
-      }
     }
   }
 

@@ -756,16 +756,6 @@ TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
   logo.metadata.height_px = 2;
   logo.metadata.dark_width_px = 3;
   logo.metadata.dark_height_px = 4;
-  logo.metadata.share_button_x = 5;
-  logo.metadata.dark_share_button_x = 6;
-  logo.metadata.share_button_y = 7;
-  logo.metadata.dark_share_button_y = 8;
-  logo.metadata.share_button_opacity = 0.5;
-  logo.metadata.dark_share_button_opacity = 0.7;
-  logo.metadata.share_button_icon = "light share button";
-  logo.metadata.dark_share_button_icon = "dark share button";
-  logo.metadata.share_button_bg = "#000100";
-  logo.metadata.dark_share_button_bg = "#010000";
 
   auto doodle = GetDoodle(logo);
 
@@ -779,12 +769,6 @@ TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
   EXPECT_EQ(1u, doodle->image->light->width);
   EXPECT_EQ(2u, doodle->image->light->height);
   EXPECT_EQ(SK_ColorWHITE, doodle->image->light->background_color);
-  EXPECT_EQ(5, doodle->image->light->share_button->x);
-  EXPECT_EQ(7, doodle->image->light->share_button->y);
-  EXPECT_EQ(SkColorSetARGB(127, 0, 1, 0),
-            doodle->image->light->share_button->background_color);
-  EXPECT_EQ("data:image/png;base64,light share button",
-            doodle->image->light->share_button->icon_url);
   EXPECT_EQ("https://doodle.com/light_cta_log_url",
             doodle->image->light->image_impression_log_url);
   EXPECT_EQ("https://doodle.com/light_log_url",
@@ -796,12 +780,6 @@ TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
   EXPECT_EQ(3u, doodle->image->dark->width);
   EXPECT_EQ(4u, doodle->image->dark->height);
   EXPECT_EQ(SkColorSetRGB(0, 0, 1), doodle->image->dark->background_color);
-  EXPECT_EQ(6, doodle->image->dark->share_button->x);
-  EXPECT_EQ(8, doodle->image->dark->share_button->y);
-  EXPECT_EQ(SkColorSetARGB(178, 1, 0, 0),
-            doodle->image->dark->share_button->background_color);
-  EXPECT_EQ("data:image/png;base64,dark share button",
-            doodle->image->dark->share_button->icon_url);
   EXPECT_EQ("https://doodle.com/dark_cta_log_url",
             doodle->image->dark->image_impression_log_url);
   EXPECT_EQ("https://doodle.com/dark_log_url",

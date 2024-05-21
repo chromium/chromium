@@ -314,11 +314,6 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     int width_px,
     int height_px,
     const std::string& background_color,
-    int share_button_x,
-    int share_button_y,
-    const std::string& share_button_icon,
-    const std::string& share_button_bg,
-    double share_button_opacity,
     GURL log_url,
     GURL cta_log_url) {
   auto doodle = new_tab_page::mojom::ImageDoodle::New();
@@ -331,16 +326,6 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
   doodle->width = width_px;
   doodle->height = height_px;
   doodle->background_color = ParseHexColor(background_color);
-  if (!share_button_icon.empty()) {
-    doodle->share_button = new_tab_page::mojom::DoodleShareButton::New();
-    doodle->share_button->x = share_button_x;
-    doodle->share_button->y = share_button_y;
-    doodle->share_button->icon_url = GURL(base::StringPrintf(
-        "data:image/png;base64,%s", share_button_icon.c_str()));
-    doodle->share_button->background_color = SkColorSetA(
-        ParseHexColor(share_button_bg),
-        std::clamp(share_button_opacity, 0.0, 1.0) * SK_AlphaOPAQUE);
-  }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;
     doodle->animation_impression_log_url = log_url;
@@ -1375,21 +1360,14 @@ void NewTabPageHandler::OnLogoAvailable(
         logo->metadata.type, logo->encoded_image->as_string(),
         logo->metadata.mime_type, logo->metadata.animated_url,
         logo->metadata.width_px, logo->metadata.height_px, "#ffffff",
-        logo->metadata.share_button_x, logo->metadata.share_button_y,
-        logo->metadata.share_button_icon, logo->metadata.share_button_bg,
-        logo->metadata.share_button_opacity, logo->metadata.log_url,
-        logo->metadata.cta_log_url);
+        logo->metadata.log_url, logo->metadata.cta_log_url);
     if (logo->dark_encoded_image) {
       image_doodle->dark = MakeImageDoodle(
           logo->metadata.type, logo->dark_encoded_image->as_string(),
           logo->metadata.dark_mime_type, logo->metadata.dark_animated_url,
           logo->metadata.dark_width_px, logo->metadata.dark_height_px,
           logo->metadata.dark_background_color,
-          logo->metadata.dark_share_button_x,
-          logo->metadata.dark_share_button_y,
-          logo->metadata.dark_share_button_icon,
-          logo->metadata.dark_share_button_bg,
-          logo->metadata.dark_share_button_opacity, logo->metadata.dark_log_url,
+          logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
     if (logo->metadata.on_click_url.is_valid()) {

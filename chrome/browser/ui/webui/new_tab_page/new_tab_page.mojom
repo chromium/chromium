@@ -99,17 +99,6 @@ struct Theme {
   most_visited.mojom.MostVisitedTheme most_visited;
 };
 
-// Specifies look of the doodle share button.
-struct DoodleShareButton {
-  // Position in pixels relative to the doodle's upper left corner.
-  int32 x;
-  int32 y;
-  // Button background color.
-  skia.mojom.SkColor background_color;
-  // Data URL of icon shown on the button.
-  url.mojom.Url icon_url;
-};
-
 // Type of image of an image doodle. Used for metrics logging only.
 enum DoodleImageType {
   // Animation of an animated doodle.
@@ -132,8 +121,6 @@ struct ImageDoodle {
   // Color of the background the doodle was designed for. If the NTP background
   // differs from that color we show the doodle in a box of that color.
   skia.mojom.SkColor background_color;
-  // Specification of the share button.
-  DoodleShareButton? share_button;
   // URLs to be pinged when an image has been shown.
   url.mojom.Url image_impression_log_url;
   url.mojom.Url? animation_impression_log_url;
