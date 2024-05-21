@@ -131,12 +131,21 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   void ValidateRequest(const network::ResourceRequest& request,
                        const GURL& expected_url,
-                       const std::optional<std::string>& event_data) {
+                       const std::optional<std::string>& event_data,
+                       bool should_have_referrer = true) {
     EXPECT_EQ(request.url, expected_url);
     EXPECT_EQ(request.mode, network::mojom::RequestMode::kCors);
     EXPECT_EQ(request.credentials_mode, network::mojom::CredentialsMode::kOmit);
     EXPECT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
                     .IsTransient());
+
+    if (should_have_referrer) {
+      EXPECT_EQ(request.referrer, main_frame_origin_.GetURL());
+      EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::ORIGIN);
+    } else {
+      EXPECT_EQ(request.referrer, GURL());
+      EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::NEVER_CLEAR);
+    }
 
     // Checks specific to DestinationURL events.
     if (!event_data.has_value()) {
@@ -1567,7 +1576,7 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
       console_message_level));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
-                  report_destination3_, "event_data3");
+                  report_destination3_, "event_data3", false);
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination3_.spec(), "");
@@ -1589,7 +1598,7 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
       console_message_level));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
-                  report_destination3_, "event_data3");
+                  report_destination3_, "event_data3", false);
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination3_.spec(), "", net::HTTP_NOT_FOUND);

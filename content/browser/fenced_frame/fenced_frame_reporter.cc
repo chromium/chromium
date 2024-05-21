@@ -678,6 +678,11 @@ bool FencedFrameReporter::SendReportInternal(
   } else {
     request->method = net::HttpRequestHeaders::kPostMethod;
   }
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) ||
+      absl::holds_alternative<DestinationURLEvent>(event_variant)) {
+    request->referrer = request_initiator.GetURL();
+    request->referrer_policy = net::ReferrerPolicy::ORIGIN;
+  }
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();

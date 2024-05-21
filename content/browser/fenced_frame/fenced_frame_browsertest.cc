@@ -5876,6 +5876,11 @@ class FencedFrameReportEventBrowserTest
           EXPECT_EQ(response.http_request()->headers.at("Origin"),
                     reporting_worklet_origin.Serialize());
         }
+        // Verify the request contains the correct referrer.
+        EXPECT_EQ(response.http_request()->headers.at("Referer"),
+                  navigation_target_node->current_frame_host()
+                      ->GetLastCommittedOrigin()
+                      .GetURL());
         // Verify the request contains the eligibility header.
         if (step.expect_attribution_reporting_allowed) {
           ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
