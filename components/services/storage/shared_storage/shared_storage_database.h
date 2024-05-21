@@ -489,13 +489,6 @@ class SharedStorageDatabase {
       std::optional<std::u16string> previous_value)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns the total number of entries for `context_origin`, including any
-  // expired entries for `context_origin` that have not yet been purged. Returns
-  // 0 if there is a database error.
-  [[nodiscard]] int64_t NumEntriesIncludeExpired(
-      const std::string& context_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   // Returns the number of entries for `context_origin`, not including any
   // expired entries, as determined by a manual "COUNT(*)" query. Returns -1 if
   // there is a database error.

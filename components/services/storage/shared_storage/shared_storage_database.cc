@@ -1452,26 +1452,6 @@ SharedStorageDatabase::InternalSetOrAppend(
   return OperationResult::kSet;
 }
 
-int64_t SharedStorageDatabase::NumEntriesIncludeExpired(
-    const std::string& context_origin) {
-  // In theory, there ought to be at most one entry found. But we make no
-  // assumption about the state of the disk. In the rare case that multiple
-  // entries are found, we return only the `length` from the first entry found.
-  static constexpr char kSelectSql[] =
-      "SELECT length FROM per_origin_mapping "
-      "WHERE context_origin=? "
-      "LIMIT 1";
-
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, context_origin);
-
-  int64_t num_entries = 0;
-  if (statement.Step())
-    num_entries = statement.ColumnInt64(0);
-
-  return num_entries;
-}
-
 int64_t SharedStorageDatabase::NumEntriesManualCountExcludeExpired(
     const std::string& context_origin) {
   static constexpr char kCountSql[] =
