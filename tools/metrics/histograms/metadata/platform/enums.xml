@@ -440,6 +440,39 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="PCR0 in wrong state"/>
 </enum>
 
+<enum name="DataLossErrorReason">
+  <summary>
+    Defined as DataLossErrorReason src/platform2/missive/util/reporting_errors.h
+  </summary>
+  <int value="0" label="FAILED_TO_CREATE_ENCRYPTION_KEY"/>
+  <int value="1" label="FAILED_TO_ENUMERATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="2" label="FAILED_TO_GET_SIZE_OF_FILE"/>
+  <int value="3" label="FAILED_TO_OPEN_FILE"/>
+  <int value="4" label="FAILED_TO_OPEN_KEY_FILE"/>
+  <int value="5" label="FAILED_TO_OPEN_STORAGE_QUEUE_FILE"/>
+  <int value="6" label="FAILED_TO_PARSE_GENERATION_ID"/>
+  <int value="7" label="FAILED_TO_PARSE_RECORD"/>
+  <int value="8" label="FAILED_TO_READ_FILE"/>
+  <int value="9" label="FAILED_TO_READ_FILE_INFO"/>
+  <int value="10" label="FAILED_TO_READ_HEALTH_DATA"/>
+  <int value="11" label="FAILED_TO_READ_HEALTH_DATA_FILE_INFO"/>
+  <int value="12" label="FAILED_TO_READ_METADATA"/>
+  <int value="13" label="FAILED_TO_RESTORE_LAST_RECORD_DIGEST"/>
+  <int value="14" label="FAILED_TO_SERIALIZE_ENCRYPTED_RECORD"/>
+  <int value="15" label="FAILED_TO_SERIALIZE_KEY"/>
+  <int value="16" label="FAILED_TO_SERIALIZE_WRAPPED_RECORD"/>
+  <int value="17" label="FAILED_TO_WRITE_FILE"/>
+  <int value="18" label="FAILED_TO_WRITE_HEALTH_DATA"/>
+  <int value="19" label="FAILED_TO_WRITE_KEY_FILE"/>
+  <int value="20" label="FAILED_TO_WRITE_METADATA"/>
+  <int value="21" label="INVALID_GENERATION_GUID"/>
+  <int value="22" label="INVALID_GENERATION_ID"/>
+  <int value="23" label="METADATA_GENERATION_ID_MISMATCH"/>
+  <int value="24" label="METADATA_GENERATION_ID_OUT_OF_RANGE"/>
+  <int value="25" label="METADATA_LAST_RECORD_DIGEST_IS_CORRUPT"/>
+  <int value="26" label="MISSING_GENERATION_ID"/>
+</enum>
+
 <enum name="DetachableBasePairResult">
   <int value="0" label="UnknownError"/>
   <int value="1" label="ChallengePassed"/>
@@ -2655,7 +2688,8 @@ Full version information for the fingerprint enum values:
 
 <enum name="UnavailableErrorReason">
   <summary>
-    Defined as UnavailableErrorReason in src/platform2/missive/util/errors.h
+    Defined as UnavailableErrorReason in
+    src/platform2/missive/util/reporting_errors.h
   </summary>
   <int value="0" label="CANNOT_CANCEL_A_JOB_THATS_ALREADY_RUNNING"/>
   <int value="1" label="CANNOT_SCHEDULE_A_JOB_THATS_ALREADY_RUNNING"/>
