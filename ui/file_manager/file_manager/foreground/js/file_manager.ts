@@ -1191,10 +1191,6 @@ export class FileManager {
           this.ui_.directoryTree as DirectoryTree, this.volumeManager_);
       await this.guestOsController_.refresh();
     }
-
-    if (isSkyvaultV2Enabled()) {
-      this.oneDriveController_ = new OneDriveController();
-    }
   }
 
   /**
@@ -1258,6 +1254,10 @@ export class FileManager {
     assert(this.volumeManager_);
     assert(this.metadataModel_);
     assert(this.directoryModel_);
+
+    if (isSkyvaultV2Enabled()) {
+      this.oneDriveController_ = new OneDriveController();
+    }
     const initMaterializedViewsPromise = isMaterializedViewsEnabled() ?
         this.initMaterializedViews_() :
         Promise.resolve();

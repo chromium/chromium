@@ -587,7 +587,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       if (currentDirectoryOnOdfs) {
         const tracker = this.createDirectoryChangeTracker();
         tracker.start();
-        // / Normally the default root is MyFiles, however with SkyVault, this
+        // Normally the default root is MyFiles, however with SkyVault, this
         // is the volume in the Cloud (OneDrive or GoogleDrive).
         this.volumeManager_.getDefaultDisplayRoot().then((displayRoot) => {
           if (displayRoot && !tracker.hasChanged) {

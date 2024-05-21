@@ -1062,9 +1062,7 @@ export async function fileDisplayOneDrivePlaceholder() {
   // Check that the placeholder is added.
   await directoryTree.waitForItemByLabel(oneDriveLabel);
 
-  // TODO(b/340170015): this should happen automatically.
-  // We should navigate to OneDrive.
-  await directoryTree.selectItemByLabel(oneDriveLabel);
+  // Files App should open by default in the placeholder.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, `/${oneDriveLabel}`);
 

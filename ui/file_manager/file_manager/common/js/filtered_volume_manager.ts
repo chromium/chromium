@@ -8,7 +8,8 @@ import {VolumeInfoList} from '../../background/js/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent} from '../../background/js/volume_manager.js';
 import {VolumeManager} from '../../background/js/volume_manager.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {getStore, type Store} from '../../state/store.js';
+import {oneDriveFakeRootKey} from '../../state/ducks/volumes.js';
+import {getEntry, getStore, type Store} from '../../state/store.js';
 
 import {type SpliceEvent} from './array_data_model.js';
 import {isOneDrive} from './entry_utils.js';
@@ -423,6 +424,13 @@ export class FilteredVolumeManager extends VolumeManager {
         break;
       case chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE:
         volumeInfo = this.getOneDriveVolumeInfo_();
+        if (!volumeInfo) {
+          // Check if the placeholder is there.
+          const entry = getEntry(this.store_.getState(), oneDriveFakeRootKey);
+          if (entry) {
+            return (entry as DirectoryEntry);
+          }
+        }
         break;
       default:
         console.warn(`Invalid default location: ${location}`);

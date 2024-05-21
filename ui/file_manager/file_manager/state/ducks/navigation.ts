@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isOneDriveId} from '../../common/js/entry_utils.js';
+import {isOneDrive, isOneDriveId} from '../../common/js/entry_utils.js';
 import type {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
@@ -166,7 +166,10 @@ function refreshNavigationRootsReducer(currentState: State): State {
   if (isSkyvaultV2Enabled()) {
     const oneDriveUIEntryExists =
         currentState.uiEntries.includes(oneDriveFakeRootKey);
-    if (oneDriveUIEntryExists) {
+    const oneDriveVolumeExists =
+        Object.values<Volume>(currentState.volumes).find(v => isOneDrive(v)) !==
+        undefined;
+    if (oneDriveUIEntryExists && !oneDriveVolumeExists) {
       roots.push({
         key: oneDriveFakeRootKey,
         section: NavigationSection.ODFS,
