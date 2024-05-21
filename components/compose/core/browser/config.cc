@@ -65,6 +65,10 @@ Config::Config() {
   proactive_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge);
 
+  proactive_nudge_compact_ui = base::GetFieldTrialParamByFeatureAsBool(
+      features::kEnableComposeProactiveNudge, "proactive_nudge_compact_ui",
+      proactive_nudge_compact_ui);
+
   proactive_nudge_show_probability = base::GetFieldTrialParamByFeatureAsDouble(
       features::kEnableComposeProactiveNudge,
       "proactive_nudge_show_probability", proactive_nudge_show_probability);

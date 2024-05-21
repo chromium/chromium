@@ -58,6 +58,9 @@ struct Config {
   // Whether to enable the proactive nudge with no saved state.
   bool proactive_nudge_enabled = false;
 
+  // Use the compact UI for proactive nudge.
+  bool proactive_nudge_compact_ui = false;
+
   // Used to randomly hide the nudge in order to reduce exposure, experimental
   // flag for triggering research experiments only. If param is greater than
   // `1`, always shows. If param is negative, never shows.
