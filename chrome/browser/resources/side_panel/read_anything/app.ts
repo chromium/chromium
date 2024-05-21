@@ -1378,65 +1378,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO: Should this be merged with highlightAndPlayMessage?
   highlightAndPlayInterruptedMessage(): boolean {
-    // getCurrentText gets the AX Node IDs of text that should be spoken and
-    // highlighted.
-    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
-
-    // If there aren't any valid ax node ids returned by getCurrentText,
-    // speech should stop.
-    if (axNodeIds.length === 0) {
-      return false;
-    }
-
-    const utteranceText = this.extractTextOf(axNodeIds);
-    // Return if the utterance is empty or null.
-    if (!utteranceText) {
-      // TODO(b/332694565): This fallback should never be needed, but it is.
-      // Investigate root cause of Read Aloud / Reading Mode mismatch.
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayInterruptedMessage();
-    }
-
-    // The TTS engine may not like attempts to speak whitespace, so move to the
-    // next utterance.
-    if (utteranceText.trim().length === 0) {
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayInterruptedMessage();
-    }
-
-    if (this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED) {
-      const substringIndex = this.wordBoundaryState.previouslySpokenIndex +
-          this.wordBoundaryState.speechUtteranceStartIndex;
-      this.wordBoundaryState.previouslySpokenIndex = 0;
-      this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
-      const utteranceTextForWordBoundary =
-          utteranceText.substring(substringIndex);
-      // Don't use the word boundary if it's going to cause a TTS engine issue.
-      if (utteranceTextForWordBoundary.trim().length === 0) {
-        this.playText(utteranceText);
-      } else {
-        this.playText(utteranceText.substring(substringIndex));
-      }
-    } else {
-      this.playText(utteranceText);
-    }
-    if (this.wordBoundaryState.mode ===
-            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
-        !this.shouldUseWordHighlighting()) {
-      this.highlightNodes(axNodeIds);
-    } else {
-      this.highlightNodesForWordBoundary();
-    }
-    return true;
+    return this.highlightAndPlayMessage(/* isInterrupted = */ true);
   }
 
   // Play text of these axNodeIds. When finished, read and highlight to read the
   // following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  highlightAndPlayMessage(): boolean {
+  highlightAndPlayMessage(isInterrupted: boolean = false): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
     // highlighted.
     const axNodeIds: number[] = chrome.readingMode.getCurrentText();
@@ -1456,17 +1406,37 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // TODO(b/332694565): This fallback should never be needed, but it is.
       // Investigate root cause of Read Aloud / Reading Mode mismatch.
       chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage();
+      return this.highlightAndPlayMessage(isInterrupted);
     }
 
     // The TTS engine may not like attempts to speak whitespace, so move to the
     // next utterance.
     if (utteranceText.trim().length === 0) {
       chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage();
+      return this.highlightAndPlayMessage(isInterrupted);
     }
 
-    this.playText(utteranceText);
+    // If we're resuming a previously interrupted message, use word
+    // boundaries (if available) to resume at the beginning of the current
+    // word.
+    if (isInterrupted &&
+        this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED) {
+      const substringIndex = this.wordBoundaryState.previouslySpokenIndex +
+          this.wordBoundaryState.speechUtteranceStartIndex;
+      this.wordBoundaryState.previouslySpokenIndex = 0;
+      this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
+      const utteranceTextForWordBoundary =
+          utteranceText.substring(substringIndex);
+      // Don't use the word boundary if it's going to cause a TTS engine issue.
+      if (utteranceTextForWordBoundary.trim().length === 0) {
+        this.playText(utteranceText);
+      } else {
+        this.playText(utteranceText.substring(substringIndex));
+      }
+    } else {
+      this.playText(utteranceText);
+    }
+
     if (this.wordBoundaryState.mode ===
             WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
         !this.shouldUseWordHighlighting()) {
