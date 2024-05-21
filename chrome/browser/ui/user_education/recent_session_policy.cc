@@ -17,34 +17,34 @@ namespace {
 
 constexpr int kMaxRecords = RecentSessionTracker::kMaxRecentSessionRecords;
 
-std::optional<int> GetActivePeriods(const RecentSessionData& recent_sessions,
-                                    int num_periods,
-                                    int period_length_in_days,
-                                    int min_count) {
-  const base::Time end =
-      (recent_sessions.recent_session_start_times.front() + base::Days(1))
-          .LocalMidnight();
-  const base::Time start =
-      end - base::Days(num_periods * period_length_in_days);
+// Gets midnight at the start of the next local day.
+// Note: inaccurate if the time is *exactly* midnight, but this will happen so
+// rarely that it's not worth worrying about.
+base::Time GetEndOfDay(base::Time time) {
+  return (time + base::Days(1)).LocalMidnight();
+}
+
+// Counts the number of active days in `recent_sessions` going back `num_days`
+// from `last_day`. Returns null if session data recording does not go back far
+// enough to cover the whole span.
+std::optional<int> CountActiveDays(const RecentSessionData& recent_sessions,
+                                   base::Time last_day,
+                                   int num_days) {
+  const base::Time end = GetEndOfDay(last_day);
+  const base::Time start = end - base::Days(num_days);
+
   if (recent_sessions.enabled_time > start) {
     return std::nullopt;
   }
 
-  const base::TimeDelta period_length = base::Days(period_length_in_days);
-  std::vector<int> active_periods(num_periods, 0);
+  std::vector<bool> active_days(num_days, false);
   for (const auto& start_time : recent_sessions.recent_session_start_times) {
-    if (start_time < start) {
-      continue;
+    if (start_time >= start && start_time < end) {
+      const size_t index = (start_time - start) / base::Days(1);
+      active_days[index] = true;
     }
-    if (start_time >= end) {
-      ++active_periods.back();
-      continue;
-    }
-    const size_t index = (start_time - start) / period_length;
-    ++active_periods[index];
   }
-  return std::count_if(active_periods.begin(), active_periods.end(),
-                       [min_count](int value) { return value >= min_count; });
+  return std::count(active_days.begin(), active_days.end(), true);
 }
 
 std::optional<int> ValueOrNull(int value) {
@@ -71,12 +71,27 @@ std::optional<int> RecentSessionPolicyImpl::SessionCountConstraint::GetCount(
 
 std::optional<int> RecentSessionPolicyImpl::ActiveDaysConstraint::GetCount(
     const RecentSessionData& recent_sessions) const {
-  return GetActivePeriods(recent_sessions, days_, 1, 1);
+  return CountActiveDays(recent_sessions,
+                         recent_sessions.recent_session_start_times.front(),
+                         days_);
 }
 
 std::optional<int> RecentSessionPolicyImpl::ActiveWeeksConstraint::GetCount(
     const RecentSessionData& recent_sessions) const {
-  return GetActivePeriods(recent_sessions, weeks_, 7, active_days_);
+  int count = 0;
+  base::Time counting_back_from =
+      recent_sessions.recent_session_start_times.front();
+  for (int week = 0; week < weeks_; ++week) {
+    const auto active_days =
+        CountActiveDays(recent_sessions, counting_back_from, 7);
+    if (!active_days) {
+      return active_days;
+    } else if (*active_days >= active_days_) {
+      ++count;
+    }
+    counting_back_from -= base::Days(7);
+  }
+  return count;
 }
 
 RecentSessionPolicyImpl::ConstraintInfo::ConstraintInfo() = default;

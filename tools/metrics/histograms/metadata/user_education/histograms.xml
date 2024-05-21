@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
   <owner>frizzle-team@google.com</owner>
   <summary>
     When a new User Education session starts, records the number of weeks with
-    at least four sessions in the past month. This helps us understand how
+    at least four active days in the past month. This helps us understand how
     frequently our product is being used in alignment with standard Google user
     segmentation metrics.
   </summary>
