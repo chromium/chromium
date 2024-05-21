@@ -125,7 +125,7 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
       ui::kColorSysStateRippleNeutralOnSubtle};
 
   // Update starter pack icon color.
-  mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysPrimary};
+  mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysOnTonalContainer};
 }
 
 // Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
