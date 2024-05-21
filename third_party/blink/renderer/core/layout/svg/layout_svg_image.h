@@ -107,7 +107,6 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                    HitTestPhase) override;
 
   gfx::SizeF CalculateObjectSize() const;
-  bool HasOverriddenIntrinsicSize() const;
 
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
