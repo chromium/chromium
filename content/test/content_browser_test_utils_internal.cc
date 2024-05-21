@@ -290,16 +290,11 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       to_explore.push(node->child_at(i));
     }
 
-    // Sort the proxies by SiteInstance ID to avoid unordered_map ordering.
+    // Sort the proxies by SiteInstanceGroup ID to avoid unordered_map ordering.
     std::vector<SiteInstance*> site_instances;
     for (const auto& proxy_pair :
          node->render_manager()->GetAllProxyHostsForTesting()) {
       SiteInstanceGroup* group = proxy_pair.second->site_instance_group();
-
-      // Currently, each SiteInstanceGroup only has one SiteInstance in it.
-      // TODO(crbug.com/1195535, yangsharon): Remove when multiple SiteInstances
-      // per group is supported.
-      CHECK_EQ(group->site_instances_for_testing().size(), 1u);
       for (raw_ptr<SiteInstanceImpl> instance :
            group->site_instances_for_testing()) {
         site_instances.push_back(instance);
@@ -394,16 +389,8 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       // Sort these alphabetically, to avoid hash_map ordering dependency.
       std::vector<std::string> sorted_proxy_hosts;
       for (const auto& proxy_pair : proxy_host_map) {
-        // Get the first SiteInstance from each group, since there's only one
-        // SiteInstance per group.
-        // TODO(crbug.com/1447896, yangsharon): Add support for multiple
-        // SiteInstances per group.
-        auto site_instances_for_testing =
-            proxy_pair.second->site_instance_group()
-                ->site_instances_for_testing();
-        CHECK_EQ(site_instances_for_testing.size(), 1u);
-        SiteInstance* site_instance = *(site_instances_for_testing.begin());
-        sorted_proxy_hosts.push_back(GetName(site_instance));
+        sorted_proxy_hosts.push_back(
+            GetGroupName(proxy_pair.second->site_instance_group()));
       }
       std::sort(sorted_proxy_hosts.begin(), sorted_proxy_hosts.end());
       for (std::string& proxy_name : sorted_proxy_hosts) {
@@ -460,6 +447,33 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
     return base::StringPrintf("%c", 'A' + static_cast<char>(index));
   else
     return base::StringPrintf("Z%d", static_cast<int>(index - 25));
+}
+
+std::string FrameTreeVisualizer::GetGroupName(SiteInstanceGroup* group) {
+  // If there's only one SiteInstance in `group`, get the name of the
+  // SiteInstance directly. This preserves test expectations for DepictFrameTree
+  // uses that predate SiteInstanceGroup.
+  if (group->site_instances_for_testing().size() == 1) {
+    return GetName(*group->site_instances_for_testing().begin());
+  }
+
+  // Alphabetically sort the SiteInstances within the group.
+  std::vector<std::string> sorted_instance_names;
+  for (auto& site_instance : group->site_instances_for_testing()) {
+    sorted_instance_names.push_back(GetName(site_instance));
+  }
+  std::sort(sorted_instance_names.begin(), sorted_instance_names.end());
+
+  // Name the group using set notation.
+  CHECK(sorted_instance_names.size() >= 1u);
+  std::string result = "{";
+  for (auto& site_instance_name : sorted_instance_names) {
+    base::StringAppendF(&result, "%s,", site_instance_name.c_str());
+  }
+  result.resize(result.length() - 1);
+  result.append("}");
+
+  return result;
 }
 
 GURL FrameTreeVisualizer::GetUrlWithoutPort(const GURL& url) {
