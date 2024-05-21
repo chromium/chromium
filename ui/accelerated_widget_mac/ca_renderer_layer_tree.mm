@@ -38,10 +38,6 @@ BASE_FEATURE(kFullscreenLowPowerBackdropMac,
              "FullscreenLowPowerBackdropMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCALayerTreeOptimization,
-             "CALayerTreeOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 // Show borders around RenderPassDrawQuad CALayers. which is the output of a
 // non-root render pass.
@@ -315,9 +311,7 @@ CARendererLayerTree::CARendererLayerTree(
     bool allow_solid_color_layers)
     : allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      allow_solid_color_layers_(allow_solid_color_layers),
-      ca_layer_tree_optimization_(
-          base::FeatureList::IsEnabled(kCALayerTreeOptimization)) {}
+      allow_solid_color_layers_(allow_solid_color_layers) {}
 CARendererLayerTree::~CARendererLayerTree() = default;
 
 bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
@@ -336,32 +330,14 @@ void CARendererLayerTree::CommitScheduledCALayers(
   TRACE_EVENT0("gpu", "CARendererLayerTree::CommitScheduledCALayers");
   scale_factor_ = scale_factor;
 
-  if (ca_layer_tree_optimization_)
-    MatchLayersToOldTree(old_tree.get());
-  else
-    MatchLayersToOldTreeDefault(old_tree.get());
+  // The CALayerTree optimization reuses the matched CALayer from the previous.
+  MatchLayersToOldTree(old_tree.get());
 
   root_layer_.CommitToCA(superlayer, pixel_size);
   // If there are any extra CALayers in |old_tree| that were not stolen by this
   // tree, they will be removed from the CALayer tree in this deallocation.
   old_tree.reset();
   has_committed_ = true;
-}
-
-void CARendererLayerTree::MatchLayersToOldTreeDefault(
-    CARendererLayerTree* old_tree) {
-  if (!old_tree)
-    return;
-  DCHECK(old_tree->has_committed_);
-
-  // Match the root layer.
-  if (old_tree->scale_factor_ != scale_factor_)
-    return;
-
-  root_layer_.old_layer_ =
-      old_tree->root_layer_.weak_factory_for_new_layer_.GetWeakPtr();
-
-  root_layer_.CALayerFallBack();
 }
 
 void CARendererLayerTree::MatchLayersToOldTree(CARendererLayerTree* old_tree) {
