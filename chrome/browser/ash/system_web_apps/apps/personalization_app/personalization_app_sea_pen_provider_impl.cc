@@ -36,7 +36,8 @@ void OnSeaPenImageDeleted(const AccountId& account_id,
   // Set selected wallpaper to default if the deleted image currently selected.
   auto* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
-  auto wallpaper_info = wallpaper_controller->GetActiveUserWallpaperInfo();
+  auto wallpaper_info =
+      wallpaper_controller->GetWallpaperInfoForAccountId(account_id);
   if (wallpaper_info.has_value() &&
       wallpaper_info->type == WallpaperType::kSeaPen &&
       wallpaper_info->location == base::NumberToString(image_id)) {

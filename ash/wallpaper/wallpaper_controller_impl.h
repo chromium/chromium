@@ -326,6 +326,8 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const override;
   std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const override;
+  std::optional<WallpaperInfo> GetWallpaperInfoForAccountId(
+      const AccountId& account_id) const override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(
@@ -333,6 +335,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) override;
   void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
+  const AccountId& CurrentAccountId() const override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
@@ -798,7 +801,7 @@ class ASH_EXPORT WallpaperControllerImpl
   std::optional<WallpaperCalculatedColors> calculated_colors_;
 
   // Account id of the current user.
-  AccountId current_user_;
+  AccountId current_account_id_;
 
   // Cached wallpapers of users.
   CustomWallpaperMap wallpaper_cache_map_;

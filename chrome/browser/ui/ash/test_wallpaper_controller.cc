@@ -343,6 +343,12 @@ TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_;
 }
 
+std::optional<ash::WallpaperInfo>
+TestWallpaperController::GetWallpaperInfoForAccountId(
+    const AccountId& account_id) const {
+  return wallpaper_info_;
+}
+
 void TestWallpaperController::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {
@@ -371,4 +377,8 @@ void TestWallpaperController::UpdateDailyRefreshWallpaper(
 void TestWallpaperController::SyncLocalAndRemotePrefs(
     const AccountId& account_id) {
   NOTIMPLEMENTED();
+}
+
+const AccountId& TestWallpaperController::CurrentAccountId() const {
+  return current_account_id;
 }

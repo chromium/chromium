@@ -37,7 +37,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/unguessable_token.h"
@@ -352,11 +351,21 @@ void PersonalizationAppWallpaperProviderImpl::SetWallpaperObserver(
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+
+  const AccountId account_id = GetAccountId(profile_);
+
+  if (wallpaper_controller->CurrentAccountId() != account_id) {
+    DVLOG(1) << "Skip " << __func__ << " for different AccountId";
+    return;
+  }
+
   wallpaper_attribution_info_fetcher_.reset();
   attribution_weak_ptr_factory_.InvalidateWeakPtrs();
 
   std::optional<ash::WallpaperInfo> info =
-      WallpaperController::Get()->GetActiveUserWallpaperInfo();
+      wallpaper_controller->GetWallpaperInfoForAccountId(account_id);
   if (!info) {
     DVLOG(1) << "No wallpaper info for active user. This should only happen in "
                 "tests.";
@@ -659,7 +668,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     // image.
     const auto& it = album_id_dedup_key_map_.find(album_id);
     std::optional<ash::WallpaperInfo> info =
-        wallpaper_controller->GetActiveUserWallpaperInfo();
+        wallpaper_controller->GetWallpaperInfoForAccountId(
+            GetAccountId(profile_));
     if (info.has_value() && info->dedup_key.has_value()) {
       force_refresh =
           it == album_id_dedup_key_map_.end() ||
@@ -715,11 +725,13 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
     wallpaper_receiver_.ReportBadMessage("Unsupported wallpaper collection");
     return;
   }
-  wallpaper_controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
-                                                    collection_id);
+
+  const AccountId account_id = GetAccountId(profile_);
+
+  wallpaper_controller->SetDailyRefreshCollectionId(account_id, collection_id);
 
   std::optional<ash::WallpaperInfo> info =
-      wallpaper_controller->GetActiveUserWallpaperInfo();
+      wallpaper_controller->GetWallpaperInfoForAccountId(account_id);
   DCHECK(info);
 
   if (collection_id.empty()) {
@@ -770,7 +782,8 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
 
   auto* wallpaper_controller = WallpaperController::Get();
   std::optional<ash::WallpaperInfo> info =
-      wallpaper_controller->GetActiveUserWallpaperInfo();
+      wallpaper_controller->GetWallpaperInfoForAccountId(
+          GetAccountId(profile_));
   DCHECK(info);
   DCHECK(info->type == WallpaperType::kDaily ||
          info->type == WallpaperType::kDailyGooglePhotos);

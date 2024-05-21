@@ -344,9 +344,14 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const = 0;
 
-  // Returns a struct with info about the active user's wallpaper if there is an
-  // active user.
+  // Returns active user's `WallpaperInfo` if there is an active user that has
+  // valid `WallpaperInfo`.
   virtual std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
+
+  // Returns a `WallpaperInfo` for the given `account_id` if `account_id` exists
+  // and has valid saved info.
+  virtual std::optional<WallpaperInfo> GetWallpaperInfoForAccountId(
+      const AccountId& account_id) const = 0;
 
   // Set and store the collection id used to update refreshable wallpapers.
   // Empty if daily refresh is not enabled.
@@ -367,6 +372,10 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sync wallpaper infos and images.
   // |account_id|: The account id of the user.
   virtual void SyncLocalAndRemotePrefs(const AccountId& account_id) = 0;
+
+  // The `AccountId` for the user whose wallpaper is currently displayed. May be
+  // empty `AccountId` for things like OOBE and device policy wallpaper.
+  virtual const AccountId& CurrentAccountId() const = 0;
 };
 
 }  // namespace ash

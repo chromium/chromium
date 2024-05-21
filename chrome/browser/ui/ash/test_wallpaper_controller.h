@@ -183,12 +183,15 @@ class TestWallpaperController : public ash::WallpaperController {
   bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const override;
   std::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo() const override;
+  std::optional<ash::WallpaperInfo> GetWallpaperInfoForAccountId(
+      const AccountId& account_id) const override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(
       const AccountId& account_id) const override;
   void UpdateDailyRefreshWallpaper(RefreshWallpaperCallback callback) override;
   void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
+  const AccountId& CurrentAccountId() const override;
 
  private:
   bool was_client_set_ = false;

@@ -52,6 +52,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -222,6 +223,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
           base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
     AddAndLoginUser(GetTestAccountId());
+    test_wallpaper_controller()->SetCurrentUser(GetTestAccountId());
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -440,6 +442,36 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   EXPECT_EQ(ash::WallpaperType::kOnline, current->type);
   EXPECT_EQ(ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
             current->layout);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       IgnoresWallpaperResizeForOtherUser) {
+  const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
+      "otherfakeemail@personalization", "0987654321");
+  test_wallpaper_controller()->SetCurrentUser(other_account_id);
+
+  test_wallpaper_controller()->ShowWallpaperImage(
+      CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorBLACK));
+
+  auto image_info = GetDefaultImageInfo();
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+
+  AddWallpaperImage(image_info);
+
+  test_wallpaper_controller()->SetOnlineWallpaper(
+      {other_account_id, "collection_id",
+       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+       /*preview_mode=*/false, /*from_user=*/true,
+       /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+      base::DoNothing());
+
+  EXPECT_EQ(nullptr, current_wallpaper());
+
+  SetWallpaperObserver();
+
+  EXPECT_EQ(nullptr, current_wallpaper());
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
