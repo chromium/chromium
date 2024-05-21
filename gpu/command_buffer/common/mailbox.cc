@@ -65,6 +65,10 @@ void Mailbox::SetName(const int8_t* n) {
 }
 
 Mailbox Mailbox::GenerateForSharedImage() {
+  return Generate();
+}
+
+Mailbox Mailbox::Generate() {
   return GenerateMailbox();
 }
 

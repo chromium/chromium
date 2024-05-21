@@ -28,13 +28,11 @@ enum class TracingImportance : int {
   kClientOwner = 2,
 };
 
-// A mailbox is an unguessable name that references texture image data.
-// This name can be passed across processes permitting one context to share
-// texture image data with another. The mailbox name consists of a random
+// A mailbox is an unguessable name that references a SharedImage.
+// This name can be passed across processes permitting one process to share
+// a SharedImage with another. The mailbox name consists of a random
 // set of bytes, optionally with a checksum (in debug mode) to verify the
 // name is valid.
-// See src/gpu/GLES2/extensions/CHROMIUM/CHROMIUM_texture_mailbox.txt for more
-// details.
 struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   using Name = int8_t[GL_MAILBOX_SIZE_CHROMIUM];
 
@@ -49,8 +47,12 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   void SetZero();
   void SetName(const int8_t* name);
 
-  // Generate a unique unguessable mailbox name for use with the SharedImage
-  // system.
+  // Generate a unique unguessable mailbox name.
+  static Mailbox Generate();
+
+  // Generate a unique unguessable mailbox name.
+  // TODO(crbug.com/337538024): Remove this method once all callers have been
+  // ported.
   static Mailbox GenerateForSharedImage();
 
   // Verify that the mailbox was created through Mailbox::Generate. This only
