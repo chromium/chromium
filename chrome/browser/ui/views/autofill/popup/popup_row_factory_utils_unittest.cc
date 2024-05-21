@@ -169,7 +169,8 @@ class PasswordPopupRowViewTest : public PopupRowFactoryUtilsTestBase {
   }
 
   void ShowPasswordSuggestionWithLoadingState(bool is_loading) {
-    Suggestion suggestion{u"ortiler", SuggestionType::kPasswordEntry};
+    Suggestion suggestion(u"ortiler", SuggestionType::kPasswordEntry);
+    suggestion.labels = {{Suggestion::Text(u"password")}};
     suggestion.is_loading = Suggestion::IsLoading(is_loading);
     ShowSuggestion(suggestion);
   }

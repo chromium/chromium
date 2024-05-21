@@ -573,7 +573,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -595,8 +595,8 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN))}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -617,7 +617,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `false` if the popup is triggered on a
   // different type of form or a standalone field.
   suggestion.is_acceptable = false;
@@ -642,7 +642,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -678,7 +678,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -722,7 +722,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -753,8 +753,8 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN))}};
   // `suggestion.is_acceptable` is `true` if the popup is triggered on a
   // password form.
   suggestion.is_acceptable = true;
@@ -777,7 +777,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       Suggestion::PasswordSuggestionDetails(u"password"));
-  suggestion.additional_label = u"username";
+  suggestion.labels = {{Suggestion::Text(u"username")}};
   // `suggestion.is_acceptable` is `false` if the popup is triggered on a
   // different type of form or a standalone field.
   suggestion.is_acceptable = false;

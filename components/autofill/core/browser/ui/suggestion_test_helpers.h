@@ -40,9 +40,9 @@ inline auto SuggestionVectorMainTextsAre(const Matchers&... matchers) {
 }
 
 template <class... Matchers>
-inline auto SuggestionVectorLabelsContains(const Matchers&... matchers) {
-  return ::testing::Contains(
-      ::testing::Field("labels", &Suggestion::labels, matchers)...);
+inline auto SuggestionAdditionalLabelsContains(const Matchers&... matchers) {
+  return ::testing::Contains(::testing::Field(
+      "additional_label", &Suggestion::additional_label, matchers)...);
 }
 
 template <class... Matchers>

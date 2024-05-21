@@ -141,7 +141,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
       password_manager_driver_->PreviewSuggestion(
-          GetUsernameFromLabel(suggestion.additional_label),
+          GetUsernameFromLabel(suggestion.labels[0][0].value),
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
               .password);
       break;
@@ -172,7 +172,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       MaybeAuthenticateBeforeFilling(base::BindOnce(
           &PasswordManagerDriver::FillSuggestion,
           base::Unretained(password_manager_driver_),
-          GetUsernameFromLabel(suggestion.additional_label),
+          GetUsernameFromLabel(suggestion.labels[0][0].value),
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
               .password));
       break;

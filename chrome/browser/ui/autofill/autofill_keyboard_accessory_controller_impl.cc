@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -53,21 +54,30 @@ constexpr size_t kMaxBulletCount = 8;
 // `Suggestion::labels`. For other suggestions, constructs the label from
 // `Suggestion::labels`.
 Suggestion::Text CreateLabel(const Suggestion& suggestion) {
-  std::u16string password =
-      suggestion.additional_label.substr(0, kMaxBulletCount);
-  // The label contains the signon_realm or is empty. The additional_label can
-  // never be empty since it must contain a password.
-  if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty()) {
-    return Suggestion::Text(password);
+  if (suggestion.labels.empty()) {
+    return Suggestion::Text();
   }
-
   // TODO(crbug.com/40221039): Re-consider whether using CHECK is an appropriate
   // way to explicitly regulate what information should be populated for the
   // interface.
   CHECK_EQ(suggestion.labels.size(), 1U);
   CHECK_EQ(suggestion.labels[0].size(), 1U);
-  return Suggestion::Text(
-      base::StrCat({suggestion.labels[0][0].value, kLabelSeparator, password}));
+  if (GetFillingProductFromSuggestionType(suggestion.type) ==
+      FillingProduct::kPassword) {
+    // The `Suggestion::labels` can never be empty since it must contain a
+    // password.
+    const std::u16string password =
+        suggestion.labels[0][0].value.substr(0, kMaxBulletCount);
+
+    // The `Suggestion::additional_label` contains the signon_realm or is empty.
+    if (suggestion.additional_label.empty()) {
+      return Suggestion::Text(password);
+    }
+    return Suggestion::Text(
+        base::StrCat({suggestion.additional_label, kLabelSeparator, password}));
+  }
+
+  return Suggestion::Text(suggestion.labels[0][0].value);
 }
 
 }  // namespace

@@ -139,7 +139,8 @@ std::vector<Suggestion> CreatePasswordSuggestions() {
 
   suggestions.emplace_back(u"Password main text",
                            SuggestionType::kPasswordEntry);
-  suggestions.back().additional_label = u"example.username@gmail.com";
+  suggestions.back().labels = {
+      {Suggestion::Text(u"example.username@gmail.com")}};
   suggestions.back().icon = Suggestion::Icon::kGlobe;
 
   suggestions.emplace_back(autofill::SuggestionType::kSeparator);
@@ -331,8 +332,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   std::vector<Suggestion> suggestions;
   Suggestion entry1(u"User1");
   entry1.main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  entry1.additional_label =
-      std::u16string(10, gfx::RenderText::kPasswordReplacementChar);
+  entry1.labels = {{Suggestion::Text(
+      std::u16string(10, gfx::RenderText::kPasswordReplacementChar))}};
   entry1.type = SuggestionType::kAccountStoragePasswordEntry;
   entry1.icon = Suggestion::Icon::kGlobe;
   entry1.trailing_icon = Suggestion::Icon::kGoogle;
@@ -341,8 +342,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   // A profile store entry.
   Suggestion entry2(u"User2");
   entry2.main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  entry2.additional_label =
-      std::u16string(6, gfx::RenderText::kPasswordReplacementChar);
+  entry2.labels = {{Suggestion::Text(
+      std::u16string(6, gfx::RenderText::kPasswordReplacementChar))}};
   entry2.type = SuggestionType::kPasswordEntry;
   entry2.icon = Suggestion::Icon::kGlobe;
   entry2.trailing_icon = Suggestion::Icon::kNoIcon;

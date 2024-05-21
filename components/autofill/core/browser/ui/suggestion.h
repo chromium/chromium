@@ -213,7 +213,7 @@ struct Suggestion {
   // the second line, third column in the grid view of label).
   std::vector<std::vector<Text>> labels;
 
-  // Used only for passwords to show the password value.
+  // Used only for passwords to show the credential signon realm if applicable.
   // Also used to display an extra line of information if two line
   // display is enabled.
   std::u16string additional_label;

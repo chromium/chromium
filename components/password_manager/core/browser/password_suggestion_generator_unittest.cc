@@ -46,7 +46,7 @@ using testing::ReturnRef;
 Matcher<Suggestion> EqualsDomainPasswordSuggestion(
     SuggestionType id,
     const std::u16string& main_text,
-    const std::u16string& additional_label,
+    const std::u16string& password_label,
     const std::u16string& realm_label,
     const gfx::Image& custom_icon,
     Suggestion::Icon trailing_icon = Suggestion::Icon::kNoIcon) {
@@ -54,12 +54,9 @@ Matcher<Suggestion> EqualsDomainPasswordSuggestion(
       realm_label.empty() ? u"" : base::StrCat({u", ", realm_label});
   return AllOf(
       EqualsSuggestion(id, main_text, Suggestion::Icon::kGlobe),
-      Field("additional_label", &Suggestion::additional_label,
-            additional_label),
-      Field(
-          "labels", &Suggestion::labels,
-          Conditional(realm_label.empty(), IsEmpty(),
-                      ElementsAre(ElementsAre(Suggestion::Text(realm_label))))),
+      Field("additional_label", &Suggestion::additional_label, realm_label),
+      Field("labels", &Suggestion::labels,
+            ElementsAre(ElementsAre(Suggestion::Text(password_label)))),
       Field("voice_over", &Suggestion::voice_over,
             Conditional(
                 realm_label.empty(),
@@ -91,14 +88,15 @@ Matcher<Suggestion> EqualsPasskeySuggestion(
 Matcher<Suggestion> EqualsManualFallbackSuggestion(
     SuggestionType id,
     const std::u16string& main_text,
-    const std::u16string& additional_label,
+    const std::u16string& username_label,
     Suggestion::Icon icon,
     bool is_acceptable,
     const Suggestion::Payload& payload) {
   return AllOf(
       EqualsSuggestion(id, main_text, icon),
-      Field("additional_label", &Suggestion::additional_label,
-            additional_label),
+      Field(
+          "labels", &Suggestion::labels,
+          ElementsAre(ElementsAre(autofill::Suggestion::Text(username_label)))),
       Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable),
       Field("payload", &Suggestion::payload, payload));
 }

@@ -283,15 +283,11 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
 std::unique_ptr<views::Label> CreatePasswordDescriptionLabel(
     const Suggestion& suggestion) {
-  if (suggestion.labels.empty()) {
+  if (suggestion.additional_label.empty()) {
     return nullptr;
   }
-
-  CHECK_EQ(suggestion.labels.size(), 1u);
-  CHECK_EQ(suggestion.labels[0].size(), 1u);
-
   auto label = std::make_unique<views::Label>(
-      suggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      suggestion.additional_label, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::ELIDE_HEAD);
   label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
@@ -301,8 +297,11 @@ std::unique_ptr<views::Label> CreatePasswordDescriptionLabel(
 std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
     const Suggestion& suggestion,
     PopupRowContentView& content_view) {
+  CHECK_EQ(suggestion.labels.size(), 1u);
+  CHECK_EQ(suggestion.labels[0].size(), 1u);
+
   auto label = std::make_unique<views::Label>(
-      suggestion.additional_label, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      suggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::TRUNCATE);
   label->SetMaximumWidthSingleLine(kAutofillPopupPasswordMaxWidth);

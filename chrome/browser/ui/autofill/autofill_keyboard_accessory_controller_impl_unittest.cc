@@ -34,9 +34,9 @@ std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
   auto create_pw_suggestion = [](std::string_view password,
                                  std::string_view username,
                                  std::string_view origin) {
-    Suggestion s(/*main_text=*/username, /*label=*/origin,
+    Suggestion s(/*main_text=*/username, /*label=*/password,
                  Suggestion::Icon::kNoIcon, SuggestionType::kPasswordEntry);
-    s.additional_label = base::UTF8ToUTF16(password);
+    s.additional_label = base::UTF8ToUTF16(origin);
     return s;
   };
   std::vector<Suggestion> suggestions = {
