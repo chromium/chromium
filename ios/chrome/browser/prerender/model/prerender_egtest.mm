@@ -127,11 +127,22 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovePrerenderedTabInTabStrip testMovePrerenderedTabInTabStrip
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  testLegacyOpenTabInTabStripBeforePrerenderedTab
+#else
+#define MAYBE_testMovePrerenderedTabInTabStrip \
+  DISABLED_testMovePrerenderedTabInTabStrip
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testLegacyOpenTabInTabStripBeforePrerenderedTab
+#endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
-      [self isRunningTest:@selector(testMovePrerenderedTabInTabStrip)]) {
+            (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+      [self isRunningTest:@selector(MAYBE_testMovePrerenderedTabInTabStrip)]) {
     config.features_disabled.push_back(kModernTabStrip);
     config.features_disabled.push_back(kTabGroupsIPad);
   } else {
@@ -290,7 +301,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1477499. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after moving it in the tab
 // strip.
-- (void)testMovePrerenderedTabInTabStrip {
+// TODO(crbug.com/324216491): Test is flaky on devices.
+- (void)MAYBE_testMovePrerenderedTabInTabStrip {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -348,7 +360,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-- (void)testLegacyOpenTabInTabStripBeforePrerenderedTab {
+// TODO(crbug.com/324216491): Test is flaky on devices.
+- (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
