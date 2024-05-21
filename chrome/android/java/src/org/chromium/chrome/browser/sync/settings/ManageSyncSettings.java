@@ -116,10 +116,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SYNC_PAYMENTS_INTEGRATION = "sync_payments_integration";
 
     @VisibleForTesting public static final String PREF_SYNC_HISTORY = "sync_history";
-
-    @VisibleForTesting
-    public static final String PREF_SYNC_HISTORY_AND_TABS = "sync_history_and_tabs";
-
     @VisibleForTesting public static final String PREF_SYNC_PASSWORDS = "sync_passwords";
     @VisibleForTesting public static final String PREF_SYNC_READING_LIST = "sync_reading_list";
     @VisibleForTesting public static final String PREF_SYNC_RECENT_TABS = "sync_recent_tabs";
@@ -127,6 +123,34 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_SYNC_APPS = "sync_apps";
     @VisibleForTesting public static final String PREF_TURN_OFF_SYNC = "turn_off_sync";
     private static final String PREF_ADVANCED_CATEGORY = "advanced_category";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_HISTORY_TOGGLE =
+            "account_section_history_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE =
+            "account_section_bookmarks_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE =
+            "account_section_reading_list_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE =
+            "account_section_addresses_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE =
+            "account_section_passwords_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE =
+            "account_section_payments_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE =
+            "account_section_settings_toggle";
 
     @VisibleForTesting
     public static final String PREF_GOOGLE_ACTIVITY_CONTROLS = "google_activity_controls";
@@ -223,22 +247,29 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
             mSyncTypeSwitchPreferencesMap = new HashMap<>();
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
+                    UserSelectableType.AUTOFILL,
+                    findPreference(PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
+                    UserSelectableType.BOOKMARKS,
+                    findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
             // HISTORY and TABS are bundled in the same switch in the new settings panel.
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY_AND_TABS));
+                    UserSelectableType.HISTORY,
+                    findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.TABS, findPreference(PREF_SYNC_HISTORY_AND_TABS));
+                    UserSelectableType.TABS, findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
+                    UserSelectableType.PASSWORDS,
+                    findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
+                    UserSelectableType.PAYMENTS,
+                    findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+                    UserSelectableType.PREFERENCES,
+                    findPreference(PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
+                    UserSelectableType.READING_LIST,
+                    findPreference(PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
 
             mSyncTypeSwitchPreferencesMap
                     .values()
@@ -764,7 +795,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 boolean managed = mSyncService.isTypeManagedByPolicy(type);
 
                 if (type == UserSelectableType.TABS || type == UserSelectableType.HISTORY) {
-                    // PREF_SYNC_HISTORY_AND_TABS toggle represents both History and Tabs in this
+                    // PREF_ACCOUNT_SECTION_HISTORY_TOGGLE toggle represents both History and Tabs
+                    // in this
                     // case.
                     // History and Tabs should usually have the same value, but in some
                     // cases they may not, e.g. if one of them is disabled by policy. In that

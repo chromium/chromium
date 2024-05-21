@@ -125,21 +125,31 @@ public class ManageSyncSettingsTest {
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
             Map.ofEntries(
-                    entry(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL),
-                    entry(UserSelectableType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS),
+                    entry(
+                            UserSelectableType.AUTOFILL,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE),
+                    entry(
+                            UserSelectableType.BOOKMARKS,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE),
                     entry(
                             UserSelectableType.PAYMENTS,
-                            ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION),
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE),
                     // HISTORY and TABS are bundled in the same switch in the new settings panel.
                     entry(
                             UserSelectableType.HISTORY,
-                            ManageSyncSettings.PREF_SYNC_HISTORY_AND_TABS),
-                    entry(UserSelectableType.TABS, ManageSyncSettings.PREF_SYNC_HISTORY_AND_TABS),
-                    entry(UserSelectableType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS),
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE),
+                    entry(
+                            UserSelectableType.TABS,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE),
+                    entry(
+                            UserSelectableType.PASSWORDS,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE),
                     entry(
                             UserSelectableType.READING_LIST,
-                            ManageSyncSettings.PREF_SYNC_READING_LIST),
-                    entry(UserSelectableType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS));
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE),
+                    entry(
+                            UserSelectableType.PREFERENCES,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
 
     private SettingsActivity mSettingsActivity;
 
@@ -248,9 +258,9 @@ public class ManageSyncSettingsTest {
 
         for (ChromeSwitchPreference dataType : dataTypes) {
             // Only settings and payments are available upon sign in without toggling more flags.
-            if (dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_SETTINGS)
+            if (dataType.getKey().equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE)
                     || dataType.getKey()
-                            .equals(ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION)) {
+                            .equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE)) {
                 Assert.assertTrue(dataType.isChecked());
             } else {
                 Assert.assertFalse(dataType.isChecked());

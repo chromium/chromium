@@ -2280,13 +2280,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_HISTORY" desc="Title for preference which enables sync'ing of history data. [CHAR_LIMIT=32]">
         History
       </message>
-      <message name="IDS_ACCOUNT_SECTION_HEADER" desc="Header of a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device). Try to avoid long strings because this is a header in large font size.">
-        In your Google Account
-      </message>
-      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
-      <message name="IDS_SYNC_HISTORY_AND_TABS" desc="Title for preference which enables sync'ing of history data and open tabs. [CHAR_LIMIT=32]" translateable="false">
-        History and Tabs
-      </message>
       <message name="IDS_SYNC_PASSWORDS" desc="Title for preference which enables sync'ing of passwords. [CHAR_LIMIT=32]">
         Passwords
       </message>
@@ -2302,12 +2295,35 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_APPS" desc="Title for preference which enables sync'ing of WebAPKs. [CHAR_LIMIT=32]">
         Apps
       </message>
-      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
-      <message name="IDS_ACCOUNT_SECTION_FOOTER" desc="Footer below a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device)." translateable="false">
-        When on, use and save data in your Google Account. When off, data is saved only to this device.
-      </message>
       <message name="IDS_SYNC_PAYMENTS_INTEGRATION" desc="Title for preference which enables import of Google Pay data for Autofill. 'Google Pay' should not be translated as it is the product name.">
         Payment methods, offers, and addresses using Google Pay
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_HEADER" desc="Header of a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device). Try to avoid long strings because this is a header in large font size.">
+        In your Google Account
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_HISTORY_TOGGLE" desc="History and tabs, one of the data types that we allow syncing. Shown on next to the toggle that controls whether history should be saved in the Google Account and synced across devices.">
+        History and Tabs
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_BOOKMARKS_TOGGLE" desc="Bookmarks, one of the data types that we allow syncing. Shown on next to the toggle that controls whether bookmarks should be saved in the Google Account and synced across devices.">
+        Bookmarks
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_READING_LIST_TOGGLE" desc="Reading List, one of the data types that we allow syncing. Shown on next to the toggle that controls whether reading list should be saved in the Google Account and synced across devices.">
+        Reading list
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_ADDRESSES_TOGGLE" desc="Form Autofill items, one of the data types that we allow syncing. Shown on next to the toggle that controls whether addresses should be saved in the Google Account and synced across devices.">
+        Addresses and more
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_PASSWORDS_TOGGLE" desc="Saved passwords, one of the data types that we allow syncing. Shown on next to the toggle that controls whether passwords should be saved in the Google Account and synced across devices.">
+        Passwords
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_PAYMENTS_TOGGLE" desc="Google Pay data for Autofill, one of the data types that we allow syncing. 'Google Pay' should not be translated as it is the product name. Shown on next to the toggle that controls whether Google Pay data for Autofill should be saved in the Google Account and synced across devices.">
+        Payment methods, offers, and addresses using Google Pay
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_SETTINGS_TOGGLE" desc="Settings, one of the data types that we allow syncing. Shown on next to the toggle that controls whether Settings should be saved in the Google Account and synced across devices.">
+        Settings
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_FOOTER" desc="Footer below a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device)." translateable="false">
+        When on, use and save data in your Google Account. When off, data is saved only to this device.
       </message>
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR_LIMIT=32]">
         Encryption
