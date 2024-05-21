@@ -329,4 +329,13 @@ public class AutocompleteMatchBuilder {
         mAdditionalText = additionalText;
         return this;
     }
+
+    /**
+     * @param serializedAnswerTemplate Serialized RichAnswerTemplate proto.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setSerializedAnswerTemplate(byte[] serializedAnswerTemplate) {
+        mSerializedAnswerTemplate = serializedAnswerTemplate;
+        return this;
+    }
 }

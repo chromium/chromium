@@ -44,12 +44,15 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
+import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.SuggestionAnswer.ImageLine;
 import org.chromium.components.omnibox.SuggestionAnswer.TextField;
@@ -101,10 +104,7 @@ public class AnswerSuggestionProcessorUnitTest {
         protected final PropertyModel mModel;
 
         private SuggestionTestHelper(
-                AutocompleteMatch suggestion,
-                SuggestionAnswer answer,
-                PropertyModel model,
-                String userQuery) {
+                AutocompleteMatch suggestion, PropertyModel model, String userQuery) {
             mSuggestion = suggestion;
             mModel = model;
             when(mUrlStateProvider.getTextWithoutAutocomplete()).thenReturn(userQuery);
@@ -174,7 +174,7 @@ public class AnswerSuggestionProcessorUnitTest {
                         .setDescription(userQuery)
                         .build();
         PropertyModel model = mProcessor.createModel();
-        return new SuggestionTestHelper(suggestion, null, model, userQuery);
+        return new SuggestionTestHelper(suggestion, model, userQuery);
     }
 
     /** Create Answer Suggestion. */
@@ -195,7 +195,31 @@ public class AnswerSuggestionProcessorUnitTest {
                         .setAnswer(answer)
                         .build();
         PropertyModel model = mProcessor.createModel();
-        return new SuggestionTestHelper(suggestion, answer, model, null);
+        return new SuggestionTestHelper(suggestion, model, null);
+    }
+
+    SuggestionTestHelper createRichAnswerSuggestion(
+            @AnswerType int type, String line1Text, String line2Text) {
+        RichAnswerTemplate answer =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(RichAnswerTemplate.AnswerType.forNumber(type))
+                        .addAnswers(
+                                AnswerData.newBuilder()
+                                        .setHeadline(
+                                                FormattedString.newBuilder()
+                                                        .setText(line1Text)
+                                                        .build())
+                                        .setSubhead(
+                                                FormattedString.newBuilder()
+                                                        .setText(line2Text)
+                                                        .build()))
+                        .build();
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setSerializedAnswerTemplate(answer.toByteArray())
+                        .build();
+        PropertyModel model = mProcessor.createModel();
+        return new SuggestionTestHelper(suggestion, model, null);
     }
 
     /** Create a (possibly) multi-line ImageLine object with default formatting. */
@@ -299,6 +323,15 @@ public class AnswerSuggestionProcessorUnitTest {
     public void answerImage_fallbackIcons() {
         for (@AnswerType int type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createAnswerSuggestion(type, "", 1, "", 1, null);
+            // Note: model is re-created on every iteration.
+            Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
+        }
+    }
+
+    @Test
+    public void answerImage_fallbackIcons_richAnswerTemplate() {
+        for (@AnswerType int type : ANSWER_TYPES) {
+            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, "", "");
             // Note: model is re-created on every iteration.
             Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
         }

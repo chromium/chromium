@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -141,8 +142,11 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         int icon = 0;
 
         SuggestionAnswer answer = suggestion.getAnswer();
-        if (answer != null) {
-            switch (answer.getType()) {
+        int type = answer != null ? answer.getType() : AnswerType.INVALID;
+        RichAnswerTemplate template = suggestion.getAnswerTemplate();
+        type = template != null ? template.getAnswerType().getNumber() : type;
+        if (type != AnswerType.INVALID) {
+            switch (type) {
                 case AnswerType.DICTIONARY:
                     icon = R.drawable.ic_book_round;
                     break;
@@ -150,6 +154,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                     icon = R.drawable.ic_swap_vert_round;
                     break;
                 case AnswerType.KNOWLEDGE_GRAPH:
+                case AnswerType.SPORTS:
                     icon = R.drawable.ic_google_round;
                     break;
                 case AnswerType.SUNRISE:
@@ -166,9 +171,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                     break;
                 case AnswerType.CURRENCY:
                     icon = R.drawable.ic_loop_round;
-                    break;
-                case AnswerType.SPORTS:
-                    icon = R.drawable.ic_google_round;
                     break;
             }
         } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
