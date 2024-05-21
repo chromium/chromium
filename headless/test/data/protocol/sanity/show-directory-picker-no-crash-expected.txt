@@ -1,2 +1,0 @@
-Tests that showDirectoryPicker does not crash the browser
-Did show dialog: true

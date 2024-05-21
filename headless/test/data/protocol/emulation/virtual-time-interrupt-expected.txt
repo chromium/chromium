@@ -1,2 +1,0 @@
-Tests that virtual time fence does not block interrupting protocol commands.
-Returned from the Performance.getMetrics call.

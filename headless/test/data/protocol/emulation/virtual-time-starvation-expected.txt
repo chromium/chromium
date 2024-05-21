@@ -1,2 +1,0 @@
-Tests that virtual time advances.
-Timer Fired, alot of events seen: true

@@ -1,2 +1,0 @@
-Tests renderer: redirect invalid url.
-requested url: http://www.example.com/

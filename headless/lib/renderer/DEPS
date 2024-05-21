@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/printing/renderer",
-  "+content/public/renderer",
-  "+media/base",
-  "+printing",
-  "+third_party/blink/public",
-  "+v8/include",
-]

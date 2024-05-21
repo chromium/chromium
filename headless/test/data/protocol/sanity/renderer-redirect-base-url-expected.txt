@@ -1,4 +1,0 @@
-Tests renderer: redirect base url.
-requested url: http://foo.com/
-requested url: http://bar.com/
-<p>Pass</p>

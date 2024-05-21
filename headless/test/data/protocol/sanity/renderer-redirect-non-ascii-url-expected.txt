@@ -1,5 +1,0 @@
-Tests renderer: redirect non ascii url.
-requested url: http://www.example.com/
-requested url: http://www.example.com/%E4%B8%AD%E6%96%87
-requested url: http://www.example.com/pass#%E4%B8%AD%E6%96%87
-<p>Pass</p>

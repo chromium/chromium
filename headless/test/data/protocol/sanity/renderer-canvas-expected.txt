@@ -1,5 +1,0 @@
-Tests renderer: canvas.
-requested url: http://example.com/
-Screenshot size: 800 x 600
-rgba @(0,0): 255,255,255,255
-rgba @(25,25): 255,0,0,255

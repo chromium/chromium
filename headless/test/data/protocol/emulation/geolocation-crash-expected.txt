@@ -1,4 +1,0 @@
-Tests geolocation request does not crash headless.
-
-Request to https://test.com/index.html, type: Document
-No crash

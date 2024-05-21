@@ -1,3 +1,0 @@
-Tests screenshot produced by beginFrame honors optimizeForSpeed param
-requested url: http://example.com/
-PASSED: slowly-encoded PNG is smaller that fast-encoded

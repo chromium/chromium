@@ -1,3 +1,0 @@
-Tests renderer: override title with JavaScript enabled.
-requested url: http://example.com/foobar
-JavaScript is on

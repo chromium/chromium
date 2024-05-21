@@ -1,3 +1,0 @@
-Tests renderer: cookie set from js.
-requested url: http://www.example.com/
-pass

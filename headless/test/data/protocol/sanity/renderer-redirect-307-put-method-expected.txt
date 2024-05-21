@@ -1,9 +1,0 @@
-Tests renderer: redirect 307 put method.
-requested url: http://www.example.com/
-requested url: http://www.example.com/1
-requested url: http://www.example.com/2
-<p>Pass</p>
-Requested methods: 3
- GET
- PUT
- PUT

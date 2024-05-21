@@ -1,6 +1,0 @@
-Tests renderer: server redirection chain.
-requested url: http://www.example.com/
-requested url: http://www.example.com/1
-requested url: http://www.example.com/2
-requested url: http://www.example.com/3
-<p>Pass</p>

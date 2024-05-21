@@ -1,4 +1,0 @@
-Tests renderer: cookie updated from js.
-requested url: http://www.example.com/
-foo=barbaz
-Pass

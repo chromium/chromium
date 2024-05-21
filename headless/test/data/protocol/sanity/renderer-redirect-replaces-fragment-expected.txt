@@ -1,5 +1,0 @@
-Tests renderer: redirect replaces fragment.
-requested url: http://www.example.com/#foo
-requested url: http://www.example.com/1#bar
-requested url: http://www.example.com/2#bar
-http://www.example.com/2#bar

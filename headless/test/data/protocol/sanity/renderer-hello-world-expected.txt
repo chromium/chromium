@@ -1,7 +1,0 @@
-Tests renderer: hello world.
-requested url: http://www.example.com/
-<h1>Hello headless world!</h1>
-Frames: 1
- frameId=MainFrame
-  url=http://www.example.com/
-ScheduledNavigations: 0

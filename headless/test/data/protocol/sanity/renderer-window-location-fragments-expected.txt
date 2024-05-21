@@ -1,5 +1,0 @@
-Tests renderer: window location fragments.
-requested url: http://www.example.com/#fragment1
-requested url: http://www.example.com/iframe#fragment2
-requested url: http://www.example.com/pass
-Pass

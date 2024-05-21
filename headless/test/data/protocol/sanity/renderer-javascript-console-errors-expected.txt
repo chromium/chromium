@@ -1,7 +1,0 @@
-Tests renderer: verify JavaScript console errors reporting.
-requested url: http://example.com/foobar
-Uncaught SyntaxError: Unexpected token '<'
-Uncaught ReferenceError: func1 is not defined
-Uncaught ReferenceError: func2 is not defined
-Hello, Script!
-Uncaught ReferenceError: func3 is not defined

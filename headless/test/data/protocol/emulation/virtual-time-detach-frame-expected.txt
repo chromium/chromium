@@ -1,4 +1,0 @@
-Tests that detaching frame while issuing request doesn't break virtual time.
-Request to http://test.com/index.html, type: Document
-Request to http://test.com/detach-frame-iframe.html, type: Document
-Request to http://test.com/detach-frame-style.css, type: Stylesheet

@@ -1,1 +1,0 @@
-Tests virtual time is not blocked by 404 page.

@@ -1,5 +1,0 @@
-Tests that disposing Emulation agent before virtual time expires doesn't cause a crash
-Request to https://test.com/index.html, type: Document
-Request to https://test.com/fetch, type: XHR
-fetch request: test fetch
-PASSED

@@ -1,7 +1,0 @@
-Tests renderer: mixed redirection chain.
-requested url: http://www.example.com/
-requested url: http://www.example.com/1
-requested url: http://www.example.com/2
-requested url: http://www.example.com/3
-requested url: http://www.example.com/4
-<p>Pass</p>

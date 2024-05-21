@@ -1,4 +1,0 @@
-Tests that pending script does not break virtual time.
-Request to http://test.com/index.html, type: Document
-Request to http://test.com/large.js, type: Script
-Test PASS

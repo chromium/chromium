@@ -1,2 +1,0 @@
-Tests that virtual time advances 10ms on every navigation.
-Resources loaded: 501

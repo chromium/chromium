@@ -1,5 +1,0 @@
-Tests renderer: in cross origin object.
-requested url: http://foo.com/
-requested url: http://bar.com/
-Failed to read an indexed property [0] from 'Window': Blocked a frame with origin "http://foo.com" from accessing a cross-origin frame.
-Pass

@@ -1,2 +1,0 @@
-Tests that dom timer respect virtual time order.
-c, b, a

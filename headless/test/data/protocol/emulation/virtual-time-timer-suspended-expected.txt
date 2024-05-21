@@ -1,5 +1,0 @@
-Tests that dom timer respects virtual time.
-Grant first budget
-1000
-Grant second budget
-1001

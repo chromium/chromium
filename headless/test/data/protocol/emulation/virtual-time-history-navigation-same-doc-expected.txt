@@ -1,3 +1,0 @@
-Tests virtual time with same document history navigation.
-Request to http://test.com/, type: Document
-PAGE: pass

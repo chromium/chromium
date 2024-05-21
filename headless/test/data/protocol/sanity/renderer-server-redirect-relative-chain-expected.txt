@@ -1,5 +1,0 @@
-Tests renderer: relative server redirection chain.
-requested url: http://www.example.com/
-requested url: http://www.mysite.com/1
-requested url: http://www.mysite.com/2
-<p>Pass</p>

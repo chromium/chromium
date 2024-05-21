@@ -1,4 +1,0 @@
-Tests that document loading is paused while virtual time is paused
-Request to https://test.com/index.html, type: Document
-[page] time at eval while paused: 100000000
-[page] time at inline script: 100000000

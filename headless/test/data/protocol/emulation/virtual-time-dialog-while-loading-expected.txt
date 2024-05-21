@@ -1,2 +1,0 @@
-Tests that virtual time pausing during loading of main resource works correctly when dialog is shown while page loads.
-Request to http://test.com/index.html, type: Document

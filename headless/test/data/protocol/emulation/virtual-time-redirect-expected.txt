@@ -1,6 +1,0 @@
-Tests that redirects don't break virtual time.
-Request to http://test.com/index.html, type: Document
-Request to http://test.com/iframe.html, type: Document
-Request to http://test.com/iframe2.html, type: Document
-Request to http://test.com/style.css, type: Stylesheet
-Request to http://test.com/style2.css, type: Stylesheet
