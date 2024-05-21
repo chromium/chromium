@@ -1,2 +1,0 @@
-# Force LF checkout for csv files
-*.csv text eol=lf

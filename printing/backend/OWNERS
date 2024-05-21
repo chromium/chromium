@@ -1,2 +1,0 @@
-# CUPS-specific code.
-per-file *cups*=file://chromeos/printing/OWNERS
