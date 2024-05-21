@@ -570,7 +570,9 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
 }
 
 // Parse a float and clamp it upwards to max_value. Optimized for having
-// no decimal part.
+// no decimal part. Returns true if the parse was successful (though it
+// may not consume the entire string; you'll need to check string != end
+// yourself if that is the intention).
 ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
                                                  const LChar* end,
                                                  int max_value,
@@ -603,11 +605,7 @@ ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
     value = new_value;
   }
 
-  if (current == end) {
-    return false;
-  }
-
-  if (*current == '.') {
+  if (current != end && *current == '.') {
     // We already parsed the integral part, try to parse
     // the fraction part.
     double fractional = 0;
