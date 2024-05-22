@@ -3182,11 +3182,6 @@ extern const char kUseXpsForPrintingFromPdfDescription[];
 
 #if BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_PRINTING)
-extern const char kCupsIppPrintingBackendName[];
-extern const char kCupsIppPrintingBackendDescription[];
-#endif  // BUILDFLAG(ENABLE_PRINTING)
-
 extern const char kEnableExtensibleEnterpriseSSOName[];
 extern const char kEnableExtensibleEnterpriseSSODescription[];
 
@@ -4599,6 +4594,11 @@ extern const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[];
 
 extern const char kRestartToGainAccessToKeychainName[];
 extern const char kRestartToGainAccessToKeychainDescription[];
+
+#if BUILDFLAG(ENABLE_PRINTING)
+extern const char kCupsIppPrintingBackendName[];
+extern const char kCupsIppPrintingBackendDescription[];
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

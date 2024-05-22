@@ -5462,13 +5462,6 @@ const char kUseXpsForPrintingFromPdfDescription[] =
 
 #if BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_PRINTING)
-const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
-const char kCupsIppPrintingBackendDescription[] =
-    "Use the CUPS IPP printing backend instead of the original CUPS backend "
-    "that calls the PPD API.";
-#endif  // BUILDFLAG(ENABLE_PRINTING)
-
 const char kEnableExtensibleEnterpriseSSOName[] = "Extensible Enterprise SSO";
 const char kEnableExtensibleEnterpriseSSODescription[] =
     "Enables support for extensible enterprise SSO in Chrome";
@@ -7931,6 +7924,13 @@ const char kRestartToGainAccessToKeychainName[] =
 const char kRestartToGainAccessToKeychainDescription[] =
     "Controls whether the Chrome shows bubbles and banner, prompting the user "
     "to restart Chrome to gain access to computer's password manager.";
+
+#if BUILDFLAG(ENABLE_PRINTING)
+const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
+const char kCupsIppPrintingBackendDescription[] =
+    "Use the CUPS IPP printing backend instead of the original CUPS backend "
+    "that calls the PPD API.";
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
