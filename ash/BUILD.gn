@@ -984,6 +984,7 @@ component("ash") {
     "picker/picker_asset_fetcher.h",
     "picker/picker_asset_fetcher_impl.cc",
     "picker/picker_asset_fetcher_impl.h",
+    "picker/picker_asset_fetcher_impl_delegate.h",
     "picker/picker_clipboard_provider.cc",
     "picker/picker_clipboard_provider.h",
     "picker/picker_controller.cc",

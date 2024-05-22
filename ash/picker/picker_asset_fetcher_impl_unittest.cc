@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/test/ash_test_util.h"
@@ -21,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -29,11 +31,7 @@
 namespace ash {
 namespace {
 
-PickerAssetFetcherImpl CreatePickerAssetFetcher(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return PickerAssetFetcherImpl(base::BindLambdaForTesting(
-      [url_loader_factory]() { return url_loader_factory; }));
-}
+using ::testing::Return;
 
 class MockPickerAssetUrlLoaderFactory : public network::SharedURLLoaderFactory {
  public:
@@ -80,6 +78,14 @@ class MockPickerAssetUrlLoaderFactory : public network::SharedURLLoaderFactory {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
+class MockPickerAssetFetcherDelegate : public PickerAssetFetcherImplDelegate {
+ public:
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetSharedURLLoaderFactory,
+              (),
+              (override));
+};
+
 class PickerAssetFetcherImplTest : public testing::Test {
  public:
   PickerAssetFetcherImplTest() = default;
@@ -98,8 +104,10 @@ TEST_F(PickerAssetFetcherImplTest, FetchGifReturnsEmptyOnFailedNetworkRequest) {
       base::MakeRefCounted<MockPickerAssetUrlLoaderFactory>();
   const GURL kGifUrl("https://media.tenor.com/invalid-gif.gif");
   url_loader_factory->AddResponse(kGifUrl, "", net::HTTP_NOT_FOUND);
-  PickerAssetFetcherImpl asset_fetcher =
-      CreatePickerAssetFetcher(url_loader_factory);
+  MockPickerAssetFetcherDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
+      .WillRepeatedly(Return(url_loader_factory));
+  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<std::vector<image_util::AnimationFrame>> future;
   asset_fetcher.FetchGifFromUrl(kGifUrl, future.GetCallback());
@@ -116,8 +124,10 @@ TEST_F(PickerAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
   url_loader_factory->AddResponse(
       kGifPreviewImageUrl,
       CreateEncodedImageForTesting(kGifPreviewImageDimensions), net::HTTP_OK);
-  PickerAssetFetcherImpl asset_fetcher =
-      CreatePickerAssetFetcher(url_loader_factory);
+  MockPickerAssetFetcherDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
+      .WillRepeatedly(Return(url_loader_factory));
+  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
   asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
@@ -134,8 +144,10 @@ TEST_F(PickerAssetFetcherImplTest, DoesNotFetchGifPreviewImageFromNonTenorUrl) {
   url_loader_factory->AddResponse(
       kNonTenorUrl, CreateEncodedImageForTesting(gfx::Size(10, 20)),
       net::HTTP_OK);
-  PickerAssetFetcherImpl asset_fetcher =
-      CreatePickerAssetFetcher(url_loader_factory);
+  MockPickerAssetFetcherDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
+      .WillRepeatedly(Return(url_loader_factory));
+  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
   asset_fetcher.FetchGifPreviewImageFromUrl(kNonTenorUrl, future.GetCallback());

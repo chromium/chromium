@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/public/cpp/image_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -109,9 +110,8 @@ void DownloadGifMediaToString(
 }  // namespace
 
 PickerAssetFetcherImpl::PickerAssetFetcherImpl(
-    SharedURLLoaderFactoryGetter shared_url_loader_factory_getter)
-    : shared_url_loader_factory_getter_(
-          std::move(shared_url_loader_factory_getter)) {}
+    PickerAssetFetcherImplDelegate* delegate)
+    : delegate_(delegate) {}
 
 PickerAssetFetcherImpl::~PickerAssetFetcherImpl() = default;
 
@@ -119,7 +119,7 @@ void PickerAssetFetcherImpl::FetchGifFromUrl(
     const GURL& url,
     PickerGifFetchedCallback callback) {
   DownloadGifMediaToString(
-      url, shared_url_loader_factory_getter_.Run(),
+      url, delegate_->GetSharedURLLoaderFactory(),
       base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
 }
 
@@ -127,7 +127,7 @@ void PickerAssetFetcherImpl::FetchGifPreviewImageFromUrl(
     const GURL& url,
     PickerImageFetchedCallback callback) {
   DownloadGifMediaToString(
-      url, shared_url_loader_factory_getter_.Run(),
+      url, delegate_->GetSharedURLLoaderFactory(),
       base::BindOnce(&image_util::DecodeImageData, std::move(callback),
                      data_decoder::mojom::ImageCodec::kDefault));
 }

@@ -270,10 +270,8 @@ void OpenFile(const base::FilePath& path) {
 
 }  // namespace
 
-PickerController::PickerController() {
-  // `base::Unretained` is safe here because this class owns `asset_fetcher_`.
-  asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
-      &PickerController::GetSharedURLLoaderFactory, base::Unretained(this)));
+PickerController::PickerController()
+    : asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {
   clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
 }
 
