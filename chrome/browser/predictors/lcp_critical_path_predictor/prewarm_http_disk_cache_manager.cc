@@ -4,6 +4,8 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 
+#include <tuple>
+
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -11,6 +13,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -93,9 +96,11 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
 
   url::Origin top_frame_origin =
       url::Origin::Create(top_frame_main_resource_url);
-  MaybeAddPrewarmJob(top_frame_origin, top_frame_main_resource_url);
+  MaybeAddPrewarmJob(top_frame_origin, top_frame_main_resource_url,
+                     net::IsolationInfo::RequestType::kMainFrame);
   for (const GURL& url : top_frame_subresource_urls) {
-    MaybeAddPrewarmJob(top_frame_origin, url);
+    MaybeAddPrewarmJob(top_frame_origin, url,
+                       net::IsolationInfo::RequestType::kOther);
   }
 
   if (!queued_jobs_.empty()) {
@@ -108,7 +113,8 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
 
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
     const url::Origin& top_frame_origin,
-    const GURL& url) {
+    const GURL& url,
+    net::IsolationInfo::RequestType request_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(url.is_valid() && url.SchemeIsHTTPOrHTTPS());
   TRACE_EVENT_WITH_FLOW1(
@@ -116,9 +122,10 @@ void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", url);
   base::TimeTicks now = base::TimeTicks::Now();
-  std::pair<url::Origin, GURL> origin_and_url =
-      std::make_pair(top_frame_origin, url);
-  const auto& it = prewarm_history_.Peek(origin_and_url);
+  std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>
+      origin_url_and_type =
+          std::make_tuple(top_frame_origin, url, request_type);
+  const auto& it = prewarm_history_.Peek(origin_url_and_type);
   if (it != prewarm_history_.end() && now - it->second < reprewarm_period_) {
     // Already processed recently.
     TRACE_EVENT_INSTANT1("loading",
@@ -129,8 +136,8 @@ void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
                          (now - it->second).InSeconds());
     return;
   }
-  prewarm_history_.Put(std::move(origin_and_url), now);
-  queued_jobs_.emplace(top_frame_origin, url);
+  prewarm_history_.Put(std::move(origin_url_and_type), now);
+  queued_jobs_.emplace(top_frame_origin, url, request_type);
 }
 
 void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
@@ -144,17 +151,17 @@ void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
     // MaybeProcessNextQueuedJob() is called again.
     return;
   }
-  std::pair<url::Origin, GURL> origin_and_url;
-  std::swap(origin_and_url, queued_jobs_.front());
+  std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>
+      origin_url_and_type;
+  std::swap(origin_url_and_type, queued_jobs_.front());
   queued_jobs_.pop();
-  const auto& [origin, url] = origin_and_url;
+  const auto& [origin, url, request_type] = origin_url_and_type;
   TRACE_EVENT_WITH_FLOW1(
       "loading", "PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-      net::SiteForCookies::FromOrigin(origin));
+      request_type, origin, origin, net::SiteForCookies::FromOrigin(origin));
   network::ResourceRequest::TrustedParams trusted_params;
   trusted_params.isolation_info = isolation_info;
 

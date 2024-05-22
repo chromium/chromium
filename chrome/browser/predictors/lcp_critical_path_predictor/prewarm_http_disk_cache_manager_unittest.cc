@@ -4,27 +4,34 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 
+#include <tuple>
+
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/isolation_info.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace predictors {
 
 namespace {
-using Job = std::pair<url::Origin, GURL>;
+using Job = std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>;
 using Jobs = std::queue<Job>;
+
+const auto kMainFrameRequestType = net::IsolationInfo::RequestType::kMainFrame;
+const auto kSubresourceRequestType = net::IsolationInfo::RequestType::kOther;
 }  // namespace
 
 class PrewarmHttpDiskCacheManagerTest : public testing::Test {
  public:
   PrewarmHttpDiskCacheManagerTest()
-      : profile_(std::make_unique<TestingProfile>()),
-        prewarm_http_disk_cache_manager_(
-            std::make_unique<PrewarmHttpDiskCacheManager>(
-                profile_->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess())) {}
+      : prewarm_http_disk_cache_manager_(std::make_unique<
+                                         PrewarmHttpDiskCacheManager>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_))) {}
   ~PrewarmHttpDiskCacheManagerTest() override = default;
 
   PrewarmHttpDiskCacheManagerTest(const PrewarmHttpDiskCacheManagerTest&) =
@@ -48,10 +55,8 @@ class PrewarmHttpDiskCacheManagerTest : public testing::Test {
   }
 
   // base::test::ScopedFeatureList features_;
-  // IO_MAINLOOP is needed for the EmbeddedTestServer.
-  content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::IO_MAINLOOP};
-  std::unique_ptr<TestingProfile> profile_;
+  content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<PrewarmHttpDiskCacheManager> prewarm_http_disk_cache_manager_;
 };
 
@@ -60,17 +65,22 @@ TEST_F(PrewarmHttpDiskCacheManagerTest, OneMainResourceUrl) {
   const GURL kSubresourceUrl1("https://p.com/");
   const GURL kSubresourceUrl2("https://q.com/");
   const url::Origin kOrigin = url::Origin::Create(kMainResourceUrl);
+  test_url_loader_factory_.AddResponse(kMainResourceUrl.spec(), "");
+  test_url_loader_factory_.AddResponse(kSubresourceUrl1.spec(), "");
+  test_url_loader_factory_.AddResponse(kSubresourceUrl2.spec(), "");
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(
       kMainResourceUrl, {kSubresourceUrl1, kSubresourceUrl2});
-  EXPECT_EQ(Jobs({{kOrigin, kMainResourceUrl},
-                  {kOrigin, kSubresourceUrl1},
-                  {kOrigin, kSubresourceUrl2}}),
+  EXPECT_EQ(Jobs({{kOrigin, kMainResourceUrl, kMainFrameRequestType},
+                  {kOrigin, kSubresourceUrl1, kSubresourceRequestType},
+                  {kOrigin, kSubresourceUrl2, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin, kSubresourceUrl1}, {kOrigin, kSubresourceUrl2}}),
+  EXPECT_EQ(Jobs({{kOrigin, kSubresourceUrl1, kSubresourceRequestType},
+                  {kOrigin, kSubresourceUrl2, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin, kSubresourceUrl2}}), GetQueuedJobs());
+  EXPECT_EQ(Jobs({{kOrigin, kSubresourceUrl2, kSubresourceRequestType}}),
+            GetQueuedJobs());
   ProcessOneUrl();
   EXPECT_TRUE(GetQueuedJobs().empty());
 }
@@ -82,36 +92,73 @@ TEST_F(PrewarmHttpDiskCacheManagerTest, TwoMainResourceUrls) {
   const GURL kSubresourceUrl2("https://q.com/");
   const url::Origin kOrigin1 = url::Origin::Create(kMainResourceUrl1);
   const url::Origin kOrigin2 = url::Origin::Create(kMainResourceUrl2);
+  test_url_loader_factory_.AddResponse(kMainResourceUrl1.spec(), "");
+  test_url_loader_factory_.AddResponse(kMainResourceUrl2.spec(), "");
+  test_url_loader_factory_.AddResponse(kSubresourceUrl1.spec(), "");
+  test_url_loader_factory_.AddResponse(kSubresourceUrl2.spec(), "");
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(
       kMainResourceUrl1, {kSubresourceUrl1, kSubresourceUrl2});
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(kMainResourceUrl1,
                                                           {kSubresourceUrl1});
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(kMainResourceUrl2,
                                                           {kSubresourceUrl1});
-  EXPECT_EQ(Jobs({{kOrigin1, kMainResourceUrl1},
-                  {kOrigin1, kSubresourceUrl1},
-                  {kOrigin1, kSubresourceUrl2},
-                  {kOrigin2, kMainResourceUrl2},
-                  {kOrigin2, kSubresourceUrl1}}),
+  EXPECT_EQ(Jobs({{kOrigin1, kMainResourceUrl1, kMainFrameRequestType},
+                  {kOrigin1, kSubresourceUrl1, kSubresourceRequestType},
+                  {kOrigin1, kSubresourceUrl2, kSubresourceRequestType},
+                  {kOrigin2, kMainResourceUrl2, kMainFrameRequestType},
+                  {kOrigin2, kSubresourceUrl1, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin1, kSubresourceUrl1},
-                  {kOrigin1, kSubresourceUrl2},
-                  {kOrigin2, kMainResourceUrl2},
-                  {kOrigin2, kSubresourceUrl1}}),
+  EXPECT_EQ(Jobs({{kOrigin1, kSubresourceUrl1, kSubresourceRequestType},
+                  {kOrigin1, kSubresourceUrl2, kSubresourceRequestType},
+                  {kOrigin2, kMainResourceUrl2, kMainFrameRequestType},
+                  {kOrigin2, kSubresourceUrl1, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin1, kSubresourceUrl2},
-                  {kOrigin2, kMainResourceUrl2},
-                  {kOrigin2, kSubresourceUrl1}}),
+  EXPECT_EQ(Jobs({{kOrigin1, kSubresourceUrl2, kSubresourceRequestType},
+                  {kOrigin2, kMainResourceUrl2, kMainFrameRequestType},
+                  {kOrigin2, kSubresourceUrl1, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin2, kMainResourceUrl2}, {kOrigin2, kSubresourceUrl1}}),
+  EXPECT_EQ(Jobs({{kOrigin2, kMainResourceUrl2, kMainFrameRequestType},
+                  {kOrigin2, kSubresourceUrl1, kSubresourceRequestType}}),
             GetQueuedJobs());
   ProcessOneUrl();
-  EXPECT_EQ(Jobs({{kOrigin2, kSubresourceUrl1}}), GetQueuedJobs());
+  EXPECT_EQ(Jobs({{kOrigin2, kSubresourceUrl1, kSubresourceRequestType}}),
+            GetQueuedJobs());
   ProcessOneUrl();
   EXPECT_TRUE(GetQueuedJobs().empty());
+}
+
+TEST_F(PrewarmHttpDiskCacheManagerTest, IsolationInfo) {
+  const GURL kMainResourceUrl("https://a.com/");
+  const GURL kSubresourceUrl("https://p.com/");
+  const url::Origin kOrigin = url::Origin::Create(kMainResourceUrl);
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url == kMainResourceUrl ||
+                    request.url == kSubresourceUrl);
+        auto expected_request_type = request.url == kMainResourceUrl
+                                         ? kMainFrameRequestType
+                                         : kSubresourceRequestType;
+        auto expected_isolation_info = net::IsolationInfo::Create(
+            expected_request_type, kOrigin, kOrigin,
+            net::SiteForCookies::FromOrigin(kOrigin));
+        EXPECT_TRUE(request.trusted_params->isolation_info.IsEqualForTesting(
+            expected_isolation_info));
+        test_url_loader_factory_.AddResponse(request.url.spec(), "");
+      }));
+  prewarm_http_disk_cache_manager_->MaybePrewarmResources(kMainResourceUrl,
+                                                          {kSubresourceUrl});
+  EXPECT_EQ(Jobs({{kOrigin, kMainResourceUrl, kMainFrameRequestType},
+                  {kOrigin, kSubresourceUrl, kSubresourceRequestType}}),
+            GetQueuedJobs());
+  ProcessOneUrl();
+  EXPECT_EQ(Jobs({{kOrigin, kSubresourceUrl, kSubresourceRequestType}}),
+            GetQueuedJobs());
+  ProcessOneUrl();
+  EXPECT_TRUE(GetQueuedJobs().empty());
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 2u);
 }
 
 }  // namespace predictors
