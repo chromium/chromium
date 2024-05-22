@@ -277,9 +277,7 @@ using ShortcutSizes =
 
 gfx::ImageFamily ApplyProductLogoBadgeToIcons(std::vector<SkBitmap> icons) {
   gfx::ImageFamily badged_icons;
-  if (icons.empty()) {
-    return badged_icons;
-  }
+  CHECK(!icons.empty());
 
   base::flat_map<int, SkBitmap> sorted_icons;
   std::vector<int> icon_sizes;

@@ -129,8 +129,7 @@ int GetOsSpecificSizes() {
 // If badging behavior changes, the icons in the listed folders would need to be
 // updated. That can be done manually, or can be done automatically by using the
 // `rebaseline-shortcuts-icon-testing` command line flag. Example usage:
-// out/Default/unit_tests
-// --gtest_filter=*ImageManipulationUtilsTest*
+// out/Default/unit_tests --gtest_filter=*IconBadgingTest*
 // --rebaseline-shortcuts-icon-testing
 
 TEST(IconBadgingTest, VerifyFromDisk) {

@@ -125,8 +125,6 @@ void CreateShortcutForCurrentWebContentsTask::
     return;
   }
 
-  // TODO(crbug/339459710): Update icon_badging.cc to work once site with
-  // no-icon use-case has been fixed.
   gfx::ImageFamily badged_images = ApplyProductLogoBadgeToIcons(result.value());
   CHECK(!badged_images.empty());
 
