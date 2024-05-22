@@ -65,7 +65,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.3pcd.Experiment3pcBlockStatusHistogram"
-    enum="Experiment3pcBlockStatus" expires_after="2024-07-01">
+    enum="Experiment3pcBlockStatus" expires_after="2024-11-03">
   <owner>trishalfonso@google.com</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
