@@ -314,6 +314,8 @@ DriveFsHost::~DriveFsHost() {
 
 bool DriveFsHost::Mount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/336831215): Remove these logs once bug has been fixed.
+  LOG(ERROR) << "DriveFs mounted";
   const AccountId& account_id = delegate_->GetAccountId();
   if (mount_state_ || !account_id.HasAccountIdKey() ||
       account_id.GetUserEmail().empty()) {
@@ -324,6 +326,8 @@ bool DriveFsHost::Mount() {
 }
 
 void DriveFsHost::Unmount() {
+  // TODO(b/336831215): Remove these logs once bug has been fixed.
+  LOG(ERROR) << "DriveFs unmounted";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mount_state_.reset();
 }

@@ -100,6 +100,24 @@ const base::FilePath::CharType kMetadataDirectory[] = FILE_PATH_LITERAL("meta");
 const base::FilePath::CharType kCacheFileDirectory[] =
     FILE_PATH_LITERAL("files");
 
+std::ostream& operator<<(std::ostream& out, DriveMountStatus status) {
+  switch (status) {
+    case DriveMountStatus::kInvocationFailure:
+      return out << "kInvocationFailure";
+    case DriveMountStatus::kTemporaryUnavailable:
+      return out << "kTemporaryUnavailable";
+    case DriveMountStatus::kUnexpectedDisconnect:
+      return out << "kUnexpectedDisconnect";
+    case DriveMountStatus::kSuccess:
+      return out << "kSuccess";
+    case DriveMountStatus::kTimeout:
+      return out << "kTimeout";
+    case DriveMountStatus::kUnknownFailure:
+      return out << "kUnknownFailure";
+  }
+  return out << "Unknown";
+}
+
 void DeleteDirectoryContents(const base::FilePath& dir) {
   base::FileEnumerator content_enumerator(
       dir, false,
@@ -306,6 +324,8 @@ DriveMountStatus ConvertMountFailure(
 }
 
 void UmaEmitMountStatus(DriveMountStatus status) {
+  // TODO(b/336831215): Remove these logs once bug has been fixed.
+  LOG(ERROR) << "Drive mount status: " << status;
   UMA_HISTOGRAM_ENUMERATION("DriveCommon.Lifecycle.Mount", status);
 }
 
@@ -327,6 +347,8 @@ void UmaEmitMountOutcome(DriveMountStatus status,
 }
 
 void UmaEmitUnmountOutcome(DriveMountStatus status) {
+  // TODO(b/336831215): Remove these logs once bug has been fixed.
+  LOG(ERROR) << "Drive unmounted: " << status;
   UMA_HISTOGRAM_ENUMERATION("DriveCommon.Lifecycle.Unmount", status);
 }
 
