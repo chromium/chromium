@@ -263,6 +263,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   bool CloseTransparentPopups();
   void ClosePopupsOutsideWorkArea();
   void RemoveClosedPopupItems();
+  void CloseAndRemovePopupFromPopupItem(MessagePopupView* popup,
+                                        bool remove_only = false);
 
   // Collapse all existing popups. Return true if size of any popup is actually
   // changed.

@@ -81,6 +81,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   MessageView* message_view() { return message_view_; }
 
+  bool view_added_to_widget() { return view_added_to_widget_; }
+
  protected:
   // For unit testing.
   explicit MessagePopupView(MessagePopupCollection* popup_collection);
@@ -98,6 +100,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   const bool a11y_feedback_on_init_;
   bool is_hovered_ = false;
   bool is_focused_ = false;
+  // Was this view ever hosted in a Widget? If so, the Widget will "own" this
+  // view and delete it accordingly. Otherwise, the MessagePopupCollection is
+  // responsible for its destruction.
+  bool view_added_to_widget_ = false;
 
   // Owned by the widget associated with this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;

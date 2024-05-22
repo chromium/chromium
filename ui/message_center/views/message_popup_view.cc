@@ -35,6 +35,7 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
     : message_view_(message_view),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(a11y_feedback_on_init) {
+  SetOwnedByWidget(false);
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -49,6 +50,7 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
     : message_view_(nullptr),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(false) {
+  SetOwnedByWidget(false);
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
@@ -179,13 +181,9 @@ void MessagePopupView::Show() {
 }
 
 void MessagePopupView::Close() {
-  if (!GetWidget()) {
-    DeleteDelegate();
-    return;
-  }
-
-  if (!GetWidget()->IsClosed())
+  if (GetWidget() && !GetWidget()->IsClosed()) {
     GetWidget()->CloseNow();
+  }
 }
 
 void MessagePopupView::OnDidChangeFocus(views::View* before, views::View* now) {
@@ -244,6 +242,7 @@ void MessagePopupView::AddedToWidget() {
   if (focus_manager_) {
     focus_manager_->AddFocusChangeListener(this);
   }
+  view_added_to_widget_ = true;
 }
 
 void MessagePopupView::RemovedFromWidget() {

@@ -9,6 +9,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -128,13 +129,7 @@ void MessagePopupCollection::NotifyPopupResized() {
 }
 
 void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
-  for (auto& item : popup_items_) {
-    if (item.popup && item.popup == popup) {
-      // Make sure this item's popup is closed before removing it.
-      item.popup->Close();
-      item.popup = nullptr;
-    }
-  }
+  CloseAndRemovePopupFromPopupItem(popup);
 }
 
 void MessagePopupCollection::AnimateResize() {
@@ -335,6 +330,17 @@ bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
 void MessagePopupCollection::ClosePopupItem(const PopupItem& item) {
   if (MessagePopupView* popup = item.popup) {
     popup->Close();
+    // Re-check item.popup since the Close() call may have deleted it.
+    if (popup == item.popup) {
+      if (!popup->view_added_to_widget()) {
+        // Take ownership and delete when leaving scope.
+        auto owned_popup = base::WrapUnique(popup);
+        // This doesn't delete the delegate, but does ensure notifications about
+        // it are still sent.
+        owned_popup->DeleteDelegate();
+        CloseAndRemovePopupFromPopupItem(owned_popup.get(), true);
+      }
+    }
   }
 }
 
@@ -687,6 +693,19 @@ void MessagePopupCollection::ClosePopupsOutsideWorkArea() {
 
 void MessagePopupCollection::RemoveClosedPopupItems() {
   std::erase_if(popup_items_, [](const auto& item) { return !item.popup; });
+}
+
+void MessagePopupCollection::CloseAndRemovePopupFromPopupItem(
+    MessagePopupView* popup,
+    bool remove_only) {
+  for (auto& item : popup_items_) {
+    if (item.popup && item.popup == popup) {
+      if (!remove_only) {
+        popup->Close();
+      }
+      item.popup = nullptr;
+    }
+  }
 }
 
 bool MessagePopupCollection::CollapseAllPopups() {
