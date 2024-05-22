@@ -666,7 +666,7 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
     Element& element,
     const char* reason,
     const InvalidationSet& invalidation_set,
-    const String& selector_part) {
+    const AtomicString& selector_part) {
   auto dict = std::move(context).WriteDictionary();
   FillCommonPart(dict, element, reason);
   InvalidationSetToSelectorMap::SelectorFeatureType feature_type =
@@ -683,8 +683,7 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
   }
   if (feature_type !=
       InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown) {
-    FillSelectors(dict, invalidation_set, feature_type,
-                  AtomicString(selector_part));
+    FillSelectors(dict, invalidation_set, feature_type, selector_part);
   }
 
   {

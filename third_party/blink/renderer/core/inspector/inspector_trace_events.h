@@ -229,7 +229,7 @@ void SelectorPart(perfetto::TracedValue context,
                   Element&,
                   const char* reason,
                   const InvalidationSet&,
-                  const String&);
+                  const AtomicString&);
 void InvalidationList(perfetto::TracedValue context,
                       ContainerNode&,
                       const Vector<scoped_refptr<InvalidationSet>>&);
