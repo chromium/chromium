@@ -59,6 +59,7 @@ inline constexpr char kQuickAnswersNoticeImpressionCount[] =
 
 // A preference to keep track of how long (in seconds) the Quick Answers notice
 // has shown to the user.
+// TODO(b/340628526): this pref is not used. Delete.
 inline constexpr char kQuickAnswersNoticeImpressionDuration[] =
     "settings.quick_answers.consent.duration";
 

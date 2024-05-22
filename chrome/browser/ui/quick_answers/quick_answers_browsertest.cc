@@ -28,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -37,6 +38,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -311,11 +313,26 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
     params.y = kCursorYToOverlapWithANotification;
     ShowMenu(params);
 
-    views::Widget* quick_answers_view_widget =
-        quick_answers_view_widget_waiter.WaitIfNeededAndGet();
-
-    return quick_answers_view_widget;
+    return quick_answers_view_widget_waiter.WaitIfNeededAndGet();
   }
+
+  void FakeControllerTimeTick() {
+    CHECK(fake_time_tick_.is_null()) << "Fake is already enabled.";
+
+    fake_time_tick_ = base::TimeTicks::Now();
+
+    static_cast<QuickAnswersControllerImpl*>(controller())
+        ->OverrideTimeTickNowForTesting(base::BindRepeating(
+            &QuickAnswersBrowserTest::FakeTimeTickNow, base::Unretained(this)));
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    CHECK(!fake_time_tick_.is_null()) << "Fake is not enabled.";
+
+    fake_time_tick_ += delta;
+  }
+
+  base::TimeTicks FakeTimeTickNow() { return fake_time_tick_; }
 
   UserConsentView* GetUserConsentView() {
     return static_cast<QuickAnswersControllerImpl*>(controller())
@@ -328,6 +345,9 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
         ->quick_answers_ui_controller()
         ->quick_answers_view();
   }
+
+ private:
+  base::TimeTicks fake_time_tick_;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
@@ -403,6 +423,37 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
   // TODO(b/239716419): Quick answers UI should be above the notification.
   EXPECT_TRUE(message_popup_widget->IsStackedAbove(
       user_consent_view_widget->GetNativeView()));
+}
+
+IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest, UserConsentViewImpressionCap) {
+  FakeControllerTimeTick();
+
+  for (int i = 0; i < kConsentImpressionCap; ++i) {
+    ShowQuickAnswersWidget();
+    ASSERT_EQ(QuickAnswersVisibility::kUserConsentVisible,
+              controller()->GetQuickAnswersVisibility());
+
+    FastForwardBy(base::Seconds(kConsentImpressionMinimumDuration));
+
+    ui::test::EventGenerator event_generator(
+        ash::Shell::GetPrimaryRootWindow());
+    event_generator.PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+
+    base::RunLoop run_loop;
+    chrome_test_utils::GetProfile(this)->GetPrefs()->CommitPendingWrite(
+        run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_FALSE(chrome_test_utils::GetProfile(this)->GetPrefs()->GetBoolean(
+        prefs::kQuickAnswersEnabled));
+    EXPECT_EQ(chrome_test_utils::GetProfile(this)->GetPrefs()->GetInteger(
+                  prefs::kQuickAnswersConsentStatus),
+              i == kConsentImpressionCap - 1
+                  ? quick_answers::prefs::ConsentStatus::kRejected
+                  : quick_answers::prefs::ConsentStatus::kUnknown)
+        << "Consent status is set to kRejected once it reaches the impression "
+           "cap.";
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest, ClickAllowOnUserConsentView) {

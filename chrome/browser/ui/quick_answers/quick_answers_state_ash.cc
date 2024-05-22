@@ -25,12 +25,6 @@ using quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
 using quick_answers::prefs::kQuickAnswersTranslationEnabled;
 using quick_answers::prefs::kQuickAnswersUnitConversionEnabled;
 
-void IncrementPrefCounter(PrefService* prefs,
-                          const std::string& path,
-                          int count) {
-  prefs->SetInteger(path, prefs->GetInteger(path) + count);
-}
-
 }  // namespace
 
 QuickAnswersStateAsh::QuickAnswersStateAsh() {
@@ -108,6 +102,10 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled,
       base::BindRepeating(&QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      kQuickAnswersNoticeImpressionCount,
+      base::BindRepeating(&QuickAnswersStateAsh::UpdateNoticeImpressionCount,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
@@ -117,6 +115,7 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   OnApplicationLocaleReady();
   UpdatePreferredLanguages();
   UpdateSpokenFeedbackEnabled();
+  UpdateNoticeImpressionCount();
 
   prefs_initialized_ = true;
   for (auto& observer : observers_) {
@@ -129,50 +128,19 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   UpdateEligibility();
 }
 
-void QuickAnswersStateAsh::StartConsent() {
-  consent_start_time_ = base::TimeTicks::Now();
+void QuickAnswersStateAsh::AsyncWriteConsentUiImpressionCount(int32_t count) {
+  pref_change_registrar_->prefs()->SetInteger(
+      kQuickAnswersNoticeImpressionCount, count);
 }
 
-void QuickAnswersStateAsh::OnConsentResult(ConsentResultType result) {
-  auto* prefs = pref_change_registrar_->prefs();
+void QuickAnswersStateAsh::AsyncWriteConsentStatus(
+    ConsentStatus consent_status) {
+  pref_change_registrar_->prefs()->SetInteger(kQuickAnswersConsentStatus,
+                                              consent_status);
+}
 
-  DCHECK(!consent_start_time_.is_null());
-  auto duration = base::TimeTicks::Now() - consent_start_time_;
-
-  // Only increase the counter and record the impression if the minimum duration
-  // has been reached.
-  if (duration.InSeconds() >= kConsentImpressionMinimumDuration) {
-    // Increments impression count.
-    IncrementPrefCounter(pref_change_registrar_->prefs(),
-                         kQuickAnswersNoticeImpressionCount, 1);
-    RecordConsentResult(result,
-                        prefs->GetInteger(kQuickAnswersNoticeImpressionCount),
-                        duration);
-  }
-
-  switch (result) {
-    case ConsentResultType::kAllow:
-      // Enable Quick Answers if the user accepted the consent.
-      prefs->SetBoolean(kQuickAnswersEnabled, true);
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
-      break;
-    case ConsentResultType::kNoThanks:
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
-      prefs->SetBoolean(kQuickAnswersEnabled, false);
-      break;
-    case ConsentResultType::kDismiss:
-      // If the impression count cap is reached, set the consented status to
-      // false;
-      bool impression_cap_reached =
-          prefs->GetInteger(kQuickAnswersNoticeImpressionCount) >=
-          kConsentImpressionCap;
-      if (impression_cap_reached) {
-        prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
-        prefs->SetBoolean(kQuickAnswersEnabled, false);
-      }
-  }
-
-  consent_start_time_ = base::TimeTicks();
+void QuickAnswersStateAsh::AsyncWriteEnabled(bool enabled) {
+  pref_change_registrar_->prefs()->SetBoolean(kQuickAnswersEnabled, enabled);
 }
 
 void QuickAnswersStateAsh::UpdateSettingsEnabled() {
@@ -288,4 +256,9 @@ void QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled() {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
   spoken_feedback_enabled_ = spoken_feedback_enabled;
+}
+
+void QuickAnswersStateAsh::UpdateNoticeImpressionCount() {
+  consent_ui_impression_count_ = pref_change_registrar_->prefs()->GetInteger(
+      kQuickAnswersNoticeImpressionCount);
 }

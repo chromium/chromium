@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 
@@ -20,10 +21,13 @@ class QuickAnswersStateLacros : public QuickAnswersState {
 
   ~QuickAnswersStateLacros() override;
 
- private:
-  void StartConsent() override;
-  void OnConsentResult(ConsentResultType result) override;
+ protected:
+  void AsyncWriteConsentUiImpressionCount(int32_t count) override;
+  void AsyncWriteConsentStatus(
+      quick_answers::prefs::ConsentStatus consent_status) override;
+  void AsyncWriteEnabled(bool enabled) override;
 
+ private:
   void OnSettingsEnabledChanged(base::Value value);
   void OnConsentStatusChanged(base::Value value);
   void OnDefinitionEnabledChanged(base::Value value);
@@ -38,7 +42,6 @@ class QuickAnswersStateLacros : public QuickAnswersState {
   // Time when the notice is shown.
   base::TimeTicks consent_start_time_;
 
-  int impression_count_ = 0;
   int impression_duration_ = 0;
 
   // Observers to track pref changes from ash.

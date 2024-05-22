@@ -8,6 +8,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
 class PrefChangeRegistrar;
@@ -41,8 +42,10 @@ class QuickAnswersStateAsh : public ash::SessionObserver,
   void RegisterPrefChanges(PrefService* pref_service);
 
   // QuickAnswersState:
-  void StartConsent() override;
-  void OnConsentResult(ConsentResultType result) override;
+  void AsyncWriteConsentUiImpressionCount(int32_t count) override;
+  void AsyncWriteConsentStatus(
+      quick_answers::prefs::ConsentStatus consent_status) override;
+  void AsyncWriteEnabled(bool enabled) override;
 
   // Called when the related preferences are obtained from the pref service.
   void UpdateSettingsEnabled();
@@ -53,6 +56,7 @@ class QuickAnswersStateAsh : public ash::SessionObserver,
   void OnApplicationLocaleReady();
   void UpdatePreferredLanguages();
   void UpdateSpokenFeedbackEnabled();
+  void UpdateNoticeImpressionCount();
 
   // Time when the notice is shown.
   base::TimeTicks consent_start_time_;

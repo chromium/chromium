@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
-
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -97,13 +97,13 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   }
 
   void AcceptConsent() {
-    QuickAnswersState::Get()->StartConsent();
-    QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kAllow);
+    QuickAnswersState::Get()->AsyncSetConsentStatus(
+        quick_answers::prefs::ConsentStatus::kAccepted);
   }
 
   void RejectConsent() {
-    QuickAnswersState::Get()->StartConsent();
-    QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kNoThanks);
+    QuickAnswersState::Get()->AsyncSetConsentStatus(
+        quick_answers::prefs::ConsentStatus::kRejected);
   }
 
   void DismissQuickAnswers() {

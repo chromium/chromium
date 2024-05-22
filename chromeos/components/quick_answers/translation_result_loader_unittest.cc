@@ -106,7 +106,7 @@ TEST_F(TranslationResultLoaderTest, Success) {
 
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
 
-  fake_quick_answers_state_.SetConsentStatus(
+  fake_quick_answers_state_.AsyncSetConsentStatus(
       quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   run_loop.Run();
@@ -140,7 +140,7 @@ TEST_F(TranslationResultLoaderTest, NetworkError) {
   EXPECT_CALL(*mock_delegate_, OnNetworkError());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::_)).Times(0);
 
-  fake_quick_answers_state_.SetConsentStatus(
+  fake_quick_answers_state_.AsyncSetConsentStatus(
       quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   base::RunLoop().RunUntilIdle();
@@ -154,7 +154,7 @@ TEST_F(TranslationResultLoaderTest, EmptyResponse) {
       .WillOnce([&]() { run_loop.Quit(); });
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
 
-  fake_quick_answers_state_.SetConsentStatus(
+  fake_quick_answers_state_.AsyncSetConsentStatus(
       quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   run_loop.Run();

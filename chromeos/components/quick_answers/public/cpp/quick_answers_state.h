@@ -57,8 +57,19 @@ class QuickAnswersState {
   void AddObserver(QuickAnswersStateObserver* observer);
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
-  virtual void StartConsent() {}
-  virtual void OnConsentResult(ConsentResultType result) {}
+  // Write consent status and a respective enabled state to the pref. Note that
+  // this method returns BEFORE a write is completed. Reading consent status
+  // and/or enabled state immediately after the write can read a stale value.
+  // TODO(b/340628526): Add validations, e.g., fail to set kAccepted if it's in
+  // kiosk mode, etc.
+  void AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus consent_status);
+
+  // Increment impression count and returns an incremented count. Note that this
+  // method is not thread safe, i.e., this does NOT operate an increment as an
+  // atomic operation. Reading impression count immediately after the write can
+  // read a stale value.
+  int32_t AsyncIncrementImpressionCount();
 
   bool ShouldUseQuickAnswersTextAnnotator();
 
@@ -89,6 +100,14 @@ class QuickAnswersState {
   }
 
  protected:
+  // All AsyncWrite.+ functions return BEFORE a write is completed, i.e., write
+  // can be an async operation. Immediately reading a respective value might end
+  // up a stale value.
+  virtual void AsyncWriteConsentUiImpressionCount(int32_t count) = 0;
+  virtual void AsyncWriteConsentStatus(
+      quick_answers::prefs::ConsentStatus consent_status) = 0;
+  virtual void AsyncWriteEnabled(bool enabled) = 0;
+
   void InitializeObserver(QuickAnswersStateObserver* observer);
 
   // Called when the feature eligibility might change.
@@ -129,6 +148,9 @@ class QuickAnswersState {
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.
   bool is_eligible_ = false;
+
+  // The number of times a user has seen the consent.
+  int32_t consent_ui_impression_count_ = 0;
 
   // Whether the pref values has been initialized.
   bool prefs_initialized_ = false;

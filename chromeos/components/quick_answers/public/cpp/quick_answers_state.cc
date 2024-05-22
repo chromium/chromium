@@ -4,11 +4,16 @@
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
+#include <cstdint>
+
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -17,24 +22,8 @@ namespace {
 
 QuickAnswersState* g_quick_answers_state = nullptr;
 
-const char kQuickAnswersConsent[] = "QuickAnswers.V2.Consent";
-const char kQuickAnswersConsentDuration[] = "QuickAnswers.V2.Consent.Duration";
-const char kQuickAnswersConsentImpression[] =
-    "QuickAnswers.V2.Consent.Impression";
-
 // Supported languages of the Quick Answers feature.
 const std::string kSupportedLanguages[] = {"en", "es", "it", "fr", "pt", "de"};
-
-std::string ConsentResultTypeToString(ConsentResultType type) {
-  switch (type) {
-    case ConsentResultType::kAllow:
-      return "Allow";
-    case ConsentResultType::kNoThanks:
-      return "NoThanks";
-    case ConsentResultType::kDismiss:
-      return "Dismiss";
-  }
-}
 
 }  // namespace
 
@@ -60,6 +49,34 @@ void QuickAnswersState::AddObserver(QuickAnswersStateObserver* observer) {
 
 void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void QuickAnswersState::AsyncSetConsentStatus(
+    quick_answers::prefs::ConsentStatus consent_status) {
+  switch (consent_status) {
+    case quick_answers::prefs::ConsentStatus::kAccepted:
+      AsyncWriteConsentStatus(quick_answers::prefs::ConsentStatus::kAccepted);
+      AsyncWriteEnabled(true);
+      break;
+    case quick_answers::prefs::ConsentStatus::kRejected:
+      AsyncWriteConsentStatus(quick_answers::prefs::ConsentStatus::kRejected);
+      AsyncWriteEnabled(false);
+      break;
+    case quick_answers::prefs::ConsentStatus::kUnknown:
+      // This is test only path for now. `kUnknown` is set only from default
+      // values in prod.
+      CHECK_IS_TEST();
+
+      AsyncWriteConsentStatus(quick_answers::prefs::ConsentStatus::kUnknown);
+      AsyncWriteEnabled(false);
+      break;
+  }
+}
+
+int32_t QuickAnswersState::AsyncIncrementImpressionCount() {
+  int32_t incremented_count = consent_ui_impression_count_ + 1;
+  AsyncWriteConsentUiImpressionCount(incremented_count);
+  return incremented_count;
 }
 
 bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
@@ -97,21 +114,4 @@ void QuickAnswersState::UpdateEligibility() {
   for (auto& observer : observers_) {
     observer.OnEligibilityChanged(is_eligible_);
   }
-}
-
-void QuickAnswersState::RecordConsentResult(ConsentResultType type,
-                                            int nth_impression,
-                                            const base::TimeDelta duration) {
-  base::UmaHistogramExactLinear(kQuickAnswersConsent, nth_impression,
-                                kConsentImpressionCap);
-
-  std::string interaction_type = ConsentResultTypeToString(type);
-  base::UmaHistogramExactLinear(
-      base::StringPrintf("%s.%s", kQuickAnswersConsentImpression,
-                         interaction_type.c_str()),
-      nth_impression, kConsentImpressionCap);
-  base::UmaHistogramTimes(
-      base::StringPrintf("%s.%s", kQuickAnswersConsentDuration,
-                         interaction_type.c_str()),
-      duration);
 }
