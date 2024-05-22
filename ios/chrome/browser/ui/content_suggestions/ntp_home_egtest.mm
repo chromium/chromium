@@ -116,6 +116,13 @@ id<GREYMatcher> notPracticallyVisible() {
 id<GREYMatcher> mostlyNotVisible() {
   return grey_not(grey_minimumVisiblePercent(0.33));
 }
+
+// Returns true if the difference between the two numbers is less than the
+// margin of error
+bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
+  int margin_of_error = 1;
+  return abs(num1 - num2) < margin_of_error;
+}
 }
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
@@ -686,8 +693,8 @@ id<GREYMatcher> mostlyNotVisible() {
 
   // Check that the new position is the same as before focusing the omnibox.
   collectionView = [NewTabPageAppInterface collectionView];
-  GREYAssertEqual(
-      previousPosition, collectionView.contentOffset.y,
+  GREYAssertTrue(
+      AreNumbersEqual(previousPosition, collectionView.contentOffset.y),
       @"NTP is not at the same position as before tapping the omnibox");
 }
 
@@ -727,8 +734,10 @@ id<GREYMatcher> mostlyNotVisible() {
 
   // Check that the new position is the same.
   collectionView = [NewTabPageAppInterface collectionView];
-  GREYAssertEqual(previousPosition, collectionView.contentOffset.y,
-                  @"NTP is not at the same position");
+
+  GREYAssertTrue(
+      AreNumbersEqual(previousPosition, collectionView.contentOffset.y),
+      @"NTP is not at the same position");
 }
 
 // Tests that tapping the fake omnibox focuses the real omnibox.
@@ -788,8 +797,8 @@ id<GREYMatcher> mostlyNotVisible() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  GREYAssertEqual(
-      origin.y, collectionView.contentOffset.y,
+  GREYAssertTrue(
+      AreNumbersEqual(origin.y, collectionView.contentOffset.y),
       @"The collection is not scrolled back to its previous position");
 }
 
