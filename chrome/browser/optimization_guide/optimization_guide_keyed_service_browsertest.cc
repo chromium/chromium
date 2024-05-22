@@ -360,7 +360,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     return std::make_unique<ModelQualityLogEntry>(
         std::move(log_ai_data_request),
-        service()->GetChromeModelQualityLogsUploaderService()->GetWeakPtr());
+        service()->GetModelQualityLogsUploaderService()->GetWeakPtr());
   }
 
   GURL url_with_hints() { return url_with_hints_; }
@@ -1430,7 +1430,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   ASSERT_FALSE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Upload should be disabled as there is no metrics consent, so total
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(model_execution_features_controller()
                   ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Create a new ModelQualityLogEntry and pass it to the
@@ -1597,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       model_execution_features_controller()
           ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Disable logging via via the enterprise policy to kDisable state this should
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       model_execution_features_controller()
           ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(model_execution_features_controller()
                   ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Upload should be disabled twice when logging is disabled via enterprise
@@ -1782,7 +1782,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(model_execution_features_controller()
                   ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
+  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
   // Intercept network requests.

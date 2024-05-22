@@ -44,6 +44,7 @@ class ModelExecutionLiveTest;
 class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
+class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
@@ -55,7 +56,6 @@ class PredictionModelStoreBrowserTestBase;
 class PushNotificationManager;
 class TabUrlProvider;
 class TopHostProvider;
-class ChromeModelQualityLogsUploaderService;
 
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
@@ -192,8 +192,8 @@ class OptimizationGuideKeyedService
     return optimization_guide_logger_.get();
   }
 
-  optimization_guide::ChromeModelQualityLogsUploaderService*
-  GetChromeModelQualityLogsUploaderService() {
+  optimization_guide::ModelQualityLogsUploaderService*
+  GetModelQualityLogsUploaderService() {
     return model_quality_logs_uploader_service_.get();
   }
 
@@ -319,7 +319,7 @@ class OptimizationGuideKeyedService
 
   // Manages the model quality logs uploader service. Not created for off the
   // record profiles.
-  std::unique_ptr<optimization_guide::ChromeModelQualityLogsUploaderService>
+  std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
       model_quality_logs_uploader_service_;
 
 #if BUILDFLAG(IS_ANDROID)
