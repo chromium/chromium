@@ -4,8 +4,6 @@
 
 package org.chromium.components.omnibox;
 
-import android.content.Context;
-
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
@@ -40,9 +38,6 @@ public class OmniboxFeatures {
 
     public static final CachedFlag sOmniboxAnswerActions =
             newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
-
-    public static final CachedFlag sOmniboxModernizeVisualUpdate =
-            newFlag(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
 
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
@@ -141,14 +136,6 @@ public class OmniboxFeatures {
     /** Retrieve list of FieldTrialParams that should be cached. */
     public static List<CachedFieldTrialParameter> getFieldTrialParamsToCache() {
         return sCachedParams;
-    }
-
-    /**
-     * @param context The activity context.
-     * @return Whether the new modernize visual UI update should be shown.
-     */
-    public static boolean shouldShowModernizeVisualUpdate(Context context) {
-        return sOmniboxModernizeVisualUpdate.isEnabled();
     }
 
     /** Returns whether the toolbar and status bar color should be matched. */

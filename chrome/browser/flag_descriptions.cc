@@ -2487,12 +2487,6 @@ const char kOmniboxMatchToolbarAndStatusBarColorDescription[] =
     "When enabled, the color of the toolbar and the status bar will be "
     "synchronized.";
 
-const char kOmniboxModernizeVisualUpdateName[] =
-    "Omnibox Modernize Visual Update";
-const char kOmniboxModernizeVisualUpdateDescription[] =
-    "When enabled, Omnibox will show a new UI which is visually "
-    "updated. This flag is for the step 1 in the Clank Omnibox revamp plan.";
-
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
     "Omnibox MV Tiles Horizontal Render Group";
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =

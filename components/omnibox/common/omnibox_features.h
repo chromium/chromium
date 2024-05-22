@@ -109,10 +109,6 @@ BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextColor);
 
-// Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
-// popup.
-BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
-
 // Android only flag that controls whether the new security indicator should be
 // used, on non-Android platforms this is controlled through the
 // ChromeRefresh2023 flag.

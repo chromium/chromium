@@ -5955,11 +5955,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMatchToolbarAndStatusBarColor)},
 
-    {"omnibox-modernize-visual-update",
-     flag_descriptions::kOmniboxModernizeVisualUpdateName,
-     flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxModernizeVisualUpdate)},
-
     {"omnibox-most-visited-tiles-horizontal-render-group",
      flag_descriptions::kOmniboxMostVisitedTilesHorizontalRenderGroupName,
      flag_descriptions::

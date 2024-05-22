@@ -389,11 +389,6 @@ BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable new Omnibox & Suggestions visual style.
-BASE_FEATURE(kOmniboxModernizeVisualUpdate,
-             "OmniboxModernizeVisualUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Android only flag that controls whether the new security indicator should be
 // used, on non-Android platforms this is controlled through the
 // ChromeRefresh2023 flag.
@@ -551,7 +546,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       std::vector<const base::Feature*>{{
           &kOmniboxAnswerActions,
-          &kOmniboxModernizeVisualUpdate,
           &kQueryTilesInZPSOnNTP,
           &kAnimateSuggestionsListAppearance,
           &kGroupingFrameworkForNonZPS,
