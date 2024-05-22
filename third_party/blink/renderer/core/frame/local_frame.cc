@@ -1450,7 +1450,7 @@ bool LocalFrame::ShouldUsePrintingLayout() const {
     return true;
   auto* local_parent = DynamicTo<LocalFrame>(parent);
   return local_parent ? !local_parent->GetDocument()->Printing()
-                      : Client()->UsePrintingLayout();
+                      : print_params_.use_printing_layout;
 }
 
 void LocalFrame::StartPaintPreview() {

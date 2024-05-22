@@ -1186,10 +1186,6 @@ void LocalFrameClientImpl::NotifyAutoscrollForSelectionInMainFrame(
       ->NotifyAutoscrollForSelectionInMainFrame(autoscroll_selection);
 }
 
-bool LocalFrameClientImpl::UsePrintingLayout() const {
-  return web_frame_->UsePrintingLayout();
-}
-
 std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
 LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
   DCHECK(web_frame_->Client());

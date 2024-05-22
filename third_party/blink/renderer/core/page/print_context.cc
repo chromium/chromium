@@ -223,10 +223,6 @@ void PrintContext::Trace(Visitor* visitor) const {
   visitor->Trace(linked_destinations_);
 }
 
-bool PrintContext::use_printing_layout() const {
-  return use_printing_layout_;
-}
-
 ScopedPrintContext::ScopedPrintContext(LocalFrame* frame)
     : context_(MakeGarbageCollected<PrintContext>(frame)) {}
 

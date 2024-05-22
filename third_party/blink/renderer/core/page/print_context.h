@@ -71,8 +71,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
   virtual void Trace(Visitor*) const;
 
-  bool use_printing_layout() const;
-
  protected:
   friend class PrintContextTest;
 

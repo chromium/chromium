@@ -838,10 +838,6 @@ bool WebLocalFrameImpl::DispatchedPagehideAndStillHidden() const {
   return ViewImpl()->GetPage()->DispatchedPagehideAndStillHidden();
 }
 
-bool WebLocalFrameImpl::UsePrintingLayout() const {
-  return print_context_ ? print_context_->use_printing_layout() : false;
-}
-
 void WebLocalFrameImpl::CopyToFindPboard() {
 #if BUILDFLAG(IS_MAC)
   if (HasSelection())

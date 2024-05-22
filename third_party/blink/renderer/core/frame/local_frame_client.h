@@ -427,10 +427,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual void NotifyAutoscrollForSelectionInMainFrame(bool) {}
 
-  // Returns whether we are associated with a print context who suggests to use
-  // printing layout.
-  virtual bool UsePrintingLayout() const { return false; }
-
   virtual std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() {
     return nullptr;
