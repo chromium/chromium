@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './product_selector.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
@@ -39,13 +40,27 @@ export class TableElement extends PolymerElement {
     return {
       columns: Array,
       rows: Array,
+      hoveredColumnIndex_: {type: Number, value: -1},
     };
   }
 
   columns: TableColumn[];
   rows: TableRow[];
+  private hoveredColumnIndex_: number;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  private onHideOpenTabButton_() {
+    this.hoveredColumnIndex_ = -1;
+  }
+
+  private onShowOpenTabButton_(e: DomRepeatEvent<TableColumn|TableRow>) {
+    this.hoveredColumnIndex_ = e.model.index;
+  }
+
+  private shouldShowOpenTabButton_(columnIndex: number): boolean {
+    return columnIndex === this.hoveredColumnIndex_;
+  }
 
   private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn, CustomEvent>) {
     this.shoppingApi_.openUrlInNewTab(

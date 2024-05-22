@@ -12,7 +12,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {$$} from './test_support.js';
+import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
@@ -167,10 +167,80 @@ suite('ProductSpecificationsTableTest', () => {
     await waitAfterNextRender(tableElement);
 
     // Act
-    $$<HTMLElement>(tableElement, '#openTabButton')!.click();
+    const openTabButton = $$<HTMLElement>(tableElement, '#openTabButton');
+    assertTrue(!!openTabButton);
+    openTabButton!.click();
 
     // Assert.
     assertEquals(1, shoppingServiceApi.getCallCount('openUrlInNewTab'));
     assertEquals(testUrl, shoppingServiceApi.getArgs('openUrlInNewTab')[0].url);
+  });
+
+  test('shows open tab button when hovered', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
+        },
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
+        },
+      },
+    ];
+    tableElement.rows = [
+      {title: 'foo', values: ['foo1', 'foo2']},
+      {title: 'bar', values: ['bar2']},
+    ];
+    await waitAfterNextRender(tableElement);
+    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    assertEquals(2, columns.length);
+    const openTabButton1 =
+        columns[0]!.querySelector<HTMLElement>('#openTabButton');
+    assertTrue(!!openTabButton1);
+    const openTabButton2 =
+        columns[1]!.querySelector<HTMLElement>('#openTabButton');
+    assertTrue(!!openTabButton2);
+    assertStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
+
+    // Act/Assert
+    columns[0]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertNotStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
+
+    columns[1]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertStyle(openTabButton1, 'display', 'none');
+    assertNotStyle(openTabButton2, 'display', 'none');
+
+    const rowContent =
+        tableElement.shadowRoot!.querySelectorAll('.row-content');
+    assertEquals(3, rowContent.length);
+    // |rowContent[0]| shows underneath the first column.
+    rowContent[0]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertNotStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
+
+    // |rowContent[1]| shows underneath the second column.
+    rowContent[1]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertStyle(openTabButton1, 'display', 'none');
+    assertNotStyle(openTabButton2, 'display', 'none');
+
+    // |rowContent[2]| shows underneath the first column.
+    rowContent[2]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertNotStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
+
+    const table = tableElement.shadowRoot!.querySelector('table');
+    assertTrue(!!table);
+    table!.dispatchEvent(new PointerEvent('pointerleave'));
+    assertStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
   });
 });
