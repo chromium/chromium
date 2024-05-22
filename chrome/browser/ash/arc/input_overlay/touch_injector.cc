@@ -628,19 +628,19 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
 
-  // Don't rewrite unrelated events.
-  if (event.IsTouchEvent() || event.IsGestureEvent() || event.IsScrollEvent() ||
-      event.IsCancelModeEvent()) {
-    // TODO(b/334233813): When real touch or gesture event happens, clean up
-    // simulated touch events and send the real touch or gesture event as it is.
-    // Supporting both simulated touch events and real touch events should be
-    // re-considered.
-    CleanupTouchEvents();
-    return SendEvent(continuation, &event);
-  }
-
   if (IsBeta()) {
     if (!can_rewrite_event_) {
+      return SendEvent(continuation, &event);
+    }
+
+    // Don't rewrite unrelated events.
+    if (event.IsTouchEvent() || event.IsGestureEvent() ||
+        event.IsCancelModeEvent()) {
+      // TODO(b/334233813): When real touch or gesture event happens, clean up
+      // simulated touch events and send the real touch or gesture event as it
+      // is. Supporting both simulated touch events and real touch events should
+      // be re-considered.
+      CleanupTouchEvents();
       return SendEvent(continuation, &event);
     }
   } else {
@@ -749,6 +749,13 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   // mode.
   if (event.IsMouseEvent() && (is_mouse_locked_ || is_play_mode_active)) {
     return DiscardEvent(continuation);
+  }
+
+  // For Alpha version, when the touch screen related event gets here, it means
+  // the event is not located on the menu entry.
+  if (!IsBeta() && is_play_mode_active &&
+      (event.IsTouchEvent() || event.IsGestureEvent())) {
+    CleanupTouchEvents();
   }
 
   return SendEvent(continuation, &event);

@@ -1142,7 +1142,26 @@ TEST_P(VersionTouchInjectorTest, TestActivePlayMode) {
                    /*expected_touch_event_size=*/2u);
   event_capturer_.Clear();
 
-  // 2. Verify original touch event cancels the simulated touch events.
+  // 2. Verify trackpad scroll event doesn't stop the active play mode.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/1u);
+  EXPECT_TRUE(GetHasPendingTouchEvents());
+  // Generate trackpad scroll event and it is still in the active play mode.
+  event_generator_->GenerateTrackpadRest();
+  event_generator_->CancelTrackpadRest();
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/1u);
+  EXPECT_TRUE(GetHasPendingTouchEvents());
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/2u);
+  event_capturer_.Clear();
+
+  // 3. Verify original touch event cancels the simulated touch events.
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/0u,
