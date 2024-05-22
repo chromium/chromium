@@ -80,6 +80,9 @@ void RequestHandlerBase::PrepareRequest(
   if (reason_ != ContentAnalysisRequest::UNKNOWN) {
     request->set_reason(reason_);
   }
+
+  request->set_blocking(analysis_settings_->block_until_verdict !=
+                        BlockUntilVerdict::kNoBlock);
 }
 
 safe_browsing::BinaryUploadService*
