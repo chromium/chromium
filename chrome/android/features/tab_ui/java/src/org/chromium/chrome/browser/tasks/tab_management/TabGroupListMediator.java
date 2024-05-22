@@ -219,27 +219,22 @@ public class TabGroupListMediator {
         return isFullyClosing ? TabGroupState.IN_CURRENT_CLOSING : TabGroupState.IN_CURRENT;
     }
 
-    private List<Pair<SavedTabGroup, Integer>> getSortedGroupAndStateList() {
-        List<Pair<SavedTabGroup, Integer>> groupAndStateList = new ArrayList<>();
+    private List<SavedTabGroup> getSortedGroupList() {
+        List<SavedTabGroup> groupList = new ArrayList<>();
         for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
-            @TabGroupState int state = getState(savedTabGroup);
             // To simplify interactions, do not include any groups currently open in other windows.
-            if (state != TabGroupState.IN_ANOTHER) {
-                groupAndStateList.add(new Pair<>(savedTabGroup, state));
+            if (getState(savedTabGroup) != TabGroupState.IN_ANOTHER) {
+                groupList.add(savedTabGroup);
             }
         }
-        groupAndStateList.sort(
-                (a, b) -> Long.compare(b.first.creationTimeMs, a.first.creationTimeMs));
-        return groupAndStateList;
+        groupList.sort((a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
+        return groupList;
     }
 
     private void repopulateModelList() {
         mModelList.clear();
-        for (Pair<SavedTabGroup, Integer> groupAndState : getSortedGroupAndStateList()) {
-            SavedTabGroup savedTabGroup = groupAndState.first;
-            @TabGroupState int state = groupAndState.second;
-
+        for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
             PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
             int numberOfTabs = savedTabGroup.savedTabs.size();
             int numberOfCorners = FAVICON_ORDER.length;
@@ -270,11 +265,9 @@ public class TabGroupListMediator {
 
             builder.with(CREATION_MILLIS, savedTabGroup.creationTimeMs);
 
+            builder.with(TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup));
             builder.with(
-                    TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup, state));
-            builder.with(
-                    TabGroupRowProperties.DELETE_RUNNABLE,
-                    () -> processDeleteGroup(savedTabGroup, state));
+                    TabGroupRowProperties.DELETE_RUNNABLE, () -> processDeleteGroup(savedTabGroup));
 
             ListItem listItem = new ListItem(0, builder.build());
             mModelList.add(listItem);
@@ -284,8 +277,12 @@ public class TabGroupListMediator {
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 
-    private void openGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
-        state = updateStateForOpenGroup(savedTabGroup, state);
+    private void openGroup(SavedTabGroup savedTabGroup) {
+        @TabGroupState int state = getState(savedTabGroup);
+        if (state == TabGroupState.IN_ANOTHER) {
+            return;
+        }
+
         if (state == TabGroupState.IN_CURRENT_CLOSING) {
             for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
@@ -308,33 +305,21 @@ public class TabGroupListMediator {
         assert success;
     }
 
-    private @TabGroupState int updateStateForOpenGroup(
-            SavedTabGroup savedTabGroup, @TabGroupState int previousState) {
-        if (previousState != TabGroupState.IN_CURRENT_CLOSING) return previousState;
-
-        // It is possible to "race" with the undo snackbar when IN_CURRENT_CLOSING is happening
-        // since refreshing this UI is a posted task. Fall back to HIDDEN if there are no tabs
-        // available to cancel the closure of.
-        TabList tabList = mFilter.getTabModel().getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
-            if (tab.isClosing() && savedTabGroup.localId.tabGroupId.equals(tab.getTabGroupId())) {
-                return TabGroupState.IN_CURRENT_CLOSING;
-            }
-        }
-        return TabGroupState.HIDDEN;
-    }
-
-    private void processDeleteGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
+    private void processDeleteGroup(SavedTabGroup savedTabGroup) {
         mActionConfirmationManager.processDeleteGroupAttempt(
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        deleteGroup(savedTabGroup, state);
+                        deleteGroup(savedTabGroup);
                     }
                 });
     }
 
-    private void deleteGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
+    private void deleteGroup(SavedTabGroup savedTabGroup) {
+        @TabGroupState int state = getState(savedTabGroup);
+        if (state == TabGroupState.IN_ANOTHER) {
+            return;
+        }
+
         if (state == TabGroupState.IN_CURRENT_CLOSING) {
             for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
@@ -350,7 +335,6 @@ public class TabGroupListMediator {
             mFilter.closeMultipleTabs(
                     tabsToClose, /* canUndo= */ false, /* hideTabGroups= */ false);
         } else {
-            assert state == TabGroupState.HIDDEN;
             mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
         }
     }
