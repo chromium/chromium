@@ -28,7 +28,11 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
@@ -243,13 +247,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
-  // TODO(crbug.com/339102426): Cleanup browserStates.
-  // TODO(crbug.com/341906612) Remove use of
-  // GetLastUsedBrowserStateDeprecatedDoNotUse.
   ChromeBrowserState* browserState =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
+      sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   if ([self isContentNotificationAvailable:browserState]) {
     // Send an NAU every time the OS authorization status changes.
     [PushNotificationUtil
