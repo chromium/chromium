@@ -1436,7 +1436,11 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
                                    .path = std::move(entry.path)};
                  });
 
-  if (permission_context_) {
+  // There is no need to scan the file in case of saving, since it's
+  // data is truncated at this point, so it won't be available for
+  // the web page.
+  if (permission_context_ &&
+      options.type() != ui::SelectFileDialog::SELECT_SAVEAS_FILE) {
     permission_context_->CheckPathsAgainstEnterprisePolicy(
         std::move(pathinfos_to_check), binding_context.frame_id,
         base::BindOnce(
