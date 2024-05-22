@@ -335,9 +335,10 @@ bool ProfileImportProcess::IsObservedProfileAutofilledQuasiDuplicate(
   // Create the merge and import candidate from the `autofilled_profile`.
   merge_candidate_ = *autofilled_profile;
   import_candidate_ = *autofilled_profile;
-  import_candidate_->SetInfo(
+  import_candidate_->SetInfoWithVerificationStatus(
       non_autofilled_type,
-      observed_profile_.GetInfo(non_autofilled_type, app_locale_), app_locale_);
+      observed_profile_.GetInfo(non_autofilled_type, app_locale_), app_locale_,
+      VerificationStatus::kObserved);
   // Ensure that potential substructure is cleared.
   import_candidate_->FinalizeAfterImport();
   return true;
