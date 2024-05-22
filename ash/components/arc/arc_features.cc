@@ -216,6 +216,14 @@ const base::FeatureParam<bool> kGuestReclaimEnabled{
 const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous{
     &kGuestSwap, "guest_reclaim_only_anonymous", false};
 
+// Controls whether to enable virtual swap device for ARCVM.
+const base::FeatureParam<bool> kVirtualSwapEnabled{
+    &kGuestSwap, "virtual_swap_enabled", false};
+
+// Controls how often ARCVM's virtual swap device is swapped out in the host.
+const base::FeatureParam<int> kVirtualSwapIntervalMs{
+    &kGuestSwap, "virtual_swap_interval_ms", 1000};
+
 // Controls whether enable ignoring hover event ANR in input dispatcher.
 BASE_FEATURE(kIgnoreHoverEventAnr,
              "IgnoreHoverEventAnr",

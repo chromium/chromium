@@ -459,16 +459,23 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   if (base::FeatureList::IsEnabled(kGuestSwap)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
+    int guestSwapSizeMiB = kGuestSwapSize.Get() / (1024 * 1024);
     if (kGuestZramSizePercentage.Get() != 0) {
       // If there's no custom memory_mib set, try to get the default value to
       // determine the ZRAM size.
       if (request.memory_mib() == 0) {
         request.set_memory_mib(GetDefaultVmMemoryMiB(delegate));
       }
-      request.set_guest_zram_mib(request.memory_mib() *
-                                 kGuestZramSizePercentage.Get() / 100);
+      guestSwapSizeMiB =
+          request.memory_mib() * kGuestZramSizePercentage.Get() / 100;
+    }
+
+    if (kVirtualSwapEnabled.Get()) {
+      auto* virtual_swap_config = request.mutable_virtual_swap_config();
+      virtual_swap_config->set_swap_interval_ms(kVirtualSwapIntervalMs.Get());
+      virtual_swap_config->set_size_mib(guestSwapSizeMiB);
     } else {
-      request.set_guest_zram_mib(kGuestSwapSize.Get() / (1024 * 1024));
+      request.set_guest_zram_mib(guestSwapSizeMiB);
     }
   }
 

@@ -2974,5 +2974,22 @@ TEST_F(ArcVmClientAdapterTest, SkipDexOptCacheSetupArcR) {
                               "ro.boot.skip_dexopt_cache"));
 }
 
+TEST_F(ArcVmClientAdapterTest, VirtualSwapDevice_Enabled) {
+  base::FieldTrialParams params;
+  params["size"] = base::NumberToString(256 * 1024 * 1024);
+  params["virtual_swap_enabled"] = "true";
+  params["virtual_swap_interval_ms"] = "1000";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(kGuestSwap, params);
+
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(0u, request.guest_zram_mib());
+  EXPECT_EQ(1000u, request.virtual_swap_config().swap_interval_ms());
+  EXPECT_EQ(256u, request.virtual_swap_config().size_mib());
+}
+
 }  // namespace
 }  // namespace arc
