@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.CUSTOM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SAVE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SHARE;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.ui.base.TestActivity;
@@ -46,10 +48,7 @@ import java.util.Map;
 public class GoogleBottomBarViewCreatorTest {
 
     private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
-            Map.of(
-                    BottomBarConfigCreator.ButtonId.SAVE, 100,
-                    BottomBarConfigCreator.ButtonId.SHARE, 101,
-                    BottomBarConfigCreator.ButtonId.PIH_BASIC, 103);
+            Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105);
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -213,6 +212,54 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator =
                 getGoogleBottomBarViewCreator(
                         mConfigCreator.create(buttonIdList, new ArrayList<>()));
+        mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+
+        mGoogleBottomBarViewCreator.logButtons();
+
+        histogramWatcher.assertExpected();
+        histogramWatcher.close();
+    }
+
+    @Test
+    public void testLogButtons_customButtonHasAssociatedCustomButtonParams_logsCustomButtons() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.GoogleBottomBar.ButtonShown",
+                                GoogleBottomBarButtonEvent.PIH_EMBEDDER,
+                                GoogleBottomBarButtonEvent.SHARE_CHROME,
+                                GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER)
+                        .build();
+        List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, CUSTOM);
+        mGoogleBottomBarViewCreator =
+                getGoogleBottomBarViewCreator(
+                        mConfigCreator.create(
+                                buttonIdList,
+                                List.of(
+                                        getMockCustomButtonParams(PIH_BASIC),
+                                        getMockCustomButtonParams(ButtonId.CUSTOM))));
+        mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+
+        mGoogleBottomBarViewCreator.logButtons();
+
+        histogramWatcher.assertExpected();
+        histogramWatcher.close();
+    }
+
+    @Test
+    public void testLogButtons_customButtonWithoutCustomButtonParams_doesNotLogCustomButton() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.GoogleBottomBar.ButtonShown",
+                                GoogleBottomBarButtonEvent.PIH_EMBEDDER,
+                                GoogleBottomBarButtonEvent.SHARE_CHROME)
+                        .build();
+        List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, CUSTOM);
+        mGoogleBottomBarViewCreator =
+                getGoogleBottomBarViewCreator(
+                        mConfigCreator.create(
+                                buttonIdList, List.of(getMockCustomButtonParams(PIH_BASIC))));
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();

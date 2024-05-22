@@ -35,7 +35,9 @@ public class BottomBarConfigCreator {
                     103,
                     ButtonId.PIH_BASIC,
                     104,
-                    ButtonId.ADD_NOTES);
+                    ButtonId.ADD_NOTES,
+                    105,
+                    ButtonId.CUSTOM);
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
             List.of(ButtonId.SAVE, ButtonId.PIH_BASIC, ButtonId.SHARE);
     private final Context mContext;
@@ -226,9 +228,9 @@ public class BottomBarConfigCreator {
     }
 
     /**
-     * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Google
-     * App Save 4 - Google App Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon
-     * 7 - Page Insights Hub with expanded icon
+     * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Save 4
+     * - Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon 7 - Page Insights Hub
+     * with expanded icon 8 - Custom button
      */
     @IntDef({
         ButtonId.PIH_BASIC,
@@ -238,6 +240,7 @@ public class BottomBarConfigCreator {
         ButtonId.REFRESH,
         ButtonId.PIH_COLORED,
         ButtonId.PIH_EXPANDED,
+        ButtonId.CUSTOM,
         ButtonId.MAX_BUTTON_ID,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -249,7 +252,8 @@ public class BottomBarConfigCreator {
         int REFRESH = 5;
         int PIH_COLORED = 6;
         int PIH_EXPANDED = 7;
-        int MAX_BUTTON_ID = PIH_EXPANDED;
+        int CUSTOM = 8;
+        int MAX_BUTTON_ID = CUSTOM;
     }
 
     /**
