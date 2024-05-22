@@ -30,6 +30,9 @@ class D3D12Fence : public base::RefCountedThreadSafe<D3D12Fence> {
   // Wait on CPU until the |fence_value| is signaled.
   D3D11Status Wait(uint64_t fence_value) const;
 
+  // Signal the fence and wait on CPU until the fence is signaled.
+  D3D11Status SignalAndWait(ID3D12CommandQueue& command_queue);
+
  private:
   friend class RefCountedThreadSafe;
   ~D3D12Fence();
