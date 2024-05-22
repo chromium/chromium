@@ -361,9 +361,24 @@ TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
 
 TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
   base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
+                                         SuggestionType::kAutocompleteEntry)});
   client().popup_controller(manager()).DoHide(SuggestionHidingReason::kTabGone);
-  histogram_tester.ExpectTotalCount("Autofill.PopupHidingReason", 1);
+  ShowSuggestions(
+      manager(), {Suggestion(u"Address entry", SuggestionType::kAddressEntry)});
+  client().popup_controller(manager()).DoHide(SuggestionHidingReason::kTabGone);
+  ShowSuggestions(manager(), {Suggestion(u"Credit Card entry",
+                                         SuggestionType::kCreditCardEntry)});
+  client().popup_controller(manager()).DoHide(SuggestionHidingReason::kTabGone);
+
+  histogram_tester.ExpectTotalCount("Autofill.PopupHidingReason", 3);
   histogram_tester.ExpectBucketCount("Autofill.PopupHidingReason",
+                                     SuggestionHidingReason::kTabGone, 3);
+  histogram_tester.ExpectBucketCount("Autofill.PopupHidingReason.Autocomplete",
+                                     SuggestionHidingReason::kTabGone, 1);
+  histogram_tester.ExpectBucketCount("Autofill.PopupHidingReason.Address",
+                                     SuggestionHidingReason::kTabGone, 1);
+  histogram_tester.ExpectBucketCount("Autofill.PopupHidingReason.CreditCard",
                                      SuggestionHidingReason::kTabGone, 1);
 }
 

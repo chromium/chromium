@@ -507,9 +507,21 @@ chromium-metrics-reviews@google.com.
 
 <variants name="FillingProduct">
   <variant name=".Address"
-      summary="User chose to fill a form or field with a address profile."/>
+      summary="User chose to fill a form or field with an address profile."/>
+  <variant name=".Autocomplete"
+      summary="User chose to fill a field with autocomplete."/>
+  <variant name=".Compose"
+      summary="User chose to fill a field with a compose suggestion."/>
   <variant name=".CreditCard"
-      summary="User chose to fill a form or field with a credit card."/>
+      summary="User chose to fill a form or field with a credit card profile."/>
+  <variant name=".Iban" summary="User chose to fill a field with an iban."/>
+  <variant name=".MerchantPromoCode"
+      summary="User chose to fill a field with a merchant promo code."/>
+  <variant name=".None" summary="No filling product matches."/>
+  <variant name=".Password"
+      summary="User chose to fill a form or field with password credentials."/>
+  <variant name=".PlusAddresses"
+      summary="User chose to fill a field with a plus addresses suggestion."/>
 </variants>
 
 <variants name="IbanRecordType">
@@ -3855,6 +3867,17 @@ chromium-metrics-reviews@google.com.
     This tracks the reasons for which the Autofill popup disappers or cannot be
     displayed. Recorded everytime an Autofill popup disappears or cannot be
     displayed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.PopupHidingReason{FillingProduct}"
+    enum="AutofillSuggestionHidingReason" expires_after="2024-09-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    This tracks per filling product the reasons for which the Autofill popup
+    disappers or cannot be displayed. Recorded everytime an Autofill popup
+    disappears or cannot be displayed.
   </summary>
 </histogram>
 
