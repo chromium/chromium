@@ -608,7 +608,12 @@ class TokenPreloadScanner::StartTagScanner {
     // whether it has loading="lazy" attribute or not, in order to make the LCP
     // image load completion faster. An exception to this is "lazy load auto
     // sizes" which must defer because sizes=auto requires layout information.
-    if (is_potentially_lcp_element && !source_size_is_auto_) {
+    //
+    // If the dry run mode is enabled, prevents the actual preload request from
+    // being created.
+    static const bool dry_run_mode =
+        features::kLCPPLazyLoadImagePreloadDryRun.Get();
+    if (is_potentially_lcp_element && !source_size_is_auto_ && !dry_run_mode) {
       switch (document_parameters.preload_lazy_load_image_type) {
         case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
         case features::LcppPreloadLazyLoadImageType::kCustomLazyLoading:

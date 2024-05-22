@@ -1377,6 +1377,10 @@ BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, do not make a preload request.
+const base::FeatureParam<bool> kLCPPLazyLoadImagePreloadDryRun{
+    &kLCPPLazyLoadImagePreload, "lcpp_lazy_load_image_preload_dry_run", false};
+
 const base::FeatureParam<
     LcppPreloadLazyLoadImageType>::Option lcpp_preload_lazy_load_image[] = {
     {LcppPreloadLazyLoadImageType::kNone, "none"},

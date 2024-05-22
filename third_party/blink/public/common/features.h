@@ -859,6 +859,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPPLazyLoadImagePreloadDryRun;
+
 // The type of preloading for LCP images which are loaded lazily.
 // crbug.com/1498777 for more details.
 enum class LcppPreloadLazyLoadImageType {
