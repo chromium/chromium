@@ -3038,7 +3038,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3226487301970807183">Vasakule joondatud külgpaneeli kuvamine/peitmine</translation>
 <translation id="322708765617468434">Teil on võimalik pärast seadistamist alati inimesi seadmesse juurde lisada. Iga inimene saab oma kasutuskogemuse isikupärastada ja andmed privaatsena hoida.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
-<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Eemaldage see <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" /> või asendage sarnaste laiendustega}other{Eemaldage need <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" /> või asendage sarnaste laiendustega}}</translation>
+<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Eemaldage see või asendage sarnase laiendusega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}other{Eemaldage need või asendage sarnaste laiendustega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}}</translation>
 <translation id="3229412050601871341">Seadme parool</translation>
 <translation id="3230539834943294477">Abikeskuse artiklite kuvamine või seadmetoe otsimine</translation>
 <translation id="3232168089952388105">Kas jagada teavet oma seadme kohta?</translation>
@@ -10632,7 +10632,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8953476467359856141">Laadimise ajal</translation>
 <translation id="895347679606913382">Alustamine...</translation>
 <translation id="8954796993367253220">Külalisrežiimi ajaloo kustutamiseks sulgege kõik külalise aknad.</translation>
-<translation id="8955093856391032948">tõlge</translation>
 <translation id="8955174612586215829">Otsi teemasid</translation>
 <translation id="8957757410289731985">Profiili kohandamine</translation>
 <translation id="8959144235813727886">Saidid ja rakendused</translation>

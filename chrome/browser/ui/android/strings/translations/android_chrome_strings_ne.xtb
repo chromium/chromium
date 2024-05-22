@@ -242,6 +242,7 @@
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
+<translation id="2328739396024849021">"सेभ गर्नुहोस्" बटन निष्क्रिय पारिएको छ</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
@@ -348,6 +349,7 @@
 <translation id="2869430948265924908">कारमा भएको आफ्नो संवेदनशील सामग्री सुरक्षित राख्न तपाईंले अनिवार्य रूपमा कार प्रोफाइल लक बनाउनु पर्छ।  तपाईं पिन, कोड वा पासवर्ड राखेर कार प्रोफाइल लक बनाउन सक्नुहुन्छ।</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजहरू प्रिलोड गर्नुहोस्</translation>
+<translation id="2871941920508945325">"पेजको विश्लेषणात्मक जानकारी" बटन</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> तपाईंले यो वेबसाइट अनुमोदन गरिदिनुहोस् भन्ने चाहन्छन्:</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ले तपाईंको डेटा कसरी गोप्य राख्छ<ph name="END_LINK" /> भन्ने बारेमा थप जान्नुहोस्</translation>
 <translation id="2888126860611144412">Chrome को बारेमा</translation>
@@ -511,6 +513,7 @@
 <translation id="3697705478071004188">साइटअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3699022356773522638">फाइल डाउनलोड गर्ने हो?</translation>
 <translation id="3701515417135397388">कुनै पासवर्ड डेटा चोरीको घटनामा देखिएका खण्डमा तपाईंलाई चेतावनी दिन्छ</translation>
+<translation id="3711001040440486668">"सेयर गर्नुहोस्" बटन</translation>
 <translation id="371230970611282515">खतरनाक घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="3714981814255182093">खोजको पट्टी खोल्नुहोस्</translation>
 <translation id="3716182511346448902">यस पृष्ठले अत्यधिक मेमोरी प्रयोग गर्ने भएकाले Chromium ले यसलाई पज गर्‍यो।</translation>
@@ -1309,6 +1312,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
 <translation id="7581273696622423628">सर्वेक्षणमा भाग लिनुहोस्</translation>
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
+<translation id="758603037873046260">यो पेज सेभ गर्न साइन इन गर्नुहोस्</translation>
 <translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> लाई <ph name="TOP_ORIGIN" /> का सम्बन्धमा कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>

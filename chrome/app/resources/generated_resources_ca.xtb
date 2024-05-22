@@ -5218,7 +5218,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4872192066608821120">Per importar contrasenyes, selecciona un fitxer CSV</translation>
 <translation id="4872212987539553601">Configura l'encriptació al dispositiu</translation>
 <translation id="4873312501243535625">Comprovador de fitxers multimèdia</translation>
-<translation id="4874705075711349931">Els llocs web utilitzen el bloqueig del teclat per capturar entrades de teclat que d'altra manera serien gestionades pel navegador o pel sistema operatiu.</translation>
+<translation id="4874705075711349931">Els llocs web utilitzen el bloqueig del teclat per capturar entrades de teclat que, d'altra manera, el navegador o el sistema operatiu gestionarien.</translation>
 <translation id="4876273079589074638">Ajuda els nostres enginyers a investigar i resoldre aquest error. Si pots, enumera els passos amb exactitud. Cap detall no és sobrer!</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
 <translation id="4876327226315760474">Això significa que les funcions del lloc web haurien de funcionar de la manera prevista, tot i que pot ser que tinguis menys protecció de navegació.</translation>
@@ -10625,7 +10625,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8953476467359856141">Mentre es carrega</translation>
 <translation id="895347679606913382">S'està iniciant...</translation>
 <translation id="8954796993367253220">Per suprimir l'historial del mode de convidat, tanca totes les finestres de convidat.</translation>
-<translation id="8955093856391032948">traduir</translation>
 <translation id="8955174612586215829">Cerca temes</translation>
 <translation id="8957757410289731985">Personalitza el perfil</translation>
 <translation id="8959144235813727886">Llocs web i aplicacions</translation>

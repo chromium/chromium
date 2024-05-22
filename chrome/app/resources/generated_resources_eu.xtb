@@ -5248,7 +5248,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4890399733764921729">Ezin da konektatu. Beste operadore batek blokeatuta dauka.</translation>
 <translation id="4890773143211625964">Erakutsi inprimagailuaren aukera aurreratuak</translation>
 <translation id="4891089016822695758">Beta foroa</translation>
-<translation id="4891795846939730995">Gailu honetan sarbide-gakoak erabiltzeko baimena berriro emateko, hasi saioa webgune edo aplikazio batean gordetako sarbide-gako batekin</translation>
+<translation id="4891795846939730995">Gailu honetan sarbide-gakoak erabiltzeko baimena berriro emateko, hasi saioa gordetako sarbide-gako batekin webgune edo aplikazio batean</translation>
 <translation id="4892229439761351791">Webguneak Bluetootha erabil dezake</translation>
 <translation id="4892328231620815052">Prest zaudenean, bilatu irakurketa-zerrenda Laster-markak eta zerrendak atalean</translation>
 <translation id="489258173289528622">Gailua kargatzen ari ez denean inaktibo geratuz gero gauzatu beharreko ekintza</translation>
@@ -10620,7 +10620,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8953476467359856141">Kargatzen ari denean</translation>
 <translation id="895347679606913382">Hasten…</translation>
 <translation id="8954796993367253220">Gonbidatu moduko historia ezabatzeko, itxi gonbidatu moduko leiho guztiak.</translation>
-<translation id="8955093856391032948">itzuli</translation>
 <translation id="8955174612586215829">Bilatu gaiak</translation>
 <translation id="8957757410289731985">Pertsonalizatu profila</translation>
 <translation id="8959144235813727886">Webguneak eta aplikazioak</translation>
