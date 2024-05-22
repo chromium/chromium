@@ -190,7 +190,7 @@ public class SignInPreference extends Preference
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
                         AccountPickerBottomSheetStrings bottomSheetStrings =
                                 new AccountPickerBottomSheetStrings.Builder(
-                                                R.string.sign_in_to_chrome)
+                                                R.string.signin_account_picker_bottom_sheet_title)
                                         .build();
                         SigninAndHistoryOptInActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(

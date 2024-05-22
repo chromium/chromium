@@ -64,7 +64,9 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
             new BaseActivityTestRule(BlankUiTestActivity.class);
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
-            new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
+            new AccountPickerBottomSheetStrings.Builder(
+                            R.string.signin_account_picker_bottom_sheet_title)
+                    .build();
 
     @Mock private Context mContextMock;
     @Mock private IdentityServicesProvider mIdentityProviderMock;

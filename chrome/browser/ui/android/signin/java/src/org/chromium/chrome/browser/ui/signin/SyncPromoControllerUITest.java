@@ -90,7 +90,9 @@ public class SyncPromoControllerUITest {
 
     private static final String TEST_EMAIL = "john.doe@gmail.com";
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
-            new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
+            new AccountPickerBottomSheetStrings.Builder(
+                            R.string.signin_account_picker_bottom_sheet_title)
+                    .build();
 
     @Rule
     public final RenderTestRule mRenderTestRule =

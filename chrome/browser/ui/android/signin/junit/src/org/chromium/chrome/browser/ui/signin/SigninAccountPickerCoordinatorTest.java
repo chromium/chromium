@@ -95,7 +95,9 @@ public class SigninAccountPickerCoordinatorTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
         AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
         mCoordinator =
                 new SigninAccountPickerCoordinator(
                         mWindowAndroidMock,

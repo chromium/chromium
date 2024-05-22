@@ -378,7 +378,8 @@ public class IdentityDiscController
             // TODO(crbug.com/41496906): Implement the new sign-in flow for automotive.
             if (SigninUtils.shouldShowNewSigninFlow()) {
                 AccountPickerBottomSheetStrings bottomSheetStrings =
-                        new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome)
+                        new AccountPickerBottomSheetStrings.Builder(
+                                        R.string.signin_account_picker_bottom_sheet_title)
                                 .setSubtitleStringId(
                                         R.string
                                                 .signin_account_picker_bottom_sheet_benefits_subtitle)
