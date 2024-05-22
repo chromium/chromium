@@ -58,9 +58,9 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
 
   base::Value::Dict apps_category_map_;
 
-  base::OneShotTimer delay_set_apps_timer_;
+  std::unique_ptr<base::OneShotTimer> delay_set_apps_timer_;
 
-  base::OneShotTimer delay_overview_timer_;
+  std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;

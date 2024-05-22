@@ -5,12 +5,14 @@
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -132,16 +134,19 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
     LOG(ERROR)
         << "Got an error when fetched cached data from the OOBE Apps Service";
     exit_callback_.Run(Result::kNotApplicable);
+    return;
   }
 
   if (app_infos.empty()) {
     LOG(ERROR) << "Empty set of apps received from the server";
     exit_callback_.Run(Result::kNotApplicable);
+    return;
   }
 
   if (use_cases.empty()) {
     LOG(ERROR) << "Empty set of use-cases received from the server";
     exit_callback_.Run(Result::kNotApplicable);
+    return;
   }
 
   // This code performs the following steps to prepare recommended app data for
@@ -266,9 +271,17 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
     }
   }
 
+  if (apps_dict.empty()) {
+    LOG(ERROR) << "No apps found after filtering, skipping the screen";
+    exit_callback_.Run(Result::kNotApplicable);
+    return;
+  }
+
   apps_category_map_ = std::move(apps_dict);
 
-  delay_set_apps_timer_.Start(
+  delay_set_apps_timer_ = std::make_unique<base::OneShotTimer>();
+
+  delay_set_apps_timer_->Start(
       FROM_HERE, kDelaySetCategoriesAppsMapTime, this,
       &PersonalizedRecommendAppsScreen::SetCategoriesAppsMapData);
 }
@@ -349,7 +362,8 @@ void PersonalizedRecommendAppsScreen::OnUserAction(
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
-    delay_overview_timer_.Start(
+    delay_overview_timer_ = std::make_unique<base::OneShotTimer>();
+    delay_overview_timer_->Start(
         FROM_HERE, kDelayOverviewStepTime, this,
         &PersonalizedRecommendAppsScreen::ShowOverviewStep);
     return;

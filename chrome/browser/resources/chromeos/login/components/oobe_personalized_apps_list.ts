@@ -105,6 +105,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     this.selectedAppsCount = 0;
     this.loadedIconsCount = 0;
     this.categoriesItemRendered = [];
+    this.appsList = [];
     for (const key in this.catgoriesMapApps) {
       this.categoriesItemRendered.push({'id': key, 'count': 0});
       this.catgoriesMapApps[key].forEach(element => {

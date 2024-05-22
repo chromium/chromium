@@ -100,6 +100,10 @@ export class PersonalizedRecommedAppsElement extends
     return OobeUiState.ONBOARDING;
   }
 
+  override onBeforeShow(): void {
+    this.setUIStep(PersonalizedAppsStep.LOADING);
+  }
+
   setCategoriesAppsMapData(categoriesData: CategoriesAppsMap): void {
     assert(categoriesData !== null);
     this.shadowRoot!
