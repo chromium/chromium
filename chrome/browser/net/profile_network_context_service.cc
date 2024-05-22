@@ -98,6 +98,7 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "net/cert/x509_util.h"
 #endif
@@ -1158,8 +1159,17 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     // username hash is empty, even when the NSS is not initialized for the
     // user.
     if (user && !user->username_hash().empty()) {
-      cert_verifier_creation_params->username_hash = user->username_hash();
-      cert_verifier_creation_params->nss_path = profile_->GetPath();
+      // Populating `username_hash` and `nss_path` will make cert verifier load
+      // and use the corresponding NSS public slot. Kiosk sessions don't have
+      // the UI that could result in interactions with the public slot. Kiosk
+      // users are also not owner users and can't have the owner key in the
+      // public slot. Leaving them empty will make cert verifier ignore the
+      // public slot.  This is done mainly because Chrome sometimes fails to
+      // load the public slot and has to crash because of that.
+      if (!chromeos::IsKioskSession()) {
+        cert_verifier_creation_params->username_hash = user->username_hash();
+        cert_verifier_creation_params->nss_path = profile_->GetPath();
+      }
       profile_supports_policy_certs = true;
     }
   }
