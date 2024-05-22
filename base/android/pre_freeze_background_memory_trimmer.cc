@@ -178,7 +178,7 @@ void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskInternal(
     base::TimeDelta delay) {
   DCHECK(SupportsModernTrim());
 
-  SetDidRegisterTaskInternal();
+  RegisterPrivateMemoryFootprintMetric();
 
   if (!base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim)) {
     task_runner->PostDelayedTask(
@@ -295,11 +295,12 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTaskInternal(
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTask() {
-  Instance().SetDidRegisterTaskInternal();
+void PreFreezeBackgroundMemoryTrimmer::RegisterPrivateMemoryFootprintMetric() {
+  Instance().RegisterPrivateMemoryFootprintMetricInternal();
 }
 
-void PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTaskInternal() {
+void PreFreezeBackgroundMemoryTrimmer::
+    RegisterPrivateMemoryFootprintMetricInternal() {
   base::AutoLock locker(lock_);
   if (!did_register_task_) {
     did_register_task_ = true;

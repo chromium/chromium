@@ -174,7 +174,8 @@ void OneShotDelayedBackgroundTimer::Start(
     TimeDelta delay,
     OnceCallback<void(MemoryReductionTaskContext)> task) {
 #if BUILDFLAG(IS_ANDROID)
-  android::PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTask();
+  android::PreFreezeBackgroundMemoryTrimmer::
+      RegisterPrivateMemoryFootprintMetric();
 #endif
   impl_->Start(from_here, delay, std::move(task));
 }

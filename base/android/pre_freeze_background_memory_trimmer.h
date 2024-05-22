@@ -161,8 +161,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   void UnregisterBackgroundTaskInternal(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
-  static void SetDidRegisterTask() LOCKS_EXCLUDED(lock_);
-  void SetDidRegisterTaskInternal() LOCKS_EXCLUDED(lock_);
+  static void RegisterPrivateMemoryFootprintMetric() LOCKS_EXCLUDED(lock_);
+  void RegisterPrivateMemoryFootprintMetricInternal() LOCKS_EXCLUDED(lock_);
 
   void PostDelayedBackgroundTaskInternal(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
