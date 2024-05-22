@@ -373,8 +373,16 @@ void BleV2GattServer::OnLocalCharacteristicRead(
   }
 
   const ByteArray& data = new_value_it->second;
+  if (offset >= data.size()) {
+    LOG(WARNING) << __func__ << ": invalid offset";
+    std::move(callback).Run(
+        bluetooth::mojom::LocalCharacteristicReadResult::NewErrorCode(
+            device::BluetoothGattService::GattErrorCode::kInvalidLength));
+    return;
+  }
+
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.data());
-  std::vector<uint8_t> read_value(bytes, bytes + data.size());
+  std::vector<uint8_t> read_value(bytes + offset, bytes + data.size());
   std::move(callback).Run(
       bluetooth::mojom::LocalCharacteristicReadResult::NewData(
           std::move(read_value)));

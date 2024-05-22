@@ -34,7 +34,8 @@ class FakeGattService : public mojom::GattService {
   void TriggerReadCharacteristicRequest(
       const device::BluetoothUUID& service_uuid,
       const device::BluetoothUUID& characteristic_uuid,
-      ValueCallback callback);
+      ValueCallback callback,
+      uint32_t offset = 0);
 
   void SetCreateCharacteristicResult(bool success);
   int GetNumCharacteristicUuids() { return characteristic_uuids_.size(); }

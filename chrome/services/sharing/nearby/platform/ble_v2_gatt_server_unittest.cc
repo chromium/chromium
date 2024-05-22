@@ -30,7 +30,8 @@ const device::BluetoothUUID kCharacteristicUuid1 =
     device::BluetoothUUID("00001101-0000-1000-8000-00805f9b34fb");
 const device::BluetoothUUID kCharacteristicUuid2 =
     device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
-const char kNewCharacteristicValue[] = "1010101";
+const std::string kNewCharacteristicValue = "123456";
+const int kPartialBufferOffset = 2;
 
 class FakeGattService : public nearby::chrome::BleV2GattServer::GattService {
  public:
@@ -382,6 +383,64 @@ TEST_F(BleV2GattServerTest, MojoGattServiceDisconnect) {
 
   run_loop.Run();
   EXPECT_TRUE(fake_gatt_service_destroyed);
+}
+
+TEST_F(
+    BleV2GattServerTest,
+    UpdateCharacteristic_ReadCharacteristicRequest_Success_PartialBufferReads) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+  auto* fake_gatt_service_ptr = fake_gatt_service.get();
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  CallUpdateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
+      future;
+  fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
+      device::BluetoothUUID(kServiceId),
+      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback(),
+      /*offset=*/kPartialBufferOffset);
+  auto read_result = future.Take();
+  EXPECT_FALSE(read_result->is_error_code());
+  EXPECT_TRUE(read_result->is_data());
+  EXPECT_EQ(kNewCharacteristicValue.substr(kPartialBufferOffset),
+            base::as_string_view(
+                base::as_chars(base::make_span(read_result->get_data()))));
+}
+
+TEST_F(BleV2GattServerTest,
+       UpdateCharacteristic_ReadCharacteristicRequest_FailureIfInvalidOffset) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+  auto* fake_gatt_service_ptr = fake_gatt_service.get();
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  CallUpdateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
+      future;
+  fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
+      device::BluetoothUUID(kServiceId),
+      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback(),
+      /*offset=*/10);
+  auto read_result = future.Take();
+  EXPECT_TRUE(read_result->is_error_code());
+  EXPECT_FALSE(read_result->is_data());
+  EXPECT_EQ(device::BluetoothGattService::GattErrorCode::kInvalidLength,
+            read_result->get_error_code());
 }
 
 }  // namespace nearby::chrome
