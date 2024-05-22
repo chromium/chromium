@@ -62,8 +62,9 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) override;
   void AddEntry(mojom::UkmEntryPtr entry) override;
-  void RecordWebFeatures(SourceId source_id,
-                         const std::set<DummyWebFeatures>& features) override;
+  void RecordWebDXFeatures(SourceId source_id,
+                           const std::set<int32_t>& features,
+                           const size_t max_feature_value) override;
   void MarkSourceForDeletion(SourceId source_id) override;
 
   class Delegate final {
@@ -80,8 +81,9 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
     void RecordNavigation(SourceId source_id,
                           const UkmSource::NavigationData& navigation_data);
     void AddEntry(mojom::UkmEntryPtr entry);
-    void RecordWebFeatures(SourceId source_id,
-                           const std::set<DummyWebFeatures>& features);
+    void RecordWebDXFeatures(SourceId source_id,
+                             const std::set<int32_t>& features,
+                             const size_t max_feature_value);
     void MarkSourceForDeletion(SourceId source_id);
 
    private:

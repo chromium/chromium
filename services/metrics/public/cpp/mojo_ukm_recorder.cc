@@ -64,9 +64,9 @@ void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   interface_->AddEntry(std::move(entry));
 }
 
-void MojoUkmRecorder::RecordWebFeatures(
-    SourceId source_id,
-    const std::set<DummyWebFeatures>& features) {
+void MojoUkmRecorder::RecordWebDXFeatures(SourceId source_id,
+                                          const std::set<int32_t>& features,
+                                          const size_t max_feature_value) {
   NOTREACHED_IN_MIGRATION();
 }
 

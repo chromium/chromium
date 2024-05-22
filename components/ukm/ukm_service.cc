@@ -566,7 +566,8 @@ void UkmService::BuildAndStoreLog(
   metrics_providers_.ProvideCurrentSessionUKMData();
 
   // Suppress generating a log if we have no new data to include.
-  bool empty = sources().empty() && entries().empty() && web_features().empty();
+  bool empty =
+      sources().empty() && entries().empty() && webdx_features().empty();
   UMA_HISTOGRAM_BOOLEAN("UKM.BuildAndStoreLogIsEmpty", empty);
   if (empty) {
     DVLOG(DebuggingLogLevel::Rare) << "No local UKM data. No log created.";

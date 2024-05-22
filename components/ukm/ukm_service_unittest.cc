@@ -74,6 +74,9 @@ const char* kTestEvent2Metric1 = TestEvent2::kArrayBufferName;
 const char* kTestEvent2Metric2 = TestEvent2::kBlinkGCName;
 using TestEvent3 = builders::PageWithPassword;
 using TestProviderEvent = builders::ScreenBrightness;
+const int32_t kWebDXFeature1 = 1;
+const int32_t kWebDXFeature3 = 3;
+const size_t kWebDXFeatureNumberOfFeaturesForTesting = 5;
 
 SourceId ConvertSourceIdToAllowlistedType(SourceId id, SourceIdType type) {
   return ukm::SourceIdObj::FromOtherId(id, type).ToInt64();
@@ -102,9 +105,10 @@ class TestRecordingHelper {
     recorder_->MarkSourceForDeletion(source_id);
   }
 
-  void RecordWebFeatures(SourceId source_id,
-                         const std::set<DummyWebFeatures>& features) {
-    recorder_->RecordWebFeatures(source_id, features);
+  void RecordWebDXFeatures(SourceId source_id,
+                           const std::set<int32_t>& features,
+                           const size_t max_feature_value) {
+    recorder_->RecordWebDXFeatures(source_id, features, max_feature_value);
   }
 
  private:
@@ -200,15 +204,12 @@ void AddSourceToReport(Report& report,
   entry->set_source_id(source_id);
 }
 
-bool WebFeaturesStrictlyContains(
-    const HighLevelWebFeatures& actual_features,
-    const std::set<DummyWebFeatures>& expected_features) {
-  constexpr size_t kBitSetSize =
-      static_cast<size_t>(DummyWebFeatures::kMaxCount);
-  BitSet bitset(kBitSetSize, actual_features.bit_vector());
-  for (size_t i = 0; i < kBitSetSize; ++i) {
-    if (bitset.Contains(i) !=
-        base::Contains(expected_features, static_cast<DummyWebFeatures>(i))) {
+bool WebDXFeaturesStrictlyContains(const HighLevelWebFeatures& actual_features,
+                                   const std::set<int32_t>& expected_features) {
+  BitSet bitset(kWebDXFeatureNumberOfFeaturesForTesting,
+                actual_features.bit_vector());
+  for (size_t i = 0; i < kWebDXFeatureNumberOfFeaturesForTesting; ++i) {
+    if (bitset.Contains(i) != base::Contains(expected_features, i)) {
       return false;
     }
   }
@@ -1189,7 +1190,8 @@ TEST_F(UkmServiceTest, LogsUploadedOnlyWhenHavingData) {
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_EQ(GetPersistedLogCount(), 3);
 
-  recorder.RecordWebFeatures(id, {DummyWebFeatures::kFeature1});
+  recorder.RecordWebDXFeatures(id, {kWebDXFeature1},
+                               kWebDXFeatureNumberOfFeaturesForTesting);
   // Includes web features data, so will persist.
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_EQ(GetPersistedLogCount(), 4);
@@ -2114,7 +2116,7 @@ TEST_F(UkmServiceTest, PurgeLogsOnClonedInstallDetected) {
   EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
-TEST_F(UkmServiceTest, WebFeatures) {
+TEST_F(UkmServiceTest, WebDXFeatures) {
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
   TestRecordingHelper recorder(&service);
@@ -2127,30 +2129,30 @@ TEST_F(UkmServiceTest, WebFeatures) {
   // it matches what was recorded.
   auto id0 = GetAllowlistedSourceId(0);
   recorder.UpdateSourceURL(id0, GURL("https://google.com/foobar0"));
-  recorder.RecordWebFeatures(id0, {DummyWebFeatures::kFeature1});
+  recorder.RecordWebDXFeatures(id0, {kWebDXFeature1},
+                               kWebDXFeatureNumberOfFeaturesForTesting);
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   ASSERT_EQ(GetPersistedLogCount(), 1);
   Report proto_report = GetPersistedReport();
   ASSERT_EQ(proto_report.web_features_size(), 1);
   EXPECT_EQ(proto_report.web_features(0).source_id(), id0);
-  EXPECT_TRUE(WebFeaturesStrictlyContains(proto_report.web_features(0),
-                                          {DummyWebFeatures::kFeature1}));
+  EXPECT_TRUE(WebDXFeaturesStrictlyContains(proto_report.web_features(0),
+                                            {kWebDXFeature1}));
 
   // Record some more web features data, create a report, and verify that the
   // data in it matches what was recorded. The web features data from the
   // previous report should not appear.
   auto id1 = GetAllowlistedSourceId(1);
   recorder.UpdateSourceURL(id1, GURL("https://google.com/foobar1"));
-  recorder.RecordWebFeatures(
-      id1, {DummyWebFeatures::kFeature1, DummyWebFeatures::kFeature2});
+  recorder.RecordWebDXFeatures(id1, {kWebDXFeature1, kWebDXFeature3},
+                               kWebDXFeatureNumberOfFeaturesForTesting);
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   ASSERT_EQ(GetPersistedLogCount(), 2);
   proto_report = GetPersistedReport();
   ASSERT_EQ(proto_report.web_features_size(), 1);
   EXPECT_EQ(proto_report.web_features(0).source_id(), id1);
-  EXPECT_TRUE(WebFeaturesStrictlyContains(
-      proto_report.web_features(0),
-      {DummyWebFeatures::kFeature1, DummyWebFeatures::kFeature2}));
+  EXPECT_TRUE(WebDXFeaturesStrictlyContains(proto_report.web_features(0),
+                                            {kWebDXFeature1, kWebDXFeature3}));
 
   // Create a report without recording any web features data. Verify that it
   // contains no web features data, as the data from the previous reports should
@@ -2167,7 +2169,8 @@ TEST_F(UkmServiceTest, WebFeatures) {
   // be gone.
   auto id3 = GetAllowlistedSourceId(3);
   recorder.UpdateSourceURL(id3, GURL("https://google.com/foobar3"));
-  recorder.RecordWebFeatures(id3, {DummyWebFeatures::kFeature2});
+  recorder.RecordWebDXFeatures(id3, {kWebDXFeature3},
+                               kWebDXFeatureNumberOfFeaturesForTesting);
   service.Purge();
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_EQ(GetPersistedLogCount(), 0);
@@ -2379,8 +2382,10 @@ class MockUkmRecorder : public ukm::UkmRecorder {
 
   MOCK_METHOD(void, AddEntry, (mojom::UkmEntryPtr entry), (override));
   MOCK_METHOD(void,
-              RecordWebFeatures,
-              (SourceId source_id, const std::set<DummyWebFeatures>& features),
+              RecordWebDXFeatures,
+              (SourceId source_id,
+               const std::set<int32_t>& features,
+               const size_t max_feature_value),
               (override));
   MOCK_METHOD(void,
               UpdateSourceURL,

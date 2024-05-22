@@ -67,8 +67,9 @@ class METRICS_EXPORT MojoUkmRecorder
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) override;
   void AddEntry(mojom::UkmEntryPtr entry) override;
-  void RecordWebFeatures(SourceId source_id,
-                         const std::set<DummyWebFeatures>& features) override;
+  void RecordWebDXFeatures(SourceId source_id,
+                           const std::set<int32_t>& features,
+                           const size_t max_feature_value) override;
   void MarkSourceForDeletion(ukm::SourceId source_id) override;
 
   // UkmRecorderClientInterface:

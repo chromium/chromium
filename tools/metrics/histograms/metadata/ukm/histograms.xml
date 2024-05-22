@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.WebFeatureSets.Dropped" enum="UkmDataDroppedReason"
+<histogram name="UKM.WebDXFeatureSets.Dropped" enum="UkmDataDroppedReason"
     expires_after="2025-05-01">
   <owner>yrsun@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -349,7 +349,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.WebFeatureSets.SerializedCount" units="web feature sets"
+<histogram name="UKM.WebDXFeatureSets.SerializedCount" units="web feature sets"
     expires_after="2025-05-01">
   <owner>yrsun@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>

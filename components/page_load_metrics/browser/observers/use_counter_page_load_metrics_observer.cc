@@ -266,6 +266,24 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
 
   // TODO(crbug.com/339271460): Add mapping of existing use counters to their
   // respective WebDXFeature use counters here.
+
+  // Feed any used WebDXFeature counters to UKM. Due to our layering rules, we
+  // can't easily use the WebDXFeature type in the UKM code, so pass our
+  // WebDXFeatures as a set of int32_t's.
+  std::set<int32_t> webdx_features;
+
+  for (int32_t feature = 1;
+       feature < static_cast<int32_t>(WebDXFeature::kNumberOfFeatures);
+       feature++) {
+    if (uma_webdx_features_.IsRecordedOrDeferred(
+            static_cast<WebDXFeature>(feature))) {
+      webdx_features.insert(feature);
+    }
+  }
+
+  ukm::UkmRecorder::Get()->RecordWebDXFeatures(
+      ukm_source_id, webdx_features,
+      static_cast<size_t>(WebDXFeature::kNumberOfFeatures) - 1);
 }
 
 UseCounterPageLoadMetricsObserver::UseCounterPageLoadMetricsObserver() =

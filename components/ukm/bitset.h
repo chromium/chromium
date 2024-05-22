@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) BitSet {
   // recreated with the `BitSet(size_t, std::string_view)` constructor.
   std::string Serialize() const;
 
+  size_t set_size() const { return set_size_; }
+
  private:
   // Returns which element `index` maps to in `bitset_`.
   size_t ToInternalIndex(size_t index) const;
