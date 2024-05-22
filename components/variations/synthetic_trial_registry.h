@@ -15,6 +15,8 @@
 #include "base/observer_list.h"
 #include "components/variations/synthetic_trials.h"
 
+class SingleClientNigoriSyncTest;
+
 namespace metrics {
 class MetricsServiceAccessor;
 }  // namespace metrics
@@ -81,6 +83,7 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   friend LimitedEntropySyntheticTrial;
   friend FieldTrialsProvider;
   friend FieldTrialsProviderTest;
+  friend ::SingleClientNigoriSyncTest;
   friend SyntheticTrialRegistryTest;
   friend ::tpcd::experiment::ExperimentManagerImplBrowserTest;
   friend content::SyntheticTrialSyncer;

@@ -43,6 +43,12 @@ std::string GetGroupName(
 }  // namespace
 
 // static
+std::string TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
+    GetMultiProfileConflictGroupName() {
+  return "MultiProfileConflict";
+}
+
+// static
 TrustedVaultAutoUpgradeSyntheticFieldTrialGroup
 TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
     sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup

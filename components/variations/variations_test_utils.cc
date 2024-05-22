@@ -370,4 +370,18 @@ bool ContainsTrialName(const std::vector<ActiveGroupId>& active_group_ids,
   return false;
 }
 
+bool ContainsTrialAndGroupName(
+    const std::vector<ActiveGroupId>& active_group_ids,
+    std::string_view trial_name,
+    std::string_view group_name) {
+  auto hashed_trial_name = HashName(trial_name);
+  auto hashed_group_name = HashName(group_name);
+  for (const auto& trial : active_group_ids) {
+    if (trial.name == hashed_trial_name && trial.group == hashed_group_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace variations

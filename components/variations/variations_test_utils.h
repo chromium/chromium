@@ -154,6 +154,13 @@ std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed);
 bool ContainsTrialName(const std::vector<ActiveGroupId>& active_group_ids,
                        std::string_view trial_name);
 
+// Returns whether the active group ids includes the given trial name with the
+// given group name.
+bool ContainsTrialAndGroupName(
+    const std::vector<ActiveGroupId>& active_group_ids,
+    std::string_view trial_name,
+    std::string_view group_name);
+
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_VARIATIONS_TEST_UTILS_H_

@@ -42,6 +42,10 @@ class AutocorrectManager;
 }  // namespace ash::input_method
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace browser_sync {
+class ChromeSyncClient;
+}
+
 namespace domain_reliability {
 bool ShouldCreateService();
 }
@@ -140,6 +144,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
+  friend class browser_sync::ChromeSyncClient;
   // TODO(crbug.com/40948861): Remove this friend when the limited entropy
   // synthetic trial has wrapped up.
   friend class ChromeVariationsServiceClient;

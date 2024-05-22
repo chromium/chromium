@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
@@ -29,6 +30,7 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -47,6 +49,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_updater_service_factory.h"
+#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_receiver_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
@@ -71,6 +74,15 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+// A global variable is needed to detect "multiprofile" (multi-BrowserState)
+// scenarios where more than one profile try to register a synthetic field
+// trial.
+bool trusted_vault_synthetic_field_trial_registered = false;
+
+}  // namespace
 
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
@@ -319,6 +331,25 @@ void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
 
-  // TODO(crbug.com/338544832): Implement plumbing.
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(
+          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
+    // Disabled via variations, as additional safeguard.
+    return;
+  }
+
+  // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
+  // each SyncService invokes this function at most once, it means that multiple
+  // BrowserState instances are trying to register a synthetic field trial. In
+  // that case, register a special "conflict" group.
+  const std::string group_name =
+      trusted_vault_synthetic_field_trial_registered
+          ? syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
+                GetMultiProfileConflictGroupName()
+          : group.name();
+
+  trusted_vault_synthetic_field_trial_registered = true;
+
+  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
