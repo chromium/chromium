@@ -13,7 +13,7 @@ namespace nearby::chrome {
 
 class WifiDirectServerSocket : public api::WifiDirectServerSocket {
  public:
-  WifiDirectServerSocket();
+  explicit WifiDirectServerSocket(mojo::PlatformHandle handle);
   WifiDirectServerSocket(const WifiDirectServerSocket&) = delete;
   WifiDirectServerSocket& operator=(const WifiDirectServerSocket&) = delete;
   ~WifiDirectServerSocket() override;
@@ -23,6 +23,9 @@ class WifiDirectServerSocket : public api::WifiDirectServerSocket {
   int GetPort() const override;
   std::unique_ptr<api::WifiDirectSocket> Accept() override;
   Exception Close() override;
+
+ private:
+  mojo::PlatformHandle handle_;
 };
 
 }  // namespace nearby::chrome

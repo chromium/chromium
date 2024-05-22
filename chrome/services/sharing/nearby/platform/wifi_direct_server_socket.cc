@@ -6,7 +6,9 @@
 
 namespace nearby::chrome {
 
-WifiDirectServerSocket::WifiDirectServerSocket() = default;
+WifiDirectServerSocket::WifiDirectServerSocket(mojo::PlatformHandle handle)
+    : handle_(std::move(handle)) {}
+
 WifiDirectServerSocket::~WifiDirectServerSocket() = default;
 
 // api::WifiDirectServerSocket

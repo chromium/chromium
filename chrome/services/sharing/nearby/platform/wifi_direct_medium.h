@@ -59,6 +59,13 @@ class WifiDirectMedium : public api::WifiDirectMedium {
       base::WaitableEvent* waitable_event,
       ash::wifi_direct::mojom::WifiDirectConnectionPropertiesPtr properties);
 
+  void AssociateSocket(bool* did_associate,
+                       base::WaitableEvent* waitable_event,
+                       mojo::PlatformHandle socket_descriptor);
+  void OnSocketAssociated(bool* did_associate,
+                          base::WaitableEvent* waitable_event,
+                          bool success);
+
   void OnDisconnect();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

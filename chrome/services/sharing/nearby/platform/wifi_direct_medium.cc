@@ -4,7 +4,12 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_direct_medium.h"
 
+#include <netinet/in.h>
+
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
+#include "net/socket/socket_descriptor.h"
 
 namespace nearby::chrome {
 
@@ -72,8 +77,36 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
 
 std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
     int port) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Ensure that there is a valid WiFi Direct connection.
+  if (!connection_) {
+    return nullptr;
+  }
+
+  // Create server socket.
+  auto fd = base::ScopedFD(
+      net::CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+  if (fd.get() < 0) {
+    return nullptr;
+  }
+  mojo::PlatformHandle handle = mojo::PlatformHandle(std::move(fd));
+
+  // Wrap the async mojo call to make it sync.
+  bool did_associate;
+  {
+    base::WaitableEvent waitable_event;
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WifiDirectMedium::AssociateSocket,
+                                  base::Unretained(this), &did_associate,
+                                  &waitable_event, handle.Clone()));
+    waitable_event.Wait();
+  }
+
+  if (!did_associate) {
+    // Socket not associated at the platform layer.
+    return nullptr;
+  }
+
+  return std::make_unique<WifiDirectServerSocket>(std::move(handle));
 }
 
 absl::optional<std::pair<std::int32_t, std::int32_t>>
@@ -157,6 +190,24 @@ void WifiDirectMedium::OnProperties(
     ash::wifi_direct::mojom::WifiDirectConnectionPropertiesPtr properties) {
   credentials->SetIPAddress(properties->ipv4_address);
   credentials->SetGateway(properties->ipv4_address);
+  waitable_event->Signal();
+}
+
+void WifiDirectMedium::AssociateSocket(bool* did_associate,
+                                       base::WaitableEvent* waitable_event,
+                                       mojo::PlatformHandle socket_handle) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(connection_.is_bound());
+  connection_->AssociateSocket(
+      std::move(socket_handle),
+      base::BindOnce(&WifiDirectMedium::OnSocketAssociated,
+                     base::Unretained(this), did_associate, waitable_event));
+}
+
+void WifiDirectMedium::OnSocketAssociated(bool* did_associate,
+                                          base::WaitableEvent* waitable_event,
+                                          bool success) {
+  *did_associate = success;
   waitable_event->Signal();
 }
 
