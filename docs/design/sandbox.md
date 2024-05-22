@@ -402,6 +402,20 @@ on the target process for enforcing security characteristics.
     [ticket](https://bugs.chromium.org/p/project-zero/issues/detail?id=213&redir=1),
     [Project Zero blog](http://googleprojectzero.blogspot.co.uk/2015/05/in-console-able.html).
 
+#### Disable Dynamic Code (ACG):
+
+*   &gt;= Windows 10 RS1
+*   `ProcessDynamicCodePolicy` - Also known as Arbitrary Code Guard (ACG).
+*   With ACG enabled, the Windows kernel prevents a process from creating and
+    modifying code pages in memory by enforcing that all code pages are
+    immutable and new unsigned code pages cannot be created. This will cause
+    code that attempts to modify or inject into these processes to fail, such as
+    certain attempts to corrupt browser memory, and some third party DLLs.
+*   This is enabled by default for sandboxed service utility processes, and for
+    sandboxed renderer processes that perform no JIT (just-in-time) compilation,
+    and can be enabled for the browser process via the
+    `BrowserDynamicCodeDisabled` feature.
+
 ### App Container (low box token):
 
 *   In Windows this is implemented at the kernel level by a Low Box token which
