@@ -801,7 +801,14 @@ bool MaybePdfViewerHandlesSave(RenderFrameHost* frame_host) {
     return false;
   }
 
-  RenderFrameHost* embedder_host = pdf_frame_util::GetEmbedderHost(frame_host);
+  // Get the PDF embedder host, either from the PDF extension host or from the
+  // PDF content host.
+  // If `frame_host` is the PDF extension host, then the parent host is the
+  // embedder host. Otherwise, `frame_host` is the PDF content host.
+  RenderFrameHost* embedder_host =
+      IsPdfExtensionOrigin(frame_host->GetLastCommittedOrigin())
+          ? frame_host->GetParent()
+          : pdf_frame_util::GetEmbedderHost(frame_host);
   CHECK(embedder_host);
 
   return pdf_extension_util::MaybeDispatchSaveEvent(embedder_host);
