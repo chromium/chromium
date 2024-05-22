@@ -6434,7 +6434,7 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(T& stream,
   // Feature tag name consists of 4-letter characters.
   const unsigned kTagNameLength = 4;
 
-  const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
+  const CSSParserToken& token = stream.Peek();
   // Feature tag name comes first
   if (token.GetType() != kStringToken) {
     return nullptr;
@@ -6443,6 +6443,7 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(T& stream,
     return nullptr;
   }
   AtomicString tag = token.Value().ToAtomicString();
+  stream.ConsumeIncludingWhitespace();
   for (unsigned i = 0; i < kTagNameLength; ++i) {
     // Limits the stream of characters to 0x20-0x7E, following the tag name
     // rules defined in the OpenType specification.
