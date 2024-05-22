@@ -217,53 +217,50 @@ llvm::raw_ostream& InfoStream() {
 //   - `is_valid` - This field is used to store the iterator validity.
 //   - `is_end` - Stores whether the current iterator points to the end
 //   iterator.
+//   - `container` - Stores the container which the iterator refers to.
 //
 // We also keep track of the `iterator` -> `container` mapping in order to
 // invalidate iterators when necessary.
 
-clang::dataflow::BoolValue* GetSyntheticFieldWithname(
+clang::dataflow::Value* GetSyntheticFieldWithName(
     llvm::StringRef name,
     const clang::dataflow::Environment& env,
-    const clang::dataflow::Value& iterator) {
-  auto* record = clang::cast_or_null<clang::dataflow::RecordValue>(
-      const_cast<clang::dataflow::Value*>(&iterator));
-  auto& loc = record->getLoc();
-  auto& field_loc = loc.getSyntheticField(name);
+    const clang::dataflow::RecordStorageLocation& loc) {
+  return env.getValue(loc.getSyntheticField(name));
+}
+
+clang::dataflow::BoolValue* GetIsValid(
+    const clang::dataflow::Environment& env,
+    const clang::dataflow::RecordStorageLocation& loc) {
   return clang::cast_or_null<clang::dataflow::BoolValue>(
-      env.getValue(field_loc));
+      GetSyntheticFieldWithName("is_valid", env, loc));
 }
 
-clang::dataflow::BoolValue* GetIsValid(const clang::dataflow::Environment& env,
-                                       const clang::dataflow::Value& iterator) {
-  return GetSyntheticFieldWithname("is_valid", env, iterator);
+clang::dataflow::BoolValue* GetIsEnd(
+    const clang::dataflow::Environment& env,
+    const clang::dataflow::RecordStorageLocation& loc) {
+  return clang::cast_or_null<clang::dataflow::BoolValue>(
+      GetSyntheticFieldWithName("is_end", env, loc));
 }
 
-clang::dataflow::BoolValue* GetIsEnd(const clang::dataflow::Environment& env,
-                                     const clang::dataflow::Value& iterator) {
-  return GetSyntheticFieldWithname("is_end", env, iterator);
-}
-
-void SetSyntheticFieldWithName(llvm::StringRef name,
-                               clang::dataflow::Environment& env,
-                               const clang::dataflow::Value& val,
-                               clang::dataflow::BoolValue& res) {
-  auto* record = clang::cast_or_null<clang::dataflow::RecordValue>(
-      const_cast<clang::dataflow::Value*>(&val));
-  auto& loc = record->getLoc();
-  auto& field_loc = loc.getSyntheticField(name);
-  env.setValue(field_loc, res);
+void SetSyntheticFieldWithName(
+    llvm::StringRef name,
+    clang::dataflow::Environment& env,
+    const clang::dataflow::RecordStorageLocation& loc,
+    clang::dataflow::Value& res) {
+  env.setValue(loc.getSyntheticField(name), res);
 }
 
 void SetIsValid(clang::dataflow::Environment& env,
-                const clang::dataflow::Value& val,
+                const clang::dataflow::RecordStorageLocation& loc,
                 clang::dataflow::BoolValue& res) {
-  SetSyntheticFieldWithName("is_valid", env, val, res);
+  SetSyntheticFieldWithName("is_valid", env, loc, res);
 }
 
 void SetIsEnd(clang::dataflow::Environment& env,
-              const clang::dataflow::Value& val,
+              const clang::dataflow::RecordStorageLocation& loc,
               clang::dataflow::BoolValue& res) {
-  SetSyntheticFieldWithName("is_end", env, val, res);
+  SetSyntheticFieldWithName("is_end", env, loc, res);
 }
 
 const clang::dataflow::Formula& ForceBoolValue(
@@ -311,6 +308,9 @@ class InvalidIteratorAnalysis
     return llvm::StringMap<clang::QualType>{
         {"is_valid", getASTContext().BoolTy},
         {"is_end", getASTContext().BoolTy},
+        // Currently this field is not modeled as a Record because we just need
+        // a symbolic value (so BoolTy is a workaround)
+        {"container", getASTContext().BoolTy},
     };
   }
 
@@ -384,7 +384,7 @@ class InvalidIteratorAnalysis
       auto* it = UnwrapAsIterator(expr.getArg(0), env);
       assert(it);
 
-      env.setValue(expr, *it);
+      // TODO(crbug.com/40272746): Add support for copy and move constructor
     }
   }
 
@@ -426,10 +426,26 @@ class InvalidIteratorAnalysis
     }
 
     bool is_end = (it->second & Annotation::kReturnEndIterator) != 0;
-    clang::dataflow::Value* iterator = UnwrapAsIterator(expr.getArg(0), env);
-    clang::dataflow::Value* container = iterator
-                                            ? GetContainerValue(env, *iterator)
-                                            : env.getValue(*expr.getArg(0));
+
+    // In order to get the container value, we look for it:
+    // 1. if there is an iterator tied to the first argument expression, in the
+    // iterator itself
+    // 2. otherwise, in the argument expression itself
+    clang::dataflow::RecordStorageLocation* iterator =
+        UnwrapAsIterator(expr.getArg(0), env);
+    clang::dataflow::Value* container = nullptr;
+
+    if (iterator) {
+      container = GetContainerValue(env, *iterator);
+    } else {
+      auto* loc =
+          clang::dyn_cast_or_null<clang::dataflow::RecordStorageLocation>(
+              env.getStorageLocation(*expr.getArg(0)));
+
+      if (loc) {
+        container = GetContainerValue(env, *loc);
+      }
+    }
 
     if (!iterator && !container) {
       return;
@@ -459,11 +475,7 @@ class InvalidIteratorAnalysis
       }
     }
     assert(loc);
-    auto& value = CreateIteratorValue(loc->getType(), env, *loc, container,
-                                      is_valid, is_end);
-    if (expr->isPRValue()) {
-      env.setValue(*expr, value);
-    }
+    PopulateIteratorValue(loc, container, is_valid, is_end, env);
   }
 
   // CXXMemberCallExpr:
@@ -494,7 +506,17 @@ class InvalidIteratorAnalysis
     assert(!(annotation & Annotation::kReturnIterator) ||
            !(annotation & Annotation::kReturnIteratorPair));
 
-    auto* container = env.getValue(*callexpr.getImplicitObjectArgument());
+    clang::dataflow::Value* container = nullptr;
+
+    if (!callexpr.getImplicitObjectArgument()->getType()->isRecordType()) {
+      container = env.getValue(*callexpr.getImplicitObjectArgument());
+    } else {
+      clang::dataflow::RecordStorageLocation* loc =
+          env.get<clang::dataflow::RecordStorageLocation>(
+              *callexpr.getImplicitObjectArgument());
+      container = GetContainerValue(env, *loc);
+    }
+
     if (!container) {
       return;
     }
@@ -598,7 +620,8 @@ class InvalidIteratorAnalysis
       // iterator expression of the same type.
       auto deduce_return_value = [&](const clang::Expr* a,
                                      const clang::Expr* b) {
-        clang::dataflow::Value* iterator = UnwrapAsIterator(a, env);
+        clang::dataflow::RecordStorageLocation* iterator =
+            UnwrapAsIterator(a, env);
         if (!iterator || !b->getType()->isIntegerType()) {
           return;
         }
@@ -634,8 +657,10 @@ class InvalidIteratorAnalysis
 
       TransferExpressionAccessForCheck(expr.getArg(0), env);
       TransferExpressionAccessForCheck(expr.getArg(1), env);
-      clang::dataflow::Value* lhs_it = UnwrapAsIterator(expr.getArg(0), env);
-      clang::dataflow::Value* rhs_it = UnwrapAsIterator(expr.getArg(1), env);
+      clang::dataflow::RecordStorageLocation* lhs_it =
+          UnwrapAsIterator(expr.getArg(0), env);
+      clang::dataflow::RecordStorageLocation* rhs_it =
+          UnwrapAsIterator(expr.getArg(1), env);
       if (!lhs_it || !rhs_it) {
         return;
       }
@@ -694,8 +719,8 @@ class InvalidIteratorAnalysis
 
   void TransferIteratorsEquality(clang::dataflow::Environment& env,
                                  const clang::dataflow::Formula& formula,
-                                 clang::dataflow::Value* lhs,
-                                 clang::dataflow::Value* rhs) {
+                                 clang::dataflow::RecordStorageLocation* lhs,
+                                 clang::dataflow::RecordStorageLocation* rhs) {
     auto& arena = env.arena();
     // If we know that lhs and rhs are equal, we can imply that:
     // 1. lhs->is_valid == rhs->is_valid
@@ -711,10 +736,11 @@ class InvalidIteratorAnalysis
                                   GetIsEnd(env, *rhs)->formula())));
   }
 
-  void TransferIteratorsInequality(clang::dataflow::Environment& env,
-                                   const clang::dataflow::Formula& formula,
-                                   clang::dataflow::Value* lhs,
-                                   clang::dataflow::Value* rhs) {
+  void TransferIteratorsInequality(
+      clang::dataflow::Environment& env,
+      const clang::dataflow::Formula& formula,
+      clang::dataflow::RecordStorageLocation* lhs,
+      clang::dataflow::RecordStorageLocation* rhs) {
     auto& arena = env.arena();
     // This is a bit trickier, because inequality doesn't really give us
     // generic information on the validities of the iterators, except:
@@ -732,7 +758,8 @@ class InvalidIteratorAnalysis
   // against. If not, we issue an error.
   void TransferExpressionAccessForCheck(const clang::Expr* expr,
                                         clang::dataflow::Environment& env) {
-    clang::dataflow::Value* iterator = UnwrapAsIterator(expr, env);
+    clang::dataflow::RecordStorageLocation* iterator =
+        UnwrapAsIterator(expr, env);
     if (!iterator) {
       return;
     }
@@ -757,7 +784,8 @@ class InvalidIteratorAnalysis
   // In other words, the iterator **must** be valid or we issue an error.
   void TransferExpressionAccessForDeref(const clang::Expr* expr,
                                         clang::dataflow::Environment& env) {
-    clang::dataflow::Value* iterator = UnwrapAsIterator(expr, env);
+    clang::dataflow::RecordStorageLocation* iterator =
+        UnwrapAsIterator(expr, env);
     if (!iterator) {
       return;
     }
@@ -781,49 +809,36 @@ class InvalidIteratorAnalysis
       if (p.second != &container) {
         continue;
       }
-      auto* value = env.getValue(*p.first);
+      auto* value = GetContainerValue(env, *p.first);
       if (!value) {
         continue;
       }
-      DebugStream() << DebugString(env, *value) << '\n';
+      DebugStream() << DebugString(env, *p.first) << '\n';
 
-      SetIsValid(env, *value, env.getBoolLiteralValue(false));
+      SetIsValid(env, *p.first, env.getBoolLiteralValue(false));
     }
   }
 
   // This invalidates the iterator `iterator` in the current environment.
   void InvalidateIterator(clang::dataflow::Environment& env,
-                          clang::dataflow::Value& iterator) {
+                          clang::dataflow::RecordStorageLocation& iterator) {
     SetIsValid(env, iterator, env.getBoolLiteralValue(false));
   }
 
-  clang::dataflow::Value& CreateIteratorValue(
-      clang::QualType type,
-      clang::dataflow::Environment& env,
-      clang::dataflow::RecordStorageLocation& Loc,
-      clang::dataflow::Value& container,
-      clang::dataflow::BoolValue& is_valid,
-      clang::dataflow::BoolValue& is_end) {
-    iterator_types_mapping_.insert(type.getCanonicalType());
-    auto& iterator = env.create<clang::dataflow::RecordValue>(Loc);
-    env.setValue(Loc, iterator);
-    PopulateIteratorValue(&iterator, container, is_valid, is_end, env);
-    return iterator;
-  }
-
-  void PopulateIteratorValue(clang::dataflow::Value* value,
+  void PopulateIteratorValue(clang::dataflow::RecordStorageLocation* iterator,
                              clang::dataflow::Value& container,
                              clang::dataflow::BoolValue& is_valid,
                              clang::dataflow::BoolValue& is_end,
                              clang::dataflow::Environment& env) {
-    assert(clang::isa<clang::dataflow::RecordValue>(*value));
-    SetContainerValue(env, *value, container);
-    SetIsValid(env, *value, is_valid);
-    SetIsEnd(env, *value, is_end);
+    iterator_types_mapping_.insert(iterator->getType().getCanonicalType());
+
+    SetContainerValue(env, *iterator, container);
+    SetIsValid(env, *iterator, is_valid);
+    SetIsEnd(env, *iterator, is_end);
   }
 
   void CloneIterator(const clang::CallExpr* expr,
-                     clang::dataflow::Value& iterator,
+                     clang::dataflow::RecordStorageLocation& iterator,
                      clang::dataflow::Environment& env) {
     auto* container = GetContainerValue(env, iterator);
     TransferCallReturningIterator(expr, *container, env.makeAtomicBoolValue(),
@@ -851,22 +866,22 @@ class InvalidIteratorAnalysis
 
   // This method walks the given expression and tries to find an iterator tied
   // to it.
-  clang::dataflow::Value* UnwrapAsIterator(
+  clang::dataflow::RecordStorageLocation* UnwrapAsIterator(
       const clang::Expr* expr,
       const clang::dataflow::Environment& env) {
     while (expr) {
-      clang::dataflow::StorageLocation* loc = nullptr;
+      clang::dataflow::RecordStorageLocation* loc = nullptr;
 
       if (expr->isGLValue()) {
-        loc = env.getStorageLocation(*expr);
+        loc = clang::dyn_cast_or_null<clang::dataflow::RecordStorageLocation>(
+            env.getStorageLocation(*expr));
       } else if (expr->isPRValue() && expr->getType()->isRecordType()) {
         loc = &env.getResultObjectLocation(*expr);
       }
 
       if (loc) {
-        clang::dataflow::Value* value = env.getValue(*expr);
         if (IsIterator(loc->getType().getCanonicalType())) {
-          return value;
+          return loc;
         }
       }
 
@@ -875,25 +890,18 @@ class InvalidIteratorAnalysis
     return nullptr;
   }
 
-  // Gets the container value for the given iterator value.
+  // Gets the container value for the given iterator location.
   clang::dataflow::Value* GetContainerValue(
       const clang::dataflow::Environment& env,
-      const clang::dataflow::Value& iterator) {
-    assert(clang::isa<clang::dataflow::RecordValue>(iterator));
-    auto& record = clang::cast<clang::dataflow::RecordValue>(iterator);
-    auto& loc = record.getLoc();
-    if (!iterator_to_container_.count(&loc)) {
-      return nullptr;
-    }
-    return iterator_to_container_[&loc];
+      const clang::dataflow::RecordStorageLocation& loc) {
+    return GetSyntheticFieldWithName("container", env, loc);
   }
 
-  void SetContainerValue(const clang::dataflow::Environment& env,
-                         const clang::dataflow::Value& iterator,
-                         clang::dataflow::Value& container) {
-    auto& record = clang::cast<clang::dataflow::RecordValue>(iterator);
-    auto& storage = record.getLoc();
-    iterator_to_container_[&storage] = &container;
+  void SetContainerValue(clang::dataflow::Environment& env,
+                         clang::dataflow::RecordStorageLocation& loc,
+                         clang::dataflow::Value& res) {
+    iterator_to_container_[&loc] = &res;
+    SetSyntheticFieldWithName("container", env, loc, res);
   }
 
   // Returns whether the currently handled value is an iterator.
@@ -903,8 +911,9 @@ class InvalidIteratorAnalysis
 
   // Dumps some debugging information about the iterator. Caller is responsible
   // of ensuring `iterator` is actually an iterator.
-  std::string DebugString(const clang::dataflow::Environment& env,
-                          const clang::dataflow::Value& iterator) {
+  std::string DebugString(
+      const clang::dataflow::Environment& env,
+      const clang::dataflow::RecordStorageLocation& iterator) {
     auto* container = GetContainerValue(env, iterator);
     std::string res;
     const auto& formula = GetIsValid(env, iterator)->formula();
@@ -946,7 +955,8 @@ class InvalidIteratorAnalysis
 
   // Iterator to container map. This allows us to invalidate all iterators in
   // case this is needed.
-  llvm::DenseMap<clang::dataflow::StorageLocation*, clang::dataflow::Value*>
+  llvm::DenseMap<clang::dataflow::RecordStorageLocation*,
+                 clang::dataflow::Value*>
       iterator_to_container_;
 
   // The set of reported errors' location. This is used to avoid submitting
