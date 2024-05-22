@@ -78,7 +78,6 @@ public class AutocompleteCoordinator
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @NonNull OmniboxSuggestionsDropdownAdapter mAdapter;
     private final @NonNull Optional<PreWarmingRecycledViewPool> mRecycledViewPool;
-    private final @NonNull PropertyModel mListModel;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private @NonNull ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
@@ -115,7 +114,7 @@ public class AutocompleteCoordinator
         Context context = parent.getContext();
 
         ModelList listItems = new ModelList();
-        mListModel =
+        PropertyModel listModel =
                 new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
                         .with(SuggestionListProperties.EMBEDDER, dropdownEmbedder)
                         .with(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, false)
@@ -128,7 +127,7 @@ public class AutocompleteCoordinator
                         context,
                         delegate,
                         urlBarEditingTextProvider,
-                        mListModel,
+                        listModel,
                         new Handler(),
                         modalDialogManagerSupplier,
                         activityTabSupplier,
@@ -147,12 +146,12 @@ public class AutocompleteCoordinator
             mScrollListenerList.addObserver(scrollListener);
         }
         mScrollListenerList.addObserver(mMediator);
-        mListModel.set(SuggestionListProperties.GESTURE_OBSERVER, mMediator);
-        mListModel.set(
+        listModel.set(SuggestionListProperties.GESTURE_OBSERVER, mMediator);
+        listModel.set(
                 SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER,
                 mMediator::onSuggestionDropdownHeightChanged);
-        mListModel.set(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER, this::dropdownScrolled);
-        mListModel.set(
+        listModel.set(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER, this::dropdownScrolled);
+        listModel.set(
                 SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER,
                 this::dropdownOverscrolledToTop);
 
@@ -163,7 +162,7 @@ public class AutocompleteCoordinator
                     mDropdown = holder.dropdown;
                 });
         LazyConstructionPropertyMcp.create(
-                mListModel,
+                listModel,
                 SuggestionListProperties.OMNIBOX_SESSION_ACTIVE,
                 viewProvider,
                 SuggestionListViewBinder::bind);
@@ -499,11 +498,6 @@ public class AutocompleteCoordinator
 
     public void stopAutocompleteForTest(boolean clearResults) {
         mMediator.stopAutocomplete(clearResults);
-    }
-
-    /** Returns the model of the Suggestions Dropdown. */
-    public @NonNull PropertyModel getSuggestionsDropdownModelForTest() {
-        return mListModel;
     }
 
     /**

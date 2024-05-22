@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.On
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -220,14 +219,6 @@ public class OmniboxTestUtils {
                     if (!mUrlBar.hasFocus()) mUrlBar.requestFocus();
                     Criteria.checkThat(
                             "Omnibox is focused.", mUrlBar.hasFocus(), Matchers.is(true));
-                    // Wait for Suggestions list ready signal.
-                    Criteria.checkThat(
-                            "Focus change propagated",
-                            mLocationBar
-                                    .getAutocompleteCoordinator()
-                                    .getSuggestionsDropdownModelForTest()
-                                    .get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE),
-                            Matchers.is(true));
                 });
     }
 

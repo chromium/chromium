@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,8 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties controlling the state of the list of suggestion items. */
-@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public @interface SuggestionListProperties {
+@interface SuggestionListProperties {
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     static final WritableFloatPropertyKey CHILD_TRANSLATION_Y = new WritableFloatPropertyKey();

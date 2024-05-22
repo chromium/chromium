@@ -407,6 +407,17 @@ class AutocompleteMediator
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
             mUrlFocusTime = System.currentTimeMillis();
+
+            // Ask directly for zero-suggestions related to current input, unless the user is
+            // currently visiting SearchActivity and the input is populated from the launch intent.
+            // In all contexts, the input will most likely be empty, triggering the same response
+            // (starting zero suggestions), but if the SearchActivity was launched with a QUERY,
+            // then the query might point to a different URL than the reported Page, and the
+            // suggestion would take the user to the DSE home page.
+            // This is tracked by MobileStartup.LaunchCause / EXTERNAL_SEARCH_ACTION_INTENT
+            // metric.
+            String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+            onTextChanged(text);
         } else {
             stopMeasuringSuggestionRequestToUiModelTime();
             cancelAutocompleteRequests();
@@ -427,6 +438,9 @@ class AutocompleteMediator
 
             mEditSessionState = EditSessionState.INACTIVE;
             mNewOmniboxEditSessionTimestamp = -1;
+            // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
+            // a consequence the omnibox is unfocused).
+            clearSuggestions();
         }
     }
 
@@ -1034,30 +1048,13 @@ class AutocompleteMediator
     @VisibleForTesting
     void propagateOmniboxSessionStateChange(boolean isActive) {
         boolean wasActive = mListPropertyModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE);
-        if (isActive == wasActive) return;
-
         mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
 
-        if (isActive) {
-            // Ask directly for zero-suggestions related to current input, unless the user is
-            // currently visiting SearchActivity and the input is populated from the launch intent.
-            // In all contexts, the input will most likely be empty, triggering the same response
-            // (starting zero suggestions), but if the SearchActivity was launched with a QUERY,
-            // then the query might point to a different URL than the reported Page, and the
-            // suggestion would take the user to the DSE home page.
-            // This is tracked by MobileStartup.LaunchCause / EXTERNAL_SEARCH_ACTION_INTENT
-            // metric.
-            String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-            onTextChanged(text);
-        } else {
-            // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
-            // a consequence the omnibox is unfocused).
-            clearSuggestions();
+        if (isActive != wasActive) {
+            mIgnoreOmniboxItemSelection |= isActive; // Reset to default value.
+            mOmniboxSuggestionsVisualStateObserver.ifPresent(
+                    (observer) -> observer.onOmniboxSessionStateChange(isActive));
         }
-
-        mIgnoreOmniboxItemSelection |= isActive; // Reset to default value.
-        mOmniboxSuggestionsVisualStateObserver.ifPresent(
-                (observer) -> observer.onOmniboxSessionStateChange(isActive));
     }
 
     /**
