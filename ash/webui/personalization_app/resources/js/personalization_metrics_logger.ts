@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {ColorScheme} from '../color_scheme.mojom-webui.js';
-import {StaticColor} from '../personalization_app.mojom-webui.js';
+import {StaticColor, TopicSource} from '../personalization_app.mojom-webui.js';
 
 import {Paths} from './personalization_router_element.js';
 
@@ -29,6 +29,7 @@ const enum MetricsPath {
 
 const enum HistogramName {
   PATH = 'Ash.Personalization.Path',
+  AMBIENT_ALBUMS_PATH = 'Ash.Personalization.AmbientMode.AlbumsPath',
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
@@ -73,6 +74,12 @@ export function logPersonalizationPathUMA(path: Paths) {
   assert(metricsPath <= MetricsPath.MAX_VALUE);
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.PATH, metricsPath, MetricsPath.MAX_VALUE + 1);
+}
+
+export function logAmbientAlbumsPathUMA(topicSource: TopicSource) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.AMBIENT_ALBUMS_PATH, topicSource,
+      TopicSource.MAX_VALUE + 1);
 }
 
 export function logAmbientModeOptInUMA() {

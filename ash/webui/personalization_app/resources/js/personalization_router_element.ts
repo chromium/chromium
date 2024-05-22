@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personalization_app.mojom-webui.js';
 
 import {isAmbientModeAllowed} from './load_time_booleans.js';
-import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
+import {logAmbientAlbumsPathUMA, logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
@@ -238,6 +238,10 @@ export class PersonalizationRouterElement extends PolymerElement {
         break;
       case Paths.AMBIENT_ALBUMS: {
         assert(!!this.queryParams_.topicSource);
+        const topicSource = parseInt(this.queryParams_.topicSource!, 10);
+        if (!isNaN(topicSource) && topicSource in TopicSource) {
+          logAmbientAlbumsPathUMA(topicSource as TopicSource);
+        }
         if (this.queryParams_.topicSource ===
             TopicSource.kGooglePhotos.toString()) {
           document.title =

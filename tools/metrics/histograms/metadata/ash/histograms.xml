@@ -6097,6 +6097,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.AmbientMode.AlbumsPath"
+    enum="AmbientModeTopicSource" expires_after="2025-01-01">
+  <owner>pzliu@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user navigates to the ambient mode albums selection page in
+    the Personalization Hub. Record the type of albums the user visits.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.AmbientMode.AnimationTheme2"
     enum="AmbientModeAnimationTheme" expires_after="2024-11-17">
   <owner>jasontt@chromium.org</owner>
