@@ -17,6 +17,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -178,10 +179,14 @@ void DidCreateScriptLoader(
 
   // The load succeeded iff `main_script_load_params` is not nullptr.
   if (main_script_load_params) {
+    // TODO(crbug.com/41478971): Pass the PolicyContainerPolicies. It can
+    // be built from the
+    // `main_script_load_params.response_head->parsed_headers`.
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
-        std::move(main_script_load_params), std::move(controller),
-        std::move(controller_service_worker_object_host), final_response_url));
+        std::move(main_script_load_params), PolicyContainerPolicies(),
+        std::move(controller), std::move(controller_service_worker_object_host),
+        final_response_url));
   } else {
     std::move(callback).Run(std::nullopt);
   }
@@ -211,12 +216,14 @@ WorkerScriptFetcherResult::WorkerScriptFetcherResult(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+    PolicyContainerPolicies policy_container_policies,
     blink::mojom::ControllerServiceWorkerInfoPtr controller,
     base::WeakPtr<ServiceWorkerObjectHost>
         controller_service_worker_object_host,
     const GURL& final_response_url)
     : subresource_loader_factories(std::move(subresource_loader_factories)),
       main_script_load_params(std::move(main_script_load_params)),
+      policy_container_policies(std::move(policy_container_policies)),
       controller(std::move(controller)),
       controller_service_worker_object_host(
           std::move(controller_service_worker_object_host)),

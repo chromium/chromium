@@ -116,6 +116,12 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
   EXPECT_FALSE(service_worker_client->is_response_committed());
   EXPECT_FALSE(service_worker_client->is_execution_ready());
 
+  // Emulate CommitResponse() and SetContainerReady() calls that would happen
+  // inside `WorkerScriptFetcher::callback_`.
+  service_worker_client->CommitResponse(
+      /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+      /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+  service_worker_client->SetContainerReady();
   factory->GetScriptLoader()->OnFetcherCallbackCalled();
   client.RunUntilComplete();
 

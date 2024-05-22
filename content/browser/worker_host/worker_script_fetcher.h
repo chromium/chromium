@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,6 +60,7 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      PolicyContainerPolicies policy_container_policies,
       blink::mojom::ControllerServiceWorkerInfoPtr controller,
       base::WeakPtr<ServiceWorkerObjectHost>
           controller_service_worker_object_host,
@@ -80,6 +82,8 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
   // Always non-null and contains `response_head` and
   // `response_head->parsed_headers`.
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
+
+  PolicyContainerPolicies policy_container_policies;
 
   // May be nullptr.
   // Contains information about the service worker controller (if any). Once

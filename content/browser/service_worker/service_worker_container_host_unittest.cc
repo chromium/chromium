@@ -1200,6 +1200,7 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
     service_worker_client->CommitResponse(
         /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
         /*coep_reporter=*/{}, ukm::UkmRecorder::GetNewSourceID());
+    service_worker_client->SetContainerReady();
     service_worker_client->SetExecutionReady();
     EXPECT_TRUE(CanFindServiceWorkerClient(service_worker_client.get()));
   }
@@ -1293,6 +1294,7 @@ void ServiceWorkerContainerHostTest::TestClientPhaseTransition(
   service_worker_client->CommitResponse(
       /*rfh_id=*/std::nullopt, PolicyContainerPolicies(), /*coep_reporter=*/{},
       ukm::UkmRecorder::GetNewSourceID());
+  service_worker_client->SetContainerReady();
   service_worker_client->SetExecutionReady();
 
   EXPECT_TRUE(service_worker_client->is_response_committed());

@@ -535,8 +535,8 @@ void ServiceWorkerContainerHostForClient::OnExecutionReady() {
 
 void ServiceWorkerClient::OnExecutionReady() {
   // Since `OnExecutionReady()` is a part of `ServiceWorkerContainerHost`,
-  // this method is called only if `is_container_ready_` is true.
-  CHECK(is_container_ready_);
+  // this method is called only if `is_container_ready()` is true.
+  CHECK(is_container_ready());
 
   if (is_execution_ready()) {
     mojo::ReportBadMessage("SWPH_OER_ALREADY_READY");
@@ -744,7 +744,7 @@ void ServiceWorkerClient::PostMessageToClient(
 
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
       container_host().version_object_manager().GetOrCreateHost(version);
-  if (!is_container_ready_) {
+  if (!is_container_ready()) {
     if (buffered_messages_.size() < kMaxBufferedMessageSize) {
       buffered_messages_.emplace_back(object_host, std::move(message));
     }
@@ -775,7 +775,7 @@ void ServiceWorkerClient::CountFeature(blink::mojom::WebFeature feature) {
   // `container_` can be used only if ServiceWorkerContainerInfoForClient has
   // been passed to the renderer process. Otherwise, the method call will crash
   // inside the mojo library (See crbug.com/40918057).
-  if (!is_container_ready_) {
+  if (!is_container_ready()) {
     base::UmaHistogramEnumeration(
         kDropOutMetrics, CountFeatureDropOutReason::kContainerNotReady);
     buffered_used_features_.insert(feature);
@@ -870,7 +870,7 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
 void ServiceWorkerClient::SendSetControllerServiceWorker(
     bool notify_controllerchange) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_container_ready_);
+  CHECK(is_container_ready());
 
   if (!controller_ || !context_) {
     // Do not set |fetch_request_window_id| when |controller_| is not available.
@@ -910,7 +910,7 @@ void ServiceWorkerClient::SendSetControllerServiceWorker(
   SCOPED_CRASH_KEY_NUMBER("SWCH_SC", "client_type",
                           static_cast<int32_t>(GetClientType()));
   SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_execution_ready", is_execution_ready());
-  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_container_ready", is_container_ready_);
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_container_ready", is_container_ready());
 
   container_host().SendSetController(std::move(controller_info),
                                      notify_controllerchange);
@@ -1118,6 +1118,7 @@ void ServiceWorkerClient::CommitResponse(
         coep_reporter,
     ukm::SourceId ukm_source_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(client_phase_, ClientPhase::kInitial);
 
   if (IsContainerForWindowClient()) {
     CHECK(coep_reporter);
@@ -1356,8 +1357,23 @@ bool ServiceWorkerClient::is_response_committed() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (client_phase_) {
     case ClientPhase::kInitial:
+    case ClientPhase::kResponseNotCommitted:
       return false;
     case ClientPhase::kResponseCommitted:
+    case ClientPhase::kContainerReady:
+    case ClientPhase::kExecutionReady:
+      return true;
+  }
+}
+
+bool ServiceWorkerClient::is_container_ready() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (client_phase_) {
+    case ClientPhase::kInitial:
+    case ClientPhase::kResponseCommitted:
+    case ClientPhase::kResponseNotCommitted:
+      return false;
+    case ClientPhase::kContainerReady:
     case ClientPhase::kExecutionReady:
       return true;
   }
@@ -1372,7 +1388,15 @@ void ServiceWorkerClient::AddExecutionReadyCallback(
 
 bool ServiceWorkerClient::is_execution_ready() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return client_phase_ == ClientPhase::kExecutionReady;
+  switch (client_phase_) {
+    case ClientPhase::kInitial:
+    case ClientPhase::kResponseCommitted:
+    case ClientPhase::kResponseNotCommitted:
+    case ClientPhase::kContainerReady:
+      return false;
+    case ClientPhase::kExecutionReady:
+      return true;
+  }
 }
 
 GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
@@ -1587,14 +1611,38 @@ void ServiceWorkerContainerHostForClient::ReturnRegistrationForReadyIfNeeded() {
 
 void ServiceWorkerClient::SetExecutionReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_execution_ready());
-  TransitionToClientPhase(ClientPhase::kExecutionReady);
-  RunExecutionReadyCallbacks();
 
-  if (context_)
-    context_->NotifyClientIsExecutionReady(*this);
+  switch (client_phase_) {
+    case ClientPhase::kInitial:
+      // When `CommitResponse()` is not yet called, it should be skipped because
+      // the service worker client initialization failed somewhere, and thus
+      // ignore the `SetExecutionReady()` call here and transition to
+      // `kResponseNotCommitted` to confirm that no further transitions are
+      // attempted. See also the comment at `kResponseNotCommitted` in the
+      // header file.
+      TransitionToClientPhase(ClientPhase::kResponseNotCommitted);
+      break;
 
-  FlushFeatures();
+    case ClientPhase::kContainerReady:
+      // Successful case.
+      TransitionToClientPhase(ClientPhase::kExecutionReady);
+      RunExecutionReadyCallbacks();
+
+      if (context_) {
+        context_->NotifyClientIsExecutionReady(*this);
+      }
+
+      FlushFeatures();
+      break;
+
+    case ClientPhase::kResponseCommitted:
+    case ClientPhase::kExecutionReady:
+    case ClientPhase::kResponseNotCommitted:
+      // Invalid state transition.
+      NOTREACHED_NORETURN()
+          << "ServiceWorkerClient::SetExecutionReady() called on ClientPhase "
+          << static_cast<int>(client_phase_);
+  }
 }
 
 void ServiceWorkerClient::RunExecutionReadyCallbacks() {
@@ -1612,14 +1660,19 @@ void ServiceWorkerClient::TransitionToClientPhase(ClientPhase new_phase) {
     return;
   switch (client_phase_) {
     case ClientPhase::kInitial:
-      DCHECK_EQ(new_phase, ClientPhase::kResponseCommitted);
+      CHECK(new_phase == ClientPhase::kResponseCommitted ||
+            new_phase == ClientPhase::kResponseNotCommitted);
       break;
     case ClientPhase::kResponseCommitted:
-      DCHECK_EQ(new_phase, ClientPhase::kExecutionReady);
+      CHECK_EQ(new_phase, ClientPhase::kContainerReady);
+      break;
+    case ClientPhase::kContainerReady:
+      CHECK_EQ(new_phase, ClientPhase::kExecutionReady);
       break;
     case ClientPhase::kExecutionReady:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case ClientPhase::kResponseNotCommitted:
+      NOTREACHED_NORETURN()
+          << "Invalid transition from " << static_cast<int>(client_phase_);
   }
   client_phase_ = new_phase;
 }
@@ -1668,7 +1721,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
   // sent in the same IPC call. Moreover, it is harmful to resend the past
   // SetController to the renderer because it moves the controller in the
   // renderer to the past one.
-  if (!is_container_ready_) {
+  if (!is_container_ready()) {
     return;
   }
 
@@ -2087,7 +2140,7 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
 
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_container_ready_ = true;
+  TransitionToClientPhase(ClientPhase::kContainerReady);
   std::vector<std::tuple<base::WeakPtr<ServiceWorkerObjectHost>,
                          blink::TransferableMessage>>
       messages;

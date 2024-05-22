@@ -347,6 +347,13 @@ void SharedWorkerHost::Start(
     service_worker_sent_state = result.controller->object_info->state;
   }
 
+  if (service_worker_handle_->service_worker_client()) {
+    // TODO(crbug.com/41478971): Plumb the COEP reporter.
+    service_worker_handle_->service_worker_client()->CommitResponse(
+        /*rfh_id=*/std::nullopt, std::move(result.policy_container_policies),
+        /*coep_reporter=*/{}, ukm_source_id());
+  }
+
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(

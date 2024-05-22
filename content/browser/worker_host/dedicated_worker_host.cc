@@ -484,6 +484,15 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
       network::URLLoaderCompletionStatus(net::OK));
 
+  if (service_worker_handle_->service_worker_client()) {
+    // TODO(crbug.com/41478971): Plumb the COEP reporter.
+    // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
+    // here.
+    service_worker_handle_->service_worker_client()->CommitResponse(
+        /*rfh_id=*/std::nullopt, std::move(result->policy_container_policies),
+        /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+  }
+
   client_->OnScriptLoadStarted(
       service_worker_handle_->TakeContainerInfo(),
       std::move(result->main_script_load_params),
