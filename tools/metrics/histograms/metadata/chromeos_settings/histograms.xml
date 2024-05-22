@@ -305,7 +305,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
-    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+    enum="DisplaySettingsBoolean" expires_after="2024-12-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.UnifiedModeStatus"
-    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+    enum="DisplaySettingsBoolean" expires_after="2024-12-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -379,7 +379,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2024-06-28">
+    enum="DisplaySettingsOrientationOption" expires_after="2024-12-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
