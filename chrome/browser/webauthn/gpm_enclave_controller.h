@@ -46,7 +46,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
                              EnclaveManager::Observer {
  public:
   struct DownloadedAccountState;
-  enum class EnclaveUserVerificationMethod;
 
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
@@ -237,9 +236,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   bool pin_is_arbitrary_ = false;
   std::optional<std::string> pin_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> creds_;
-
-  // The user verification that will be performed for this request.
-  std::optional<EnclaveUserVerificationMethod> uv_method_;
 
   std::optional<bool> is_active_ = false;
 
