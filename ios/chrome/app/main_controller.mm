@@ -849,7 +849,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 // TODO(crbug.com/325614311): Get rid of this method/property completely.
-- (id<BrowserProviderInterface>)browserProviderInterface {
+- (id<BrowserProviderInterface>)browserProviderInterfaceDoNotUse {
   if (self.appState.foregroundActiveScene) {
     return self.appState.foregroundActiveScene.browserProviderInterface;
   }
