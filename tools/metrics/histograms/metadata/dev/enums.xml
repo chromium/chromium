@@ -959,6 +959,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="84" label="heapSnapshotTreatBackingStoreAsContainingObject"/>
   <int value="85" label="cssTypeComponentLengthDeprecate"/>
   <int value="86" label="timelineShowPostMessageEvents"/>
+  <int value="89" label="timelineExtensions"/>
+  <int value="90" label="timelineEnhancedTraces"/>
+  <int value="91" label="timelineCompiledSources"/>
+  <int value="93" label="timelineDebugMode"/>
+  <int value="94" label="timelineAnnotations"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
