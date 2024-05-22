@@ -99,7 +99,7 @@ public class StartSurfaceTabSwitcherActionMenuRenderTest extends BlankUiTestActi
                 () -> {
                     Activity activity = getActivity();
                     StartSurfaceTabSwitcherActionMenuCoordinator coordinator =
-                            new StartSurfaceTabSwitcherActionMenuCoordinator();
+                            new StartSurfaceTabSwitcherActionMenuCoordinator(mProfile);
 
                     coordinator.displayMenu(
                             activity,

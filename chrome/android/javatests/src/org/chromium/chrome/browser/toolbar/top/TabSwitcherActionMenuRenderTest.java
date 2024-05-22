@@ -98,7 +98,7 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
                 () -> {
                     Activity activity = getActivity();
                     TabSwitcherActionMenuCoordinator coordinator =
-                            new TabSwitcherActionMenuCoordinator();
+                            new TabSwitcherActionMenuCoordinator(mProfile);
 
                     coordinator.displayMenu(
                             activity,

@@ -19,7 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -40,9 +40,6 @@ import java.lang.annotation.RetentionPolicy;
  * (popup window) in general and building a list of menu items.
  */
 public class TabSwitcherActionMenuCoordinator {
-    // For test.
-    private View mContentView;
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
         MenuItemType.DIVIDER,
@@ -58,11 +55,14 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     /**
-     * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
+     * @param onItemClicked The clicked listener handling clicks on TabSwitcherActionMenu.
+     * @param profile The {@link Profile} associated with the tabs.
      * @return a long click listener of the long press action of tab switcher button.
      */
-    public static OnLongClickListener createOnLongClickListener(Callback<Integer> onItemClicked) {
-        return createOnLongClickListener(new TabSwitcherActionMenuCoordinator(), onItemClicked);
+    public static OnLongClickListener createOnLongClickListener(
+            Callback<Integer> onItemClicked, Profile profile) {
+        return createOnLongClickListener(
+                new TabSwitcherActionMenuCoordinator(profile), onItemClicked);
     }
 
     // internal helper function to create a long click listener.
@@ -95,13 +95,23 @@ public class TabSwitcherActionMenuCoordinator {
         }
     }
 
+    private final Profile mProfile;
+
+    // For test.
+    private View mContentView;
+
+    /** Construct a coordinator for the given {@link Profile}. */
+    public TabSwitcherActionMenuCoordinator(Profile profile) {
+        mProfile = profile;
+    }
+
     /**
      * Created and display the tab switcher action menu anchored to the specified view.
      *
-     * @param context        The context of the TabSwitcherActionMenu.
-     * @param anchorView     The anchor {@link View} of the {@link PopupWindow}.
-     * @param listItems      The menu item models.
-     * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
+     * @param context The context of the TabSwitcherActionMenu.
+     * @param anchorView The anchor {@link View} of the {@link PopupWindow}.
+     * @param listItems The menu item models.
+     * @param onItemClicked The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
     void displayMenu(
@@ -171,8 +181,7 @@ public class TabSwitcherActionMenuCoordinator {
                         R.string.menu_new_incognito_tab,
                         R.id.new_incognito_tab_menu_id,
                         R.drawable.incognito_simple,
-                        IncognitoUtils.isIncognitoModeEnabled(
-                                ProfileManager.getLastUsedRegularProfile()));
+                        IncognitoUtils.isIncognitoModeEnabled(mProfile));
             case MenuItemType.DIVIDER:
             default:
                 return buildMenuDivider();
