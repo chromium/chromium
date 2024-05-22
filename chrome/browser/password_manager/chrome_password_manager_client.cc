@@ -290,8 +290,14 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     return false;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (form_to_save->IsBlocklisted())
+  if (form_to_save->IsBlocklisted()) {
+    if (log_manager_->IsLoggingActive()) {
+      password_manager::BrowserSavePasswordProgressLogger logger(
+          log_manager_.get());
+      logger.LogMessage(Logger::STRING_SAVING_BLOCKLISTED_EXPLICITLY);
+    }
     return false;
+  }
 
   // base::Unretained() is safe: If the callback is called, AccountStorageNotice
   // is alive, then so are its parent ChromePasswordManagerClient, its sibling

@@ -40,7 +40,7 @@ class ManagePasswordsState {
     client_ = client;
   }
 
-  password_manager::PasswordManagerClient* client() { return client_; }
+  password_manager::PasswordManagerClient* client() const { return client_; }
 
   // The methods below discard the current state/data of the object and move it
   // to the specified state.

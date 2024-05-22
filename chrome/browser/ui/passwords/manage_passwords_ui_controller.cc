@@ -51,6 +51,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -91,6 +93,8 @@ using password_manager::PasswordFormManagerForUI;
 int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
 
 namespace {
+
+using Logger = autofill::SavePasswordProgressLogger;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Should be kept in sync with constant declared in
@@ -138,6 +142,21 @@ void MaybeShowPasswordManagerShortcutIPH(Browser* browser) {
   }
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHPasswordManagerShortcutFeature);
+}
+
+std::optional<password_manager::BrowserSavePasswordProgressLogger>
+GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
+  if (!client) {
+    return std::nullopt;
+  }
+
+  autofill::LogManager* log_manager = client->GetLogManager();
+  if (!log_manager || !log_manager->IsLoggingActive()) {
+    return std::nullopt;
+  }
+
+  return std::make_optional<
+      password_manager::BrowserSavePasswordProgressLogger>(log_manager);
 }
 
 }  // namespace
@@ -991,7 +1010,12 @@ bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
     const {
   PasswordFormManagerForUI* form_manager = passwords_data_.form_manager();
   DCHECK(form_manager);
+  auto logger = GetSaveProgressLogger(passwords_data_.client());
+
   if (form_manager->IsBlocklisted()) {
+    if (logger.has_value()) {
+      logger->LogMessage(Logger::STRING_SAVING_BLOCKLISTED_EXPLICITLY);
+    }
     return true;
   }
 
@@ -999,8 +1023,12 @@ bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
       GetCurrentInteractionStats();
   const int show_threshold =
       password_bubble_experiment::GetSmartBubbleDismissalThreshold();
-  return stats && show_threshold > 0 &&
-         stats->dismissal_count >= show_threshold;
+  const bool is_implicitly_blocklisted =
+      stats && show_threshold > 0 && stats->dismissal_count >= show_threshold;
+  if (is_implicitly_blocklisted && logger.has_value()) {
+    logger->LogMessage(Logger::STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE);
+  }
+  return is_implicitly_blocklisted;
 }
 
 void ManagePasswordsUIController::AuthenticateUserWithMessage(

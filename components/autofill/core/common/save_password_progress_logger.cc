@@ -455,6 +455,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Possible username is used";
     case STRING_POSSIBLE_USERNAME_NOT_USED:
       return "Possible username is not used";
+    case STRING_SAVING_BLOCKLISTED_EXPLICITLY:
+      return "Saving on this domain is explicitly blocklisted";
+    case STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE:
+      return "Saving on this domain is blocklisted by the smart bubble";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
