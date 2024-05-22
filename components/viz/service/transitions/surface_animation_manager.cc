@@ -177,6 +177,18 @@ void SurfaceAnimationManager::OnSaveDirectiveProcessed(
     const CompositorFrameTransitionDirective& directive) {
   CHECK_EQ(stage_, Stage::kPendingCopy);
   stage_ = Stage::kWaitingForAnimate;
+
+  // Importing textures must be deferred until the SurfaceAnimationManager is
+  // bound to a frame sink. This is because ref-counting for textures
+  // referenced in a Surface's frame is managed by the frame sink associated
+  // with that Surface. So if this transition is potentially cross frame sink,
+  // we need to defer importing textures until the animate directive. The
+  // frame sink for the transition is finalized to the frame sink using the
+  // animate directive.
+  if (!directive.maybe_cross_frame_sink()) {
+    ImportTextures();
+  }
+
   std::move(callback).Run(directive);
 }
 
@@ -186,12 +198,20 @@ bool SurfaceAnimationManager::Animate() {
   }
 
   stage_ = Stage::kAnimating;
+  if (!saved_textures_) {
+    ImportTextures();
+  }
 
-  DCHECK(!saved_textures_);
+  return true;
+}
+
+void SurfaceAnimationManager::ImportTextures() {
+  CHECK(!saved_textures_);
+
   if (!saved_frame_ || !saved_frame_->IsValid()) {
     LOG(ERROR) << "Failure in caching shared element snapshots";
     saved_frame_.reset();
-    return true;
+    return;
   }
 
   // Import the saved frame, which converts it to a ResourceFrame -- a
@@ -199,7 +219,6 @@ bool SurfaceAnimationManager::Animate() {
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame_)));
   empty_resource_ids_.clear();
-  return true;
 }
 
 void SurfaceAnimationManager::ReceiveFromChild(

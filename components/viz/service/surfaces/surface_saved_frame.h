@@ -118,6 +118,10 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
                                   bool is_software,
                                   std::unique_ptr<CopyOutputResult> result);
 
+  // The `directive_finished_callback_` is dispatched asynchronously since the
+  // callback can access *and* delete this object.
+  void DispatchCopyDoneCallback();
+
   size_t ExpectedResultCount() const;
   void InitFrameResult();
 
