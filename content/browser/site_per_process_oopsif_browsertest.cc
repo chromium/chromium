@@ -1054,14 +1054,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 
-  // Verify parent and child frames share a SiteInstance
+  // Verify parent and child frames share a non-sandboxed SiteInstance.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(child->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
 
-  // Now make subframe sandboxed.
+  // Now make the subframe sandboxed.
   {
     std::string js_str(
         "var frame = document.getElementById('test_frame'); "
@@ -1070,12 +1074,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   }
   NavigateFrameToURL(child,
                      embedded_test_server()->GetURL("b.com", "/title1.html"));
-  // Child should now be in a different SiteInstance.
+
+  // Child should now be in a different, sandboxed SiteInstance.
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
 
-  // Go back and ensure the data: URL committed in the same SiteInstance as the
-  // original navigation.
+  // Go back and ensure the data: URL remains sandboxed, and committed in a
+  // different SiteInstance from the original navigation. From the spec:
+  // "Generally speaking, dynamically removing or changing the sandbox attribute
+  // is ill-advised, because it can make it quite hard to reason about what will
+  // be allowed and what will not."
+  // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-sandbox
   EXPECT_TRUE(web_contents()->GetController().CanGoBack());
   {
     TestFrameNavigationObserver frame_observer(child);
@@ -1084,6 +1097,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   }
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
   EXPECT_EQ(GURL(data_url_str),
             child->current_frame_host()->GetLastCommittedURL());
 }
