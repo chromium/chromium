@@ -340,6 +340,11 @@ TEST(DemangleRust, TypeBackrefsDoNotRecurseDuringSilence) {
                     "<(i32, u32, i128, ...) as c::t>::f");
 }
 
+TEST(DemangleRust, ConstBackrefsDoNotRecurseDuringSilence) {
+  // B_ points at the whole I...E mangling, which does not parse as a const.
+  EXPECT_DEMANGLING("_RINvC1c1fAlB_E", "c::f::<>");
+}
+
 TEST(DemangleRust, ReturnFromBackrefToInputPosition256) {
   // Show that we can resume at input positions that don't fit into a byte.
   EXPECT_DEMANGLING("_RNvYNtC1c238very_long_type_"
@@ -358,6 +363,119 @@ TEST(DemangleRust, ReturnFromBackrefToInputPosition256) {
                     "ABCDEFGHIJabcdefghijABCDEFGHIJabcdefghij"
                     "ABCDEFGHIJabcdefghijABC"
                     " as c::t>::f");
+}
+
+TEST(DemangleRust, EmptyGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fE", "c::f::<>");
+}
+
+TEST(DemangleRust, OneSimpleTypeInGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1flE",  // c::f::<i32>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, OneTupleInGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fTlmEE",  // c::f::<(i32, u32)>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, OnePathInGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fNtC1d1sE",  // c::f::<d::s>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, LongerGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1flmRNtC1d1sE",  // c::f::<i32, u32, &d::s>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, BackrefInGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fRlB7_NtB2_1sE",  // c::f::<&i32, &i32, c::s>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, NestedGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fINtB2_1slEmE",  // c::f::<c::s::<i32>, u32>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, MonomorphicEntityNestedInsideGeneric) {
+  EXPECT_DEMANGLING("_RNvINvC1c1fppE1g",  // c::f::<_, _>::g
+                    "c::f::<>::g");
+}
+
+TEST(DemangleRust, ArrayTypeWithSimpleElementType) {
+  EXPECT_DEMANGLING("_RNvYAlj1f_NtC1c1t1f", "<[i32; 0x1f] as c::t>::f");
+}
+
+TEST(DemangleRust, ArrayTypeWithComplexElementType) {
+  EXPECT_DEMANGLING("_RNvYAINtC1c1slEj1f_NtB6_1t1f",
+                    "<[c::s::<>; 0x1f] as c::t>::f");
+}
+
+TEST(DemangleRust, NestedArrayType) {
+  EXPECT_DEMANGLING("_RNvYAAlj1f_j2e_NtC1c1t1f",
+                    "<[[i32; 0x1f]; 0x2e] as c::t>::f");
+}
+
+TEST(DemangleRust, BackrefArraySize) {
+  EXPECT_DEMANGLING("_RNvYAAlj1f_B5_NtC1c1t1f",
+                    "<[[i32; 0x1f]; 0x1f] as c::t>::f");
+}
+
+TEST(DemangleRust, ZeroArraySize) {
+  EXPECT_DEMANGLING("_RNvYAlj0_NtC1c1t1f", "<[i32; 0x0] as c::t>::f");
+}
+
+TEST(DemangleRust, SurprisingMinusesInArraySize) {
+  // Compilers shouldn't do this stuff, but existing demanglers accept it.
+  EXPECT_DEMANGLING("_RNvYAljn0_NtC1c1t1f", "<[i32; -0x0] as c::t>::f");
+  EXPECT_DEMANGLING("_RNvYAljn42_NtC1c1t1f", "<[i32; -0x42] as c::t>::f");
+}
+
+TEST(DemangleRust, NumberAsGenericArg) {
+  EXPECT_DEMANGLING("_RINvC1c1fKl8_E",  // c::f::<0x8>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, NumberAsFirstOfTwoGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fKl8_mE",  // c::f::<0x8, u32>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, NumberAsSecondOfTwoGenericArgs) {
+  EXPECT_DEMANGLING("_RINvC1c1fmKl8_E",  // c::f::<u32, 0x8>
+                    "c::f::<>");
+}
+
+TEST(DemangleRust, NumberPlaceholder) {
+  EXPECT_DEMANGLING("_RNvINvC1c1fKpE1g",  // c::f::<_>::g
+                    "c::f::<>::g");
+}
+
+TEST(DemangleRust, InherentImplWithoutDisambiguator) {
+  EXPECT_DEMANGLING("_RNvMNtC8my_crate6my_modNtB2_9my_struct7my_func",
+                    "<my_crate::my_mod::my_struct>::my_func");
+}
+
+TEST(DemangleRust, InherentImplWithDisambiguator) {
+  EXPECT_DEMANGLING("_RNvMs_NtC8my_crate6my_modNtB4_9my_struct7my_func",
+                    "<my_crate::my_mod::my_struct>::my_func");
+}
+
+TEST(DemangleRust, TraitImplWithoutDisambiguator) {
+  EXPECT_DEMANGLING("_RNvXC8my_crateNtB2_9my_structNtB2_8my_trait7my_func",
+                    "<my_crate::my_struct as my_crate::my_trait>::my_func");
+}
+
+TEST(DemangleRust, TraitImplWithDisambiguator) {
+  EXPECT_DEMANGLING("_RNvXs_C8my_crateNtB4_9my_structNtB4_8my_trait7my_func",
+                    "<my_crate::my_struct as my_crate::my_trait>::my_func");
+}
+
+TEST(DemangleRust, TraitImplWithNonpathSelfType) {
+  EXPECT_DEMANGLING("_RNvXC8my_crateRlNtB2_8my_trait7my_func",
+                    "<&i32 as my_crate::my_trait>::my_func");
 }
 
 }  // namespace

@@ -318,6 +318,7 @@ if (absl_build_tests) {
         "absl/numeric:int128_test",
         "absl/profiling:exponential_biased_test",
         "absl/profiling:periodic_sampler_test",
+        "absl/random:mock_distributions_test",
         "absl/status:status_matchers_test",
         "absl/status:status_test",
         "absl/status:statusor_test",

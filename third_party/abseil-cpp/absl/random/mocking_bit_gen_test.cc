@@ -16,9 +16,11 @@
 #include "absl/random/mocking_bit_gen.h"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <numeric>
-#include <random>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest-spi.h"
@@ -246,33 +248,33 @@ TEST(WillOnce, DistinctCounters) {
   absl::MockingBitGen gen;
   EXPECT_CALL(absl::MockUniform<int>(), Call(gen, 1, 1000000))
       .Times(3)
-      .WillRepeatedly(Return(0));
+      .WillRepeatedly(Return(1));
   EXPECT_CALL(absl::MockUniform<int>(), Call(gen, 1000001, 2000000))
       .Times(3)
-      .WillRepeatedly(Return(1));
-  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1);
-  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 0);
-  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1);
-  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 0);
-  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1);
-  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 0);
+      .WillRepeatedly(Return(1000001));
+  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1000001);
+  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 1);
+  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1000001);
+  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 1);
+  EXPECT_EQ(absl::Uniform(gen, 1000001, 2000000), 1000001);
+  EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 1);
 }
 
 TEST(TimesModifier, ModifierSaturatesAndExpires) {
   EXPECT_NONFATAL_FAILURE(
       []() {
         absl::MockingBitGen gen;
-        EXPECT_CALL(absl::MockUniform<int>(), Call(gen, 1, 1000000))
+        EXPECT_CALL(absl::MockUniform<int>(), Call(gen, 0, 1000000))
             .Times(3)
             .WillRepeatedly(Return(15))
             .RetiresOnSaturation();
 
-        EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 15);
-        EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 15);
-        EXPECT_EQ(absl::Uniform(gen, 1, 1000000), 15);
+        EXPECT_EQ(absl::Uniform(gen, 0, 1000000), 15);
+        EXPECT_EQ(absl::Uniform(gen, 0, 1000000), 15);
+        EXPECT_EQ(absl::Uniform(gen, 0, 1000000), 15);
         // Times(3) has expired - Should get a different value now.
 
-        EXPECT_NE(absl::Uniform(gen, 1, 1000000), 15);
+        EXPECT_NE(absl::Uniform(gen, 0, 1000000), 15);
       }(),
       "");
 }
@@ -394,7 +396,7 @@ TEST(MockingBitGen, StrictMock_TooMany) {
   EXPECT_EQ(absl::Uniform(gen, 1, 1000), 145);
 
   EXPECT_NONFATAL_FAILURE(
-      [&]() { EXPECT_EQ(absl::Uniform(gen, 10, 1000), 0); }(),
+      [&]() { EXPECT_EQ(absl::Uniform(gen, 0, 1000), 0); }(),
       "over-saturated and active");
 }
 

@@ -47,7 +47,6 @@ ABSL_LLVM_FLAGS = [
     "-Wc++98-compat-extra-semi",
     "-Wcast-qual",
     "-Wconversion",
-    "-Wdead-code-aggressive",
     "-Wdeprecated-pragma",
     "-Wfloat-overflow-conversion",
     "-Wfloat-zero-conversion",

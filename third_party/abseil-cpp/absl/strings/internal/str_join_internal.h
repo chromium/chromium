@@ -33,6 +33,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <initializer_list>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -319,6 +320,15 @@ std::string JoinRange(const Range& range, absl::string_view separator) {
   using std::begin;
   using std::end;
   return JoinRange(begin(range), end(range), separator);
+}
+
+template <typename Tuple, std::size_t... I>
+std::string JoinTuple(const Tuple& value, absl::string_view separator,
+                      std::index_sequence<I...>) {
+  return JoinRange(
+      std::initializer_list<absl::string_view>{
+          static_cast<const AlphaNum&>(std::get<I>(value)).Piece()...},
+      separator);
 }
 
 }  // namespace strings_internal

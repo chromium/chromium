@@ -126,6 +126,22 @@ TEST(GrowthInfoTest, HasNoDeletedAndGrowthLeft) {
   EXPECT_TRUE(gi.HasNoDeletedAndGrowthLeft());
 }
 
+TEST(GrowthInfoTest, HasNoGrowthLeftAndNoDeleted) {
+  GrowthInfo gi;
+  gi.InitGrowthLeftNoDeleted(1);
+  EXPECT_FALSE(gi.HasNoGrowthLeftAndNoDeleted());
+  gi.OverwriteEmptyAsFull();
+  EXPECT_TRUE(gi.HasNoGrowthLeftAndNoDeleted());
+  gi.OverwriteFullAsDeleted();
+  EXPECT_FALSE(gi.HasNoGrowthLeftAndNoDeleted());
+  gi.OverwriteFullAsEmpty();
+  EXPECT_FALSE(gi.HasNoGrowthLeftAndNoDeleted());
+  gi.InitGrowthLeftNoDeleted(0);
+  EXPECT_TRUE(gi.HasNoGrowthLeftAndNoDeleted());
+  gi.OverwriteFullAsEmpty();
+  EXPECT_FALSE(gi.HasNoGrowthLeftAndNoDeleted());
+}
+
 TEST(GrowthInfoTest, OverwriteFullAsEmpty) {
   GrowthInfo gi;
   gi.InitGrowthLeftNoDeleted(5);

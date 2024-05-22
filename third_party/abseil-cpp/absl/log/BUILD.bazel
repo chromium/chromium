@@ -357,6 +357,8 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/log/internal:test_helpers",
         "//absl/status",
+        "//absl/strings",
+        "//absl/strings:string_view",
         "@com_google_googletest//:gtest",
     ],
 )
