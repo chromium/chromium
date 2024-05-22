@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
+
 #include "base/feature_list.h"
+#include "base/strings/pattern.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -34,40 +36,65 @@ AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
 
   const JSONObject* framework_to_speculation_rules =
       config->GetJSONObject("framework_to_speculation_rules");
-  if (!framework_to_speculation_rules) {
-    // Not an error.
-    return;
+  if (framework_to_speculation_rules) {
+    for (wtf_size_t i = 0; i < framework_to_speculation_rules->size(); ++i) {
+      const JSONObject::Entry entry = framework_to_speculation_rules->at(i);
+
+      bool key_is_int = false;
+      const int key_as_int = entry.first.ToIntStrict(&key_is_int);
+      if (!key_is_int) {
+        LOG(ERROR) << "Non-integer key " << entry.first
+                   << " inside framework_to_speculation_rules";
+        continue;
+      }
+
+      const mojom::JavaScriptFramework framework =
+          static_cast<mojom::JavaScriptFramework>(key_as_int);
+      const bool value_is_known = IsKnownEnumValue(framework);
+      if (!value_is_known) {
+        LOG(ERROR) << "Unknown integer key " << key_as_int
+                   << " inside framework_to_speculation_rules";
+        continue;
+      }
+
+      String speculation_rules;
+      bool value_is_string = entry.second->AsString(&speculation_rules);
+      if (!value_is_string) {
+        LOG(ERROR) << "Non-string value " << entry.second->ToJSONString()
+                   << " inside framework_to_speculation_rules";
+        continue;
+      }
+
+      framework_to_speculation_rules_.emplace_back(framework,
+                                                   speculation_rules);
+    }
   }
 
-  for (wtf_size_t i = 0; i < framework_to_speculation_rules->size(); ++i) {
-    const JSONObject::Entry entry = framework_to_speculation_rules->at(i);
+  const JSONObject* url_match_pattern_to_speculation_rules =
+      config->GetJSONObject("url_match_pattern_to_speculation_rules");
+  if (url_match_pattern_to_speculation_rules) {
+    for (wtf_size_t i = 0; i < url_match_pattern_to_speculation_rules->size();
+         ++i) {
+      const JSONObject::Entry entry =
+          url_match_pattern_to_speculation_rules->at(i);
 
-    bool key_is_int = false;
-    const int key_as_int = entry.first.ToIntStrict(&key_is_int);
-    if (!key_is_int) {
-      LOG(ERROR) << "Non-integer key " << entry.first
-                 << " inside framework_to_speculation_rules";
-      continue;
+      String speculation_rules;
+      bool value_is_string = entry.second->AsString(&speculation_rules);
+      if (!value_is_string) {
+        LOG(ERROR) << "Non-string value " << entry.second->ToJSONString()
+                   << " inside url_match_pattern_to_speculation_rules";
+        continue;
+      }
+
+      if (!entry.first.ContainsOnlyASCIIOrEmpty()) {
+        LOG(ERROR) << "Non-ASCII key " << entry.first
+                   << " inside url_match_pattern_to_speculation_rules";
+        continue;
+      }
+
+      url_match_pattern_to_speculation_rules_.emplace_back(entry.first.Ascii(),
+                                                           speculation_rules);
     }
-
-    const mojom::JavaScriptFramework framework =
-        static_cast<mojom::JavaScriptFramework>(key_as_int);
-    const bool value_is_known = IsKnownEnumValue(framework);
-    if (!value_is_known) {
-      LOG(ERROR) << "Unknown integer key " << key_as_int
-                 << " inside framework_to_speculation_rules";
-      continue;
-    }
-
-    String speculation_rules;
-    bool value_is_string = entry.second->AsString(&speculation_rules);
-    if (!value_is_string) {
-      LOG(ERROR) << "Non-string value " << entry.second->ToJSONString()
-                 << " inside framework_to_speculation_rules";
-      continue;
-    }
-
-    framework_to_speculation_rules_.emplace_back(framework, speculation_rules);
   }
 }
 
@@ -102,6 +129,19 @@ String AutoSpeculationRulesConfig::ForFramework(
   }
 
   return String();
+}
+
+Vector<String> AutoSpeculationRulesConfig::ForUrl(const KURL& url) const {
+  const std::string url_string = url.GetString().Ascii();
+  Vector<String> result;
+
+  for (const auto& entry : url_match_pattern_to_speculation_rules_) {
+    if (base::MatchPattern(url_string, entry.first)) {
+      result.push_back(entry.second);
+    }
+  }
+
+  return result;
 }
 
 }  // namespace blink
