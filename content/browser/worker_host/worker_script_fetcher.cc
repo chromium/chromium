@@ -260,7 +260,6 @@ void WorkerScriptFetcher::CreateAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override,
     StoragePartitionImpl* storage_partition,
     const std::string& storage_domain,
-    ukm::SourceId worker_source_id,
     DevToolsAgentHostImpl* devtools_agent_host,
     const base::UnguessableToken& devtools_worker_token,
     bool require_cross_site_request_for_cookies,
@@ -381,9 +380,9 @@ void WorkerScriptFetcher::CreateAndStart(
       std::move(subresource_loader_factories),
       std::move(service_worker_context), service_worker_handle,
       std::move(blob_url_loader_factory),
-      std::move(url_loader_factory_override), worker_source_id,
-      devtools_agent_host, devtools_worker_token,
-      require_cross_site_request_for_cookies, std::move(callback));
+      std::move(url_loader_factory_override), devtools_agent_host,
+      devtools_worker_token, require_cross_site_request_for_cookies,
+      std::move(callback));
 }
 
 void WorkerScriptFetcher::CreateScriptLoader(
@@ -403,7 +402,6 @@ void WorkerScriptFetcher::CreateScriptLoader(
     ServiceWorkerMainResourceHandle* service_worker_handle,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override,
-    ukm::SourceId worker_source_id,
     DevToolsAgentHostImpl* devtools_agent_host,
     const base::UnguessableToken& devtools_worker_token,
     bool require_cross_site_request_for_cookies,
@@ -525,7 +523,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
       std::make_unique<WorkerScriptLoaderFactory>(
           worker_process_id, worker_token, trusted_isolation_info,
           service_worker_handle, browser_context_getter,
-          std::move(url_loader_factory), worker_source_id),
+          std::move(url_loader_factory)),
       std::move(resource_request),
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
                      std::move(subresource_loader_factories),

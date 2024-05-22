@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/redirect_info.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -164,7 +163,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
           url_loader_factory_override,
       StoragePartitionImpl* storage_partition,
       const std::string& storage_domain,
-      ukm::SourceId worker_source_id,
       DevToolsAgentHostImpl* devtools_agent_host,
       const base::UnguessableToken& devtools_worker_token,
       bool require_cross_site_request_for_cookies,
@@ -237,7 +235,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_override,
-      ukm::SourceId worker_source_id,
       DevToolsAgentHostImpl* devtools_agent_host,
       const base::UnguessableToken& devtools_worker_token,
       bool require_cross_site_request_for_cookies,

@@ -336,10 +336,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       storage_partition_impl->GetServiceWorkerContext(),
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,
-      // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
-      // here.
-      ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
-      token_.value(),
+      DedicatedWorkerDevToolsAgentHost::GetFor(this), token_.value(),
       /*require_cross_site_request_for_cookies=*/false, has_storage_access,
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));

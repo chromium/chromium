@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -50,8 +49,7 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
       const net::IsolationInfo& isolation_info,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       const BrowserContextGetter& browser_context_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      ukm::SourceId worker_source_id);
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   WorkerScriptLoaderFactory(const WorkerScriptLoaderFactory&) = delete;
   WorkerScriptLoaderFactory& operator=(const WorkerScriptLoaderFactory&) =
@@ -80,7 +78,6 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle_;
   BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
-  const ukm::SourceId worker_source_id_;
 
   // This is owned by SelfOwnedReceiver associated with the given
   // mojo::PendingReceiver<URLLoader>, and invalidated after receiver completion

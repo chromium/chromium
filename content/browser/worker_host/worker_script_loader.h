@@ -21,7 +21,6 @@
 #include "net/base/load_timing_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -77,8 +76,7 @@ class CONTENT_EXPORT WorkerScriptLoader
       base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle,
       const BrowserContextGetter& browser_context_getter,
       scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      ukm::SourceId ukm_source_id);
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   WorkerScriptLoader(const WorkerScriptLoader&) = delete;
   WorkerScriptLoader& operator=(const WorkerScriptLoader&) = delete;
@@ -140,7 +138,6 @@ class CONTENT_EXPORT WorkerScriptLoader
   BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
-  const ukm::SourceId ukm_source_id_;
 
   std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_ = net::URLRequest::kMaxRedirects;

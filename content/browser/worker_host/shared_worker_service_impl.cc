@@ -409,7 +409,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,
       std::move(blob_url_loader_factory), url_loader_factory_override_,
-      storage_partition_, storage_domain, host->ukm_source_id(),
+      storage_partition_, storage_domain,
       SharedWorkerDevToolsAgentHost::GetFor(host), host->GetDevToolsToken(),
       host->instance().DoesRequireCrossSiteRequestForCookies(),
       has_storage_access,
