@@ -99,19 +99,8 @@ class TestExporter:
         self.local_repo.fetch()
 
         pr_events = collections.defaultdict(set)
-        _log.info('Searching for exportable in-flight CLs.')
-        # The Gerrit search API is slow and easy to fail, so we wrap it in a try
-        # statement to continue exporting landed commits when it fails.
-        try:
-            open_gerrit_cls = self.gerrit.query_exportable_cls()
-        except GerritError as e:
-            _log.info(
-                'In-flight CLs cannot be exported due to the following error:')
-            _log.error(str(e))
-            gerrit_error = True
-        else:
-            self.process_gerrit_cls(open_gerrit_cls, pr_events)
-            gerrit_error = False
+
+        gerrit_error = self.export_in_flight_changes(pr_events)
 
         _log.info('Searching for exportable Chromium commits.')
         exportable_commits, git_errors = self.get_exportable_commits()
@@ -196,6 +185,25 @@ class TestExporter:
             '--summary-markdown',
             help='Write a summary of PR updates to this markdown file.')
         return parser.parse_args(argv)
+
+    def export_in_flight_changes(self, pr_events: PREventsByType) -> bool:
+        """ Search and export in-flight changes from Gerrit.
+        Returns:
+            A boolean: True if there was an error, False otherwise.
+        """
+        _log.info('Searching for exportable in-flight CLs.')
+        # The Gerrit search API is slow and easy to fail, so we wrap it in a try
+        # statement to continue exporting landed commits when it fails.
+        try:
+            open_gerrit_cls = self.gerrit.query_exportable_cls()
+        except GerritError as e:
+            _log.info(
+                'In-flight CLs cannot be exported due to the following error:')
+            _log.error(str(e))
+            return True
+        else:
+            self.process_gerrit_cls(open_gerrit_cls, pr_events)
+            return False
 
     def process_gerrit_cls(self, gerrit_cls, pr_events: PREventType):
         for cl in gerrit_cls:
