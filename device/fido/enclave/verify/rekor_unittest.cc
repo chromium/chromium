@@ -168,4 +168,54 @@ TEST(RekorTest, VerifyRekorSignatureFailure) {
   EXPECT_FALSE(VerifyRekorSignature(log_entry, *pub_key));
 }
 
+TEST(RekorTest, VerifyRekorBodySucceeds) {
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  EXPECT_TRUE(log_entry_body.has_value());
+  base::span<const uint8_t> content_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_TRUE(VerifyRekorBody(log_entry_body.value(), content_span));
+}
+
+TEST(RekorTest, VerifyRekorBodyWrongSignatureFormatFails) {
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  EXPECT_TRUE(log_entry_body.has_value());
+  log_entry_body->spec.generic_signature.format = "bad";
+  base::span<const uint8_t> content_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+}
+
+TEST(RekorTest, VerifyRekorBodyWrongContentFails) {
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = "abcd";
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  EXPECT_TRUE(log_entry_body.has_value());
+  base::span<const uint8_t> content_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+}
+
+TEST(RekorTest, VerifyRekorBodyWrongPublicKeyFails) {
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  EXPECT_TRUE(log_entry_body.has_value());
+  log_entry_body->spec.generic_signature.public_key.content = "abcd";
+  base::span<const uint8_t> content_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+}
+
 }  // namespace device::enclave

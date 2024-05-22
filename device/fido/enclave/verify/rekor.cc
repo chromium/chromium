@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/utils.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device::enclave {
 
@@ -200,6 +201,44 @@ bool VerifyRekorSignature(base::span<const uint8_t> log_entry,
   return VerifySignatureRaw(rekor_signature_bundle->signature,
                             rekor_signature_bundle->canonicalized,
                             rekor_public_key)
+      .has_value();
+}
+
+bool VerifyRekorBody(const Body& body,
+                     base::span<const uint8_t> contents_bytes) {
+  if (body.spec.generic_signature.format != "x509" ||
+      body.spec.data.hash.hash_type != kSHA256) {
+    return false;
+  }
+  uint8_t contents_hash[SHA256_DIGEST_LENGTH];
+  SHA256(reinterpret_cast<const uint8_t*>(contents_bytes.data()),
+         contents_bytes.size(), contents_hash);
+  std::string contents_hash_hex = base::ToLowerASCII(
+      base::HexEncode(contents_hash, std::size(contents_hash)));
+  std::string_view bytes_str(
+      reinterpret_cast<const char*>(body.spec.data.hash.bytes.data()),
+      body.spec.data.hash.bytes.size());
+  if (contents_hash_hex != bytes_str) {
+    return false;
+  }
+
+  std::string signature;
+  if (!base::Base64Decode(body.spec.generic_signature.content, &signature)) {
+    return false;
+  }
+  std::string public_key_pem;
+  if (!base::Base64Decode(body.spec.generic_signature.public_key.content,
+                          &public_key_pem)) {
+    return false;
+  }
+  auto public_key = ConvertPemToRaw(public_key_pem);
+  if (!public_key.has_value()) {
+    return false;
+  }
+  return VerifySignatureRaw(
+             base::make_span(static_cast<uint8_t*>((uint8_t*)signature.data()),
+                             signature.size()),
+             contents_bytes, public_key.value())
       .has_value();
 }
 

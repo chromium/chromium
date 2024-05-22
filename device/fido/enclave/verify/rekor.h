@@ -159,7 +159,8 @@ bool COMPONENT_EXPORT(DEVICE_FIDO)
                          base::span<const uint8_t> rekor_public_key);
 
 // Verifies the signature in the body over the contents.
-bool VerifyRekorBody(const Body&, base::span<const uint8_t> contents_bytes);
+bool COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifyRekorBody(const Body& body, base::span<const uint8_t> contents_bytes);
 
 // Parses `RekorSignatureBundle` from `log_entry`.
 std::optional<RekorSignatureBundle> COMPONENT_EXPORT(DEVICE_FIDO)
