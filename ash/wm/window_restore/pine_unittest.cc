@@ -740,10 +740,6 @@ TEST_F(PineTest, PineWidgetTabTraversal) {
 
   StartPineOverviewSession(MakeTestAppIds(1));
 
-  // Tab through the default desk button and zero state new desk button.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  PressAndReleaseKey(ui::VKEY_TAB);
-
   views::Widget* pine_widget =
       OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))
           .pine_widget();
@@ -772,27 +768,14 @@ TEST_F(PineTest, PineWidgetTabTraversal) {
             focus_manager->GetFocusedView());
 }
 
-// Tests that the pine dialog gets hidden when we show the saved desk library.
-TEST_F(PineTest, ShowSavedDeskLibrary) {
-  // Add one entry for the saved desk button to show up.
-  ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
-  AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
-                    base::Uuid::GenerateRandomV4(), "saved_desk",
-                    base::Time::Now(), DeskTemplateType::kSaveAndRecall);
-
+// Tests that there is no desk bar in pine session.
+TEST_F(PineTest, NoDeskBar) {
   // Start a pine overview session.
   StartPineOverviewSession(MakeTestAppIds(1));
 
-  views::Widget* pine_widget =
-      OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))
-          .pine_widget();
-  ASSERT_TRUE(pine_widget);
-
-  // Click the library button and test that the dialog has zero opacity.
-  const views::Button* library_button = GetLibraryButton();
-  ASSERT_TRUE(library_button);
-  LeftClickOn(library_button);
-  EXPECT_EQ(0.f, pine_widget->GetLayer()->GetTargetOpacity());
+  // There should be no desk bar.
+  EXPECT_FALSE(
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_widget());
 }
 
 // Tests that the Pine contents are laid out correctly when the display is in
