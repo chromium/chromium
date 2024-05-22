@@ -73,7 +73,12 @@ namespace {
 const char kCsdDebugFeatureDirectoryFlag[] = "csd-debug-feature-directory";
 const char kSkipCSDAllowlistOnPreclassification[] =
     "safe-browsing-skip-csd-allowlist";
-const float kProbabilityForSendingSampleRequest = 0.0001;
+
+// Probability value used to sample pings on CSD allowlist match. For other safe
+// browsing countermeasures, we sample at 1 in 100 rate, but in this, we hit the
+// allowlist 1000 times more than the rate at which we send a ping due to local
+// model verdict. Therefore, we sample at 1 in 100,000 rate instead.
+const float kProbabilityForSendingSampleRequest = 0.00001;
 
 void WriteFeaturesToDisk(const ClientPhishingRequest& features,
                          const base::FilePath& base_path) {
