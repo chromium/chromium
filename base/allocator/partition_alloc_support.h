@@ -81,7 +81,9 @@ class BASE_EXPORT PartitionAllocSupport {
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
-  void OnForegrounded(bool has_main_frame);
+  // The default value is intended for other process types, where the parameter
+  // does not make sense.
+  void OnForegrounded(bool has_main_frame = false);
   void OnBackgrounded();
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)

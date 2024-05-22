@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1403,6 +1404,8 @@ void GpuServiceImpl::OnBackgroundedOnMainThread() {
       UpdateGPUInfoGL();
     }
   }
+
+  base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
 }
 
 void GpuServiceImpl::OnForegrounded() {
@@ -1426,6 +1429,7 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
     }
   }
   gpu_channel_manager_->OnApplicationForegounded();
+  base::allocator::PartitionAllocSupport::Get()->OnForegrounded();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

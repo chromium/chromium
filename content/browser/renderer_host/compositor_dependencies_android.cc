@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -43,6 +44,9 @@ void SendOnBackgroundedToGpuService() {
   content::GpuProcessHost::CallOnUI(
       FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce([](content::GpuProcessHost* host) {
+        // This is not necessarily the most logical place to notify the
+        // allocator, but it matches the call made on the GPU process side.
+        base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
         if (host) {
           host->gpu_service()->OnBackgrounded();
         }
@@ -53,6 +57,7 @@ void SendOnForegroundedToGpuService() {
   content::GpuProcessHost::CallOnUI(
       FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce([](content::GpuProcessHost* host) {
+        base::allocator::PartitionAllocSupport::Get()->OnForegrounded();
         if (host) {
           host->gpu_service()->OnForegrounded();
         }

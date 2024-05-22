@@ -1448,6 +1448,9 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Other changes are renderer-only, not this one.
+  MemoryReclaimerSupport::Instance().SetForegrounded(true);
+
   {
     base::AutoLock scoped_lock(lock_);
     if (established_process_type_ != switches::kRendererProcess) {
@@ -1466,12 +1469,13 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
     allocator_shim::AdjustDefaultAllocatorForForeground();
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-  MemoryReclaimerSupport::Instance().SetForegrounded(true);
 }
 
 void PartitionAllocSupport::OnBackgrounded() {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Other changes are renderer-only, not this one.
+  MemoryReclaimerSupport::Instance().SetForegrounded(false);
+
   {
     base::AutoLock scoped_lock(lock_);
     if (established_process_type_ != switches::kRendererProcess) {
@@ -1505,8 +1509,6 @@ void PartitionAllocSupport::OnBackgrounded() {
     allocator_shim::AdjustDefaultAllocatorForBackground();
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-  MemoryReclaimerSupport::Instance().SetForegrounded(false);
 }
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
