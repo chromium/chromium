@@ -137,7 +137,7 @@ void WrapWithPrefixPrefStore::OnPrefValueChanged(const std::string& key) {
     return;
   }
   std::string original_key(RemoveDottedPrefix(key));
-  for (Observer& observer : observers_) {
+  for (PrefStore::Observer& observer : observers_) {
     observer.OnPrefValueChanged(original_key);
   }
 }
@@ -148,7 +148,7 @@ void WrapWithPrefixPrefStore::OnInitializationCompleted(bool succeeded) {
       read_error_delegate_.has_value() && read_error_delegate_.value()) {
     read_error_delegate_.value()->OnError(read_error);
   }
-  for (Observer& observer : observers_) {
+  for (PrefStore::Observer& observer : observers_) {
     observer.OnInitializationCompleted(succeeded);
   }
 }
