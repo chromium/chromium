@@ -79,6 +79,7 @@ class Embedder {
       ComputePassagesEmbeddingsCallback callback) = 0;
 
   // Set the callback to run when the embedder is ready to process requests.
+  // The callback is invoked immediately if the embedder is ready beforehand.
   virtual void SetOnEmbedderReady(OnEmbedderReadyCallback callback) = 0;
 
  protected:

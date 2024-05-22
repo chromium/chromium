@@ -180,6 +180,10 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
           std::move(callback)));
 }
 
+bool PassageEmbeddingsServiceController::EmbedderReady() {
+  return !sp_model_path_.empty() && !embeddings_model_path_.empty();
+}
+
 void PassageEmbeddingsServiceController::ResetRemotes() {
   service_remote_.reset();
   embedder_remote_.reset();

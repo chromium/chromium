@@ -52,7 +52,11 @@ void MlEmbedder::OnModelUpdated(
 }
 
 void MlEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
-  on_embedder_ready_ = std::move(callback);
+  if (service_controller_->EmbedderReady()) {
+    std::move(callback).Run(service_controller_->GetEmbedderMetadata());
+  } else {
+    on_embedder_ready_ = std::move(callback);
+  }
 }
 
 }  // namespace history_embeddings

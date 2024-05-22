@@ -59,7 +59,11 @@ class PassageEmbeddingsServiceController {
   void GetEmbeddings(std::vector<std::string> passages,
                      GetEmbeddingsCallback callback);
 
-  // Returns the embeddings model version;
+  // Returns true if this service controller is ready for embeddings generation.
+  bool EmbedderReady();
+
+  // Returns the metadata about the embeddings model. This is only valid when
+  // EmbedderReady() returns true.
   EmbedderMetadata GetEmbedderMetadata();
 
  protected:
