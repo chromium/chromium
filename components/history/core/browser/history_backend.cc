@@ -3570,8 +3570,7 @@ void HistoryBackend::KillHistoryDatabase() {
   // transaction. Deleting the object causes the rollback in the destructor.
   singleton_transaction_.reset();
 
-  bool success = db_->Raze();
-  UMA_HISTOGRAM_BOOLEAN("History.KillHistoryDatabaseResult", success);
+  db_->Raze();
 
   // The expirer keeps tabs on the active databases. Tell it about the
   // databases which will be closed.
