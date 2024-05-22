@@ -4614,6 +4614,7 @@ source_set("ash") {
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
       "//chromeos/services/chromebox_for_meetings/public/cpp",
       "//chromeos/services/chromebox_for_meetings/public/mojom",
+      "//chromeos/services/chromebox_for_meetings/public/proto",
     ]
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
@@ -6953,6 +6954,7 @@ source_set("unit_tests") {
       "//chromeos/services/chromebox_for_meetings/public/cpp",
       "//chromeos/services/chromebox_for_meetings/public/cpp:test_support",
       "//chromeos/services/chromebox_for_meetings/public/mojom",
+      "//chromeos/services/chromebox_for_meetings/public/proto",
       "//components/variations/field_trial_config",
     ]
   }

@@ -13,6 +13,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/proto/transport_payload.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -86,8 +87,13 @@ class DataAggregatorService : public CfmObserver,
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
   void EnqueueData(const std::string& source_name,
-                   const std::vector<std::string>& serialized_records);
-  void HandleEnqueueResponse(const std::string& source_name, bool success);
+                   const std::vector<std::string>& serialized_entries);
+  void WrapEntriesInTransportPayload(
+      const std::string& source_name,
+      const std::vector<std::string>& serialized_entries,
+      proto::TransportPayload* transport_payload);
+  void HandleEnqueueResponse(const std::string& source_name,
+                             chromeos::cfm::mojom::LoggerStatusPtr status);
 
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::DataAggregator> receivers_;

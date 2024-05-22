@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/process/launch.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -17,6 +18,15 @@ namespace {
 // Local convenience aliases
 using mojom::DataFilter::FilterType::CHANGE;
 using mojom::DataFilter::FilterType::REGEX;
+
+// Regex used to separate timestamps and severity from rest of data.
+// Note that the timestamp and severity fields are both optional fields.
+// In the event that a data source produces data that doesn't have one
+// or the other, defaults will be provided.
+constexpr LazyRE2 kFullLogLineRegex = {
+    "^(?:([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z) )?"
+    "(?:(EMERG|ALERT|CRIT|SEVERE|ERR|ERROR|WARNING|INFO|NOTICE"
+    "|DEBUG|VERBOSE[1-4]) )?((?s).*)"};
 
 }  // namespace
 
@@ -32,7 +42,6 @@ inline LocalDataSource::~LocalDataSource() = default;
 
 void LocalDataSource::Fetch(FetchCallback callback) {
   if (data_buffer_.empty() && pending_upload_buffer_.empty()) {
-    // TODO(b/326441003): serialize output
     std::move(callback).Run({});
     return;
   }
@@ -113,11 +122,8 @@ void LocalDataSource::FillDataBuffer() {
       return;
     }
 
-    // Update our last known unique data and add a timestamp. Note that
-    // we're assuming non-incremental sources will not have their own
-    // timestamps already prepended, which should hold true.
+    // Update our last known unique data.
     last_unique_data_ = next_data;
-    AddTimestamps(next_data);
 
     // Fire any CHANGE watchdogs. Note that these are not supported
     // for incremental sources as they will always be changing.
@@ -172,15 +178,98 @@ void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {
 }
 
 void LocalDataSource::SerializeDataBuffer(std::vector<std::string>& buffer) {
-  // TODO(b/326441003): add serialization logic
-  (void)buffer;
+  if (buffer.empty()) {
+    return;
+  }
+
+  // Set defaults for data that doesn't have timestamps or severity
+  // levels. Use the current time for the timestamp.
+  auto default_timestamp =
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
+  const proto::LogSeverity default_severity = proto::LOG_SEVERITY_DEFAULT;
+
+  // Build each LogEntry object, then replace the buffer data with
+  // the serialized entry.
+  for (size_t i = 0; i < buffer.size(); i++) {
+    proto::LogEntry entry;
+    BuildLogEntryFromLogLine(entry, buffer[i], default_timestamp,
+                             default_severity);
+
+    std::string serialized_data;
+    entry.SerializeToString(&serialized_data);
+    buffer[i] = std::move(serialized_data);
+  }
 }
 
-void LocalDataSource::AddTimestamps(std::vector<std::string>& data) {
-  auto formatted_time =
-      base::TimeFormatAsIso8601(base::Time::NowFromSystemTime());
-  for (size_t i = 0; i < data.size(); i++) {
-    data[i] = formatted_time + " " + data[i];
+void LocalDataSource::BuildLogEntryFromLogLine(
+    proto::LogEntry& entry,
+    const std::string& line,
+    const uint64_t default_timestamp,
+    const proto::LogSeverity& default_severity) {
+  std::string timestamp;
+  std::string severity;
+  std::string log_msg;
+
+  if (!RE2::PartialMatch(line, *kFullLogLineRegex, &timestamp, &severity,
+                         &log_msg)) {
+    LOG(ERROR) << "Unable to parse log line properly: " << line;
+    entry.set_timestamp_micros(default_timestamp);
+    entry.set_severity(default_severity);
+    entry.set_text_payload(line);
+  } else {
+    auto time_since_epoch = TimestampStringToUnixTime(timestamp);
+
+    // Use the log source and timestamp to create a unique ID that can be
+    // used to identify this entry. This will aid in de-duplication on the
+    // server side.
+    if (is_incremental_) {
+      entry.set_insert_id(GetDisplayName() + ":" +
+                          base::NumberToString(time_since_epoch));
+    }
+
+    // Even if the match succeeded, the timestamps and severity are optional
+    // matches, so supply a default if they aren't populated.
+    entry.set_timestamp_micros(timestamp.empty() ? default_timestamp
+                                                 : time_since_epoch);
+    entry.set_severity(severity.empty() ? default_severity
+                                        : SeverityStringToEnum(severity));
+    entry.set_text_payload(log_msg);
+  }
+}
+
+uint64_t LocalDataSource::TimestampStringToUnixTime(
+    const std::string& timestamp) {
+  base::Time time;
+  if (!base::Time::FromString(timestamp.c_str(), &time)) {
+    LOG(ERROR) << "Unable to parse timestamp: " << timestamp;
+    return 0;
+  }
+  return (time - base::Time::UnixEpoch()).InMicroseconds();
+}
+
+proto::LogSeverity LocalDataSource::SeverityStringToEnum(
+    const std::string& severity) {
+  if (severity == "EMERGENCY" || severity == "EMERG") {
+    return proto::LOG_SEVERITY_EMERGENCY;
+  } else if (severity == "ALERT") {
+    return proto::LOG_SEVERITY_ALERT;
+  } else if (severity == "CRITICAL" || severity == "CRIT") {
+    return proto::LOG_SEVERITY_CRITICAL;
+  } else if (severity == "ERROR" || severity == "ERR") {
+    return proto::LOG_SEVERITY_ERROR;
+  } else if (severity == "WARNING") {
+    return proto::LOG_SEVERITY_WARNING;
+  } else if (severity == "NOTICE") {
+    return proto::LOG_SEVERITY_NOTICE;
+  } else if (severity == "INFO") {
+    return proto::LOG_SEVERITY_INFO;
+  } else if (severity == "DEBUG" || severity == "VERBOSE1" ||
+             severity == "VERBOSE2" || severity == "VERBOSE3" ||
+             severity == "VERBOSE4") {
+    return proto::LOG_SEVERITY_DEBUG;
+  } else {
+    LOG(ERROR) << "Unable to parse severity: " << severity;
+    return proto::LOG_SEVERITY_DEFAULT;
   }
 }
 

@@ -368,32 +368,77 @@ void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
 
 void DataAggregatorService::EnqueueData(
     const std::string& source_name,
-    const std::vector<std::string>& serialized_records) {
+    const std::vector<std::string>& serialized_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/326441003): this function will need to be replaced
-  // with an async call to the uploader. For now, assume success
-  // and just print the data.
-  bool success = true;
-
-  VLOG(4) << "Enqueuing the following records: ";
-  for (auto& record : serialized_records) {
-    VLOG(4) << record;
+  if (serialized_entries.empty()) {
+    return;
   }
 
-  // TODO(b/326441003): this will eventually be a callback function
-  // for the async upload transaction.
-  HandleEnqueueResponse(std::move(source_name), success);
+  if (VLOG_IS_ON(4)) {
+    VLOG(4) << "Enqueuing the following entries: ";
+    for (auto& entry : serialized_entries) {
+      VLOG(4) << entry;
+    }
+  }
+
+  // TODO(b/340913913): each data source will produce one TransportPayload
+  // per call to Fetch(). We should instead combine the logs of multiple
+  // sources into a single payload to reduce QPS.
+  proto::TransportPayload transport_payload;
+  WrapEntriesInTransportPayload(source_name, serialized_entries,
+                                &transport_payload);
+
+  auto enqueue_success_callback =
+      base::BindOnce(&DataAggregatorService::HandleEnqueueResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(source_name));
+
+  // TODO(b/339455254): have each data source specify a priority instead
+  // of assuming kLow for every enqueue.
+  uploader_remote_->Enqueue(transport_payload.SerializeAsString(),
+                            chromeos::cfm::mojom::EnqueuePriority::kLow,
+                            std::move(enqueue_success_callback));
+}
+
+void DataAggregatorService::WrapEntriesInTransportPayload(
+    const std::string& source_name,
+    const std::vector<std::string>& serialized_entries,
+    proto::TransportPayload* transport_payload) {
+  // TODO(b/336777241): use different payloads for different source types.
+  // Using LogPayload for everything at this time.
+  proto::LogPayload* log_payload = transport_payload->mutable_log_payload();
+  proto::LogSet* log_set = log_payload->add_log_sets();
+  google::protobuf::RepeatedPtrField<proto::LogEntry>* entries =
+      log_set->mutable_entries();
+
+  log_set->set_log_source(source_name);
+
+  // Deserialize the entries back into protos and append them to the payload.
+  for (const auto& entry_str : serialized_entries) {
+    proto::LogEntry entry;
+    if (!entry.ParseFromString(entry_str)) {
+      LOG(WARNING) << "Unable to parse entry. Dropping '" << entry_str << "'";
+    } else {
+      entries->Add(std::move(entry));
+    }
+  }
+
+  auto timestamp =
+      (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
+
+  transport_payload->set_collection_timestamp_ms(timestamp);
+  transport_payload->set_permanent_id(device_id_);
 }
 
 void DataAggregatorService::HandleEnqueueResponse(
     const std::string& source_name,
-    bool success) {
+    chromeos::cfm::mojom::LoggerStatusPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success) {
+  if (status->code != chromeos::cfm::mojom::LoggerErrorCode::kOk) {
     LOG(ERROR) << "Recent enqueue for source '" << source_name
-               << "' failed. Trying again in " << kFetchFrequency;
+               << "' failed with error code: " << status->code
+               << ". Trying again in " << kFetchFrequency;
     return;
   }
 

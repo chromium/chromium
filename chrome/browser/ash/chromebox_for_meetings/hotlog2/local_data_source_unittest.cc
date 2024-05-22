@@ -32,8 +32,9 @@ void FetchCallbackFn(const std::vector<std::string>& expected_data,
   EXPECT_EQ(expected_data, actual_data);
 }
 
-void FetchCallbackFnWithRegex(const std::vector<std::string>& expected_data,
-                              const std::vector<std::string>& actual_data) {
+[[maybe_unused]] void FetchCallbackFnWithRegex(
+    const std::vector<std::string>& expected_data,
+    const std::vector<std::string>& actual_data) {
   EXPECT_EQ(expected_data.size(), actual_data.size());
   for (size_t i = 0; i < expected_data.size(); i++) {
     EXPECT_TRUE(RE2::FullMatch(actual_data[i], expected_data[i]));
@@ -83,6 +84,16 @@ class LocalDataSourcePeer : public LocalDataSource {
     }
   }
 
+  // Give public access to BuildLogEntryFromLogLine() so we can
+  // test the regex matching capabilities.
+  void BuildLogEntryFromLogLineForTesting(
+      proto::LogEntry& entry,
+      const std::string& line,
+      const uint64_t default_timestamp,
+      const proto::LogSeverity& default_severity) {
+    BuildLogEntryFromLogLine(entry, line, default_timestamp, default_severity);
+  }
+
   // Add a wrapper around Fetch invocations for convenience. Use the callback
   // function defined above for data verification.
   void RunFetchWithExpectedData(const std::vector<std::string>& expected_data) {
@@ -106,6 +117,9 @@ class LocalDataSourcePeer : public LocalDataSource {
   const std::string& GetDisplayName() override { return kDataSourceName; }
   std::vector<std::string> GetNextData() override { return {next_data_}; }
 
+  // Override this and avoid serialization as it greatly complicates testing
+  void SerializeDataBuffer(std::vector<std::string>& buffer) override {}
+
  private:
   std::string next_data_;
 };
@@ -128,16 +142,8 @@ TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
 
   source.FillDataBufferForTesting({"aa", "aa", "b", "b", "bb", "aa"});
 
-  // Verify we only get the unique data, and that it has a timestamp
-  const std::string ts_regex = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z ";
-  std::vector<std::string> expected_data = {"aa", "b", "bb", "aa"};
-  for (size_t i = 0; i < expected_data.size(); i++) {
-    expected_data[i] = ts_regex + expected_data[i];
-  }
-
-  // Using special regex callback to account for timestamps
-  auto callback = base::BindOnce(&FetchCallbackFnWithRegex, expected_data);
-  source.Fetch(std::move(callback));
+  // Verify we only get the unique data
+  source.RunFetchWithExpectedData({"aa", "b", "bb", "aa"});
 }
 
 TEST(HotlogLocalDataSourceTest, TestFlushWithVariousFetches) {
@@ -212,6 +218,58 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
 
   new_source.FillDataBufferForTesting(fake_data);
   new_source.RunFetchWithExpectedData(fake_data);
+}
+
+TEST(HotlogLocalDataSourceTest, TestTimestampAndSeverityParser) {
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsIncremental);
+
+  const std::string timestamp_str = "2000-01-01T22:34:56.789987Z";
+  const std::string severity_str = "ERROR";
+  const uint64_t timestamp = 946766096789987;  // us since epoch
+  const proto::LogSeverity severity = proto::LOG_SEVERITY_ERROR;
+
+  const std::string default_timestamp_str = "1970-01-01T00:00:00.000000Z";
+  const std::string default_severity_str = "INFO";
+  const uint64_t default_timestamp = 0;  // us since epoch
+  const proto::LogSeverity default_severity = proto::LOG_SEVERITY_INFO;
+
+  const std::string& text_payload = "fake log";
+
+  proto::LogEntry entry;
+  std::string log_line;
+
+  // Test fully-formed log line
+  log_line = timestamp_str + " " + severity_str + " " + text_payload;
+  source.BuildLogEntryFromLogLineForTesting(entry, log_line, default_timestamp,
+                                            default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp);
+  EXPECT_EQ(entry.severity(), severity);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Test log line with missing severity
+  log_line = timestamp_str + " " + text_payload;
+  source.BuildLogEntryFromLogLineForTesting(entry, log_line, default_timestamp,
+                                            default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp);
+  EXPECT_EQ(entry.severity(), default_severity);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Test log line with missing timestamp
+  log_line = severity_str + " " + text_payload;
+  source.BuildLogEntryFromLogLineForTesting(entry, log_line, default_timestamp,
+                                            default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), default_timestamp);
+  EXPECT_EQ(entry.severity(), severity);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Test log line with text payload only
+  log_line = text_payload;
+  source.BuildLogEntryFromLogLineForTesting(entry, log_line, default_timestamp,
+                                            default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), default_timestamp);
+  EXPECT_EQ(entry.severity(), default_severity);
+  EXPECT_EQ(entry.text_payload(), text_payload);
 }
 
 TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
