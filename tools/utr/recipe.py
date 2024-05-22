@@ -96,7 +96,8 @@ class LegacyRunner:
                skip_test,
                skip_prompts,
                build_dir=None,
-               additional_test_args=None):
+               additional_test_args=None,
+               reuse_task=None):
     """Constructor for LegacyRunner
 
     Args:
@@ -112,6 +113,7 @@ class LegacyRunner:
       build_dir: pathlib.Path to the build dir to build in. Will use the UTR's
           default otherwise if needed.
       additional_test_args: List of additional args to pass to the tests.
+      reuse_task: String of a swarming task to reuse.
     """
     self._recipes_py = recipes_py
     self._skip_prompts = skip_prompts
@@ -155,6 +157,9 @@ class LegacyRunner:
     elif skip_test:
       mode = 'RUN_TYPE_COMPILE'
     input_props['run_type'] = mode
+
+    if reuse_task:
+      input_props['reuse_swarming_task'] = reuse_task
 
     # Need to pretend we're an actual build for various builder look-ups in
     # the recipe.

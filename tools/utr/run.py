@@ -77,6 +77,9 @@ def add_common_args(parser):
       'a bundle locally, run `./recipes.py bundle` in your desired recipe '
       'checkout. This creates a dir called "bundle" that can be pointed to '
       'with this arg.')
+  parser.add_argument('--reuse-task',
+                      type=str,
+                      help='Ruse the cas digest of the provided swarming task')
 
 
 def add_compile_args(parser):
@@ -137,6 +140,9 @@ def parse_args(args=None):
   if not args.run_mode:
     parser.print_help()
     parser.error('Please select a run_mode: compile,test,compile-and-test')
+  if args.reuse_task and args.run_mode != 'test':
+    parser.print_help()
+    parser.error('reuse-task is only compatible with "test"')
   return args
 
 
@@ -186,6 +192,7 @@ def main():
       args.force,
       args.build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
+      reuse_task=args.reuse_task,
   )
   exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2)
