@@ -1801,13 +1801,27 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
       stats_(HashTableStatsPtr<Allocator>::copy(other.stats_))
 #endif
 {
-  if (other.size())
-    ReserveCapacityForSize(other.size());
-  // Copy the hash table the dumb way, by adding each element to the new
-  // table.  It might be more efficient to copy the table slots, but it's not
-  // clear that efficiency is needed.
-  for (const auto& element : other)
-    insert(element);
+  DCHECK(!other.AccessForbidden());
+  table_size_ = other.table_size_;
+  if (table_size_ == 0) {
+    return;
+  }
+  table_ = AllocateTable(table_size_);
+  key_count_ = other.key_count_;
+  deleted_count_ = other.deleted_count_;
+
+  for (unsigned i = 0; i < table_size_; i++) {
+    if (other.IsEmptyBucket(other.table_[i])) {
+      // Do nothing. All entries are initially empty by AllocateTable().
+    } else if (other.IsDeletedBucket(other.table_[i])) {
+      ConstructHashTraitsDeletedValue<KeyTraits>(
+          Extractor::ExtractKey(table_[i]));
+    } else {
+      new (&table_[i]) ValueType(other.table_[i]);
+      ConstructTraits<ValueType, Traits, Allocator>::NotifyNewElement(
+          &table_[i]);
+    }
+  }
 }
 
 template <typename Key,
