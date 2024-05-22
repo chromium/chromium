@@ -8475,7 +8475,7 @@
       "izuzic@google.com",
       "ioanap@chromium.org"
     ],
-    "expiry_milestone": 126
+    "expiry_milestone": 128
   },
   {
     "name": "upm-local-with-migration",
@@ -8483,7 +8483,7 @@
       "izuzic@google.com",
       "ioanap@chromium.org"
     ],
-    "expiry_milestone": 126
+    "expiry_milestone": 128
   },
   {
     "name": "upm-sync-only-in-gms-core",
@@ -8491,7 +8491,7 @@
       "sygiet@google.com",
       "vasilii@chromium.org"
     ],
-    "expiry_milestone": 127
+    "expiry_milestone": 128
   },
   {
     "name": "upstream-trusted-reports-firmware",
