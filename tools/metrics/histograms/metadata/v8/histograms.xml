@@ -1331,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ProduceCodeCacheMicroseconds" units="microseconds"
-    expires_after="2024-06-30">
+    expires_after="2024-12-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
