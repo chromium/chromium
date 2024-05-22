@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
 
@@ -26,6 +25,8 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
+
+class ModelQualityLogEntry;
 
 class ModelQualityLogsUploaderService {
  public:
@@ -47,13 +48,15 @@ class ModelQualityLogsUploaderService {
   // Sets system profile proto corresponding to the logging_metadata.
   virtual void SetSystemProfileProto(proto::LoggingMetadata* logging_metadata);
 
-  void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry);
-
   // Returns the WeakPtr for uploading logs during model qualtiy logs
   // destruction.
   base::WeakPtr<ModelQualityLogsUploaderService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  // Test-only setter. Pairs well with TestUrlLoaderFactory.
+  void SetUrlLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
   friend class ModelQualityLogsUploaderServiceTest;

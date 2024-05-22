@@ -4,8 +4,6 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
-#include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 
@@ -18,29 +16,22 @@ ModelQualityLogEntry::ModelQualityLogEntry(
       uploader_(uploader) {}
 
 ModelQualityLogEntry::~ModelQualityLogEntry() {
-  // Upload logs if we have reference to the uploader service and the
-  // LogAiDataRequest is not null. This can happen when the logs are not
-  // uploaded in the feature which owns the ModelQualityLogEntry for e.g when
-  // chrome is closed.
-  bool uploaded_on_destruction = false;
-  if (uploader_ && log_ai_data_request_) {
-    auto key = GetModelExecutionFeature(log_ai_data_request_->feature_case());
+  // Upload logs upon destruction. Typical usage will destroy a log entry
+  // intentionally in order to trigger upload. However, uploading upon
+  // destruction also covers the case when the logs are not explicitly uploaded
+  // in the feature code -- for example, when Chrome is closed.
 
-    if (key && uploader_->CanUploadLogs(*key)) {
-      // Set the system profile proto before upload. We do that here as we need
-      // to access the API on //chrome.
-      uploader_->SetSystemProfileProto(
-          log_ai_data_request_->mutable_logging_metadata());
-
-      // We pass the ownership of the LogAiDataRequest to avoid re-uploading the
-      // logs.
-      uploader_->UploadModelQualityLogs(std::move(log_ai_data_request_));
-      uploaded_on_destruction = true;
-    }
+  // Bail early if there's nothing to upload. The uploader will not exist if
+  // uploading is not allowed -- for example, in Incognito mode.
+  if (!log_ai_data_request_) {
+    return;
   }
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction",
-      uploaded_on_destruction);
+  auto feature = GetModelExecutionFeature(log_ai_data_request_->feature_case());
+  if (!feature || !uploader_ || !uploader_->CanUploadLogs(*feature)) {
+    return;
+  }
+
+  uploader_->UploadModelQualityLogs(std::move(log_ai_data_request_));
 }
 
 // static
