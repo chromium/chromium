@@ -198,8 +198,6 @@
 
 #include "base/threading/platform_thread_win.h"
 #include "net/base/winsock_init.h"
-#include "sandbox/policy/win/sandbox_win.h"
-#include "sandbox/win/src/sandbox.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -213,7 +211,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "media/device_monitors/system_message_window_win.h"
-#include "sandbox/win/src/process_mitigations.h"
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "media/device_monitors/device_monitor_udev.h"
 #endif
@@ -393,16 +390,6 @@ mojo::PendingRemote<data_decoder::mojom::BleScanParser> GetBleScanParser() {
   return ble_scan_parser;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_WIN)
-// Disable dynamic code using ACG. Prevents the browser process from generating
-// dynamic code or modifying executable code. See comments in
-// sandbox/win/src/security_level.h. Only available on Windows 10 RS1 (1607,
-// Build 14393) onwards.
-BASE_FEATURE(kBrowserDynamicCodeDisabled,
-             "BrowserDynamicCodeDisabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
 
 class OopDataDecoder : public data_decoder::ServiceProvider {
  public:
@@ -620,15 +607,6 @@ int BrowserMainLoop::EarlyInitialization() {
   zx_status_t result =
       zx::job::default_job()->set_critical(0, *zx::process::self());
   ZX_CHECK(ZX_OK == result, result) << "zx_job_set_critical";
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  if (!parsed_command_line_->HasSwitch(switches::kSingleProcess) &&
-      base::FeatureList::IsEnabled(kBrowserDynamicCodeDisabled) &&
-      parameters_.sandbox_info && parameters_.sandbox_info->broker_services) {
-    parameters_.sandbox_info->broker_services->RatchetDownSecurityMitigations(
-        sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
-  }
 #endif
 
   if (parsed_command_line_->HasSwitch(switches::kRendererProcessLimit)) {

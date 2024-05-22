@@ -104,6 +104,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "sandbox/policy/switches.h"
+#include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
@@ -509,6 +512,24 @@ void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
   platform_auth_policy_observer_.reset();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
+}
+
+void ChromeBrowserMainPartsWin::PostEarlyInitialization() {
+  // This must happen when Chrome is still in single-threaded mode, in
+  // particular before the launcher thread has been created. This mitigation is
+  // not enabled if running in single-process mode or the GPU is in-process. It
+  // is also not enabled if the sandbox is disabled.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kInProcessGPU) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kNoSandbox) &&
+      base::FeatureList::IsEnabled(features::kBrowserDynamicCodeDisabled)) {
+    sandbox::SandboxFactory::GetBrokerServices()
+        ->RatchetDownSecurityMitigations(
+            sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
+  }
 }
 
 void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {

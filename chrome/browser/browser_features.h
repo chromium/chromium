@@ -155,6 +155,9 @@ BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
 BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
+#endif
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
