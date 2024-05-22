@@ -783,19 +783,18 @@ config("compiler") {
       ldflags += [ "-Wl,-mllvm,-disable-auto-upgrade-debug-info" ]
     }
 
-    # TODO(crbug.com/335365324): Enable on other platforms.
-    if (is_android && !optimize_for_size) {
+    if (!optimize_for_size) {
       # Ideally the compiler would handle this automatically with PGO (see
       # comments at https://crrev.com/c/5440500).
-      #
-      # Android binary size impact (as of April 2024): The arm64 native code
-      # size increases by ~627KB (or 0.34%: the arm64 native code size in
-      # M124 is 178MB).
       cflags += [
         "-mllvm",
         "-inlinehint-threshold=360",
       ]
-      ldflags += [ "-Wl,-mllvm,-inlinehint-threshold=360" ]
+      if (is_win) {
+        ldflags += [ "-mllvm:-inlinehint-threshold=360" ]
+      } else {
+        ldflags += [ "-Wl,-mllvm,-inlinehint-threshold=360" ]
+      }
     }
 
     # TODO(crbug.com/40182783): investigate why this isn't effective on
