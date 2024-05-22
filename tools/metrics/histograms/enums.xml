@@ -32520,6 +32520,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="TAB_GROUP"/>
   <int value="7" label="WEBAPP_NOTIFICATION"/>
   <int value="8" label="FEED"/>
+  <int value="9" label="PAGE_INSIGHTS"/>
+  <int value="10" label="GOOGLE_BOTTOM_BAR"/>
 </enum>
 
 <enum name="ShareSourceAndroid">

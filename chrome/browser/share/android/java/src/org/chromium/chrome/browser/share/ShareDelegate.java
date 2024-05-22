@@ -12,7 +12,8 @@ import org.chromium.components.browser_ui.share.ShareParams;
 /** Interface to expose sharing to external classes. */
 public interface ShareDelegate {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
+    // should never be reused. Ensure new values are also added to ShareOrigin in
+    // //tools/metrics/histograms/enums.xml.
     @IntDef({
         ShareOrigin.OVERFLOW_MENU,
         ShareOrigin.TOP_TOOLBAR,
