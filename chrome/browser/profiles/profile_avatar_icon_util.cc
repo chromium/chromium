@@ -296,8 +296,7 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 
 ui::ImageModel GetGuestAvatar(int size) {
   return ui::ImageModel::FromVectorIcon(
-      features::IsChromeRefresh2023() ? kUserAccountAvatarRefreshIcon
-                                      : kUserAccountAvatarIcon,
+      kUserAccountAvatarRefreshIcon,
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
           ? ui::kColorMenuIcon
           : ui::kColorAvatarIconGuest,

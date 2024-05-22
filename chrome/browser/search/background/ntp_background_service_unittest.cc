@@ -111,12 +111,9 @@ class NtpBackgroundServiceTest : public testing::Test,
 
 INSTANTIATE_TEST_SUITE_P(All, NtpBackgroundServiceTest, ::testing::Bool());
 
-TEST_P(NtpBackgroundServiceTest, CollectionRequest) {
-  // TODO (crbug/1522182): Test fails under ChromeRefresh2023. Skip until fixed
-  //                       or removed.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO(crbug/41495146): Test fails post-ChromeRefresh2023. Skip until fixed
+// or removed.
+TEST_P(NtpBackgroundServiceTest, DISABLED_CollectionRequest) {
   g_browser_process->SetApplicationLocale("foo");
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();

@@ -569,12 +569,8 @@ void ThemeService::SetBrowserColorScheme(
 }
 
 ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
-  // If not running ChromeRefresh2023 we should always defer to the system color
-  // scheme.
-  return features::IsChromeRefresh2023()
-             ? static_cast<BrowserColorScheme>(
-                   profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme))
-             : BrowserColorScheme::kSystem;
+  return static_cast<BrowserColorScheme>(
+      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme));
 }
 
 void ThemeService::SetUserColor(std::optional<SkColor> user_color) {

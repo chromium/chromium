@@ -36,12 +36,6 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
                 tab_->GetBrowserContext()));
   }
 
-  void SetChromeRefresh2023() {
-    iph_feature_list_.Reset();
-    iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature});
-  }
-
   NewTabPageFeaturePromoHelper* helper() { return helper_.get(); }
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {

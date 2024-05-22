@@ -934,17 +934,7 @@ TEST_F(ThemeServiceTest, SetUseDeviceTheme) {
   EXPECT_FALSE(theme_service_->UsingDeviceTheme());
 }
 
-class BrowserColorSchemeTest : public ThemeServiceTest,
-                               public testing::WithParamInterface<bool> {
- protected:
-  BrowserColorSchemeTest() {
-    feature_list_.InitWithFeatureState(features::kChromeRefresh2023,
-                                       GetParam());
-  }
-};
-
-// Sets and gets browser color scheme.
-TEST_P(BrowserColorSchemeTest, SetBrowserColorScheme) {
+TEST_F(ThemeServiceTest, SetBrowserColorScheme) {
   // Default without anything explicitly set should be kSystem.
   ThemeService::BrowserColorScheme color_scheme =
       theme_service_->GetBrowserColorScheme();
@@ -955,15 +945,7 @@ TEST_P(BrowserColorSchemeTest, SetBrowserColorScheme) {
       ThemeService::BrowserColorScheme::kLight);
   color_scheme = theme_service_->GetBrowserColorScheme();
 
-  // If not running ChromeRefresh2023 the pref should always track the system's
-  // color scheme.
-  if (features::IsChromeRefresh2023()) {
-    EXPECT_EQ(color_scheme, ThemeService::BrowserColorScheme::kLight);
-  } else {
-    EXPECT_EQ(color_scheme, ThemeService::BrowserColorScheme::kSystem);
-  }
+  EXPECT_EQ(color_scheme, ThemeService::BrowserColorScheme::kLight);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, BrowserColorSchemeTest, testing::Bool());
 
 }  // namespace theme_service_internal
