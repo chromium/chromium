@@ -49,7 +49,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(
-        {/*enabled=*/kContentPushNotifications, kIOSTipsNotifications},
+        {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications},
         {/*disabled=*/});
     AddTestCasesToManager(manager_, browser_state_info(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
