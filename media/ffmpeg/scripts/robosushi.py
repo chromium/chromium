@@ -16,7 +16,7 @@
 # --build-gn:   build ffmpeg configs for all platforms, then generate gn config.
 # --patches:    generate chromium/patches/README and commit it locally.
 
-import getopt
+import optparse
 import os
 import sys
 from subprocess import check_output
@@ -157,7 +157,8 @@ steps = {
 
     # This is a WIP, present in case you're feeling particularly brave.  :)
     "start_fake_deps_roll": {
-        "desc": "Try a test deps roll against the sushi (not master) branch",  # nocheck
+        "desc":
+        "Try a test deps roll against the sushi (not master) branch",  # nocheck
         "do_fn": robo_branch.TryFakeDepsRoll
     },
 
@@ -223,86 +224,99 @@ def RunSteps(cfg, step_names):
 
 
 def ListSteps():
-    for name, step in steps.iteritems():
+    for name, step in steps.items():
         if "desc" in step:
             print(f"{name}: {step['desc']}\n")
 
 
 def main(argv):
+    parser = optparse.OptionParser(usage='Usage: %prog [options]')
+    parser.add_option('--prompt',
+                      action='store_true',
+                      help='Prompt for each robosushi step')
+    parser.add_option(
+        '--setup',
+        action='store_true',
+        help='Run initial setup steps. Do this once before auto-merge.')
+    parser.add_option('--test',
+                      action='store_true',
+                      help='Build and run all tests')
+    parser.add_option(
+        '--build-gn',
+        action='store_true',
+        help='Unconditionally build all the configs and import them.')
+    parser.add_option('--patches',
+                      action='store_true',
+                      help='Update patches file only')
+    parser.add_option('--auto-merge',
+                      action='store_true',
+                      help='Run auto-merge. (Usually what you want)')
+    parser.add_option('--list', action='store_true', help='List steps')
+    parser.add_option('--no-skip',
+                      action='store_true',
+                      help='Don\'t allow any steps to be skipped')
+    parser.add_option('--force-gn-rebuild',
+                      action='store_true',
+                      help='Force rebuild of GN args.')
+    parser.add_option('--step', action='append', help='Step to run.')
+
+    options, args = parser.parse_args(argv)
+
+    if options.list:
+        ListSteps()
+        return 0
+
     robo_configuration = config.RoboConfiguration()
     robo_configuration.chdir_to_ffmpeg_home()
 
-    # TODO(liberato): Add a way to skip |skip_fn|.
-    parsed, remaining = getopt.getopt(argv, "", [
-        "prompt",
-        "setup",
-        "test",
-        "build-gn",
-        "patches",
-        "force-gn-rebuild",
-        "auto-merge",
-        "step=",
-        "list",
-        "dev-merge",
-        "no-skip",
-    ])
-
     exec_steps = []
 
-    for opt, arg in parsed:
-        if opt == "--prompt":
-            robo_configuration.set_prompt_on_call(True)
-        elif opt == "--setup":
-            exec_steps = ["setup"]
-        elif opt == "--test":
-            robo_build.BuildAndImportFFmpegConfigForHost(robo_configuration)
-            robo_build.RunTests(robo_configuration)
-        elif opt == "--build-gn":
-            # Unconditionally build all the configs and import them.
-            robo_build.BuildAndImportAllFFmpegConfigs(robo_configuration)
-        elif opt == "--patches":
-            # To be run after committing a local change to fix the tests.
-            if not robo_branch.IsWorkingDirectoryClean():
-                raise errors.UserInstructions(
-                    "Working directory must be clean to generate patches file")
-            robo_branch.UpdatePatchesFileUnconditionally(robo_configuration)
-        elif opt == "--auto-merge":
-            exec_steps = ["auto-merge"]
-        elif opt == "--step":
-            exec_steps = arg.split(",")
-        elif opt == "--list":
-            ListSteps()
-        elif opt == "--no-skip":
-            robo_configuration.set_skip_allowed(False)
-        elif opt == "--dev-merge":
-            # Use HEAD rather than an origin branch, so that local robosushi
-            # changes are part of the merge.  Only useful for testing those
-            # changes.
-            new_merge_base = shell.output_or_error(
-                ["git", "log", "--format=%H", "-1"])
-            shell.log(
-                f"Using {new_merge_base} as new origin merge base for testing")
-            robo_configuration.override_origin_merge_base(new_merge_base)
-        elif opt == "--force-gn-rebuild":
-            robo_configuration.set_force_gn_rebuild()
-        else:
-            raise Exception("Unknown option '%s'" % opt)
+    if options.prompt:
+        robo_configuration.set_prompt_on_call(True)
+    if options.no_skip:
+        robo_configuration.set_skip_allowed(False)
+    if options.force_gn_rebuild:
+        robo_configuration.set_force_gn_rebuild()
 
-        # TODO: make sure that any untracked autorename files are removed, or
-        # make sure that the autorename git script doesn't try to 'git rm'
-        # untracked files, else the script fails.
-        RunSteps(robo_configuration, exec_steps)
-        # TODO: Start a fake deps roll.  To do this, we would:
-        # Create new remote branch from the current remote sushi branch.
-        # Create and check out a new local branch at the current local branch.
-        # Make the new local branch track the new remote branch.
-        # Push to origin/new remote branch.
-        # Start a fake deps roll CL that runs the *san bots.
-        # Switch back to original local branch.
-        # For extra points, include a pointer to the fake deps roll CL in the
-        # local branch, so that when it's pushed for review, it'll point the
-        # reviewer at it.
-        # TODO: git cl upload for review.
+    if options.setup:
+        exec_steps += ["setup"]
+    if options.test:
+        robo_build.BuildAndImportFFmpegConfigForHost(robo_configuration)
+        robo_build.RunTests(robo_configuration)
+    if options.build_gn:
+        # Unconditionally build all the configs and import them.
+        robo_build.BuildAndImportAllFFmpegConfigs(robo_configuration)
+    if options.patches:
+        # To be run after committing a local change to fix the tests.
+        if not robo_branch.IsWorkingDirectoryClean():
+            raise errors.UserInstructions(
+                "Working directory must be clean to generate patches file")
+        robo_branch.UpdatePatchesFileUnconditionally(robo_configuration)
+    if options.auto_merge:
+        exec_steps += ["auto-merge"]
+    if options.step:
+        exec_steps += options.step
+
+    if len(exec_steps) == 0:
+        parser.print_help()
+        return 1
+
+    # TODO: make sure that any untracked autorename files are removed, or
+    # make sure that the autorename git script doesn't try to 'git rm'
+    # untracked files, else the script fails.
+    RunSteps(robo_configuration, exec_steps)
+
+    # TODO: Start a fake deps roll.  To do this, we would:
+    # Create new remote branch from the current remote sushi branch.
+    # Create and check out a new local branch at the current local branch.
+    # Make the new local branch track the new remote branch.
+    # Push to origin/new remote branch.
+    # Start a fake deps roll CL that runs the *san bots.
+    # Switch back to original local branch.
+    # For extra points, include a pointer to the fake deps roll CL in the
+    # local branch, so that when it's pushed for review, it'll point the
+    # reviewer at it.
+    # TODO: git cl upload for review.
 
 
 if __name__ == "__main__":

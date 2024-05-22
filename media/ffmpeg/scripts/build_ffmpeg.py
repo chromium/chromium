@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2014 The Chromium Authors.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,7 +37,6 @@ import gn_helpers
 
 BRANDINGS = [
     'Chrome',
-    'ChromeOS',
     'Chromium',
 ]
 
@@ -55,7 +54,8 @@ Valid combinations are android     [%(android)s]
                        mac         [%(mac)s]
                        win         [%(win)s]
 
-If no target architecture is specified all will be built.
+If no target architecture is specified all will be built. Usually you don't want
+to run this script manually and should instead be using robosushi.py.
 
 Platform specific build notes:
   android:
@@ -100,7 +100,7 @@ Platform specific build notes:
     under Cygwin (or MinGW, but as of 1.0.11, it has serious performance issues
     with make which makes building take hours).
 
-    Additionally, ensure you have the correct toolchain environment for building.
+    Additionally, ensure you have the correct toolchain environment for builds.
     The x86 toolchain environment is required for ia32 builds and the x64 one
     for x64 builds.  This can be verified by running "cl.exe" and checking if
     the version string ends with "for x64" or "for x86."
@@ -112,7 +112,6 @@ Platform specific build notes:
 
 Resulting binaries will be placed in:
   build.TARGET_ARCH.TARGET_OS/Chrome/
-  build.TARGET_ARCH.TARGET_OS/ChromeOS/
   build.TARGET_ARCH.TARGET_OS/Chromium/
   """
 
@@ -151,10 +150,10 @@ class AndroidApiLevels:
 
     # Extracts the Android API levels from the Chromium Android GN config.
     # Before Q1 2021, these were grep'able from build/config/android/config.gni.
-    # With conditional logic introduced in that gni file, we seek to avoid fragility
-    # going forwards, at the cost of creating a full temporary GN Chromium Android
-    # build configuration just to extract the API levels here. Caches the results
-    # in api32 and api64 instance variables.
+    # With conditional logic introduced in that gni file, we seek to avoid
+    # fragility going forwards, at the cost of creating a full temporary GN
+    # Chromium Android build configuration just to extract the API levels here.
+    # Caches the results in api32 and api64 instance variables.
     def Setup(self):
         print('Creating a temporary GN config to retrieve Android API levels:')
 
@@ -986,29 +985,17 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
                 '--ar=cygwin-wrapper lib',
             ])
 
-    # Google Chrome & ChromeOS specific configuration.
+    # Google Chrome specific configuration.
     configure_flags['Chrome'].extend([
         '--enable-decoder=aac,h264',
         '--enable-demuxer=aac',
         '--enable-parser=aac,h264',
     ])
 
-    # Google ChromeOS specific configuration.
-    # We want to make sure to play everything Android generates and plays.
-    # http://developer.android.com/guide/appendix/media-formats.html
-    configure_flags['ChromeOS'].extend([
-        # Enable playing avi files.
-        '--enable-decoder=mpeg4',
-        '--enable-parser=h263,mpeg4video',
-        '--enable-demuxer=avi',
-    ])
-
     configure_flags['ChromeAndroid'].extend([
         '--enable-demuxer=aac',
         '--enable-parser=aac',
         '--enable-decoder=aac',
-
-        # TODO(dalecurtis, watk): Figure out if we need h264 parser for now?
     ])
 
     def do_build_ffmpeg(branding, configure_flags):
@@ -1033,14 +1020,6 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
         do_build_ffmpeg(
             'Chrome', configure_flags['Common'] +
             configure_flags['ChromeAndroid'] + configure_args)
-
-    if target_os in ['linux', 'linux-noasm']:
-        # ChromeOS enables MPEG4 which requires error resilience :(
-        chrome_os_flags = (configure_flags['Common'] +
-                           configure_flags['Chrome'] +
-                           configure_flags['ChromeOS'] + configure_args)
-        chrome_os_flags.remove('--disable-error-resilience')
-        do_build_ffmpeg('ChromeOS', chrome_os_flags)
 
     print('Done. If desired you may copy config.h/config.asm into the '
           'source/config tree using copy_config.sh.')

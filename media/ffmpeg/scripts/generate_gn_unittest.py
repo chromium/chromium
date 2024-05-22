@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env python3
 #
-# Copyright (c) 2011 The Chromium Authors.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittest for generate_gn.py.
@@ -336,8 +336,8 @@ class SourceSetUnittest(unittest.TestCase):
         e = SourceSet(set(['common', 'arm']),
                       set([SourceListCondition('arm', 'Chromium', 'linux')]))
         f = SourceSet(
-            set(['common', 'arm-neon', 'chrome', 'chromeos']),
-            set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')]))
+            set(['common', 'arm-neon', 'chrome', 'chrome']),
+            set([SourceListCondition('arm-neon', 'Chrome', 'linux')]))
 
         expected = set()
         expected.add(
@@ -349,7 +349,7 @@ class SourceSetUnittest(unittest.TestCase):
                     SourceListCondition('x64', 'Chromium', 'linux'),
                     SourceListCondition('x64', 'Chrome', 'linux'),
                     SourceListCondition('arm', 'Chromium', 'linux'),
-                    SourceListCondition('arm-neon', 'ChromeOS', 'linux')
+                    SourceListCondition('arm-neon', 'Chrome', 'linux')
                 ])))
         expected.add(
             SourceSet(
@@ -369,12 +369,12 @@ class SourceSetUnittest(unittest.TestCase):
                 set([
                     SourceListCondition('ia32', 'Chrome', 'linux'),
                     SourceListCondition('x64', 'Chrome', 'linux'),
-                    SourceListCondition('arm-neon', 'ChromeOS', 'linux')
+                    SourceListCondition('arm-neon', 'Chrome', 'linux')
                 ])))
         expected.add(
             SourceSet(
-                set(['arm-neon', 'chromeos']),
-                set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')])))
+                set(['arm-neon', 'chrome']),
+                set([SourceListCondition('arm-neon', 'Chrome', 'linux')])))
 
         source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f])
         self.assertEqualSourceSets(expected, set(source_sets))

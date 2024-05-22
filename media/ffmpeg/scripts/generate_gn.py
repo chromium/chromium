@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2012 The Chromium Authors.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Creates a GN include file for building FFmpeg from source.
@@ -81,7 +81,7 @@ _Attrs = ('ARCHITECTURE', 'TARGET', 'PLATFORM')
 Attr = collections.namedtuple('Attr', _Attrs)(*_Attrs)
 SUPPORT_MATRIX = {
     Attr.ARCHITECTURE: set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon']),
-    Attr.TARGET: set(['Chromium', 'Chrome', 'ChromeOS']),
+    Attr.TARGET: set(['Chromium', 'Chrome']),
     Attr.PLATFORM: set(['android', 'linux', 'win', 'mac'])
 }
 
@@ -372,7 +372,6 @@ class SourceSet(object):
 
         # Write out all C sources.
         c_sources = list(filter(IsCFile, sources))
-        print(c_sources)
         if c_sources:
             stanza += indent(GN_C_SOURCES_BEGIN)
             for name in c_sources:
@@ -492,8 +491,6 @@ def GetAttributeValuesRange(attribute, condition):
     # fragile to changes in our supported platforms. Fortunately, these platforms
     # don't change often. Refactor if we run into trouble.
     platform = condition.PLATFORM
-    if attribute == Attr.TARGET and platform != '*' and platform != 'linux':
-        values.difference_update(['ChromeOS'])
     if attribute == Attr.ARCHITECTURE and platform == 'win':
         values.intersection_update(['ia32', 'x64', 'arm64'])
     if attribute == Attr.ARCHITECTURE and platform == 'mac':
@@ -989,7 +986,8 @@ def main():
                 if not os.path.exists(build_dir):
                     continue
 
-                print(f'Processing build directory: {name} {options.build_dir}')
+                print(
+                    f'Processing build directory: {name} {options.build_dir}')
                 print(build_dir)
                 object_files = GetObjectFiles(build_dir)
                 if not object_files:
@@ -1045,6 +1043,7 @@ def main():
         WriteGn(fd, sets)
 
     subprocess.run(['gn', 'format', gn_file_name])
+
 
 if __name__ == '__main__':
     main()

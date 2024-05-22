@@ -83,39 +83,45 @@ def ImportFFmpegConfigsIntoChromium(robo_configuration, write_git_file=False):
 
 
 def CopyConfigPythonTranslation(robo_configuration):
-  for opsys in ("android", "linux", "linux-noasm", "mac", "win"):
-    for target in ("Chromium", "Chrome", "ChromeOS"):
-      for arch in ("arm", "arm-neon", "arm64", "ia32", "x64", "mipsel", "mips64el"):
-        gen_dir = robo_configuration.target_config_directory(arch, opsys, target)
-        export_dir = robo_configuration.exported_configs_directory(
-          arch, opsys, target)
-        if not os.path.exists(os.path.join(gen_dir, "config.h")):
-          continue  # Don't waste time on non-existent configs.
+    for opsys in ("android", "linux", "linux-noasm", "mac", "win"):
+        for target in ("Chromium", "Chrome"):
+            for arch in ("arm", "arm-neon", "arm64", "ia32", "x64", "mipsel",
+                         "mips64el"):
+                gen_dir = robo_configuration.target_config_directory(
+                    arch, opsys, target)
+                export_dir = robo_configuration.exported_configs_directory(
+                    arch, opsys, target)
+                if not os.path.exists(os.path.join(gen_dir, "config.h")):
+                    continue  # Don't waste time on non-existent configs.
                     # if there is no config.h, skip.
-        for file in (("config.h",), ("config_components.h",), ("config.asm",),
-                     ("libavutil", "avconfig.h"), ("libavutil", "ffversion.h"),
-                     ("libavcodec", "bsf_list.c"),
-                     ("libavcodec", "codec_list.c"),
-                     ("libavcodec", "parser_list.c"),
-                     ("libavformat", "demuxer_list.c"),
-                     ("libavformat", "muxer_list.c"),
-                     ("libavformat", "protocol_list.c")):
-          copy_from = os.path.join(gen_dir, *file)
-          copy_to = os.path.join(export_dir, *file)
-          if os.path.exists(copy_from):
-            if not os.path.exists(os.path.dirname(copy_to)):
-              os.makedirs(os.path.dirname(copy_to))
-            print(f'CP {copy_from} {copy_to}')
-            shutil.copy(copy_from, copy_to)
-      # Since we cannot cross-compile for ios, we just duplicate the mac config
-      # for this platform.
-      if opsys == "mac":
-        mac_dir = robo_configuration.target_config_directory(arch, opsys, "noarch")
-        ios_dir = robo_configuration.target_config_directory(arch, 'ios', "noarch")
-        copy_from = os.path.dirname(mac_dir)
-        if os.path.exists(copy_from):
-          copy_to = os.path.dirname(ios_dir)
-          shutil.copy(copy_from, copy_to)
+                for file in (("config.h", ), ("config_components.h", ),
+                             ("config.asm", ), ("libavutil", "avconfig.h"),
+                             ("libavutil", "ffversion.h"), ("libavcodec",
+                                                            "bsf_list.c"),
+                             ("libavcodec", "codec_list.c"), ("libavcodec",
+                                                              "parser_list.c"),
+                             ("libavformat", "demuxer_list.c"),
+                             ("libavformat",
+                              "muxer_list.c"), ("libavformat",
+                                                "protocol_list.c")):
+                    copy_from = os.path.join(gen_dir, *file)
+                    copy_to = os.path.join(export_dir, *file)
+                    if os.path.exists(copy_from):
+                        if not os.path.exists(os.path.dirname(copy_to)):
+                            os.makedirs(os.path.dirname(copy_to))
+                        print(f'CP {copy_from} {copy_to}')
+                        shutil.copy(copy_from, copy_to)
+            # Since we cannot cross-compile for ios, we just duplicate the mac config
+            # for this platform.
+            if opsys == "mac":
+                mac_dir = robo_configuration.target_config_directory(
+                    arch, opsys, "noarch")
+                ios_dir = robo_configuration.target_config_directory(
+                    arch, 'ios', "noarch")
+                copy_from = os.path.dirname(mac_dir)
+                if os.path.exists(copy_from):
+                    copy_to = os.path.dirname(ios_dir)
+                    shutil.copy(copy_from, copy_to)
 
 
 def BuildAndImportAllFFmpegConfigs(robo_configuration):
@@ -195,6 +201,7 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
         raise Exception("%s didn't complete successfully" % target)
     shell.log("%s ran successfully" % target)
 
+
 def BuildChromex86(robo_configuration):
     """Build a Chromium target for x86 to make sure ffmpeg builds there.
 
@@ -211,6 +218,7 @@ def BuildChromex86(robo_configuration):
     ]):
         raise Exception(f"Failed to build {target}")
     shell.log(f"x86 {target} built successfully")
+
 
 def RunTests(robo_configuration):
     """Build all tests and run them locally.

@@ -44,11 +44,13 @@ def InstallPrereqs(robo_configuration):
         raise Exception("I don't know how to install deps for host os %s" %
                         robo_configuration.host_operating_system())
 
+
 def CreateDefaultGnArgs():
     return ("is_debug=false", "is_clang=true", "proprietary_codecs=true",
             "media_use_libvpx=true", "media_use_ffmpeg=true",
             'ffmpeg_branding="Chrome"', "use_remoteexec=true",
             "dcheck_always_on=true")
+
 
 def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
     """Create and initialize a new out/ dir.
@@ -80,9 +82,10 @@ def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
         raise Exception(f"Unable to gn gen {relative_directory}")
 
     shell.log(f"Cleaning {relative_directory}")
-    if robo_configuration.Call(["ninja", "clean", "-C", relative_directory,
-                                "-t", "clean"]):
+    if robo_configuration.Call(
+        ["ninja", "clean", "-C", relative_directory, "-t", "clean"]):
         raise Exception(f"Unable to clean {relative_directory}")
+
 
 def EnsureNewASANDirWorks(robo_configuration):
     """Create the asan out dir and config for ninja builds.
@@ -93,10 +96,11 @@ def EnsureNewASANDirWorks(robo_configuration):
       robo_configuration: current RoboConfiguration.
     """
 
-    opts = CreateDefaultGnArgs() + ("is_asan=true");
+    opts = CreateDefaultGnArgs() + ("is_asan=true", )
     CreateAndInitOutputDirectory(robo_configuration,
                                  robo_configuration.relative_asan_directory(),
                                  opts)
+
 
 def Ensurex86ChromeOutputDir(robo_configuration):
     """Create the asan out dir and config for ninja builds.
@@ -107,11 +111,12 @@ def Ensurex86ChromeOutputDir(robo_configuration):
       robo_configuration: current RoboConfiguration.
     """
 
-    opts = CreateDefaultGnArgs() +
-           ("target_cpu=\"x86\"", "v8_target_cpu=\"arm\"");
+    opts = CreateDefaultGnArgs() + ("target_cpu=\"x86\"",
+                                    "v8_target_cpu=\"arm\"")
     CreateAndInitOutputDirectory(robo_configuration,
                                  robo_configuration.relative_x86_directory(),
                                  opts)
+
 
 def FileRead(filename):
     with io.open(filename, encoding='utf-8') as f:
