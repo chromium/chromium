@@ -271,6 +271,12 @@ const char kEnableViewportIntentsDescription[] =
     "When enabled the intents are detected live as the viewport is moved "
     "around.";
 
+const char kEnableNewParcelTrackingNumberDetectionName[] =
+    "Improve Tracking Number Detection";
+const char kEnableNewParcelTrackingNumberDetectionDescription[] =
+    "When enabled carrier names are parsed out and must match tracking "
+    "numbers.";
+
 const char kEnableExpKitTextClassifierDateName[] =
     "Date with Text Classifier in Experience Kit";
 const char kEnableExpKitTextClassifierDateDescription[] =

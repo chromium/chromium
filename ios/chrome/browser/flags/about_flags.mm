@@ -917,6 +917,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"intents-on-viewport", flag_descriptions::kEnableViewportIntentsName,
      flag_descriptions::kEnableViewportIntentsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableViewportIntents)},
+    {"improve-parcel-detection",
+     flag_descriptions::kEnableNewParcelTrackingNumberDetectionName,
+     flag_descriptions::kEnableNewParcelTrackingNumberDetectionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         web::features::kEnableNewParcelTrackingNumberDetection)},
     {"enable-expkit-text-classifier-date",
      flag_descriptions::kEnableExpKitTextClassifierDateName,
      flag_descriptions::kEnableExpKitTextClassifierDateDescription,

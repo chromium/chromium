@@ -235,6 +235,11 @@ extern const char kMeasurementsDescription[];
 extern const char kEnableViewportIntentsName[];
 extern const char kEnableViewportIntentsDescription[];
 
+// Title and description for the flag to enable improve parcel tracking
+// detection.
+extern const char kEnableNewParcelTrackingNumberDetectionName[];
+extern const char kEnableNewParcelTrackingNumberDetectionDescription[];
+
 // Title and description for the flag to enable text classifier date detection
 // in experience kit.
 extern const char kEnableExpKitTextClassifierDateName[];

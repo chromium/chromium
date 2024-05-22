@@ -5036,6 +5036,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "improve-parcel-detection",
+    "owners": [ "djean@google.com", "smcgruer@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
