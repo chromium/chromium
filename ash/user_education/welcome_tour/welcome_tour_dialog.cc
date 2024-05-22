@@ -39,13 +39,14 @@ constexpr gfx::Size kImagePreferredSize(240, 240);
 void WelcomeTourDialog::CreateAndShow(base::OnceClosure accept_callback,
                                       base::OnceClosure cancel_callback,
                                       base::OnceClosure close_callback) {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_HelpBubbleContainer);
   params.delegate = new WelcomeTourDialog(std::move(accept_callback),
                                           std::move(cancel_callback),
                                           std::move(close_callback));
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 
   auto* widget = new views::Widget;
   widget->Init(std::move(params));

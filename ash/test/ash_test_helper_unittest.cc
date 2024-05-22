@@ -47,8 +47,7 @@ TEST_F(AshTestHelperTest, AshTestHelper) {
   // Enough state is initialized to create a window.
   using views::Widget;
   std::unique_ptr<Widget> w1(new Widget);
-  Widget::InitParams params;
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.context = ash_test_helper()->GetContext();
   w1->Init(std::move(params));
   w1->Show();

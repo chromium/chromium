@@ -99,8 +99,9 @@ TEST_P(ArcCurvePathUtilPixelTest, basic) {
 
   // Create a top level widget.
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(gfx::Point(100, 100), gfx::Size(100, 100));
   init_params.parent = root_window;
   widget->Init(std::move(init_params));

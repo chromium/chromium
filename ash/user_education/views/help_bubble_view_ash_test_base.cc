@@ -116,7 +116,8 @@ void HelpBubbleViewAshTestBase::SetUp() {
   // Initialize a test `widget_` to be used as an anchor for help bubble
   // views. Note that shadow is removed since pixel tests of help bubble views
   // should not fail solely due to changes in shadow appearance of the anchor.
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.layer_type = ui::LAYER_SOLID_COLOR;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   widget_ = std::make_unique<views::Widget>();

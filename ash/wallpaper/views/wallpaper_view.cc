@@ -286,9 +286,9 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
   auto wallpaper_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "WallpaperViewWidget";
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = root_window->GetChildById(container_id);
   WallpaperView* wallpaper_view = new WallpaperView(blur_sigma);

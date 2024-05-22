@@ -286,14 +286,15 @@ void VirtualTrackpadView::Toggle() {
   // `TYPE_WINDOW`.
   delegate->SetContentsView(std::make_unique<VirtualTrackpadView>());
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = delegate.release();
   // TODO(b/252556382): The bounds and root should be where the user last
   // closed the window if any.
   params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                       kShellWindowId_OverlayContainer);
   params.bounds = gfx::Rect(kDefaultSize);
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = "VirtualTrackpadWidget";
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = true;

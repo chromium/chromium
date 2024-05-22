@@ -165,7 +165,8 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
   set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
   set_dialog_title(base::UTF8ToUTF16(params.app_name));
 
-  views::Widget::InitParams widget_params{};
+  views::Widget::InitParams widget_params{
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
   widget_params.z_order = ui::ZOrderLevel::kFloatingWindow;
   web_dialog_view_ = new views::WebDialogView(
       params.context, this, std::make_unique<WebContentsHandler>());
