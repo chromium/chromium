@@ -40,6 +40,7 @@ using ::testing::TestWithParam;
 
 const char kAllowedTestCountry[] = "au";
 const char kDeniedTestCountry[] = "br";
+const char kUsEngineId[] = "xkb:us::eng";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
 
@@ -564,6 +565,84 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
 
   EXPECT_THAT(editor_switch.GetBlockedReasons(),
               testing::ElementsAreArray(test_case.expected_blocked_reasons));
+}
+
+using DenylistTestCase = std::pair<std::string, EditorMode>;
+
+using EditorSwitchDenylistTest = TestWithParam<DenylistTestCase>;
+
+INSTANTIATE_TEST_SUITE_P(
+    EditorSwitchDenylist,
+    EditorSwitchDenylistTest,
+    testing::ValuesIn<DenylistTestCase>({
+        {"https://calendar.google.com", EditorMode::kBlocked},
+        {"https://calendar.google.com/c/1234", EditorMode::kBlocked},
+        {"https://docs.google.com", EditorMode::kBlocked},
+        {"https://docs.google.com/drawings/1234", EditorMode::kBlocked},
+        {"https://docs.google.com/document/1234", EditorMode::kBlocked},
+        {"https://docs.google.com/forms/1234", EditorMode::kBlocked},
+        {"https://docs.google.com/presentation/1234", EditorMode::kBlocked},
+        {"https://docs.google.com/spreadsheet/1234", EditorMode::kBlocked},
+        {"https://docs.google.com/videos/1234", EditorMode::kBlocked},
+        {"https://drive.google.com", EditorMode::kBlocked},
+        {"https://drive.google.com/1234", EditorMode::kBlocked},
+        {"https://keep.google.com", EditorMode::kBlocked},
+        {"https://keep.google.com/1234", EditorMode::kBlocked},
+        {"https://mail.google.com/chat", EditorMode::kBlocked},
+        {"https://mail.google.com/mail", EditorMode::kBlocked},
+        {"https://meet.google.com", EditorMode::kBlocked},
+        {"https://meet.google.com/1234", EditorMode::kBlocked},
+        {"https://script.google.com", EditorMode::kBlocked},
+        {"https://script.google.com/1234", EditorMode::kBlocked},
+        {"https://sites.google.com", EditorMode::kBlocked},
+        {"https://sites.google.com/view/test-page", EditorMode::kBlocked},
+        {"https://sites.google.com/1234", EditorMode::kBlocked},
+        {"https://outlook.com", EditorMode::kRewrite},
+        {"https://whatsapp.com", EditorMode::kRewrite},
+        {"https://x.com", EditorMode::kRewrite},
+        {"https://linkedin.com", EditorMode::kRewrite},
+    }));
+
+TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
+  const DenylistTestCase& test_case = GetParam();
+  const std::string& test_url = std::get<0>(test_case);
+  const EditorMode& expected_mode = std::get<1>(test_case);
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            chromeos::features::kFeatureManagementOrca,
+                            chromeos::features::kOrcaInternationalize},
+      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
+  ScopedBrowserLocale browser_locale("en");
+
+  std::unique_ptr<TestingProfile> profile =
+      CreateTestingProfile("testuser@gmail.com");
+  FakeSystem system;
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorContext context(&context_observer, &system, kAllowedTestCountry);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
+                             /*profile=*/profile.get(),
+                             /*context=*/&context);
+
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  mock_notifier->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile->GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  context.OnTabletModeUpdated(false);
+  context.OnActivateIme(kUsEngineId);
+  context.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER, test_url,
+                                        ""));
+  context.OnTextSelectionLengthChanged(10);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
 }
 
 using InputMethodTestCase = std::pair<std::string, EditorMode>;
