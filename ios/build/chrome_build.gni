@@ -123,6 +123,7 @@ if (ios_chrome_generate_order_file) {
   ios_enable_credential_provider_extension = false
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
+  ios_enable_push_notification_service_extension = false
   ios_enable_share_extension = false
   ios_enable_open_extension = false
   ios_enable_intents_extension = false
