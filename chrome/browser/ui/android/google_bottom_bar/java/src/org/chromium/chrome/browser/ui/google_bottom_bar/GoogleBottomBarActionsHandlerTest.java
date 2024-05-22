@@ -29,10 +29,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -43,7 +45,9 @@ import java.util.Set;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowLog.class})
 public class GoogleBottomBarActionsHandlerTest {
     private static final String TEST_URI = "https://www.test.com/";
     private final GURL mGURL = new GURL(TEST_URI);
@@ -58,6 +62,9 @@ public class GoogleBottomBarActionsHandlerTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
+    @Mock private PageInsightsCoordinator mPageInsightsCoordinator;
+    @Mock private Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
+
     private Activity mActivity;
     private GoogleBottomBarActionsHandler mGoogleBottomBarActionsHandler;
 
@@ -66,7 +73,11 @@ public class GoogleBottomBarActionsHandlerTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
         mGoogleBottomBarActionsHandler =
-                new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
+                new GoogleBottomBarActionsHandler(
+                        mActivity,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        mPageInsightsCoordinatorSupplier);
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mGURL);
@@ -131,7 +142,73 @@ public class GoogleBottomBarActionsHandlerTest {
         View.OnClickListener clickListener =
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
+
         verify(mShareDelegate)
                 .share(eq(mTab), eq(false), eq(ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR));
+    }
+
+    @Test
+    public void
+            testPageInsightsAction_pageInsightCoordinatorNotNull_initiatePageInsightsCoordinatorLaunch() {
+        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        BottomBarConfigCreator.ButtonId.PIH_BASIC,
+                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getString(
+                                R.string.google_bottom_bar_page_insights_button_description),
+                        /* pendingIntent= */ null);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        verify(mPageInsightsCoordinator).launch();
+    }
+
+    @Test
+    public void testPageInsightsAction_buttonConfigHasPendingIntent_startsPendingIntent()
+            throws PendingIntent.CanceledException {
+        PendingIntent pendingIntent = mock(PendingIntent.class);
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        BottomBarConfigCreator.ButtonId.PIH_BASIC,
+                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getString(
+                                R.string.google_bottom_bar_page_insights_button_description),
+                        pendingIntent);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(pendingIntent)
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
+    }
+
+    @Test
+    public void testPageInsightsAction_buttonConfigHasNoPendingIntent_logsError() {
+        Context context = mActivity.getApplicationContext();
+        View buttonView = new View(context);
+        BottomBarConfig.ButtonConfig buttonConfig =
+                new BottomBarConfig.ButtonConfig(
+                        BottomBarConfigCreator.ButtonId.PIH_BASIC,
+                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getString(
+                                R.string.google_bottom_bar_page_insights_button_description),
+                        /* pendingIntent= */ null);
+
+        View.OnClickListener clickListener =
+                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
+        clickListener.onClick(buttonView);
+
+        ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
+        assertEquals(logItem.msg, "Can't perform page insights action as pending intent is null.");
     }
 }
