@@ -286,7 +286,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 }
 
 - (BOOL)isContentNotificationAvailable:(ChromeBrowserState*)browserState {
-  if (!IsContentNotificationExperimentEnalbed()) {
+  if (!IsContentNotificationExperimentEnabled()) {
     return false;
   }
   if (!browserState) {

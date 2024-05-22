@@ -491,7 +491,7 @@ bool IsFeedAblationEnabled();
 bool IsFollowUIUpdateEnabled();
 
 // YES if content push notification experiments are enabled.
-bool IsContentNotificationExperimentEnalbed();
+bool IsContentNotificationExperimentEnabled();
 
 // YES when any of the content push notification variations are enabled.
 bool IsContentPushNotificationsEnabled();

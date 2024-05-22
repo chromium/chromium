@@ -388,7 +388,7 @@ BASE_FEATURE(kContentNotificationExperiment,
              "ContentNotificationExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsContentNotificationExperimentEnalbed() {
+bool IsContentNotificationExperimentEnabled() {
   return base::FeatureList::IsEnabled(kContentNotificationExperiment);
 }
 

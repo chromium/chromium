@@ -169,7 +169,7 @@ bool DefaultBrowserPromoCompleted() {
     [_sceneState addObserver:self];
 
     BOOL isContentNotificationEnabled =
-        IsContentNotificationExperimentEnalbed() &&
+        IsContentNotificationExperimentEnabled() &&
         IsContentNotificationSetUpListEnabled(
             identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
             self.isDefaultSearchEngine, prefService);

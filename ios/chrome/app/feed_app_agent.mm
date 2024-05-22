@@ -83,7 +83,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     }
 
     BOOL isContentNotificationProvisionalEnabled = NO;
-    if (IsContentNotificationExperimentEnalbed()) {
+    if (IsContentNotificationExperimentEnabled()) {
       // Only start doing the content notificaiton user eligibiliey check when
       // content notification experiment is enabled.
       AuthenticationService* authService =

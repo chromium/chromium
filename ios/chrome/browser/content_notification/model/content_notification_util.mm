@@ -165,7 +165,7 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
     return false;
   }
 
-  if (!IsContentNotificationExperimentEnalbed()) {
+  if (!IsContentNotificationExperimentEnabled()) {
     return false;
   }
 

@@ -488,7 +488,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 // `YES` if Content notification is enabled or registered. Called before
 // register device With APNS.
 - (BOOL)isContentNotificationAvailable {
-  if (!IsContentNotificationExperimentEnalbed()) {
+  if (!IsContentNotificationExperimentEnabled()) {
     return false;
   }
 
