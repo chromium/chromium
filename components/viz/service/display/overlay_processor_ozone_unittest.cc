@@ -108,13 +108,13 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
   primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
   candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
@@ -148,13 +148,13 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
   primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
   candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
@@ -182,13 +182,13 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
   primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
   candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);

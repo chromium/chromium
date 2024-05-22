@@ -1688,7 +1688,7 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     uint32_t usage,
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   auto task =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CreateSharedImage,
@@ -1704,7 +1704,7 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
 gpu::Mailbox SkiaOutputSurfaceImpl::CreateSolidColorSharedImage(
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   auto task = base::BindOnce(
       &SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage,

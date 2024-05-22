@@ -159,7 +159,7 @@ ScopedSharedImageMailbox CopyQuadResource(
   // conversion pass.
   CHECK(!src_representation->color_space().IsHDR());
 
-  const gpu::Mailbox overlay_dst = gpu::Mailbox::GenerateForSharedImage();
+  const gpu::Mailbox overlay_dst = gpu::Mailbox::Generate();
   const SharedImageFormat dst_format = SinglePlaneFormat::kBGRA_8888;
   const gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
   const bool success = shared_image_factory.CreateSharedImage(

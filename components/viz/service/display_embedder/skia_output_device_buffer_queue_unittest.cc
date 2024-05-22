@@ -500,7 +500,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   std::unique_ptr<gpu::OverlayImageRepresentation> MakeOverlay() {
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
     bool success = shared_image_factory_->CreateSharedImage(
         mailbox, SinglePlaneFormat::kRGBA_8888, gfx::Size(1000, 1000),
         gfx::ColorSpace::CreateSRGB(),

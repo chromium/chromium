@@ -36,7 +36,7 @@ bool OutputPresenter::Image::Initialize(const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,
                                         SharedImageFormat format,
                                         uint32_t shared_image_usage) {
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   if (!factory_->CreateSharedImage(
           mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
