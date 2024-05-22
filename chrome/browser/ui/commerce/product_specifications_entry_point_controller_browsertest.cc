@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -57,12 +58,14 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   ProductSpecificationsEntryPointControllerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
-    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
+    auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
+    mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
+        mock_shopping_service->GetClusterManager());
     product_spec_service_ =
         std::make_unique<MockProductSpecificationsService>();
-    ON_CALL(*mock_shopping_service_, GetProductSpecificationsService)
+    ON_CALL(*mock_shopping_service, GetProductSpecificationsService)
         .WillByDefault(testing::Return(product_spec_service_.get()));
 
     controller_ =
@@ -92,8 +95,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   }
 
  protected:
-  raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
-      mock_shopping_service_;
+  raw_ptr<commerce::MockClusterManager, AcrossTasksDanglingUntriaged>
+      mock_cluster_manager_;
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
       controller_;
@@ -110,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Mock EntryPointInfo returned by ShoppingService.
   auto info =
       std::make_optional<commerce::EntryPointInfo>(kTitle, std::set<GURL>());
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForSelection(info);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
   MockObserver observer;
@@ -144,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Mock EntryPointInfo returned by ShoppingService.
   std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
   auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForNavigation(info);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
   MockObserver observer;
@@ -175,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Trigger entry point with selection.
   auto info =
       std::make_optional<commerce::EntryPointInfo>(kTitle, std::set<GURL>());
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForSelection(info);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
                                      ui::PAGE_TRANSITION_LINK, true));
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
@@ -207,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Trigger entry point with selection.
   std::set<GURL> urls = {GURL(kTestUrl1), GURL(kTestUrl2)};
   auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForSelection(info);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
                                      ui::PAGE_TRANSITION_LINK, true));
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),

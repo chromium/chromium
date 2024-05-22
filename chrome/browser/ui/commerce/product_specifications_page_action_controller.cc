@@ -71,10 +71,11 @@ void ProductSpecificationsPageActionController::ResetForNewNavigation(
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(
     const GURL& url,
     const std::optional<const ProductInfo>& info) {
-  if (url == current_url_ && info.has_value()) {
+  if (url == current_url_ && info.has_value() &&
+      shopping_service_->GetClusterManager()) {
     product_info_for_page_ = info;
-    product_group_for_page_ =
-        shopping_service_->GetProductGroupForCandidateProduct(url);
+    product_group_for_page_ = shopping_service_->GetClusterManager()
+                                  ->GetProductGroupForCandidateProduct(url);
   }
   got_product_response_for_page_ = true;
   NotifyHost();

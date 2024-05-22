@@ -51,6 +51,14 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               GetAllProductSpecifications,
               (),
               (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (commerce::ProductSpecificationsSet::Observer * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (commerce::ProductSpecificationsSet::Observer * observer),
+              (override));
 };
 
 class MockObserver : public ClusterManager::Observer {

@@ -63,10 +63,12 @@ class ProductSpecificationsService : public KeyedService {
   virtual void DeleteProductSpecificationsSet(const std::string& uuid);
 
   // Observer monitoring add/remove/update of ProductSpecificationSets.
-  void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
+  virtual void AddObserver(
+      commerce::ProductSpecificationsSet::Observer* observer);
 
   // Remove observer monitoring add/remove/update of ProductSpecificationSets.
-  void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
+  virtual void RemoveObserver(
+      commerce::ProductSpecificationsSet::Observer* observer);
 
  private:
   friend class commerce::ProductSpecificationsServiceTest;

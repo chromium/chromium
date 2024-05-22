@@ -16,7 +16,6 @@ class Browser;
 
 namespace commerce {
 
-class ShoppingService;
 class ProductSpecificationsService;
 
 class ProductSpecificationsEntryPointController
@@ -72,7 +71,7 @@ class ProductSpecificationsEntryPointController
   // Info of the entry point that is currently showing, when available.
   std::optional<EntryPointInfo> current_entry_point_info_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
-  raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
+  raw_ptr<ClusterManager, DanglingUntriaged> cluster_manager_;
   raw_ptr<ProductSpecificationsService> product_specifications_service_;
   base::ObserverList<Observer> observers_;
   GURL last_committed_url_;

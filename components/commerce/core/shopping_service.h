@@ -121,7 +121,6 @@ class SubscriptionsObserver;
 class WebWrapper;
 enum class SubscriptionType;
 struct CommerceSubscription;
-struct ProductGroup;
 
 // Types of shopping pages from backend.
 enum class ShoppingPageType {
@@ -432,16 +431,7 @@ class ShoppingService : public KeyedService,
 
   virtual ProductSpecificationsService* GetProductSpecificationsService();
 
-  // ClusterManager APIs.
-  virtual std::optional<EntryPointInfo> GetEntryPointInfoForNavigation(
-      GURL url);
-  virtual std::optional<EntryPointInfo> GetEntryPointInfoForSelection(
-      GURL old_url,
-      GURL new_url);
-  virtual std::optional<ProductGroup> GetProductGroupForCandidateProduct(
-      const GURL& product_url);
-  void AddClusterManagerObserver(ClusterManager::Observer* observer);
-  void RemoveClusterManagerObserver(ClusterManager::Observer* observer);
+  virtual ClusterManager* GetClusterManager();
 
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();

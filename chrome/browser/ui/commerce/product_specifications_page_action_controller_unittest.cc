@@ -15,13 +15,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
+#include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
 namespace commerce {
 
 namespace {
@@ -52,6 +52,8 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
     account_checker_ = std::make_unique<MockAccountChecker>();
     shopping_service_->SetAccountChecker(account_checker_.get());
+    mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
+        shopping_service_->GetClusterManager());
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
         std::move(callback), shopping_service_.get());
   }
@@ -67,13 +69,15 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
   std::unique_ptr<MockAccountChecker> account_checker_;
   base::MockRepeatingCallback<void()> notify_host_callback_;
   std::unique_ptr<MockShoppingService> shopping_service_;
+  raw_ptr<commerce::MockClusterManager> mock_cluster_manager_;
   std::unique_ptr<ProductSpecificationsPageActionController> controller_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
-  EXPECT_CALL(*shopping_service_, GetProductGroupForCandidateProduct).Times(1);
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(1);
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(1);
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
 
@@ -81,7 +85,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
   ASSERT_FALSE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
 
-  shopping_service_->SetResponseForGetProductGroupForCandidateProduct(
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
       CreateProductGroup());
   shopping_service_->SetResponseForGetProductInfoForUrl(
       CreateProductInfo(kClusterId));
@@ -96,7 +100,8 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
        IconNotwShow_NoProductGroup) {
-  EXPECT_CALL(*shopping_service_, GetProductGroupForCandidateProduct).Times(1);
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(1);
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(1);
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
 
@@ -105,7 +110,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->WantsExpandedUi());
 
   // Mock no product group for current URL.
-  shopping_service_->SetResponseForGetProductGroupForCandidateProduct(
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
       std::nullopt);
   shopping_service_->SetResponseForGetProductInfoForUrl(
       CreateProductInfo(kClusterId));
@@ -120,7 +125,8 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
        IconNotwShow_NoProductInfo) {
-  EXPECT_CALL(*shopping_service_, GetProductGroupForCandidateProduct).Times(0);
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(0);
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(1);
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
 
@@ -144,7 +150,8 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   // Mock Ineligible for the feature.
   account_checker_->SetSignedIn(false);
 
-  EXPECT_CALL(*shopping_service_, GetProductGroupForCandidateProduct).Times(0);
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(0);
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(0);
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(0));
 

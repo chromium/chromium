@@ -294,6 +294,8 @@ source_set("shopping_service_test_support") {
   testonly = true
 
   sources = [
+    "mock_cluster_manager.cc",
+    "mock_cluster_manager.h",
     "mock_discounts_storage.cc",
     "mock_discounts_storage.h",
     "mock_shopping_service.cc",

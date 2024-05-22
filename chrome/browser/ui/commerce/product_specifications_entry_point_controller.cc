@@ -47,15 +47,18 @@ namespace commerce {
 // TODO(b/340252809): No need to have browser as a dependency.
 ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(Browser* browser)
-    : browser_(browser),
-      shopping_service_(
-          ShoppingServiceFactory::GetForBrowserContext(browser->profile())) {
+    : browser_(browser) {
   CHECK(browser_);
   browser->tab_strip_model()->AddObserver(this);
-  if (shopping_service_) {
+  ShoppingService* shopping_service =
+      ShoppingServiceFactory::GetForBrowserContext(browser->profile());
+  if (shopping_service) {
     product_specifications_service_ =
-        shopping_service_->GetProductSpecificationsService();
-    shopping_service_->AddClusterManagerObserver(this);
+        shopping_service->GetProductSpecificationsService();
+    cluster_manager_ = shopping_service->GetClusterManager();
+    if (cluster_manager_) {
+      cluster_manager_->AddObserver(this);
+    }
   }
 }
 
@@ -69,11 +72,11 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
   // Filter out non-tab-selection events.
   if (change.type() != TabStripModelChange::Type::kSelectionOnly ||
       !selection.active_tab_changed() || !selection.old_contents ||
-      !selection.new_contents || !shopping_service_) {
+      !selection.new_contents || !cluster_manager_) {
     return;
   }
 
-  auto entry_point_info = shopping_service_->GetEntryPointInfoForSelection(
+  auto entry_point_info = cluster_manager_->GetEntryPointInfoForSelection(
       selection.old_contents->GetLastCommittedURL(),
       selection.new_contents->GetLastCommittedURL());
   if (entry_point_info.has_value()) {
@@ -133,12 +136,11 @@ void ProductSpecificationsEntryPointController::OnEntryPointHidden() {
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
   // Cluster finished for a navigation that didn't happen in this window.
-  if (last_committed_url_ != url) {
+  if (last_committed_url_ != url || !cluster_manager_) {
     return;
   }
 
-  auto entry_point_info =
-      shopping_service_->GetEntryPointInfoForNavigation(url);
+  auto entry_point_info = cluster_manager_->GetEntryPointInfoForNavigation(url);
   if (!entry_point_info.has_value() ||
       !IsNavigationEligibleForEntryPoint(browser_->tab_strip_model(),
                                          entry_point_info.value())) {

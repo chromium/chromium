@@ -1745,6 +1745,10 @@ ShoppingService::GetProductSpecificationsService() {
   return product_specifications_service_;
 }
 
+ClusterManager* ShoppingService::GetClusterManager() {
+  return cluster_manager_.get();
+}
+
 void ShoppingService::GetProductIdentifierForUrl(
     const GURL& url,
     UrlProductIdentifierTupleCallback callback) {
@@ -1771,45 +1775,6 @@ ShoppingService::GetAllProductSpecificationSets() {
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForNavigation(
-    GURL url) {
-  if (!cluster_manager_) {
-    return std::nullopt;
-  }
-  return cluster_manager_->GetEntryPointInfoForNavigation(url);
-}
-
-std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForSelection(
-    GURL old_url,
-    GURL new_url) {
-  if (!cluster_manager_) {
-    return std::nullopt;
-  }
-  return cluster_manager_->GetEntryPointInfoForSelection(old_url, new_url);
-}
-
-std::optional<ProductGroup> ShoppingService::GetProductGroupForCandidateProduct(
-    const GURL& product_url) {
-  if (!cluster_manager_) {
-    return std::nullopt;
-  }
-  return cluster_manager_->GetProductGroupForCandidateProduct(product_url);
-}
-
-void ShoppingService::AddClusterManagerObserver(
-    ClusterManager::Observer* observer) {
-  if (cluster_manager_) {
-    cluster_manager_->AddObserver(observer);
-  }
-}
-
-void ShoppingService::RemoveClusterManagerObserver(
-    ClusterManager::Observer* observer) {
-  if (cluster_manager_) {
-    cluster_manager_->RemoveObserver(observer);
-  }
 }
 
 void ShoppingService::Shutdown() {
