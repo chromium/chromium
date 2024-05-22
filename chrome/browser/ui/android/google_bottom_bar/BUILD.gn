@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreator.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandler.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarLogger.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
   ]
   deps = [
@@ -54,6 +55,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandlerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreatorTest.java",
   ]
   deps = [
     ":java",

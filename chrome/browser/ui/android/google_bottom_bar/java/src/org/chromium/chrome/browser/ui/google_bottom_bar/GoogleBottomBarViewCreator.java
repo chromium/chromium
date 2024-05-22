@@ -18,12 +18,14 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
     private final Context mContext;
     private final BottomBarConfig mConfig;
     private final GoogleBottomBarActionsHandler mActionsHandler;
+    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
     private View mRootView;
 
     /**
@@ -49,6 +51,7 @@ public class GoogleBottomBarViewCreator {
                         tabProvider,
                         shareDelegateSupplier,
                         pageInsightsCoordinatorSupplier);
+        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
     }
 
     /**
@@ -80,9 +83,9 @@ public class GoogleBottomBarViewCreator {
 
     private void initButton(int viewId, @ButtonId int buttonConfigId) {
         assert mRootView != null;
-        ImageView imageView = mRootView.findViewById(viewId);
+        ImageView button = mRootView.findViewById(viewId);
         ButtonConfig buttonConfig = findButtonConfig(buttonConfigId);
-        maybeUpdateButton(imageView, buttonConfig);
+        maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
     }
 
     boolean updateBottomBarButton(@Nullable ButtonConfig buttonConfig) {
@@ -90,7 +93,7 @@ public class GoogleBottomBarViewCreator {
             return false;
         }
         ImageView button = mRootView.findViewById(buttonConfig.getId());
-        return maybeUpdateButton(button, buttonConfig);
+        return maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {
@@ -101,15 +104,19 @@ public class GoogleBottomBarViewCreator {
     }
 
     private View createGoogleBottomBarEvenLayoutView() {
+        GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
         return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_even, null);
     }
 
     private View createGoogleBottomBarSpotlightLayoutView() {
+        GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
         return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
     }
 
     private boolean maybeUpdateButton(
-            @Nullable ImageView button, @Nullable ButtonConfig buttonConfig) {
+            @Nullable ImageView button,
+            @Nullable ButtonConfig buttonConfig,
+            boolean isFirstTimeShown) {
         if (button == null || buttonConfig == null) {
             return false;
         }
@@ -117,6 +124,15 @@ public class GoogleBottomBarViewCreator {
         button.setImageDrawable(buttonConfig.getIcon());
         button.setContentDescription(buttonConfig.getDescription());
         button.setOnClickListener(mActionsHandler.getClickListener(buttonConfig));
+
+        int buttonEvent =
+                GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
+                        mPageInsightsCoordinatorSupplier, buttonConfig);
+        if (isFirstTimeShown) {
+            GoogleBottomBarLogger.logButtonShown(buttonEvent);
+        } else {
+            GoogleBottomBarLogger.logButtonUpdated(buttonEvent);
+        }
         return true;
     }
 }

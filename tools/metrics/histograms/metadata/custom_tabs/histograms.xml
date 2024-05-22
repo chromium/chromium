@@ -228,6 +228,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.GoogleBottomBar.ButtonClicked"
+    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only on Android. Records clicks on GoogleBottomBar buttons in the
+    GoogleBottomBar. Logged when a button is clicked in the GoogleBottomBar
+    (when the GoogleBottomBar feature is enabled and visible at the bottom of
+    the CCT).
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.GoogleBottomBar.ButtonShown"
+    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only on Android. Records GoogleBottomBar buttons that are shown.
+    Logged when a button is displayed in the GoogleBottomBar (when the
+    GoogleBottomBar feature is enabled and visible at the bottom of the CCT).
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.GoogleBottomBar.ButtonUpdated"
+    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only on Android. Records GoogleBottomBar(GBB) buttons that are
+    updated. Logged when embedder send request to update a button that is
+    displayed in the GoogleBottomBar (when the GoogleBottomBar feature is
+    enabled and visible at the bottom of the CCT).
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.GoogleBottomBar.Created"
+    enum="GoogleBottomBarCreatedEvent" expires_after="2025-05-16">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only on Android. Records type of the layout used to create the
+    GoogleBottomBar. Logged when the GoogleBottomBar is displayed (when the
+    GoogleBottomBar feature is enabled and visible at the bottom of the CCT).
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.HadInteractionOnClose.Form" enum="Boolean"
     expires_after="2024-11-03">
   <owner>katzz@google.com</owner>
