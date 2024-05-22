@@ -359,7 +359,18 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
   }
 }
 
-TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
+// This is needed because this code is racy (example:
+// https://crbug.com/338398659#comment1) by design: tracing needs to have
+// minimal runtime overhead, so tracing code assumes certain things are already
+// initialized, and never uninitialized. However, tests uninitialize and
+// reinitialize state, which races with use of this state. Therefore, we disable
+// this test case when TSan is enabled.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_SamplingChildThread DISABLED_SamplingChildThread
+#else
+#define MAYBE_SamplingChildThread SamplingChildThread
+#endif
+TEST_F(TracingSampleProfilerTest, MAYBE_SamplingChildThread) {
   base::Thread sampled_thread("sampling_profiler_test");
   sampled_thread.Start();
   sampled_thread.task_runner()->PostTask(
