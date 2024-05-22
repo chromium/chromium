@@ -141,8 +141,8 @@ class CORE_EXPORT FragmentBuilder {
     lines_until_clamp_ = value;
   }
 
-  bool IsTextBoxTrimApplied() const { return is_text_box_trim_applied_; }
-  void SetIsTextBoxTrimApplied() { is_text_box_trim_applied_ = true; }
+  bool IsBlockStartTrimmed() const { return is_block_start_trimmed_; }
+  void SetIsBlockStartTrimmed() { is_block_start_trimmed_ = true; }
   bool IsBlockEndTrimmed() const { return is_block_end_trimmed_; }
   void SetIsBlockEndTrimmed() { is_block_end_trimmed_ = true; }
 
@@ -626,7 +626,7 @@ class CORE_EXPORT FragmentBuilder {
   bool requires_content_before_breaking_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
-  bool is_text_box_trim_applied_ = false;
+  bool is_block_start_trimmed_ = false;
   bool is_block_end_trimmed_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;

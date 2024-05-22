@@ -624,7 +624,6 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
                               intrinsic_metrics);
 
   container_builder_.SetIntrinsicMetrics(intrinsic_metrics);
-  container_builder_.SetIsTextBoxTrimApplied();
 
   if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.
@@ -637,6 +636,7 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
             ? offset_for_trimming_box +
                   container_builder_.LineBoxBfcBlockOffset().value()
             : offset_for_trimming_box);
+    container_builder_.SetIsBlockStartTrimmed();
 
     // Cancel adjusting the block start for the initial letters and Ruby
     // annotation. The use of the `text-box-trim` accepts the risk of collisions

@@ -113,10 +113,12 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
-  bool IsTextBoxTrimApplied() const {
-    return rare_data_ && rare_data_->text_box_trim_is_applied();
+  // Returns true if the block-start/-end is trimmed by the `text-box-trim`
+  // property. Set not only for inline nodes, but also for block nodes when
+  // propagating.
+  bool IsBlockStartTrimmed() const {
+    return rare_data_ && rare_data_->is_block_start_trimmed();
   }
-
   bool IsBlockEndTrimmed() const {
     return rare_data_ && rare_data_->is_block_end_trimmed();
   }
@@ -632,10 +634,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         NeedsAnchorPositionScrollAdjustmentInXFlag::DefineNextValue<bool, 1>;
     using DataUnionTypeValue =
         NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
-    using TextBoxTrimIsAppliedFlag =
+    using IsBlockStartTrimmedFlag =
         DataUnionTypeValue::DefineNextValue<bool, 1>;
     using IsBlockEndTrimmedFlag =
-        TextBoxTrimIsAppliedFlag::DefineNextValue<bool, 1>;
+        IsBlockStartTrimmedFlag::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -717,12 +719,12 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return bit_field.set<DataUnionTypeValue>(static_cast<uint8_t>(data_type));
     }
 
-    bool text_box_trim_is_applied() const {
-      return bit_field.get<TextBoxTrimIsAppliedFlag>();
+    bool is_block_start_trimmed() const {
+      return bit_field.get<IsBlockStartTrimmedFlag>();
     }
 
-    void set_text_box_trim_is_applied() {
-      bit_field.set<TextBoxTrimIsAppliedFlag>(true);
+    void set_is_block_start_trimmed() {
+      bit_field.set<IsBlockStartTrimmedFlag>(true);
     }
 
     bool is_block_end_trimmed() const {

@@ -2413,11 +2413,11 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   if (UNLIKELY(should_text_box_trim_start_ || should_text_box_trim_end_)) {
-    if (layout_result->IsTextBoxTrimApplied()) {
+    if (layout_result->IsBlockStartTrimmed()) {
       // Update `should_text_box_trim_{start,end}_` if the child `layout_result`
       // has applied `text-box-trim`.
       should_text_box_trim_start_ = false;
-      container_builder_.SetIsTextBoxTrimApplied();
+      container_builder_.SetIsBlockStartTrimmed();
     }
     if (layout_result->IsBlockEndTrimmed() && should_text_box_trim_end_ &&
         child_space.ShouldTextBoxTrimEnd() &&

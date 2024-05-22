@@ -30,7 +30,7 @@ struct TextBoxTrimResult {
     const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
     should_trim_start = space.ShouldTextBoxTrimStart();
     should_trim_end = space.ShouldTextBoxTrimEnd();
-    is_trimmed = result->IsTextBoxTrimApplied() || result->IsBlockEndTrimmed();
+    is_trimmed = result->IsBlockStartTrimmed() || result->IsBlockEndTrimmed();
   }
 
   bool should_trim_start = false;
