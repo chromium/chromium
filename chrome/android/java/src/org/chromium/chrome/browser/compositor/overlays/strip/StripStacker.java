@@ -47,16 +47,14 @@ public abstract class StripStacker {
      * Computes and sets the draw X, draw Y, visibility and content offset for each view.
      *
      * @param indexOrderedViews A list of tabs ordered by index.
-     * @param tabClosing Whether a tab is being closed.
      * @param tabCreating Whether a tab is being created.
+     * @param groupTitleSlidingAnimRunning Whether a group title is sliding for reorder.
      * @param cachedTabWidth Whether The ideal tab width.
      */
     public abstract void setViewOffsets(
             StripLayoutView[] indexOrderedViews,
-            boolean tabClosing,
             boolean tabCreating,
             boolean groupTitleSlidingAnimRunning,
-            boolean groupCollapsingOrExpanding,
             float cachedTabWidth);
 
     /**
@@ -76,25 +74,20 @@ public abstract class StripStacker {
             float stripLeftMargin,
             float stripRightMargin,
             float stripWidth,
-            float buttonWidth,
-            float cachedTabWidth,
-            boolean animate) {
+            float buttonWidth) {
         return LocalizationUtils.isLayoutRtl()
                 ? computeNewTabButtonOffsetRtl(
                         indexOrderedTabs,
                         stripLeftMargin,
                         stripRightMargin,
                         stripWidth,
-                        buttonWidth,
-                        animate)
+                        buttonWidth)
                 : computeNewTabButtonOffsetLtr(
                         indexOrderedTabs,
                         tabOverlapWidth,
                         stripLeftMargin,
                         stripRightMargin,
-                        stripWidth,
-                        cachedTabWidth,
-                        animate);
+                        stripWidth);
     }
 
     private float computeNewTabButtonOffsetLtr(
@@ -102,37 +95,16 @@ public abstract class StripStacker {
             float tabOverlapWidth,
             float stripLeftMargin,
             float stripRightMargin,
-            float stripWidth,
-            float cachedTabWidth,
-            boolean animate) {
+            float stripWidth) {
         float rightEdge = stripLeftMargin;
         for (StripLayoutTab tab : indexOrderedTabs) {
             if (tab.isDying() || tab.isDraggedOffStrip()) continue;
-
-            float tabWidth;
-            float tabDrawX;
-            float tabWidthWeight;
-            if (animate) {
-                // This value is set to 1.f to avoid the new tab button jitter for the improved tab
-                // strip design. The tab.width and tab.drawX may not reflect the final values before
-                // the tab closing animations are completed.
-                tabWidthWeight = 1.f;
-                tabWidth = cachedTabWidth;
-                tabDrawX = tab.getIdealX();
-            } else {
-                tabWidthWeight = tab.getWidthWeight();
-                tabWidth = tab.getWidth();
-                tabDrawX = tab.getDrawX();
-            }
-            float layoutWidth = (tabWidth - tabOverlapWidth) * tabWidthWeight;
-            rightEdge = Math.max(tabDrawX + layoutWidth, rightEdge); // use idealX here
+            float layoutWidth = (tab.getWidth() - tabOverlapWidth) * tab.getWidthWeight();
+            rightEdge = Math.max(tab.getDrawX() + layoutWidth, rightEdge);
         }
 
-        rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
-
-
         // The draw X position for the new tab button is the rightEdge of the tab strip.
-        return rightEdge;
+        return Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
     }
 
     private float computeNewTabButtonOffsetRtl(
@@ -140,22 +112,16 @@ public abstract class StripStacker {
             float stripLeftMargin,
             float stripRightMargin,
             float stripWidth,
-            float newTabButtonWidth,
-            boolean animate) {
+            float newTabButtonWidth) {
         float leftEdge = stripWidth - stripRightMargin;
-
         for (StripLayoutTab tab : indexOrderedTabs) {
             if (tab.isDying() || tab.isDraggedOffStrip()) continue;
-
-            float drawX = animate ? tab.getIdealX() : tab.getDrawX();
-            leftEdge = Math.min(drawX, leftEdge);
+            leftEdge = Math.min(tab.getDrawX(), leftEdge);
         }
-
-        leftEdge = Math.max(leftEdge, stripLeftMargin);
 
         // The draw X position for the new tab button is the left edge of the tab strip minus
         // the new tab button width.
-        return leftEdge - newTabButtonWidth;
+        return Math.max(leftEdge, stripLeftMargin) - newTabButtonWidth;
     }
 
     /**

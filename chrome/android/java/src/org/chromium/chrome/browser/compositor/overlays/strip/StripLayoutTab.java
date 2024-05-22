@@ -168,6 +168,7 @@ public class StripLayoutTab extends StripLayoutView {
     private TintedCompositorButton mCloseButton;
 
     private boolean mIsDying;
+    private boolean mIsClosed;
     private boolean mIsReordering;
     private boolean mIsDraggedOffStrip;
     private boolean mCanShowCloseButton = true;
@@ -501,8 +502,9 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Mark this tab as in the process of dying.  This lets us track which tabs are dead after
+     * Mark this tab as in the process of dying. This lets us track which tabs are closed after
      * animations.
+     *
      * @param isDying Whether or not the tab is dying.
      */
     public void setIsDying(boolean isDying) {
@@ -514,6 +516,28 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public boolean isDying() {
         return mIsDying;
+    }
+
+    /**
+     * Mark this tab as closed. We can't immediately remove the tab from the TabModel, since doing
+     * so may result in a concurrent modification exception. Track here to treat as removed.
+     *
+     * @param isClosed Whether or not the tab should be treated as closed.
+     */
+    public void setIsClosed(boolean isClosed) {
+        mIsClosed = isClosed;
+    }
+
+    /**
+     * Closed tabs should have been removed from the TabModel and mStripTabs. We can't do so
+     * immediately, however, since we may try to do so when we are committing all tab closures,
+     * resulting in a concurrent modification exception. We instead post the removal and mark such
+     * tabs as closed.
+     *
+     * @return Whether or not the tab should be treated as closed.
+     */
+    public boolean isClosed() {
+        return mIsClosed;
     }
 
     /**

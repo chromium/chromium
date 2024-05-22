@@ -33,20 +33,6 @@ public class CompositorButton extends StripLayoutView {
                 }
             };
 
-    /** A property for animations to use for changing the drawX of the button. */
-    public static final FloatProperty<CompositorButton> DRAW_X =
-            new FloatProperty<CompositorButton>("drawX") {
-                @Override
-                public void setValue(CompositorButton object, float value) {
-                    object.setDrawX(value);
-                }
-
-                @Override
-                public Float get(CompositorButton object) {
-                    return object.getDrawX();
-                }
-            };
-
     /** Handler for click actions on VirtualViews. */
     public interface CompositorOnClickHandler {
         /**

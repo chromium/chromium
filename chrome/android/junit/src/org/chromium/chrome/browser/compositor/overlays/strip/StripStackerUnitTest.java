@@ -25,14 +25,12 @@ import org.chromium.ui.base.LocalizationUtils;
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripStackerUnitTest {
     private static final float TAB_WIDTH = 25;
-    private static final float CACHED_TAB_WIDTH = 30;
     private static final float TAB_WEIGHT = 1;
     private static final float TAB_OVERLAP = 5;
     private static final float STRIP_LEFT_MARGIN = 2;
     private static final float STRIP_RIGHT_MARGIN = 2;
     private static final float STRIP_WIDTH = 200;
     private static final float BUTTON_WIDTH = 10;
-    private static final float TOUCH_OFFSET = 5;
 
     private StripStacker mTarget = new TestStacker();
 
@@ -76,9 +74,7 @@ public class StripStackerUnitTest {
                         STRIP_LEFT_MARGIN,
                         STRIP_RIGHT_MARGIN,
                         STRIP_WIDTH,
-                        BUTTON_WIDTH,
-                        CACHED_TAB_WIDTH,
-                        true);
+                        BUTTON_WIDTH);
         assertThat("New Tab button offset does not match", result, is(35f));
     }
 
@@ -86,12 +82,12 @@ public class StripStackerUnitTest {
     public void testComputeNewTabButtonOffsetRTL() {
         LocalizationUtils.setRtlForTesting(true);
         float expected_res = 3f;
-        // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
+        // Update drawX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
         // expected_res = 4*25 + 10 + 3
-        float ideal_x = 113f;
+        float drawX = 113f;
         for (StripLayoutTab tab : mInput) {
-            when(tab.getIdealX()).thenReturn(ideal_x);
-            ideal_x -= TAB_WIDTH;
+            when(tab.getDrawX()).thenReturn(drawX);
+            drawX -= TAB_WIDTH;
         }
         float result =
                 mTarget.computeNewTabButtonOffset(
@@ -100,9 +96,7 @@ public class StripStackerUnitTest {
                         STRIP_LEFT_MARGIN,
                         STRIP_RIGHT_MARGIN,
                         STRIP_WIDTH,
-                        BUTTON_WIDTH,
-                        CACHED_TAB_WIDTH,
-                        true);
+                        BUTTON_WIDTH);
         assertThat("New Tab button offset does not match", result, is(expected_res));
     }
 
@@ -110,10 +104,8 @@ public class StripStackerUnitTest {
         @Override
         public void setViewOffsets(
                 StripLayoutView[] indexOrderedViews,
-                boolean tabClosing,
                 boolean tabCreating,
                 boolean mGroupTitleSliding,
-                boolean groupCollapsingOrExpanding,
                 float cachedTabWidth) {}
 
         @Override

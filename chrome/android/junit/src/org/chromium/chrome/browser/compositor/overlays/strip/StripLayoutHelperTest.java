@@ -2624,23 +2624,20 @@ public class StripLayoutHelperTest {
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) = 684.
         // ExpectedWidth = (availableSize(684) + 4 * overlap(28)) / 5  = 159.2.
-        float expectedWidthAfterResize = 159.2f;
+        float openTabWidth = 159.2f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
+            float expectedWidth = stripTab.isClosed() ? TAB_OVERLAP_WIDTH : openTabWidth;
             assertEquals(
-                    "Unexpected tab width after resize.",
-                    expectedWidthAfterResize,
-                    stripTab.getWidth(),
-                    0.1f);
+                    "Unexpected tab width after resize.", expectedWidth, stripTab.getWidth(), 0.1f);
         }
         assertFalse(
                 "MultiStepAnimations should have ended.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
-        float expectedEndWidth =
-                calculateExpectedBottomIndicatorWidth(expectedWidthAfterResize, 1, groupTitle);
+        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(openTabWidth, 1, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width after resize.",
                 expectedEndWidth,

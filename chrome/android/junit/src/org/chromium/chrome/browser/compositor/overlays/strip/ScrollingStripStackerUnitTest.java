@@ -49,32 +49,20 @@ public final class ScrollingStripStackerUnitTest {
     }
 
     @Test
-    public void testSetTabOffsets_tabNotClosing() {
-        mTarget.setViewOffsets(mInput, false, false, false, false, CACHED_TAB_WIDTH);
+    public void testSetTabOffsets() {
+        mTarget.setViewOffsets(mInput, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawX(expected_x);
-            verify(tab).setWidth(CACHED_TAB_WIDTH);
             verify(tab).setDrawY(TAB_OFFSET_Y);
             expected_x += TAB_WIDTH;
         }
     }
 
     @Test
-    public void testSetTabOffsets_tabClosing() {
-        mTarget.setViewOffsets(mInput, true, false, false, false, CACHED_TAB_WIDTH);
-
-        for (StripLayoutTab tab : mInput) {
-            verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).getOffsetY();
-            verifyNoMoreInteractions(tab);
-        }
-    }
-
-    @Test
     public void testSetTabOffsets_tabCreating() {
-        mTarget.setViewOffsets(mInput, false, true, false, false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, true, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
