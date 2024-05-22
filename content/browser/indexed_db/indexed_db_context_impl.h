@@ -188,7 +188,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const std::optional<storage::BucketLocator>& bucket_locator);
 
   // Always run immediately before destruction.
-  void ShutdownOnIDBSequence();
+  void ShutdownOnIDBSequence(base::TimeTicks start_time);
 
   base::FilePath GetDataPath(
       const storage::BucketLocator& bucket_locator) const;
@@ -366,6 +366,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 
   bool force_single_thread_ = false;
+
+  // When `Shutdown()` was called, or null if it's not been called. Used for
+  // UMA.
+  base::TimeTicks shutdown_start_time_;
 
   // weak_factory_->GetWeakPtr() may be used on any thread, but the resulting
   // pointer must only be checked/used on idb_task_runner_.

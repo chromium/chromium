@@ -27,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -754,11 +755,16 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
         .WithArgs(/*doom=*/false);
   }
   bucket_contexts_sharded_.clear();
+
+  base::UmaHistogramTimes("IndexedDB.ContextShutdownDuration",
+                          base::TimeTicks::Now() - shutdown_start_time_);
 }
 
-void IndexedDBContextImpl::ShutdownOnIDBSequence() {
+void IndexedDBContextImpl::ShutdownOnIDBSequence(base::TimeTicks start_time) {
   // `this` will be destroyed when this method returns.
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+
+  shutdown_start_time_ = start_time;
 
   if (force_keep_session_state_) {
     return;
@@ -814,7 +820,7 @@ void IndexedDBContextImpl::Shutdown(
           &IndexedDBContextImpl::InitializeFromFilesIfNeeded,
           base::Unretained(context_ptr),
           base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
-                         std::move(context))));
+                         std::move(context), base::TimeTicks::Now())));
 }
 
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(

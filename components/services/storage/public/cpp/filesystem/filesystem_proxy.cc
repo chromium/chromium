@@ -263,11 +263,12 @@ base::File::Error FilesystemProxy::RenameFile(const base::FilePath& old_path,
 }
 
 base::FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>>
-FilesystemProxy::LockFile(const base::FilePath& path) {
+FilesystemProxy::LockFile(const base::FilePath& path,
+                          bool* same_process_failure) {
   if (!remote_directory_) {
     base::FilePath full_path = MaybeMakeAbsolute(path);
-    ASSIGN_OR_RETURN(base::File result,
-                     FilesystemImpl::LockFileLocal(full_path));
+    ASSIGN_OR_RETURN(base::File result, FilesystemImpl::LockFileLocal(
+                                            full_path, same_process_failure));
     return std::make_unique<LocalFileLockImpl>(std::move(full_path),
                                                std::move(result));
   }

@@ -219,6 +219,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.BackingStoreCloseDuration" units="ms"
+    expires_after="2024-11-21">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the time it takes to close the IDB backing store. This is different
+    WebCore.IndexedDB.LevelDB.CloseTime because it includes the time taken for
+    in-flight tasks such as scope commit/rollback, and not just the time taken
+    for the leveldb::DB destructor.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.ContextShutdownDuration" units="ms"
+    expires_after="2024-11-21">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the time it takes to completely shut down `IndexedDBContextImpl`,
+    starting from when it's requested on the UI thread to when destruction is
+    completed on the IDB task runner.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.QuotaCheckTime2.{QuotaCheckResult}" units="ms"
     expires_after="2024-10-07">
   <owner>estade@chromium.org</owner>
@@ -248,6 +271,29 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
+</histogram>
+
+<histogram name="LevelDBEnv.LockFileInUseByThisProcess" enum="Boolean"
+    expires_after="2024-11-21">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When there is a failure to acquire a lock on a LevelDB LOCK file due to
+    FILE_IN_USE, this histogram logs true if the lock was already held by the
+    same Chromium process, false otherwise. This is only logged for IndexedDB
+    LevelDB instances.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.LockFileSuccessAttempts" units="count"
+    expires_after="2024-11-21">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When a LevelDB LOCK file is successfully locked, this is the count of
+    attempts that were required. This is intended to inform how long LevelDB
+    should keep retrying. This is only logged for IndexedDB LevelDB instances.
+  </summary>
 </histogram>
 
 <histogram name="LevelDBEnv.MissingFiles" units="files"

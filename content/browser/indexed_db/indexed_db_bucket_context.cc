@@ -288,7 +288,8 @@ leveldb_env::Options GetLevelDBOptions() {
 
   // Thread-safe: static local construction, and `ChromiumEnv` implements
   // internal synchronization.
-  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env;
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env{
+      /*log_lock_errors=*/true};
   options.env = g_leveldb_env.get();
 
   return options;
@@ -1726,10 +1727,13 @@ void IndexedDBBucketContext::ResetBackingStore() {
       backing_store_->ForceRunBlobCleanup();
     }
 
+    const auto start = base::TimeTicks::Now();
     base::WaitableEvent leveldb_destruct_event;
     backing_store_->TearDown(&leveldb_destruct_event);
     backing_store_.reset();
     leveldb_destruct_event.Wait();
+    base::UmaHistogramTimes("IndexedDB.BackingStoreCloseDuration",
+                            base::TimeTicks::Now() - start);
   }
 
   task_run_queued_ = false;

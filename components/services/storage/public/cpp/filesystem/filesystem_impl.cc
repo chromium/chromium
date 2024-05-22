@@ -239,7 +239,8 @@ void FilesystemImpl::RenameFile(const base::FilePath& old_path,
 
 void FilesystemImpl::LockFile(const base::FilePath& path,
                               LockFileCallback callback) {
-  ASSIGN_OR_RETURN(base::File result, LockFileLocal(MakeAbsolute(path)),
+  ASSIGN_OR_RETURN(base::File result,
+                   LockFileLocal(MakeAbsolute(path), nullptr),
                    [&](base::File::Error error) {
                      std::move(callback).Run(error, mojo::NullRemote());
                    });
@@ -260,7 +261,8 @@ void FilesystemImpl::SetOpenedFileLength(base::File file,
 
 // static
 base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    bool* same_process_failure) {
   DCHECK(path.IsAbsolute());
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
@@ -268,6 +270,9 @@ base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
     return base::unexpected(file.error_details());
 
   if (!GetLockTable().AddLock(path)) {
+    if (same_process_failure) {
+      *same_process_failure = true;
+    }
     return base::unexpected(base::File::FILE_ERROR_IN_USE);
   }
 
