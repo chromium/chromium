@@ -12593,9 +12593,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240503",
+                    "name": "Enabled_20240522",
                     "params": {
-                        "intersection_observer_delay": "500ms",
+                        "intersection_observer_delay": "1000ms",
                         "max_intersection_observations": "345",
                         "random_anchor_sampling_period": "1"
                     },
