@@ -17,20 +17,12 @@
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
         },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "mac": {
-            "description": "beta/stable",
+            "description": "extended stable",
             "sheriff_rotation": "chrome_browser_release"
         },
         "windows": {
-            "description": "beta/stable",
+            "description": "extended stable",
             "sheriff_rotation": "chrome_browser_release"
         }
     }
