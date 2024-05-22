@@ -11,8 +11,6 @@ namespace web {
 class WebState;
 }
 
-// TODO(crbug.com/327330805): Avoid using
-// mainController.browserProviderInterface in this class.
 namespace chrome_test_util {
 
 // Opens a new tab, and does not wait for animations to complete.
