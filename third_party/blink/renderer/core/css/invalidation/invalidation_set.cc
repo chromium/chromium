@@ -124,6 +124,8 @@ InvalidationSet::InvalidationSet(InvalidationType type)
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {
   if (invalidation_flags_.WholeSubtreeInvalid()) {
+    TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
+        element, kInvalidationSetInvalidatesSubtree, *this, g_empty_atom);
     return true;
   }
 
@@ -373,6 +375,9 @@ void InvalidationSet::SetWholeSubtreeInvalid() {
     return;
   }
 
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      this, InvalidationSetToSelectorMap::SelectorFeatureType::kWholeSubtree,
+      g_empty_atom);
   invalidation_flags_.SetWholeSubtreeInvalid(true);
   invalidation_flags_.SetInvalidateCustomPseudo(false);
   invalidation_flags_.SetTreeBoundaryCrossing(false);

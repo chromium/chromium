@@ -45,7 +45,8 @@ class InvalidationSetToSelectorMap final
     kClass,
     kId,
     kTagName,
-    kAttribute
+    kAttribute,
+    kWholeSubtree
   };
 
   // Instantiates a new mapping if a diagnostic tracing session with the

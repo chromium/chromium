@@ -198,4 +198,95 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithCombine) {
   EXPECT_EQ(found_event_count, 1u);
 }
 
+TEST_F(InvalidationSetToSelectorMapTest, SelfInvalidation) {
+  StartTracing();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a { color: red; }
+      .b { color: green; }
+      .c { color: blue; }
+    </style>
+    <div id=parent class=a>Parent
+      <div class=x>Child</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+
+  analyzer->FindEvents(
+      trace_analyzer::Query::EventNameIs("ScheduleStyleInvalidationTracking") ||
+          trace_analyzer::Query::EventNameIs(
+              "StyleInvalidatorInvalidationTracking"),
+      &events);
+  ASSERT_EQ(events.size(), 4u);
+  EXPECT_EQ(events[0]->name, "ScheduleStyleInvalidationTracking");
+  EXPECT_EQ(*(events[0]->GetKnownArgAsDict("data").FindString(
+                "invalidatedSelectorId")),
+            "class");
+  EXPECT_EQ(*(events[0]->GetKnownArgAsDict("data").FindString("changedClass")),
+            "b");
+  EXPECT_EQ(events[1]->name, "ScheduleStyleInvalidationTracking");
+  EXPECT_EQ(*(events[1]->GetKnownArgAsDict("data").FindString(
+                "invalidatedSelectorId")),
+            "class");
+  EXPECT_EQ(*(events[1]->GetKnownArgAsDict("data").FindString("changedClass")),
+            "a");
+  // Because self invalidations are largely handled via the Bloom filter and/or
+  // the singleton SelfInvalidationSet, we don't expect selectors. But the
+  // preceding schedule events do give us context for what changed.
+  EXPECT_EQ(events[2]->name, "StyleInvalidatorInvalidationTracking");
+  EXPECT_EQ(*(events[2]->GetKnownArgAsDict("data").FindString("reason")),
+            "Invalidation set invalidates self");
+  EXPECT_EQ(events[3]->name, "StyleInvalidatorInvalidationTracking");
+  EXPECT_EQ(*(events[3]->GetKnownArgAsDict("data").FindString("reason")),
+            "Invalidation set invalidates self");
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
+  StartTracing();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a * { color: red; }
+      .b * { color: green; }
+      .c * { color: blue; }
+    </style>
+    <div id=parent class=a>Parent
+      <div class=x>Child</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr &&
+        *reason == "Invalidation set invalidates subtree") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ((*selector_list)[0], ".b *");
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
 }  // namespace blink

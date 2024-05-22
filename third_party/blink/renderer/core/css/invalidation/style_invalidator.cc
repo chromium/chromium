@@ -179,6 +179,8 @@ bool StyleInvalidator::SiblingData::MatchCurrentInvalidationSets(
     if (const DescendantInvalidationSet* descendants =
             invalidation_set.SiblingDescendants()) {
       if (descendants->WholeSubtreeInvalid()) {
+        TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+            element, kInvalidationSetInvalidatesSubtree, *descendants);
         element.SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
                                      style_change_reason::kRelatedStyleRule));

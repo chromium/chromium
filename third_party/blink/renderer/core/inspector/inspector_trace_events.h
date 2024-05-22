@@ -218,6 +218,8 @@ String DescendantInvalidationSetToIdString(const InvalidationSet&);
 namespace inspector_style_invalidator_invalidate_event {
 extern const char kElementHasPendingInvalidationList[];
 extern const char kInvalidateCustomPseudo[];
+extern const char kInvalidationSetInvalidatesSelf[];
+extern const char kInvalidationSetInvalidatesSubtree[];
 extern const char kInvalidationSetMatchedAttribute[];
 extern const char kInvalidationSetMatchedClass[];
 extern const char kInvalidationSetMatchedId[];
@@ -250,6 +252,11 @@ void InvalidationList(perfetto::TracedValue context,
       inspector_style_invalidator_invalidate_event::SelectorPart, (element), \
       (inspector_style_invalidator_invalidate_event::reason),                \
       (invalidationSet), (singleSelectorPart))
+
+#define TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(element, reason, \
+                                                 invalidationSet) \
+  TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART(              \
+      element, reason, invalidationSet, g_empty_atom)
 
 // From a web developer's perspective: what caused this layout? This is strictly
 // for tracing. Blink logic must not depend on these.

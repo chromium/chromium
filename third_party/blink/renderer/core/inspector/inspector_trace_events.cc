@@ -616,6 +616,11 @@ const char
     inspector_style_invalidator_invalidate_event::kInvalidateCustomPseudo[] =
         "Invalidate custom pseudo element";
 const char inspector_style_invalidator_invalidate_event::
+    kInvalidationSetInvalidatesSelf[] = "Invalidation set invalidates self";
+const char inspector_style_invalidator_invalidate_event::
+    kInvalidationSetInvalidatesSubtree[] =
+        "Invalidation set invalidates subtree";
+const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedAttribute[] = "Invalidation set matched attribute";
 const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedClass[] = "Invalidation set matched class";
@@ -680,6 +685,9 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
   } else if (reason == kInvalidationSetMatchedAttribute) {
     feature_type =
         InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute;
+  } else if (reason == kInvalidationSetInvalidatesSubtree) {
+    feature_type =
+        InvalidationSetToSelectorMap::SelectorFeatureType::kWholeSubtree;
   }
   if (feature_type !=
       InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown) {
