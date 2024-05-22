@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -168,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithValidIdSyncInstalled) {
   GURL url("https://example.com/");
-  const std::string app_id = GenerateAppId(/*manifest_id=*/std::nullopt, url);
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
   InjectWebAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
@@ -280,9 +283,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
   GURL scope("https://example.com/scope/");
   webapps::ManifestId manifest_id("https://example.com/manifest-id");
   std::string app_name = "app name";
-  auto install_info = absl::make_unique<WebAppInstallInfo>();
-  install_info->start_url = app_url;
-  install_info->manifest_id = manifest_id;
+  auto install_info = std::make_unique<WebAppInstallInfo>(manifest_id, app_url);
   install_info->scope = scope;
   install_info->title = base::UTF8ToUTF16(app_name);
   install_info->description = base::UTF8ToUTF16(app_name);
@@ -440,18 +441,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 
-  WebAppInstallInfo info;
-  std::string name = "Test name";
-  info.title = base::UTF8ToUTF16(app_id);
-  info.description = u"Test description";
-  info.start_url = url;
-  info.scope = url;
-  info.manifest_id = GenerateManifestId(relative_manifest_id, url);
+  auto manifest_id = GenerateManifestId(relative_manifest_id, url);
+  auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
+  info->title = base::UTF8ToUTF16(app_id);
+  info->description = u"Test description";
+  info->scope = url;
   const webapps::AppId installed_app_id =
-      apps_helper::InstallWebApp(GetProfile(0), info);
+      apps_helper::InstallWebApp(GetProfile(0), std::move(info));
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/std::nullopt, GURL("https://example.com/explicit_id"));
+      /*manifest_id_path=*/std::nullopt,
+      GURL("https://example.com/explicit_id"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 
@@ -467,18 +467,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 
-  WebAppInstallInfo info;
-  std::string name = "Test name";
-  info.title = base::UTF8ToUTF16(app_id);
-  info.description = u"Test description";
-  info.start_url = url;
-  info.scope = url;
-  info.manifest_id = GenerateManifestId(relative_manifest_id, url);
+  auto manifest_id = GenerateManifestId(relative_manifest_id, url);
+  auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
+  info->title = base::UTF8ToUTF16(app_id);
+  info->description = u"Test description";
+  info->scope = url;
   const webapps::AppId installed_app_id =
-      apps_helper::InstallWebApp(GetProfile(0), info);
+      apps_helper::InstallWebApp(GetProfile(0), std::move(info));
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/std::nullopt, GURL("https://example.com/"));
+      /*manifest_id_path=*/std::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 

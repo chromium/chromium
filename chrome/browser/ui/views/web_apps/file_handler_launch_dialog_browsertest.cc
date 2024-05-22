@@ -84,9 +84,9 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
 
   void InstallTestWebApp() {
     const GURL example_url = GURL(kStartUrl);
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
     web_app_info->title = u"Test app";
-    web_app_info->start_url = example_url;
     web_app_info->scope = example_url;
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
 

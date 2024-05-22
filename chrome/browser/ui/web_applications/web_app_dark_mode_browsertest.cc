@@ -15,9 +15,10 @@ namespace web_app {
 class WebAppDarkModeBrowserTest : public WebAppBrowserTestBase {
  public:
   webapps::AppId InstallWebAppFromInfo() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     // We want to hang so WebContents does not update the background color.
-    web_app_info->start_url = https_server()->GetURL("/hung");
+    GURL start_url = https_server()->GetURL("/hung");
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->title = u"A Web App";
     web_app_info->display_mode = DisplayMode::kStandalone;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;

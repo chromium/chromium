@@ -61,10 +61,9 @@ class SimpleInstallDialogBubbleViewBrowserTest
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
 
   std::unique_ptr<WebAppInstallInfo> GetAppInfo() {
-    auto app_info = std::make_unique<WebAppInstallInfo>();
+    auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example2.com"));
     app_info->title = u"Test app 2";
-    app_info->start_url = GURL("https://example2.com");
-    app_info->manifest_id = GURL("https://example2.com");
     app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     return app_info;
   }

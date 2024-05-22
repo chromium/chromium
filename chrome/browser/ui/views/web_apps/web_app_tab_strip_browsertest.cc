@@ -330,9 +330,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NonTabbedWebApp) {
   Profile* profile = browser()->profile();
 
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      embedded_test_server()->GetURL(kAppPath));
   web_app_info->title = u"Test app";
-  web_app_info->start_url = embedded_test_server()->GetURL(kAppPath);
   webapps::AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
 
   Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);

@@ -291,7 +291,7 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   options.uninstall_and_replace = {kExtensionId};
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating(
-      []() { return std::make_unique<WebAppInstallInfo>(); });
+      WebAppInstallInfo::CreateWithStartUrlForTesting, install_url);
   preinstalled_web_app_override_.apps.push_back(std::move(options));
 
   auto expect_present = [&]() {

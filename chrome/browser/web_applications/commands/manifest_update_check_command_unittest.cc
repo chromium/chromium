@@ -45,9 +45,14 @@ namespace {
 apps::FileHandlers CreateFileHandlersFromManifest(
     const std::vector<blink::mojom::ManifestFileHandlerPtr>& file_handler,
     const GURL& app_scope) {
-  WebAppInstallInfo web_app_info;
-  PopulateFileHandlerInfoFromManifest(file_handler, app_scope, &web_app_info);
-  return web_app_info.file_handlers;
+  // Make a fake WebAppInstallInfo to extract file_handlers data.
+  // TODO(b:341617121): Ideally `PopulateFileHandlerInfoFromManifest` would
+  // return the file handlers directly.
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(app_scope);
+  PopulateFileHandlerInfoFromManifest(file_handler, app_scope,
+                                      web_app_info.get());
+  return web_app_info->file_handlers;
 }
 }  // namespace
 

@@ -414,9 +414,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
                        PRE_SessionRestartDoesntOverrideDefaultAppListPosition) {
   // Simluate installation of an app pinned to shelf by default:
   // App with web_app::kGmailAppId ID.
-  auto gmail_info = std::make_unique<web_app::WebAppInstallInfo>();
-  gmail_info->start_url =
-      GURL("https://mail.google.com/mail/?usp=installed_webapp");
+  auto gmail_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
   gmail_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(gmail_info));
 

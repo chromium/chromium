@@ -104,9 +104,9 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // Install a dummy app
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://testpwa.com/"));
     web_app_info->title = u"WebAppTest";
-    web_app_info->start_url = GURL("https://testpwa.com/");
     web_app_info->scope = GURL("https://testpwa.com/");
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
 
@@ -461,12 +461,12 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
   // Validate array when app does declare shortcut menus in the manifest.
   {
     // Install a dummy app with shortcut menu items
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     WebAppShortcutsMenuItemInfo shortcut_info1;
     WebAppShortcutsMenuItemInfo shortcut_info2;
     WebAppShortcutsMenuItemInfo shortcut_info3;
 
-    web_app_info->start_url = GURL("https://mytestpwa.com/");
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://mytestpwa.com/"));
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";
     web_app_info->scope = web_app_info->start_url;
     web_app_info->description = web_app_info->title;

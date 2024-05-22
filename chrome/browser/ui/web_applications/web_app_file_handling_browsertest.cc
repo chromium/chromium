@@ -205,9 +205,10 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 
   webapps::AppId InstallFileHandlingWebApp(const std::u16string& title,
                                            const GURL& handler_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url =
+    GURL start_url =
         https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
     web_app_info->title = title;
     apps::FileHandler entry;

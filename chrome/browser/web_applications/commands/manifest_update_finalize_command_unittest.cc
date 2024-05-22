@@ -74,21 +74,10 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     return output_result;
   }
 
-  webapps::AppId InstallWebApp() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url();
-    web_app_info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
-    web_app_info->scope = app_url().GetWithoutFilename();
-    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    web_app_info->title = u"Foo Bar";
-    return test::InstallWebApp(profile(), std::move(web_app_info));
-  }
 
   std::unique_ptr<WebAppInstallInfo> GetNewInstallInfoWithTitle(
       std::u16string new_title) {
     auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
-    info->start_url = app_url();
-    info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
     info->scope = app_url().GetWithoutFilename();
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     info->title = new_title;
@@ -105,7 +94,8 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
 };
 
 TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
-  webapps::AppId app_id = InstallWebApp();
+  webapps::AppId app_id =
+      test::InstallDummyWebApp(profile(), "Old Name", app_url());
   ManifestUpdateResult expected_result = RunCommandAndGetResult(
       app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdated);

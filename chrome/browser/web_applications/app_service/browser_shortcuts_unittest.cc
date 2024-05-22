@@ -63,9 +63,9 @@ class BrowserShortcutsTest : public testing::Test,
 
     // Create a web app entry with scope, which would be recognised
     // as normal web app in the web app system.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
     web_app_info->title = base::UTF8ToUTF16(app_name);
-    web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
 
     std::string app_id =

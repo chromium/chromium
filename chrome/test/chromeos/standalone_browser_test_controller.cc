@@ -166,9 +166,9 @@ void StandaloneBrowserTestController::InstallWebApp(
     const std::string& start_url,
     apps::WindowMode window_mode,
     InstallWebAppCallback callback) {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(start_url));
   info->title = u"Test Web App";
-  info->start_url = GURL(start_url);
   info->display_mode = WindowModeToDisplayMode(window_mode);
   info->user_display_mode = WindowModeToUserDisplayMode(window_mode);
   Profile* profile = ProfileManager::GetPrimaryUserProfile();

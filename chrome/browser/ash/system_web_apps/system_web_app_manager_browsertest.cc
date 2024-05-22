@@ -1197,8 +1197,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
 
-  EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
-  EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
+  EXPECT_EQ("Test System App Untrusted", registrar.GetAppShortName(app_id));
+  EXPECT_EQ(SkColorSetRGB(0xFF, 0, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
   EXPECT_EQ(registrar.FindAppWithUrlInScope(

@@ -135,9 +135,9 @@ class AppManagementPageHandlerTestBase
 TEST_P(AppManagementPageHandlerTestBase, GetApp) {
   // Create a web app entry with scope, which would be recognised
   // as normal web app in the web app system.
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/");
 
   std::string app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -151,9 +151,9 @@ TEST_P(AppManagementPageHandlerTestBase, GetApp) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, GetPreferredAppTest) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("https://example.com/abc/");
 
   std::string app_id =
@@ -177,9 +177,9 @@ TEST_P(AppManagementPageHandlerTestBase, GetPreferredAppTest) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, DisablePreferredApp) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("https://example.com/abc/");
 
   std::string app_id =
@@ -195,9 +195,9 @@ TEST_P(AppManagementPageHandlerTestBase, DisablePreferredApp) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, SupportedLinksWithPort) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("https://example:8080/abc/");
 
   std::string app_id =
@@ -210,17 +210,17 @@ TEST_P(AppManagementPageHandlerTestBase, SupportedLinksWithPort) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, PreferredAppNonOverlappingScopePort) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"App 1";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example:8080/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
   web_app_info2->title = u"App 2";
-  web_app_info2->start_url = GURL("https://example.com/abc/index.html");
   web_app_info2->scope = GURL("https://example:9090/");
 
   std::string app_id2 =
@@ -243,17 +243,17 @@ TEST_P(AppManagementPageHandlerTestBase, PreferredAppNonOverlappingScopePort) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(AppManagementPageHandlerTestBase, PreferredAppOverlappingScopePort) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"App 1";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example:8080/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
   web_app_info2->title = u"App 2";
-  web_app_info2->start_url = GURL("https://example.com/abc/index.html");
   web_app_info2->scope = GURL("https://example:8080/abc");
 
   std::string app_id2 =
@@ -286,9 +286,9 @@ TEST_P(AppManagementPageHandlerTestBase, PreferredAppOverlappingScopePort) {
 TEST_P(AppManagementPageHandlerTestBase,
        GetPreferredAppDifferentScopesNotReset) {
   // Install app1 and mark it as preferred.
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
@@ -298,18 +298,18 @@ TEST_P(AppManagementPageHandlerTestBase,
   AwaitWebAppCommandsComplete();
 
   // Install app2 with same scope as app1.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->scope = GURL("https://example.com/");
 
   std::string app_id2 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
 
   // Install app3 with a completely different scope than app1 and app2.
-  auto web_app_info3 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info3 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://abc.com/index.html"));
   web_app_info3->title = u"app_name3";
-  web_app_info3->start_url = GURL("https://abc.com/index.html");
   web_app_info3->scope = GURL("https://abc.com/def/");
 
   std::string app_id3 =
@@ -330,9 +330,9 @@ TEST_P(AppManagementPageHandlerTestBase,
 }
 
 TEST_P(AppManagementPageHandlerTestBase, GetPreferredAppTestInvalidAppId) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("https://example.com/");
 
   std::string app_id =
@@ -350,9 +350,9 @@ TEST_P(AppManagementPageHandlerTestBase, GetPreferredAppTestInvalidAppId) {
 
 TEST_P(AppManagementPageHandlerTestBase,
        GetPreferredAppTestInvalidSupportedLink) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("abc://example.com/");
 
   std::string app_id =
@@ -376,18 +376,18 @@ TEST_P(AppManagementPageHandlerTestBase,
 TEST_P(AppManagementPageHandlerTestBase,
        GetOverlappingPreferredAppsSingleAppOnly) {
   // First install an app that has some scope set in it.
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
   // 2nd app has the same scope, but different app_id and opens in a new window.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/");
@@ -412,18 +412,18 @@ TEST_P(AppManagementPageHandlerTestBase,
 TEST_P(AppManagementPageHandlerTestBase,
        GetOverlappingPreferredAppsNestedScope) {
   // First install an app that has some scope set in it.
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
   // 2nd app has the same scope, but different app_id and opens in a new window.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/nested/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/nested/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/nested/");
@@ -450,18 +450,18 @@ TEST_P(AppManagementPageHandlerTestBase,
 
 TEST_P(AppManagementPageHandlerTestBase, GetOverlappingPreferredAppsTwice) {
   // First install an app that has some scope set in it.
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
   // 2nd app has the same scope, but different app_id and opens in a new window.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/");
@@ -490,18 +490,18 @@ TEST_P(AppManagementPageHandlerTestBase, GetOverlappingPreferredAppsTwice) {
 TEST_P(AppManagementPageHandlerTestBase,
        GetOverlappingPreferredAppsTwiceNonPreferred) {
   // First install an app that has some scope set in it.
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
   // 2nd app has the same scope, but different app_id and opens in a new window.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/");
@@ -530,18 +530,18 @@ TEST_P(AppManagementPageHandlerTestBase,
 
 TEST_P(AppManagementPageHandlerTestBase,
        GetOverlappingPreferredAppsShortcutApp) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
   // The WebAppRegistrar treats an app without a scope as a shortcut app.
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
@@ -560,9 +560,9 @@ TEST_P(AppManagementPageHandlerTestBase,
 // GetOverlappingPreferredApps call.
 TEST_P(AppManagementPageHandlerTestBase,
        GetOverlappingPreferredAppsInvalidApp) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/index.html");
   web_app_info->scope = GURL("https://example.com/");
 
   std::string app_id =
@@ -581,17 +581,17 @@ TEST_P(AppManagementPageHandlerTestBase,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"app_name";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("invalid");
 
   std::string app_id1 =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example_2.com/index_abc.html"));
   web_app_info2->title = u"app_name2";
-  web_app_info2->start_url = GURL("https://example_2.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example_2.com/");
@@ -607,9 +607,9 @@ TEST_P(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/"));
   web_app_info->title = u"app_name";
-  web_app_info->start_url = GURL("https://example.com/");
   web_app_info->scope_extensions = web_app::ScopeExtensions(
       {web_app::ScopeExtensionInfo(
            url::Origin::Create(GURL("https://sitea.com"))),
@@ -662,17 +662,17 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
 // on ChromeOS, and will need to be modified if the behavior changes.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, UseCase_ADisabledBDisabled) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"A";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string appA =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"B";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/abc/");
@@ -690,17 +690,17 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_ADisabledBDisabled) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, UseCase_ADisabledBEnabled) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"A";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string appA =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"B";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/abc/");
@@ -722,17 +722,17 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_ADisabledBEnabled) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBDisabled) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"A";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string appA =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"B";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/abc/");
@@ -754,17 +754,17 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBDisabled) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBEnabled) {
-  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
   web_app_info1->title = u"A";
-  web_app_info1->start_url = GURL("https://example.com/index.html");
   web_app_info1->scope = GURL("https://example.com/");
 
   std::string appA =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
 
-  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index_abc.html"));
   web_app_info2->title = u"B";
-  web_app_info2->start_url = GURL("https://example.com/index_abc.html");
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info2->scope = GURL("https://example.com/abc/");

@@ -52,10 +52,10 @@ class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
-  auto info = std::make_unique<WebAppInstallInfo>();
   base::HistogramTester tester;
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("http://test.com/path"));
   info->title = u"Test name";
-  info->start_url = GURL("http://test.com/path");
 
   const webapps::WebappInstallSource install_source =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -96,9 +96,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("http://test.com/path"));
   info->title = u"Test name";
-  info->start_url = GURL("http://test.com/path");
 
   WebAppInstallParams install_params;
   install_params.bypass_os_hooks = false;
