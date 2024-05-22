@@ -39,7 +39,7 @@ suite('LanguageMenu', () => {
     // Bypass Typescript compiler to allow us to set a private readonly
     // property
     // @ts-ignore
-    languageMenu.voicePackInstallStatus = languagesToNotificationMap;
+    languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
     flush();
   };
 
@@ -324,10 +324,18 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(getNotificationItems()[2]!, '');
       });
 
-      test('it shows downloading notification', async () => {
+      test('it shows and hides downloading notification', async () => {
         enabledLanguagesInPref = ['Italian', 'English (United States)'];
         setEnabledLanguages();
-        languagesToNotificationMap['Italian'] = VoicePackStatus.INSTALLING;
+        languagesToNotificationMap['it'] = VoicePackStatus.INSTALLING;
+        setNotificationForLanguage();
+        assertEquals(getNotificationItems().length, 3);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+        assertLanguageNotification(
+            getNotificationItems()[2]!, 'Downloading voices…');
+
+        languagesToNotificationMap['it'] = VoicePackStatus.INSTALLED;
         setNotificationForLanguage();
         assertEquals(getNotificationItems().length, 3);
         assertLanguageNotification(getNotificationItems()[0]!, '');
