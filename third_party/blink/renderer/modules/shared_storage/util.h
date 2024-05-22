@@ -42,15 +42,14 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 // Returns true if a valid privateAggregationConfig is provided or if no config
 // is provided. A config is invalid if an invalid (i.e. too long) context_id
 // string is provided or an invalid (i.e. not on the allowlist)
-// aggregationCoordinatorOrigin is provided. Note that the
-// aggregationCoordinatorOrigin is only evaluated if the relevant features are
-// enabled. If the config is invalid, returns false and rejects the `resolver`
-// with an error. Always populates `out_private_aggregation_config` with a new
-// config object. If a valid context_id string was provided,
-// `out_private_aggregation_config->context_id` is populated with it; otherwise,
-// it's left default (a null String). If a valid aggregation coordinator is
-// provided, `out_private_aggregation_config->aggregation_coodinator_origin` is
-// populated with it; otherwise, it's left default (nullptr). If a valid
+// aggregationCoordinatorOrigin is provided. If the config is invalid, returns
+// false and rejects the `resolver` with an error. Always populates
+// `out_private_aggregation_config` with a new config object. If a valid
+// context_id string was provided, `out_private_aggregation_config->context_id`
+// is populated with it; otherwise, it's left default (a null String). If a
+// valid aggregation coordinator is provided,
+// `out_private_aggregation_config->aggregation_coodinator_origin` is populated
+// with it; otherwise, it's left default (nullptr). If a valid
 // filteringIdMaxBytes is provided, `out_filtering_id_max_bytes` is populated
 // with it; otherwise, it's populated with the default of 1.
 bool CheckPrivateAggregationConfig(

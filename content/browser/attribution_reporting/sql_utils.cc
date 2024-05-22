@@ -16,10 +16,8 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
@@ -56,9 +54,7 @@ bool IsValid(const proto::AttributionAggregationKey& key) {
 void SerializeCommonAggregatableData(
     const AttributionReport::CommonAggregatableData& data,
     proto::AttributionCommonAggregatableMetadata& msg) {
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
-      data.aggregation_coordinator_origin.has_value()) {
+  if (data.aggregation_coordinator_origin.has_value()) {
     msg.set_coordinator_origin(
         data.aggregation_coordinator_origin->Serialize());
   }
@@ -93,9 +89,7 @@ void SerializeCommonAggregatableData(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::aggregation_service::kAggregationServiceMultipleCloudProviders) &&
-      msg.has_coordinator_origin()) {
+  if (msg.has_coordinator_origin()) {
     auto aggregation_coordinator_origin =
         attribution_reporting::SuitableOrigin::Deserialize(
             msg.coordinator_origin());

@@ -22,11 +22,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
@@ -1359,76 +1357,6 @@ TEST_F(AggregationServiceStorageSqlInMemoryTest,
   EXPECT_FALSE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
   EXPECT_TRUE(GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
   histograms.ExpectTotalCount(
-      "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime2",
-      0);
-}
-
-TEST_F(AggregationServiceStorageSqlTest,
-       AggregationCoordinatorFeatureModifiedBetweenStorageAndLoading_Success) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-  OpenDatabase();
-
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-
-  storage_->StoreRequest(
-      aggregation_service::CloneReportRequest(example_request));
-  EXPECT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max()).size(), 1u);
-
-  // Turning the feature on should not affect the report loading.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeature(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
-      scoped_coordinator_allowlist(
-          {url::Origin::Create(GURL("https://a.test"))});
-
-  ASSERT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max()).size(), 1u);
-  EXPECT_FALSE(GetRequestsReportingOnOrBefore(base::Time::Max())[0]
-                   .request.payload_contents()
-                   .aggregation_coordinator_origin.has_value());
-
-  storage_->ClearDataBetween(base::Time(), base::Time(), base::NullCallback());
-
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  payload_contents.aggregation_coordinator_origin =
-      url::Origin::Create(GURL("https://a.test"));
-
-  storage_->StoreRequest(
-      AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info().Clone())
-          .value());
-  ASSERT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max()).size(), 1u);
-  EXPECT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max())[0]
-                .request.payload_contents()
-                .aggregation_coordinator_origin.value()
-                .GetURL()
-                .spec(),
-            "https://a.test/");
-
-  // Turning the feature off should also not affect the report loading.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndDisableFeature(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-
-  ASSERT_EQ(storage_
-                ->GetRequestsReportingOnOrBefore(base::Time::Max(),
-                                                 /*limit=*/std::nullopt)
-                .size(),
-            1u);
-  EXPECT_EQ(storage_
-                ->GetRequestsReportingOnOrBefore(base::Time::Max(),
-                                                 /*limit=*/std::nullopt)[0]
-                .request.payload_contents()
-                .aggregation_coordinator_origin.value()
-                .GetURL()
-                .spec(),
-            "https://a.test/");
-  histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
       "RequestDelayFromUpdatedReportTime2",
       0);

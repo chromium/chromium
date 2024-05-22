@@ -36,7 +36,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -70,22 +69,16 @@ std::vector<GURL> GetDefaultProcessingUrls(
     const std::optional<url::Origin>& aggregation_coordinator_origin) {
   switch (aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased:
-      if (base::FeatureList::IsEnabled(
-              aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-        if (!aggregation_coordinator_origin.has_value()) {
-          return {GetAggregationServiceProcessingUrl(
-              ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
-        }
-        if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
-                *aggregation_coordinator_origin)) {
-          return {};
-        }
+      if (!aggregation_coordinator_origin.has_value()) {
         return {GetAggregationServiceProcessingUrl(
-            *aggregation_coordinator_origin)};
-      } else {
-        return {GURL(
-            kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
+            ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())};
       }
+      if (!::aggregation_service::IsAggregationCoordinatorOriginAllowed(
+              *aggregation_coordinator_origin)) {
+        return {};
+      }
+      return {
+          GetAggregationServiceProcessingUrl(*aggregation_coordinator_origin)};
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       // TODO(crbug.com/40214439): Update default processing urls.
       return {GURL("https://server1.example"), GURL("https://server2.example")};
@@ -474,9 +467,7 @@ void ConvertPayloadContentsToProto(
       break;
   }
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
-      payload_contents.aggregation_coordinator_origin.has_value()) {
+  if (payload_contents.aggregation_coordinator_origin.has_value()) {
     out->set_aggregation_coordinator_origin(
         payload_contents.aggregation_coordinator_origin->Serialize());
   }
@@ -1032,15 +1023,12 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
     value.Set("debug_key", base::NumberToString(debug_key_.value()));
   }
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     value.Set(
         "aggregation_coordinator_origin",
         aggregation_coordinator_origin_
             .value_or(
                 ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())
             .Serialize());
-  }
 
   for (const auto& item : additional_fields_) {
     CHECK(!value.contains(item.first))

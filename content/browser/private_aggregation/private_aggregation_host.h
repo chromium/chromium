@@ -121,10 +121,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   // timeout, regardless of when the disconnection actually happens. `timeout`
   // must be positive if set. If `timeout` is set, `context_id` must be set too.
   // If `aggregation_coordinator_origin` is set, the origin must be on the
-  // allowlist. But if the `kAggregationServiceMultipleCloudProviders`
-  // feature is disabled, this function will act as if
-  // `aggregation_coordinator_origin` was not set. `filtering_id_max_bytes` must
-  // be positive and no greater than
+  // allowlist. `filtering_id_max_bytes` must be positive and no greater than
   // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`. The
   // return value indicates whether the receiver was accepted. Virtual for
   // testing.

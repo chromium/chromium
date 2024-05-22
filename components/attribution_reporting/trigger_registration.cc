@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +15,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
@@ -144,12 +142,9 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     ASSIGN_OR_RETURN(
         registration.aggregation_coordinator_origin,
         ParseAggregationCoordinator(dict.Find(kAggregationCoordinatorOrigin)));
-  }
 
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
@@ -215,9 +210,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   SerializeDebugReporting(dict, debug_reporting);
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
-      aggregation_coordinator_origin.has_value()) {
+  if (aggregation_coordinator_origin.has_value()) {
     dict.Set(kAggregationCoordinatorOrigin,
              aggregation_coordinator_origin->Serialize());
   }

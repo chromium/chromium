@@ -33,7 +33,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -184,13 +183,6 @@ bool PrivateAggregationHost::BindNewReceiver(
   if (context_id.has_value() &&
       context_id.value().size() > kMaxContextIdLength) {
     return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    // Override with the default if a non-default coordinator is specified when
-    // the feature is disabled.
-    aggregation_coordinator_origin = std::nullopt;
   }
 
   if (aggregation_coordinator_origin.has_value() &&

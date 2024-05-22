@@ -53,7 +53,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -5115,21 +5114,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
-class InterestGroupAggregationCoordinatorBrowserTest
-    : public InterestGroupBrowserTest {
- public:
-  InterestGroupAggregationCoordinatorBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        aggregation_service::kAggregationServiceMultipleCloudProviders);
-  }
-
-  ~InterestGroupAggregationCoordinatorBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5160,7 +5145,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5192,7 +5177,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
                  aggregation_service::kDefaultAggregationCoordinatorAwsCloud)));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupNonHTTPSAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5224,7 +5209,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    InterestGroupAggregationCoordinatorBrowserTest,
+    InterestGroupBrowserTest,
     JoinInterestGroupUnsupportedAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {

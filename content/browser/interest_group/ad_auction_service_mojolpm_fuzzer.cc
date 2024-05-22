@@ -25,7 +25,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
-#include "components/aggregation_service/features.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer.pb.h"
 #include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.h"
@@ -294,7 +293,6 @@ AdAuctionServiceTestcase::AdAuctionServiceTestcase(
        blink::features::kAdInterestGroupAPI, blink::features::kFledge,
        blink::features::kFledgeClearOriginJoinedAdInterestGroups,
        blink::features::kFledgeNegativeTargeting,
-       aggregation_service::kAggregationServiceMultipleCloudProviders,
        features::kEnableUpdatingUserBiddingSignals,
        features::kEnableUpdatingExecutionModeToFrozenContext},
       /*disabled_features=*/{});

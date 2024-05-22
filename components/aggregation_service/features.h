@@ -13,6 +13,7 @@
 
 namespace aggregation_service {
 
+// This feature is no longer checked, and only the feature param is used.
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
 BASE_DECLARE_FEATURE(kAggregationServiceMultipleCloudProviders);
 

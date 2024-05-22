@@ -33,7 +33,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -388,7 +387,6 @@ class AttributionStorageSqlTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_directory_;
@@ -2159,9 +2157,6 @@ TEST_F(AttributionStorageSqlTest,
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-
   for (auto test_case : kTestCases) {
     OpenDatabase();
     storage()->StoreSource(SourceBuilder()
@@ -2270,9 +2265,6 @@ TEST_F(AttributionStorageSqlTest,
           .valid = false,
       },
   };
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
 
   for (auto test_case : kTestCases) {
     OpenDatabase();

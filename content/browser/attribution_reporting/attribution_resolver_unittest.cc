@@ -23,10 +23,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -3754,9 +3752,6 @@ TEST_F(AttributionResolverTest,
 }
 
 TEST_F(AttributionResolverTest, AggregationCoordinator_RoundTrip) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-
   auto coordinator_origin = SuitableOrigin::Deserialize("https://a.test");
 
   storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());

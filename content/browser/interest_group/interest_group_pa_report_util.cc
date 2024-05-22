@@ -21,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
@@ -361,13 +360,6 @@ void SplitContributionsIntoBatchesThenSendToHost(
 
     contributions_map[std::move(request->debug_mode_details)].push_back(
         std::move(request->contribution->get_histogram_contribution()));
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    // Override with the default if a non-default coordinator is specified when
-    // the feature is disabled.
-    aggregation_coordinator_origin = std::nullopt;
   }
 
   if (aggregation_coordinator_origin &&

@@ -21,7 +21,6 @@
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -1007,13 +1006,6 @@ bool GetAggregationCoordinatorFromConfig(
     const ProtectedAudiencePrivateAggregationConfig& config,
     scoped_refptr<const SecurityOrigin>& aggregation_coordinator_origin_out) {
   if (!config.hasAggregationCoordinatorOrigin()) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    // Ignore the specified aggregation coordinator unless the feature is
-    // enabled.
     return true;
   }
 

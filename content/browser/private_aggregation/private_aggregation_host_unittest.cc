@@ -1015,69 +1015,6 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
   }
 }
 
-TEST_F(PrivateAggregationHostTest,
-       AggregationCoordinatorOriginIgnoredIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
-  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
-      scoped_coordinator_allowlist(
-          {url::Origin::Create(GURL("https://a.test"))});
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  const url::Origin kValidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://a.test"));
-  const url::Origin kInvalidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://b.test"));
-
-  const std::optional<url::Origin> kTestCases[] = {
-      std::nullopt,
-      kValidCoordinatorOrigin,
-      kInvalidCoordinatorOrigin,
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histogram;
-
-    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-    bool bind_result = host_->BindNewReceiver(
-        kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationBudgetKey::Api::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt, test_case,
-        PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
-        remote.BindNewPipeAndPassReceiver());
-
-    // The provided origin should be ignored.
-    EXPECT_TRUE(bind_result);
-
-    std::optional<AggregatableReportRequest> validated_request;
-    EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-        contributions;
-    contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
-    remote->ContributeToHistogram(std::move(contributions));
-
-    remote.reset();
-    host_->FlushReceiverSetForTesting();
-
-    histogram.ExpectUniqueSample(
-        kPipeResultHistogram,
-        PrivateAggregationHost::PipeResult::kReportSuccess, 1);
-
-    ASSERT_TRUE(validated_request);
-    EXPECT_FALSE(validated_request->payload_contents()
-                     .aggregation_coordinator_origin.has_value());
-  }
-}
-
 TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

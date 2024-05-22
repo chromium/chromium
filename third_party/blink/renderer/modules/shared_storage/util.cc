@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -118,9 +117,7 @@ bool CheckPrivateAggregationConfig(
     out_context_id = options.privateAggregationConfig()->contextId();
   }
 
-  if (options.privateAggregationConfig()->hasAggregationCoordinatorOrigin() &&
-      base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+  if (options.privateAggregationConfig()->hasAggregationCoordinatorOrigin()) {
     scoped_refptr<SecurityOrigin> parsed_coordinator =
         SecurityOrigin::CreateFromString(
             options.privateAggregationConfig()->aggregationCoordinatorOrigin());
