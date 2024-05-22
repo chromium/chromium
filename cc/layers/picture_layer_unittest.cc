@@ -382,7 +382,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
 
   // Make the layer not update.
   layer->SetHideLayerAndSubtree(true);
-  EXPECT_EQ(gfx::Size(500, 500), layer->GetRecordingSourceForTesting()->size());
+  EXPECT_EQ(gfx::Size(500, 500), layer->GetRecordingSourceForTesting().size());
 
   // Change its bounds while it's in a state that can't update.
   layer->SetBounds(gfx::Size(600, 600));
@@ -394,7 +394,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
 
   // This layer should also drop its recording source because it was resized
   // and not recorded.
-  EXPECT_EQ(gfx::Size(), layer->GetRecordingSourceForTesting()->size());
+  EXPECT_EQ(gfx::Size(), layer->GetRecordingSourceForTesting().size());
 
   host_client1.SetLayerTreeHost(nullptr);
   host_client2.SetLayerTreeHost(nullptr);
@@ -440,7 +440,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
   // Solid color analysis will return true since the layer tree host has the
   // recording scale set to its default value of 1. The non solid pixel is
   // out of bounds for the unscaled layer size in this particular case.
-  EXPECT_TRUE(layer->GetRecordingSourceForTesting()->is_solid_color());
+  EXPECT_TRUE(layer->GetRecordingSourceForTesting().is_solid_color());
 
   host->SetRecordingScaleFactor(recording_scale);
   layer->SetNeedsDisplayRect(invalidation_bounds);
@@ -448,7 +448,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
 
   // Once the recording scale is set and propagated to the recording source,
   // the solid color analysis should work as expected and return false.
-  EXPECT_FALSE(layer->GetRecordingSourceForTesting()->is_solid_color());
+  EXPECT_FALSE(layer->GetRecordingSourceForTesting().is_solid_color());
 }
 
 }  // namespace

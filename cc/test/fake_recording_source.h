@@ -25,12 +25,9 @@ namespace cc {
 // display list.
 class FakeRecordingSource : public RecordingSource {
  public:
-  static std::unique_ptr<FakeRecordingSource> Create(
-      const gfx::Size& layer_bounds) {
-    auto recording_source = std::make_unique<FakeRecordingSource>();
-    recording_source->SetCanUseRecordedBounds(true);
-    recording_source->SetLayerBounds(layer_bounds);
-    return recording_source;
+  explicit FakeRecordingSource(const gfx::Size& layer_bounds) {
+    SetCanUseRecordedBounds(true);
+    SetLayerBounds(layer_bounds);
   }
 
   void SetLayerBounds(const gfx::Size& layer_bounds) {
@@ -110,8 +107,6 @@ class FakeRecordingSource : public RecordingSource {
   }
 
  private:
-  using RecordingSource::RecordingSource;
-
   FakeContentLayerClient client_;
   PaintFlags default_flags_;
 };

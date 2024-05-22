@@ -21,6 +21,10 @@ class RecordingSource;
 
 class FakeRasterSource : public RasterSource {
  public:
+  explicit FakeRasterSource(const RecordingSource& recording_source);
+  FakeRasterSource(const RecordingSource& recording_source,
+                   base::WaitableEvent* playback_allowed_event);
+
   static scoped_refptr<FakeRasterSource> CreateInfiniteFilled();
   static scoped_refptr<FakeRasterSource> CreateFilled(const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreateFilledWithImages(
@@ -36,17 +40,14 @@ class FakeRasterSource : public RasterSource {
       const gfx::Rect& recorded_bounds);
   static scoped_refptr<FakeRasterSource> CreateEmpty(const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreateFromRecordingSource(
-      const RecordingSource* recording_source);
+      const RecordingSource& recording_source);
   static scoped_refptr<FakeRasterSource> CreateFromRecordingSourceWithWaitable(
-      const RecordingSource* recording_source,
+      const RecordingSource& recording_source,
       base::WaitableEvent* playback_allowed_event);
 
   void SetDirectlyCompositedImageDefaultRasterScale(gfx::Vector2dF scale);
 
  protected:
-  explicit FakeRasterSource(const RecordingSource* recording_source);
-  FakeRasterSource(const RecordingSource* recording_source,
-                   base::WaitableEvent* playback_allowed_event);
   ~FakeRasterSource() override;
 
   void PlaybackDisplayListToCanvas(

@@ -16582,24 +16582,24 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   gfx::Size layer_size = gfx::Size(750, 750);
 
-  auto recording_source = FakeRecordingSource::Create(layer_size);
+  FakeRecordingSource recording_source(layer_size);
   PaintImage checkerable_image =
       PaintImageBuilder::WithCopy(
           CreateDiscardablePaintImage(gfx::Size(500, 500)))
           .set_decoding_mode(PaintImage::DecodingMode::kAsync)
           .TakePaintImage();
-  recording_source->add_draw_image(checkerable_image, gfx::Point(0, 0));
+  recording_source.add_draw_image(checkerable_image, gfx::Point(0, 0));
 
   SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
   PaintFlags non_solid_flags;
   non_solid_flags.setColor(non_solid_color);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(510, 0, 200, 600),
-                                             non_solid_flags);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(0, 510, 200, 400),
-                                             non_solid_flags);
-  recording_source->Rerecord();
+  recording_source.add_draw_rect_with_flags(gfx::Rect(510, 0, 200, 600),
+                                            non_solid_flags);
+  recording_source.add_draw_rect_with_flags(gfx::Rect(0, 510, 200, 400),
+                                            non_solid_flags);
+  recording_source.Rerecord();
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   viz::BeginFrameArgs begin_frame_args =
       viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);

@@ -140,7 +140,7 @@ void RecordingSource::SetCanUseRecordedBounds(bool can_use_recorded_bounds) {
 }
 
 scoped_refptr<RasterSource> RecordingSource::CreateRasterSource() const {
-  return scoped_refptr<RasterSource>(new RasterSource(this));
+  return base::WrapRefCounted(new RasterSource(*this));
 }
 
 void RecordingSource::DetermineIfSolidColor() {

@@ -23,18 +23,18 @@
 
 namespace cc {
 
-RasterSource::RasterSource(const RecordingSource* other)
-    : display_list_(other->display_list_),
-      background_color_(other->background_color_),
-      requires_clear_(other->requires_clear_),
-      is_solid_color_(other->is_solid_color_),
-      solid_color_(other->solid_color_),
-      recorded_bounds_(other->recorded_bounds_),
-      size_(other->size_),
+RasterSource::RasterSource(const RecordingSource& other)
+    : display_list_(other.display_list_),
+      background_color_(other.background_color_),
+      requires_clear_(other.requires_clear_),
+      is_solid_color_(other.is_solid_color_),
+      solid_color_(other.solid_color_),
+      recorded_bounds_(other.recorded_bounds_),
+      size_(other.size_),
       slow_down_raster_scale_factor_for_debug_(
-          other->slow_down_raster_scale_factor_for_debug_),
-      recording_scale_factor_(other->recording_scale_factor_),
-      directly_composited_image_info_(other->directly_composited_image_info_) {
+          other.slow_down_raster_scale_factor_for_debug_),
+      recording_scale_factor_(other.recording_scale_factor_),
+      directly_composited_image_info_(other.directly_composited_image_info_) {
   DCHECK(recorded_bounds_.IsEmpty() ||
          gfx::Rect(size_).Contains(recorded_bounds_));
 }

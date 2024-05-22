@@ -17,7 +17,7 @@ namespace cc {
 namespace {
 
 TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(256, 256));
+  FakeRecordingSource recording_source(gfx::Size(256, 256));
   PaintImage discardable_image[2][2];
   gfx::Transform identity_transform;
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
@@ -32,16 +32,16 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
   rotate_transform.Rotate(45);
   discardable_image[1][1] = CreateDiscardablePaintImage(gfx::Size(32, 32));
 
-  recording_source->add_draw_image_with_transform(discardable_image[0][0],
-                                                  identity_transform);
-  recording_source->add_draw_image_with_transform(discardable_image[1][0],
-                                                  translate_transform);
-  recording_source->add_draw_image_with_transform(discardable_image[1][1],
-                                                  rotate_transform);
-  recording_source->Rerecord();
+  recording_source.add_draw_image_with_transform(discardable_image[0][0],
+                                                 identity_transform);
+  recording_source.add_draw_image_with_transform(discardable_image[1][0],
+                                                 translate_transform);
+  recording_source.add_draw_image_with_transform(discardable_image[1][1],
+                                                 rotate_transform);
+  recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Tile sized iterators. These should find only one pixel ref.
   {
@@ -104,11 +104,11 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 }
 
 TEST(RecordingSourceTest, EmptyImages) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(256, 256));
-  recording_source->Rerecord();
+  FakeRecordingSource recording_source(gfx::Size(256, 256));
+  recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Tile sized iterators.
   {
@@ -134,28 +134,28 @@ TEST(RecordingSourceTest, EmptyImages) {
 }
 
 TEST(RecordingSourceTest, NoDiscardableImages) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(256, 256));
+  FakeRecordingSource recording_source(gfx::Size(256, 256));
 
   PaintFlags simple_flags;
   simple_flags.setColor(SkColorSetARGB(255, 12, 23, 34));
 
   auto non_discardable_image =
       CreateNonDiscardablePaintImage(gfx::Size(128, 128));
-  recording_source->add_draw_rect_with_flags(gfx::Rect(0, 0, 256, 256),
-                                             simple_flags);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(128, 128, 512, 512),
-                                             simple_flags);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(512, 0, 256, 256),
-                                             simple_flags);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(0, 512, 256, 256),
-                                             simple_flags);
-  recording_source->add_draw_image(non_discardable_image, gfx::Point(128, 0));
-  recording_source->add_draw_image(non_discardable_image, gfx::Point(0, 128));
-  recording_source->add_draw_image(non_discardable_image, gfx::Point(150, 150));
-  recording_source->Rerecord();
+  recording_source.add_draw_rect_with_flags(gfx::Rect(0, 0, 256, 256),
+                                            simple_flags);
+  recording_source.add_draw_rect_with_flags(gfx::Rect(128, 128, 512, 512),
+                                            simple_flags);
+  recording_source.add_draw_rect_with_flags(gfx::Rect(512, 0, 256, 256),
+                                            simple_flags);
+  recording_source.add_draw_rect_with_flags(gfx::Rect(0, 512, 256, 256),
+                                            simple_flags);
+  recording_source.add_draw_image(non_discardable_image, gfx::Point(128, 0));
+  recording_source.add_draw_image(non_discardable_image, gfx::Point(0, 128));
+  recording_source.add_draw_image(non_discardable_image, gfx::Point(150, 150));
+  recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Tile sized iterators.
   {
@@ -181,7 +181,7 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
 }
 
 TEST(RecordingSourceTest, DiscardableImages) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(256, 256));
+  FakeRecordingSource recording_source(gfx::Size(256, 256));
 
   PaintImage discardable_image[2][2];
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
@@ -194,14 +194,14 @@ TEST(RecordingSourceTest, DiscardableImages) {
   // |---|---|
   // | x | x |
   // |---|---|
-  recording_source->add_draw_image(discardable_image[0][0], gfx::Point(0, 0));
-  recording_source->add_draw_image(discardable_image[1][0], gfx::Point(0, 130));
-  recording_source->add_draw_image(discardable_image[1][1],
-                                   gfx::Point(140, 140));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(discardable_image[0][0], gfx::Point(0, 0));
+  recording_source.add_draw_image(discardable_image[1][0], gfx::Point(0, 130));
+  recording_source.add_draw_image(discardable_image[1][1],
+                                  gfx::Point(140, 140));
+  recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Tile sized iterators. These should find only one image.
   {
@@ -247,7 +247,7 @@ TEST(RecordingSourceTest, DiscardableImages) {
 }
 
 TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(512, 512));
+  FakeRecordingSource recording_source(gfx::Size(512, 512));
   PaintImage non_discardable_image =
       CreateNonDiscardablePaintImage(gfx::Size(512, 512));
 
@@ -263,15 +263,15 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
   // |---|---|
   // |   | x |
   // |---|---|
-  recording_source->add_draw_image(non_discardable_image, gfx::Point(0, 0));
-  recording_source->add_draw_image(discardable_image[0][0], gfx::Point(0, 0));
-  recording_source->add_draw_image(discardable_image[0][1], gfx::Point(260, 0));
-  recording_source->add_draw_image(discardable_image[1][1],
-                                   gfx::Point(260, 260));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(non_discardable_image, gfx::Point(0, 0));
+  recording_source.add_draw_image(discardable_image[0][0], gfx::Point(0, 0));
+  recording_source.add_draw_image(discardable_image[0][1], gfx::Point(260, 0));
+  recording_source.add_draw_image(discardable_image[1][1],
+                                  gfx::Point(260, 260));
+  recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Tile sized iterators. These should find only one image.
   {
@@ -318,8 +318,8 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
   const std::vector<float> recording_scales = {1.f,   1.25f, 1.33f, 1.5f, 1.6f,
                                                1.66f, 2.f,   2.25f, 2.5f};
   for (float recording_scale : recording_scales) {
-    auto recording_source = FakeRecordingSource::Create(layer_bounds);
-    recording_source->SetRecordingScaleFactor(recording_scale);
+    FakeRecordingSource recording_source(layer_bounds);
+    recording_source.SetRecordingScaleFactor(recording_scale);
 
     PaintFlags solid_flags;
     SkColor4f solid_color{0.1f, 0.2f, 0.3f, 1.0f};
@@ -329,12 +329,12 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
     PaintFlags non_solid_flags;
     non_solid_flags.setColor(non_solid_color);
 
-    recording_source->add_draw_rect_with_flags(
+    recording_source.add_draw_rect_with_flags(
         gfx::ScaleToEnclosingRect(gfx::Rect(layer_bounds), recording_scale),
         solid_flags);
-    recording_source->Rerecord();
+    recording_source.Rerecord();
 
-    scoped_refptr<RasterSource> raster = recording_source->CreateRasterSource();
+    scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
 
     EXPECT_TRUE(raster->IsSolidColor())
         << " recording scale: " << recording_scale;
@@ -342,16 +342,16 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
 
     for (int y = 0; y < layer_bounds.height(); y += 50) {
       for (int x = 0; x < layer_bounds.width(); x += 50) {
-        recording_source->reset_draws();
-        recording_source->add_draw_rect_with_flags(
+        recording_source.reset_draws();
+        recording_source.add_draw_rect_with_flags(
             gfx::ScaleToEnclosingRect(gfx::Rect(layer_bounds), recording_scale),
             solid_flags);
-        recording_source->add_draw_rect_with_flags(
+        recording_source.add_draw_rect_with_flags(
             gfx::Rect(std::round(x * recording_scale),
                       std::round(y * recording_scale), 1, 1),
             non_solid_flags);
-        recording_source->Rerecord();
-        raster = recording_source->CreateRasterSource();
+        recording_source.Rerecord();
+        raster = recording_source.CreateRasterSource();
         EXPECT_FALSE(raster->IsSolidColor())
             << " recording scale: " << recording_scale << " pixel at: (" << x
             << ", " << y << ") was not solid.";
@@ -361,11 +361,11 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
 }
 
 TEST(RecordingSourceTest, RecordedBounds) {
-  auto recording_source = FakeRecordingSource::Create(gfx::Size(400, 400));
-  recording_source->add_draw_rect(gfx::Rect(100, 100, 100, 100));
-  recording_source->add_draw_rect(gfx::Rect(50, 200, 200, 50));
-  recording_source->Rerecord();
-  auto raster = recording_source->CreateRasterSource();
+  FakeRecordingSource recording_source(gfx::Size(400, 400));
+  recording_source.add_draw_rect(gfx::Rect(100, 100, 100, 100));
+  recording_source.add_draw_rect(gfx::Rect(50, 200, 200, 50));
+  recording_source.Rerecord();
+  auto raster = recording_source.CreateRasterSource();
   EXPECT_EQ(gfx::Rect(50, 100, 200, 150), raster->recorded_bounds());
 }
 

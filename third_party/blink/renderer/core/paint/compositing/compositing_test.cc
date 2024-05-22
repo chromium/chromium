@@ -3319,7 +3319,7 @@ TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffset) {
   ASSERT_TRUE(image_layer);
   EXPECT_EQ(gfx::Vector2dF(0.25f, 0.0625f),
             image_layer->GetRecordingSourceForTesting()
-                ->directly_composited_image_info()
+                .directly_composited_image_info()
                 ->default_raster_scale);
 }
 
@@ -3335,7 +3335,7 @@ TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
   ASSERT_TRUE(image_layer);
   EXPECT_EQ(gfx::Vector2dF(0.0625f, 0.25f),
             image_layer->GetRecordingSourceForTesting()
-                ->directly_composited_image_info()
+                .directly_composited_image_info()
                 ->default_raster_scale);
 }
 
@@ -3367,15 +3367,15 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
   if (RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
     EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
-              layer->GetRecordingSourceForTesting()->recorded_bounds());
+              layer->GetRecordingSourceForTesting().recorded_bounds());
   } else if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 2000, 2000, 2000),
-              layer->GetRecordingSourceForTesting()->recorded_bounds());
+              layer->GetRecordingSourceForTesting().recorded_bounds());
   } else {
     EXPECT_EQ(gfx::Size(2000, 2000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
-              layer->GetRecordingSourceForTesting()->recorded_bounds());
+              layer->GetRecordingSourceForTesting().recorded_bounds());
   }
 }
 

@@ -4945,12 +4945,12 @@ TEST_F(LegacySWPictureLayerImplTest, PendingOrActiveTwinLayer) {
   EXPECT_FALSE(active_layer()->GetPendingOrActiveTwinLayer());
 }
 
-void GetClientDataAndUpdateInvalidation(RecordingSource* recording_source,
+void GetClientDataAndUpdateInvalidation(RecordingSource& recording_source,
                                         FakeContentLayerClient* client,
                                         gfx::Size layer_bounds) {
   Region invalidation;
-  recording_source->Update(layer_bounds, /*recording_scale_factor=*/1.f,
-                           *client, invalidation);
+  recording_source.Update(layer_bounds, /*recording_scale_factor=*/1.f, *client,
+                          invalidation);
 }
 
 void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
@@ -4970,7 +4970,7 @@ void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
-  RecordingSource* recording_source = layer->GetRecordingSourceForTesting();
+  RecordingSource& recording_source = layer->GetRecordingSourceForTesting();
 
   client.set_fill_with_nonsolid_color(!test_for_solid);
   PaintFlags flags;
@@ -4981,7 +4981,7 @@ void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
   GetClientDataAndUpdateInvalidation(recording_source, &client, layer_bounds);
 
   scoped_refptr<RasterSource> pending_raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
   ActivateTree();
@@ -5056,15 +5056,15 @@ TEST_F(LegacySWPictureLayerImplTest, NonSolidToSolidNoTilings) {
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get());
   host->SetRootLayer(layer);
-  RecordingSource* recording_source = layer->GetRecordingSourceForTesting();
+  RecordingSource& recording_source = layer->GetRecordingSourceForTesting();
 
   client.set_fill_with_nonsolid_color(true);
 
-  recording_source->SetNeedsDisplayRect(layer_rect);
+  recording_source.SetNeedsDisplayRect(layer_rect);
   GetClientDataAndUpdateInvalidation(recording_source, &client, layer_bounds);
 
   scoped_refptr<RasterSource> raster_source1 =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   SetupPendingTree(raster_source1);
   ActivateTree();
@@ -5075,11 +5075,11 @@ TEST_F(LegacySWPictureLayerImplTest, NonSolidToSolidNoTilings) {
 
   client.set_fill_with_nonsolid_color(false);
 
-  recording_source->SetNeedsDisplayRect(layer_rect);
+  recording_source.SetNeedsDisplayRect(layer_rect);
   GetClientDataAndUpdateInvalidation(recording_source, &client, layer_bounds);
 
   scoped_refptr<RasterSource> raster_source2 =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   SetupPendingTree(raster_source2);
   ActivateTree();
@@ -6185,17 +6185,17 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
   gfx::Size layer_bounds(1000, 1000);
 
   // Set up a raster source with 2 animated images.
-  auto recording_source = FakeRecordingSource::Create(layer_bounds);
+  FakeRecordingSource recording_source(layer_bounds);
   std::vector<FrameMetadata> frames = {
       FrameMetadata(true, base::Milliseconds(1)),
       FrameMetadata(true, base::Milliseconds(1))};
   PaintImage image1 = CreateAnimatedImage(gfx::Size(200, 200), frames);
   PaintImage image2 = CreateAnimatedImage(gfx::Size(200, 200), frames);
-  recording_source->add_draw_image(image1, gfx::Point(100, 100));
-  recording_source->add_draw_image(image2, gfx::Point(500, 500));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(image1, gfx::Point(100, 100));
+  recording_source.add_draw_image(image2, gfx::Point(500, 500));
+  recording_source.Rerecord();
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // All images should be registered on the pending layer.
   SetupPendingTree(raster_source, gfx::Size(), Region(gfx::Rect(layer_bounds)));
@@ -6241,14 +6241,14 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputPaintRecordInvalidation) {
       PaintWorkletInput::NativePropertyType::kClipPath, ElementId());
 
   // Set up a raster source with a PaintWorkletInput.
-  auto recording_source = FakeRecordingSource::Create(layer_bounds);
+  FakeRecordingSource recording_source(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input1 =
       base::MakeRefCounted<TestPaintWorkletInput>(key, gfx::SizeF(100, 100));
   PaintImage image1 = CreatePaintWorkletPaintImage(input1);
-  recording_source->add_draw_image(image1, gfx::Point(100, 100));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(image1, gfx::Point(100, 100));
+  recording_source.Rerecord();
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // Ensure the input is registered
   SetupPendingTree(raster_source, gfx::Size(), Region(gfx::Rect(layer_bounds)));
@@ -6289,18 +6289,18 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
   gfx::Size layer_bounds(1000, 1000);
 
   // Set up a raster source with 2 PaintWorkletInputs.
-  auto recording_source = FakeRecordingSource::Create(layer_bounds);
+  FakeRecordingSource recording_source(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input1 =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
   PaintImage image1 = CreatePaintWorkletPaintImage(input1);
   scoped_refptr<TestPaintWorkletInput> input2 =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(50, 50));
   PaintImage image2 = CreatePaintWorkletPaintImage(input2);
-  recording_source->add_draw_image(image1, gfx::Point(100, 100));
-  recording_source->add_draw_image(image2, gfx::Point(500, 500));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(image1, gfx::Point(100, 100));
+  recording_source.add_draw_image(image2, gfx::Point(500, 500));
+  recording_source.Rerecord();
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource();
+      recording_source.CreateRasterSource();
 
   // All inputs should be registered on the pending layer.
   SetupPendingTree(raster_source, gfx::Size(), Region(gfx::Rect(layer_bounds)));
@@ -6323,13 +6323,13 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
 
   // Committing new PaintWorkletInputs (in a new raster source) should replace
   // the previous ones.
-  recording_source = FakeRecordingSource::Create(layer_bounds);
+  FakeRecordingSource recording_source2(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input3 =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(12, 12));
   PaintImage image3 = CreatePaintWorkletPaintImage(input3);
-  recording_source->add_draw_image(image3, gfx::Point(10, 10));
-  recording_source->Rerecord();
-  raster_source = recording_source->CreateRasterSource();
+  recording_source2.add_draw_image(image3, gfx::Point(10, 10));
+  recording_source2.Rerecord();
+  raster_source = recording_source2.CreateRasterSource();
 
   SetupPendingTree(raster_source, gfx::Size(), Region(gfx::Rect(layer_bounds)));
   EXPECT_EQ(pending_layer()->GetPaintWorkletRecordMap().size(), 1u);
@@ -6339,16 +6339,16 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
 TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputsIdenticalEntries) {
   gfx::Size layer_bounds(1000, 1000);
 
-  auto recording_source = FakeRecordingSource::Create(layer_bounds);
+  FakeRecordingSource recording_source(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
   PaintImage image = CreatePaintWorkletPaintImage(input);
-  recording_source->add_draw_image(image, gfx::Point(100, 100));
-  recording_source->add_draw_image(image, gfx::Point(100, 100));
-  recording_source->Rerecord();
+  recording_source.add_draw_image(image, gfx::Point(100, 100));
+  recording_source.add_draw_image(image, gfx::Point(100, 100));
+  recording_source.Rerecord();
 
   // All inputs should be registered on the pending layer.
-  SetupPendingTree(recording_source->CreateRasterSource(), gfx::Size(),
+  SetupPendingTree(recording_source.CreateRasterSource(), gfx::Size(),
                    Region(gfx::Rect(layer_bounds)));
   EXPECT_EQ(pending_layer()->GetPaintWorkletRecordMap().size(), 1u);
   EXPECT_TRUE(pending_layer()->GetPaintWorkletRecordMap().contains(input));
@@ -6356,8 +6356,8 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputsIdenticalEntries) {
   PaintRecord record;
   pending_layer()->SetPaintWorkletRecord(input, record);
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
-  recording_source->Rerecord();
-  pending_layer()->SetRasterSource(recording_source->CreateRasterSource(),
+  recording_source.Rerecord();
+  pending_layer()->SetRasterSource(recording_source.CreateRasterSource(),
                                    Region());
   EXPECT_EQ(pending_layer()->GetPaintWorkletRecordMap().size(), 1u);
   auto it = pending_layer()->GetPaintWorkletRecordMap().find(input);

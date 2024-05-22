@@ -13,13 +13,13 @@
 #include "cc/base/invalidation_region.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/layers/layer.h"
+#include "cc/layers/recording_source.h"
 
 namespace cc {
 
 class ContentLayerClient;
 class DisplayItemList;
 class RasterSource;
-class RecordingSource;
 
 class CC_EXPORT PictureLayer : public Layer {
  public:
@@ -50,11 +50,10 @@ class CC_EXPORT PictureLayer : public Layer {
 
   ContentLayerClient* client() { return client_; }
 
-  RecordingSource* GetRecordingSourceForTesting() {
-    return recording_source_.Write(*this).get();
+  RecordingSource& GetRecordingSourceForTesting() {
+    return recording_source_.Write(*this);
   }
-
-  const RecordingSource* GetRecordingSourceForTesting() const {
+  const RecordingSource& GetRecordingSourceForTesting() const {
     return recording_source_.Read(*this);
   }
 
@@ -81,7 +80,7 @@ class CC_EXPORT PictureLayer : public Layer {
   raw_ptr<ContentLayerClient, DanglingUntriaged> client_ = nullptr;
   bool is_backdrop_filter_mask_ = false;
 
-  ProtectedSequenceWritable<std::unique_ptr<RecordingSource>> recording_source_;
+  ProtectedSequenceWritable<RecordingSource> recording_source_;
   ProtectedSequenceForbidden<devtools_instrumentation::ScopedLayerObjectTracker>
       instrumentation_object_tracker_;
 

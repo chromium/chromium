@@ -160,7 +160,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   friend class RecordingSource;
   friend class base::RefCountedThreadSafe<RasterSource>;
 
-  explicit RasterSource(const RecordingSource* other);
+  explicit RasterSource(const RecordingSource& other);
   virtual ~RasterSource();
 
   void ClearForOpaqueRaster(SkCanvas* raster_canvas,
