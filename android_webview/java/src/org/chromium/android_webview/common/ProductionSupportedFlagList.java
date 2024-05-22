@@ -1003,6 +1003,7 @@ public final class ProductionSupportedFlagList {
                 "Allows concurrent transitions in local frames rendered in the same process"),
         Flag.baseFeature("WebViewVizUseThreadPool"),
         Flag.baseFeature("InProcessGpuUseIOThread"),
+        Flag.baseFeature("CustomInputStreamBufferSize"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
