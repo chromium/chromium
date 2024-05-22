@@ -143,6 +143,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -2325,14 +2326,16 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
           user->GetAccountId(), user->username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+          ash::standalone_browser::migrator_util::PolicyInitState::
+              kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
     return;
   }
 
   if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
           user->GetAccountId(), user->username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+          ash::standalone_browser::migrator_util::PolicyInitState::
+              kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run backward profile migration.";
     return;
   }

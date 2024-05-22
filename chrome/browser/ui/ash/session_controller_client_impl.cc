@@ -44,6 +44,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -288,7 +289,8 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
   const auto* primary_user = UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
   DCHECK(!crosapi::browser_util::IsLacrosEnabledForMigration(
-      primary_user, crosapi::browser_util::PolicyInitState::kAfterInit));
+      primary_user,
+      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
@@ -373,9 +375,9 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
   }
   // Multiprofile mode is not allowed if Lacros is enabled.
   const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  if (primary_user &&
-      crosapi::browser_util::IsLacrosEnabledForMigration(
-          primary_user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
+  if (primary_user && crosapi::browser_util::IsLacrosEnabledForMigration(
+                          primary_user, ash::standalone_browser::migrator_util::
+                                            PolicyInitState::kAfterInit)) {
     return false;
   }
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
@@ -462,7 +464,8 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   const auto* primary_user = user_manager->GetPrimaryUser();
   if (primary_user) {
     if (crosapi::browser_util::IsLacrosEnabledForMigration(
-            primary_user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
+            primary_user, ash::standalone_browser::migrator_util::
+                              PolicyInitState::kAfterInit)) {
       return ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED;
     }
   }

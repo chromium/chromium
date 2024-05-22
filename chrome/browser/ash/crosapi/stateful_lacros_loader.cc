@@ -22,6 +22,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 
@@ -117,7 +118,8 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
     // If backward migration is enabled, don't remove the lacros folder as it
     // will used by the migration and will be removed after it completes.
     if (!ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
-            crosapi::browser_util::PolicyInitState::kBeforeInit)) {
+            ash::standalone_browser::migrator_util::PolicyInitState::
+                kBeforeInit)) {
       base::DeletePathRecursively(browser_util::GetUserDataDir());
     }
   }

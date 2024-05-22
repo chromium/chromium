@@ -128,12 +128,12 @@ LacrosAvailability GetCachedLacrosAvailability() {
 // Returns appropriate LacrosAvailability.
 std::optional<LacrosAvailability> GetLacrosAvailability(
     const user_manager::User* user,
-    PolicyInitState policy_init_state) {
+    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
   auto* user_manager = user_manager::UserManager::Get();
   auto* primary_user = user_manager->GetPrimaryUser();
 
   switch (policy_init_state) {
-    case PolicyInitState::kBeforeInit: {
+    case ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit: {
       // If the value is needed before policy initialization, actually,
       // this should be the case where ash process was restarted, and so
       // the calculated value in the previous session should be carried
@@ -160,7 +160,7 @@ std::optional<LacrosAvailability> GetLacrosAvailability(
               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                   ash::standalone_browser::kLacrosAvailabilityPolicySwitch));
     }
-    case PolicyInitState::kAfterInit: {
+    case ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit: {
       // If policy initialization is done, the calculated value should be
       // cached.
       CHECK(primary_user);
@@ -273,8 +273,9 @@ bool IsLacrosEnabled() {
       /*check_migration_status=*/true);
 }
 
-bool IsLacrosEnabledForMigration(const User* user,
-                                 PolicyInitState policy_init_state) {
+bool IsLacrosEnabledForMigration(
+    const User* user,
+    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
   std::optional<LacrosAvailability> lacros_availability =
       GetLacrosAvailability(user, policy_init_state);
   if (!lacros_availability.has_value()) {
@@ -284,8 +285,9 @@ bool IsLacrosEnabledForMigration(const User* user,
       user, *lacros_availability, /*check_migration_status=*/false);
 }
 
-bool IsProfileMigrationEnabled(const user_manager::User* user,
-                               PolicyInitState policy_init_state) {
+bool IsProfileMigrationEnabled(
+    const user_manager::User* user,
+    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
   return !base::FeatureList::IsEnabled(ash::standalone_browser::features::
                                            kLacrosProfileMigrationForceOff) &&
          IsLacrosEnabledForMigration(user, policy_init_state);
@@ -294,7 +296,9 @@ bool IsProfileMigrationEnabled(const user_manager::User* user,
 bool IsProfileMigrationAvailable() {
   auto* user_manager = UserManager::Get();
   auto* primary_user = user_manager->GetPrimaryUser();
-  if (!IsProfileMigrationEnabled(primary_user, PolicyInitState::kAfterInit)) {
+  if (!IsProfileMigrationEnabled(primary_user,
+                                 ash::standalone_browser::migrator_util::
+                                     PolicyInitState::kAfterInit)) {
     return false;
   }
 
@@ -558,7 +562,8 @@ std::optional<MigrationStatus> GetMigrationStatus() {
 MigrationStatus GetMigrationStatusForUser(PrefService* local_state,
                                           const user_manager::User* user) {
   if (!crosapi::browser_util::IsLacrosEnabledForMigration(
-          user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
+          user, ash::standalone_browser::migrator_util::PolicyInitState::
+                    kAfterInit)) {
     return MigrationStatus::kLacrosNotEnabled;
   }
 

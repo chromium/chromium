@@ -22,6 +22,10 @@ class PrefService;
 
 namespace ash {
 
+namespace standalone_browser::migrator_util {
+enum class PolicyInitState;
+}  // namespace standalone_browser::migrator_util
+
 namespace browser_data_back_migrator {
 // Temporary directory for back migration.
 constexpr char kTmpDir[] = "back_migrator_tmp";
@@ -127,7 +131,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   // The policy value is cached at the beginning of the session and not
   // updated.
   static bool IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // MaybeRestartToMigrateBack checks if backward migration should be
   // triggered. Migration is started by adding extra flags to Chrome using
@@ -137,7 +142,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   static bool MaybeRestartToMigrateBack(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // CancelMigration is called when the user chooses to cancel the migration
   // from OOBE and it cleans up the in-progress migration.
@@ -341,7 +347,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   static bool ShouldMigrateBack(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // RestartToMigrateBack triggers a Chrome restart to start backward migration.
   // Called by MaybeRestartToMigrateBack.

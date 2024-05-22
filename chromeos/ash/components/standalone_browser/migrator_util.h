@@ -24,6 +24,13 @@ enum class MigrationMode {
   kSkipForNewUser = 2,  // Skip migration for new users.
 };
 
+// Represents whether the function is being called before the Policy is
+// initialized or not.
+enum class PolicyInitState {
+  kBeforeInit,
+  kAfterInit,
+};
+
 // Maximum number of migration attempts. Migration will be skipped for the user
 // after reaching this limit with this many failed/skipped attempts.
 constexpr int kMaxMigrationAttemptCount = 3;

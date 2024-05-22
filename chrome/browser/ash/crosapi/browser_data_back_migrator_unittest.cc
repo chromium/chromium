@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1187,12 +1188,12 @@ class BrowserDataBackMigratorTriggeringTest : public testing::Test {
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, DefaultDisabledBeforeInit) {
   EXPECT_FALSE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kBeforeInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, DefaultDisabledAfterInit) {
   EXPECT_FALSE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kAfterInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledBeforeInit) {
@@ -1201,7 +1202,7 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledBeforeInit) {
       ash::features::kLacrosProfileBackwardMigration);
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kAfterInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledAfterInit) {
@@ -1210,7 +1211,7 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledAfterInit) {
       ash::features::kLacrosProfileBackwardMigration);
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kAfterInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledBeforeInit) {
@@ -1219,7 +1220,7 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledBeforeInit) {
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll);
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kBeforeInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
@@ -1227,7 +1228,7 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll);
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kAfterInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 class BrowserDataBackMigratorShouldMigrateBackTest : public testing::Test {
@@ -1287,7 +1288,7 @@ TEST_F(BrowserDataBackMigratorShouldMigrateBackTest,
         switches::kForceBrowserDataBackwardMigration, "force-migration");
     EXPECT_TRUE(BrowserDataBackMigrator::ShouldMigrateBack(
         user->GetAccountId(), user->username_hash(),
-        crosapi::browser_util::PolicyInitState::kAfterInit));
+        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 }
 
@@ -1301,7 +1302,7 @@ TEST_F(BrowserDataBackMigratorShouldMigrateBackTest, CommandLineForceSkip) {
         switches::kForceBrowserDataBackwardMigration, "force-skip");
     EXPECT_FALSE(BrowserDataBackMigrator::ShouldMigrateBack(
         user->GetAccountId(), user->username_hash(),
-        crosapi::browser_util::PolicyInitState::kAfterInit));
+        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 }
 
@@ -1322,11 +1323,11 @@ TEST_F(BrowserDataBackMigratorShouldMigrateBackTest,
     // Migration should be triggered for the primary user.
     EXPECT_TRUE(BrowserDataBackMigrator::ShouldMigrateBack(
         primary_user->GetAccountId(), primary_user->username_hash(),
-        crosapi::browser_util::PolicyInitState::kAfterInit));
+        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
     // But not for secondary users.
     EXPECT_FALSE(BrowserDataBackMigrator::ShouldMigrateBack(
         secondary_user->GetAccountId(), secondary_user->username_hash(),
-        crosapi::browser_util::PolicyInitState::kAfterInit));
+        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 }
 

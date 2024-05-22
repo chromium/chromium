@@ -25,6 +25,10 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+namespace standalone_browser::migrator_util {
+enum class PolicyInitState;
+}  // namespace standalone_browser::migrator_util
+
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get restarted repeatedly for migration.
 // 1. The user logs in and restarts ash if necessary to apply flags.
@@ -142,7 +146,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       PrefService* local_state,
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a D-Bus method to session_manager and
@@ -152,7 +157,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static bool MaybeRestartToMigrate(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // Very similar to `MaybeRestartToMigrate`, but this checks the disk space in
   // addition, and reports an error if out of disk space case.
@@ -203,7 +209,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static bool MaybeRestartToMigrateInternal(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // A part of `MaybeRestartToMigrateWithDiskCheck`, runs after the disk check.
   static void MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
@@ -224,7 +231,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       const AccountId& account_id,
       const std::string& user_id_hash,
       PrefService* local_state,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);

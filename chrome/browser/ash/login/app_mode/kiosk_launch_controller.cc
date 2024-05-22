@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
@@ -63,6 +62,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -443,7 +443,8 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
 
   if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
           user.GetAccountId(), user.username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+          ash::standalone_browser::migrator_util::PolicyInitState::
+              kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
     OnLaunchFailed(KioskAppLaunchError::Error::kLacrosDataMigrationStarted);
     return;
@@ -451,7 +452,8 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
 
   if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
           user.GetAccountId(), user.username_hash(),
-          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+          ash::standalone_browser::migrator_util::PolicyInitState::
+              kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run backward profile migration.";
     OnLaunchFailed(
         KioskAppLaunchError::Error::kLacrosBackwardDataMigrationStarted);
