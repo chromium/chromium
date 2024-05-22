@@ -44,6 +44,8 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
   bool GetPrefValue() const override;
   void SetPrefForTesting(bool pref_state) { pref_state_ = pref_state; }
 
+  bool is_pdf_focused_web_contents() { return is_pdf_focused_web_contents_; }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetMahiBrowserDelegateForTesting(
       crosapi::mojom::MahiBrowserDelegate* delegate);
