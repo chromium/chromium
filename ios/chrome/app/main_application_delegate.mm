@@ -250,8 +250,11 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
         if ([self isContentNotificationAvailable]) {
-          Browser* browser = self.mainController.browserProviderInterface
-                                 .mainBrowserProvider.browser;
+          // TODO(crbug.com/341906612) Remove use of
+          // browserProviderInterfaceDoNotUse.
+          Browser* browser =
+              self.mainController.browserProviderInterfaceDoNotUse
+                  .mainBrowserProvider.browser;
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
                                 browserState:browser->GetBrowserState()];
@@ -286,8 +289,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   }
   // TODO(crbug.com/325613461) Remove this Browser dependency, ideally by
   // refactoring into a dedicated agent.
-  Browser* browser =
-      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = _mainController.browserProviderInterfaceDoNotUse
+                         .mainBrowserProvider.browser;
   if (!browser) {
     // TODO(crbug.com/40240359): We should store the completionHandler and wait
     // for mainBrowserProvider creation.
@@ -466,8 +469,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 // TODO(crbug.com/325614090): Change this to iterate and inform the feature
 // trackers for all of the browser states.
 - (void)notifyFETAppStartupFromExternalIntent {
-  Browser* browser =
-      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = _mainController.browserProviderInterfaceDoNotUse
+                         .mainBrowserProvider.browser;
 
   // OTR browsers are ignored because they can sometimes cause a nullptr tracker
   // to be returned from the tracker factory.
@@ -488,8 +491,11 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   if (!IsContentNotificationExperimentEnalbed()) {
     return false;
   }
-  Browser* browser =
-      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+
+  // TODO(crbug.com/341903881) Do not use
+  // mainController.browserProviderInterfaceDoNotUse.
+  Browser* browser = _mainController.browserProviderInterfaceDoNotUse
+                         .mainBrowserProvider.browser;
 
   if (!browser) {
     base::UmaHistogramBoolean(

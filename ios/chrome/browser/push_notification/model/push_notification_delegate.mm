@@ -244,6 +244,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
   // TODO(crbug.com/339102426): Cleanup browserStates.
+  // TODO(crbug.com/341906612) Remove use of
+  // GetLastUsedBrowserStateDeprecatedDoNotUse.
   ChromeBrowserState* browserState =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()

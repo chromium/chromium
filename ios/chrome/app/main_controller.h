@@ -38,7 +38,7 @@
 // this is `nil`.
 // TODO(crbug.com/40266840) Remove this public property.
 @property(nonatomic, readonly) id<BrowserProviderInterface>
-    browserProviderInterface;
+    browserProviderInterfaceDoNotUse;
 
 @end
 
