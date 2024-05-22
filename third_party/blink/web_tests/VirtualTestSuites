@@ -1070,9 +1070,17 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=SplitCacheByIncludeCredentials",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2024"
+    "args": [
+      "--enable-features=SplitCacheByIncludeCredentials",
+      "--disable-threaded-compositing",
+      "--disable-threaded-animation"
+    ],
+    "expires": "never",
+    "owners": [
+      "chrome-security-owp-team@google.com",
+      "clamy@chromium.org",
+      "arthursonzogni@chromium.org"
+    ]
   },
 
   "This pair of test suites never expire because they test a feature that is",
@@ -1093,9 +1101,17 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
-    "args": ["--disable-features=SplitCacheByNetworkIsolationKey",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "never"
+    "args": [
+      "--disable-features=SplitCacheByNetworkIsolationKey",
+      "--disable-threaded-compositing",
+      "--disable-threaded-animation"
+    ],
+    "expires": "never",
+    "owners": [
+      "chrome-security-owp-team@google.com",
+      "clamy@chromium.org",
+      "arthursonzogni@chromium.org"
+    ]
   },
 
   {
