@@ -159,7 +159,6 @@ class ContentAutofillDriver : public AutofillDriver,
   AutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
-  bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   net::IsolationInfo IsolationInfo() override;

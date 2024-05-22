@@ -109,10 +109,6 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
   return frame ? frame->IsMainFrame() : true;
 }
 
-bool AutofillDriverIOS::IsPrerendering() const {
-  return false;
-}
-
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   return false;
 }

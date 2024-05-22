@@ -86,10 +86,6 @@ class AutofillDriver {
   // frame.
   virtual bool IsInAnyMainFrame() const = 0;
 
-  // Returns whether the AutofillDriver instance is associated with a
-  // prerendered frame.
-  virtual bool IsPrerendering() const = 0;
-
   // Returns whether the policy-controlled feature "shared-autofill" is enabled
   // in the document. In the main frame the permission is enabled by default.
   // The main frame may pass it on to its children.

@@ -191,11 +191,6 @@ bool ContentAutofillDriver::IsInAnyMainFrame() const {
   return render_frame_host_->GetMainFrame() == render_frame_host();
 }
 
-bool ContentAutofillDriver::IsPrerendering() const {
-  return render_frame_host_->IsInLifecycleState(
-      content::RenderFrameHost::LifecycleState::kPrerendering);
-}
-
 bool ContentAutofillDriver::HasSharedAutofillPermission() const {
   return render_frame_host_->IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature::kSharedAutofill);
@@ -539,8 +534,6 @@ void ContentAutofillDriver::HidePopup() {
     return;
   }
   router().HidePopup(*this, [](autofill::AutofillDriver& target) {
-    DCHECK(!target.IsPrerendering())
-        << "We should never affect UI while prerendering";
     target.GetAutofillManager().OnHidePopup();
   });
 }
@@ -702,7 +695,6 @@ std::optional<FormData> ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
 }
 
 AutofillDriverRouter& ContentAutofillDriver::router() {
-  DCHECK(!IsPrerendering());
   return owner_->router();
 }
 
