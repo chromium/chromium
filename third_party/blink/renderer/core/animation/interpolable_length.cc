@@ -173,11 +173,7 @@ const CSSMathExpressionNode& ExtractCalcSizeBasis(
     return *node;
   }
 
-  // TODO(https://crbug.com/313072): We should allow the basis to have
-  // another calc-size() in it, but we don't support that yet because we
-  // don't yet have code to simplify the expression:
-  //    return ExtractCalcSizeBasis(operation->GetOperands()[0]);
-  return *operation->GetOperands()[0];
+  return ExtractCalcSizeBasis(operation->GetOperands()[0]);
 }
 
 }  // namespace
@@ -187,6 +183,14 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
                                         const InterpolableValue* end) {
   const auto& start_length = To<InterpolableLength>(*start);
   const auto& end_length = To<InterpolableLength>(*end);
+
+  // Implement the rules in
+  // https://drafts.csswg.org/css-values-5/#interp-calc-size, but
+  // without actually writing the implicit conversion of the "other"
+  // value to a calc-size().  This means that if one value is a
+  // calc-size(), the other value converts to:
+  // * for intrinsic size keywords, a calc-size(value, size)
+  // * for other values, a calc-size(any, value)
 
   // Only animate to or from width keywords if the other endpoint of the
   // animation is a calc-size() expression.  And only animate between
@@ -217,8 +221,6 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
     const CSSMathExpressionNode& basis =
         ExtractCalcSizeBasis(non_keyword->expression_);
 
-    // TODO(https://crbug.com/313072): Should we also allow animation to/from
-    // a non-keyword basis (that is, a <length-percentage> basis)?
     if (const auto* basis_literal =
             DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
       return basis_literal->GetValue() == keyword ||
@@ -230,9 +232,8 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
 
   // Only animate between calc-size() expressions if they have compatible
   // basis.  This includes checking the type of the keyword, but it also
-  // includes broad compatibility for 'any'.
-  // TODO(https://crbug.com/313072): Should we also allow animation to/from
-  // a non-keyword basis (that is, a <length-percentage> basis)?
+  // includes broad compatibility for 'any', and for animating between
+  // different <calc-sum> values.
   if (start_length.IsCalcSize() && end_length.IsCalcSize()) {
     const CSSMathExpressionNode& start_basis =
         ExtractCalcSizeBasis(start_length.expression_);
@@ -242,8 +243,17 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
       const auto* literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
       return literal && literal->GetValue() == CSSValueID::kAny;
     };
+    auto is_calc_sum = [](const CSSMathExpressionNode& node) -> bool {
+      // Something is a <calc-sum> for our purposes if it's *not* a
+      // keyword literal that was created for calc-size().
+      auto* keyword_literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
+      CHECK(!keyword_literal ||
+            keyword_literal->GetOperator() == CSSMathOperator::kCalcSize);
+      return !keyword_literal;
+    };
     return start_basis == end_basis || is_any_keyword(start_basis) ||
-           is_any_keyword(end_basis);
+           is_any_keyword(end_basis) ||
+           (is_calc_sum(start_basis) && is_calc_sum(end_basis));
   }
 
   return true;
@@ -543,6 +553,12 @@ void InterpolableLength::Add(const InterpolableValue& other) {
   CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_length.AsExpression(), CSSMathOperator::kAdd);
+  if (!result) {
+    // TODO(https://crbug.com/40339056): This should really behave as though
+    // the property is IACVT.
+    SetLengthArray(CSSLengthArray());
+    return;
+  }
   SetExpression(*result);
 }
 
@@ -564,6 +580,12 @@ void InterpolableLength::ScaleAndAdd(double scale,
   CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           scaled, &other_length.AsExpression(), CSSMathOperator::kAdd);
+  if (!result) {
+    // TODO(https://crbug.com/40339056): This should really behave as though
+    // the property is IACVT.
+    SetLengthArray(CSSLengthArray());
+    return;
+  }
   SetExpression(*result);
 }
 
@@ -609,6 +631,12 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
   CSSMathExpressionNode* result_expression =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
+  if (!result_expression) {
+    // TODO(https://crbug.com/40339056): This should really behave as though
+    // the property is IACVT.
+    result_length.SetLengthArray(CSSLengthArray());
+    return;
+  }
   result_length.SetExpression(*result_expression);
 }
 
