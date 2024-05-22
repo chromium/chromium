@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/files/file_path.h"
+#include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -48,6 +52,20 @@ class WebHandwritingIntegrationTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebHandwritingIntegrationTest, Recognition) {
+  // The full board name may have the form "glimmer-signed-mp-v4keys" and we
+  // just want "glimmer".
+  std::vector<std::string> board =
+      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (board.empty()) {
+    LOG(ERROR) << "Unable to determine LSB release board";
+    GTEST_SKIP();
+  }
+  // TODO(b/342174514): Fails on jacuzzi.
+  if (board[0] == "jacuzzi") {
+    GTEST_SKIP();
+  }
+
   // Navigate to the appropriate test page, based on whether handwriting
   // recognition is supported or not.
   const char* test_file =
