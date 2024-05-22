@@ -170,6 +170,6 @@ interface PageHandler {
   GetFilesDatabaseEntries() => (array<FileDatabaseEntry> db_entries);
 
   // Returns the inode number of the requested file only if the file is in
-  // "My Files/Downloads" directory.
+  // MyFiles/Downloads directory.
   GetFileInode(string file_name) => (uint64 inode);
 };

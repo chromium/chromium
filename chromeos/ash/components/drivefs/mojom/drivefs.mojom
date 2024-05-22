@@ -308,7 +308,7 @@ struct DriveFsConfiguration {
   [MinVersion=2]
   bool enable_metrics = false;
 
-  // The directory name to use for lost and found within the user's My files
+  // The directory name to use for lost and found within the user's MyFiles
   // directory.
   [MinVersion=3]
   string? lost_and_found_directory_name;
