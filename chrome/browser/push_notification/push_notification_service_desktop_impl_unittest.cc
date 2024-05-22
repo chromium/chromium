@@ -32,6 +32,8 @@ const char kTestMessage[] = "This is a test message";
 const char kTestRepresentativeTargetId[] = "0123456789";
 const char kTotalTokenRetrievalTime[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalTime";
+const char kTotalSuccessfulRegistrationResponseTime[] =
+    "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Success";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -146,6 +148,8 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_));
     histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 0);
+    histogram_tester_.ExpectTotalCount(kTotalSuccessfulRegistrationResponseTime,
+                                       0);
   }
 
   void TearDown() override {
@@ -182,6 +186,8 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
     EXPECT_EQ(kTestRepresentativeTargetId,
               pref_service_.GetString(
                   prefs::kPushNotificationRepresentativeTargetIdPrefName));
+    histogram_tester_.ExpectTotalCount(kTotalSuccessfulRegistrationResponseTime,
+                                       1);
   }
 
   void CheckForFailedRegistration(

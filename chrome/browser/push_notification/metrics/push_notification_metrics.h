@@ -11,6 +11,8 @@ namespace push_notification::metrics {
 
 void RecordPushNotificationServiceTimeToRetrieveToken(
     base::TimeDelta total_retrieval_time);
+void RecordPushNotificationServiceTimeToReceiveRegistrationSuccessResponse(
+    base::TimeDelta registration_response_time);
 
 }  // namespace push_notification::metrics
 

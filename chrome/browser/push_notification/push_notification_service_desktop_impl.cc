@@ -203,14 +203,19 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
       request_proto,
       base::BindOnce(&PushNotificationServiceDesktopImpl::
                          OnPushNotificationRegistrationSuccess,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), /*api_call_start_time=*/
+                     base::TimeTicks::Now()),
       base::BindOnce(&PushNotificationServiceDesktopImpl::
                          OnPushNotificationRegistrationFailure,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
+    base::TimeTicks api_call_start_time,
     const proto::NotificationsMultiLoginUpdateResponse& response) {
+  metrics::
+      RecordPushNotificationServiceTimeToReceiveRegistrationSuccessResponse(
+          base::TimeTicks::Now() - api_call_start_time);
   VLOG(1) << __func__ << ": Push notification service registration successful";
   is_initialized_ = true;
   server_client_.reset();

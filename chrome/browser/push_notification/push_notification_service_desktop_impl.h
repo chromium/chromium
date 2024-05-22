@@ -86,6 +86,7 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
                        instance_id::InstanceID::Result result);
 
   void OnPushNotificationRegistrationSuccess(
+      base::TimeTicks api_call_start_time,
       const proto::NotificationsMultiLoginUpdateResponse& response);
   void OnPushNotificationRegistrationFailure(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError

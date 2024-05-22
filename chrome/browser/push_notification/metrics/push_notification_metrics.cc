@@ -11,6 +11,9 @@ namespace {
 const char kTotalTokenRetrievalTime[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalTime";
 
+const char kTotalSuccessfulRegistrationResponseTime[] =
+    "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Success";
+
 }  // namespace
 
 namespace push_notification::metrics {
@@ -18,6 +21,12 @@ namespace push_notification::metrics {
 void RecordPushNotificationServiceTimeToRetrieveToken(
     base::TimeDelta total_retrieval_time) {
   base::UmaHistogramTimes(kTotalTokenRetrievalTime, total_retrieval_time);
+}
+
+void RecordPushNotificationServiceTimeToReceiveRegistrationSuccessResponse(
+    base::TimeDelta registration_response_time) {
+  base::UmaHistogramTimes(kTotalSuccessfulRegistrationResponseTime,
+                          registration_response_time);
 }
 
 }  // namespace push_notification::metrics
