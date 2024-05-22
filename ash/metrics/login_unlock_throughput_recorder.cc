@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -187,6 +188,11 @@ void OnRestoredWindowPresentationTimeReceived(
   LoginUnlockThroughputRecorder* throughput_recorder =
       Shell::Get()->login_unlock_throughput_recorder();
   throughput_recorder->OnRestoredWindowPresented(restore_window_id);
+}
+
+bool HasBrowserIcon(const ShelfModel* model) {
+  return model->ItemByID(ShelfID(app_constants::kLacrosAppId)) ||
+         model->ItemByID(ShelfID(app_constants::kChromeAppId));
 }
 
 bool HasPendingIcon(const ShelfModel* model) {
@@ -423,27 +429,17 @@ void LoginUnlockThroughputRecorder::OnRestoredWindowPresented(
 }
 
 void LoginUnlockThroughputRecorder::InitShelfIconList(const ShelfModel* model) {
+  shelf_initialized_ = true;
   UpdateShelfIconList(model);
 }
 
 void LoginUnlockThroughputRecorder::UpdateShelfIconList(
     const ShelfModel* model) {
-  shelf_initialized_ = true;
-
-  has_pending_icon_ = HasPendingIcon(model);
-
-  if (has_pending_icon_) {
-    return;
+  const bool is_browser_icon_ready =
+      browser_windows_will_not_be_restored_ || HasBrowserIcon(model);
+  if (shelf_initialized_ && is_browser_icon_ready && !HasPendingIcon(model)) {
+    OnAllExpectedShelfIconsLoaded();
   }
-
-  // Internally it will be called again after browser has listed all the
-  // windows/apps and added new shelf icons.
-  if (!browser_windows_will_not_be_restored_ &&
-      !first_restored_window_created_) {
-    return;
-  }
-
-  OnAllExpectedShelfIconsLoaded();
 }
 
 void LoginUnlockThroughputRecorder::
@@ -486,23 +482,18 @@ bool LoginUnlockThroughputRecorder::NeedReportArcAppListReady() const {
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
-  // If shelf icons were just waiting for browser window to be presented,
-  // trigger "no more icons are going to be loaded for the session restore".
-  if (!shelf_icons_loaded_ &&
-      (browser_windows_will_not_be_restored_ ||
-       all_restored_windows_presented_) &&
-      shelf_initialized_ && !has_pending_icon_) {
-    OnAllExpectedShelfIconsLoaded();
-  }
+  const bool window_restore_done =
+      browser_windows_will_not_be_restored_ || all_restored_windows_presented_;
 
-  // If not ready yet or report was already scheduled, ignore.
-  if (!shelf_icons_loaded_ ||
-      (!browser_windows_will_not_be_restored_ &&
-       !all_restored_windows_presented_) ||
-      shelf_animation_end_scheduled_) {
+  // If not ready yet, do nothing this time.
+  if (!window_restore_done || !shelf_icons_loaded_) {
     return;
   }
 
+  // If report was already scheduled, ignore.
+  if (shelf_animation_end_scheduled_) {
+    return;
+  }
   shelf_animation_end_scheduled_ = true;
 
   scoped_throughput_reporter_blocker_.reset();
@@ -556,20 +547,22 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
-  if (shelf_icons_loaded_ || (!browser_windows_will_not_be_restored_ &&
-                              !first_restored_window_created_)) {
+  if (shelf_icons_loaded_) {
     return;
   }
-
   shelf_icons_loaded_ = true;
-  const base::TimeDelta duration_ms =
-      base::TimeTicks::Now() - timestamp_primary_user_logged_in_.value();
-  constexpr char kAshLoginSessionRestoreAllShelfIconsLoaded[] =
-      "Ash.LoginSessionRestore.AllShelfIconsLoaded";
-  UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllShelfIconsLoaded,
-                             duration_ms, base::Milliseconds(1),
-                             base::Seconds(100), 100);
-  AddLoginTimeMarker(kAshLoginSessionRestoreAllShelfIconsLoaded);
+
+  if (timestamp_primary_user_logged_in_.has_value()) {
+    const base::TimeDelta duration_ms =
+        base::TimeTicks::Now() - timestamp_primary_user_logged_in_.value();
+    constexpr char kAshLoginSessionRestoreAllShelfIconsLoaded[] =
+        "Ash.LoginSessionRestore.AllShelfIconsLoaded";
+    UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllShelfIconsLoaded,
+                               duration_ms, base::Milliseconds(1),
+                               base::Seconds(100), 100);
+    AddLoginTimeMarker(kAshLoginSessionRestoreAllShelfIconsLoaded);
+  }
+
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
 

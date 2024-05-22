@@ -194,13 +194,8 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // will not be restored at this point.
   bool restore_data_loaded_ = false;
 
-  // |has_pending_icon_| is true when last shelf icons update had an item
-  // pending icon load.
-  bool has_pending_icon_ = false;
-
-  // |shelf_icons_loaded_| is true when shelf icons are considered loaded,
-  // i.e. |has_pending_icon_| is true and first resored browser window was
-  // created.
+  // |shelf_icons_loaded_| is true when all shelf icons are considered loaded,
+  // i.e. there is no pending icon on shelf after shelf is initialized.
   bool shelf_icons_loaded_ = false;
 
   bool user_logged_in_ = false;

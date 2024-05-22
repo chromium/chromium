@@ -80,6 +80,14 @@ class TestShelfModel : public ShelfModel {
     }
   }
 
+  void AddBrowserIcon(bool is_lacros) {
+    ShelfItem item;
+    item.id = ShelfID(is_lacros ? app_constants::kLacrosAppId
+                                : app_constants::kChromeAppId);
+    item.type = TYPE_PINNED_APP;
+    Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
+  }
+
   void SetIconsLoadedFor(const std::vector<int>& ids) {
     for (int n : ids) {
       const ShelfID id(base::StringPrintf("item%d", n));
@@ -92,6 +100,19 @@ class TestShelfModel : public ShelfModel {
 
       Set(index, item);
     }
+  }
+
+  void SetIconLoadedForBrowser(bool is_lacros) {
+    const ShelfID id(is_lacros ? app_constants::kLacrosAppId
+                               : app_constants::kChromeAppId);
+    int index = ItemIndexByID(id);
+    // Expect item exists.
+    ASSERT_GE(index, 0);
+
+    ShelfItem item = items()[index];
+    item.image = gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
+
+    Set(index, item);
   }
 };
 
@@ -233,21 +254,22 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
     RunSimpleAnimation();
   }
 
-  void AddScheduledRestoreBrowserWindows(const std::vector<int>& ids,
-                                         bool is_lacros) {
-    for (int n : ids) {
+  void AddScheduledRestoreWindows(
+      const std::vector<int>& browser_ids,
+      bool is_lacros,
+      const std::vector<int>& non_browser_ids = {}) {
+    for (int n : browser_ids) {
       throughput_recorder()->AddScheduledRestoreWindow(
           n, is_lacros ? app_constants::kLacrosAppId : "",
           LoginUnlockThroughputRecorder::kBrowser);
     }
-  }
-
-  void AddScheduledRestoreNonBrowserWindows(const std::vector<int>& ids) {
-    for (int n : ids) {
+    for (int n : non_browser_ids) {
       throughput_recorder()->AddScheduledRestoreWindow(
           n, base::StringPrintf("some_app%d", n),
           LoginUnlockThroughputRecorder::kBrowser);
     }
+    throughput_recorder()->BrowserSessionRestoreDataLoaded();
+    throughput_recorder()->FullSessionRestoreDataLoaded();
   }
 
   void RestoredWindowsCreated(const std::vector<int>& ids) {
@@ -461,8 +483,8 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   EXPECT_FALSE(histogram_tester_.get()->GetTotalSum(
       "Ash.LoginSessionRestore.AllBrowserWindowsPresented"));
 
-  AddScheduledRestoreBrowserWindows({1, 2, 3, 4, 5, 6}, is_lacros);
-  AddScheduledRestoreNonBrowserWindows({7, 8, 9, 10, 11, 12});
+  AddScheduledRestoreWindows({1, 2, 3, 4, 5, 6}, is_lacros,
+                             {7, 8, 9, 10, 11, 12});
   EXPECT_FALSE(histogram_tester_.get()->GetTotalSum(
       "Ash.LoginSessionRestore.AllBrowserWindowsCreated"));
   EXPECT_FALSE(histogram_tester_.get()->GetTotalSum(
@@ -563,7 +585,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
           .empty());
 
   LoginOwner();
-  AddScheduledRestoreBrowserWindows({1, 2, 3}, is_lacros);
+  AddScheduledRestoreWindows({1, 2, 3}, is_lacros);
   // Should not report login histograms until shelf icons are loaded.
   EXPECT_TRUE(histogram_tester_.get()
                   ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
@@ -576,6 +598,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   RestoredWindowsCreated({1, 2, 3});
   RestoredWindowsShown({1, 2, 3});
   RestoredWindowsPresented({1, 2, 3});
+
   MetricsWaiter(histogram_tester_.get(),
                 "Ash.LoginSessionRestore.AllBrowserWindowsCreated")
       .Wait();
@@ -595,7 +618,9 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   TestShelfModel model;
   model.InitializeIconList({1, 2, 3});
+  model.AddBrowserIcon(is_lacros);
   model.SetIconsLoadedFor({1, 2, 3});
+  model.SetIconLoadedForBrowser(is_lacros);
   throughput_recorder()->InitShelfIconList(&model);
 
   // Start login animation. It should trigger metrics reporting.
@@ -642,7 +667,9 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   TestShelfModel model;
   model.InitializeIconList({1, 2, 3});
+  model.AddBrowserIcon(is_lacros);
   model.SetIconsLoadedFor({1, 2, 3});
+  model.SetIconLoadedForBrowser(is_lacros);
   throughput_recorder()->InitShelfIconList(&model);
   RunSimpleAnimation();
 
@@ -657,10 +684,11 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   EXPECT_TRUE(histogram_tester_.get()->GetAllSamples(kBootTimeLogin3).empty());
   GiveItSomeTime(base::Milliseconds(100));
 
-  AddScheduledRestoreBrowserWindows({1, 2, 3}, is_lacros);
+  AddScheduledRestoreWindows({1, 2, 3}, is_lacros);
   RestoredWindowsCreated({1, 2, 3});
   RestoredWindowsShown({1, 2, 3});
   RestoredWindowsPresented({1, 2, 3});
+
   // Start login animation. It should trigger LoginAnimation.Duration reporting.
   RunSimpleAnimation();
   MetricsWaiter(histogram_tester_.get(),
