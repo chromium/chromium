@@ -62,6 +62,11 @@ BleV2Medium::~BleV2Medium() {
 bool BleV2Medium::StartAdvertising(
     const api::ble_v2::BleAdvertisementData& advertising_data,
     api::ble_v2::AdvertiseParameters advertise_set_parameters) {
+  if (!features::IsNearbyBleV2Enabled()) {
+    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    return false;
+  }
+
   std::string service_data_info;
   for (auto it = advertising_data.service_data.begin();
        it != advertising_data.service_data.end(); it++) {
@@ -162,6 +167,11 @@ std::unique_ptr<BleV2Medium::AdvertisingSession> BleV2Medium::StartAdvertising(
 }
 
 bool BleV2Medium::StopAdvertising() {
+  if (!features::IsNearbyBleV2Enabled()) {
+    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    return false;
+  }
+
   CD_LOG(INFO, Feature::NEARBY_INFRA)
       << __func__ << " Clearing registered advertisements.";
   registered_advertisements_map_.clear();
@@ -185,6 +195,11 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
     const Uuid& service_uuid,
     api::ble_v2::TxPowerLevel tx_power_level,
     BleV2Medium::ScanningCallback callback) {
+  if (!features::IsNearbyBleV2Enabled()) {
+    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    return nullptr;
+  }
+
   if (!IsScanning()) {
     discovered_ble_peripherals_map_.clear();
     service_uuid_to_session_ids_map_.clear();
@@ -302,6 +317,11 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
 
 std::unique_ptr<api::ble_v2::BleServerSocket> BleV2Medium::OpenServerSocket(
     const std::string& service_id) {
+  if (!features::IsNearbyBleV2Enabled()) {
+    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    return nullptr;
+  }
+
   // TODO(b/320554697): This function has no purpose in BLE V2 and can be
   // removed once implementation of the GATT Server advertising is complete.
   // Note that other platforms still use this function for now.
@@ -318,6 +338,11 @@ std::unique_ptr<api::ble_v2::BleSocket> BleV2Medium::Connect(
 }
 
 bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
+  if (!features::IsNearbyBleV2Enabled()) {
+    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    return false;
+  }
+
   if (!features::IsNearbyBleV2ExtendedAdvertisingEnabled()) {
     return false;
   }

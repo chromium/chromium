@@ -111,6 +111,11 @@ class BleV2MediumTest : public testing::Test {
 };
 
 TEST_F(BleV2MediumTest, TestScanning_OneService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   CountDownLatch scanning_started_latch(1);
   CountDownLatch found_advertisement_latch(1);
   api::ble_v2::BleMedium::ScanningCallback scanning_callback = {
@@ -152,6 +157,11 @@ TEST_F(BleV2MediumTest, TestScanning_OneService) {
 }
 
 TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   // Expects session 1 found one advertisement.
   CountDownLatch session_1_found_advertisement_latch(1);
   // Expects session 2 found two advertisement.
@@ -220,6 +230,11 @@ TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
 }
 
 TEST_F(BleV2MediumTest, TestScanning_IgnoreIrrelevantAdvertisement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   CountDownLatch scanning_started_latch(1);
   api::ble_v2::BleMedium::ScanningCallback scanning_callback = {
       .start_scanning_result =
@@ -254,6 +269,11 @@ TEST_F(BleV2MediumTest, TestScanning_IgnoreIrrelevantAdvertisement) {
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_AdapterFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(false);
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
@@ -265,6 +285,11 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFails) {
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_FastAdvertisementSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
@@ -278,7 +303,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_FastAdvertisementSuccess) {
 TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementNotSupported) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{
           ::features::kEnableNearbyBleV2ExtendedAdvertising});
   EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
@@ -296,7 +321,8 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementNotSupported) {
 TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementSupported) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2ExtendedAdvertising},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2,
+                            ::features::kEnableNearbyBleV2ExtendedAdvertising},
       /*disabled_features=*/{});
   EXPECT_TRUE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 
@@ -311,6 +337,11 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementSupported) {
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_EmptyAdvertisingData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data = {};
   // Passing in empty advertisement data is unexpected, but is still
@@ -321,7 +352,8 @@ TEST_F(BleV2MediumTest, TestAdvertising_EmptyAdvertisingData) {
 TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2ExtendedAdvertising},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2,
+                            ::features::kEnableNearbyBleV2ExtendedAdvertising},
       /*disabled_features=*/{});
   EXPECT_TRUE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
@@ -362,6 +394,11 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_MultipleAdvertisementDataSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
@@ -387,6 +424,11 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleAdvertisementDataSuccess) {
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
@@ -414,7 +456,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
 TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{
           ::features::kEnableNearbyBleV2ExtendedAdvertising});
 
@@ -429,7 +471,8 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagDisabled) {
 TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2ExtendedAdvertising},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2,
+                            ::features::kEnableNearbyBleV2ExtendedAdvertising},
       /*disabled_features=*/{});
 
   // If the flag is enabled, return whether the device has hardware support.
