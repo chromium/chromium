@@ -92,7 +92,7 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
     results.push_back(ash::PickerSearchResult::DriveFile(
-        std::move(file.title), std::move(file.url),
+        std::move(file.title), std::move(file.url), std::move(file.local_path),
         ui::ImageModel::FromVectorIcon(
             chromeos::GetIconForPath(file.local_path))));
   }
@@ -153,7 +153,8 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
       }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(ash::PickerSearchResult::DriveFile(
-            result->title(), *result->url(), result->icon().icon));
+            result->title(), *result->url(), result->filePath(),
+            result->icon().icon));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "

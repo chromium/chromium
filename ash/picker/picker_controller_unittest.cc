@@ -381,7 +381,7 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
       .Times(1);
 
   controller.OpenResult(PickerSearchResult::DriveFile(
-      u"title", GURL("http://foo.com"), ui::ImageModel{}));
+      u"title", GURL("http://foo.com"), base::FilePath(), ui::ImageModel{}));
 }
 
 TEST_F(PickerControllerTest, OpenLocalFileResult) {

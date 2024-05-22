@@ -94,6 +94,23 @@ bool PickerSearchResult::GifData::operator==(
 bool PickerSearchResult::LocalFileData::operator==(const LocalFileData&) const =
     default;
 
+PickerSearchResult::DriveFileData::DriveFileData(std::u16string title,
+                                                 GURL url,
+                                                 base::FilePath file_path,
+                                                 ui::ImageModel icon)
+    : title(std::move(title)),
+      url(std::move(url)),
+      file_path(std::move(file_path)),
+      icon(std::move(icon)) {}
+
+PickerSearchResult::DriveFileData::DriveFileData(const DriveFileData&) =
+    default;
+
+PickerSearchResult::DriveFileData& PickerSearchResult::DriveFileData::operator=(
+    const DriveFileData&) = default;
+
+PickerSearchResult::DriveFileData::~DriveFileData() = default;
+
 bool PickerSearchResult::DriveFileData::operator==(const DriveFileData&) const =
     default;
 
@@ -207,9 +224,10 @@ PickerSearchResult PickerSearchResult::LocalFile(std::u16string title,
 
 PickerSearchResult PickerSearchResult::DriveFile(std::u16string title,
                                                  const GURL& url,
+                                                 base::FilePath file_path,
                                                  ui::ImageModel icon) {
-  return PickerSearchResult(DriveFileData{
-      .title = std::move(title), .url = url, .icon = std::move(icon)});
+  return PickerSearchResult(DriveFileData(
+      std::move(title), url, std::move(file_path), std::move(icon)));
 }
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {

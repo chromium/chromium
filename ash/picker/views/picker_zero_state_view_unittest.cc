@@ -142,7 +142,7 @@ TEST_F(PickerZeroStateViewTest, ShowsRecentItems) {
                    MockZeroStateViewDelegate::SearchResultsCallback callback) {
         std::move(callback).Run({PickerSearchResult::DriveFile(
             /*title=*/u"test drive file",
-            /*url=*/GURL(),
+            /*url=*/GURL(), base::FilePath(),
             /*icon=*/{})});
       });
 
