@@ -241,7 +241,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
   ImageBitmap* CreateAcceleratedStaticImageBitmap() {
-    auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+    auto mailbox = gpu::Mailbox::Generate();
 
     return MakeGarbageCollected<ImageBitmap>(
         AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
