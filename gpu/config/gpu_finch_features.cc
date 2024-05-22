@@ -763,9 +763,14 @@ bool LimitAImageReaderMaxSizeToOne() {
     // For the android Tvs which are in the below list, we are relaxing this
     // restrictions as those are able to create AImageReader with more than 1
     // images. This helps in removing the flickering seen which can happen with
-    // only 1 image.
-    // https://buganizer.corp.google.com/issues/266571065
-    if (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->manufacturer(),
+    // only 1 image. Also note that we should use soc_manufacturer instead of
+    // manufacturer when available as sometimes manufacturer field gets
+    // modified by vendors.
+    const char* manufacturer =
+        strlen(base::android::BuildInfo::GetInstance()->soc_manufacturer())
+            ? base::android::BuildInfo::GetInstance()->soc_manufacturer()
+            : base::android::BuildInfo::GetInstance()->manufacturer();
+    if (IsDeviceBlocked(manufacturer,
                         kRelaxLimitAImageReaderMaxSizeToOneBlocklist.Get())) {
       return false;
     }
