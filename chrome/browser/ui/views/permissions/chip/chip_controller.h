@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CHIP_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CHIP_CONTROLLER_H_
 
 #include <cstddef>
 #include <memory>
@@ -252,4 +252,4 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CHIP_CONTROLLER_H_

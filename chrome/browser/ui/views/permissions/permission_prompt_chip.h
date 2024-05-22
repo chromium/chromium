@@ -7,7 +7,7 @@
 
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/permissions/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/permissions/permission_request_manager.h"
 #include "ui/views/widget/widget_observer.h"
