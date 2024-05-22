@@ -27,17 +27,6 @@ class SigninMetricsService : public KeyedService,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // This access point will be used to resolve the source of the reauth when
-  // resolving the Sign in Pending state. It will only be set if the
-  // `account_id` was in Signin Pending state, or if the state update has not
-  // yet reached `SigninMetricsService` through the `signin::IdentityManager`
-  // notifications. This class uses a cached value of the Signin Paused state.
-  // TODO(b/341260149): This is a temporary solution, to be revisited with a
-  // cleaner architecture.
-  void SetReauthAccessPointIfInSigninPending(
-      CoreAccountId account_id,
-      signin_metrics::AccessPoint access_point);
-
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;

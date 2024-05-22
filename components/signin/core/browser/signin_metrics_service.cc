@@ -15,6 +15,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 namespace {
@@ -129,7 +130,7 @@ void SigninMetricsService::OnPrimaryAccountChanged(
 }
 
 void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
+    const CoreAccountInfo& core_account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled() ||
@@ -137,24 +138,26 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
 
-  if (account_info ==
+  if (core_account_info !=
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)) {
-    if (error.IsPersistentError()) {
-      pref_service_->SetTime(kSigninPendingStartTimePref, base::Time::Now());
-    } else if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
-      RecordSigninPendingResolution(
-          SigninPendingResolution::kReauth,
-          pref_service_->GetTime(kSigninPendingStartTimePref));
-      pref_service_->ClearPref(kSigninPendingStartTimePref);
+    return;
+  }
 
-      if (last_reauth_access_point_ !=
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
-        base::UmaHistogramEnumeration(
-            "Signin.SigninPending.ResolutionSource", last_reauth_access_point_,
-            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
-        last_reauth_access_point_ =
-            signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
-      }
+  if (error.IsPersistentError()) {
+    pref_service_->SetTime(kSigninPendingStartTimePref, base::Time::Now());
+  } else if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
+    RecordSigninPendingResolution(
+        SigninPendingResolution::kReauth,
+        pref_service_->GetTime(kSigninPendingStartTimePref));
+    pref_service_->ClearPref(kSigninPendingStartTimePref);
+
+    AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfo(core_account_info);
+    if (account_info.access_point !=
+        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+      base::UmaHistogramEnumeration(
+          "Signin.SigninPending.ResolutionSource", account_info.access_point,
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
     }
   }
 }
@@ -181,16 +184,5 @@ void SigninMetricsService::OnAccountsInCookieUpdated(
   if (!pref_service_->HasPrefPath(kFirstAccountWebSigninStartTimePref)) {
     pref_service_->SetTime(kFirstAccountWebSigninStartTimePref,
                            base::Time::Now());
-  }
-}
-
-void SigninMetricsService::SetReauthAccessPointIfInSigninPending(
-    CoreAccountId account_id,
-    signin_metrics::AccessPoint access_point) {
-  if (pref_service_->HasPrefPath(kSigninPendingStartTimePref) &&
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
-          account_id &&
-      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    last_reauth_access_point_ = access_point;
   }
 }

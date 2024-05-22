@@ -23,10 +23,8 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_metrics_service_factory.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/core/browser/signin_metrics_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -145,7 +143,6 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     DependsOn(UnexportableKeyServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    DependsOn(SigninMetricsServiceFactory::GetInstance());
   }
 
   ~DiceResponseHandlerFactory() override {}
@@ -166,7 +163,6 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
         IdentityManagerFactory::GetForProfile(profile),
         AccountReconcilorFactory::GetForProfile(profile),
         AboutSigninInternalsFactory::GetForProfile(profile),
-        SigninMetricsServiceFactory::GetForProfile(profile),
         std::move(registration_token_helper_factory));
   }
 };
@@ -327,13 +323,11 @@ DiceResponseHandler::DiceResponseHandler(
     signin::IdentityManager* identity_manager,
     AccountReconcilor* account_reconcilor,
     AboutSigninInternals* about_signin_internals,
-    SigninMetricsService* signin_metrics_service,
     RegistrationTokenHelperFactory registration_token_helper_factory)
     : signin_client_(signin_client),
       identity_manager_(identity_manager),
       account_reconcilor_(account_reconcilor),
       about_signin_internals_(about_signin_internals),
-      signin_metrics_service_(signin_metrics_service),
       registration_token_helper_factory_(
           std::move(registration_token_helper_factory)) {
   DCHECK(signin_client_);
@@ -557,11 +551,6 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       identity_manager_->PickAccountIdForAccount(gaia_id, email);
   bool is_new_account =
       !identity_manager_->HasAccountWithRefreshToken(account_id);
-
-  if (!is_new_account) {
-    signin_metrics_service_->SetReauthAccessPointIfInSigninPending(
-        account_id, token_fetcher->delegate()->GetAccessPoint());
-  }
 
   identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
