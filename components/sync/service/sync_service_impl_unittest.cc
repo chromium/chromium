@@ -2325,8 +2325,8 @@ TEST_F(SyncServiceImplTest, ShouldNotifyOnManagedPrefDisabled) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
-  const int kTestCohortId1 = 11;
-  const int kTestCohortId2 = 22;
+  const int kTestCohort1 = 11;
+  const int kTestCohort2 = 22;
 
   component_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
@@ -2349,11 +2349,12 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
 
   {
     SyncStatus sync_status;
-    sync_status.trusted_vault_debug_info.mutable_auto_upgrade_debug_info()
-        ->set_auto_upgrade_cohort_id(kTestCohortId1);
-    sync_status.trusted_vault_debug_info.mutable_auto_upgrade_debug_info()
-        ->set_auto_upgrade_experiment_group(
-            sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL);
+    sync_status.trusted_vault_debug_info
+        .mutable_auto_upgrade_experiment_group()
+        ->set_cohort(kTestCohort1);
+    sync_status.trusted_vault_debug_info
+        .mutable_auto_upgrade_experiment_group()
+        ->set_type(sync_pb::TrustedVaultAutoUpgradeExperimentGroup::CONTROL);
     engine()->SetDetailedStatus(sync_status);
   }
 
@@ -2361,7 +2362,7 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
   // registration.
   EXPECT_CALL(*sync_client(),
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
-                  IsValidFieldTrialGroupWithName("Control_11")));
+                  IsValidFieldTrialGroupWithName("Cohort11_Control")));
 
   base::RunLoop().RunUntilIdle();
   engine()->TriggerInitializationCompletion(/*success=*/true);
@@ -2374,37 +2375,41 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
   // Verify that the debug info has been cached in prefs.
   SyncPrefs sync_prefs(prefs());
   EXPECT_TRUE(
-      sync_prefs.GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
-  EXPECT_EQ(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL,
-            sync_prefs.GetCachedTrustedVaultAutoUpgradeDebugInfo()
-                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
-                .auto_upgrade_experiment_group());
-  EXPECT_EQ(kTestCohortId1,
-            sync_prefs.GetCachedTrustedVaultAutoUpgradeDebugInfo()
-                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
-                .auto_upgrade_cohort_id());
+      sync_prefs.GetCachedTrustedVaultAutoUpgradeExperimentGroup().has_value());
+  EXPECT_EQ(kTestCohort1,
+            sync_prefs.GetCachedTrustedVaultAutoUpgradeExperimentGroup()
+                .value_or(sync_pb::TrustedVaultAutoUpgradeExperimentGroup())
+                .cohort());
+  EXPECT_EQ(sync_pb::TrustedVaultAutoUpgradeExperimentGroup::CONTROL,
+            sync_prefs.GetCachedTrustedVaultAutoUpgradeExperimentGroup()
+                .value_or(sync_pb::TrustedVaultAutoUpgradeExperimentGroup())
+                .type());
+  EXPECT_EQ(0, sync_prefs.GetCachedTrustedVaultAutoUpgradeExperimentGroup()
+                   .value_or(sync_pb::TrustedVaultAutoUpgradeExperimentGroup())
+                   .type_index());
 
   // The SyncClient API should not be invoked for the second time.
   EXPECT_CALL(*sync_client(),
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial)
       .Times(0);
 
-  // Mimic another sync cycle that mutates the debug info.
+  // Mimic another sync cycle that mutates the experiment group.
   {
     SyncStatus sync_status;
-    sync_status.trusted_vault_debug_info.mutable_auto_upgrade_debug_info()
-        ->set_auto_upgrade_cohort_id(kTestCohortId2);
-    sync_status.trusted_vault_debug_info.mutable_auto_upgrade_debug_info()
-        ->set_auto_upgrade_experiment_group(
-            sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL);
+    sync_status.trusted_vault_debug_info
+        .mutable_auto_upgrade_experiment_group()
+        ->set_cohort(kTestCohort2);
+    sync_status.trusted_vault_debug_info
+        .mutable_auto_upgrade_experiment_group()
+        ->set_type(sync_pb::TrustedVaultAutoUpgradeExperimentGroup::CONTROL);
     engine()->SetDetailedStatus(sync_status);
     service()->OnSyncCycleCompleted(MakeDefaultSyncCycleSnapshot());
   }
 
-  EXPECT_EQ(kTestCohortId2,
-            sync_prefs.GetCachedTrustedVaultAutoUpgradeDebugInfo()
-                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
-                .auto_upgrade_cohort_id());
+  EXPECT_EQ(kTestCohort2,
+            sync_prefs.GetCachedTrustedVaultAutoUpgradeExperimentGroup()
+                .value_or(sync_pb::TrustedVaultAutoUpgradeExperimentGroup())
+                .cohort());
 }
 
 }  // namespace

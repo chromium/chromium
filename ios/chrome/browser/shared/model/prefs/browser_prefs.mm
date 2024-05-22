@@ -185,6 +185,10 @@ const char kObsoleteAccountStorageNoticeShown[] =
 constexpr char kPreferencesMigratedToBasic[] =
     "browser.clear_data.preferences_migrated_to_basic";
 
+// Deprecated 05/2024.
+constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
+    "sync.cached_trusted_vault_auto_upgrade_debug_info";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -796,6 +800,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterDictionaryPref(
       prefs::kContentNotificationsEnrollmentEligibility);
+
+  registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1009,6 +1015,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
       spotlight::kSpotlightLastIndexingVersionKey, prefs, defaults);
   MigrateNSDatePreferenceFromUserDefaults(
       spotlight::kSpotlightLastIndexingDateKey, prefs, defaults);
+
+  // Added 05/2024.
+  prefs->ClearPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
 }
 
 void MigrateObsoleteUserDefault() {

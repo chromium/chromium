@@ -965,17 +965,18 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
 }
 
 VISIT_PROTO_FIELDS(
-    const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo& proto) {
-  VISIT_ENUM(auto_upgrade_experiment_group);
-  VISIT(auto_upgrade_cohort_id);
+    const sync_pb::TrustedVaultAutoUpgradeExperimentGroup& proto) {
+  VISIT(cohort);
+  VISIT_ENUM(type);
+  VISIT(type_index);
 }
 
 VISIT_PROTO_FIELDS(
     const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo& proto) {
   VISIT(migration_time);
   VISIT(key_version);
-  VISIT(auto_upgrade_debug_info);
-  VISIT(auto_upgrade_debug_info_modification_time_unix_epoch_millis);
+  VISIT(auto_upgrade_experiment_group);
+  VISIT(auto_upgrade_experiment_group_modification_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::OsPreferenceSpecifics& proto) {

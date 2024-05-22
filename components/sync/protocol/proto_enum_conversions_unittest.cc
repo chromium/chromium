@@ -120,9 +120,10 @@ TEST(ProtoEnumConversionsTest, GetCategoryBenefitTypeString) {
   TestEnumStringsNonEmpty(sync_pb::CardBenefit::CategoryBenefitType);
 }
 
-TEST(ProtoEnumConversionsTest, GetAutoUpgradeExperimentGroupString) {
-  TestEnumStringsNonEmpty(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::
-    AutoUpgradeExperimentGroup);
+TEST(ProtoEnumConversionsTest,
+     GetTrustedVaultAutoUpgradeExperimentGroupTypeString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type);
 }
 
 }  // namespace

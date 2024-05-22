@@ -275,20 +275,18 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
 }
 
 void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
-  const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo debug_info =
-      sync_prefs_.GetCachedTrustedVaultAutoUpgradeDebugInfo().value_or(
-          sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo());
-
-  const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup group =
-      TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
-          debug_info.auto_upgrade_experiment_group(),
-          debug_info.auto_upgrade_cohort_id());
-
   if (trusted_vault_auto_upgrade_synthetic_field_trial_registered_) {
     // Registration function already invoked. It cannot be invoked twice, as
     // runtime changes to the group assignment is not supported (e.g. signout).
     return;
   }
+
+  const sync_pb::TrustedVaultAutoUpgradeExperimentGroup proto =
+      sync_prefs_.GetCachedTrustedVaultAutoUpgradeExperimentGroup().value_or(
+          sync_pb::TrustedVaultAutoUpgradeExperimentGroup());
+
+  const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup group =
+      TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(proto);
 
   if (!group.is_valid()) {
     // Broadcasting an invalid group isn't allowed, as it would otherwise use
@@ -2169,9 +2167,9 @@ void SyncServiceImpl::CacheTrustedVaultDebugInfoToPrefsFromEngine() {
   CHECK(engine_);
   CHECK(engine_->IsInitialized());
 
-  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
+  sync_prefs_.SetCachedTrustedVaultAutoUpgradeExperimentGroup(
       engine_->GetDetailedStatus()
-          .trusted_vault_debug_info.auto_upgrade_debug_info());
+          .trusted_vault_debug_info.auto_upgrade_experiment_group());
 
   RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
 }
@@ -2270,7 +2268,7 @@ void SyncServiceImpl::StopAndClear() {
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
   // Cached information provided by SyncEngine must be cleared.
   sync_prefs_.ClearCachedPassphraseType();
-  sync_prefs_.ClearCachedTrustedVaultAutoUpgradeDebugInfo();
+  sync_prefs_.ClearCachedTrustedVaultAutoUpgradeExperimentGroup();
   // If the migration didn't finish before StopAndClear() was called, mark it as
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();

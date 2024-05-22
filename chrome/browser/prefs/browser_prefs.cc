@@ -1083,6 +1083,10 @@ inline constexpr char kAccessibilityMouseKeysShortcutToPauseEnabled[] =
     "settings.a11y.mouse_keys.ctrl_to_pause_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2024.
+inline constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
+    "sync.cached_trusted_vault_auto_upgrade_debug_info";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1553,6 +1557,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kAccessibilityMouseKeysShortcutToPauseEnabled,
                                 true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2024.
+  registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2915,6 +2922,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 05/2024.
   profile_prefs->ClearPref(kAccessibilityMouseKeysShortcutToPauseEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 05/2024.
+  profile_prefs->ClearPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
