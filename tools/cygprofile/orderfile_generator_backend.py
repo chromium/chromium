@@ -414,18 +414,17 @@ class OrderfileUpdater:
     bucket = (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG if use_debug_location
               else self._CLOUD_STORAGE_BUCKET)
     extension = _GetFileExtension(filename)
-    if use_new_cloud:
-      cmd = [self._UPLOAD_TO_NEW_CLOUD_COMMAND]
-    else:
-      cmd = [self._UPLOAD_TO_CLOUD_COMMAND]
-    cmd += ['--bucket', bucket]
+    cmd = [self._UPLOAD_TO_CLOUD_COMMAND, '--bucket', bucket]
     if extension:
       cmd.extend(['-z', extension])
     cmd.append(filename)
-    stdout: str = self._step_recorder.RunCommand(cmd,
-                                                 capture_output=True).stdout
+    # Keep both upload paths working as the upload script updates .sha1 files.
+    self._step_recorder.RunCommand(cmd)
     if use_new_cloud:
       logging.info('Uploading using the new cloud:')
+      new_cmd = [self._UPLOAD_TO_NEW_CLOUD_COMMAND] + cmd[1:]
+      stdout: str = self._step_recorder.RunCommand(new_cmd,
+                                                   capture_output=True).stdout
       # The first line is "Uploading ... ", the rest of the lines is valid json.
       json_string = stdout.split('\n', 1)[1]
       logging.info(json_string)
