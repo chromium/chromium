@@ -20,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
@@ -155,24 +156,60 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
-// TODO(crbug.com/335997050) timeout on ARM64 debug builder.
-#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
-#define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
-#else
-#define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
-#endif  // BUILDFLAG(IS_CHROMEOS)
+// Updated test fixture for testing interaction of thumbnail tab helper and
+// browser, specifically testing interaction of tab load and thumbnail capture.
+class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
+ protected:
+  void SetUp() override {
+    // This flag causes the thumbnail tab helper system to engage. Otherwise
+    // there is no ThumbnailTabHelper created. Note that there *are* other flags
+    // that also trigger the existence of the helper.
+    scoped_feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
+    InteractiveBrowserTest::SetUp();
+  }
 
-IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
-                       MAYBE_TabLoadTriggersScreenshot) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  int GetTabCount() { return browser()->tab_strip_model()->count(); }
 
-  DCHECK_EQ(2, browser()->tab_strip_model()->count());
-  WaitForAndVerifyThumbnail(browser(), 1);
+  auto CheckTabHasThumbnailData(int tab_index, bool has_data) {
+    return CheckResult(
+        [=]() {
+          return ThumbnailTabHelper::FromWebContents(
+                     browser()->tab_strip_model()->GetWebContentsAt(tab_index))
+              ->thumbnail()
+              ->has_data();
+        },
+        has_data);
+  }
+
+  auto WaitForAndVerifyThumbnail(int tab_index) {
+    return Check([=]() {
+      auto* const thumbnail_tab_helper = ThumbnailTabHelper::FromWebContents(
+          browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+      auto thumbnail = thumbnail_tab_helper->thumbnail();
+
+      ThumbnailWaiter waiter;
+      const std::optional<gfx::ImageSkia> data =
+          waiter.WaitForThumbnail(thumbnail.get());
+      return data && !data->isNull();
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
+                       TabLoadTriggersScreenshot) {
+  RunTestSequence(
+      Do([this]() {
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), GURL(chrome::kChromeUINewTabURL),
+            WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+      }),
+      CheckResult([this]() { return GetTabCount(); }, 2),
+      CheckTabHasThumbnailData(0, false), CheckTabHasThumbnailData(1, false),
+      WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
 // TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
