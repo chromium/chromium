@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -364,7 +365,11 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         ui::ImageModel::FromVectorIcon(
             vector_icons::kLocationOnChromeRefreshIcon, ui::kColorIcon,
             kContextMenuIconSize));
-    menu_model_->SetIsNewFeatureAt(menu_model_->GetItemCount() - 1, true);
+    menu_model_->SetIsNewFeatureAt(
+        menu_model_->GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(
+            delegate_->GetBrowserContext(),
+            features::kAutofillForUnclassifiedFieldsAvailable));
   }
   if (add_payments_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
@@ -372,7 +377,11 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
         ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
                                        ui::kColorIcon, kContextMenuIconSize));
-    menu_model_->SetIsNewFeatureAt(menu_model_->GetItemCount() - 1, true);
+    menu_model_->SetIsNewFeatureAt(
+        menu_model_->GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(
+            delegate_->GetBrowserContext(),
+            features::kAutofillForUnclassifiedFieldsAvailable));
   }
   if (add_passwords_fallback) {
     AddPasswordsManualFallbackItems(*password_manager_driver);
@@ -628,6 +637,9 @@ void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
   LogManualFallbackContextMenuEntryAccepted(autofill_driver,
                                             FillingProduct::kCreditCard);
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      delegate_->GetBrowserContext(),
+      features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForPasswordsCommand(
@@ -723,6 +735,9 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
   }
   LogManualFallbackContextMenuEntryAccepted(autofill_driver,
                                             FillingProduct::kAddress);
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      delegate_->GetBrowserContext(),
+      features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
 AutofillField* AutofillContextMenuManager::GetAutofillField(

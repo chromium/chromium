@@ -42,6 +42,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -1343,6 +1344,8 @@ void MaybeRegisterChromeTutorials(
   }
 }
 
+// Note: If you add a badge here, be sure to add the name of the corresponding
+// feature to tools/metrics/histograms/metadata/user_education/histograms.xml
 void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   if (registry.IsFeatureRegistered(
           user_education::features::kNewBadgeTestFeature)) {
@@ -1370,6 +1373,14 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(
           126, "emshack@chromium.org",
           "Shown in app menu when TabOrganizationAppMenuItem is enabled.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      autofill::features::kAutofillForUnclassifiedFieldsAvailable,
+      user_education::Metadata(
+          125, "vidhanj@google.com",
+          "Shown in the autofill section of the context menu for address and "
+          "credit card autofill entries when autofill for unclassified fields "
+          "is enabled.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(

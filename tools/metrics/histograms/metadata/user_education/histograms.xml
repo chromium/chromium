@@ -23,6 +23,9 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="NewBadgeFeature">
+  <variant name="AutofillForUnclassifiedFieldsAvailable"
+      summary="For address and card field-by-field filling; shown in the
+               autofill section of the context menu."/>
   <variant name="Compose"
       summary="For Compose feature; shown in web context menu."/>
   <variant name="ComposeNudge"
