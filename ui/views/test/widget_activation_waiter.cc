@@ -9,6 +9,8 @@
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #endif
@@ -23,7 +25,8 @@ namespace {
 // value. To use create and call Wait().
 class WidgetActivationWaiter : public WidgetObserver {
  public:
-  WidgetActivationWaiter(Widget* widget, bool active) : active_(active) {
+  WidgetActivationWaiter(Widget* widget, bool active)
+      : active_(active), widget_(*widget) {
     if (active == widget->native_widget_active()) {
       observed_ = true;
       return;
@@ -45,7 +48,12 @@ class WidgetActivationWaiter : public WidgetObserver {
       // Some tests waiting on widget creation + activation are flaky due to
       // timeout. crbug.com/1327590.
       const base::test::ScopedRunLoopTimeout increased_run_timeout(
-          FROM_HERE, TestTimeouts::action_max_timeout());
+          FROM_HERE, TestTimeouts::action_max_timeout(),
+          base::BindLambdaForTesting([&]() {
+            return "Requested activation state: " +
+                   base::NumberToString(active_) + ", actual: " +
+                   base::NumberToString(widget_->native_widget_active());
+          }));
 #endif
       run_loop_.Run();
     }
@@ -67,7 +75,7 @@ class WidgetActivationWaiter : public WidgetObserver {
 
   bool observed_ = false;
   bool active_;
-
+  const raw_ref<Widget> widget_;
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
