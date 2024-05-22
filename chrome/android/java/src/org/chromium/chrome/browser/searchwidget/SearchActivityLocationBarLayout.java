@@ -164,7 +164,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // Note that the Voice search will call us back in the event of any failure via
         // notifyVoiceRecognitionCanceled() call, giving us the opportunity to focus the Omnibox.
         View micButton = findViewById(R.id.mic_button);
-        if (micButton.getVisibility() != View.VISIBLE || !micButton.performClick()) {
+        if (!micButton.performClick()) {
             // Voice recognition is not available. Fall back to regular text search.
             Toast.makeText(
                             getContext(),
@@ -186,7 +186,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // field on top.
         focusTextBox();
         View lensButton = findViewById(R.id.lens_camera_button);
-        if (lensButton.getVisibility() != View.VISIBLE || !lensButton.performClick()) {
+        if (!lensButton.performClick()) {
             Toast.makeText(
                             getContext(),
                             R.string.quick_action_search_widget_message_no_google_lens,
