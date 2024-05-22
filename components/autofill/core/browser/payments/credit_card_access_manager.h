@@ -14,10 +14,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -35,7 +37,6 @@
 
 namespace autofill {
 
-class BrowserAutofillManager;
 enum class WebauthnDialogCallbackType;
 
 // Flow type denotes which card unmask authentication method was used.
@@ -103,9 +104,7 @@ class CreditCardAccessManager
   using OtpAuthenticationResponse =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
-  CreditCardAccessManager(AutofillDriver* driver,
-                          AutofillClient* client,
-                          PersonalDataManager* personal_data_manager,
+  CreditCardAccessManager(AutofillManager* manager,
                           autofill_metrics::CreditCardFormEventLogger*
                               credit_card_form_event_logger);
 
@@ -183,8 +182,18 @@ class CreditCardAccessManager
  private:
   friend class CreditCardAccessManagerTestApi;
 
-  payments::PaymentsAutofillClient* payments_autofill_client() {
-    return client_->GetPaymentsAutofillClient();
+  AutofillClient& autofill_client() { return manager_->client(); }
+
+  payments::PaymentsAutofillClient& payments_autofill_client() {
+    return *autofill_client().GetPaymentsAutofillClient();
+  }
+
+  PersonalDataManager& personal_data_manager() {
+    return *autofill_client().GetPersonalDataManager();
+  }
+
+  PaymentsDataManager& payments_data_manager() {
+    return personal_data_manager().payments_data_manager();
   }
 
   base::WeakPtr<CreditCardAccessManager> GetWeakPtr() {
@@ -383,15 +392,8 @@ class CreditCardAccessManager
   // OnCvcAuthenticationComplete() to be executed.
   bool is_authentication_in_progress_ = false;
 
-  // The associated autofill driver.
-  const raw_ref<AutofillDriver> driver_;
-
-  // The associated autofill client.
-  const raw_ref<AutofillClient> client_;
-
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  // The owning AutofillManager.
+  const raw_ref<AutofillManager> manager_;
 
   // For logging metrics.
   const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;

@@ -665,10 +665,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
   manual_fallback_logger_ =
       std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
-
-  credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      driver, &client(), client().GetPersonalDataManager(),
-      credit_card_form_event_logger_.get());
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {
@@ -706,6 +702,10 @@ base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
 }
 
 CreditCardAccessManager& BrowserAutofillManager::GetCreditCardAccessManager() {
+  if (!credit_card_access_manager_) {
+    credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
+        this, credit_card_form_event_logger_.get());
+  }
   return *credit_card_access_manager_;
 }
 
@@ -1542,7 +1542,7 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
   // OnCreditCardFetched() in this class after successfully fetching the
   // card.
   fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
-  credit_card_access_manager_->FetchCreditCard(
+  GetCreditCardAccessManager().FetchCreditCard(
       &credit_card_,
       base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -1766,7 +1766,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (base::Contains(shown_suggestions_types, FillingProduct::kCreditCard,
                      GetFillingProductFromSuggestionType) &&
       IsCreditCardFidoAuthenticationEnabled()) {
-    credit_card_access_manager_->PrepareToFetchCreditCard();
+    GetCreditCardAccessManager().PrepareToFetchCreditCard();
   }
 
   FormStructure* form_structure = nullptr;
@@ -1897,7 +1897,7 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
 }
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
-  return credit_card_access_manager_->ShouldClearPreviewedForm();
+  return GetCreditCardAccessManager().ShouldClearPreviewedForm();
 }
 
 void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
@@ -2283,9 +2283,6 @@ void BrowserAutofillManager::Reset() {
       std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),
           client().GetPersonalDataManager(), &client());
-  credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      &driver(), &client(), client().GetPersonalDataManager(),
-      credit_card_form_event_logger_.get());
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
   manual_fallback_logger_ =
@@ -2312,7 +2309,7 @@ bool BrowserAutofillManager::RefreshDataModels() {
     return false;
   }
 
-  credit_card_access_manager_->UpdateCreditCardFormEventLogger();
+  GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
 
   const std::vector<AutofillProfile*>& profiles =
       client().GetPersonalDataManager()->address_data_manager().GetProfiles();
@@ -2466,7 +2463,7 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
 
   if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
       credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
-    credit_card_access_manager_->CacheUnmaskedCardInfo(credit_card,
+    GetCreditCardAccessManager().CacheUnmaskedCardInfo(credit_card,
                                                        credit_card.cvc());
   }
 }

@@ -197,6 +197,9 @@ class CreditCardAccessManagerTest : public testing::Test {
     otp_authenticator_ = otp_authenticator.get();
     autofill_client_.GetPaymentsAutofillClient()->set_otp_authenticator(
         std::move(otp_authenticator));
+
+    // Force creation of the CreditCardAccessManager.
+    std::ignore = credit_card_access_manager();
   }
 
   bool IsAuthenticationInProgress() {

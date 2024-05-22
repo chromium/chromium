@@ -406,15 +406,7 @@ std::string kElvisProfileGuid = MakeGuid(1);
 
 class MockCreditCardAccessManager : public CreditCardAccessManager {
  public:
-  MockCreditCardAccessManager(AutofillDriver* driver,
-                              AutofillClient* client,
-                              PersonalDataManager* personal_data_manager,
-                              autofill_metrics::CreditCardFormEventLogger*
-                                  credit_card_form_event_logger)
-      : CreditCardAccessManager(driver,
-                                client,
-                                personal_data_manager,
-                                credit_card_form_event_logger) {}
+  using CreditCardAccessManager::CreditCardAccessManager;
   MOCK_METHOD(void, PrepareToFetchCreditCard, (), (override));
 };
 
@@ -678,9 +670,11 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FieldGlobalId& field_id,
                const std::u16string& value),
               (override));
-  MOCK_METHOD1(
+  MOCK_METHOD(
+      void,
       SendAutofillTypePredictionsToRenderer,
-      void(const std::vector<raw_ptr<FormStructure, VectorExperimental>>&));
+      ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&)),
+      (override));
 };
 
 }  // namespace
@@ -998,7 +992,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     test_api(*browser_autofill_manager_)
         .set_credit_card_access_manager(
             std::make_unique<NiceMock<MockCreditCardAccessManager>>(
-                autofill_driver_.get(), &autofill_client_, &personal_data(),
+                browser_autofill_manager_.get(),
                 test_api(*browser_autofill_manager_)
                     .credit_card_form_event_logger()));
   }

@@ -679,6 +679,7 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<FormData> pending_form_data_;
 
   // The credit card access manager, used to access local and server cards.
+  // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
   // Helper class to generate Autofill suggestions.

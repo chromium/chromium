@@ -61,14 +61,7 @@ AccessorySheetData::Builder PaymentMethodAccessorySheetDataBuilder() {
 
 class TestAccessManager : public CreditCardAccessManager {
  public:
-  TestAccessManager(AutofillDriver* driver,
-                    AutofillClient* client,
-                    PersonalDataManager* personal_data)
-      : CreditCardAccessManager(driver,
-                                client,
-                                personal_data,
-                                /*credit_card_form_event_logger=*/nullptr) {}
-
+  using CreditCardAccessManager::CreditCardAccessManager;
   void FetchCreditCard(
       const CreditCard* card,
       OnCreditCardFetchedCallback on_credit_card_fetched) override {
@@ -99,8 +92,8 @@ class PaymentMethodAccessoryControllerTest
     FocusWebContentsOnMainFrame();
 
     test_api(autofill_manager())
-        .set_credit_card_access_manager(std::make_unique<TestAccessManager>(
-            &autofill_driver(), &autofill_client(), &data_manager_));
+        .set_credit_card_access_manager(
+            std::make_unique<TestAccessManager>(&autofill_manager(), nullptr));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &autofill_manager(), &autofill_driver());

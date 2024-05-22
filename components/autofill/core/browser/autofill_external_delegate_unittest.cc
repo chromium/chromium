@@ -130,15 +130,7 @@ auto PopupOpenArgsAre(
 // separate file.
 class MockCreditCardAccessManager : public CreditCardAccessManager {
  public:
-  MockCreditCardAccessManager(AutofillDriver* driver,
-                              AutofillClient* client,
-                              PersonalDataManager* personal_data_manager,
-                              autofill_metrics::CreditCardFormEventLogger*
-                                  credit_card_form_event_logger)
-      : CreditCardAccessManager(driver,
-                                client,
-                                personal_data_manager,
-                                credit_card_form_event_logger) {}
+  using CreditCardAccessManager::CreditCardAccessManager;
   MOCK_METHOD(void,
               FetchCreditCard,
               (const CreditCard*,
@@ -243,7 +235,11 @@ class MockAutofillClient : public TestAutofillClient {
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
-      : TestBrowserAutofillManager(driver) {}
+      : TestBrowserAutofillManager(driver) {
+    test_api(*this).set_credit_card_access_manager(
+        std::make_unique<NiceMock<MockCreditCardAccessManager>>(
+            this, test_api(*this).credit_card_form_event_logger()));
+  }
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -331,12 +327,6 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     auto mock_browser_autofill_manager =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
             autofill_driver_.get());
-    test_api(*mock_browser_autofill_manager)
-        .set_credit_card_access_manager(
-            std::make_unique<NiceMock<MockCreditCardAccessManager>>(
-                autofill_driver_.get(), &client(), &pdm(),
-                test_api(*mock_browser_autofill_manager)
-                    .credit_card_form_event_logger()));
     driver().set_autofill_manager(std::move(mock_browser_autofill_manager));
   }
 
