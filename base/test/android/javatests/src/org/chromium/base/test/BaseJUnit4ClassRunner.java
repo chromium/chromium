@@ -5,6 +5,7 @@
 package org.chromium.base.test;
 
 import android.app.Application;
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -24,16 +25,17 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
+import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
 import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
-import org.chromium.base.test.util.EspressoIdleTimeoutRule;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
@@ -42,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A custom runner for JUnit4 tests that checks requirements to conditionally ignore tests.
@@ -69,8 +70,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      * <p>The only reason to use a ClassHook instead of a TestRule is
      * because @BeforeClass/@AfterClass run during test listing, or multiple times for parameterized
      * tests. See https://crbug.com/1090043.
-     *
-     * <p>TODO(crbug.com/40134682): Migrate all Class/Test Hooks to TestRules.
      */
     public interface ClassHook {
         /**
@@ -97,6 +96,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
+    private long mTestStartTimeMs;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -166,7 +166,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     /**
-     * See {@link ClassHook}. Prefer to use TestRules over this.
+     * See {@link ClassHook}.
      *
      * <p>Additional hooks can be added to the list by overriding this method and using {@link
      * #addToList}: {@code return addToList(super.getPreClassHooks(), hook1, hook2);}
@@ -177,18 +177,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     /**
-     * See {@link ClassHook}. Prefer to use TestRules over this.
-     *
-     * <p>Additional hooks can be added to the list by overriding this method and using {@link
-     * #addToList}: {@code return addToList(super.getPostClassHooks(), hook1, hook2);}
-     */
-    @CallSuper
-    protected List<ClassHook> getPostClassHooks() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * See {@link TestHook}. Prefer to use TestRules over this.
+     * See {@link TestHook}.
      *
      * <p>Additional hooks can be added to the list by overriding this method and using {@link
      * #addToList}: {@code return addToList(super.getPreTestHooks(), hook1, hook2);}
@@ -199,7 +188,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     /**
-     * See {@link TestHook}. Prefer to use TestRules over this.
+     * See {@link TestHook}.
      *
      * <p>Additional hooks can be added to the list by overriding this method and using {@link
      * #addToList}: {@code return addToList(super.getPostTestHooks(), hook1, hook2);}
@@ -225,16 +214,12 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      * Override this method to return a list of rules that should be applied to all tests run with
      * this test runner.
      *
-     * Additional rules can be added to the list using {@link #addToList}:
-     * {@code return addToList(super.getDefaultTestRules(), rule1, rule2);}
+     * <p>Additional rules can be added to the list using {@link #addToList}: {@code return
+     * addToList(super.getDefaultTestRules(), rule1, rule2);}
      */
     @CallSuper
     protected List<TestRule> getDefaultTestRules() {
-        return Arrays.asList(
-                new BaseJUnit4TestRule(),
-                new MockitoErrorHandler(),
-                new UnitTestLifetimeAssertRule(),
-                new EspressoIdleTimeoutRule(20, TimeUnit.SECONDS));
+        return Collections.emptyList();
     }
 
     /** Evaluate whether a FrameworkMethod is ignored based on {@code SkipCheck}s. */
@@ -267,23 +252,13 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             return;
         }
 
-        ResettersForTesting.beforeClassHooksWillExecute();
-
-        Class<?> testClass = getDescription().getTestClass();
-        CommandLineFlags.setUpClass(testClass);
-        runPreClassHooks(testClass);
-
+        onBeforeTestClass();
         super.run(notifier);
+        onAfterTestClass();
+    }
 
-        try {
-            CommandLineFlags.tearDownClass();
-            runPostClassHooks(testClass);
-        } finally {
-            // Run resetters on UI thread so as to minimize the number of failed thread check
-            // assertions, and to match the semantics of Robolectric's runners.
-            BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
-                    ResettersForTesting::afterClassHooksDidExecute);
-        }
+    static void clearJobSchedulerJobs() {
+        BaseJUnit4ClassRunner.getApplication().getSystemService(JobScheduler.class).cancelAll();
     }
 
     private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
@@ -295,72 +270,113 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     @Override
-    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        String testName = method.getName();
-        TestTraceEvent.begin(testName);
+    protected Statement methodBlock(final FrameworkMethod method) {
+        Statement innerStatement = super.methodBlock(method);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                onBeforeTestMethod(method);
+                Throwable exception = null;
+                try {
+                    // Runs @Rules, then @Befores, then test method.
+                    innerStatement.evaluate();
+                    performExtraAssertions(method);
+                } catch (Throwable t) {
+                    exception = t;
+                }
+                try {
+                    onAfterTestMethod(method);
+                } catch (Throwable t) {
+                    // Ensure original exception is not lost if onAfterTestMethod() throws.
+                    if (exception != null) {
+                        Log.e(TAG, "Unexpected exception in onAfterTestMethod()", t);
+                    } else {
+                        exception = t;
+                    }
+                }
+                if (exception != null) {
+                    throw exception;
+                }
+            }
+        };
+    }
 
-        long start = SystemClock.uptimeMillis();
+    private void onBeforeTestMethod(FrameworkMethod method) {
+        TestTraceEvent.begin(method.getName());
 
+        mTestStartTimeMs = SystemClock.uptimeMillis();
         ResettersForTesting.beforeHooksWillExecute();
+
+        // TODO: Might be slow to do this before every test.
+        SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
 
         CommandLineFlags.setUpMethod(method.getMethod());
         blockUnitTestsFromStartingBrowser(method);
         // TODO(agrieve): These should not reset flag values set in @BeforeClass
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();
+        UmaRecorderHolder.resetForTesting();
 
-        runPreTestHooks(method);
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        for (TestHook hook : getPreTestHooks()) {
+            hook.run(targetContext, method);
+        }
+    }
 
-        super.runChild(method, notifier);
+    private void onBeforeTestClass() {
+        Class<?> testClass = getTestClass().getJavaClass();
+        ResettersForTesting.beforeClassHooksWillExecute();
+        CommandLineFlags.setUpClass(testClass);
 
-        runPostTestHooks(method);
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        for (ClassHook hook : getPreClassHooks()) {
+            hook.run(targetContext, testClass);
+        }
+    }
+
+    private void performExtraAssertions(FrameworkMethod method) throws Throwable {
+        SharedPreferencesTestUtil.assertNoOnDiskSharedPreferences();
+
+        Batch annotation = method.getDeclaringClass().getAnnotation(Batch.class);
+        if (annotation != null && annotation.value().equals(Batch.UNIT_TESTS)) {
+            if (method.getAnnotation(RequiresRestart.class) != null) return;
+            LifetimeAssert.assertAllInstancesDestroyedForTesting();
+        }
+    }
+
+    protected void onAfterTestMethod(FrameworkMethod method) {
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        for (TestHook hook : getPostTestHooks()) {
+            hook.run(targetContext, method);
+        }
+
+        // Do not reset things here for state we may want to persist when set via @BeforeClass.
         CommandLineFlags.tearDownMethod();
         try {
             // Run resetters on UI thread so as to minimize the number of failed thread check
             // assertions, and to match the semantics of Robolectric's runners.
             BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                     ResettersForTesting::afterHooksDidExecute);
+            clearJobSchedulerJobs();
         } finally {
             Bundle b = new Bundle();
-            b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - start);
-            BaseChromiumAndroidJUnitRunner.sInstance.sendStatus(STATUS_CODE_TEST_DURATION, b);
+            b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - mTestStartTimeMs);
+            InstrumentationRegistry.getInstrumentation().sendStatus(STATUS_CODE_TEST_DURATION, b);
 
-            TestTraceEvent.end(testName);
+            TestTraceEvent.end(method.getName());
 
-            // A new instance of BaseJUnit4ClassRunner is created on the device
-            // for each new method, so runChild will only be called once. Thus, we
-            // can disable tracing, and dump the output, once we get here.
+            // TODO: This dumps trace output after a single test, which means traces do not work for
+            // @Batched tests.
             TestTraceEvent.disable();
         }
     }
 
-    /** Loop through all the {@code PreTestHook}s to run them */
-    private void runPreTestHooks(FrameworkMethod frameworkMethod) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        for (TestHook hook : getPreTestHooks()) {
-            hook.run(targetContext, frameworkMethod);
-        }
-    }
-
-    private void runPreClassHooks(Class<?> klass) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        for (ClassHook hook : getPreClassHooks()) {
-            hook.run(targetContext, klass);
-        }
-    }
-
-    private void runPostTestHooks(FrameworkMethod frameworkMethod) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        for (TestHook hook : getPostTestHooks()) {
-            hook.run(targetContext, frameworkMethod);
-        }
-    }
-
-    private void runPostClassHooks(Class<?> klass) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        for (ClassHook hook : getPostClassHooks()) {
-            hook.run(targetContext, klass);
-        }
+    protected void onAfterTestClass() {
+        CommandLineFlags.tearDownClass();
+        // Run resetters on UI thread so as to minimize the number of failed thread check
+        // assertions, and to match the semantics of Robolectric's runners.
+        BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
+                ResettersForTesting::afterHooksDidExecute);
     }
 
     /** Loop through all the {@code SkipCheck}s to confirm whether a test should be ignored */
@@ -376,6 +392,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     /** Overriding this method to take screenshot of failure before tear down functions are run. */
     @Override
     protected Statement withAfters(FrameworkMethod method, Object test, Statement base) {
+        // Afters are called before @Rule tearDown, so a good time for a screenshot.
         return super.withAfters(method, test, new ScreenshotOnFailureStatement(base));
     }
 }
