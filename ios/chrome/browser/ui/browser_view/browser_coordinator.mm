@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -192,6 +193,7 @@
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/ui/phone_number/add_contacts_coordinator.h"
+#import "ios/chrome/browser/ui/phone_number/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
@@ -276,12 +278,14 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <
+    AddContactsCommands,
     AppLauncherTabHelperBrowserPresentationProvider,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BrowserViewVisibilityConsumer,
     BubblePresenterDelegate,
     ContextualSheetCommands,
+    CountryCodePickerCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     EnterprisePromptCoordinatorDelegate,
@@ -301,7 +305,6 @@ enum class ToolbarKind {
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
     PriceNotificationsCommands,
-    AddContactsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
@@ -575,6 +578,7 @@ enum class ToolbarKind {
   raw_ptr<WebNavigationBrowserAgent> _webNavigationBrowserAgent;
   raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
   AddContactsCoordinator* _addContactsCoordinator;
+  CountryCodePickerCoordinator* _countryCodePickerCoordinator;
   OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
@@ -768,6 +772,9 @@ enum class ToolbarKind {
 
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
+
+  [_countryCodePickerCoordinator stop];
+  _countryCodePickerCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -915,6 +922,7 @@ enum class ToolbarKind {
     @protocol(ParcelTrackingOptInCommands),
     @protocol(UnitConversionCommands),
     @protocol(AddContactsCommands),
+    @protocol(CountryCodePickerCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -2256,6 +2264,21 @@ enum class ToolbarKind {
 - (void)hideAddContacts {
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
+}
+
+#pragma mark - CountryCodePickerCommands
+
+- (void)presentCountryCodePickerForPhoneNumber:(NSString*)phoneNumber {
+  _countryCodePickerCoordinator = [[CountryCodePickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _countryCodePickerCoordinator.phoneNumber = phoneNumber;
+  [_countryCodePickerCoordinator start];
+}
+
+- (void)hideCountryCodePicker {
+  [_countryCodePickerCoordinator stop];
+  _countryCodePickerCoordinator = nil;
 }
 
 #pragma mark - PromosManagerCommands

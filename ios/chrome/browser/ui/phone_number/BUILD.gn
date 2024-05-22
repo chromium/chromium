@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("add_contacts") {
+source_set("phone_number") {
   sources = [
     "add_contacts_coordinator.h",
     "add_contacts_coordinator.mm",
+    "country_code_picker_coordinator.h",
+    "country_code_picker_coordinator.mm",
   ]
   deps = [
     "//components/prefs",
