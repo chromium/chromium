@@ -37,13 +37,6 @@
 // Delegate.
 @property(nonatomic, weak) id<ManageSyncSettingsCoordinatorDelegate> delegate;
 
-// Initializes ManageSyncSettingsCoordinator to present its controller modally.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              accountState:
-                                  (SyncSettingsAccountState)accountState
-    NS_DESIGNATED_INITIALIZER;
-
 // Initializes ManageSyncSettingsCoordinator to view its controller by pushing
 // it on top of the navigation stack.
 - (instancetype)initWithBaseNavigationController:
