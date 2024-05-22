@@ -6216,6 +6216,21 @@
             ]
         }
     ],
+    "DesktopCapturePermissionChecker": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DesktopCapturePermissionChecker"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopLinkCapturingPWAExperiment": [
         {
             "platforms": [
