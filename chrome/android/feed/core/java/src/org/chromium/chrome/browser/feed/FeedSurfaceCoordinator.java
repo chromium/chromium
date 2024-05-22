@@ -502,6 +502,23 @@ public class FeedSurfaceCoordinator
                     mNtpHeader.getPaddingTop(),
                     mNtpHeader.getPaddingRight(),
                     bottomPadding);
+
+            // Apply negative margins to the NTP header in order to compensate the containment
+            // paddings applied to the whole NTP. This is to allow all the elements in the NTP
+            // header to keep using their existing margins/paddings settings.
+            if (!mUseStaggeredLayout) {
+                int margin =
+                        -mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.feed_containment_margin);
+                ViewGroup.MarginLayoutParams layoutParams =
+                        new ViewGroup.MarginLayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMarginStart(margin);
+                layoutParams.setMarginEnd(margin);
+                mNtpHeader.setLayoutParams(layoutParams);
+            }
         }
 
         // Mediator should be created before any Stream changes.

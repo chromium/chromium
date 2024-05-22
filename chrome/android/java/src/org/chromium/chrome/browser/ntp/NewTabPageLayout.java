@@ -792,9 +792,6 @@ public class NewTabPageLayout extends LinearLayout {
                                         shouldShowLogo()
                                                 ? R.dimen.mvt_container_top_margin_polish
                                                 : R.dimen.tile_grid_layout_no_logo_top_margin);
-            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-                marginLayoutParams.leftMargin = 0;
-                marginLayoutParams.rightMargin = 0;
             }
             return;
         }
@@ -1350,15 +1347,11 @@ public class NewTabPageLayout extends LinearLayout {
                                             R.dimen.ntp_search_box_lateral_margin_tablet_polish)
                             * 2;
         } else {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-                mSearchBoxTwoSideMargin = 0;
-            } else {
-                mSearchBoxTwoSideMargin =
-                        getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.mvt_container_lateral_margin_polish)
-                                * 2;
-            }
+            mSearchBoxTwoSideMargin =
+                    getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.mvt_container_lateral_margin_polish)
+                            * 2;
         }
     }
 
