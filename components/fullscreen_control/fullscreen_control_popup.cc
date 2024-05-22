@@ -25,9 +25,10 @@ std::unique_ptr<views::Widget> CreatePopupWidget(
     std::unique_ptr<FullscreenControlView> view) {
   // Initialize the popup.
   std::unique_ptr<views::Widget> popup = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.z_order = ui::ZOrderLevel::kSecuritySurface;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = parent_view;

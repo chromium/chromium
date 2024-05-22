@@ -1064,9 +1064,10 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
   overlay_overlaps_frame_ = overlay_params.overlaps_frame;
   overlay_can_resize_ = std::move(overlay_params.can_resize);
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_CONTROL);
   params.parent = widget_->GetNativeWindow();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   if (overlay_params.translucent)
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
@@ -1733,13 +1734,13 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   if (system_modal_)
     SetModalType(ui::MODAL_TYPE_SYSTEM);
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.type = (emulate_x11_override_redirect || is_menu_)
                     ? views::Widget::InitParams::TYPE_MENU
                     : (is_popup_ ? views::Widget::InitParams::TYPE_POPUP
                                  : views::Widget::InitParams::TYPE_WINDOW);
 
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.delegate = this;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

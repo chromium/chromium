@@ -37,9 +37,9 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
     ViewsTestBase::SetUp();
 
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(300, 300);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_.Init(std::move(params));
     views::View* container =
         widget_.SetContentsView(std::make_unique<views::View>());

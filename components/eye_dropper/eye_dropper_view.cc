@@ -205,9 +205,13 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
 #if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
   // above the color picker.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_MENU);
 #else
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   // Use software compositing to prevent situations when the widget is not

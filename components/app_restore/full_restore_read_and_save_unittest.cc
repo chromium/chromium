@@ -296,11 +296,12 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       const std::string& lacros_window_id,
       int32_t restore_session_id,
       int32_t restore_window_id) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
 
     params.bounds = gfx::Rect(5, 5, 20, 20);
     params.context = aura_test_helper_.GetContext();
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
     params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
                                                  chromeos::AppType::LACROS);

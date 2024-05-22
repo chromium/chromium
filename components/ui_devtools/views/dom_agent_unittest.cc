@@ -100,8 +100,8 @@ class DOMAgentTest : public views::ViewsTestBase {
 
   views::internal::NativeWidgetPrivate* CreateTestNativeWidget() {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 #if defined(USE_AURA)
     params.parent = GetContext();
 #endif

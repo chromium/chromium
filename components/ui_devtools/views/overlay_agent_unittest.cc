@@ -118,9 +118,9 @@ class OverlayAgentTest : public views::ViewsTestBase {
   void CreateWidget(const gfx::Rect& bounds,
                     views::Widget::InitParams::Type type) {
     widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     params.delegate = nullptr;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = bounds;
     params.type = type;
 #if defined(USE_AURA)

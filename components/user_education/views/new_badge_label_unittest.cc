@@ -26,8 +26,8 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
 
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     constexpr gfx::Size kNewBadgeLabelTestWidgetSize(300, 300);
     params.bounds = gfx::Rect(gfx::Point(), kNewBadgeLabelTestWidgetSize);
     widget_->Init(std::move(params));

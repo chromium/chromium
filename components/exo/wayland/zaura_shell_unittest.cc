@@ -344,9 +344,10 @@ TEST_F(ZAuraSurfaceTest,
   ::wm::ActivateWindow(parent_widget().GetNativeWindow());
 
   // Lock the screen.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   auto lock_widget = std::make_unique<views::Widget>();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.context = GetContext();
   params.bounds = gfx::Rect(0, 0, 100, 100);
   lock_widget->Init(std::move(params));

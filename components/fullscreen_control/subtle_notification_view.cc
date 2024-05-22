@@ -225,7 +225,9 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
     std::unique_ptr<SubtleNotificationView> view) {
   // Initialize the popup.
   views::Widget* popup = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
   // On Windows, this widget isn't parented on purpose to avoid it being
   // obscured by other topmost widgets. See crbug.com/1431043. Setting
@@ -239,7 +241,6 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
 #endif
 
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.z_order = ui::ZOrderLevel::kSecuritySurface;
   params.accept_events = false;
   popup->Init(std::move(params));

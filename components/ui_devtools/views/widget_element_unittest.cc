@@ -47,7 +47,8 @@ class WidgetElementTest : public views::ViewsTestBase {
 
     widget_ = new views::Widget;
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+        CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW);
     params.name = kWidgetName;
     widget_->Init(std::move(params));
 
