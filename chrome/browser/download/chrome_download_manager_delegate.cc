@@ -1904,6 +1904,13 @@ ChromeDownloadManagerDelegate::GetQuarantineConnectionCallback() {
       &ChromeDownloadManagerDelegate::ConnectToQuarantineService);
 }
 
+std::unique_ptr<download::DownloadItemRenameHandler>
+ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
+    download::DownloadItem* download_item) {
+  // TODO(b/341259898): Add implementation for SkyVault on CrOS.
+  return nullptr;
+}
+
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
     download::DownloadItem* download_item,
     base::flat_map<base::FilePath, base::FilePath> save_package_files,

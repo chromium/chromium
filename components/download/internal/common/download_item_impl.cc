@@ -52,6 +52,7 @@
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_job_factory.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -1020,6 +1021,10 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
   return download_file_.get();
 }
 
+DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  return rename_handler_.get();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool DownloadItemImpl::IsFromExternalApp() {
   return is_from_external_app_;
@@ -1924,6 +1929,13 @@ void DownloadItemImpl::OnDownloadCompleting() {
   DownloadFile::RenameCompletionCallback rename_callback =
       base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
                      weak_ptr_factory_.GetWeakPtr());
+
+  // If an alternate rename handler is specified, use it instead.
+  rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
+  if (rename_handler_) {
+    rename_handler_->Start(std::move(rename_callback));
+    return;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (GetTargetFilePath().IsContentUri()) {

@@ -461,6 +461,10 @@ download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
   return nullptr;
 }
 
+download::DownloadItemRenameHandler* FakeDownloadItem::GetRenameHandler() {
+  return nullptr;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool FakeDownloadItem::IsFromExternalApp() {
   return false;

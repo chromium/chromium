@@ -214,6 +214,11 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   virtual download::QuarantineConnectionCallback
   GetQuarantineConnectionCallback();
 
+  // Gets a handler to perform the rename for a download item. Returns nullptr
+  // if no special rename handling is required.
+  virtual std::unique_ptr<download::DownloadItemRenameHandler>
+  GetRenameHandlerForDownload(download::DownloadItem* download_item);
+
   // Gets a |DownloadItem| from the GUID, or null if no such GUID is available.
   virtual download::DownloadItem* GetDownloadByGuid(const std::string& guid);
 

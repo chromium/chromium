@@ -52,6 +52,7 @@ class HttpResponseHeaders;
 
 namespace download {
 class DownloadFile;
+class DownloadItemRenameHandler;
 
 // One DownloadItem per download. This is the model class that stores all the
 // state for a download.
@@ -438,6 +439,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Gets the pointer to the DownloadFile owned by this object.
   virtual DownloadFile* GetDownloadFile() = 0;
+
+  // Gets a handler to perform the rename for a download item. Returns nullptr
+  // if no special rename handling is required.
+  virtual DownloadItemRenameHandler* GetRenameHandler() = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets whether the download is triggered from external app.

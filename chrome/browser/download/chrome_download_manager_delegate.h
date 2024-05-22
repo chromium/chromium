@@ -146,6 +146,8 @@ class ChromeDownloadManagerDelegate
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;
   download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
       override;
+  std::unique_ptr<download::DownloadItemRenameHandler>
+  GetRenameHandlerForDownload(download::DownloadItem* download_item) override;
   void CheckSavePackageAllowed(
       download::DownloadItem* download_item,
       base::flat_map<base::FilePath, base::FilePath> save_package_files,

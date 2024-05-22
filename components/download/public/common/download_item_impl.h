@@ -299,6 +299,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool GetFileExternallyRemoved() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   DownloadFile* GetDownloadFile() override;
+  DownloadItemRenameHandler* GetRenameHandler() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
   bool IsMustDownload() override;
@@ -879,6 +880,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The InsecureDownloadStatus if determined.
   InsecureDownloadStatus insecure_download_status_ =
       InsecureDownloadStatus::UNKNOWN;
+
+  // A handler for renaming and helping with displaying the item.
+  std::unique_ptr<DownloadItemRenameHandler> rename_handler_;
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;

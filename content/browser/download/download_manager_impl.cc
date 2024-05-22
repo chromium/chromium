@@ -33,6 +33,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_factory.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -792,6 +793,16 @@ DownloadManagerImpl::GetQuarantineConnectionCallback() {
     return base::NullCallback();
 
   return delegate_->GetQuarantineConnectionCallback();
+}
+
+std::unique_ptr<download::DownloadItemRenameHandler>
+DownloadManagerImpl::GetRenameHandlerForDownload(
+    download::DownloadItemImpl* download_item) {
+  if (!delegate_) {
+    return nullptr;
+  }
+
+  return delegate_->GetRenameHandlerForDownload(download_item);
 }
 
 void DownloadManagerImpl::StartDownload(

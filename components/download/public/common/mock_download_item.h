@@ -100,6 +100,7 @@ class MockDownloadItem : public DownloadItem {
   }
   MOCK_METHOD1(DeleteFile_, void(base::OnceCallback<void(bool)>& cb));
   MOCK_METHOD0(GetDownloadFile, DownloadFile*());
+  MOCK_METHOD0(GetRenameHandler, DownloadItemRenameHandler*());
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD0(IsFromExternalApp, bool());
   MOCK_METHOD0(IsMustDownload, bool());

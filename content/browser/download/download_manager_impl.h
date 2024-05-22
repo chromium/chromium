@@ -185,6 +185,9 @@ class CONTENT_EXPORT DownloadManagerImpl
   download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
       override;
   std::string GetApplicationClientIdForFileScanning() const override;
+  std::unique_ptr<download::DownloadItemRenameHandler>
+  GetRenameHandlerForDownload(
+      download::DownloadItemImpl* download_item) override;
 
  private:
   using DownloadSet = std::set<download::DownloadItem*>;
