@@ -1930,6 +1930,9 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
 
   // ShowFailureDialog() may have completed the request synchronously, in which
   // case we did not really show any failure dialog.
+  if (idp_data_for_display_.empty()) {
+    return;
+  }
   CHECK(idp_data_for_display_.size() == 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
       idp_data_for_display_[0], has_shown_mismatch, has_hints);

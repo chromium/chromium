@@ -7308,6 +7308,19 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
           accounts_displayed_callback) override {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }
+
+  void ShowFailureDialog(
+      const std::string& top_frame_for_display,
+      const std::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
+      const IdentityProviderMetadata& idp_metadata,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::LoginToIdPCallback
+          identity_registry_callback) override {
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+  }
 };
 
 // Crash test for crbug.com/328945371.
@@ -7324,6 +7337,28 @@ TEST_F(FederatedAuthRequestImplTest, ImmediateDismiss) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
+}
+
+// Tests that dismissing during ShowFailureDialog() does not crash.
+TEST_F(FederatedAuthRequestImplTest, FailureDialogImmediateDismiss) {
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  MockConfiguration configuration = kConfigurationValid;
+
+  // Setup IdP sign-in status mismatch.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+
+  SetDialogController(
+      std::make_unique<TestDialogControllerWithImmediateDismiss>(
+          configuration));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
 }  // namespace content
