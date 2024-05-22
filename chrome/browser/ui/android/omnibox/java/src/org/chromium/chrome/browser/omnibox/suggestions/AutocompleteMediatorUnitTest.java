@@ -113,7 +113,6 @@ import java.util.Set;
             AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
             ShadowLooper.class
         })
-@EnableFeatures(OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS)
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;
