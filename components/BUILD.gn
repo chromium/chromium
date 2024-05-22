@@ -248,6 +248,7 @@ test("components_unittests") {
     "//components/metrics:unit_tests",
     "//components/metrics/demographics:unit_tests",
     "//components/named_mojo_ipc_server:unit_tests",
+    "//components/named_system_lock:unit_tests",
     "//components/navigation_metrics:unit_tests",
     "//components/net_log:unit_tests",
     "//components/network_session_configurator/browser:unit_tests",

@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("named_system_lock") {
+  sources = [ "lock.h" ]
+  deps = [ "//base" ]
+  if (is_linux) {
+    sources += [ "lock_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "lock_mac.mm" ]
+  } else if (is_win) {
+    sources += [ "lock_win.cc" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+
+  # Disable NamedSystemLockTest on unsupported platforms.
+  if (is_linux || is_win || is_mac) {
+    sources += [ "lock_unittest.cc" ]
+  }
+
+  deps = [
+    ":named_system_lock",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
