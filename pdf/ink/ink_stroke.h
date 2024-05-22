@@ -7,12 +7,13 @@
 
 namespace chrome_pdf {
 
+class InkModeledShape;
+
 class InkStroke {
  public:
-  ~InkStroke() = default;
+  virtual ~InkStroke() = default;
 
- protected:
-  InkStroke() = default;
+  virtual const InkModeledShape* GetShape() const = 0;
 };
 
 }  // namespace chrome_pdf

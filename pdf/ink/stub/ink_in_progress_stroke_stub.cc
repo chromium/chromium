@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "pdf/ink/ink_stroke.h"
+#include "pdf/ink/stub/ink_stroke_stub.h"
 
 namespace chrome_pdf {
 
@@ -34,7 +34,7 @@ bool InkInProgressStrokeStub::UpdateShape(float current_elapsed_time_seconds) {
 }
 
 std::unique_ptr<InkStroke> InkInProgressStrokeStub::CopyToStroke() const {
-  return nullptr;
+  return std::make_unique<InkStrokeStub>();
 }
 
 }  // namespace chrome_pdf
