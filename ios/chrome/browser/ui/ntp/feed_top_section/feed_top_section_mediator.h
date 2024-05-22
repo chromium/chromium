@@ -70,6 +70,9 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
 // Cleans the mediator.
 - (void)shutdown;
 
+// Used from the coordinator to respond to the OS prompt outcome.
+- (void)updateFeedTopSectionWhenClosed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_

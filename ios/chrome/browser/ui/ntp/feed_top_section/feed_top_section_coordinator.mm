@@ -219,10 +219,12 @@ using base::UserMetricsAction;
           "ContentNotifications.Promo.TopOfFeed.Permission.Declined"));
       [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
                                       kDecline];
+      [self.feedTopSectionMediator updateFeedTopSectionWhenClosed];
       break;
     case NotificationsOptInAlertResult::kCanceled:
       [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
                                      kCanceled];
+      [self.feedTopSectionMediator updateFeedTopSectionWhenClosed];
       break;
     case NotificationsOptInAlertResult::kError:
       [self
@@ -231,12 +233,14 @@ using base::UserMetricsAction;
     case NotificationsOptInAlertResult::kOpenedSettings:
       [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
                                      kNotifActive];
+      [self.feedTopSectionMediator updateFeedTopSectionWhenClosed];
       break;
     case NotificationsOptInAlertResult::kPermissionGranted:
       RecordAction(UserMetricsAction(
           "ContentNotifications.Promo.TopOfFeed.Permission.Accepted"));
       [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
                                       kAccept];
+      [self.feedTopSectionMediator updateFeedTopSectionWhenClosed];
       break;
   }
 }
