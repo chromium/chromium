@@ -128,7 +128,8 @@ public class MediaNotificationTestTabHolder {
                 /* httpStatusCode= */ 200,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
-                /* mimeType= */ "");
+                /* mimeType= */ "",
+                /* shouldUpdateHistory= */ false);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didFinishNavigationInPrimaryMainFrame(navigation);
     }

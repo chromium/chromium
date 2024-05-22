@@ -64,6 +64,10 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
             return;
         }
 
+        if (!navigationHandle.shouldUpdateHistory()) {
+            return;
+        }
+
         // Avoid loops if the navigation was initiated from sync.
         if (mNavigationTracker.wasNavigationFromSync(navigationHandle.getUserDataHost())) {
             return;

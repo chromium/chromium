@@ -81,6 +81,10 @@ public class NavigationObserverUnitTest {
     }
 
     private void simulateNavigation(int transition) {
+        simulateNavigation(transition, /* shouldUpdateHistory= */ true);
+    }
+
+    private void simulateNavigation(int transition, boolean shouldUpdateHistory) {
         NavigationHandle navigation =
                 NavigationHandle.createForTesting(
                         new GURL("unused"),
@@ -89,7 +93,8 @@ public class NavigationObserverUnitTest {
                         /*isRendererInitiated*/ false,
                         transition,
                         /* hasUserGesture= */ false,
-                        /* isReload= */ false);
+                        /* isReload= */ false,
+                        shouldUpdateHistory);
         mNavigationObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
     }
 
@@ -254,6 +259,20 @@ public class NavigationObserverUnitTest {
         mNavigationTracker.setNavigationWasFromSync(navigation.getUserDataHost());
         mNavigationObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
 
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testShouldNotUpdateHistory() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        simulateNavigation(PageTransition.LINK, false);
         verifyNoInteractions(mTabGroupSyncService);
     }
 

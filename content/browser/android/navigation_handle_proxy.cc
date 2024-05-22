@@ -18,6 +18,19 @@ using base::android::JavaParamRef;
 
 namespace content {
 
+namespace {
+// Checks if Chrome should update navigation history with the current
+// navigation. If the current navigation is not yet committed, this
+// method will return false. Otherwise, this is the same as calling
+// NavigationHandle::ShouldUpdateHistory(). The HasCommitted() check
+// is necessary due to a DCHECK in ShouldUpdateHistory().
+bool ShouldUpdateHistory(NavigationHandle* navigation_handle) {
+  return navigation_handle->HasCommitted() &&
+         navigation_handle->ShouldUpdateHistory();
+}
+
+}  // namespace
+
 NavigationHandleProxy::NavigationHandleProxy(
     NavigationHandle* cpp_navigation_handle)
     : cpp_navigation_handle_(cpp_navigation_handle) {
@@ -53,7 +66,8 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsPageActivation(),
       cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
       cpp_navigation_handle_->IsPdf(),
-      base::android::ConvertUTF8ToJavaString(env, GetMimeType()));
+      base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
+      ShouldUpdateHistory(cpp_navigation_handle_));
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -105,7 +119,8 @@ void NavigationHandleProxy::DidFinish() {
           : 200,
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->IsPdf(),
-      base::android::ConvertUTF8ToJavaString(env, GetMimeType()));
+      base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
+      ShouldUpdateHistory(cpp_navigation_handle_));
 }
 
 NavigationHandleProxy::~NavigationHandleProxy() {
