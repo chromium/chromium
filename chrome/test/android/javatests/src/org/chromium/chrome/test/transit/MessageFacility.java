@@ -79,7 +79,6 @@ public class MessageFacility extends Facility<PageStation> {
                                         MessageDispatcher messageDispatcher =
                                                 MessageDispatcherProvider.from(
                                                         mHostStation
-                                                                .mChromeTabbedActivityTestRule
                                                                 .getActivity()
                                                                 .getWindowAndroid());
                                         assert messageDispatcher != null;

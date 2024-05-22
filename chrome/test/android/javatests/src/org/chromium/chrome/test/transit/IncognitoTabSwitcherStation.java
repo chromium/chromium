@@ -7,13 +7,12 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.action.ViewActions.click;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The tab switcher screen showing incognito tabs. */
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
-    public IncognitoTabSwitcherStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
-        super(chromeTabbedActivityTestRule, /* incognito= */ true);
+    public IncognitoTabSwitcherStation() {
+        super(/* incognito= */ true);
     }
 
     @Override
@@ -26,8 +25,7 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     }
 
     public RegularTabSwitcherStation selectRegularTabList() {
-        RegularTabSwitcherStation tabSwitcher =
-                new RegularTabSwitcherStation(mChromeTabbedActivityTestRule);
+        RegularTabSwitcherStation tabSwitcher = new RegularTabSwitcherStation();
         return travelToSync(tabSwitcher, () -> REGULAR_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

@@ -16,7 +16,6 @@ import androidx.test.espresso.Espresso;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 
 /** The 3-dot menu "Select Tabs" UI for the {@link HubTabSwitcherBase} panes. */
@@ -30,13 +29,8 @@ public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBas
                             isDescendantOfA(withId(R.id.selectable_list)),
                             withId(R.id.tab_list_recycler_view)));
 
-    private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
-
-    public HubTabSwitcherListEditorFacility(
-            HubTabSwitcherBaseStation station,
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+    public HubTabSwitcherListEditorFacility(HubTabSwitcherBaseStation station) {
         super(station);
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
     }
 
     @Override

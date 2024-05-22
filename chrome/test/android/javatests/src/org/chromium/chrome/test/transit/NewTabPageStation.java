@@ -12,6 +12,7 @@ import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
@@ -34,7 +35,7 @@ public class NewTabPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        boolean isTablet = mChromeTabbedActivityTestRule.getActivity().isTablet();
+        boolean isTablet = DeviceFormFactor.isTablet();
 
         // TODO(crbug.com/40267786): On generic_android32_foldable these elements do not appear or
         // appear unreliably when a keyboard is attached, which is the case for local development

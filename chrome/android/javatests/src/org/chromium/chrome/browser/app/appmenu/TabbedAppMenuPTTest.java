@@ -85,7 +85,6 @@ public class TabbedAppMenuPTTest {
         // Exit settings for the initial state rule to be able to reset state.
         settings.pressBack(
                 WebPageStation.newWebPageStationBuilder()
-                        .withActivityTestRule(sActivityTestRule)
                         .withIncognito(false)
                         .withIsOpeningTabs(0)
                         .withTabAlreadySelected(tab)

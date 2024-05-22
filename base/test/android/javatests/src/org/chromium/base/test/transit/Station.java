@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.junit.Assert.fail;
+
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 
@@ -65,6 +67,16 @@ public abstract class Station extends ConditionalState {
      */
     public int getId() {
         return mId;
+    }
+
+    protected void assertSuppliersCanBeUsed() {
+        int phase = getPhase();
+        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
+            fail(
+                    String.format(
+                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
+                            this, phaseToString(phase)));
+        }
     }
 
     @Override

@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station {
@@ -63,17 +62,12 @@ public abstract class HubBaseStation extends Station {
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_incognito_stack)));
 
-    protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected TabModelSelectorCondition mTabModelSelectorCondition;
 
-    /**
-     * @param chromeTabbedActivityTestRule The {@link ChromeTabbedActivityTestRule} of the test.
-     */
-    public HubBaseStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+    public HubBaseStation() {
         super();
         assert HubFieldTrial.isHubEnabled();
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
     }
 
     /** Returns the station's {@link PaneId}. */
@@ -103,6 +97,14 @@ public abstract class HubBaseStation extends Station {
     }
 
     /**
+     * @return the {@link ChromeTabbedActivity} for this station.
+     */
+    protected ChromeTabbedActivity getActivity() {
+        assertSuppliersCanBeUsed();
+        return mActivityElement.get();
+    }
+
+    /**
      * Returns to the previous tab via the back button.
      *
      * @return the {@link PageStation} that Hub returned to.
@@ -113,7 +115,6 @@ public abstract class HubBaseStation extends Station {
         // a solution that better handles the complexity.
         PageStation destination =
                 PageStation.newPageStationBuilder()
-                        .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIsOpeningTabs(0)
                         .withIsSelectingTabs(1)
                         .build();
@@ -133,8 +134,7 @@ public abstract class HubBaseStation extends Station {
             return expectedDestination.cast(this);
         }
 
-        T destinationStation = expectedDestination.cast(
-            HubStationUtils.createHubStation(paneId, mChromeTabbedActivityTestRule));
+        T destinationStation = expectedDestination.cast(HubStationUtils.createHubStation(paneId));
 
         try {
             HUB_PANE_SWITCHER.onView().check(matches(isDisplayed()));

@@ -8,7 +8,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.util.Map;
 
@@ -37,16 +36,14 @@ public class HubStationUtils {
 
     /**
      * @param paneId The pane to create the station for.
-     * @param chromeTabbedActivityTestRule The test rule.
      * @return corresponding {@link HubBaseStation} subclass.
      */
-    public static HubBaseStation createHubStation(
-            @PaneId int paneId, ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+    public static HubBaseStation createHubStation(@PaneId int paneId) {
         switch (paneId) {
             case PaneId.TAB_SWITCHER:
-                return new HubTabSwitcherStation(chromeTabbedActivityTestRule);
+                return new HubTabSwitcherStation();
             case PaneId.INCOGNITO_TAB_SWITCHER:
-                return new HubIncognitoTabSwitcherStation(chromeTabbedActivityTestRule);
+                return new HubIncognitoTabSwitcherStation();
             default:
                 throw new IllegalArgumentException("No hub station is available for " + paneId);
         }

@@ -32,10 +32,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         sentinel.setAsEntryPoint();
 
         WebPageStation entryPageStation =
-                WebPageStation.newWebPageStationBuilder()
-                        .withActivityTestRule(mActivityTestRule)
-                        .withEntryPoint()
-                        .build();
+                WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
         return sentinel.travelToSync(
                 entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
     }

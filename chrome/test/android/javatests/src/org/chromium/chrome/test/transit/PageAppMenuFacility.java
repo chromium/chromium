@@ -30,7 +30,7 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
     protected Item<SettingsStation> mSettings;
 
     public PageAppMenuFacility(HostPageStationT station) {
-        super(station, station.mChromeTabbedActivityTestRule);
+        super(station);
     }
 
     @Override

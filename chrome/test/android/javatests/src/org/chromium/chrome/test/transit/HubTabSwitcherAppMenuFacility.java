@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.chrome.R;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** The app menu shown when pressing ("...") in the Hub on a tab switcher pane. */
 public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitcherBaseStation> {
@@ -22,13 +23,13 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
     private Item<SettingsStation> mSettings;
 
     public HubTabSwitcherAppMenuFacility(HubTabSwitcherBaseStation station, boolean isIncognito) {
-        super(station, station.mChromeTabbedActivityTestRule);
+        super(station);
         mIsIncognito = isIncognito;
     }
 
     @Override
     protected void declareItems(ItemsBuilder items) {
-        boolean isTablet = mChromeTabbedActivityTestRule.getActivity().isTablet();
+        boolean isTablet = mHostStation.getActivity().isTablet();
 
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);
         mNewIncognitoTab =
@@ -36,8 +37,15 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
-
-            if (mChromeTabbedActivityTestRule.tabsCount(/* regular= */ false) > 0) {
+            int tabCount =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            () ->
+                                    mHostStation
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getModel(/* incognito= */ false)
+                                            .getCount());
+            if (tabCount > 0) {
                 mCloseAllTabs = declareStubMenuItem(items, CLOSE_ALL_TABS_ID);
                 mSelectTabs =
                         declareMenuItemToFacility(
@@ -89,6 +97,6 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
     }
 
     private HubTabSwitcherListEditorFacility createListEditorFacility() {
-        return new HubTabSwitcherListEditorFacility(mHostStation, mChromeTabbedActivityTestRule);
+        return new HubTabSwitcherListEditorFacility(mHostStation);
     }
 }

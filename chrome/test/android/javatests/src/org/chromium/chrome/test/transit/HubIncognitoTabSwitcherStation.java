@@ -5,16 +5,12 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** Incognito tab switcher pane station. */
 public class HubIncognitoTabSwitcherStation extends HubTabSwitcherBaseStation {
-    /**
-     * @param chromeTabbedActivityTestRule The activity rule under test.
-     */
-    public HubIncognitoTabSwitcherStation(
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
-        super(chromeTabbedActivityTestRule, /* isIncognito= */ true);
+
+    public HubIncognitoTabSwitcherStation() {
+        super(/* isIncognito= */ true);
     }
 
     @Override

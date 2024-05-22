@@ -139,11 +139,7 @@ public class HubLayoutPublicTransitTest {
 
     private NewTabPageStation pauseAndResumeActivity(Station currentStation) {
         NewTabPageStation destination =
-                NewTabPageStation.newBuilder()
-                        .withActivityTestRule(sActivityTestRule)
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .build();
+                NewTabPageStation.newBuilder().withIsOpeningTabs(0).withIsSelectingTabs(1).build();
         currentStation.travelToSync(
                 destination,
                 () -> {

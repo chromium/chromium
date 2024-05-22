@@ -53,10 +53,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
         }
 
         WebPageStation entryPageStation =
-                WebPageStation.newWebPageStationBuilder()
-                        .withActivityTestRule(mActivityTestRule)
-                        .withEntryPoint()
-                        .build();
+                WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
 
         // Wait for the Conditions to be met to return an active PageStation.
         return homeStation.travelToSync(entryPageStation, /* trigger= */ null);

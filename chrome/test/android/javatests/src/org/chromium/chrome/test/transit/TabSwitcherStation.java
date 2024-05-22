@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 
@@ -94,18 +93,15 @@ public abstract class TabSwitcherStation extends Station {
                                     withParent(instanceOf(TabGridView.class)))),
                     isDisplayed());
 
-    protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected final boolean mIsIncognito;
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected TabModelSelectorCondition mTabModelSelectorCondition;
 
     /** Instantiate one of the subclasses instead. */
-    protected TabSwitcherStation(
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule, boolean incognito) {
+    protected TabSwitcherStation(boolean incognito) {
         super();
 
         assert !HubFieldTrial.isHubEnabled();
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
         mIsIncognito = incognito;
     }
 
@@ -131,7 +127,6 @@ public abstract class TabSwitcherStation extends Station {
 
         PageStation page =
                 PageStation.newPageStationBuilder()
-                        .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
@@ -155,13 +150,9 @@ public abstract class TabSwitcherStation extends Station {
 
         T tabSwitcher;
         if (landInIncognitoSwitcher) {
-            tabSwitcher =
-                    expectedDestinationType.cast(
-                            new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule));
+            tabSwitcher = expectedDestinationType.cast(new IncognitoTabSwitcherStation());
         } else {
-            tabSwitcher =
-                    expectedDestinationType.cast(
-                            new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+            tabSwitcher = expectedDestinationType.cast(new RegularTabSwitcherStation());
         }
 
         return travelToSync(
@@ -174,7 +165,6 @@ public abstract class TabSwitcherStation extends Station {
     public PageStation selectTabAtIndex(int index) {
         PageStation page =
                 PageStation.newPageStationBuilder()
-                        .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
                         .withIsOpeningTabs(0)
                         .withIsSelectingTabs(1)

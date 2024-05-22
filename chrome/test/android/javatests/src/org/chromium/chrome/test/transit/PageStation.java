@@ -8,8 +8,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.junit.Assert.fail;
-
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.ThreadUtils;
@@ -29,7 +27,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
@@ -52,7 +49,6 @@ public class PageStation extends Station {
      */
     public static class Builder<T extends PageStation> {
         private final Function<Builder<T>, T> mFactoryMethod;
-        private ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
         private boolean mIncognito;
         private boolean mIsEntryPoint;
         private Integer mNumTabsBeingOpened;
@@ -63,11 +59,6 @@ public class PageStation extends Station {
 
         public Builder(Function<Builder<T>, T> factoryMethod) {
             mFactoryMethod = factoryMethod;
-        }
-
-        public Builder<T> withActivityTestRule(ChromeTabbedActivityTestRule activityTestRule) {
-            mChromeTabbedActivityTestRule = activityTestRule;
-            return this;
         }
 
         public Builder<T> withIncognito(boolean incognito) {
@@ -112,7 +103,6 @@ public class PageStation extends Station {
         }
 
         public Builder<T> initFrom(PageStation previousStation) {
-            mChromeTabbedActivityTestRule = previousStation.getTestRule();
             mIncognito = previousStation.isIncognito();
             return this;
         }
@@ -122,7 +112,6 @@ public class PageStation extends Station {
         }
     }
 
-    protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected final boolean mIncognito;
     protected final boolean mIsEntryPoint;
     protected final int mNumTabsBeingOpened;
@@ -146,9 +135,6 @@ public class PageStation extends Station {
 
     /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
-        // activityTestRule is required
-        assert builder.mChromeTabbedActivityTestRule != null;
-        mChromeTabbedActivityTestRule = builder.mChromeTabbedActivityTestRule;
 
         // incognito is optional and defaults to false
         mIncognito = builder.mIncognito;
@@ -191,7 +177,8 @@ public class PageStation extends Station {
         elements.declareView(MENU_BUTTON);
 
         if (mNumTabsBeingOpened > 0) {
-            elements.declareEnterCondition(new TabAddedCondition(mNumTabsBeingOpened));
+            elements.declareEnterCondition(
+                    new TabAddedCondition(mNumTabsBeingOpened, mActivityElement));
         }
 
         if (mIsEntryPoint) {
@@ -204,7 +191,7 @@ public class PageStation extends Station {
                 // The last tab of N opened is the Tab that mSelectedTabSupplier will supply.
                 mSelectedTabSupplier =
                         elements.declareEnterCondition(
-                                new TabSelectedCondition(mNumTabsBeingSelected));
+                                new TabSelectedCondition(mNumTabsBeingSelected, mActivityElement));
             } else {
                 // The Tab already created and provided to the constructor is the one that is
                 // expected to be the activityTab.
@@ -229,10 +216,6 @@ public class PageStation extends Station {
             elements.declareEnterCondition(
                     new PageUrlContainsCondition(mPath, mPageLoadedCondition));
         }
-    }
-
-    public ChromeTabbedActivityTestRule getTestRule() {
-        return mChromeTabbedActivityTestRule;
     }
 
     public boolean isIncognito() {
@@ -307,13 +290,9 @@ public class PageStation extends Station {
 
         T destination;
         if (isIncognito()) {
-            destination =
-                    expectedDestination.cast(
-                            new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule));
+            destination = expectedDestination.cast(new IncognitoTabSwitcherStation());
         } else {
-            destination =
-                    expectedDestination.cast(
-                            new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+            destination = expectedDestination.cast(new RegularTabSwitcherStation());
         }
         return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
@@ -325,8 +304,9 @@ public class PageStation extends Station {
         T destination =
                 expectedDestination.cast(
                         HubStationUtils.createHubStation(
-                                isIncognito() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
-                                getTestRule()));
+                                isIncognito()
+                                        ? PaneId.INCOGNITO_TAB_SWITCHER
+                                        : PaneId.TAB_SWITCHER));
 
         return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
@@ -372,21 +352,14 @@ public class PageStation extends Station {
         return mPageLoadedCondition.get();
     }
 
-    private void assertSuppliersCanBeUsed() {
-        int phase = getPhase();
-        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
-            fail(
-                    String.format(
-                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
-                            this, phaseToString(phase)));
-        }
-    }
-
     private class TabAddedCondition extends CallbackCondition implements TabModelObserver {
         private TabModel mTabModel;
+        private Supplier<ChromeTabbedActivity> mActivity;
 
-        protected TabAddedCondition(int numTabsBeingOpened) {
+        protected TabAddedCondition(
+                int numTabsBeingOpened, Supplier<ChromeTabbedActivity> activitySupplier) {
             super("didAddTab", numTabsBeingOpened);
+            mActivity = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
@@ -399,11 +372,7 @@ public class PageStation extends Station {
             super.onStartMonitoring();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel =
-                                getTestRule()
-                                        .getActivity()
-                                        .getTabModelSelector()
-                                        .getModel(isIncognito());
+                        mTabModel = mActivity.get().getTabModelSelector().getModel(isIncognito());
                         mTabModel.addObserver(this);
                     });
         }
@@ -421,9 +390,12 @@ public class PageStation extends Station {
             implements TabModelObserver, Supplier<Tab> {
         private final List<Tab> mTabsSelected = new ArrayList<>();
         private TabModel mTabModel;
+        private Supplier<ChromeTabbedActivity> mActivity;
 
-        private TabSelectedCondition(int numTabsBeingSelected) {
+        private TabSelectedCondition(
+                int numTabsBeingSelected, Supplier<ChromeTabbedActivity> activitySupplier) {
             super("didSelectTab", numTabsBeingSelected);
+            mActivity = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
@@ -442,11 +414,7 @@ public class PageStation extends Station {
             super.onStartMonitoring();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel =
-                                getTestRule()
-                                        .getActivity()
-                                        .getTabModelSelector()
-                                        .getModel(isIncognito());
+                        mTabModel = mActivity.get().getTabModelSelector().getModel(isIncognito());
                         mTabModel.addObserver(this);
                     });
         }
