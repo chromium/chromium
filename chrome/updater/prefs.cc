@@ -20,6 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/updater_branding.h"
@@ -148,7 +149,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
 
   const auto deadline(base::TimeTicks::Now() + kCreatePrefsWait);
   std::unique_ptr<ScopedLock> lock =
-      ScopedLock::Create(kPrefsAccessMutex, scope, kCreatePrefsWait);
+      CreateScopedLock(kPrefsAccessMutex, scope, kCreatePrefsWait);
   if (!lock) {
     LOG(ERROR) << "Failed to acquire GlobalPrefs";
     return nullptr;

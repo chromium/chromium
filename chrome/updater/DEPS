@@ -4,6 +4,7 @@ include_rules = [
   "+components/crash/core/common",
   "+components/crx_file",
   "+components/named_mojo_ipc_server",
+  "+components/named_system_lock",
   "+components/policy",
   "+components/prefs",
   "+components/services/patch",
