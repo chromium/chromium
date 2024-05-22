@@ -304,7 +304,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         Assert.assertEquals(
                 ChromeColors.getSurfaceColor(
-                        mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation_modern),
+                        mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation),
                 ((ColorDrawable) backgroundCaptor.getValue().getDrawable(0)).getColor());
     }
 

@@ -144,7 +144,7 @@ public class SuggestionLayoutUnitTest {
 
         int endSpace =
                 mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_modern);
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding);
         int inflateSize =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
