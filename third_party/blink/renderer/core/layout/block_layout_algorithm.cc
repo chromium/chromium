@@ -974,7 +974,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   }
 
   if (UNLIKELY(constraint_space.ShouldTextBoxTrimEnd() &&
-               !container_builder_.IsTextBoxTrimApplied())) {
+               !container_builder_.IsBlockEndTrimmed())) {
     // The `text-box-trim: end` should apply to the last inflow child. If that
     // turned out to be empty, it should be applied to the previous child
     // instead.
@@ -2063,7 +2063,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
                (child_space.ShouldTextBoxTrimEnd() &&
                 layout_result->Status() == LayoutResult::kSuccess &&
                 !layout_result->GetPhysicalFragment().GetBreakToken() &&
-                !layout_result->IsTextBoxTrimApplied()))) {
+                !layout_result->IsBlockEndTrimmed()))) {
     // If the child algorithm couldn't apply `text-box-trim: end` to the last
     // fragment, block or line, try to apply to the previous child.
     return LayoutResult::kTextBoxTrimEndDidNotApply;
@@ -2417,11 +2417,13 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       // Update `should_text_box_trim_{start,end}_` if the child `layout_result`
       // has applied `text-box-trim`.
       should_text_box_trim_start_ = false;
-      if (should_text_box_trim_end_ && child_space.ShouldTextBoxTrimEnd() &&
-          (child.IsInline() || child == override_text_box_trim_end_child_)) {
-        should_text_box_trim_end_ = false;
-      }
       container_builder_.SetIsTextBoxTrimApplied();
+    }
+    if (layout_result->IsBlockEndTrimmed() && should_text_box_trim_end_ &&
+        child_space.ShouldTextBoxTrimEnd() &&
+        (child.IsInline() || child == override_text_box_trim_end_child_)) {
+      should_text_box_trim_end_ = false;
+      container_builder_.SetIsBlockEndTrimmed();
     }
     if (should_text_box_trim_end_ && child.IsBlock() &&
         !layout_result->IsSelfCollapsing()) {
@@ -2568,8 +2570,9 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     }
     if (!container_builder_.BfcBlockOffset())
       DCHECK_EQ(logical_block_offset, LayoutUnit());
-  } else if (layout_result.IsBlockEndTrimmed()) {
-    // Trim the space to respect the `text-box-trim` property here.
+  } else if (layout_result.IsBlockEndTrimmed() && child.IsInline()) {
+    // Trim the space to respect the `text-box-trim` property here. Only trim
+    // inline nodes as its containers will adjust themselves accordingly.
     const PhysicalFragment& inline_physical_fragment =
         layout_result.GetPhysicalFragment();
     CHECK(inline_physical_fragment.IsLineBox());

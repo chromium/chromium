@@ -143,6 +143,7 @@ class CORE_EXPORT FragmentBuilder {
 
   bool IsTextBoxTrimApplied() const { return is_text_box_trim_applied_; }
   void SetIsTextBoxTrimApplied() { is_text_box_trim_applied_ = true; }
+  bool IsBlockEndTrimmed() const { return is_block_end_trimmed_; }
   void SetIsBlockEndTrimmed() { is_block_end_trimmed_ = true; }
 
   const UnpositionedListMarker& GetUnpositionedListMarker() const {
