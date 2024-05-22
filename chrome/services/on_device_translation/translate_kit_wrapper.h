@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_WRAPPER_H_
 #define CHROME_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_WRAPPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
