@@ -39,7 +39,7 @@ constexpr std::string_view GetChannelString(Channel channel) {
     case Channel::UNKNOWN:
       return "unknown";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace version_info

@@ -82,7 +82,7 @@ String ExceptionCodeToString(ExceptionCode exception_code) {
     case ESErrorType::kTypeError:
       return "TypeError";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "UnknownError";
   }
 }
