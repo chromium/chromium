@@ -29,9 +29,9 @@ void FakeUIResourceLayerTreeHostImpl::CreateUIResource(
 
   data.resource_id_for_export = resource_provider()->ImportResource(
       viz::TransferableResource::MakeGpu(
-          gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
-          gpu::SyncToken(), bitmap.GetSize(),
-          viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */),
+          gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(),
+          bitmap.GetSize(), viz::SinglePlaneFormat::kRGBA_8888,
+          false /* is_overlay_candidate */),
       base::DoNothing());
 
   data.opaque = bitmap.GetOpaque();

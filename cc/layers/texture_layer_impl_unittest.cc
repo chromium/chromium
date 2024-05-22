@@ -28,7 +28,7 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
   LayerTreeImplTestBase impl;
 
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
       gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                      gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
       layer_bounds, viz::SinglePlaneFormat::kRGBA_8888,
@@ -62,7 +62,7 @@ TEST(TextureLayerImplTest, Occlusion) {
   LayerTreeImplTestBase impl;
 
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
       gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                      gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
       layer_size, viz::SinglePlaneFormat::kRGBA_8888,
