@@ -473,6 +473,13 @@ BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
              "ServiceWorkerStaticRouterStartServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// (crbug.com/340949948): Killswitch for the fix to address the ServiceWorker
+// main and subreosurce loader lifetime issue, which introduces fetch() failure
+// in the sw fetch handler.
+BASE_FEATURE(kServiceWorkerStaticRouterRaceRequestFix,
+             "kServiceWorkerStaticRouterRaceRequestFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The set of ServiceWorker to bypass while making navigation request.
 // They are represented by a comma separated list of HEX encoded SHA256 hash of
 // the ServiceWorker's scripts.
