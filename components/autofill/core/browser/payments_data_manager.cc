@@ -711,7 +711,7 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
 }
 
 std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts() const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!HasMaskedBankAccounts()) {
     return {};
   }
   std::vector<BankAccount> bank_accounts;
@@ -1873,6 +1873,10 @@ void PaymentsDataManager::AddServerCreditCardForTest(
 void PaymentsDataManager::AddCreditCardBenefitForTest(
     CreditCardBenefit benefit) {
   credit_card_benefits_.push_back(std::move(benefit));
+}
+
+bool PaymentsDataManager::IsFacilitatedPaymentsPixUserPrefEnabled() const {
+  return prefs::IsFacilitatedPaymentsPixEnabled(pref_service_);
 }
 
 bool PaymentsDataManager::HasPendingPaymentQueries() const {

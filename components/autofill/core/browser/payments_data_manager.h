@@ -467,6 +467,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // not affect data in the real database.
   void AddCreditCardBenefitForTest(CreditCardBenefit benefit);
 
+  // Returns the value of the FacilitatedPaymentsPix user pref.
+  bool IsFacilitatedPaymentsPixUserPrefEnabled() const;
+
  protected:
   friend class PaymentsDataManagerTestApi;
 

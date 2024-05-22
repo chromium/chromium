@@ -151,6 +151,7 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     return;
   }
   if (result != mojom::PixCodeDetectionResult::kValidPixCodeFound ||
+      !payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled() ||
       !payments_data_manager->HasMaskedBankAccounts() ||
       !base::FeatureList::IsEnabled(kEnablePixPayments)) {
     Reset();

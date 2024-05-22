@@ -299,5 +299,13 @@ void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
+bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return prefs->GetBoolean(kFacilitatedPaymentsPix);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace prefs
 }  // namespace autofill
