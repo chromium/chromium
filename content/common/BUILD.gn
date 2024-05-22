@@ -114,6 +114,8 @@ source_set("common") {
     "input/actions_parser.cc",
     "input/actions_parser.h",
     "input/event_with_latency_info.h",
+    "input/events_helper.cc",
+    "input/events_helper.h",
     "input/fling_controller.cc",
     "input/fling_controller.h",
     "input/fling_scheduler_base.h",

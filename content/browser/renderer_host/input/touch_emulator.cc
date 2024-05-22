@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
-#include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/common/input/events_helper.h"
 #include "content/common/input/render_widget_host_view_input.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/grit/content_resources.h"

@@ -11,7 +11,6 @@
 
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#include "content/browser/renderer_host/ui_events_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -39,6 +38,91 @@ int WebEventButtonToUIEventButtonFlags(blink::WebMouseEvent::Button button) {
   if (button == blink::WebMouseEvent::Button::kForward)
     return ui::EF_FORWARD_MOUSE_BUTTON;
   return 0;
+}
+
+enum class TouchEventCoordinateSystem { SCREEN_COORDINATES, LOCAL_COORDINATES };
+
+ui::EventType WebTouchPointStateToEventType(blink::WebTouchPoint::State state) {
+  switch (state) {
+    case blink::WebTouchPoint::State::kStateReleased:
+      return ui::ET_TOUCH_RELEASED;
+
+    case blink::WebTouchPoint::State::kStatePressed:
+      return ui::ET_TOUCH_PRESSED;
+
+    case blink::WebTouchPoint::State::kStateMoved:
+      return ui::ET_TOUCH_MOVED;
+
+    case blink::WebTouchPoint::State::kStateCancelled:
+      return ui::ET_TOUCH_CANCELLED;
+
+    case blink::WebTouchPoint::State::kStateStationary:
+    case blink::WebTouchPoint::State::kStateUndefined:
+      return ui::ET_UNKNOWN;
+  }
+}
+
+// Creates a list of ui::TouchEvents out of a single WebTouchEvent.
+// A WebTouchEvent can contain information about a number of WebTouchPoints,
+// whereas a ui::TouchEvent contains information about a single touch-point. So
+// it is possible to create more than one ui::TouchEvents out of a single
+// WebTouchEvent. All the ui::TouchEvent in the list will carry the same
+// LatencyInfo the WebTouchEvent carries.
+// |coordinate_system| specifies which fields to use for the co-ordinates,
+// WebTouchPoint.position or WebTouchPoint.screenPosition.  Is's up to the
+// caller to do any co-ordinate system mapping (typically to get them into
+// the Aura EventDispatcher co-ordinate system).
+bool MakeUITouchEventsFromWebTouchEvents(
+    const TouchEventWithLatencyInfo& touch_with_latency,
+    std::vector<std::unique_ptr<ui::TouchEvent>>* list,
+    TouchEventCoordinateSystem coordinate_system) {
+  const blink::WebTouchEvent& touch = touch_with_latency.event;
+  ui::EventType type = ui::ET_UNKNOWN;
+  switch (touch.GetType()) {
+    case blink::WebInputEvent::Type::kTouchStart:
+      type = ui::ET_TOUCH_PRESSED;
+      break;
+    case blink::WebInputEvent::Type::kTouchEnd:
+      type = ui::ET_TOUCH_RELEASED;
+      break;
+    case blink::WebInputEvent::Type::kTouchMove:
+      type = ui::ET_TOUCH_MOVED;
+      break;
+    case blink::WebInputEvent::Type::kTouchCancel:
+      type = ui::ET_TOUCH_CANCELLED;
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION();
+      return false;
+  }
+
+  int flags = ui::WebEventModifiersToEventFlags(touch.GetModifiers());
+  base::TimeTicks timestamp = touch.TimeStamp();
+  for (unsigned i = 0; i < touch.touches_length; ++i) {
+    const blink::WebTouchPoint& point = touch.touches[i];
+    if (WebTouchPointStateToEventType(point.state) != type) {
+      continue;
+    }
+    // ui events start in the co-ordinate space of the EventDispatcher.
+    gfx::PointF location;
+    if (coordinate_system == TouchEventCoordinateSystem::LOCAL_COORDINATES) {
+      location = point.PositionInWidget();
+    } else {
+      location = point.PositionInScreen();
+    }
+    auto uievent = std::make_unique<ui::TouchEvent>(
+        type, gfx::Point(), timestamp,
+        ui::PointerDetails(ui::EventPointerType::kTouch, point.id,
+                           point.radius_x, point.radius_y, point.force,
+                           point.rotation_angle, point.tilt_x, point.tilt_y,
+                           point.tangential_pressure),
+        flags);
+    uievent->set_location_f(location);
+    uievent->set_root_location_f(location);
+    uievent->set_latency(touch_with_latency.latency);
+    list->push_back(std::move(uievent));
+  }
+  return true;
 }
 
 }  // namespace
@@ -71,7 +155,8 @@ void SyntheticGestureTargetAura::DispatchWebTouchEventToPlatform(
   }
   std::vector<std::unique_ptr<ui::TouchEvent>> events;
   bool conversion_success = MakeUITouchEventsFromWebTouchEvents(
-      touch_with_latency, &events, LOCAL_COORDINATES);
+      touch_with_latency, &events,
+      TouchEventCoordinateSystem::LOCAL_COORDINATES);
   DCHECK(conversion_success);
 
   aura::Window* window = GetWindow();

@@ -97,7 +97,7 @@
 
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/common/input/events_helper.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/events/event.h"
 #endif
