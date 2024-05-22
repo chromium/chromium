@@ -25,6 +25,8 @@ import org.chromium.base.Log;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.ui.text.EmptyTextWatcher;
 
+import java.util.Optional;
+
 /** An {@link EditText} that shows autocomplete text at the end. */
 public class AutocompleteEditText extends VerticallyFixedEditText
         implements AutocompleteEditTextModelBase.Delegate {
@@ -133,6 +135,16 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     }
 
     /**
+     * @return Additional text presented in the omnibox, indicating the destination of the default
+     *     match.
+     */
+    @VisibleForTesting
+    public Optional<String> getAdditionalText() {
+        if (mModel == null) return Optional.empty();
+        return mModel.getAdditionalText();
+    }
+
+    /**
      * @return Whether any autocomplete information is specified on the current text.
      */
     @VisibleForTesting
@@ -199,12 +211,18 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      *
      * @param userText user The text entered by the user.
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
+     * @param additionalText This string is displayed adjacent to the omnibox if this match is the
+     *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
     public void setAutocompleteText(
-            @NonNull CharSequence userText, @Nullable CharSequence inlineAutocompleteText) {
+            @NonNull CharSequence userText,
+            @Nullable CharSequence inlineAutocompleteText,
+            Optional<String> additionalText) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
         if (!emptyAutocomplete) mDisableTextScrollingFromAutocomplete = true;
-        if (mModel != null) mModel.setAutocompleteText(userText, inlineAutocompleteText);
+        if (mModel != null) {
+            mModel.setAutocompleteText(userText, inlineAutocompleteText, additionalText);
+        }
     }
 
     /**

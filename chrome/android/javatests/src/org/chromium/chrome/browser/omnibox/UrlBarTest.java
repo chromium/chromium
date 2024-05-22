@@ -45,6 +45,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -89,14 +90,17 @@ public class UrlBarTest {
         public final boolean hasAutocomplete;
         public final String textWithoutAutocomplete;
         public final String textWithAutocomplete;
+        public final String additionalText;
 
         public AutocompleteState(
                 boolean hasAutocomplete,
                 String textWithoutAutocomplete,
-                String textWithAutocomplete) {
+                String textWithAutocomplete,
+                String additionalText) {
             this.hasAutocomplete = hasAutocomplete;
             this.textWithoutAutocomplete = textWithoutAutocomplete;
             this.textWithAutocomplete = textWithAutocomplete;
+            this.additionalText = additionalText;
         }
     }
 
@@ -104,17 +108,22 @@ public class UrlBarTest {
         final AtomicBoolean hasAutocomplete = new AtomicBoolean();
         final AtomicReference<String> textWithoutAutocomplete = new AtomicReference<String>();
         final AtomicReference<String> textWithAutocomplete = new AtomicReference<String>();
+        final AtomicReference<String> additionalText = new AtomicReference<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (action != null) action.run();
+                    hasAutocomplete.set(mUrlBar.hasAutocomplete());
                     textWithoutAutocomplete.set(mUrlBar.getTextWithoutAutocomplete());
                     textWithAutocomplete.set(mUrlBar.getTextWithAutocomplete());
-                    hasAutocomplete.set(mUrlBar.hasAutocomplete());
+                    additionalText.set(mUrlBar.getAdditionalText().orElse(""));
                 });
 
         return new AutocompleteState(
-                hasAutocomplete.get(), textWithoutAutocomplete.get(), textWithAutocomplete.get());
+                hasAutocomplete.get(),
+                textWithoutAutocomplete.get(),
+                textWithAutocomplete.get(),
+                additionalText.get());
     }
 
     private AutocompleteState setSelection(final int selectionStart, final int selectionEnd) {
@@ -165,11 +174,11 @@ public class UrlBarTest {
     public void testAutocompleteUpdatedOnSetText() {
         // Verify that setting a new string will clear the autocomplete.
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
 
         // Replace part of the non-autocomplete text
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(mUrlBar.getText().replace(1, 2, "a"));
@@ -178,7 +187,7 @@ public class UrlBarTest {
 
         // Replace part of the autocomplete text.
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(mUrlBar.getText().replace(8, 10, "no"));
@@ -189,6 +198,7 @@ public class UrlBarTest {
     private void verifySelectionState(
             String text,
             String inlineAutocomplete,
+            String additionalText,
             int selectionStart,
             int selectionEnd,
             boolean expectedHasAutocomplete,
@@ -198,7 +208,7 @@ public class UrlBarTest {
             String expectedRequestedAutocompleteText)
             throws TimeoutException {
         mOmnibox.setText(text);
-        mOmnibox.setAutocompleteText(inlineAutocomplete);
+        mOmnibox.setAutocompleteText(inlineAutocomplete, Optional.of(additionalText));
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
@@ -219,6 +229,7 @@ public class UrlBarTest {
                 state.textWithoutAutocomplete);
         Assert.assertEquals(
                 "Text w/ Autocomplete", expectedTextWithAutocomplete, state.textWithAutocomplete);
+        Assert.assertEquals("Addition Text", additionalText, state.additionalText);
 
         autocompleteHelper.waitForCallback(0);
         Assert.assertEquals(
@@ -235,16 +246,19 @@ public class UrlBarTest {
     @SmallTest
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         // Verify that setting a selection before the autocomplete clears it.
-        verifySelectionState("test", "ing is fun", 1, 1, false, "test", "test", true, "test");
+        verifySelectionState(
+                "test", "ing is fun", "foo.com", 1, 1, false, "test", "test", true, "test");
 
         // Verify that setting a selection range before the autocomplete clears it.
-        verifySelectionState("test", "ing is fun", 0, 4, false, "test", "test", true, "test");
+        verifySelectionState(
+                "test", "ing is fun", "foo.com", 0, 4, false, "test", "test", true, "test");
 
         // Verify that setting a selection range that covers a portion of the non-autocomplete
         // and autocomplete text does not delete the autocomplete text.
         verifySelectionState(
                 "test",
                 "ing is fun",
+                "foo.com",
                 2,
                 5,
                 false,
@@ -258,6 +272,7 @@ public class UrlBarTest {
         verifySelectionState(
                 "test",
                 "ing is fun",
+                "foo.com",
                 0,
                 14,
                 false,
@@ -272,6 +287,7 @@ public class UrlBarTest {
         verifySelectionState(
                 "test",
                 "ing is fun",
+                "foo.com",
                 14,
                 14,
                 false,
@@ -285,6 +301,7 @@ public class UrlBarTest {
         verifySelectionState(
                 "test",
                 "ing is fun",
+                "foo.com",
                 9,
                 9,
                 false,
@@ -298,6 +315,7 @@ public class UrlBarTest {
         verifySelectionState(
                 "test",
                 "ing is fun",
+                "foo.com",
                 8,
                 11,
                 false,
@@ -309,9 +327,9 @@ public class UrlBarTest {
         // Select autocomplete text. As we do not expect the suggestions to be refreshed, we test
         // this slightly differently than the other cases.
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.of("www.bar.com"));
         TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(4, 14));
-        mOmnibox.checkText(equalTo("testing is fun"), null);
+        mOmnibox.checkText(equalTo("testing is fun"), null, equalTo("www.bar.com"));
     }
 
     /**
@@ -417,7 +435,7 @@ public class UrlBarTest {
     @SmallTest
     public void testSuggestionsUpdatedWhenDeletingInlineAutocomplete() throws TimeoutException {
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing");
+        mOmnibox.setAutocompleteText("ing", Optional.empty());
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
@@ -442,9 +460,8 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void testAutocorrectionChangesTriggerCorrectSuggestions() {
-        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         mOmnibox.setComposingText("test", 0, 4);
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
         mOmnibox.checkText(equalTo("test"), equalTo("testing is fun"));
         mOmnibox.commitText("rest", false);
         mOmnibox.checkText(equalTo("rest"), null);
@@ -453,10 +470,9 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void testAutocompletionChangesTriggerCorrectSuggestions() {
-        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         // Type text. Make sure it appears as composing text for the IME.
         mOmnibox.setComposingText("test", 0, 4);
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
         mOmnibox.checkText(equalTo("test"), equalTo("testing is fun"));
         mOmnibox.commitText("y", true);
         mOmnibox.checkText(equalTo("testy"), null);
@@ -467,13 +483,13 @@ public class UrlBarTest {
     public void testAutocompleteCorrectlyPerservedOnBatchMode() {
         // Valid case (cursor at the end of text, single character, matches previous autocomplete).
         mOmnibox.setText("g");
-        mOmnibox.setAutocompleteText("oogle.com");
+        mOmnibox.setAutocompleteText("oogle.com", Optional.empty());
         mOmnibox.typeText("o", false);
         mOmnibox.checkText(equalTo("go"), equalTo("google.com"));
 
         // Invalid case (cursor not at the end of the text).
         mOmnibox.setText("g");
-        mOmnibox.setAutocompleteText("oogle.com");
+        mOmnibox.setAutocompleteText("oogle.com", Optional.empty());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
@@ -487,13 +503,13 @@ public class UrlBarTest {
 
         // Invalid case (next character did not match previous autocomplete)
         mOmnibox.setText("g");
-        mOmnibox.setAutocompleteText("oogle.com");
+        mOmnibox.setAutocompleteText("oogle.com", Optional.empty());
         mOmnibox.typeText("a", false);
         mOmnibox.checkText(equalTo("ga"), null);
 
         // Multiple characters entered instead of 1.
         mOmnibox.setText("g");
-        mOmnibox.setAutocompleteText("oogle.com");
+        mOmnibox.setAutocompleteText("oogle.com", Optional.empty());
         mOmnibox.commitText("oogl", true);
         mOmnibox.checkText(equalTo("googl"), equalTo("google.com"));
     }
@@ -502,7 +518,7 @@ public class UrlBarTest {
     @SmallTest
     public void testAutocompleteSpanClearedOnNonMatchingCommitText() {
         mOmnibox.setText("a");
-        mOmnibox.setAutocompleteText("mazon.com");
+        mOmnibox.setAutocompleteText("mazon.com", Optional.empty());
         mOmnibox.checkText(equalTo("a"), equalTo("amazon.com"));
 
         mOmnibox.typeText("l", false);
@@ -513,7 +529,7 @@ public class UrlBarTest {
     @SmallTest
     public void testAutocompleteClearedOnComposition() {
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is fun");
+        mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
 
         mOmnibox.setComposingText("ing compose", 4, 4);
         mOmnibox.checkText(equalTo("testing compose"), null);
@@ -524,27 +540,27 @@ public class UrlBarTest {
     public void testDelayedCompositionCorrectedWithAutocomplete() {
         // Test with a single IME autocomplete
         mOmnibox.typeText("chrome://f", false);
-        mOmnibox.setAutocompleteText("lags");
+        mOmnibox.setAutocompleteText("lags", Optional.empty());
         mOmnibox.setComposingText("l", 13, 14);
         mOmnibox.checkText(equalTo("chrome://fl"), equalTo("chrome://flags"));
 
         // Test with > 1 characters in composition.
         mOmnibox.setText("chrome://fl");
-        mOmnibox.setAutocompleteText("ags");
+        mOmnibox.setAutocompleteText("ags", Optional.empty());
         mOmnibox.checkText(equalTo("chrome://fl"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("fl", 12, 14);
         mOmnibox.checkText(equalTo("chrome://flfl"), null);
 
         // Test with non-matching composition.  Should just append to the URL text.
         mOmnibox.setText("chrome://f");
-        mOmnibox.setAutocompleteText("lags");
+        mOmnibox.setAutocompleteText("lags", Optional.empty());
         mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("g", 13, 14);
         mOmnibox.checkText(equalTo("chrome://fg"), null);
 
         // Test with composition text that matches the entire text w/o autocomplete.
         mOmnibox.setText("chrome://f");
-        mOmnibox.setAutocompleteText("lags");
+        mOmnibox.setAutocompleteText("lags", Optional.empty());
         mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("chrome://f", 13, 14);
         mOmnibox.checkText(equalTo("chrome://fchrome://f"), null);
@@ -552,7 +568,7 @@ public class UrlBarTest {
         // Test with composition text longer than the URL text.
         // Shouldn't crash and should just append text.
         mOmnibox.setText("chrome://f");
-        mOmnibox.setAutocompleteText("lags");
+        mOmnibox.setAutocompleteText("lags", Optional.empty());
         mOmnibox.checkText(equalTo("chrome://f"), equalTo("chrome://flags"));
         mOmnibox.setComposingText("blahblahblah", 13, 14);
         mOmnibox.checkText(equalTo("chrome://fblahblahblah"), null);
@@ -569,7 +585,7 @@ public class UrlBarTest {
         Mockito.verify(listener).onTextChanged("onomatop");
 
         // Setting autocomplete does not send a change update.
-        mOmnibox.setAutocompleteText("oeia");
+        mOmnibox.setAutocompleteText("oeia", Optional.empty());
 
         mOmnibox.setText("");
         Mockito.verify(listener).onTextChanged("");
@@ -579,30 +595,61 @@ public class UrlBarTest {
     @SmallTest
     public void testSetAutocompleteText_ShrinkingText() {
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing is awesome");
-        mOmnibox.setAutocompleteText("ing is hard");
-        mOmnibox.setAutocompleteText("ingz");
-        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), 4, 8);
+        mOmnibox.setAutocompleteText("ing is awesome", Optional.empty());
+        mOmnibox.setAutocompleteText("ing is hard", Optional.empty());
+        mOmnibox.setAutocompleteText("ingz", Optional.empty());
+        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), null, 4, 8);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetAutocompleteTextWithAdditionalText_ShrinkingText() {
+        mOmnibox.setText("test");
+        mOmnibox.setAutocompleteText("ing is awesome", Optional.of("www.foobar.com"));
+        mOmnibox.setAutocompleteText("ing is hard", Optional.of("www.bar.com"));
+        mOmnibox.setAutocompleteText("ingz", Optional.of("www.foo.com"));
+        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), equalTo("www.foo.com"), 4, 8);
     }
 
     @Test
     @SmallTest
     public void testSetAutocompleteText_GrowingText() {
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ingz");
-        mOmnibox.setAutocompleteText("ing is hard");
-        mOmnibox.setAutocompleteText("ing is awesome");
-        mOmnibox.checkText(equalTo("test"), equalTo("testing is awesome"), 4, 18);
+        mOmnibox.setAutocompleteText("ingz", Optional.empty());
+        mOmnibox.setAutocompleteText("ing is hard", Optional.empty());
+        mOmnibox.setAutocompleteText("ing is awesome", Optional.empty());
+        mOmnibox.checkText(equalTo("test"), equalTo("testing is awesome"), null, 4, 18);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetAutocompleteTextWithAdditionalText_GrowingText() {
+        mOmnibox.setText("test");
+        mOmnibox.setAutocompleteText("ingz", Optional.of("www.foo.com"));
+        mOmnibox.setAutocompleteText("ing is hard", Optional.of("www.bar.com"));
+        mOmnibox.setAutocompleteText("ing is awesome", Optional.of("www.foobar.com"));
+        mOmnibox.checkText(
+                equalTo("test"), equalTo("testing is awesome"), equalTo("www.foobar.com"), 4, 18);
     }
 
     @Test
     @SmallTest
     public void testSetAutocompleteText_DuplicateText() {
         mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ingz");
-        mOmnibox.setAutocompleteText("ingz");
-        mOmnibox.setAutocompleteText("ingz");
-        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), 4, 8);
+        mOmnibox.setAutocompleteText("ingz", Optional.empty());
+        mOmnibox.setAutocompleteText("ingz", Optional.empty());
+        mOmnibox.setAutocompleteText("ingz", Optional.empty());
+        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), null, 4, 8);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetAutocompleteTextWithAdditionalText_DuplicateText() {
+        mOmnibox.setText("test");
+        mOmnibox.setAutocompleteText("ingz", Optional.of("www.foo.com"));
+        mOmnibox.setAutocompleteText("ingz", Optional.of("www.foo.com"));
+        mOmnibox.setAutocompleteText("ingz", Optional.of("www.foo.com"));
+        mOmnibox.checkText(equalTo("test"), equalTo("testingz"), equalTo("www.foo.com"), 4, 8);
     }
 
     @Test

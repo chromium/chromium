@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -20,6 +21,8 @@ import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Optional;
 
 /** Handles translating the UrlBar model data to the view state. */
 class UrlBarViewBinder {
@@ -38,7 +41,12 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.AUTOCOMPLETE_TEXT.equals(propertyKey)) {
             AutocompleteText autocomplete = model.get(UrlBarProperties.AUTOCOMPLETE_TEXT);
             if (view.shouldAutocomplete()) {
-                view.setAutocompleteText(autocomplete.userText, autocomplete.autocompleteText);
+                view.setAutocompleteText(
+                        autocomplete.userText,
+                        autocomplete.autocompleteText,
+                        TextUtils.isEmpty(autocomplete.additionalText)
+                                ? Optional.empty()
+                                : Optional.of(autocomplete.additionalText));
             }
         } else if (UrlBarProperties.DELEGATE.equals(propertyKey)) {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));

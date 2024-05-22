@@ -22,6 +22,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputContentInfo;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -366,6 +367,11 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     }
 
     @Override
+    public Optional<String> getAdditionalText() {
+        return mCurrentState.getAdditionalText();
+    }
+
+    @Override
     public void setIgnoreTextChangeFromAutocomplete(boolean ignore) {
         if (DEBUG) Log.i(TAG, "setIgnoreText: " + ignore);
         mIgnoreTextChangeFromAutocomplete = ignore;
@@ -373,26 +379,31 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
     @Override
     public void setAutocompleteText(
-            @NonNull CharSequence userText, @Nullable CharSequence inlineAutocompleteText) {
+            @NonNull CharSequence userText,
+            @Nullable CharSequence inlineAutocompleteText,
+            Optional<String> additionalText) {
         // Note: this is invoked when the Autocomplete text is supplied by the Autocomplete
         // subsystem. These changes should be ignored for Autocomplete, specifically should not
         // be sent back to the Autocomplete subsystem to trigger suggestions fetch.
         setIgnoreTextChangeFromAutocomplete(true);
         setAutocompleteTextInternal(
                 userText.toString(),
-                inlineAutocompleteText != null ? inlineAutocompleteText.toString() : null);
+                inlineAutocompleteText != null ? inlineAutocompleteText.toString() : null,
+                additionalText);
         setIgnoreTextChangeFromAutocomplete(false);
     }
 
     private void setAutocompleteTextInternal(
-            @NonNull String userText, @Nullable String autocompleteText) {
+            @NonNull String userText,
+            @Nullable String autocompleteText,
+            Optional<String> additionalText) {
         if (DEBUG) Log.i(TAG, "setAutocompleteText: %s[%s]", userText, autocompleteText);
         mPreviouslySetState.set(
                 userText,
                 TextUtils.isEmpty(autocompleteText)
                         ? Optional.empty()
                         : Optional.of(autocompleteText),
-                Optional.empty(),
+                additionalText,
                 userText.length(),
                 userText.length());
         // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
@@ -514,6 +525,16 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                         state.getAutocompleteText().map(t -> t.length()).orElse(0),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 editable.append(spanString);
+            }
+
+            if (state.getAdditionalText().isPresent()) {
+                String additionalText = " - " + state.getAdditionalText().get();
+                SpannableString additionalTextSpanString = new SpannableString(additionalText);
+                // TODO(b/341744198) : Update the color for the additional text.
+                final @ColorInt int gray = 0;
+                additionalTextSpanString.setSpan(
+                        gray, 0, additionalText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                editable.append(additionalTextSpanString);
             }
 
             // Keep the original selection before adding spannable string.
