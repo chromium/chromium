@@ -10,6 +10,7 @@ using ManualFillAddressiOSTest = PlatformTest;
 
 // Tests that a credential is correctly created.
 TEST_F(ManualFillAddressiOSTest, Creation) {
+  NSString* GUID = @"1234-5678-abcd";
   NSString* firstName = @"First";
   NSString* middleNameOrInitial = @"M";
   NSString* lastName = @"Last";
@@ -23,19 +24,21 @@ TEST_F(ManualFillAddressiOSTest, Creation) {
   NSString* phoneNumber = @"123-456-789";
   NSString* emailAddress = @"john@doe";
   ManualFillAddress* address =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_TRUE(address);
+  EXPECT_TRUE([GUID isEqualToString:address.GUID]);
   EXPECT_TRUE([firstName isEqualToString:address.firstName]);
   EXPECT_TRUE(
       [middleNameOrInitial isEqualToString:address.middleNameOrInitial]);
@@ -53,6 +56,7 @@ TEST_F(ManualFillAddressiOSTest, Creation) {
 
 // Test equality between addresses (lexicographically).
 TEST_F(ManualFillAddressiOSTest, Equality) {
+  NSString* GUID = @"1234-5678-abcd";
   NSString* firstName = @"First";
   NSString* middleNameOrInitial = @"M";
   NSString* lastName = @"Last";
@@ -66,211 +70,241 @@ TEST_F(ManualFillAddressiOSTest, Equality) {
   NSString* phoneNumber = @"123-456-789";
   NSString* emailAddress = @"john@doe";
   ManualFillAddress* address =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
 
   ManualFillAddress* equalAddress =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_TRUE([address isEqual:equalAddress]);
 
+  ManualFillAddress* differentAddressGUID =
+      [[ManualFillAddress alloc] initWithGUID:@"1234-5678-wxyz"
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
+  EXPECT_FALSE([address isEqual:differentAddressGUID]);
+
   ManualFillAddress* differentAddressFirstName =
-      [[ManualFillAddress alloc] initWithFirstName:@"Bilbo"
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:@"Bilbo"
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressFirstName]);
 
   ManualFillAddress* differentAddressMiddleNameOrInitial =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:@"R"
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:@"R"
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressMiddleNameOrInitial]);
 
   ManualFillAddress* differentAddressLastName =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:@"Hobbit"
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:@"Hobbit"
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressLastName]);
 
   ManualFillAddress* differentAddressCompany =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:@"Tokien"
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:@"Tokien"
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressCompany]);
 
   ManualFillAddress* differentAddressLine1 =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:@"A House"
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:@"A House"
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressLine1]);
 
   ManualFillAddress* differentAddressLine2 =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:@""
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:@""
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressLine2]);
 
   ManualFillAddress* differentAddressZip =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:@"1937"
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:@"1937"
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressZip]);
 
   ManualFillAddress* differentAddressCity =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:@"Shire"
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:@"Shire"
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressCity]);
 
   ManualFillAddress* differentAddressState =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:@"Eriador"
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:@"Eriador"
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressState]);
 
   ManualFillAddress* differentAddressCountry =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:@"Arnor"
-                                       phoneNumber:phoneNumber
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:@"Arnor"
+                                  phoneNumber:phoneNumber
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentAddressCountry]);
 
   ManualFillAddress* differentPhoneNumber =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:@"999-999-999"
-                                      emailAddress:emailAddress];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:@"999-999-999"
+                                 emailAddress:emailAddress];
   EXPECT_FALSE([address isEqual:differentPhoneNumber]);
 
   ManualFillAddress* differentEmailAddress =
-      [[ManualFillAddress alloc] initWithFirstName:firstName
-                               middleNameOrInitial:middleNameOrInitial
-                                          lastName:lastName
-                                           company:company
-                                             line1:line1
-                                             line2:line2
-                                               zip:zip
-                                              city:city
-                                             state:state
-                                           country:country
-                                       phoneNumber:phoneNumber
-                                      emailAddress:@"jane@doe"];
+      [[ManualFillAddress alloc] initWithGUID:GUID
+                                    firstName:firstName
+                          middleNameOrInitial:middleNameOrInitial
+                                     lastName:lastName
+                                      company:company
+                                        line1:line1
+                                        line2:line2
+                                          zip:zip
+                                         city:city
+                                        state:state
+                                      country:country
+                                  phoneNumber:phoneNumber
+                                 emailAddress:@"jane@doe"];
   EXPECT_FALSE([address isEqual:differentEmailAddress]);
 }

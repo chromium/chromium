@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
@@ -31,8 +33,11 @@ using chrome_test_util::TapWebElementWithId;
 
 namespace {
 
-constexpr char kFormElementName[] = "name";
+constexpr char kFormElementAddress[] = "address";
 constexpr char kFormElementCity[] = "city";
+constexpr char kFormElementName[] = "name";
+constexpr char kFormElementState[] = "state";
+constexpr char kFormElementZip[] = "zip";
 
 constexpr char kFormHTMLFile[] = "/profile_form.html";
 
@@ -396,11 +401,60 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
+  // Tap the "Autofill Form" button.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
 
-  // TODO(crbug.com/326413487): Perform tap on the button and assert that the
-  // form was filled.
+  // Verify that the page is filled properly.
+  [self verifyAddressInfoHasBeenFilled:autofill::test::GetFullProfile()];
+}
+
+#pragma mark - Private
+
+// Verify that the address info has been filled.
+- (void)verifyAddressInfoHasBeenFilled:(autofill::AutofillProfile)profile {
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  // Full name.
+  NSString* name =
+      base::SysUTF16ToNSString(profile.GetInfo(autofill::NAME_FULL, locale));
+  NSString* nameCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementName, name];
+
+  // Address.
+  NSString* address = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_LINE1, locale));
+  NSString* addressCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementAddress, address];
+
+  // City.
+  NSString* city = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_CITY, locale));
+  NSString* cityCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementCity, city];
+
+  // State.
+  NSString* state = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_STATE, locale));
+  NSString* stateCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementState, state];
+
+  // Zip code.
+  NSString* zip = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, locale));
+  NSString* zipCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementZip, zip];
+
+  NSString* condition =
+      [NSString stringWithFormat:@"%@ && %@ && %@ && %@ && %@", nameCondition,
+                                 addressCondition, cityCondition,
+                                 stateCondition, zipCondition];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 @end

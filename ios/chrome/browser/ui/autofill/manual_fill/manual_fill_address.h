@@ -10,6 +10,9 @@
 // This represents an address to use with manual fill.
 @interface ManualFillAddress : NSObject
 
+// The address' GUID.
+@property(nonatomic, readonly) NSString* GUID;
+
 // The addressee's first name.
 @property(nonatomic, readonly) NSString* firstName;
 
@@ -47,19 +50,19 @@
 @property(nonatomic, readonly) NSString* emailAddress;
 
 // Default init.
-- (instancetype)initWithFirstName:(NSString*)firstName
-              middleNameOrInitial:(NSString*)middleNameOrInitial
-                         lastName:(NSString*)lastName
-                          company:(NSString*)company
-                            line1:(NSString*)line1
-                            line2:(NSString*)line2
-                              zip:(NSString*)zip
-                             city:(NSString*)city
-                            state:(NSString*)state
-                          country:(NSString*)country
-                      phoneNumber:(NSString*)phoneNumber
-                     emailAddress:(NSString*)emailAddress
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGUID:(NSString*)GUID
+                   firstName:(NSString*)firstName
+         middleNameOrInitial:(NSString*)middleNameOrInitial
+                    lastName:(NSString*)lastName
+                     company:(NSString*)company
+                       line1:(NSString*)line1
+                       line2:(NSString*)line2
+                         zip:(NSString*)zip
+                        city:(NSString*)city
+                       state:(NSString*)state
+                     country:(NSString*)country
+                 phoneNumber:(NSString*)phoneNumber
+                emailAddress:(NSString*)emailAddress NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Please use `initWithFirstName:middleNameOrInitial:lastName:
 // line1:line2:zip:city:state:country:`.

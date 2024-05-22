@@ -587,8 +587,8 @@ using base::SysNSStringToUTF8;
   }
 }
 
-// Called the "Autofill Form" button is tapped. Fills the current form with the
-// card's data.
+// Called when the "Autofill Form" button is tapped. Fills the current form with
+// the card's data.
 - (void)onAutofillFormButtonTapped {
   autofill::SuggestionType popupItemId =
       autofill::VirtualCardFeatureEnabled() &&

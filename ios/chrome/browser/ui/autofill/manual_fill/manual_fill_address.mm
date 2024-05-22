@@ -6,20 +6,22 @@
 
 @implementation ManualFillAddress
 
-- (instancetype)initWithFirstName:(NSString*)firstName
-              middleNameOrInitial:(NSString*)middleNameOrInitial
-                         lastName:(NSString*)lastName
-                          company:(NSString*)company
-                            line1:(NSString*)line1
-                            line2:(NSString*)line2
-                              zip:(NSString*)zip
-                             city:(NSString*)city
-                            state:(NSString*)state
-                          country:(NSString*)country
-                      phoneNumber:(NSString*)phoneNumber
-                     emailAddress:(NSString*)emailAddress {
+- (instancetype)initWithGUID:(NSString*)GUID
+                   firstName:(NSString*)firstName
+         middleNameOrInitial:(NSString*)middleNameOrInitial
+                    lastName:(NSString*)lastName
+                     company:(NSString*)company
+                       line1:(NSString*)line1
+                       line2:(NSString*)line2
+                         zip:(NSString*)zip
+                        city:(NSString*)city
+                       state:(NSString*)state
+                     country:(NSString*)country
+                 phoneNumber:(NSString*)phoneNumber
+                emailAddress:(NSString*)emailAddress {
   self = [super init];
   if (self) {
+    _GUID = GUID;
     _firstName = [firstName copy];
     _middleNameOrInitial = [middleNameOrInitial copy];
     _lastName = [lastName copy];
@@ -47,6 +49,9 @@
     return NO;
   }
   ManualFillAddress* otherObject = (ManualFillAddress*)object;
+  if (![otherObject.GUID isEqualToString:self.GUID]) {
+    return NO;
+  }
   if (![otherObject.firstName isEqualToString:self.firstName]) {
     return NO;
   }
@@ -88,23 +93,25 @@
 }
 
 - (NSUInteger)hash {
-  return [self.firstName hash] ^ [self.middleNameOrInitial hash] ^
-         [self.lastName hash] ^ [self.company hash] ^ [self.line1 hash] ^
-         [self.line2 hash] ^ [self.zip hash] ^ [self.city hash] ^
-         [self.state hash] ^ [self.country hash] ^ [self.phoneNumber hash] ^
+  return [self.GUID hash] ^ [self.firstName hash] ^
+         [self.middleNameOrInitial hash] ^ [self.lastName hash] ^
+         [self.company hash] ^ [self.line1 hash] ^ [self.line2 hash] ^
+         [self.zip hash] ^ [self.city hash] ^ [self.state hash] ^
+         [self.country hash] ^ [self.phoneNumber hash] ^
          [self.emailAddress hash];
 }
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@ (%p): firstName: %@, middleNameOrInitial: %@, "
-                       @"lastName: %@, company: %@, line1: %@, "
-                       @"line2: %@, zip: %@, city: %@, state: %@, country: %@, "
-                       @"phoneNumber: %@, emailAddress: %@>",
-                       NSStringFromClass([self class]), self, self.firstName,
-                       self.middleNameOrInitial, self.lastName, self.company,
-                       self.line1, self.line2, self.zip, self.city, self.state,
-                       self.country, self.phoneNumber, self.emailAddress];
+      stringWithFormat:
+          @"<%@ (%p): GUID: %@, firstName: %@, middleNameOrInitial: %@, "
+          @"lastName: %@, company: %@, line1: %@, "
+          @"line2: %@, zip: %@, city: %@, state: %@, country: %@, "
+          @"phoneNumber: %@, emailAddress: %@>",
+          NSStringFromClass([self class]), self, self.GUID, self.firstName,
+          self.middleNameOrInitial, self.lastName, self.company, self.line1,
+          self.line2, self.zip, self.city, self.state, self.country,
+          self.phoneNumber, self.emailAddress];
 }
 
 @end
