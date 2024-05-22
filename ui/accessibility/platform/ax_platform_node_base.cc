@@ -1550,9 +1550,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("datetime", datetime, attributes);
   }
 
-  // Expose id attribute.
   std::string id;
-  if (GetHtmlAttribute("id", &id)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
     AddAttributeToList("id", id, attributes);
   }
 

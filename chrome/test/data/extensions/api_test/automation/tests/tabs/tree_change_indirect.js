@@ -6,9 +6,9 @@
 // tree are updated when the related content changes.
 
 // TODO(aleventhal) why isn't this working?
-//function findById(id) {
-  //return rootNode.find({ htmlAttributes: { id }});
-//}
+// function findById(id) {
+// TODO(accessibility): Verify that the following line really works.
+// return rootNode.find({ htmlId: id });
 
 var allTests = [
   function testUpdateRelatedNamesAndDescriptions() {

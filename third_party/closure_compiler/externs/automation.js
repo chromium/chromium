@@ -1329,6 +1329,13 @@ chrome.automation.AutomationNode.prototype.imageAnnotation;
 chrome.automation.AutomationNode.prototype.value;
 
 /**
+ * The HTML id for this element, if this node is an HTML element.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-htmlId
+ */
+chrome.automation.AutomationNode.prototype.htmlId;
+
+/**
  * The HTML tag for this element, if this node is an HTML element.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-htmlTag

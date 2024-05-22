@@ -858,7 +858,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
                                               node->GetStateDescription()));
 
   std::u16string element_id;
-  if (node->GetHtmlAttribute("id", &element_id)) {
+  if (node->GetString16Attribute(ax::mojom::StringAttribute::kHtmlId,
+                                 &element_id)) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoViewIdResourceName(
         env, obj, info,
         base::android::ConvertUTF16ToJavaString(env, element_id));

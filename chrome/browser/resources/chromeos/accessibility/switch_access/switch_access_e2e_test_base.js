@@ -55,7 +55,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @return {!AutomationNode}
    */
   findNodeById(id) {
-    const predicate = node => node.htmlAttributes.id === id;
+    const predicate = node => node.htmlId === id;
     const nodeString = 'node with id "' + id + '"';
     return this.findNodeMatchingPredicate(predicate, nodeString);
   }

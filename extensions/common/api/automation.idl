@@ -946,6 +946,9 @@ enum PositionType {
     // an <code>&lt;input&gt; element.
     DOMString? value;
 
+    // The HTML id for this element, if this node is an HTML element.
+    DOMString? htmlId;
+
     // The HTML tag for this element, if this node is an HTML element.
     DOMString? htmlTag;
 
