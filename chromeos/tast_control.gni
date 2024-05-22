@@ -143,9 +143,6 @@ tast_disabled_tests_from_lacros_all = [
   # https://crbug.com/1376638
   "lacros.AudioRecord",
 
-  # https://crbug.com/1440735
-  "mlservice.WebHandwritingRecognition.lacros",
-
   # https://crbug.com/1446233
   "arc.IntentForward.lacros_vm",
 
