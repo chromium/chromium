@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
@@ -26,6 +27,17 @@ class SigninMetricsService : public KeyedService,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // This access point will be used to resolve the source of the reauth when
+  // resolving the Sign in Pending state. It will only be set if the
+  // `account_id` was in Signin Pending state, or if the state update has not
+  // yet reached `SigninMetricsService` through the `signin::IdentityManager`
+  // notifications. This class uses a cached value of the Signin Paused state.
+  // TODO(b/341260149): This is a temporary solution, to be revisited with a
+  // cleaner architecture.
+  void SetReauthAccessPointIfInSigninPending(
+      CoreAccountId account_id,
+      signin_metrics::AccessPoint access_point);
+
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -41,6 +53,9 @@ class SigninMetricsService : public KeyedService,
  private:
   raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
+
+  signin_metrics::AccessPoint last_reauth_access_point_ =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

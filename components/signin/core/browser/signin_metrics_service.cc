@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -145,6 +146,15 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
           SigninPendingResolution::kReauth,
           pref_service_->GetTime(kSigninPendingStartTimePref));
       pref_service_->ClearPref(kSigninPendingStartTimePref);
+
+      if (last_reauth_access_point_ !=
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+        base::UmaHistogramEnumeration(
+            "Signin.SigninPending.ResolutionSource", last_reauth_access_point_,
+            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        last_reauth_access_point_ =
+            signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      }
     }
   }
 }
@@ -171,5 +181,16 @@ void SigninMetricsService::OnAccountsInCookieUpdated(
   if (!pref_service_->HasPrefPath(kFirstAccountWebSigninStartTimePref)) {
     pref_service_->SetTime(kFirstAccountWebSigninStartTimePref,
                            base::Time::Now());
+  }
+}
+
+void SigninMetricsService::SetReauthAccessPointIfInSigninPending(
+    CoreAccountId account_id,
+    signin_metrics::AccessPoint access_point) {
+  if (pref_service_->HasPrefPath(kSigninPendingStartTimePref) &&
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+          account_id &&
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    last_reauth_access_point_ = access_point;
   }
 }

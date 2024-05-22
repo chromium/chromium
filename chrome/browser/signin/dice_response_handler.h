@@ -38,6 +38,7 @@ class GaiaAuthFetcher;
 class GoogleServiceAuthError;
 class SigninClient;
 class Profile;
+class SigninMetricsService;
 
 namespace signin {
 class IdentityManager;
@@ -106,6 +107,7 @@ class DiceResponseHandler : public KeyedService {
       signin::IdentityManager* identity_manager,
       AccountReconcilor* account_reconcilor,
       AboutSigninInternals* about_signin_internals,
+      SigninMetricsService* signin_metrics_service,
       RegistrationTokenHelperFactory registration_token_helper_factory);
 
   DiceResponseHandler(const DiceResponseHandler&) = delete;
@@ -240,6 +242,7 @@ class DiceResponseHandler : public KeyedService {
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<AccountReconcilor> account_reconcilor_;
   const raw_ptr<AboutSigninInternals> about_signin_internals_;
+  const raw_ptr<SigninMetricsService> signin_metrics_service_;
   std::vector<std::unique_ptr<DiceTokenFetcher>> token_fetchers_;
   // Lock the account reconcilor for kLockAccountReconcilorTimeoutHours
   // when there was OAuth outage in Dice.
