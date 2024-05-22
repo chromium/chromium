@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_COMMON_LOGGING_H_
 
 #include <sstream>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/logging.h"
@@ -23,8 +24,9 @@ namespace quick_pair {
 //   QP_LOG(INFO) << "Waiting for " << x << " pending requests.";
 //   QP_LOG(ERROR) << "Request failed: " << error_string;
 #define QP_LOG(severity)                                         \
-  ash::quick_pair::ScopedLogMessage(__FILE__, __LINE__,          \
-                                    logging::LOGGING_##severity) \
+  ash::quick_pair::ScopedLogMessage(                             \
+      std::string_view(__FILE__, std::size(__FILE__)), __LINE__, \
+      logging::LOGGING_##severity)                               \
       .stream()
 
 // Disables all logging while in scope. Intended to be called only from test
@@ -42,7 +44,9 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedDisableLoggingForTesting {
 // directly.
 class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedLogMessage {
  public:
-  ScopedLogMessage(const char* file, int line, logging::LogSeverity severity);
+  ScopedLogMessage(const std::string_view file,
+                   int line,
+                   logging::LogSeverity severity);
   ScopedLogMessage(const ScopedLogMessage&) = delete;
   ScopedLogMessage& operator=(const ScopedLogMessage&) = delete;
   ~ScopedLogMessage();
@@ -50,7 +54,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedLogMessage {
   std::ostream& stream() { return stream_; }
 
  private:
-  const char* file_;
+  const std::string_view file_;
   int line_;
   logging::LogSeverity severity_;
   std::ostringstream stream_;

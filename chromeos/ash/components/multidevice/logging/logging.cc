@@ -22,7 +22,7 @@ ScopedDisableLoggingForTesting::~ScopedDisableLoggingForTesting() {
   g_logging_enabled = true;
 }
 
-ScopedLogMessage::ScopedLogMessage(const char* file,
+ScopedLogMessage::ScopedLogMessage(const std::string_view file,
                                    int line,
                                    logging::LogSeverity severity)
     : file_(file), line_(line), severity_(severity) {}
@@ -35,18 +35,18 @@ ScopedLogMessage::~ScopedLogMessage() {
   auto* log_buffer = LogBuffer::GetInstance();
   CHECK(log_buffer);
   log_buffer->AddLogMessage(LogBuffer::LogMessage(
-      string_from_stream, base::Time::Now(), file_, line_, severity_));
+      string_from_stream, base::Time::Now(), file_.data(), line_, severity_));
 
   // Don't emit VERBOSE-level logging to the standard logging system unless
   // verbose logging is enabled for the source file.
   if (severity_ <= logging::LOGGING_VERBOSE &&
-      logging::GetVlogLevelHelper(file_, strlen(file_) + 1) <= 0) {
+      logging::GetVlogLevelHelper(file_.data(), file_.size()) <= 0) {
     return;
   }
 
   // The destructor of |log_message| also creates a log for the standard logging
   // system.
-  logging::LogMessage log_message(file_, line_, severity_);
+  logging::LogMessage log_message(file_.data(), line_, severity_);
   log_message.stream() << string_from_stream;
 }
 

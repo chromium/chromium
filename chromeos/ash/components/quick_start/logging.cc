@@ -18,7 +18,7 @@ constexpr char kQuickStartVerboseLoggingSwitch[] =
 
 }  // namespace
 
-ScopedLogMessage::ScopedLogMessage(const char* file,
+ScopedLogMessage::ScopedLogMessage(const std::string_view file,
                                    int line,
                                    logging::LogSeverity severity)
     : file_(file), line_(line), severity_(severity) {}
@@ -26,7 +26,7 @@ ScopedLogMessage::ScopedLogMessage(const char* file,
 ScopedLogMessage::~ScopedLogMessage() {
   if (ShouldEmitToStandardLog()) {
     // Create a log for the standard logging system.
-    logging::LogMessage log_message(file_, line_, severity_);
+    logging::LogMessage log_message(file_.data(), line_, severity_);
     log_message.stream() << stream_.str();
   }
 }
@@ -37,7 +37,7 @@ bool ScopedLogMessage::ShouldEmitToStandardLog() const {
   // - The Vlog Level for |file_| is at least 1
   // - The --quick-start-verbose-logging switch is enabled
   return severity_ > logging::LOGGING_VERBOSE ||
-         logging::GetVlogLevelHelper(file_, strlen(file_) + 1) > 0 ||
+         logging::GetVlogLevelHelper(file_.data(), file_.size()) > 0 ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              kQuickStartVerboseLoggingSwitch);
 }
