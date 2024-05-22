@@ -89,7 +89,7 @@ class AngleVulkanImageBackingFactoryTest
 // Verify creation and Skia access works as expected.
 TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -160,7 +160,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
 // Verify that pixel upload works as expected.
 TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   auto backing = backing_factory_->CreateSharedImage(

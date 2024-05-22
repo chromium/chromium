@@ -341,7 +341,7 @@ TEST_F(GLTextureImageBackingFactoryTest,
 // with memory tracker.
 TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -455,7 +455,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 #endif  // BUILDFLAG(IS_IOS)
 
   EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -590,7 +590,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
     GTEST_SKIP();
   }
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -694,7 +694,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
     GTEST_SKIP();
   }
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -736,7 +736,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
     GTEST_SKIP();
   }
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;

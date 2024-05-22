@@ -39,7 +39,7 @@ std::unique_ptr<TestImageBacking> AllocateTextureAndCreateSharedImage(
 
 TEST_F(GLES2DecoderPassthroughTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   MemoryTypeTracker memory_tracker(nullptr);
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto backing = AllocateTextureAndCreateSharedImage(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
@@ -103,7 +103,7 @@ TEST_F(GLES2DecoderPassthroughTest,
        CreateAndTexStorage2DSharedImageCHROMIUMPreexistingTexture) {
   MemoryTypeTracker memory_tracker(nullptr);
   // Create a texture with kNewClientId.
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
@@ -139,7 +139,7 @@ TEST_F(GLES2DecoderPassthroughTest, BeginEndSharedImageAccessCRHOMIUM) {
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_images;
   for (int i = 0; i < 40; i++) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
+    Mailbox mailbox = Mailbox::Generate();
     auto format = viz::SinglePlaneFormat::kRGBA_8888;
     std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
         GetSharedImageManager()->Register(
@@ -207,7 +207,7 @@ TEST_F(GLES2DecoderPassthroughTest,
        BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   // Create a shared image.
   MemoryTypeTracker memory_tracker(nullptr);
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto shared_image_backing = AllocateTextureAndCreateSharedImage(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
@@ -249,7 +249,7 @@ TEST_F(GLES2DecoderPassthroughTest,
        BeginSharedImageAccessDirectCHROMIUMClearUncleared) {
   // Create an uncleared shared image.
   MemoryTypeTracker memory_tracker(nullptr);
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(

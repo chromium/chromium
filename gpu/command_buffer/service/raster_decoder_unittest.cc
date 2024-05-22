@@ -292,7 +292,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
                              GLsizei width,
                              GLsizei height,
                              bool cleared) {
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
     gfx::Size size(width, height);
     auto color_space = gfx::ColorSpace::CreateSRGB();
 

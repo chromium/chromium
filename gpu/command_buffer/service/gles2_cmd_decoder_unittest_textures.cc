@@ -2915,7 +2915,7 @@ TEST_P(GLES2DecoderTest, TextureUsageAngleExtNotEnabledByDefault) {
 
 TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
@@ -2978,7 +2978,7 @@ TEST_P(GLES2DecoderTest,
        CreateAndTexStorage2DSharedImageCHROMIUMPreexistingTexture) {
   // Try to create a mailbox with kNewClientId.
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
@@ -3003,7 +3003,7 @@ TEST_P(GLES2DecoderTest,
 
 TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCRHOMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
@@ -3065,7 +3065,7 @@ TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMNotSharedImage) {
 TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   // Create a shared image.
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto shared_image_backing = std::make_unique<TestImageBacking>(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),

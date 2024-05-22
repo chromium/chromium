@@ -21,7 +21,7 @@ class SharedImageRepresentationTest : public ::testing::Test {
  public:
   void SetUp() override {
     tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
-    mailbox_ = Mailbox::GenerateForSharedImage();
+    mailbox_ = Mailbox::Generate();
     auto format = viz::SinglePlaneFormat::kRGBA_8888;
     gfx::Size size(256, 256);
     auto color_space = gfx::ColorSpace::CreateSRGB();

@@ -156,7 +156,7 @@ class CompoundImageBackingTest : public testing::Test {
             buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
-        &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
+        &test_factory_, allow_shm_overlays, Mailbox::Generate(),
         std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT, size,
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel");
@@ -176,7 +176,7 @@ class CompoundImageBackingTest : public testing::Test {
             buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
-        &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
+        &test_factory_, allow_shm_overlays, Mailbox::Generate(),
         std::move(handle), viz::MultiPlaneFormat::kNV12, size,
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel");

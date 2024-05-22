@@ -136,7 +136,7 @@ class GLES2ExternalFrameBufferTest
   // Creates a SharedImage that can be used for reading and writing via the
   // GLES2 interface (these tests do both).
   Mailbox CreateSharedImage(const viz::SharedImageFormat& format) {
-    auto mailbox = Mailbox::GenerateForSharedImage();
+    auto mailbox = Mailbox::Generate();
     backing_factory_->CreateSharedImage(
         mailbox, format, gfx::Size(64, 64), gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SurfaceHandle(),

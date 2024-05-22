@@ -101,7 +101,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
   std::unique_ptr<DCompImageBackingFactory> shared_image_factory_;
 
   void RunDXGISwapChainAlphaTest(bool has_alpha) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
+    Mailbox mailbox = Mailbox::Generate();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
             mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -196,7 +196,7 @@ TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
 // Test that |asyncRescaleAndReadPixels| works on a DXGI swap chain-backed
 // SharedImage for CopyOutput support.
 TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -253,7 +253,7 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
 // that we correctly restore the previous current surface after we're done
 // drawing.
 TEST_F(DCompImageBackingFactoryTest, DCompSurfaceRestoresGLSurfaceAfterDraw) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -292,7 +292,7 @@ TEST_F(DCompImageBackingFactoryTest, DCompSurfaceRestoresGLSurfaceAfterDraw) {
 // changes). This test ensures that this value changes after draws.
 TEST_F(DCompImageBackingFactoryTest,
        DCompSurfaceMultipleDrawsIncrementSurfaceSerial) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -377,7 +377,7 @@ class DCompImageBackingFactoryBufferCountTest
 };
 
 TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -543,7 +543,7 @@ class DCompImageBackingFactoryVisualTreeTest
                                 bool has_alpha,
                                 const gfx::Rect& draw_area,
                                 SkColor draw_color) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
+    Mailbox mailbox = Mailbox::Generate();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
             mailbox, format, nullptr, window_size_, color_space,
@@ -807,7 +807,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainBackingCanDrawMultipleTimes) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,

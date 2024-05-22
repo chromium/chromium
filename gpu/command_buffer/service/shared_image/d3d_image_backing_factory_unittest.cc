@@ -179,8 +179,8 @@ class D3DImageBackingFactoryTestSwapChain
 };
 
 TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
-  auto front_buffer_mailbox = Mailbox::GenerateForSharedImage();
-  auto back_buffer_mailbox = Mailbox::GenerateForSharedImage();
+  auto front_buffer_mailbox = Mailbox::Generate();
+  auto back_buffer_mailbox = Mailbox::Generate();
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -221,8 +221,8 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
 }
 
 TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
-  auto front_buffer_mailbox = Mailbox::GenerateForSharedImage();
-  auto back_buffer_mailbox = Mailbox::GenerateForSharedImage();
+  auto front_buffer_mailbox = Mailbox::Generate();
+  auto back_buffer_mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -580,7 +580,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
 // representation.
 TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -654,7 +654,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
 
   // Create a backing using mailbox.
-  const auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -835,7 +835,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
 
   // Create a backing using mailbox.
-  const auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -920,7 +920,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 // 4. Verify through CheckSkiaPixel that GL drawn color not seen
 TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1032,7 +1032,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 // initialized
 TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1113,7 +1113,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 // Test that Skia trying to access uninitialized SharedImage will fail
 TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
   // Create a mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1143,7 +1143,7 @@ TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromPixelData) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1164,7 +1164,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromPixelData) {
 
 void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto buffer_format = gfx::BufferFormat::RGBA_8888;
   const auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
   const gfx::Size size(1, 1);
@@ -1239,7 +1239,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
 
   // Check that a second backing created from the duplicated handle shares the
   // shared handle state and texture with the first backing.
-  auto dup_mailbox = Mailbox::GenerateForSharedImage();
+  auto dup_mailbox = Mailbox::Generate();
   auto dup_backing = shared_image_factory_->CreateSharedImage(
       dup_mailbox, std::move(dup_handle), buffer_format, plane, size,
       color_space, surface_origin, alpha_type, usage, "TestLabel");
@@ -1303,7 +1303,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
 // Test to check external image stored in the backing can be reused
 TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1418,7 +1418,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 // Check if making Dawn have the last ref works without a current GL context.
 TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1533,9 +1533,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
   }
 
   const size_t kNumPlanes = 2;
-  const gpu::Mailbox mailboxes[kNumPlanes] = {
-      gpu::Mailbox::GenerateForSharedImage(),
-      gpu::Mailbox::GenerateForSharedImage()};
+  const gpu::Mailbox mailboxes[kNumPlanes] = {gpu::Mailbox::Generate(),
+                                              gpu::Mailbox::Generate()};
   const gfx::BufferPlane planes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                gfx::BufferPlane::UV};
 
@@ -1982,9 +1981,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   }
 
   constexpr size_t kNumPlanes = 2;
-  const gpu::Mailbox mailboxes[kNumPlanes] = {
-      gpu::Mailbox::GenerateForSharedImage(),
-      gpu::Mailbox::GenerateForSharedImage()};
+  const gpu::Mailbox mailboxes[kNumPlanes] = {gpu::Mailbox::Generate(),
+                                              gpu::Mailbox::Generate()};
   const gfx::BufferPlane planes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                gfx::BufferPlane::UV};
   // This test writes to the created SharedImages via GL and then reads back
@@ -2151,7 +2149,7 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
 
-  const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   // This test writes to the created SharedImages via GL and then reads back
   // those contents via GL for verification.
@@ -2319,7 +2317,7 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
                              gpu::SHARED_IMAGE_USAGE_SCANOUT |
                              gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
   constexpr auto format = viz::MultiPlaneFormat::kNV12;
-  const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   auto owned_backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, kNullSurfaceHandle, size, color_space,

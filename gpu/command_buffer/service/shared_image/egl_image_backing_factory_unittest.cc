@@ -430,7 +430,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
-  const auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -521,7 +521,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
     // Create a backing using mailbox.
-    const auto mailbox = Mailbox::GenerateForSharedImage();
+    const auto mailbox = Mailbox::Generate();
     const auto format = viz::SinglePlaneFormat::kRGBA_8888;
     const gfx::Size size(1, 1);
     const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -664,7 +664,7 @@ CreateAndValidateSharedImageRepresentations::
   DCHECK(context_state);
   EXPECT_TRUE(
       context_state->MakeCurrent(context_state->surface(), true /* needs_gl*/));
-  mailbox_ = Mailbox::GenerateForSharedImage();
+  mailbox_ = Mailbox::Generate();
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;

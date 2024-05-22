@@ -23,7 +23,7 @@ namespace gpu {
 namespace {
 
 std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -41,7 +41,7 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   SharedImageManager manager;
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -131,7 +131,7 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   SharedImageManager manager;
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -163,7 +163,7 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
   auto tracker2 = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -233,7 +233,7 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   auto memory_type_tracker2 = std::make_unique<MemoryTypeTracker>(
       &memory_tracker2, memory_tracker2.task_runner());
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();

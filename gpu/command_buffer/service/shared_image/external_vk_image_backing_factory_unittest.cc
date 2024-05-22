@@ -103,7 +103,7 @@ class ExternalVkImageBackingFactoryDawnTest
 
 TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -216,7 +216,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
 TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -363,7 +363,7 @@ class ExternalVkImageBackingFactoryWithFormatTest
 
 TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   viz::SharedImageFormat format = get_format();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -497,7 +497,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
 // Verify that pixel upload works as expected.
 TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   viz::SharedImageFormat format = get_format();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(30, 30);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
