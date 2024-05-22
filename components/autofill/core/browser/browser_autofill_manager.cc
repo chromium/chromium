@@ -2768,8 +2768,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context) {
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
+  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
     return client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(),
