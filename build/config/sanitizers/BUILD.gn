@@ -70,9 +70,6 @@ group("deps") {
     # .o files which depend on them.
     deps += [ "//third_party/fuzztest:centipede_weak_sancov_stubs" ]
   }
-  if (use_dlcloseshim) {
-    deps += [ ":dlclose_shim" ]
-  }
 }
 
 assert(!(is_win && is_asan && current_cpu == "x86"),
@@ -183,6 +180,10 @@ static_library("options_sources") {
 if (use_dlcloseshim) {
   source_set("dlclose_shim") {
     sources = [ "//build/sanitizers/dlcloseshim.c" ]
+  }
+} else {
+  group("dlclose_shim") {
+    deps = []
   }
 }
 

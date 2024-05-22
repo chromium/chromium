@@ -247,6 +247,10 @@ group("common_deps") {
     public_deps += [ "//buildtools/third_party/libc++" ]
   }
 
+  if (use_libfuzzer) {
+    public_deps += [ "//build/config/sanitizers:dlclose_shim" ]
+  }
+
   if (use_afl) {
     public_deps += [ "//third_party/afl" ]
   }
