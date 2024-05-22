@@ -788,8 +788,9 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
     // CoreAudio drivers will fire the callbacks during stream creation, leading
     // to re-entrancy issues otherwise.  See http://crbug.com/349604
     output_device_listener_ = AudioDeviceListenerMac::Create(
-        base::BindPostTaskToCurrentDefault(base::BindRepeating(
-            &AudioManagerMac::HandleDeviceChanges, base::Unretained(this))),
+        base::BindPostTaskToCurrentDefault(
+            base::BindRepeating(&AudioManagerMac::HandleDeviceChanges,
+                                weak_ptr_factory_.GetWeakPtr())),
         /*monitor_sample_rate_changes=*/
         base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),
         /*monitor_default_input=*/false,
