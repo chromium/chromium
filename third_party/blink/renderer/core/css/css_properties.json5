@@ -5470,6 +5470,7 @@
       default_value: "TextBoxEdge()",
       type_name: "TextBoxEdge",
       converter: "ConvertTextBoxEdge",
+      invalidate: ["layout"],
       runtime_flag: "CSSTextBoxTrim",
     },
     {
@@ -5480,6 +5481,7 @@
       default_value: "none",
       keywords: ["none", "start", "end", "both"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout"],
       runtime_flag: "CSSTextBoxTrim",
     },
     {
