@@ -5,14 +5,10 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -20,12 +16,8 @@ import android.widget.ViewFlipper;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +26,6 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithLeading;
 
@@ -147,8 +138,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
-            // TODO(b/40944124): Duplicate the xml instead of updating the UI programmatically.
-            revampSelectedAccountView();
         }
     }
 
@@ -353,32 +342,5 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             mDismissButton.setVisibility(View.GONE);
             mDismissButtonGoneMarginSpace.setVisibility(View.VISIBLE);
         }
-    }
-
-    // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
-    private void revampSelectedAccountView() {
-        Context context = mSelectedAccountView.getContext();
-        mSelectedAccountView.setBackground(
-                AppCompatResources.getDrawable(
-                        context, R.drawable.account_row_background_rounded_all));
-        int padding = ViewUtils.dpToPx(context, 16);
-        mSelectedAccountView.setPadding(padding, padding, padding, padding);
-        int horizontalMargin = ViewUtils.dpToPx(context, 24);
-        int bottomMargin = ViewUtils.dpToPx(context, 12);
-        MarginLayoutParams params = (MarginLayoutParams) mSelectedAccountView.getLayoutParams();
-        params.setMargins(
-                /* left= */ horizontalMargin,
-                /* top= */ 0,
-                /* right= */ horizontalMargin,
-                /* bottom= */ bottomMargin);
-
-        ImageView expandIcon =
-                mSelectedAccountView.findViewById(R.id.account_picker_selected_account_expand_icon);
-        expandIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
-        ColorStateList colorStateList =
-                ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                                mSelectedAccountView, R.attr.colorOnSurfaceVariant));
-        ImageViewCompat.setImageTintList(expandIcon, colorStateList);
     }
 }
