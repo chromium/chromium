@@ -7532,24 +7532,6 @@
             ]
         }
     ],
-    "EnableReportingMultigenerationStorage": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "PartiallyEnabled",
-                    "params": {
-                        "legacy_storage": "IMMEDIATE,SECURITY"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootMissiveStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
