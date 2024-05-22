@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OpenFailureTime" units="ms"
-    expires_after="2024-05-24">
+    expires_after="2024-09-29">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OpenSuccessTime" units="ms"
-    expires_after="2024-05-24">
+    expires_after="2024-09-29">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE"
-    enum="PlatformFileError" expires_after="2024-05-24">
+    enum="PlatformFileError" expires_after="2024-09-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE"
-    enum="PlatformFileError" expires_after="2024-05-24">
+    enum="PlatformFileError" expires_after="2024-09-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"
-    enum="PlatformFileError" expires_after="2024-05-24">
+    enum="PlatformFileError" expires_after="2024-09-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
