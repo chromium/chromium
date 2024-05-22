@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Fatal Error"/>
   <int value="1" label="Success"/>
   <int value="2" label="Printer Unreachable"/>
-  <int value="3" label="Could not contact debugd over dbus"/>
+  <int value="3" label="Could not contact printscanmgr over dbus"/>
   <int value="4" label="Can't configure native printers due to policy"/>
   <int value="5" label="Invalid values are used to update printer"/>
   <int value="6" label="Could not install component"/>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Memory allocation error in Cups"/>
   <int value="16" label="Printer's URI is incorrect"/>
   <int value="17" label="Manual setup required"/>
-  <int value="64" label="No reply from debugd over D-Bus"/>
+  <int value="64" label="No reply from printscanmgr over D-Bus"/>
   <int value="65" label="Generic D-Bus timeout"/>
   <int value="66" label="Printer removed during setup"/>
 </enum>

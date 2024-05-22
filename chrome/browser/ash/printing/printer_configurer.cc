@@ -518,9 +518,9 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
     case PrinterSetupResult::kDbusError:
       return "D-Bus error occurred. Reboot required.";
     case PrinterSetupResult::kDbusNoReply:
-      return "Couldn't talk to debugd over D-Bus.";
+      return "Couldn't talk to printscanmgr over D-Bus.";
     case PrinterSetupResult::kDbusTimeout:
-      return "Timed out trying to reach debugd over D-Bus.";
+      return "Timed out trying to reach printscanmgr over D-Bus.";
     // Problem reported by OS.
     case PrinterSetupResult::kIoError:
       return "I/O error occurred.";
