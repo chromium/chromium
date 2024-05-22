@@ -72,7 +72,7 @@ std::string_view AsString(const EditorOpportunityMode& mode) {
     case EditorOpportunityMode::kRewrite:
       return "Rewrite";
     case EditorOpportunityMode::kNone:
-      return "None";
+      return "NotAllowed";
   }
 }
 
@@ -238,10 +238,6 @@ void EditorMetricsRecorder::SetTone(EditorTone tone) {
 }
 
 void EditorMetricsRecorder::LogEditorState(EditorStates state) {
-  if (mode_ == EditorOpportunityMode::kNone) {
-    return;
-  }
-
   base::UmaHistogramEnumeration(
       base::StrCat({"InputMethod.Manta.Orca.States.", AsString(mode_)}), state);
 

@@ -289,7 +289,7 @@ bool EditorSwitch::IsAllowedForUse() const {
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
-  if (IsAllowedForUse() && IsInputTypeAllowed(context_->input_type())) {
+  if (IsInputTypeAllowed(context_->input_type())) {
     return context_->selected_text_length() > 0
                ? EditorOpportunityMode::kRewrite
                : EditorOpportunityMode::kWrite;
