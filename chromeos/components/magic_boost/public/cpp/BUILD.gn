@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos)
+
+component("cpp") {
+  output_name = "magic_boost"
+
+  defines = [ "IS_MAGIC_BOOST_IMPL" ]
+
+  sources = [
+    "magic_boost_state.cc",
+    "magic_boost_state.h",
+  ]
+
+  deps = [ "//base" ]
+}
