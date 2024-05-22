@@ -28,6 +28,14 @@
     z-index: 0;
   }
 
+  #loadingResultsImage {
+    background-color: white;
+  }
+
+  :host([dark-mode]) #loadingResultsImage {
+    background-color: #1F1F1F;
+  }
+
   :host(:not([is-loading-results])) #loadingResultsImage {
     z-index: 0;
   }
@@ -119,6 +127,10 @@
   cr-icon-button.icon-arrow-back {
     margin-inline-start: 8px;
     margin-inline-end: 12px;
+  }
+
+  :host([dark-mode]) cr-icon-button.icon-arrow-back {
+    color: #70757A;
   }
 </style>
 <div id="realboxContainer">
