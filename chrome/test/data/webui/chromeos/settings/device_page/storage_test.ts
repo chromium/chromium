@@ -27,6 +27,11 @@ suite('<settings-storage> for device page', () => {
   let browserProxy: TestDevicePageBrowserProxy;
 
   setup(async () => {
+    // Default is persistent user. If any test needs it, they can override.
+    loadTimeData.overrideValues({
+      isCryptohomeDataEphemeral: false,
+    });
+
     fakeSystemDisplay = new FakeSystemDisplay();
     setDisplayApiForTesting(fakeSystemDisplay);
 
@@ -240,10 +245,6 @@ suite('<settings-storage> for device page', () => {
     flush();
     assertFalse(
         isVisible(storageSubpage.shadowRoot!.querySelector('#systemSize')));
-
-    loadTimeData.overrideValues({
-      isCryptohomeDataEphemeral: false,
-    });
   });
 
   test('apps extensions size default', async () => {
@@ -337,15 +338,12 @@ suite('<settings-storage> for device page', () => {
   });
 
   test('system encryption', async () => {
-    loadTimeData.overrideValues({
-      isCryptohomeDataEphemeral: false,
-    });
     await createStorageSubpage();
     const systemEncryptionLabel =
         storageSubpage.shadowRoot!.querySelector<HTMLElement>(
             '#systemEncryptionLabel');
     assertTrue(!!systemEncryptionLabel);
-    assertEquals('Encrypted using', systemEncryptionLabel.innerText);
+    assertEquals('User data encryption', systemEncryptionLabel.innerText);
 
     let systemEncryptionSubLabel =
         storageSubpage.shadowRoot!.querySelector<HTMLElement>(
@@ -368,8 +366,5 @@ suite('<settings-storage> for device page', () => {
     flush();
     assertFalse(isVisible(
         storageSubpage.shadowRoot!.querySelector('#systemEncryption')));
-  });
-  loadTimeData.overrideValues({
-    isCryptohomeDataEphemeral: false,
   });
 });

@@ -42,7 +42,7 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kStorage},
        {IDS_OS_SETTINGS_TAG_STORAGE_ALT1, IDS_OS_SETTINGS_TAG_STORAGE_ALT2,
-        SearchConcept::kAltTagEnd}},
+        IDS_OS_SETTINGS_TAG_STORAGE_ALT3, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }

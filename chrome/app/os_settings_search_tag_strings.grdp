@@ -616,14 +616,17 @@
   <message name="IDS_OS_SETTINGS_TAG_DISPLAY_NIGHT_LIGHT_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with a section for Night Light (adjusts brightness in dim light). Alternate phrase for: 'Night Light', 'Dim light'">
     Blue light reduction
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Disk space', 'Hard drive'">
+  <message name="IDS_OS_SETTINGS_TAG_STORAGE" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Disk space', 'Hard drive', 'User data encryption'">
     Storage management
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Hard drive'">
+  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Hard drive', 'User data encryption'">
     Disk space
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Disk space'">
+  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Disk space', 'User data encryption'">
     Hard drive
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT3" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Disk space', 'User data encryption'">
+    User data encryption
   </message>
   <message name="IDS_OS_SETTINGS_TAG_POWER" desc="Text for search result item which, when clicked, navigates the user to power settings.">
     Power
