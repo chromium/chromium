@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_OBSERVER_H_
 
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink-forward.h"
+#include "base/files/file.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -55,8 +55,18 @@ class FileSystemObserver : public ScriptWrappable,
                   mojo::PendingReceiver<mojom::blink::FileSystemAccessObserver>
                       observer_receiver);
 
+  // Callback for StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed.
+  void OnGotStorageAccessStatus(ScriptPromiseResolver<IDLUndefined>* resolver,
+                                FileSystemHandle* handle,
+                                FileSystemObserverObserveOptions* options,
+                                mojom::blink::FileSystemAccessErrorPtr result);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::optional<std::tuple</*status=*/mojom::blink::FileSystemAccessStatus,
+                           /*file_error=*/::base::File::Error,
+                           /*message=*/WTF::String>>
+      storage_access_status_;
   Member<ExecutionContext> execution_context_;
   Member<V8FileSystemObserverCallback> callback_;
 

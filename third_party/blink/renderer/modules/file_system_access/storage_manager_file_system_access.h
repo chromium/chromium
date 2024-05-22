@@ -29,12 +29,12 @@ class StorageManagerFileSystemAccess {
   // Called to execute checks, both renderer side and browser side, that OPFS is
   // allowed. Will execute `on_allowed` with the result of browser side checks
   // if it gets that far.
-  static ScriptPromise<FileSystemDirectoryHandle> CheckGetDirectoryIsAllowed(
+  static ScriptPromise<FileSystemDirectoryHandle> CheckStorageAccessIsAllowed(
       ScriptState* script_state,
       ExceptionState& exception_state,
       base::OnceCallback<
           void(ScriptPromiseResolver<FileSystemDirectoryHandle>*)> on_allowed);
-  static void CheckGetDirectoryIsAllowed(
+  static void CheckStorageAccessIsAllowed(
       ExecutionContext* context,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
           callback);

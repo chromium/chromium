@@ -324,7 +324,7 @@ ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use);
-  return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+  return StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
       script_state, exception_state,
       WTF::BindOnce(&StorageAccessHandle::GetDirectoryImpl,
                     WrapWeakPersistent(this)));

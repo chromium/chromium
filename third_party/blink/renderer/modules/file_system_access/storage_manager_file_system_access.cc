@@ -58,7 +58,7 @@ ScriptPromise<FileSystemDirectoryHandle>
 StorageManagerFileSystemAccess::getDirectory(ScriptState* script_state,
                                              const StorageManager& storage,
                                              ExceptionState& exception_state) {
-  return CheckGetDirectoryIsAllowed(
+  return CheckStorageAccessIsAllowed(
       script_state, exception_state,
       WTF::BindOnce([](ScriptPromiseResolver<FileSystemDirectoryHandle>*
                            resolver) {
@@ -71,7 +71,7 @@ StorageManagerFileSystemAccess::getDirectory(ScriptState* script_state,
 
 // static
 ScriptPromise<FileSystemDirectoryHandle>
-StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
     ScriptState* script_state,
     ExceptionState& exception_state,
     base::OnceCallback<void(ScriptPromiseResolver<FileSystemDirectoryHandle>*)>
@@ -81,7 +81,7 @@ StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
           script_state, exception_state.GetContext());
   auto result = resolver->Promise();
 
-  CheckGetDirectoryIsAllowed(
+  CheckStorageAccessIsAllowed(
       ExecutionContext::From(script_state),
       WTF::BindOnce(&OnGotAccessAllowed, WrapPersistent(resolver),
                     std::move(on_allowed)));
@@ -90,7 +90,7 @@ StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
 }
 
 // static
-void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+void StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
     ExecutionContext* context,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
   if (!context->GetSecurityOrigin()->CanAccessFileSystem()) {

@@ -198,7 +198,7 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
 ScriptPromise<FileSystemDirectoryHandle> StorageBucket::getDirectory(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+  return StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
       script_state, exception_state,
       WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
                     WrapWeakPersistent(this)));
@@ -208,7 +208,7 @@ void StorageBucket::GetDirectoryForDevTools(
     ExecutionContext* context,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             FileSystemDirectoryHandle*)> callback) {
-  StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+  StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
       context, WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
                              WrapWeakPersistent(this),
                              WrapWeakPersistent(context), std::move(callback)));

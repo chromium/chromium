@@ -88,19 +88,17 @@ class FileSystemFileHandle final : public FileSystemHandle {
       const FileSystemCreateSyncAccessHandleOptions* options,
       ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver);
 
-  // Checks if the File System Storage Access is allowed for the current
-  // frame.
-  void CheckFileSystemStorageAccessIsAllowed(
-      ExecutionContext* context,
-      base::OnceCallback<void(bool)> callback);
+  // Callback for StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed.
   void OnGotFileSystemStorageAccessStatus(
       ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver,
       base::OnceClosure on_allowed_callback,
-      bool allow_access);
+      mojom::blink::FileSystemAccessErrorPtr result);
 
   HeapMojoRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr_;
-
-  std::optional<bool> file_system_storage_access_allowed_;
+  std::optional<std::tuple</*status=*/mojom::blink::FileSystemAccessStatus,
+                           /*file_error=*/::base::File::Error,
+                           /*message=*/WTF::String>>
+      storage_access_status_;
 };
 
 template <>

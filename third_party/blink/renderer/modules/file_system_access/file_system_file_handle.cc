@@ -15,11 +15,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writable_options.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,10 +27,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-namespace {
-const char kSecurityErrorMessage[] = "File System access is denied.";
-}  // namespace
 
 using mojom::blink::FileSystemAccessErrorPtr;
 
@@ -154,11 +150,22 @@ FileSystemFileHandle::createSyncAccessHandle(
                     WrapWeakPersistent(this), WrapPersistent(options),
                     WrapPersistent(resolver));
 
-  CheckFileSystemStorageAccessIsAllowed(
-      ExecutionContext::From(script_state),
+  auto on_got_storage_access_status_cb =
       WTF::BindOnce(&FileSystemFileHandle::OnGotFileSystemStorageAccessStatus,
                     WrapWeakPersistent(this), WrapPersistent(resolver),
-                    std::move(on_allowed_callback)));
+                    std::move(on_allowed_callback));
+
+  if (storage_access_status_.has_value()) {
+    std::move(on_got_storage_access_status_cb)
+        .Run(mojom::blink::FileSystemAccessError::New(
+            /*status=*/get<0>(storage_access_status_.value()),
+            /*file_error=*/get<1>(storage_access_status_.value()),
+            /*message=*/get<2>(storage_access_status_.value())));
+  } else {
+    StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
+        ExecutionContext::From(script_state),
+        std::move(on_got_storage_access_status_cb));
+  }
 
   return promise;
 }
@@ -373,59 +380,32 @@ void FileSystemFileHandle::GetCloudIdentifiersImpl(
   mojo_ptr_->GetCloudIdentifiers(std::move(callback));
 }
 
-void FileSystemFileHandle::CheckFileSystemStorageAccessIsAllowed(
-    ExecutionContext* context,
-    base::OnceCallback<void(bool)> callback) {
-  SECURITY_DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
-
-  if (file_system_storage_access_allowed_.has_value()) {
-    std::move(callback).Run(file_system_storage_access_allowed_.value());
-    return;
-  }
-
-  WebContentSettingsClient* content_settings_client = nullptr;
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    LocalFrame* frame = window->GetFrame();
-    if (!frame) {
-      std::move(callback).Run(false);
-      return;
-    }
-
-    content_settings_client = frame->GetContentSettingsClient();
-  } else {
-    content_settings_client =
-        To<WorkerGlobalScope>(context)->ContentSettingsClient();
-  }
-
-  if (!content_settings_client) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  content_settings_client->AllowStorageAccess(
-      WebContentSettingsClient::StorageType::kFileSystem, std::move(callback));
-}
-
 void FileSystemFileHandle::OnGotFileSystemStorageAccessStatus(
     ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver,
     base::OnceClosure on_allowed_callback,
-    bool allow_access) {
+    mojom::blink::FileSystemAccessErrorPtr result) {
   if (!resolver->GetExecutionContext() ||
       !resolver->GetScriptState()->ContextIsValid()) {
     return;
   }
 
-  if (file_system_storage_access_allowed_.has_value()) {
-    DCHECK_EQ(file_system_storage_access_allowed_.value(), allow_access);
+  CHECK(result);
+  if (storage_access_status_.has_value()) {
+    CHECK_EQ(/*status=*/get<0>(storage_access_status_.value()), result->status);
+    CHECK_EQ(/*file_error=*/get<1>(storage_access_status_.value()),
+             result->file_error);
+    CHECK_EQ(/*message=*/get<2>(storage_access_status_.value()),
+             result->message);
   } else {
-    file_system_storage_access_allowed_ = allow_access;
+    storage_access_status_ =
+        std::make_tuple(result->status, result->file_error, result->message);
   }
 
-  if (!allow_access) {
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
     auto* const isolate = resolver->GetScriptState()->GetIsolate();
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        isolate, DOMExceptionCode::kSecurityError, kSecurityErrorMessage));
+        isolate, DOMExceptionCode::kSecurityError, result->message));
     return;
   }
 

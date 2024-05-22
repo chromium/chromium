@@ -19,7 +19,7 @@ namespace {
 constexpr char kInitialUrl[] = "/run_async_code_on_worker.html";
 constexpr char kSuccessMessage[] = "success";
 constexpr char kSecurityErrorMessage[] =
-    "SecurityError: File System access is denied.";
+    "SecurityError: Storage directory access is denied.";
 
 }  // namespace
 

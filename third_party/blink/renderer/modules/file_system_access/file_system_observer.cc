@@ -4,11 +4,10 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observer.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_observe_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -17,6 +16,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_manager.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_change_record.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -78,17 +78,66 @@ ScriptPromise<IDLUndefined> FileSystemObserver::observe(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/321980226): Add AllowStorageAccess checks.
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
+
+  auto on_got_storage_access_status_cb =
+      WTF::BindOnce(&FileSystemObserver::OnGotStorageAccessStatus,
+                    WrapWeakPersistent(this), WrapPersistent(resolver),
+                    WrapPersistent(handle), WrapPersistent(options));
+
+  if (storage_access_status_.has_value()) {
+    std::move(on_got_storage_access_status_cb)
+        .Run(mojom::blink::FileSystemAccessError::New(
+            /*status=*/get<0>(storage_access_status_.value()),
+            /*file_error=*/get<1>(storage_access_status_.value()),
+            /*message=*/get<2>(storage_access_status_.value())));
+  } else {
+    StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
+        ExecutionContext::From(script_state),
+        std::move(on_got_storage_access_status_cb));
+  }
+
+  return result;
+}
+
+void FileSystemObserver::OnGotStorageAccessStatus(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    FileSystemHandle* handle,
+    FileSystemObserverObserveOptions* options,
+    mojom::blink::FileSystemAccessErrorPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!resolver->GetExecutionContext() ||
+      !resolver->GetScriptState()->ContextIsValid()) {
+    return;
+  }
+
+  CHECK(result);
+  if (storage_access_status_.has_value()) {
+    CHECK_EQ(/*status=*/get<0>(storage_access_status_.value()), result->status);
+    CHECK_EQ(/*file_error=*/get<1>(storage_access_status_.value()),
+             result->file_error);
+    CHECK_EQ(/*message=*/get<2>(storage_access_status_.value()),
+             result->message);
+  } else {
+    storage_access_status_ =
+        std::make_tuple(result->status, result->file_error, result->message);
+  }
+
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+    auto* const isolate = resolver->GetScriptState()->GetIsolate();
+    ScriptState::Scope scope(resolver->GetScriptState());
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        isolate, DOMExceptionCode::kSecurityError, result->message));
+    return;
+  }
 
   host_remote_->Observe(
       handle->Transfer(), options->recursive(),
       WTF::BindOnce(&FileSystemObserver::DidObserve, WrapPersistent(this),
                     WrapPersistent(resolver)));
-  return result;
 }
 
 void FileSystemObserver::DidObserve(
