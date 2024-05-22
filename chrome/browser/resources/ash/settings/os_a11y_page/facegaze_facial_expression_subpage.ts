@@ -85,6 +85,16 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         value: () => [],
       },
 
+      keyPressToggleOverviewMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      keyPressMediaPlayPauseMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
       leftClickPref_: {
         type: Object,
         value(): chrome.settingsPrivate.PrefObject {
@@ -195,6 +205,28 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         },
       },
 
+      keyPressToggleOverviewPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_TOGGLE_OVERVIEW_pref',
+          };
+        },
+      },
+
+      keyPressMediaPlayPausePref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_MEDIA_PLAY_PAUSE_pref',
+          };
+        },
+      },
+
       browInnerUpPref_: {
         type: Object,
         computed:
@@ -293,6 +325,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       'updateKeyPressLeftPref_(keyPressLeftPref_.*)',
       'updateKeyPressRightPref_(keyPressRightPref_.*)',
       'updateKeyPressUpPref_(keyPressUpPref_.*)',
+      'updateKeyPressToggleOverviewPref_(keyPressToggleOverviewPref_.*)',
+      'updateKeyPressMediaPlayPausePref_(keyPressMediaPlayPausePref_.*)',
       'updateBrowInnerUpPref_(browInnerUpPref_.*)',
       'updateBrowsDownPref_(browsDownPref_.*)',
       'updateEyeSquintLeftPref_(eyeSquintLeftPref_.*)',
@@ -321,6 +355,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private keyPressLeftMenuOptions_: DropdownMenuOptionList;
   private keyPressRightMenuOptions_: DropdownMenuOptionList;
   private keyPressUpMenuOptions_: DropdownMenuOptionList;
+  private keyPressToggleOverviewMenuOptions_: DropdownMenuOptionList;
+  private keyPressMediaPlayPauseMenuOptions_: DropdownMenuOptionList;
   private leftClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private rightClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private longClickLeftPref_: chrome.settingsPrivate.PrefObject<string>;
@@ -331,6 +367,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private keyPressLeftPref_: chrome.settingsPrivate.PrefObject<string>;
   private keyPressRightPref_: chrome.settingsPrivate.PrefObject<string>;
   private keyPressUpPref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressToggleOverviewPref_:
+      chrome.settingsPrivate.PrefObject<string>;
+  private keyPressMediaPlayPausePref_:
+      chrome.settingsPrivate.PrefObject<string>;
   private browInnerUpPref_: chrome.settingsPrivate.PrefObject<number>;
   private browsDownPref_: chrome.settingsPrivate.PrefObject<number>;
   private eyeSquintLeftPref_: chrome.settingsPrivate.PrefObject<number>;
@@ -360,6 +400,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.keyPressLeftMenuOptions_ = this.getGestureMenuOptions_();
     this.keyPressRightMenuOptions_ = this.getGestureMenuOptions_();
     this.keyPressUpMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressToggleOverviewMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressMediaPlayPauseMenuOptions_ = this.getGestureMenuOptions_();
     this.updateVirtualPrefs_();
   }
 
@@ -466,6 +508,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_RIGHT);
     this.keyPressUpPref_ =
         this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_UP);
+    this.keyPressToggleOverviewPref_ = this.updateVirtualPref_(
+        macrosToGestures, MacroName.KEY_PRESS_TOGGLE_OVERVIEW);
+    this.keyPressMediaPlayPausePref_ = this.updateVirtualPref_(
+        macrosToGestures, MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE);
   }
 
   private updateVirtualPref_(
@@ -536,6 +582,18 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         MacroName.KEY_PRESS_UP, this.keyPressUpPref_.value);
   }
 
+  private updateKeyPressToggleOverviewPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
+        this.keyPressToggleOverviewPref_.value);
+  }
+
+  private updateKeyPressMediaPlayPausePref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+        this.keyPressMediaPlayPausePref_.value);
+  }
+
   private setDropdownMenuOptionsHiddenForGesture_(
       menuOptions: DropdownMenuOptionList, gesture: string,
       hidden: boolean): void {
@@ -569,6 +627,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     const newKeyPressRightMenuOptions =
         Object.assign(this.keyPressRightMenuOptions_);
     const newKeyPressUpMenuOptions = Object.assign(this.keyPressUpMenuOptions_);
+    const newKeyPressToggleOverviewMenuOptions =
+        Object.assign(this.keyPressToggleOverviewMenuOptions_);
+    const newKeyPressMediaPlayPauseMenuOptions =
+        Object.assign(this.keyPressMediaPlayPauseMenuOptions_);
     const newMenuOptions = [
       newLeftClickMenuOptions,
       newRightClickMenuOptions,
@@ -580,6 +642,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       newKeyPressLeftMenuOptions,
       newKeyPressRightMenuOptions,
       newKeyPressUpMenuOptions,
+      newKeyPressToggleOverviewMenuOptions,
+      newKeyPressMediaPlayPauseMenuOptions,
     ];
     const assignedGestures = {
         ...this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value')};
@@ -649,6 +713,14 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         this.setDropdownMenuOptionsHiddenForGesture_(
             newKeyPressUpMenuOptions, value, true);
       }
+      if (macro !== MacroName.KEY_PRESS_TOGGLE_OVERVIEW) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressToggleOverviewMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressMediaPlayPauseMenuOptions, value, true);
+      }
     }
     this.set(
         'prefs.settings.a11y.face_gaze.gestures_to_macros.value',
@@ -671,6 +743,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.keyPressLeftMenuOptions_ = newKeyPressLeftMenuOptions;
     this.keyPressRightMenuOptions_ = newKeyPressRightMenuOptions;
     this.keyPressUpMenuOptions_ = newKeyPressUpMenuOptions;
+    this.keyPressToggleOverviewMenuOptions_ =
+        newKeyPressToggleOverviewMenuOptions;
+    this.keyPressMediaPlayPauseMenuOptions_ =
+        newKeyPressMediaPlayPauseMenuOptions;
   }
 
   private getGestureToConfidencePref_(gestureName: FacialGesture):
