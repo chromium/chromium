@@ -60,6 +60,7 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
       CloseButtonVisible close_button_visible) {
     views::Widget* widget = new views::Widget;
     views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     auto delegate = std::make_unique<views::WidgetDelegateView>();
     delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
@@ -67,7 +68,6 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     delegate->SetCanResize(true);
     delegate->SetShowCloseButton(close_button_visible == CLOSE_BUTTON_VISIBLE);
     params.delegate = delegate.release();
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(10, 10, 100, 100);
     params.context = GetContext();
     widget->Init(std::move(params));

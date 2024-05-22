@@ -25,8 +25,8 @@ using PickerPreviewBubbleControllerTest = views::ViewsTestBase;
 // bubble.
 std::unique_ptr<views::Widget> CreateAnchorWidget(gfx::NativeWindow context) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 400, 400);
   params.context = context;
 

@@ -161,7 +161,9 @@ class FrameSizeButtonTest : public AshTestBase {
   // |delegate|.
   views::Widget* CreateWidget(views::WidgetDelegate* delegate) {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.delegate = delegate;
     params.bounds = gfx::Rect(10, 10, 100, 100);
     params.context = GetContext();

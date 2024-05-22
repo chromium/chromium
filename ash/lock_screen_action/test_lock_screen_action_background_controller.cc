@@ -39,7 +39,9 @@ bool TestLockScreenActionBackgroundController::ShowBackground() {
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>();
 
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.name = kTestingWidgetName;
     params.parent = parent_window_;
     params.delegate = new views::WidgetDelegate();
@@ -49,7 +51,6 @@ bool TestLockScreenActionBackgroundController::ShowBackground() {
     params.delegate->SetCanResize(true);
     params.delegate->SetOwnedByWidget(true);
     params.delegate->SetFocusTraversesOut(true);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
     widget_->Init(std::move(params));
   }

@@ -41,11 +41,12 @@ views::Widget::InitParams CreateInitParams(
                                                   trigger_event_timestamp);
   picker_view->SetSize(kPickerViewMaxSize);
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_BUBBLE);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.type = views::Widget::InitParams::TYPE_BUBBLE;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = picker_view->GetTargetBounds(anchor_bounds, layout_type);
   // TODO(b/309706053): Replace this with the finalized string.

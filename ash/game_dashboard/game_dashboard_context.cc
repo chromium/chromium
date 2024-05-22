@@ -79,8 +79,8 @@ std::unique_ptr<views::Widget> CreateTransientChildWidget(
     views::Widget::InitParams::Activatable activatable =
         views::Widget::InitParams::Activatable::kDefault) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // Sets the widget as a transient child, which is actually a sibling
   // of the window. This ensures that this widget will not show up in
   // screenshots or screen recordings.

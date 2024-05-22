@@ -431,9 +431,10 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
 
   DCHECK(!floating_control_buttons_widget_);
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_CONTROL);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = surface_->GetWindow();
 
   floating_control_buttons_widget_ = std::make_unique<views::Widget>();

@@ -173,9 +173,10 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   views::Widget* unparented_control = new Widget;
-  Widget::InitParams params;
+  Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      Widget::InitParams::TYPE_CONTROL);
   params.bounds = gfx::Rect(650, 10, 100, 100);
-  params.type = Widget::InitParams::TYPE_CONTROL;
   params.context = GetContext();
   unparented_control->Init(std::move(params));
   EXPECT_EQ(root_windows[1],

@@ -194,8 +194,9 @@ class ArcNotificationContentViewTest : public AshTestBase {
             MessageViewFactory::Create(notification, /*shown_in_popup=*/false)
                 .release()));
 
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.context = Shell::GetPrimaryRootWindow();
     auto wrapper_widget = std::make_unique<views::Widget>();
     wrapper_widget->Init(std::move(params));

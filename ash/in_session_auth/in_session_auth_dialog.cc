@@ -28,8 +28,8 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
     std::unique_ptr<views::View> contents_view,
     aura::Window* parent) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
   params.show_state = ui::SHOW_STATE_NORMAL;

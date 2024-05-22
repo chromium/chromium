@@ -243,8 +243,8 @@ TEST_F(ShellTest, CreateWindowWithPreferredSize) {
   aura::Window* secondary_root = Shell::GetAllRootWindows()[1];
   display::ScopedDisplayForNewWindows scoped_display(secondary_root);
 
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // Don't specify bounds, parent or context.
   {
     auto delegate = std::make_unique<views::WidgetDelegateView>();

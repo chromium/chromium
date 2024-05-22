@@ -63,8 +63,8 @@ void LoginTestBase::SetWidget(std::unique_ptr<views::Widget> widget) {
 std::unique_ptr<views::Widget> LoginTestBase::CreateWidgetWithContent(
     views::View* content) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 800, 800);
 
   params.delegate = new views::WidgetDelegate();

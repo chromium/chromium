@@ -88,12 +88,11 @@ void PinRequestWidget::Close(bool success) {
 PinRequestWidget::PinRequestWidget(PinRequest request,
                                    PinRequestView::Delegate* delegate)
     : on_pin_request_done_(std::move(request.on_pin_request_done)) {
-  views::Widget::InitParams widget_params;
   // Using window frameless to be able to get focus on the view input fields,
   // which does not work with popup type.
-  widget_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams widget_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget_params.opacity =
       views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget_params.accept_events = true;

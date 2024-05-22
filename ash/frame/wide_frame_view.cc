@@ -109,13 +109,13 @@ WideFrameView::WideFrameView(views::Widget* target)
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.delegate = this;
   params.bounds = GetFrameBounds(target);
   params.name = "WideFrameView";
   params.parent = target->GetNativeWindow();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // Setup Opacity Control.
   // WideFrame should be used only when the rounded corner is not necessary.
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
