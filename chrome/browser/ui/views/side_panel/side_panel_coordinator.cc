@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -1112,9 +1113,11 @@ void SidePanelCoordinator::MaybeQueuePinPromo() {
   pending_pin_promo_ = iph_feature;
   if (iph_feature && !browser_view_->CanShowFeaturePromo(*iph_feature)
                           .is_blocked_this_instance()) {
-    // This is the standard "minimum successful impression" time.
-    constexpr base::TimeDelta kImpressionSuccessDuration = base::Seconds(6);
-    pin_promo_timer_.Start(FROM_HERE, kImpressionSuccessDuration,
+    // Default to ten second delay, but allow setting a different parameter via
+    // field trial.
+    const base::TimeDelta delay = base::GetFieldTrialParamByFeatureAsTimeDelta(
+        *iph_feature, "x_custom_iph_delay", base::Seconds(10));
+    pin_promo_timer_.Start(FROM_HERE, delay,
                            base::BindOnce(&SidePanelCoordinator::ShowPinPromo,
                                           base::Unretained(this)));
   }
