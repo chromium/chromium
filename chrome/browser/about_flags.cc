@@ -10990,6 +10990,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshPickerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPicker)},
 
+    {"ash-picker-cloud", flag_descriptions::kAshPickerCloudName,
+     flag_descriptions::kAshPickerCloudDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPickerCloud)},
+
     {"ash-picker-feature-key", flag_descriptions::kAshPickerFeatureKeyName,
      flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},

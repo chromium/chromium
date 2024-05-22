@@ -106,6 +106,11 @@ DriveSearchProvider::DriveSearchProvider(Profile* profile)
 
 DriveSearchProvider::~DriveSearchProvider() = default;
 
+void DriveSearchProvider::SetQuerySource(
+    drivefs::mojom::QueryParameters::QuerySource query_source) {
+  query_source_ = query_source;
+}
+
 ash::AppListSearchResultType DriveSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kDriveSearch;
 }
@@ -128,7 +133,7 @@ void DriveSearchProvider::Start(const std::u16string& query) {
       base::UTF16ToUTF8(query), kMaxResults,
       drivefs::mojom::QueryParameters::SortField::kLastModified,
       drivefs::mojom::QueryParameters::SortDirection::kDescending,
-      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+      query_source_,
       base::BindOnce(&DriveSearchProvider::OnSearchDriveByFileName,
                      weak_factory_.GetWeakPtr()));
 }

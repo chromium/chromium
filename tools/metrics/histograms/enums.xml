@@ -21640,6 +21640,7 @@ from previous Chrome versions.
   <int value="151532710" label="ChromeSharePageInfo:disabled"/>
   <int value="151630887" label="WebUIA11yEnhancements:disabled"/>
   <int value="152126026" label="ProjectorExcludeTranscript:enabled"/>
+  <int value="152212646" label="PickerCloud:enabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
   <int value="155879687" label="ShimlessRMAEnableStandalone:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
@@ -22889,6 +22890,7 @@ from previous Chrome versions.
   <int value="703469777" label="AndroidNightModeTabReparenting:enabled"/>
   <int value="705407202" label="AutofillSaveCardImprovedUserConsent:disabled"/>
   <int value="705411729" label="AccessiblePDFForm:disabled"/>
+  <int value="705601070" label="PickerCloud:disabled"/>
   <int value="705712478" label="EnablePalmOnToolTypePalm:disabled"/>
   <int value="705713283" label="EasyUnlockPromotions:disabled"/>
   <int value="705946076"

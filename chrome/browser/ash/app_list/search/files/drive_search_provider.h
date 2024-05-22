@@ -49,6 +49,9 @@ class DriveSearchProvider : public SearchProvider {
   DriveSearchProvider(const DriveSearchProvider&) = delete;
   DriveSearchProvider& operator=(const DriveSearchProvider&) = delete;
 
+  void SetQuerySource(
+      drivefs::mojom::QueryParameters::QuerySource query_source);
+
   // SearchProvider:
   ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
@@ -73,6 +76,8 @@ class DriveSearchProvider : public SearchProvider {
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<drive::DriveIntegrationService> drive_service_;
+  drivefs::mojom::QueryParameters::QuerySource query_source_ =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveSearchProvider> weak_factory_{this};

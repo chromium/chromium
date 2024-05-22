@@ -482,6 +482,14 @@
     "expiry_milestone": 131
   },
   {
+    "name": "ash-picker-cloud",
+    "owners": [
+      "shend@chromium.org",
+      "e14s-eng@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ash-picker-feature-key",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
     "expiry_milestone": 131

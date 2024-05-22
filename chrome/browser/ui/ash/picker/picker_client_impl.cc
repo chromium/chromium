@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -101,7 +103,12 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
     Profile* profile) {
-  return std::make_unique<app_list::DriveSearchProvider>(profile);
+  auto provider = std::make_unique<app_list::DriveSearchProvider>(profile);
+  if (base::FeatureList::IsEnabled(ash::features::kPickerCloud)) {
+    provider->SetQuerySource(
+        drivefs::mojom::QueryParameters::QuerySource::kCloudOnly);
+  }
+  return provider;
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
