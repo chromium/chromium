@@ -7,10 +7,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
-#import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -30,14 +28,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ui/base/device_form_factor.h"
 
-@interface CardCoordinator () <CardListDelegate, PersonalDataManagerObserver> {
-  // Personal data manager to be observed.
-  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
-
-  // C++ to ObjC bridge for PersonalDataManagerObserver.
-  std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
-      _personalDataManagerObserver;
-
+@interface CardCoordinator () <CardListDelegate> {
   // Opening links on the enrollment bottom sheet is delegated to this
   // dispatcher.
   __weak id<ApplicationCommands> _dispatcher;
@@ -74,19 +65,13 @@
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.
-    _personalDataManager =
+    autofill::PersonalDataManager* personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-    DCHECK(_personalDataManager);
+    DCHECK(personalDataManager);
 
-    _personalDataManagerObserver.reset(
-        new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
-
-    std::vector<autofill::CreditCard*> cards =
-        _personalDataManager->payments_data_manager().GetCreditCards();
-
-    _cardMediator = [[ManualFillCardMediator alloc] initWithCards:cards];
+    _cardMediator = [[ManualFillCardMediator alloc]
+        initWithPersonalDataManager:personalDataManager];
     _cardMediator.navigationDelegate = self;
     _cardMediator.contentInjector = super.injectionHandler;
     _cardMediator.consumer = _cardViewController;
@@ -102,10 +87,11 @@
   return self;
 }
 
-- (void)dealloc {
-  if (_personalDataManager) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-  }
+- (void)stop {
+  [_cardMediator disconnect];
+  _cardMediator = nil;
+
+  _cardViewController = nil;
 }
 
 #pragma mark - FallbackCoordinator
@@ -154,15 +140,6 @@
                                        inIncognito:self.browser
                                                        ->GetBrowserState()
                                                        ->IsOffTheRecord()]];
-}
-
-#pragma mark - PersonalDataManagerObserver
-
-- (void)onPersonalDataChanged {
-  std::vector<autofill::CreditCard*> cards =
-      _personalDataManager->payments_data_manager().GetCreditCardsToSuggest();
-
-  [self.cardMediator reloadWithCards:cards];
 }
 
 @end

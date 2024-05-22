@@ -12,6 +12,7 @@
 @protocol BrowserCoordinatorCommands;
 namespace autofill {
 class CreditCard;
+class PersonalDataManager;
 }  // namespace autofill
 
 @protocol ManualFillContentInjector;
@@ -38,8 +39,9 @@ extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
 
-// The designated initializer. `cards` must not be nil.
-- (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards
+// The designated initializer. `personalDataManager` must not be nil.
+- (instancetype)initWithPersonalDataManager:
+    (autofill::PersonalDataManager*)personalDataManager
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithCards:`.
@@ -48,8 +50,8 @@ extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 // Finds the original autofill::CreditCard from given `GUID`.
 - (const autofill::CreditCard*)findCreditCardfromGUID:(NSString*)GUID;
 
-// Updates the `cards` being presented.
-- (void)reloadWithCards:(std::vector<autofill::CreditCard*>)cards;
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

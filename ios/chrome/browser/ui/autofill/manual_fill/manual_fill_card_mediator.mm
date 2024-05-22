@@ -11,7 +11,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -42,19 +44,31 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 
 }  // namespace manual_fill
 
-@interface ManualFillCardMediator ()
+@interface ManualFillCardMediator () <PersonalDataManagerObserver>
 
 // All available credit cards.
 @property(nonatomic, assign) std::vector<CreditCard*> cards;
 
 @end
 
-@implementation ManualFillCardMediator
+@implementation ManualFillCardMediator {
+  // Personal data manager to be observed.
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
-- (instancetype)initWithCards:(std::vector<CreditCard*>)cards {
+  // C++ to ObjC bridge for PersonalDataManagerObserver.
+  std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
+      _personalDataManagerObserver;
+}
+
+- (instancetype)initWithPersonalDataManager:
+    (autofill::PersonalDataManager*)personalDataManager {
   self = [super init];
   if (self) {
-    _cards = cards;
+    _personalDataManager = personalDataManager;
+    _personalDataManagerObserver.reset(
+        new autofill::PersonalDataManagerObserverBridge(self));
+    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
+    _cards = _personalDataManager->payments_data_manager().GetCreditCards();
   }
   return self;
 }
@@ -78,8 +92,18 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
   return nil;
 }
 
-- (void)reloadWithCards:(std::vector<CreditCard*>)cards {
-  self.cards = cards;
+- (void)disconnect {
+  if (_personalDataManager && _personalDataManagerObserver.get()) {
+    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
+    _personalDataManagerObserver.reset();
+  }
+}
+
+#pragma mark - PersonalDataManagerObserver
+
+- (void)onPersonalDataChanged {
+  self.cards =
+      _personalDataManager->payments_data_manager().GetCreditCardsToSuggest();
   if (self.consumer) {
     [self postCardsToConsumer];
     [self postActionsToConsumer];
