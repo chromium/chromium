@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -61,7 +62,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -79,7 +79,6 @@
 // to the view.
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
                                       IdentityManagerObserverBridgeDelegate,
-                                      ManageSyncSettingsCoordinatorDelegate,
                                       ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
@@ -99,6 +98,8 @@
     ReadingListTableViewController* tableViewController;
 // Coordinator in charge of handling sharing use cases.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
+// Whether the sign-in promo is shown or not.
+@property(nonatomic, assign) BOOL shouldShowSignInPromo;
 
 @end
 
@@ -106,8 +107,6 @@
   // Observer for changes to the user's Google identities.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
-  // Whether the sign-in promo is shown or not.
-  BOOL _shouldShowSignInPromo;
   // The mediator that updates the sign-in promo view.
   SigninPromoViewMediator* _signinPromoViewMediator;
   // Handler for sign-in commands.
@@ -120,8 +119,6 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
-  // Coordinator of manage sync settings.
-  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -323,7 +320,7 @@
 }
 
 - (void)didLoadContent {
-  if (!_shouldShowSignInPromo) {
+  if (!self.shouldShowSignInPromo) {
     return;
   }
 
@@ -546,17 +543,10 @@
 #pragma mark - AccountSettingsPresenter
 
 - (void)showAccountSettings {
-  CHECK(!_syncService->GetAccountInfo().IsEmpty())
-      << base::SysNSStringToUTF8([self description]);
-  SyncSettingsAccountState accountState =
-      _syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
-                                     : SyncSettingsAccountState::kSignedIn;
-  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
-      initWithBaseViewController:self.tableViewController
-                         browser:self.browser
-                    accountState:accountState];
-  _manageSyncSettingsCoordinator.delegate = self;
-  [_manageSyncSettingsCoordinator start];
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler
+      showSyncSettingsFromViewController:self.navigationController];
 }
 
 #pragma mark - SigninPromoViewConsumer
@@ -614,10 +604,14 @@
   }
 
   SigninPromoAction signinPromoAction = SigninPromoAction::kInstantSignin;
-  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+  const BOOL hasPrimaryAccount =
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  const BOOL isReadingListSynced =
+      _syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kReadingList);
+  if (hasPrimaryAccount &&
       base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
-      !_syncService->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kReadingList)) {
+      !isReadingListSynced) {
     signinPromoAction = SigninPromoAction::kReviewAccountSettings;
   }
   if (![SigninPromoViewMediator
@@ -630,37 +624,34 @@
     return;
   }
 
-  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    syncer::UserSelectableTypeSet selected_types =
-        _syncService->GetUserSettings()->GetSelectedTypes();
-    if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
-        !selected_types.Has(syncer::UserSelectableType::kReadingList)) {
-      // Should remove the promo section completely in case it was showing
-      // before with another action.
-      self.shouldShowSignInPromo = NO;
-      if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
-        // TODO(crbug.com/339472472): There is crash if the settings are
-        // opened from the incognito tab.
-        _signinPromoViewMediator.signinPromoAction =
-            SigninPromoAction::kReviewAccountSettings;
-        self.shouldShowSignInPromo = YES;
-      }
-    } else {
-      // If the user is signed-in with the promo (thus opted-in for Reading List
-      // account storage), the promo should stay visible during the initial sync
-      // and a spinner should be shown on it.
-      self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
-    }
-  } else {
-    const std::string lastSignedInGaiaId =
-        _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-    // Show the promo if the last syncing user signed out and chose to clear
-    // data, or if the feature kEnableBatchUploadFromBookmarksManager is
-    // enabled.
-    self.shouldShowSignInPromo =
-        lastSignedInGaiaId.empty() ||
-        base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager);
+  if (_signinPromoViewMediator.showSpinner) {
+    // If the user is signed-in with the promo (thus opted-in for Reading List
+    // account storage), the promo should stay visible during the initial sync
+    // and a spinner should be shown on it.
+    // TODO(crbug.com/342114426): When this bug will be fixed, the following
+    // line can be changed into:
+    // CHECK(self.shouldShowSignInPromo);
+    self.shouldShowSignInPromo = YES;
+    return;
   }
+  if (hasPrimaryAccount && isReadingListSynced) {
+    self.shouldShowSignInPromo = NO;
+    return;
+  }
+  if (_signinPromoViewMediator.signinPromoAction != signinPromoAction) {
+    // Should remove the promo section completely in case it was showing
+    // before with another action.
+    self.shouldShowSignInPromo = NO;
+    _signinPromoViewMediator.signinPromoAction = signinPromoAction;
+  }
+  const std::string lastSignedInGaiaId =
+      _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+  // Show the promo if the last syncing user signed out and chose to clear
+  // data, or if the feature kEnableBatchUploadFromBookmarksManager is
+  // enabled.
+  self.shouldShowSignInPromo =
+      lastSignedInGaiaId.empty() ||
+      base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager);
 }
 
 // Updates the visibility of the sign-in promo.
@@ -729,24 +720,6 @@
 
 - (BOOL)isIncognitoAvailable {
   return !IsIncognitoModeDisabled(_prefService);
-}
-
-#pragma mark - ManageSyncSettingsCoordinatorDelegate
-
-- (void)manageSyncSettingsCoordinatorWasRemoved:
-    (ManageSyncSettingsCoordinator*)coordinator {
-  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
-  [_manageSyncSettingsCoordinator stop];
-  _manageSyncSettingsCoordinator = nil;
-  // Should remove the promo section completely.
-  self.shouldShowSignInPromo = NO;
-  _signinPromoViewMediator.signinPromoAction =
-      SigninPromoAction::kInstantSignin;
-  [self updateSignInPromoVisibility];
-}
-
-- (NSString*)manageSyncSettingsCoordinatorTitle {
-  return l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
 }
 
 @end
