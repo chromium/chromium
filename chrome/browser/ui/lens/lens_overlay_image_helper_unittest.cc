@@ -349,4 +349,146 @@ TEST_F(LensOverlayImageHelperTest,
             result->coordinate_type);
 }
 
+TEST_F(LensOverlayImageHelperTest, ExtractVibrantOrDominantColorFromImage) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  // muted green for the whole image
+  bitmap.eraseColor(SkColorSetRGB(80, 200, 80));
+  // vibrant green for 40x40, which is 16%
+  bitmap.erase(SK_ColorGREEN, {20, 20, 60, 60});
+
+  // Happy path, green.
+  {
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.15f);
+    EXPECT_EQ(SK_ColorGREEN, color);
+  }
+
+  // Not enough pixels for green, muted green.
+  {
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.17f);
+    EXPECT_EQ(SkColorSetRGB(80, 200, 80) /* Muted green */, color);
+  }
+
+  // Not enough pixels for green, background dark gray is
+  // not colorful enough, extraction fails and returns
+  // transparent.
+  {
+    // dark gray for the whole image
+    bitmap.eraseColor(SK_ColorDKGRAY);
+    // vibrant green for 40x40, which is 16%
+    bitmap.erase(SK_ColorGREEN, {20, 20, 60, 60});
+
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.17f);
+    EXPECT_EQ(SK_ColorTRANSPARENT, color);
+  }
+}
+
+TEST_F(LensOverlayImageHelperTest, ConvertColorToLab) {
+  SkColor input_rgb[] = {SK_ColorBLACK, SK_ColorWHITE,  SK_ColorRED,
+                         SK_ColorGREEN, SK_ColorBLUE,   SK_ColorYELLOW,
+                         SK_ColorCYAN,  SK_ColorMAGENTA};
+
+  // Conversion values from
+  // https://colorjs.io/apps/convert/?color=magenta&precision=4
+  std::tuple<float, float, float> output_lab[] = {
+      {0.0, 0.0, 0.0},         {100.0, 0.0, 0.0},       {54.29, 80.80, 69.89},
+      {87.82, -79.27, 80.99},  {29.57, 68.30, -112.03}, {97.61, -15.75, 93.39},
+      {90.67, -50.66, -14.96}, {60.17, 93.54, -60.50}};
+
+  int index = 0;
+  for (auto rgb : input_rgb) {
+    auto [l, a, b] = ConvertColorToLab(rgb);
+    auto [expected_l, expected_a, expected_b] = output_lab[index];
+    EXPECT_NEAR(expected_l, l, 0.05);
+    EXPECT_NEAR(expected_a, a, 0.05);
+    EXPECT_NEAR(expected_b, b, 0.05);
+    index++;
+  }
+}
+
+TEST_F(LensOverlayImageHelperTest, ColorUtilityFunctions) {
+  EXPECT_NEAR(0.0, CalculateChroma(ConvertColorToLab(SK_ColorDKGRAY)), 1.0);
+  EXPECT_NEAR(111.4, CalculateChroma(ConvertColorToLab(SK_ColorMAGENTA)), 1.0);
+  EXPECT_NEAR(72.0,
+              CalculateChroma(ConvertColorToLab(SkColorSetRGB(80, 200, 80))),
+              1.0);
+
+  EXPECT_NEAR(0.71, CalculateHueAngle(ConvertColorToLab(SK_ColorRED)).value(),
+              0.01);
+  EXPECT_NEAR(-1.023,
+              CalculateHueAngle(ConvertColorToLab(SK_ColorBLUE)).value(), 0.01);
+  EXPECT_NEAR(-0.574,
+              CalculateHueAngle(ConvertColorToLab(SK_ColorMAGENTA)).value(),
+              0.01);
+
+  EXPECT_FALSE(CalculateHueAngle({100, 0, 0}).has_value());
+
+  EXPECT_FALSE(CalculateHueAngleDistance(ConvertColorToLab(SK_ColorRED),
+                                         {29.0f, 0.0f, 0.0f})
+                   .has_value());
+  EXPECT_FALSE(CalculateHueAngleDistance({29.0f, 0.0f, 0.0f},
+                                         ConvertColorToLab(SK_ColorCYAN))
+                   .has_value());
+  EXPECT_NEAR(1.028,
+              CalculateHueAngleDistance(ConvertColorToLab(SK_ColorRED),
+                                        ConvertColorToLab(SK_ColorYELLOW))
+                  .value(),
+              0.01);
+}
+
+TEST_F(LensOverlayImageHelperTest, FindBestMatchedColorOrTransparent) {
+  // Colors pulled from
+  // https://www.figma.com/design/MkL8eSQvcZ9hlO3jcx47Jt/Chromnient-I%2FO-Specs
+  // Setting this up as a map to match expected usage from caller in
+  // order to find the theme name with the best matched primary color.
+  std::map<SkColor, const std::string> color_map = {
+      {SkColorSetRGB(0x60, 0x18, 0xD6), "grape"},
+      {SkColorSetRGB(0x95, 0x00, 0x84), "candy"},
+      {SkColorSetRGB(0xA2, 0x00, 0x3B), "gum"},
+      {SkColorSetRGB(0x8F, 0x31, 0x00), "tangerine"},
+      {SkColorSetRGB(0x50, 0x42, 0x2B), "schoolbus"},
+      {SkColorSetRGB(0x18, 0x5D, 0x00), "cactus"},
+      {SkColorSetRGB(0x00, 0x5A, 0x5C), "turquoise"},
+      {SkColorSetRGB(0xA3, 0x06, 0x21), "tomato"},
+      {SkColorSetRGB(0x8E, 0x4E, 0x00), "cinnamon"},
+      {SkColorSetRGB(0x6D, 0x5E, 0x00), "lemon"},
+      {SkColorSetRGB(0x56, 0x65, 0x00), "lime"},
+      {SkColorSetRGB(0x00, 0x6D, 0x42), "evergreen"},
+      {SkColorSetRGB(0x00, 0x6B, 0x5B), "mint"},
+      {SkColorSetRGB(0x00, 0x67, 0x7D), "ice"},
+      {SkColorSetRGB(0x00, 0x65, 0x90), "glacier"},
+      {SkColorSetRGB(0x0A, 0x2B, 0xCE), "sapphire"},
+      {SkColorSetRGB(0x74, 0x00, 0x9F), "lavender"},
+  };
+
+  std::vector<SkColor> colors;
+  for (const auto& pair : color_map) {
+    colors.emplace_back(pair.first);
+  }
+  // No match for close to grayscale colors
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorWHITE, 3.0f));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorGRAY, 3.0f));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorBLACK, 3.0f));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            FindBestMatchedColorOrTransparent(
+                colors, SkColorSetRGB(0x43, 0x46, 0x44), 3.0f));
+
+  // Closest matching colors.
+  EXPECT_EQ("grape", color_map[FindBestMatchedColorOrTransparent(
+                         colors, SkColorSetRGB(0x50, 0x12, 0xC4), 3.0f)]);
+  EXPECT_EQ(
+      "turquoise",
+      color_map[FindBestMatchedColorOrTransparent(colors, SK_ColorCYAN, 3.0f)]);
+  EXPECT_EQ(
+      "tangerine",
+      color_map[FindBestMatchedColorOrTransparent(colors, SK_ColorRED, 3.0f)]);
+  EXPECT_EQ("cactus", color_map[FindBestMatchedColorOrTransparent(
+                          colors, SK_ColorGREEN, 3.0f)]);
+  EXPECT_EQ("schoolbus", color_map[FindBestMatchedColorOrTransparent(
+                             colors, SkColorSetRGB(0x48, 0x39, 0x12), 3.0f)]);
+}
+
 }  // namespace lens
