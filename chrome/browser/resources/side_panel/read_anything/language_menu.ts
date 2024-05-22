@@ -71,6 +71,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     };
   }
 
+  private availableVoices: SpeechSynthesisVoice[];
   private languageSearchValue_: string;
   private readonly voicePackInstallStatus:
       {[language: string]: VoicePackStatus};
@@ -200,7 +201,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     // TODO(b/40927698): In the future, some of our install error messages
     // might not be set to an "error" in the notification status span, so
     // be more specific.
-    return notification === VoicePackStatus.INSTALL_ERROR;
+    return notification === VoicePackStatus.INSTALL_ERROR ||
+        notification === VoicePackStatus.INSTALL_ERROR_ALLOCATION;
   }
 
   private getNotificationText(
@@ -239,6 +241,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
           return 'readingModeLanguageMenuNoInternet';
         }
         return '';
+      case VoicePackStatus.INSTALL_ERROR_ALLOCATION:
+        // If we get an allocation error but voices exist for the given
+        // language, show an allocation error specific to downloading high
+        // quality voices.
+        if (this.availableVoices.some(
+                voice => voice.lang.toLowerCase() === lang)) {
+          return 'allocationErrorHighQuality';
+        }
+        return 'allocationError';
       case VoicePackStatus.NONE:
       case VoicePackStatus.EXISTS:
       case VoicePackStatus.INSTALLED:

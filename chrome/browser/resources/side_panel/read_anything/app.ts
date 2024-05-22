@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, errorCodeToVoicePackStatusEnum, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -893,8 +893,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (voicePackStatus === VoicePackStatus.INSTALL_ERROR) {
-      // TODO (b/331795122) Handle install errors on the UI
-      this.setVoicePackStatus_(lang, VoicePackStatus.INSTALL_ERROR);
+      // TODO (b/331795122) Handle more install errors on the UI
+      this.setVoicePackStatus_(lang, errorCodeToVoicePackStatusEnum(status));
       return;
     }
 

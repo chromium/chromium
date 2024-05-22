@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 export enum VoicePackStatus {
-  NONE, //  no language pack available
-  EXISTS, // available, and not installed
-  INSTALLING, // we've requested a language pack installation
-  DOWNLOADED, // language pack downloaded, waiting for update to voices
-  INSTALLED, //  we have natural voices for this language
-  REMOVED_BY_USER, // user removed this voice pack outside of reading mode
-  INSTALL_ERROR,
+  NONE,             //  no language pack available
+  EXISTS,           // available, and not installed
+  INSTALLING,       // we've requested a language pack installation
+  DOWNLOADED,       // language pack downloaded, waiting for update to voices
+  INSTALLED,        //  we have natural voices for this language
+  REMOVED_BY_USER,  // user removed this voice pack outside of reading mode
+  INSTALL_ERROR,    // Catch-all status. Use more specific error status if
+                    // possible.
+  INSTALL_ERROR_ALLOCATION, // Install error due to no memory.
 }
 
 // This string is not localized and will be in English, even for non-English
@@ -113,6 +115,15 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   }
   // The success statuses were not sent so return an Error
   // TODO (b/331795122) Handle install errors on the UI
+  return VoicePackStatus.INSTALL_ERROR;
+}
+export function errorCodeToVoicePackStatusEnum(errorCode: string) {
+  if (errorCode === 'kAllocation') {
+    return VoicePackStatus.INSTALL_ERROR_ALLOCATION;
+  }
+
+  // TODO: b/331795122 - Handle more error codes from the language pack.
+
   return VoicePackStatus.INSTALL_ERROR;
 }
 
