@@ -51,8 +51,9 @@ void CredentialManagerPendingPreventSilentAccessTask::
     }
   }
   pending_requests_--;
-  if (!pending_requests_)
+  if (!pending_requests_) {
     delegate_->DoneRequiringUserMediation();
+  }
 }
 
 }  // namespace password_manager

@@ -310,8 +310,9 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<PasswordForm> forms;
   PasswordStoreChangeList changes;
-  if (!login_db_ || !login_db_->GetAutoSignInLogins(&forms))
+  if (!login_db_ || !login_db_->GetAutoSignInLogins(&forms)) {
     return changes;
+  }
 
   std::set<GURL> origins_to_update;
   for (const auto& form : forms) {
@@ -322,8 +323,9 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
 
   std::set<GURL> origins_updated;
   for (const GURL& origin : origins_to_update) {
-    if (login_db_->DisableAutoSignInForOrigin(origin))
+    if (login_db_->DisableAutoSignInForOrigin(origin)) {
       origins_updated.insert(origin);
+    }
   }
 
   for (const auto& form : forms) {
@@ -337,14 +339,16 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
 // Synchronous implementation for manipulating with statistics.
 void LoginDatabaseAsyncHelper::AddSiteStats(const InteractionsStats& stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
+  if (login_db_) {
     login_db_->stats_table().AddRow(stats);
+  }
 }
 
 void LoginDatabaseAsyncHelper::RemoveSiteStats(const GURL& origin_domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
+  if (login_db_) {
     login_db_->stats_table().RemoveRow(origin_domain);
+  }
 }
 
 std::vector<InteractionsStats> LoginDatabaseAsyncHelper::GetSiteStats(
@@ -389,8 +393,9 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateCredentialSync(
 void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!remote_forms_changes_received_callback_)
+  if (!remote_forms_changes_received_callback_) {
     return;
+  }
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(remote_forms_changes_received_callback_, changes));
@@ -426,29 +431,33 @@ void LoginDatabaseAsyncHelper::NotifyUnsyncedCredentialsWillBeDeleted(
 
 bool LoginDatabaseAsyncHelper::BeginTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
+  if (login_db_) {
     return login_db_->BeginTransaction();
+  }
   return false;
 }
 
 void LoginDatabaseAsyncHelper::RollbackTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
+  if (login_db_) {
     login_db_->RollbackTransaction();
+  }
 }
 
 bool LoginDatabaseAsyncHelper::CommitTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_)
+  if (login_db_) {
     return login_db_->CommitTransaction();
+  }
   return false;
 }
 
 FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(
     PrimaryKeyToPasswordSpecificsDataMap* key_to_specifics_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!login_db_)
+  if (!login_db_) {
     return FormRetrievalResult::kDbError;
+  }
   std::vector<PasswordForm> forms;
   FormRetrievalResult result = login_db_->GetAllLogins(&forms);
   for (const auto& form : forms) {
@@ -491,8 +500,9 @@ bool LoginDatabaseAsyncHelper::DeleteAndRecreateDatabaseFile() {
 DatabaseCleanupResult
 LoginDatabaseAsyncHelper::DeleteUndecryptableCredentials() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!login_db_)
+  if (!login_db_) {
     return DatabaseCleanupResult::kDatabaseUnavailable;
+  }
   return login_db_->DeleteUndecryptableLogins();
 }
 
@@ -527,8 +537,9 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLoginImpl(
 // and bubble statistics.
 void LoginDatabaseAsyncHelper::ReportMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!login_db_)
+  if (!login_db_) {
     return;
+  }
   login_db_->ReportMetrics();
 }
 

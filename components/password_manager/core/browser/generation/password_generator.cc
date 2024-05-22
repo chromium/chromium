@@ -110,10 +110,12 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
 
   // Determine target length.
   uint32_t target_length = kDefaultPasswordLength;
-  if (spec.has_min_length())
+  if (spec.has_min_length()) {
     target_length = std::max(target_length, spec.min_length());
-  if (spec.has_max_length())
+  }
+  if (spec.has_max_length()) {
     target_length = std::min(target_length, spec.max_length());
+  }
   // Avoid excessively long passwords.
   target_length = std::min(target_length, 200u);
 
@@ -146,12 +148,14 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
     DCHECK(character_class->has_max());
 
     // If the character set is empty, we cannot generate characters from it.
-    if (character_class->character_set().empty())
+    if (character_class->character_set().empty()) {
       character_class->set_max(0);
+    }
 
     // The the maximum is smaller than the minimum, limit the minimum.
-    if (character_class->max() < character_class->min())
+    if (character_class->max() < character_class->min()) {
       character_class->set_min(character_class->max());
+    }
 
     if (character_class->max() > 0) {
       classes.push_back(character_class);
@@ -186,8 +190,9 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
             characters_of_class[character_class].length();
       }
     }
-    if (number_of_possible_chars == 0)
+    if (number_of_possible_chars == 0) {
       break;
+    }
     uint64_t choice = base::RandGenerator(number_of_possible_chars);
     // Now figure out which character was chosen and append it.
     for (CharacterClass* character_class : classes) {
@@ -254,8 +259,9 @@ std::u16string GenerateMaxEntropyChunkedPassword(
 
 void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec) {
   DCHECK(spec);
-  if (spec->lower_case().max() == 0 && spec->upper_case().max() == 0)
+  if (spec->lower_case().max() == 0 && spec->upper_case().max() == 0) {
     spec->mutable_numeric()->mutable_character_set()->append("01");
+  }
 }
 
 std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {

@@ -73,7 +73,6 @@ class AffiliatedMatchHelper {
   static bool IsValidWebCredential(const PasswordFormDigest& form);
 
  private:
-
   // Called back by AffiliationService to supply the list of facets
   // affiliated with the Android credential in |form|. Injects affiliation and
   // branding information by setting |affiliated_web_realm|, |app_display_name|

@@ -1140,8 +1140,8 @@ class PasswordStoreGroupsTest : public PasswordStoreTest {
          u"", u"", u"username_3", u"password"},
 
         // Credential that is a group match of the observed form.
-        {PasswordForm::Scheme::kHtml, kTestGroupRealm, kTestGroupURL, "",
-         u"", u"", u"", u"username_4", u"password1"},
+        {PasswordForm::Scheme::kHtml, kTestGroupRealm, kTestGroupURL, "", u"",
+         u"", u"", u"username_4", u"password1"},
 
         // Credential that is a PSL match of an affiliated form. It should be
         // filtered out.
@@ -1477,8 +1477,9 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
 
   MockPasswordStoreConsumer mock_consumer;
   std::vector<PasswordForm> expected_results;
-  for (const auto& credential : all_credentials)
+  for (const auto& credential : all_credentials) {
     expected_results.push_back(*credential);
+  }
 
   EXPECT_CALL(
       mock_consumer,
@@ -1524,8 +1525,9 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
 
   MockPasswordStoreConsumer mock_consumer;
   std::vector<PasswordForm> expected_results;
-  for (const auto& credential : all_credentials)
+  for (const auto& credential : all_credentials) {
     expected_results.push_back(*credential);
+  }
 
   std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {

@@ -305,7 +305,7 @@ class VotesUploader {
   // username value is found, the match is saved to |username_correction_vote_|
   // and the function returns true.
   bool FindUsernameInOtherAlternativeUsernames(const PasswordForm& match,
-                                            const std::u16string& username);
+                                               const std::u16string& username);
 
   // Wrapper around `autofill::EncodeUploadRequest`. Given the form, returns the
   // information that needs to be sent to the Autofill server.

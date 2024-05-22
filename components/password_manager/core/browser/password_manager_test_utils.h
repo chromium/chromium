@@ -126,8 +126,9 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
 }
 
 MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
-  if (absl::holds_alternative<PasswordStoreBackendError>(arg))
+  if (absl::holds_alternative<PasswordStoreBackendError>(arg)) {
     return false;
+  }
 
   return ContainsEqualPasswordFormsUnordered(
       *expectations, std::move(absl::get<LoginsResult>(arg)),

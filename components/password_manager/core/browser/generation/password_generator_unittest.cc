@@ -242,8 +242,9 @@ TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
   // as an indicator that the override was respected.
   size_t num_as_and_bs = 0;
   for (char16_t c : password) {
-    if (c == 'a' || c == 'b')
+    if (c == 'a' || c == 'b') {
       ++num_as_and_bs;
+    }
   }
   EXPECT_EQ(5u, num_as_and_bs);
 }
@@ -264,10 +265,12 @@ TEST_F(PasswordGeneratorTest, AllCharactersAreGenerated) {
     size_t num_as = 0;
     size_t num_bs = 0;
     for (char16_t c : password) {
-      if (c == 'a')
+      if (c == 'a') {
         ++num_as;
-      if (c == 'b')
+      }
+      if (c == 'b') {
         ++num_bs;
+      }
     }
     if (num_as > 0u && num_bs > 0u) {
       success = true;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/password_manager/core/browser/leak_detection_delegate.h"
+
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +18,6 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
-#include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -176,8 +177,9 @@ class LeakDetectionDelegateTest : public testing::Test {
 
   void ExpectPasswords(std::vector<PasswordForm> password_forms,
                        MockPasswordStoreInterface* store = nullptr) {
-    if (!store)
+    if (!store) {
       store = profile_store();
+    }
 
     PasswordForm::Store in_store =
         (store == account_store() ? PasswordForm::Store::kAccountStore

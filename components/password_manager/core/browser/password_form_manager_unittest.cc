@@ -166,8 +166,9 @@ MATCHER_P(FormHasUsernameValue, username_value, "") {
 }
 
 MATCHER_P(FormHasPassword, password_value, "") {
-  if (arg.new_password_value.empty())
+  if (arg.new_password_value.empty()) {
     return arg.password_value == password_value;
+  }
   return arg.new_password_value == password_value;
 }
 
@@ -254,8 +255,9 @@ void CheckMetric(const int64_t* expected,
       ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name);
 
   ASSERT_EQ(!!expected, !!actual);
-  if (expected)
+  if (expected) {
     EXPECT_EQ(*expected, *actual);
+  }
 }
 
 // Check that |recorder| records metrics |expected_metrics|.
@@ -265,8 +267,9 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
       recorder.GetEntriesByName(ukm::builders::PasswordForm::kEntryName);
   ASSERT_EQ(1u, entries.size());
   const int64_t* expected_popup_shown = nullptr;
-  if (expected_metrics.generation_popup_shown)
+  if (expected_metrics.generation_popup_shown) {
     expected_popup_shown = &expected_metrics.generation_popup_shown.value();
+  }
   CheckMetric(expected_popup_shown, entries[0],
               ukm::builders::PasswordForm::kGeneration_PopupShownName);
 
@@ -274,9 +277,10 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
               ukm::builders::PasswordForm::kGeneration_GeneratedPasswordName);
 
   const int64_t* expected_password_modified = nullptr;
-  if (expected_metrics.generated_password_modified)
+  if (expected_metrics.generated_password_modified) {
     expected_password_modified =
         &expected_metrics.generated_password_modified.value();
+  }
   CheckMetric(
       expected_password_modified, entries[0],
       ukm::builders::PasswordForm::kGeneration_GeneratedPasswordModifiedName);
@@ -1286,12 +1290,13 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
       EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
     }
 
-    if (expected_vote == autofill::NEW_PASSWORD)
+    if (expected_vote == autofill::NEW_PASSWORD) {
       form_manager_->Save();
-    else if (expected_vote == autofill::PROBABLY_NEW_PASSWORD)
+    } else if (expected_vote == autofill::PROBABLY_NEW_PASSWORD) {
       form_manager_->OnNoInteraction(true /* is_update */);
-    else
+    } else {
       form_manager_->OnNopeUpdateClicked();
+    }
     Mock::VerifyAndClearExpectations(&crowdsourcing_manager());
   }
 }
@@ -1665,8 +1670,9 @@ bool ParsingSuccessReported(const ukm::mojom::UkmEntry* entry,
   // Ideally, an ASSERT_TRUE above would prevent the test suite from crashing on
   // dereferencing |value| below. But ASSERT_* is not available in non-void
   // returning functions, so the null value is handled explicitly.
-  if (!value)
+  if (!value) {
     return false;  // Value does not matter, the test already failed.
+  }
   return 1 == (1 & *value);
 }
 
@@ -2321,8 +2327,9 @@ TEST_P(PasswordFormManagerTest, PasswordRevealedVote) {
     EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                  possible_usernames_));
 
-    if (password_revealed)
+    if (password_revealed) {
       form_manager_->OnPasswordsRevealed();
+    }
 
     EXPECT_CALL(
         crowdsourcing_manager(),
@@ -2403,8 +2410,9 @@ TEST_P(PasswordFormManagerTest, SaveHttpAuthNoHttpAuthStored) {
     MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>> saved_matches;
-    if (html_credentials_saved)
+    if (html_credentials_saved) {
       saved_matches.push_back(&saved_match_);
+    }
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);
 
     std::u16string username = u"user1";
@@ -3608,7 +3616,6 @@ TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeServerPrediction) {
 // Tests that boolean representing autocomplete = "username" is taken into
 // consideration when offering username in prompt in username first flow.
 TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
-
   // A single password form is loaded on the page.
   FormData submitted_form = observed_form_only_password_fields_;
   CreateFormManager(submitted_form);
@@ -4810,8 +4817,9 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     EXPECT_CALL(client_, AutofillHttpAuth(_, _)).Times(0);
     CreateFormManagerForNonWebForm(http_auth_form);
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>> saved_matches;
-    if (html_credentials_saved)
+    if (html_credentials_saved) {
       saved_matches.push_back(&saved_match_);
+    }
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);
     std::u16string username = u"user1";
     std::u16string password = u"pass1";

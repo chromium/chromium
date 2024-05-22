@@ -90,8 +90,9 @@ bool PasswordManagerPorter::Export(
 }
 
 void PasswordManagerPorter::CancelExport() {
-  if (exporter_)
+  if (exporter_) {
     exporter_->Cancel();
+  }
 }
 
 password_manager::ExportProgressStatus
@@ -190,8 +191,9 @@ void PasswordManagerPorter::PresentFileSelector(
 // and the relevant IDS constants are not present for Android.
 #if !BUILDFLAG(IS_ANDROID)
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   CHECK(web_contents);
 

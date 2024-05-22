@@ -149,9 +149,10 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
   form_fetcher_->Fetch();
   form_fetcher_->AddConsumer(this);
 
-  for (const GURL& federation : request_federations)
+  for (const GURL& federation : request_federations) {
     federations_.insert(
         url::Origin::Create(federation.DeprecatedGetOriginAsURL()).Serialize());
+  }
 }
 
 CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() {

@@ -200,8 +200,9 @@ bool BlocklistedBySmartBubble(
         field.user_input().empty() ? field.value() : field.user_input();
     for (const InteractionsStats& stat : interactions_stats) {
       if (stat.username_value == value &&
-          stat.dismissal_count >= show_threshold)
+          stat.dismissal_count >= show_threshold) {
         return true;
+      }
     }
   }
   return false;
@@ -212,12 +213,14 @@ PasswordFormMetricsRecorder::FillingSource ComputeFillingSource(
     bool filled_from_account_store) {
   using FillingSource = PasswordFormMetricsRecorder::FillingSource;
   if (filled_from_profile_store) {
-    if (filled_from_account_store)
+    if (filled_from_account_store) {
       return FillingSource::kFilledFromBothStores;
+    }
     return FillingSource::kFilledFromProfileStore;
   }
-  if (filled_from_account_store)
+  if (filled_from_account_store) {
     return FillingSource::kFilledFromAccountStore;
+  }
   return FillingSource::kNotFilled;
 }
 
@@ -518,23 +521,26 @@ void PasswordFormMetricsRecorder::RecordShowManualFallbackForSaving(
 }
 
 void PasswordFormMetricsRecorder::RecordFormChangeBitmask(uint32_t bitmask) {
-  if (!form_changes_bitmask_)
+  if (!form_changes_bitmask_) {
     form_changes_bitmask_ = bitmask;
-  else
+  } else {
     *form_changes_bitmask_ |= bitmask;
+  }
 }
 
 void PasswordFormMetricsRecorder::RecordFirstFillingResult(int32_t result) {
-  if (recorded_first_filling_result_)
+  if (recorded_first_filling_result_) {
     return;
+  }
   ukm_entry_builder_.SetFill_FirstFillingResultInRenderer(result);
   recorded_first_filling_result_ = true;
 }
 
 void PasswordFormMetricsRecorder::RecordFirstWaitForUsernameReason(
     WaitForUsernameReason reason) {
-  if (recorded_wait_for_username_reason_)
+  if (recorded_wait_for_username_reason_) {
     return;
+  }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.FirstWaitForUsernameReason",
                             reason);
   ukm_entry_builder_.SetFill_FirstWaitForUsernameReason(
@@ -790,8 +796,9 @@ void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
   bool had_focus = false;
   bool had_user_input_or_autofill_on_password = false;
   for (const auto& field : submitted_form.fields) {
-    if (field.HadFocus())
+    if (field.HadFocus()) {
       had_focus = true;
+    }
     if (field.IsPasswordInputElement() &&
         (field.DidUserType() || field.WasPasswordAutofilled())) {
       had_user_input_or_autofill_on_password = true;
@@ -837,8 +844,9 @@ void PasswordFormMetricsRecorder::CalculateParsingDifferenceOnSavingAndFilling(
 void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     metrics_util::CredentialSourceType credential_source_type,
     metrics_util::UIDisplayDisposition display_disposition) {
-  if (credential_source_type == metrics_util::CredentialSourceType::kUnknown)
+  if (credential_source_type == metrics_util::CredentialSourceType::kUnknown) {
     return;
+  }
   DCHECK_EQ(CurrentBubbleOfInterest::kNone, current_bubble_);
   BubbleTrigger automatic_trigger_type =
       credential_source_type ==
@@ -912,8 +920,9 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
 void PasswordFormMetricsRecorder::RecordUIDismissalReason(
     metrics_util::UIDismissalReason ui_dismissal_reason) {
   if (current_bubble_ != CurrentBubbleOfInterest::kUpdateBubble &&
-      current_bubble_ != CurrentBubbleOfInterest::kSaveBubble)
+      current_bubble_ != CurrentBubbleOfInterest::kSaveBubble) {
     return;
+  }
   auto bubble_dismissal_reason = GetBubbleDismissalReason(ui_dismissal_reason);
   if (bubble_dismissal_reason != BubbleDismissalReason::kUnknown) {
     if (current_bubble_ == CurrentBubbleOfInterest::kUpdateBubble) {

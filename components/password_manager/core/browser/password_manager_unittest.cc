@@ -1881,8 +1881,9 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   form_data_after_navigation.renderer_id.value() += 1000;
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
-  for (auto& field : form_data_after_navigation.fields)
+  for (auto& field : form_data_after_navigation.fields) {
     field.set_value({});
+  }
   observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
@@ -1919,8 +1920,9 @@ TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
   form_data_after_navigation.renderer_id.value() += 1000;
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
-  for (auto& field : form_data_after_navigation.fields)
+  for (auto& field : form_data_after_navigation.fields) {
     field.set_value({});
+  }
   observed.push_back(form_data_after_navigation);
 
   // Reappeared change password form is a signal of a possibly successful
@@ -2784,8 +2786,9 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
     // The user accepts generated password and makes successful login.
     form.password_value = form.new_password_value;
     PasswordForm presaved_form(form);
-    if (found_matched_logins_in_store)
+    if (found_matched_logins_in_store) {
       presaved_form.username_value.clear();
+    }
     manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
                                           form.password_value);
     task_environment_.RunUntilIdle();
@@ -5329,8 +5332,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 
     form_data.fields[0].set_value(std::u16string());
     form_data.fields[2].set_value(std::u16string());
-    if (new_password_field_was_cleared)
+    if (new_password_field_was_cleared) {
       form_data.fields[1].set_value(std::u16string());
+    }
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {
@@ -5385,8 +5389,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
     form_data.fields[0].set_value({});
-    if (new_password_field_was_cleared)
+    if (new_password_field_was_cleared) {
       form_data.fields[1].set_value({});
+    }
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {

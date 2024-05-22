@@ -51,8 +51,9 @@ void PostProcessMatches(
   // Update existing matches in the password store.
   for (const password_manager::PasswordForm* match : matches) {
     if (match->IsFederatedCredential() ||
-        ArePasswordFormUniqueKeysEqual(pending, *match))
+        ArePasswordFormUniqueKeysEqual(pending, *match)) {
       continue;
+    }
     // Delete obsolete empty username credentials.
     const bool same_password = match->password_value == pending.password_value;
     const bool username_was_added =
@@ -87,8 +88,7 @@ void PostProcessMatches(
 
 }  // namespace
 
-FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {
-}
+FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {}
 
 FormSaverImpl::~FormSaverImpl() = default;
 
@@ -120,8 +120,9 @@ void FormSaverImpl::Update(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
-  if (old_password != pending.password_value)
+  if (old_password != pending.password_value) {
     pending.date_password_modified = base::Time::Now();
+  }
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);

@@ -24,7 +24,7 @@ class EditablePasswordCombobox;
 namespace views {
 class Label;
 class StyledLabel;
-}
+}  // namespace views
 
 namespace password_manager {
 struct PasswordForm;

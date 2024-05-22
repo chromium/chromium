@@ -292,8 +292,9 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
 
   // Verify that the store returns all test credentials.
   std::vector<PasswordForm> expected_results;
-  for (const auto& credential : all_credentials)
+  for (const auto& credential : all_credentials) {
     expected_results.push_back(*credential);
+  }
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,

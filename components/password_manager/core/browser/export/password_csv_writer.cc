@@ -57,15 +57,19 @@ std::string PasswordCSVWriter::SerializePasswords(
     }
   }
 
-  std::sort(records.begin(), records.end(), [&header](
-    const std::map<std::string, std::string>& lhs,
-    const std::map<std::string, std::string>& rhs) {
-      for (const std::string& headerVal : header) {
-        if (lhs.at(headerVal) < rhs.at(headerVal)) return true;
-        if (lhs.at(headerVal) > rhs.at(headerVal)) return false;
-      }
-      return false;
-  });
+  std::sort(records.begin(), records.end(),
+            [&header](const std::map<std::string, std::string>& lhs,
+                      const std::map<std::string, std::string>& rhs) {
+              for (const std::string& headerVal : header) {
+                if (lhs.at(headerVal) < rhs.at(headerVal)) {
+                  return true;
+                }
+                if (lhs.at(headerVal) > rhs.at(headerVal)) {
+                  return false;
+                }
+              }
+              return false;
+            });
 
   std::string result;
   WriteCSV(header, records, &result);

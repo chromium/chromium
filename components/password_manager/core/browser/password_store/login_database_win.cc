@@ -12,8 +12,9 @@ namespace password_manager {
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) {
-  if (OSCrypt::EncryptString16(plain_text, cipher_text))
+  if (OSCrypt::EncryptString16(plain_text, cipher_text)) {
     return ENCRYPTION_RESULT_SUCCESS;
+  }
   return ENCRYPTION_RESULT_ITEM_FAILURE;
 }
 
@@ -33,8 +34,9 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     plain_text->clear();
     return ENCRYPTION_RESULT_SUCCESS;
   }
-  if (OSCrypt::DecryptString16(cipher_text, plain_text))
+  if (OSCrypt::DecryptString16(cipher_text, plain_text)) {
     return ENCRYPTION_RESULT_SUCCESS;
+  }
   return ENCRYPTION_RESULT_ITEM_FAILURE;
 }
 

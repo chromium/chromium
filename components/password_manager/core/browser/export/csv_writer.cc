@@ -32,8 +32,9 @@ class CSVFormatter {
 
 void CSVFormatter::AppendValue(const std::string& raw_value) {
   // Append the field separator unless this is the first field on the line.
-  if (!at_beginning_of_line_)
+  if (!at_beginning_of_line_) {
     output_->push_back(',');
+  }
   at_beginning_of_line_ = false;
 
   // Fields containing line breaks (CRLF), double quotes, and commas should be
@@ -82,8 +83,8 @@ void WriteCSV(const std::vector<std::string>& column_names,
   for (const auto& row : records) {
     for (const auto& column_name : column_names) {
       auto it_field = row.find(column_name);
-      formatter.AppendValue(it_field != row.end() ?
-          it_field->second : std::string());
+      formatter.AppendValue(it_field != row.end() ? it_field->second
+                                                  : std::string());
     }
     formatter.EndLine();
   }

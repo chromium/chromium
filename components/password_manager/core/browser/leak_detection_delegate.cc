@@ -50,16 +50,18 @@ LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
                                            const PasswordForm& credentials,
                                            const GURL& form_url) {
-  if (client_->IsOffTheRecord())
+  if (client_->IsOffTheRecord()) {
     return;
+  }
 
   if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(), form_url,
                                              GetLogger(client_))) {
     return;
   }
 
-  if (credentials.username_value.empty())
+  if (credentials.username_value.empty()) {
     return;
+  }
 
   DCHECK(!credentials.password_value.empty());
 

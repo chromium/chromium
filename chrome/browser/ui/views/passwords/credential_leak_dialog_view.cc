@@ -79,8 +79,9 @@ CredentialLeakDialogView::CredentialLeakDialogView(
 }
 
 CredentialLeakDialogView::~CredentialLeakDialogView() {
-  if (controller_)
+  if (controller_) {
     std::exchange(controller_, nullptr)->ResetDialog();
+  }
 }
 
 void CredentialLeakDialogView::ShowCredentialLeakPrompt() {
@@ -94,8 +95,9 @@ void CredentialLeakDialogView::ControllerGone() {
   // reentry into Close() - |controller_| might have been nulled out by the
   // closure callbacks already, in which case the dialog is already closing. See
   // the definition of |close_callback| in the constructor.
-  if (controller_)
+  if (controller_) {
     GetWidget()->Close();
+  }
 }
 
 void CredentialLeakDialogView::AddedToWidget() {

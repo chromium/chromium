@@ -467,8 +467,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   waiter.WaitForDeactivation();
 
   // Let asynchronous tasks run until the bubble stops showing.
-  while (IsBubbleShowing())
+  while (IsBubbleShowing()) {
     base::RunLoop().RunUntilIdle();
+  }
   EXPECT_FALSE(IsBubbleShowing());
 }
 

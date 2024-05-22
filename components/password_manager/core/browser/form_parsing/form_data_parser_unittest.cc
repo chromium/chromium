@@ -177,8 +177,9 @@ void CheckField(const std::vector<FormFieldData>& fields,
 
   if (renderer_id.is_null()) {
     EXPECT_EQ(std::u16string(), element_name);
-    if (element_value)
+    if (element_value) {
       EXPECT_EQ(std::u16string(), *element_value);
+    }
     return;
   }
 
@@ -193,8 +194,9 @@ void CheckField(const std::vector<FormFieldData>& fields,
                                       ? field_it->value()
                                       : field_it->user_input();
 
-  if (element_value)
+  if (element_value) {
     EXPECT_EQ(expected_value, *element_value);
+  }
 }
 
 // Describes the |form_data| including field values and names. Use this in
@@ -316,11 +318,13 @@ class FormParserTest : public testing::Test {
       } else {
         field.set_value(field_description.value);
       }
-      if (field_description.autocomplete_attribute)
+      if (field_description.autocomplete_attribute) {
         field.set_autocomplete_attribute(
             field_description.autocomplete_attribute);
-      if (!field_description.user_input.empty())
+      }
+      if (!field_description.user_input.empty()) {
         field.set_user_input(field_description.user_input);
+      }
       form_data.fields.push_back(field);
       if (field_description.role == ElementRole::NONE) {
         UpdateResultWithIdByRole(fill_result, renderer_id,
@@ -340,8 +344,9 @@ class FormParserTest : public testing::Test {
       if (field_description.predicted_username >= 0) {
         size_t index =
             static_cast<size_t>(field_description.predicted_username);
-        if (form_data.username_predictions.size() <= index)
+        if (form_data.username_predictions.size() <= index) {
           form_data.username_predictions.resize(index + 1);
+        }
         form_data.username_predictions[index] = field.renderer_id();
       }
     }
@@ -349,8 +354,9 @@ class FormParserTest : public testing::Test {
     // correctly ignored. In real situation, this might correspond, e.g., to
     // fields which were not fillable and hence dropped from the selection.
     for (autofill::FieldRendererId& id : form_data.username_predictions) {
-      if (id.is_null())
+      if (id.is_null()) {
         id = GetUniqueId();
+      }
     }
     return form_data;
   }
@@ -379,65 +385,52 @@ class FormParserTest : public testing::Test {
         const ParseResultIds& expected_ids =
             mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
-      if (expected_ids.IsEmpty()) {
-        EXPECT_THAT(parsed_form, IsNull()) << "Expected no parsed results";
-      } else {
-        ASSERT_THAT(parsed_form, NotNull()) << "Expected successful parsing";
-        EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
-        EXPECT_FALSE(parsed_form->blocked_by_user);
-        EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
-        EXPECT_EQ(test_case.server_side_classification_successful,
-                  parsed_form->server_side_classification_successful);
-        EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
-                  parsed_form->username_may_use_prefilled_placeholder);
-        EXPECT_EQ(test_case.submission_event, parsed_form->submission_event);
-        if (test_case.is_new_password_reliable &&
-            mode == FormDataParser::Mode::kFilling) {
-          EXPECT_EQ(*test_case.is_new_password_reliable,
-                    parsed_form->is_new_password_reliable);
-        }
-        EXPECT_EQ(test_case.accepts_webauthn_credentials &&
-                      mode == FormDataParser::Mode::kFilling,
-                  parsed_form->accepts_webauthn_credentials);
-        EXPECT_EQ(test_case.form_has_autofilled_value,
-                  parsed_form->form_has_autofilled_value);
+        if (expected_ids.IsEmpty()) {
+          EXPECT_THAT(parsed_form, IsNull()) << "Expected no parsed results";
+        } else {
+          ASSERT_THAT(parsed_form, NotNull()) << "Expected successful parsing";
+          EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
+          EXPECT_FALSE(parsed_form->blocked_by_user);
+          EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
+          EXPECT_EQ(test_case.server_side_classification_successful,
+                    parsed_form->server_side_classification_successful);
+          EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
+                    parsed_form->username_may_use_prefilled_placeholder);
+          EXPECT_EQ(test_case.submission_event, parsed_form->submission_event);
+          if (test_case.is_new_password_reliable &&
+              mode == FormDataParser::Mode::kFilling) {
+            EXPECT_EQ(*test_case.is_new_password_reliable,
+                      parsed_form->is_new_password_reliable);
+          }
+          EXPECT_EQ(test_case.accepts_webauthn_credentials &&
+                        mode == FormDataParser::Mode::kFilling,
+                    parsed_form->accepts_webauthn_credentials);
+          EXPECT_EQ(test_case.form_has_autofilled_value,
+                    parsed_form->form_has_autofilled_value);
 
           CheckPasswordFormFields(*parsed_form, form_data, expected_ids);
           CheckAllValuesUnique(parsed_form->all_alternative_passwords);
           CheckAllValuesUnique(parsed_form->all_alternative_usernames);
           if (test_case.number_of_all_alternative_passwords >= 0) {
-            EXPECT_EQ(
-              static_cast<size_t>(
-                test_case.number_of_all_alternative_passwords
-              ),
-              parsed_form->all_alternative_passwords.size()
-            );
+            EXPECT_EQ(static_cast<size_t>(
+                          test_case.number_of_all_alternative_passwords),
+                      parsed_form->all_alternative_passwords.size());
           }
           if (test_case.all_alternative_passwords) {
-            EXPECT_EQ(
-              *test_case.all_alternative_passwords,
-              parsed_form->all_alternative_passwords
-            );
+            EXPECT_EQ(*test_case.all_alternative_passwords,
+                      parsed_form->all_alternative_passwords);
           }
           if (test_case.number_of_all_alternative_usernames >= 0) {
-            EXPECT_EQ(
-              static_cast<size_t>(
-                test_case.number_of_all_alternative_usernames
-              ),
-              parsed_form->all_alternative_usernames.size()
-            );
+            EXPECT_EQ(static_cast<size_t>(
+                          test_case.number_of_all_alternative_usernames),
+                      parsed_form->all_alternative_usernames.size());
           }
           if (test_case.all_alternative_usernames) {
-            EXPECT_EQ(
-              *test_case.all_alternative_usernames,
-              parsed_form->all_alternative_usernames
-            );
+            EXPECT_EQ(*test_case.all_alternative_usernames,
+                      parsed_form->all_alternative_usernames);
           }
           if (mode == FormDataParser::Mode::kSaving) {
-            EXPECT_EQ(
-              test_case.fallback_only,
-              parsed_form->only_for_fallback
-            );
+            EXPECT_EQ(test_case.fallback_only, parsed_form->only_for_fallback);
           }
         }
         if (test_case.readonly_status) {
@@ -448,8 +441,9 @@ class FormParserTest : public testing::Test {
                   mode == FormDataParser::Mode::kSaving
                       ? &test_case.readonly_status_for_saving
                       : &test_case.readonly_status_for_filling;
-          if (expected_readonly_status->has_value())
+          if (expected_readonly_status->has_value()) {
             EXPECT_EQ(*expected_readonly_status, parser.readonly_status());
+          }
         }
       }
     }
@@ -3029,8 +3023,9 @@ TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // should be ignored despite it is more reliable than prediction for
   // "id" field.
   std::vector<ProcessedField> processed_fields;
-  for (const auto& form_field_data : form_data.fields)
+  for (const auto& form_field_data : form_data.fields) {
     processed_fields.push_back(ProcessedField{.field = &form_field_data});
+  }
 
   processed_fields[2].interactability = Interactability::kCertain;  // id
   processed_fields[3].interactability = Interactability::kCertain;  // password

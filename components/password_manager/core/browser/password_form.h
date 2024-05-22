@@ -38,8 +38,8 @@ struct AlternativeElement {
       base::StrongAlias<class AlternativeElementNameTag, std::u16string>;
 
   AlternativeElement(const Value& value,
-               autofill::FieldRendererId field_renderer_id,
-               const Name& name);
+                     autofill::FieldRendererId field_renderer_id,
+                     const Name& name);
   explicit AlternativeElement(const Value& value);
   AlternativeElement(const AlternativeElement& rhs);
   AlternativeElement(AlternativeElement&& rhs);
@@ -108,7 +108,6 @@ struct InsecurityMetadata {
   // the user hasn't already been notified (e.g. via a leak check prompt).
   TriggerBackendNotification trigger_notification_from_backend{false};
 };
-
 
 // Represents a note attached to a particular credential.
 struct PasswordNote {

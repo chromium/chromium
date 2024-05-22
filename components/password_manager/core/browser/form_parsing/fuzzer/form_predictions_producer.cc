@@ -4,11 +4,11 @@
 
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <bitset>
 #include <string>
 #include <utility>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"

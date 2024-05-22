@@ -18,8 +18,9 @@ CSVFieldParser::~CSVFieldParser() = default;
 
 bool CSVFieldParser::NextField(std::string_view* field_contents) {
   DCHECK(HasMoreFields());
-  if (fields_returned_ >= kMaxFields)
+  if (fields_returned_ >= kMaxFields) {
     return false;
+  }
 
   if (state_ != State::kInit) {
     state_ = State::kError;
@@ -53,8 +54,9 @@ char CSVFieldParser::ConsumeChar() {
   // The default character to return once all from |row_| are consumed and
   // |position_| == |row_.size()|.
   char ret = ',';
-  if (position_ < row_.size())
+  if (position_ < row_.size()) {
     ret = row_[position_];
+  }
   ++position_;
   return ret;
 }

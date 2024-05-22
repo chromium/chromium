@@ -72,8 +72,9 @@ CSVPassword::CSVPassword(const ColumnMap& map, std::string_view row) {
       return;
     }
     auto meaning_it = map.find(field_idx++);
-    if (meaning_it == map.end())
+    if (meaning_it == map.end()) {
       continue;
+    }
     switch (meaning_it->second) {
       case Label::kOrigin: {
         GURL gurl = GURL(field);

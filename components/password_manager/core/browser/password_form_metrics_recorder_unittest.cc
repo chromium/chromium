@@ -123,8 +123,9 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
     {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure*/ true, &pref_service_);
-      if (test.generation_available)
+      if (test.generation_available) {
         recorder->MarkGenerationAvailable();
+      }
       if (test.has_generated_password) {
         recorder->SetGeneratedPasswordStatus(
             PasswordFormMetricsRecorder::GeneratedPasswordStatus::
@@ -602,19 +603,22 @@ PasswordForm ConvertToPasswordForm(
     form_field.set_value(ASCIIToUTF16(field.value));
     form_field.set_user_input(ASCIIToUTF16(field.user_input));
 
-    if (field.user_typed)
+    if (field.user_typed) {
       form_field.set_properties_mask(form_field.properties_mask() |
                                      FieldPropertiesFlags::kUserTyped);
+    }
 
-    if (field.manually_filled)
+    if (field.manually_filled) {
       form_field.set_properties_mask(
           form_field.properties_mask() |
           FieldPropertiesFlags::kAutofilledOnUserTrigger);
+    }
 
-    if (field.automatically_filled)
+    if (field.automatically_filled) {
       form_field.set_properties_mask(
           form_field.properties_mask() |
           FieldPropertiesFlags::kAutofilledOnPageLoad);
+    }
 
     form_field.set_form_control_type(
         field.is_password ? autofill::FormControlType::kInputPassword
@@ -637,10 +641,12 @@ StoreSet ConvertToString16AndStoreSet(
     const std::vector<std::string>& profile_store_values,
     const std::vector<std::string>& account_store_values) {
   StoreSet result;
-  for (const std::string& str : profile_store_values)
+  for (const std::string& str : profile_store_values) {
     result.emplace(ASCIIToUTF16(str), PasswordForm::Store::kProfileStore);
-  for (const std::string& str : account_store_values)
+  }
+  for (const std::string& str : account_store_values) {
     result.emplace(ASCIIToUTF16(str), PasswordForm::Store::kAccountStore);
+  }
   return result;
 }
 
@@ -743,8 +749,9 @@ void CheckFillingAssistanceTestCase(
           sub_case.account_storage_usage_level);
     }
 
-    if (test_case.submission_is_successful)
+    if (test_case.submission_is_successful) {
       recorder->LogSubmitPassed();
+    }
     recorder.reset();
 
     int expected_count = test_case.expectation ? 1 : 0;

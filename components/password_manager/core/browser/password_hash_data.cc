@@ -98,8 +98,9 @@ std::string CanonicalizeUsername(const std::string& username,
   std::vector<std::string> parts = base::SplitString(
       username, "@", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2U) {
-    if (is_gaia_account && parts.size() == 1U)
+    if (is_gaia_account && parts.size() == 1U) {
       return gaia::CanonicalizeEmail(username + "@gmail.com");
+    }
     return username;
   }
   return gaia::CanonicalizeEmail(username);
@@ -109,8 +110,9 @@ bool AreUsernamesSame(const std::string& username1,
                       bool is_username1_gaia_account,
                       const std::string& username2,
                       bool is_username2_gaia_account) {
-  if (is_username1_gaia_account != is_username2_gaia_account)
+  if (is_username1_gaia_account != is_username2_gaia_account) {
     return false;
+  }
   return CanonicalizeUsername(username1, is_username1_gaia_account) ==
          CanonicalizeUsername(username2, is_username2_gaia_account);
 }

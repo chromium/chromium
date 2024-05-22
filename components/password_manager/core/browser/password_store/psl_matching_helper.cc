@@ -53,16 +53,18 @@ bool IsFederatedRealm(const std::string& form_signon_realm, const GURL& url) {
 bool IsFederatedPSLMatch(const std::string& form_signon_realm,
                          const GURL& form_url,
                          const GURL& url) {
-  if (!IsPublicSuffixDomainMatch(form_url.spec(), url.spec()))
+  if (!IsPublicSuffixDomainMatch(form_url.spec(), url.spec())) {
     return false;
+  }
 
   return IsFederatedRealm(form_signon_realm, form_url);
 }
 
 MatchResult GetMatchResult(const PasswordForm& form,
                            const PasswordFormDigest& form_digest) {
-  if (form.signon_realm == form_digest.signon_realm)
+  if (form.signon_realm == form_digest.signon_realm) {
     return MatchResult::EXACT_MATCH;
+  }
 
   // PSL and federated matches only apply to HTML forms.
   if (form_digest.scheme != PasswordForm::Scheme::kHtml ||
@@ -70,8 +72,9 @@ MatchResult GetMatchResult(const PasswordForm& form,
     return MatchResult::NO_MATCH;
   }
 
-  if (IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm))
+  if (IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm)) {
     return MatchResult::PSL_MATCH;
+  }
 
   const bool allow_federated_match = !form.federation_origin.opaque();
   if (allow_federated_match &&
@@ -94,11 +97,13 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
   GURL gurl1(url1);
   GURL gurl2(url2);
 
-  if (!gurl1.is_valid() || !gurl2.is_valid())
+  if (!gurl1.is_valid() || !gurl2.is_valid()) {
     return false;
+  }
 
-  if (gurl1 == gurl2)
+  if (gurl1 == gurl2) {
     return true;
+  }
 
   if (gurl1.DomainIs("google.com") && gurl2.DomainIs("google.com")) {
     return gurl1.scheme() == gurl2.scheme() && gurl1.port() == gurl2.port() &&
@@ -109,8 +114,9 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
   std::string domain1(GetRegistryControlledDomain(gurl1));
   std::string domain2(GetRegistryControlledDomain(gurl2));
 
-  if (domain1.empty() || domain2.empty())
+  if (domain1.empty() || domain2.empty()) {
     return false;
+  }
 
   return gurl1.scheme() == gurl2.scheme() && domain1 == domain2 &&
          gurl1.port() == gurl2.port();

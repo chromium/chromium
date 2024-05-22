@@ -34,16 +34,19 @@ namespace {
 
 // Returns empty string if decryption fails.
 std::string DecryptBase64String(const std::string& encrypted_base64_string) {
-  if (encrypted_base64_string.empty())
+  if (encrypted_base64_string.empty()) {
     return std::string();
+  }
 
   std::string encrypted_string;
-  if (!base::Base64Decode(encrypted_base64_string, &encrypted_string))
+  if (!base::Base64Decode(encrypted_base64_string, &encrypted_string)) {
     return std::string();
+  }
 
   std::string plain_text;
-  if (!OSCrypt::DecryptString(encrypted_string, &plain_text))
+  if (!OSCrypt::DecryptString(encrypted_string, &plain_text)) {
     return std::string();
+  }
 
   return plain_text;
 }
@@ -80,12 +83,14 @@ std::string LengthAndSaltToString(const std::string& salt,
 bool StringToLengthAndSalt(const std::string& s,
                            size_t* password_length,
                            std::string* salt) {
-  if (s.empty() || !salt)
+  if (s.empty() || !salt) {
     return false;
+  }
 
   size_t separator_index = s.find(kSeparator);
-  if (separator_index == std::string::npos)
+  if (separator_index == std::string::npos) {
     return false;
+  }
 
   std::string prefix = s.substr(0, separator_index);
   *salt = s.substr(separator_index + 1);
@@ -101,8 +106,9 @@ std::optional<PasswordHashData> ConvertToPasswordHashData(
     const base::Value& dict) {
   PasswordHashData result;
   result.username = GetAndDecryptField(dict, kUsernameFieldKey);
-  if (result.username.empty())
+  if (result.username.empty()) {
     return std::nullopt;
+  }
 
   if (!base::StringToUint64(GetAndDecryptField(dict, kHashFieldKey),
                             &result.hash)) {
@@ -161,8 +167,9 @@ bool HashPasswordManager::SavePasswordHash(const std::string& username,
   // a user has changed their password. This means that an existing password
   // hash has to already exist in the password store and the SavePasswordHash
   // has to succeed.
-  if (!is_first_sign_in && is_saved)
+  if (!is_first_sign_in && is_saved) {
     state_callback_list_.Notify(username);
+  }
   return is_saved;
 }
 
@@ -175,8 +182,9 @@ bool HashPasswordManager::SavePasswordHash(
 }
 
 void HashPasswordManager::ClearSavedPasswordHash() {
-  if (prefs_)
+  if (prefs_) {
     prefs_->ClearPref(prefs::kSyncPasswordHash);
+  }
 }
 
 void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
@@ -256,8 +264,9 @@ HashPasswordManager::RetrieveAllPasswordHashesInternal(
   for (const base::Value& entry : hash_list) {
     std::optional<PasswordHashData> password_hash_data =
         ConvertToPasswordHashData(entry);
-    if (password_hash_data)
+    if (password_hash_data) {
       result.push_back(std::move(*password_hash_data));
+    }
   }
   return result;
 }
@@ -318,23 +327,27 @@ bool HashPasswordManager::EncryptAndSave(
 
   std::string encrypted_username = EncryptString(CanonicalizeUsername(
       password_hash_data.username, password_hash_data.is_gaia_password));
-  if (encrypted_username.empty())
+  if (encrypted_username.empty()) {
     return false;
+  }
 
   std::string encrypted_hash =
       EncryptString(base::NumberToString(password_hash_data.hash));
-  if (encrypted_hash.empty())
+  if (encrypted_hash.empty()) {
     return false;
+  }
 
   std::string encrypted_length_and_salt = EncryptString(LengthAndSaltToString(
       password_hash_data.salt, password_hash_data.length));
-  if (encrypted_length_and_salt.empty())
+  if (encrypted_length_and_salt.empty()) {
     return false;
+  }
 
   std::string encrypted_is_gaia_value =
       EncryptString(BooleanToString(password_hash_data.is_gaia_password));
-  if (encrypted_is_gaia_value.empty())
+  if (encrypted_is_gaia_value.empty()) {
     return false;
+  }
 
   base::Value::Dict encrypted_password_hash_entry;
   encrypted_password_hash_entry.Set(kUsernameFieldKey, encrypted_username);

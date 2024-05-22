@@ -1243,11 +1243,10 @@ TEST_F(PasswordAutofillManagerTest,
   histograms.ExpectUniqueSample(
       kDropdownShownHistogram,
       metrics_util::PasswordDropdownState::kStandardGenerate, 1);
-  EXPECT_THAT(
-      open_args.suggestions,
-      SuggestionVectorIconsAre(Suggestion::Icon::kGlobe, Suggestion::Icon::kKey,
-                               Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kSettings));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIconsAre(
+                  Suggestion::Icon::kGlobe, Suggestion::Icon::kKey,
+                  Suggestion::Icon::kNoIcon, Suggestion::Icon::kSettings));
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1695,7 +1694,6 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   // Destroying the manager should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_ptr2, Cancel());
 }
-
 
 TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;

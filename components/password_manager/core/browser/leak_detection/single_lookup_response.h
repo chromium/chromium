@@ -28,7 +28,6 @@ struct SingleLookupResponse {
   std::string reencrypted_lookup_hash;
 };
 
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_SINGLE_LOOKUP_RESPONSE_H_

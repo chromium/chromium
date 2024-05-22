@@ -47,8 +47,7 @@ AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
                      &CredentialManagerDialogController::OnAutoSigninTurnOff));
 }
 
-AutoSigninFirstRunDialogView::~AutoSigninFirstRunDialogView() {
-}
+AutoSigninFirstRunDialogView::~AutoSigninFirstRunDialogView() = default;
 
 void AutoSigninFirstRunDialogView::ShowAutoSigninPrompt() {
   InitWindow();
@@ -67,8 +66,9 @@ std::u16string AutoSigninFirstRunDialogView::GetWindowTitle() const {
 }
 
 void AutoSigninFirstRunDialogView::WindowClosing() {
-  if (controller_)
+  if (controller_) {
     controller_->OnCloseDialog();
+  }
 }
 
 void AutoSigninFirstRunDialogView::InitWindow() {

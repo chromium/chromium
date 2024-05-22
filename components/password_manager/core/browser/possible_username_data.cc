@@ -20,8 +20,9 @@ const PasswordFieldPrediction* FindFieldPrediction(
     const FormPredictions& predictions,
     autofill::FieldRendererId field_renderer_id) {
   for (const auto& field : predictions.fields) {
-    if (field.renderer_id == field_renderer_id)
+    if (field.renderer_id == field_renderer_id) {
       return &field;
+    }
   }
   return nullptr;
 }
@@ -58,8 +59,9 @@ bool PossibleUsernameData::IsStale() const {
 
 bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
   // Check if there is a server prediction.
-  if (!form_predictions)
+  if (!form_predictions) {
     return false;
+  }
   const PasswordFieldPrediction* field_prediction =
       FindFieldPrediction(*form_predictions, renderer_id);
   return field_prediction &&

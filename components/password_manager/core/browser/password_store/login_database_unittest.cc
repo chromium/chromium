@@ -195,8 +195,9 @@ std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
   sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE, statement.c_str()));
   EXPECT_TRUE(s.is_valid());
 
-  while (s.Step())
+  while (s.Step()) {
     results.push_back(GetFirstColumn<T>(s));
+  }
 
   return results;
 }
@@ -570,8 +571,9 @@ class LoginDatabaseSchemesTest
 TEST_P(LoginDatabaseSchemesTest, TestPublicSuffixDisabled) {
   // The test is based on the different treatment for kHtml vs. non kHtml
   // schemes.
-  if (GetParam() == PasswordForm::Scheme::kHtml)
+  if (GetParam() == PasswordForm::Scheme::kHtml) {
     return;
+  }
   // Simple non-html auth form.
   PasswordForm non_html_auth;
   non_html_auth.in_store = PasswordForm::Store::kProfileStore;
@@ -924,8 +926,9 @@ static bool AddTimestampedLogin(LoginDatabase* db,
       url::Origin::Create(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
 
-  if (date_is_creation)
+  if (date_is_creation) {
     form.date_created = time;
+  }
   return db->AddLogin(form) == AddChangeForForm(form);
 }
 
@@ -1017,8 +1020,9 @@ TEST_F(LoginDatabaseTest, GetAutoSignInLogins) {
 
   EXPECT_TRUE(db().GetAutoSignInLogins(&forms));
   EXPECT_EQ(4U, forms.size());
-  for (const auto& form : forms)
+  for (const auto& form : forms) {
     EXPECT_FALSE(form.skip_zero_click);
+  }
 
   EXPECT_TRUE(db().DisableAutoSignInForOrigin(origin));
   EXPECT_TRUE(db().GetAutoSignInLogins(&forms));
@@ -1038,8 +1042,9 @@ TEST_F(LoginDatabaseTest, DisableAutoSignInForOrigin) {
   EXPECT_TRUE(AddZeroClickableLogin(&db(), "foo4", origin4));
 
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  for (const auto& form : result)
+  for (const auto& form : result) {
     EXPECT_FALSE(form.skip_zero_click);
+  }
 
   EXPECT_TRUE(db().DisableAutoSignInForOrigin(origin1));
   EXPECT_TRUE(db().DisableAutoSignInForOrigin(origin3));
@@ -2013,8 +2018,9 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
   }
 
   void DestroyDatabase() {
-    if (!database_path_.empty())
+    if (!database_path_.empty()) {
       sql::Database::Delete(database_path_);
+    }
   }
 
   // Returns the database version for the test.

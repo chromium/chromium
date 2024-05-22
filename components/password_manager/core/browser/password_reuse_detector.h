@@ -45,7 +45,6 @@ struct MatchingReusedCredential {
   std::u16string username;
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
-
 };
 
 // Per-profile class responsible for detection of password reuse, i.e. that the

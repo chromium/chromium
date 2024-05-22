@@ -18,8 +18,9 @@ namespace {
 // remaining ones back in |rest|.
 std::string_view ExtractFirstRow(std::string_view* rest) {
   DCHECK(rest);
-  if (!rest->empty())
+  if (!rest->empty()) {
     return ConsumeCSVLine(rest);
+  }
   return std::string_view();
 }
 
@@ -42,10 +43,11 @@ CSVPasswordIterator& CSVPasswordIterator::operator=(
   map_ = other.map_;
   csv_rest_ = other.csv_rest_;
   csv_row_ = other.csv_row_;
-  if (map_)
+  if (map_) {
     password_.emplace(*map_, csv_row_);
-  else
+  } else {
     password_.reset();
+  }
   return *this;
 }
 

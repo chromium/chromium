@@ -165,8 +165,9 @@ void LabelFields(const FieldTypeMap& field_types,
 bool IsAddingUsernameToExistingMatch(
     const PasswordForm& credentials,
     const base::span<const PasswordForm>& matches) {
-  if (credentials.username_value.empty())
+  if (credentials.username_value.empty()) {
     return false;
+  }
   const PasswordForm* match = FindFormByUsername(matches, std::u16string());
 
   if (!match) {
@@ -208,8 +209,9 @@ size_t GetLowEntropyHashValue(const std::u16string& value) {
 FieldSignature GetUsernameFieldSignature(
     const SingleUsernameVoteData& single_username_data) {
   for (const auto& field : single_username_data.form_predictions.fields) {
-    if (field.renderer_id == single_username_data.renderer_id)
+    if (field.renderer_id == single_username_data.renderer_id) {
       return field.signature;
+    }
   }
   return FieldSignature();
 }
@@ -217,8 +219,9 @@ FieldSignature GetUsernameFieldSignature(
 AutofillUploadContents::ValueType GetValueType(
     const std::u16string& username_value,
     const base::span<const PasswordForm>& stored_credentials) {
-  if (username_value.empty())
+  if (username_value.empty()) {
     return AutofillUploadContents::NO_VALUE_TYPE;
+  }
 
   // Check if |username_value| is an already stored username.
   // TODO(crbug.com/40626063) Implement checking against usenames stored for all
@@ -240,8 +243,9 @@ AutofillUploadContents::ValueType GetValueType(
     return AutofillUploadContents::USERNAME_LIKE;
   }
 
-  if (username_value.find(' ') != std::u16string::npos)
+  if (username_value.find(' ') != std::u16string::npos) {
     return AutofillUploadContents::VALUE_WITH_WHITESPACE;
+  }
 
   return AutofillUploadContents::VALUE_WITH_NO_WHITESPACE;
 }
@@ -412,8 +416,9 @@ void VotesUploader::SendVoteOnCredentialsReuse(
   // to PasswordForm. Even without this check, these FormStructure's won't
   // be uploaded, but it makes it hard to see if we are encountering
   // unexpected errors.
-  if (pending->form_data.fields.empty())
+  if (pending->form_data.fields.empty()) {
     return;
+  }
 
   FormStructure pending_structure(pending->form_data);
   FormStructure observed_structure(observed);
@@ -460,8 +465,9 @@ bool VotesUploader::UploadPasswordVote(
   // Check if there is any vote to be sent.
   bool has_autofill_vote = autofill_type != autofill::UNKNOWN_TYPE;
   bool has_password_generation_vote = generation_popup_was_shown_;
-  if (!has_autofill_vote && !has_password_generation_vote)
+  if (!has_autofill_vote && !has_password_generation_vote) {
     return false;
+  }
 
   if (form_to_upload.form_data.fields.empty()) {
     // List of fields may be empty in tests.
@@ -530,8 +536,9 @@ bool VotesUploader::UploadPasswordVote(
       }
     }
     if (autofill_type != autofill::ACCOUNT_CREATION_PASSWORD) {
-      if (generation_popup_was_shown_)
+      if (generation_popup_was_shown_) {
         AddGeneratedVote(&form_structure);
+      }
       if (username_change_state_ == UsernameChangeState::kChangedToKnownValue) {
         SetFieldType(form_to_upload.username_element_renderer_id,
                      autofill::USERNAME, field_types, field_name_collision);
@@ -641,8 +648,9 @@ void VotesUploader::SetInitialHashValueOfUsernameField(
     FormStructure* form_structure) {
   auto it = initial_values_.find(username_element_renderer_id);
 
-  if (it == initial_values_.end() || it->second.empty())
+  if (it == initial_values_.end() || it->second.empty()) {
     return;
+  }
 
   for (const auto& field : *form_structure) {
     if (field && field->renderer_id() == username_element_renderer_id) {
@@ -755,8 +763,9 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
   DCHECK(form_structure);
   DCHECK(generation_popup_was_shown_);
 
-  if (!generation_element_)
+  if (!generation_element_) {
     return;
+  }
 
   AutofillUploadContents::Field::PasswordGenerationType type =
       AutofillUploadContents::Field::NO_GENERATION;
@@ -846,8 +855,9 @@ bool VotesUploader::FindCorrectedUsernameElement(
     const std::u16string& password) {
   // As the username may have changed, re-compute |username_correction_vote_|.
   username_correction_vote_.reset();
-  if (username.empty())
+  if (username.empty()) {
     return false;
+  }
   for (const PasswordForm* match : matches) {
     if ((match->password_value == password) &&
         FindUsernameInOtherAlternativeUsernames(*match, username)) {
@@ -992,8 +1002,9 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     const auto& prompt_edit = single_username.prompt_edit;
     const auto& is_form_overrule = single_username.is_form_overrule;
     // There is no meaningful data on prompt edit, the vote should not be sent.
-    if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED)
+    if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED) {
       return false;
+    }
 
     if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
         prompt_edit == AutofillUploadContents::NOT_EDITED_POSITIVE) {

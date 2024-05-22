@@ -92,14 +92,16 @@ void PostSaveCompromisedBubbleController::OnAccepted() {
       referrer = PasswordCheckReferrer::kMoreToFixBubble;
       break;
   }
-  if (delegate_)
+  if (delegate_) {
     delegate_->NavigateToPasswordCheckup(referrer);
+  }
 }
 
 void PostSaveCompromisedBubbleController::OnSettingsClicked() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kSafeStateBubble);
+  }
 }
 
 std::u16string PostSaveCompromisedBubbleController::GetTitle() const {

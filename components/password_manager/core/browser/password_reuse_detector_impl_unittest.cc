@@ -106,8 +106,9 @@ PasswordStoreChangeList GetChangeList(
     PasswordStoreChange::Type type,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   PasswordStoreChangeList changes;
-  for (const auto& form : forms)
+  for (const auto& form : forms) {
     changes.push_back(PasswordStoreChange(type, *form));
+  }
 
   return changes;
 }

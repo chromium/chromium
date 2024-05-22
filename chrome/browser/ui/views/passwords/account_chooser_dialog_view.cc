@@ -88,8 +88,9 @@ bool AccountChooserDialogView::ShouldShowCloseButton() const {
 }
 
 void AccountChooserDialogView::WindowClosing() {
-  if (controller_)
+  if (controller_) {
     controller_->OnCloseDialog();
+  }
 }
 
 bool AccountChooserDialogView::Accept() {

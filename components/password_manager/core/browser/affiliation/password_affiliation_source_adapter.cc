@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
+
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
 namespace password_manager {

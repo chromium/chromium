@@ -92,16 +92,16 @@ void IntermediateCallbackForSettingPrefs(
 void SetEmptyStorePref(PrefService* prefs,
                        const std::string& pref,
                        LoginDatabase::LoginDatabaseEmptinessState value) {
-    CHECK(prefs);
-    prefs->SetBoolean(pref, value.no_login_found);
+  CHECK(prefs);
+  prefs->SetBoolean(pref, value.no_login_found);
 }
 
 void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
     const std::string& pref,
     LoginDatabase::LoginDatabaseEmptinessState value) {
-    CHECK(prefs);
-    prefs->SetBoolean(pref, value.autofillable_credentials_exist);
+  CHECK(prefs);
+  prefs->SetBoolean(pref, value.autofillable_credentials_exist);
 }
 
 }  // namespace password_manager

@@ -267,8 +267,9 @@ LoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {
     for (const auto& stored_form : elements.second) {
-      if (!stored_form.blocked_by_user)
+      if (!stored_form.blocked_by_user) {
         result.push_back(stored_form);
+      }
     }
   }
   return result;

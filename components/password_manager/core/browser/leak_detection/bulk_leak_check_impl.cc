@@ -135,12 +135,14 @@ void BulkLeakCheckImpl::OnTokenReady(
   std::unique_ptr<CredentialHolder> holder =
       RemoveFromQueue(weak_holder, &waiting_token_);
   if (error.state() != GoogleServiceAuthError::NONE) {
-    if (error.state() == GoogleServiceAuthError::CONNECTION_FAILED)
+    if (error.state() == GoogleServiceAuthError::CONNECTION_FAILED) {
       delegate_->OnError(LeakDetectionError::kNetworkError);
-    else if (error.state() == GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)
+    } else if (error.state() ==
+               GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
       delegate_->OnError(LeakDetectionError::kNotSignIn);
-    else
+    } else {
       delegate_->OnError(LeakDetectionError::kTokenRequestFailure);
+    }
     // |this| can be destroyed here.
     return;
   }

@@ -28,7 +28,6 @@ struct InteractionsStats {
   base::Time update_time;
 };
 
-
-} // namespace password_manager
+}  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_

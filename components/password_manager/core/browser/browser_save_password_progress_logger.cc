@@ -319,8 +319,9 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       base::StrAppend(&field_info, {", VOTE: ", FieldTypeToStringView(type)});
     }
 
-    if (field->vote_type())
+    if (field->vote_type()) {
       field_info += ", vote_type=" + VoteTypeToString(field->vote_type());
+    }
 
     if (field->initial_value_hash().has_value()) {
       field_info += ", initial value hash=";
@@ -328,11 +329,13 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
     }
 
     std::string generation = GenerationTypeToString(field->generation_type());
-    if (!generation.empty())
+    if (!generation.empty()) {
       field_info += ", GENERATION_EVENT: " + generation;
+    }
 
-    if (field->generated_password_changed())
+    if (field->generated_password_changed()) {
       field_info += ", generated password changed";
+    }
 
     if (field->password_requirements()) {
       std::ostringstream s;

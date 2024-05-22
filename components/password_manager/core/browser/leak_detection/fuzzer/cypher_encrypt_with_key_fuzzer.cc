@@ -13,14 +13,16 @@ namespace password_manager {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   using ::private_join_and_compute::ECCommutativeCipher;
 
-  if (size < 1)
+  if (size < 1) {
     return 0;
+  }
   uint8_t key_size = data[0];
   data++;
   size--;
 
-  if (size < key_size)
+  if (size < key_size) {
     return 0;
+  }
 
   std::string key(reinterpret_cast<const char*>(data), key_size);
   data += key_size;
@@ -29,8 +31,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Check the key correctness. Otherwise, a crash happens.
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
-  if (!cipher.ok())
+  if (!cipher.ok()) {
     return 0;
+  }
 
   std::string payload(reinterpret_cast<const char*>(data), size);
   std::optional<std::string> result =

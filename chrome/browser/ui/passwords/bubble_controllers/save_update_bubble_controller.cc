@@ -68,8 +68,9 @@ void CleanStatisticsForSite(Profile* profile, const url::Origin& origin) {
           .get();
   password_manager::SmartBubbleStatsStore* stats_store =
       password_store->GetSmartBubbleStatsStore();
-  if (stats_store)
+  if (stats_store) {
     stats_store->RemoveSiteStats(origin.GetURL());
+  }
 }
 
 std::vector<password_manager::PasswordForm> DeepCopyForms(
@@ -200,21 +201,24 @@ bool SaveUpdateBubbleController::
     // `delegate_`.
     return false;
   }
-  if (IsSyncUser(GetProfile()))
+  if (IsSyncUser(GetProfile())) {
     return true;
+  }
 
   bool is_update = false;
   bool is_update_in_account_store = false;
   for (const password_manager::PasswordForm& form : existing_credentials_) {
     if (form.username_value == GetPendingPassword().username_value) {
       is_update = true;
-      if (form.IsUsingAccountStore())
+      if (form.IsUsingAccountStore()) {
         is_update_in_account_store = true;
+      }
     }
   }
 
-  if (!is_update)
+  if (!is_update) {
     return IsUsingAccountStore();
+  }
 
   return is_update_in_account_store;
 }
@@ -282,14 +286,17 @@ bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
   // store, so the opt-in shouldn't be offered because the account storage won't
   // be used, or b) there is a copy in the account store, which means the user
   // already opted in. Either way, the opt-in shouldn't be offered.
-  if (IsCurrentStateUpdate())
+  if (IsCurrentStateUpdate()) {
     return false;
+  }
   // If saving to the profile store, then no need to ask for opt-in.
-  if (!IsUsingAccountStore())
+  if (!IsUsingAccountStore()) {
     return false;
+  }
   // If already opted in, no need to ask again.
-  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage())
+  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return false;
+  }
 
   return true;
 }

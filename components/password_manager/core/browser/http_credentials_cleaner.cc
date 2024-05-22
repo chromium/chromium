@@ -74,8 +74,9 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
   ++processed_results_;
   absl::Cleanup report = [this] { SetPrefIfDone(); };
 
-  if (hsts_result == HSTSResult::kError)
+  if (hsts_result == HSTSResult::kError) {
     return;
+  }
 
   bool is_hsts = (hsts_result == HSTSResult::kYes);
 
@@ -115,8 +116,9 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
 }
 
 void HttpCredentialCleaner::SetPrefIfDone() {
-  if (processed_results_ != total_http_credentials_)
+  if (processed_results_ != total_http_credentials_) {
     return;
+  }
 
   prefs_->SetDouble(prefs::kLastTimeObsoleteHttpCredentialsRemoved,
                     base::Time::Now().InSecondsFSinceUnixEpoch());

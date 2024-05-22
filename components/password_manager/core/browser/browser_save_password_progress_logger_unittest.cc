@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"

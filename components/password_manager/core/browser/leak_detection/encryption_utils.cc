@@ -79,8 +79,9 @@ std::string BucketizeUsername(std::string_view canonicalized_username) {
   DCHECK_EQ(base::ToLowerASCII(canonicalized_username), canonicalized_username);
   std::string prefix =
       HashUsername(canonicalized_username).substr(0, kPrefixBytes);
-  if (kPrefixRemainder != 0)
+  if (kPrefixRemainder != 0) {
     prefix.back() &= kPrefixMask;
+  }
   return prefix;
 }
 
@@ -145,8 +146,9 @@ std::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
     auto result = cipher.value()->Encrypt(plaintext);
-    if (result.ok())
+    if (result.ok()) {
       return std::move(result).value();
+    }
   }
   return std::nullopt;
 }
@@ -173,8 +175,9 @@ std::optional<std::string> CipherDecrypt(const std::string& ciphertext,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
     auto result = cipher.value()->Decrypt(ciphertext);
-    if (result.ok())
+    if (result.ok()) {
       return std::move(result).value();
+    }
   }
   return std::nullopt;
 }
@@ -183,8 +186,9 @@ std::optional<std::string> CreateNewKey() {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  if (cipher.ok())
+  if (cipher.ok()) {
     return cipher.value()->GetPrivateKeyBytes();
+  }
   return std::nullopt;
 }
 

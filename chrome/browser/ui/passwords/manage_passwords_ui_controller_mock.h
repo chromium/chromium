@@ -14,8 +14,7 @@ class WebContents;
 
 class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
  public:
-  explicit ManagePasswordsUIControllerMock(
-      content::WebContents* contents);
+  explicit ManagePasswordsUIControllerMock(content::WebContents* contents);
 
   ManagePasswordsUIControllerMock(const ManagePasswordsUIControllerMock&) =
       delete;

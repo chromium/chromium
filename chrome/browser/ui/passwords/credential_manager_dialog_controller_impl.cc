@@ -30,8 +30,9 @@ namespace {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::u16string GetAuthenticationMessage(PasswordsModelDelegate* delegate) {
-  if (!delegate || !delegate->GetWebContents())
+  if (!delegate || !delegate->GetWebContents()) {
     return u"";
+  }
   const std::u16string origin = base::UTF8ToUTF16(
       password_manager::GetShownOrigin(delegate->GetWebContents()
                                            ->GetPrimaryMainFrame()
@@ -206,8 +207,9 @@ void CredentialManagerDialogControllerImpl::OnBiometricReauthCompleted(
     password_manager::PasswordForm password_form,
     password_manager::CredentialType credential_type,
     bool result) {
-  if (!result)
+  if (!result) {
     return;
+  }
   ResetDialog();
   delegate_->ChooseCredential(password_form, credential_type);
 }

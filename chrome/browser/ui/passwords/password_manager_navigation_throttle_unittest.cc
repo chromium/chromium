@@ -50,8 +50,9 @@ class PasswordManagerNavigationThrottleTest
     content::MockNavigationHandle handle(
         opts.url, opts.rfh ? opts.rfh.get() : main_rfh());
     handle.set_page_transition(opts.page_transition);
-    if (opts.initiator_origin)
+    if (opts.initiator_origin) {
       handle.set_initiator_origin(*opts.initiator_origin);
+    }
     return PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(&handle);
   }
 

@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store/mock_password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,13 +48,12 @@ TEST(PasswordStoreConsumerTest, OnGetPasswordStoreResultsFromIsCalledWithData) {
   MockPasswordStoreConsumer consumer;
 
   ON_CALL(consumer, OnGetPasswordStoreResultsOrErrorFrom)
-      .WillByDefault(
-          [&consumer](PasswordStoreInterface* store,
-                      LoginsResultOrError forms_or_error) {
-            return consumer
-                .PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
-                    store, std::move(forms_or_error));
-          });
+      .WillByDefault([&consumer](PasswordStoreInterface* store,
+                                 LoginsResultOrError forms_or_error) {
+        return consumer
+            .PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
+                store, std::move(forms_or_error));
+      });
 
   std::vector<PasswordForm> forms;
   forms.push_back(*CreateForm());
@@ -73,13 +73,12 @@ TEST(PasswordStoreConsumerTest,
   MockPasswordStoreConsumer consumer;
 
   ON_CALL(consumer, OnGetPasswordStoreResultsOrErrorFrom)
-      .WillByDefault(
-          [&consumer](PasswordStoreInterface* store,
-                      LoginsResultOrError forms_or_error) {
-            return consumer
-                .PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
-                    store, std::move(forms_or_error));
-          });
+      .WillByDefault([&consumer](PasswordStoreInterface* store,
+                                 LoginsResultOrError forms_or_error) {
+        return consumer
+            .PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
+                store, std::move(forms_or_error));
+      });
 
   scoped_refptr<MockPasswordStoreInterface> mock_store;
   EXPECT_CALL(consumer,

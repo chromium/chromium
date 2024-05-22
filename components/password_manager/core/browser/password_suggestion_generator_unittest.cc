@@ -346,8 +346,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               SuggestionType::kAccountStoragePasswordEntry,
                               u"username", password_label(8u),
                               /*realm_label=*/u"", favicon(),
-                              Suggestion::Icon::kGoogle
-                              ),
+                              Suggestion::Icon::kGoogle),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
 }
@@ -416,20 +415,18 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
       ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
-                                         u"username", password_label(8u),
-                                         /*realm_label=*/u"", favicon()),
-          EqualsDomainPasswordSuggestion(
-              SuggestionType::kAccountStoragePasswordEntry, u"additional_login",
-              password_label(19u),
-              /*realm_label=*/u"additional.login.com", favicon(),
-              Suggestion::Icon::kNoIcon
-              ),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion()));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsDomainPasswordSuggestion(
+                              SuggestionType::kPasswordEntry, u"username",
+                              password_label(8u),
+                              /*realm_label=*/u"", favicon()),
+                          EqualsDomainPasswordSuggestion(
+                              SuggestionType::kAccountStoragePasswordEntry,
+                              u"additional_login", password_label(19u),
+                              /*realm_label=*/u"additional.login.com",
+                              favicon(), Suggestion::Icon::kNoIcon),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Verify that suggestions for additional logins are sorted by username.

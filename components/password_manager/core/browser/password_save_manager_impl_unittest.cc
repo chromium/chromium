@@ -118,8 +118,9 @@ void CheckMetric(const int64_t* expected,
       ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name);
 
   ASSERT_EQ(!!expected, !!actual);
-  if (expected)
+  if (expected) {
     EXPECT_EQ(*expected, *actual);
+  }
 }
 
 // Check that |recorder| records metrics |expected_metrics|.
@@ -129,8 +130,9 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
       recorder.GetEntriesByName(ukm::builders::PasswordForm::kEntryName);
   ASSERT_EQ(1u, entries.size());
   const int64_t* expected_popup_shown = nullptr;
-  if (expected_metrics.generation_popup_shown)
+  if (expected_metrics.generation_popup_shown) {
     expected_popup_shown = &expected_metrics.generation_popup_shown.value();
+  }
   CheckMetric(expected_popup_shown, entries[0],
               ukm::builders::PasswordForm::kGeneration_PopupShownName);
 
@@ -138,9 +140,10 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
               ukm::builders::PasswordForm::kGeneration_GeneratedPasswordName);
 
   const int64_t* expected_password_modified = nullptr;
-  if (expected_metrics.generated_password_modified)
+  if (expected_metrics.generated_password_modified) {
     expected_password_modified =
         &expected_metrics.generated_password_modified.value();
+  }
   CheckMetric(
       expected_password_modified, entries[0],
       ukm::builders::PasswordForm::kGeneration_GeneratedPasswordModifiedName);

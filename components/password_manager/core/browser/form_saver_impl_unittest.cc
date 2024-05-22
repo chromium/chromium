@@ -111,8 +111,9 @@ void FormSaverImplSaveTest::SaveCredential(
       EXPECT_CALL(*mock_store_, AddLogin(expected, _));
       return form_saver_.Save(std::move(pending), matches, old_password);
     case SaveOperation::kUpdate:
-      if (old_password != pending.password_value)
+      if (old_password != pending.password_value) {
         expected.date_password_modified = base::Time::Now();
+      }
       EXPECT_CALL(*mock_store_, UpdateLogin(expected, _));
       return form_saver_.Update(std::move(pending), matches, old_password);
     case SaveOperation::kReplaceUpdate: {

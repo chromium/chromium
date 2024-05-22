@@ -198,8 +198,9 @@ class FakePasswordParserService
     password_manager::CSVPasswordSequence seq(raw_json);
     if (seq.result() == password_manager::CSVPassword::Status::kOK) {
       result = password_manager::mojom::CSVPasswordSequence::New();
-      for (const auto& pwd : seq)
+      for (const auto& pwd : seq) {
         result->csv_passwords.push_back(pwd);
+      }
     }
     std::move(callback).Run(std::move(result));
   }

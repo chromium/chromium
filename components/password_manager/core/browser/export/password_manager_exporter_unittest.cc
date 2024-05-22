@@ -69,11 +69,11 @@ PasswordExportInfo CreateExportInProgressInfo() {
 
 PasswordExportInfo CreateSuccessfulExportInfo(const base::FilePath& path) {
   return {
-    .status = ExportProgressStatus::kSucceeded,
+      .status = ExportProgressStatus::kSucceeded,
 #if !BUILDFLAG(IS_WIN)
-    .file_path = path.value(),
+      .file_path = path.value(),
 #else
-    .file_path = base::WideToUTF8(path.value()),
+      .file_path = base::WideToUTF8(path.value()),
 #endif
   };
 }

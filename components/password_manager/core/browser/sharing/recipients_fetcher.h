@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
 
 namespace password_manager {

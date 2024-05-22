@@ -40,8 +40,9 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
     LeakDetectionInitiator initiator,
     const void* key,
     LeakCheckCredential::Data* data) {
-  if (service_->GetState() == BulkLeakCheckServiceInterface::State::kRunning)
+  if (service_->GetState() == BulkLeakCheckServiceInterface::State::kRunning) {
     return false;
+  }
 
   // Even though the BulkLeakCheckService performs canonicalization eventually
   // we do it here to de-dupe credentials that have the same canonicalized form.

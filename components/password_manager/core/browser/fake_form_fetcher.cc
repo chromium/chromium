@@ -67,17 +67,20 @@ bool FakeFormFetcher::IsMovingBlocked(const signin::GaiaIdHash& destination,
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|
       // entries anyway).
-      if (form->IsUsingAccountStore())
+      if (form->IsUsingAccountStore()) {
         continue;
+      }
       // Ignore non-exact matches for blocking moving.
       if (password_manager_util::GetMatchType(*form) !=
           password_manager_util::GetLoginMatchType::kExact) {
         continue;
       }
-      if (form->username_value != username)
+      if (form->username_value != username) {
         continue;
-      if (base::Contains(form->moving_blocked_for_list, destination))
+      }
+      if (base::Contains(form->moving_blocked_for_list, destination)) {
         return true;
+      }
     }
   }
   return false;
@@ -117,8 +120,9 @@ void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
 
 void FakeFormFetcher::NotifyFetchCompleted() {
   state_ = State::NOT_WAITING;
-  for (Consumer& consumer : consumers_)
+  for (Consumer& consumer : consumers_) {
     consumer.OnFetchCompleted();
+  }
 }
 
 std::optional<PasswordStoreBackendError>

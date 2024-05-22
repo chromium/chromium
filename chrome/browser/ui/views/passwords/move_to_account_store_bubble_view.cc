@@ -142,16 +142,18 @@ void ImageWithBadge::UpdateBadge(const gfx::ImageSkia& badge_image) {
 }
 
 gfx::ImageSkia ImageWithBadge::GetMainImage() const {
-  if (main_image_skia_)
+  if (main_image_skia_) {
     return main_image_skia_.value();
+  }
   DCHECK(main_vector_icon_);
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }
 
 gfx::ImageSkia ImageWithBadge::GetBadge() const {
-  if (badge_image_skia_)
+  if (badge_image_skia_) {
     return badge_image_skia_.value();
+  }
   // If there is no badge set, fallback to the default globe icon.
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, color);

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
-
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 

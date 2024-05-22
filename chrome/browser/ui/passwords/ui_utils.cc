@@ -83,15 +83,18 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
 std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
     const password_manager::PasswordForm& form) {
   std::u16string federation;
-  if (!form.federation_origin.opaque())
+  if (!form.federation_origin.opaque()) {
     federation = GetDisplayFederation(form);
+  }
 
-  if (form.display_name.empty())
+  if (form.display_name.empty()) {
     return std::make_pair(form.username_value, std::move(federation));
+  }
 
   // Display name isn't empty.
-  if (federation.empty())
+  if (federation.empty()) {
     return std::make_pair(form.display_name, form.username_value);
+  }
 
   return std::make_pair(form.display_name,
                         form.username_value + u"\n" + federation);

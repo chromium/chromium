@@ -1368,8 +1368,9 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
 
 TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInAccountStoreAfterPrompt) {
   // This test is relevant only for account store users.
-  if (!GetParam())
+  if (!GetParam()) {
     return;
+  }
   DCHECK(account_store_);
   // This is simplified version of the test above that tests against the account
   // store.
@@ -1406,8 +1407,9 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInAccountStoreAfterPrompt) {
 TEST_P(CredentialManagerImplTest,
        ResetSkipZeroClickInAccountStoreAfterPromptIfExistsInBothStores) {
   // This test is relevant only for account store users.
-  if (!GetParam())
+  if (!GetParam()) {
     return;
+  }
   DCHECK(account_store_);
   // This is simplified version of the test above that tests against both the
   // profile the account stores. When the same credential is stored in both

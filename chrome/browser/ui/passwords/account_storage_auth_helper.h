@@ -19,7 +19,7 @@ class PasswordFeatureManager;
 namespace signin {
 enum class ReauthResult;
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace signin_metrics {
 enum class ReauthAccessPoint;

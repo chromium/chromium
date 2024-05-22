@@ -15,7 +15,9 @@ TEST(PasswordHashDataTest, CalculatePasswordHash) {
   const char* kSalt[] = {"", "salt", "123", "456"};
 
   constexpr uint64_t kExpectedHash[] = {
-      UINT64_C(0x1c610a7950), UINT64_C(0x1927dc525e), UINT64_C(0xf72f81aa6),
+      UINT64_C(0x1c610a7950),
+      UINT64_C(0x1927dc525e),
+      UINT64_C(0xf72f81aa6),
       UINT64_C(0x3645af77f),
   };
 

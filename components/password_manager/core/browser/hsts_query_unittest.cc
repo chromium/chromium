@@ -55,8 +55,9 @@ HSTSStateManager::HSTSStateManager(net::TransportSecurityState* state,
 }
 
 HSTSStateManager::~HSTSStateManager() {
-  if (is_hsts_)
+  if (is_hsts_) {
     state_->DeleteDynamicDataForHost(host_);
+  }
 }
 
 }  // namespace

@@ -79,8 +79,9 @@ password_manager::PasswordForm GenerateFormFromCredential(
   form.date_created = base::Time::Now();
   form.date_password_modified = form.date_created;
 
-  if (!credential.note.empty())
+  if (!credential.note.empty()) {
     form.SetNoteWithEmptyUniqueDisplayName(credential.note);
+  }
 
   DCHECK(!credential.stored_in.empty());
   form.in_store = *credential.stored_in.begin();
@@ -184,8 +185,9 @@ SavedPasswordsPresenter::GetExpectedAddResult(
   if (!IsValidPasswordURL(credential.GetURL())) {
     return AddResult::kInvalid;
   }
-  if (credential.password.empty())
+  if (credential.password.empty()) {
     return AddResult::kInvalid;
+  }
 
   auto have_equal_username_and_realm =
       [&credential](const PasswordForm& entry) {
@@ -212,8 +214,9 @@ SavedPasswordsPresenter::GetExpectedAddResult(
       base::ranges::any_of(sort_key_to_password_forms_,
                            have_equal_username_and_realm_in_account_store);
 
-  if (!existing_credential_profile && !existing_credential_account)
+  if (!existing_credential_profile && !existing_credential_account) {
     return AddResult::kSuccess;
+  }
 
   auto have_exact_match = [&credential, &have_equal_username_and_realm](
                               const DuplicatePasswordsMap::value_type& pair) {
@@ -221,13 +224,16 @@ SavedPasswordsPresenter::GetExpectedAddResult(
            credential.password == pair.second.password_value;
   };
 
-  if (base::ranges::any_of(sort_key_to_password_forms_, have_exact_match))
+  if (base::ranges::any_of(sort_key_to_password_forms_, have_exact_match)) {
     return AddResult::kExactMatch;
+  }
 
-  if (!existing_credential_profile)
+  if (!existing_credential_profile) {
     return AddResult::kConflictInAccountStore;
-  if (!existing_credential_account)
+  }
+  if (!existing_credential_account) {
     return AddResult::kConflictInProfileStore;
+  }
 
   return AddResult::kConflictInProfileAndAccountStore;
 }
@@ -235,8 +241,9 @@ SavedPasswordsPresenter::GetExpectedAddResult(
 bool SavedPasswordsPresenter::AddCredential(
     const CredentialUIEntry& credential,
     password_manager::PasswordForm::Type type) {
-  if (GetExpectedAddResult(credential) != AddResult::kSuccess)
+  if (GetExpectedAddResult(credential) != AddResult::kSuccess) {
     return false;
+  }
 
   UnblocklistBothStores(credential);
   PasswordForm form = GenerateFormFromCredential(credential, type);
@@ -253,8 +260,9 @@ void SavedPasswordsPresenter::UnblocklistBothStores(
       PasswordFormDigest(PasswordForm::Scheme::kHtml,
                          credential.GetFirstSignonRealm(), credential.GetURL());
   profile_store_->Unblocklist(form_digest);
-  if (account_store_)
+  if (account_store_) {
     account_store_->Unblocklist(form_digest);
+  }
 }
 
 void SavedPasswordsPresenter::AddCredentials(
@@ -407,8 +415,9 @@ void SavedPasswordsPresenter::RemoveObserver(Observer* observer) {
 
 void SavedPasswordsPresenter::NotifyEdited(
     const CredentialUIEntry& credential) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnEdited(credential);
+  }
 }
 
 void SavedPasswordsPresenter::NotifySavedPasswordsChanged(
@@ -417,8 +426,9 @@ void SavedPasswordsPresenter::NotifySavedPasswordsChanged(
   if (pending_store_updates_ > 0) {
     return;
   }
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSavedPasswordsChanged(changes);
+  }
 }
 
 void SavedPasswordsPresenter::OnLoginsChanged(

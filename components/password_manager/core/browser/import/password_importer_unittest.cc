@@ -48,9 +48,11 @@ class FakePasswordParserService : public mojom::CSVPasswordParser {
     CSVPasswordSequence seq(raw_json);
     if (seq.result() == CSVPassword::Status::kOK) {
       result = mojom::CSVPasswordSequence::New();
-      if (result)
-        for (const auto& pwd : seq)
+      if (result) {
+        for (const auto& pwd : seq) {
           result->csv_passwords.push_back(pwd);
+        }
+      }
     }
     std::move(callback).Run(std::move(result));
   }
@@ -1040,8 +1042,9 @@ TEST_F(PasswordImporterTest, CSVImportHitMaxPasswordsLimit) {
   std::string row = "http://a.b,c,d\n";
   const size_t EXCEEDS_LIMIT = PasswordImporter::MAX_PASSWORDS_PER_IMPORT + 1;
   content.reserve(row.size() * EXCEEDS_LIMIT);
-  for (size_t i = 0; i < EXCEEDS_LIMIT; i++)
+  for (size_t i = 0; i < EXCEEDS_LIMIT; i++) {
     content.append(row);
+  }
 
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));

@@ -111,8 +111,9 @@ bool ShowAllSavedPasswordsContextMenuEnabled(
     password_manager::PasswordManagerDriver* driver) {
   password_manager::PasswordManagerInterface* password_manager =
       driver ? driver->GetPasswordManager() : nullptr;
-  if (!password_manager)
+  if (!password_manager) {
     return false;
+  }
 
   password_manager::PasswordManagerClient* client =
       password_manager->GetClient();
@@ -221,12 +222,14 @@ std::vector<PasswordForm> FindBestMatches(
   non_federated_same_scheme->clear();
 
   for (const password_manager::PasswordForm* match : non_federated_matches) {
-    if (match->scheme == scheme)
+    if (match->scheme == scheme) {
       non_federated_same_scheme->push_back(match);
+    }
   }
 
-  if (non_federated_same_scheme->empty())
+  if (non_federated_same_scheme->empty()) {
     return best_matches;
+  }
 
   std::sort(non_federated_same_scheme->begin(),
             non_federated_same_scheme->end(), IsBetterMatch);
@@ -296,15 +299,17 @@ const PasswordForm* GetMatchForUpdating(
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.
   // TODO(crbug.com/40620575): turn it into a DCHECK.
-  if (!submitted_form.federation_origin.opaque())
+  if (!submitted_form.federation_origin.opaque()) {
     return nullptr;
+  }
 
   // Try to return form with matching |username_value|.
   const PasswordForm* username_match =
       FindFormByUsername(credentials, submitted_form.username_value);
   if (username_match) {
-    if (GetMatchType(*username_match) != GetLoginMatchType::kPSL)
+    if (GetMatchType(*username_match) != GetLoginMatchType::kPSL) {
       return username_match;
+    }
 
     const auto& password_to_save = submitted_form.new_password_value.empty()
                                        ? submitted_form.password_value
@@ -330,15 +335,17 @@ const PasswordForm* GetMatchForUpdating(
   }
 
   for (const PasswordForm* stored_match : credentials) {
-    if (stored_match->password_value == submitted_form.password_value)
+    if (stored_match->password_value == submitted_form.password_value) {
       return stored_match;
+    }
   }
 
   // If the user manually changed the username value: consider this at this
   // point of the heuristic a new credential (didn't match other
   // passwords/usernames).
-  if (username_updated_in_bubble)
+  if (username_updated_in_bubble) {
     return nullptr;
+  }
 
   // Last try. The submitted form had no username but a password. Assume that
   // it's an existing credential.

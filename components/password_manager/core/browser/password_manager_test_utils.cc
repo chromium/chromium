@@ -27,22 +27,30 @@ std::unique_ptr<PasswordForm> PasswordFormFromData(
       base::Time::FromSecondsSinceUnixEpoch(form_data.last_usage_time);
   form->date_created =
       base::Time::FromSecondsSinceUnixEpoch(form_data.creation_time);
-  if (form_data.signon_realm)
+  if (form_data.signon_realm) {
     form->signon_realm = std::string(form_data.signon_realm);
-  if (form_data.origin)
+  }
+  if (form_data.origin) {
     form->url = GURL(form_data.origin);
-  if (form_data.action)
+  }
+  if (form_data.action) {
     form->action = GURL(form_data.action);
-  if (form_data.submit_element)
+  }
+  if (form_data.submit_element) {
     form->submit_element = form_data.submit_element;
-  if (form_data.username_element)
+  }
+  if (form_data.username_element) {
     form->username_element = form_data.username_element;
-  if (form_data.password_element)
+  }
+  if (form_data.password_element) {
     form->password_element = form_data.password_element;
-  if (form_data.username_value)
+  }
+  if (form_data.username_value) {
     form->username_value = form_data.username_value;
-  if (form_data.password_value)
+  }
+  if (form_data.password_value) {
     form->password_value = form_data.password_value;
+  }
   return form;
 }
 
@@ -50,10 +58,11 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
     bool use_federated_login) {
   auto form = PasswordFormFromData(form_data);
-  if (form_data.username_value)
+  if (form_data.username_value) {
     form->display_name = form->username_value;
-  else
+  } else {
     form->blocked_by_user = true;
+  }
   form->icon_url = GURL("https://accounts.google.com/Icon");
   if (use_federated_login) {
     form->password_value.clear();

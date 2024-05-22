@@ -243,10 +243,11 @@ void SaveUpdateBubbleControllerTest::DestroyModelExpectReason(
   base::HistogramTester histogram_tester;
   password_manager::ui::State state = controller_->state();
   std::string histogram(kUIDismissalReasonGeneralMetric);
-  if (state == password_manager::ui::PENDING_PASSWORD_STATE)
+  if (state == password_manager::ui::PENDING_PASSWORD_STATE) {
     histogram = kUIDismissalReasonSaveMetric;
-  else if (state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE)
+  } else if (state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     histogram = kUIDismissalReasonUpdateMetric;
+  }
   DestroyModelAndVerifyControllerExpectations();
   histogram_tester.ExpectUniqueSample(histogram, dismissal_reason, 1);
 }
@@ -501,10 +502,11 @@ TEST_P(SaveUpdateBubbleControllerUKMTest, RecordUKMs) {
                        ? CredentialSourceType::kCredentialManagementAPI
                        : CredentialSourceType::kPasswordManager));
 
-    if (update)
+    if (update) {
       PretendUpdatePasswordWaiting();
-    else
+    } else {
       PretendPasswordWaiting();
+    }
 
     if (interaction == BubbleDismissalReason::kAccepted) {
       EXPECT_CALL(

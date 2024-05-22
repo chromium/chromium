@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
+
+#include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -15,8 +15,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,8 +71,9 @@ class InsecureCredentialsTableTest : public testing::Test {
       base::span<const InsecureCredential> credentials) {
     std::vector<int> ids;
     ids.reserve(credentials.size());
-    for (const auto& credential : credentials)
+    for (const auto& credential : credentials) {
       ids.push_back(credential.parent_key.value());
+    }
     return ids;
   }
 

@@ -365,8 +365,9 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       owning_matches.push_back(form);
     }
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
-    for (const PasswordForm& match : owning_matches)
+    for (const PasswordForm& match : owning_matches) {
       matches.push_back(&match);
+    }
 
     const PasswordForm* preferred_match = nullptr;
 

@@ -66,8 +66,9 @@ void AccountAvatarFetcher::Start(
 
 void AccountAvatarFetcher::OnFetchComplete(const GURL& /*url*/,
                                            const SkBitmap* bitmap) {
-  if (bitmap && delegate_)
+  if (bitmap && delegate_) {
     delegate_->UpdateAvatar(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+  }
 
   delete this;
 }

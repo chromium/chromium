@@ -4,7 +4,6 @@
 #include "components/password_manager/core/browser/credential_manager_impl.h"
 
 #include <memory>
-
 #include <string>
 
 #include "base/functional/bind.h"
@@ -49,8 +48,9 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   std::move(callback).Run();
 
   if (credential.type == CredentialType::CREDENTIAL_TYPE_EMPTY ||
-      !client_->IsSavingAndFillingEnabled(origin.GetURL()))
+      !client_->IsSavingAndFillingEnabled(origin.GetURL())) {
     return;
+  }
 
   client_->NotifyStorePasswordCalled();
 
@@ -85,8 +85,9 @@ void CredentialManagerImpl::PreventSilentAccess(
   std::move(callback).Run();
 
   PasswordStoreInterface* store = GetProfilePasswordStore();
-  if (!store || !client_->IsSavingAndFillingEnabled(GetOrigin().GetURL()))
+  if (!store || !client_->IsSavingAndFillingEnabled(GetOrigin().GetURL())) {
     return;
+  }
 
   if (!pending_require_user_mediation_) {
     pending_require_user_mediation_ =

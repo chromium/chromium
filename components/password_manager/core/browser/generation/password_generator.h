@@ -9,7 +9,6 @@
 
 #include <string>
 
-
 namespace autofill {
 
 class PasswordRequirementsSpec;

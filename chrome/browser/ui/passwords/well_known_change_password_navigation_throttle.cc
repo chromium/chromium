@@ -42,8 +42,9 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
   // `PAGE_TRANSITION_FROM_API` covers cases where Chrome is opened as a CCT.
   // This happens on Android if Chrome is opened from the Password Check(up) in
   // Chrome settings or the Google Password Manager app.
-  if (page_transition & ui::PAGE_TRANSITION_FROM_API)
+  if (page_transition & ui::PAGE_TRANSITION_FROM_API) {
     return true;
+  }
 
   // In case where the user clicked on a link, we require that the origin is
   // either chrome://settings or https://passwords.google.com.
@@ -93,8 +94,9 @@ WellKnownChangePasswordNavigationThrottle::
                      ->GetPageUkmSourceId()) {
   // If this is a prerender navigation, we're only constructing the throttle
   // so it can cancel the prerender.
-  if (handle->IsInPrerenderedMainFrame())
+  if (handle->IsInPrerenderedMainFrame()) {
     return;
+  }
 
   affiliation_service_ =
       AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
@@ -198,15 +200,17 @@ void WellKnownChangePasswordNavigationThrottle::Redirect(const GURL& url) {
   params.transition = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
 
   WebContents* web_contents = navigation_handle()->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<content::WebContents> web_contents,
                         const content::OpenURLParams& params) {
-                       if (!web_contents)
+                       if (!web_contents) {
                          return;
+                       }
                        web_contents->OpenURL(params,
                                              /*navigation_handle_callback=*/{});
                      },

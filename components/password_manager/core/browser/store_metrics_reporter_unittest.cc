@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
+
 #include <string>
 
 #include "base/functional/callback_helpers.h"

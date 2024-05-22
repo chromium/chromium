@@ -496,11 +496,13 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata) {
     std::u16string password_value;
     for (int i = 0; i < kNumberOfPasswordAttributes; ++i) {
       has_password_attribute[i] = base::RandGenerator(2);
-      if (has_password_attribute[i])
+      if (has_password_attribute[i]) {
         password_value += base::ASCIIToUTF16(kPasswordSnippets[i]);
+      }
     }
-    if (password_value.empty())
+    if (password_value.empty()) {
       continue;
+    }
 
     int reported_false[kNumberOfPasswordAttributes] = {0, 0};
     int reported_true[kNumberOfPasswordAttributes] = {0, 0};
@@ -554,7 +556,6 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata) {
 }
 
 TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
-
   const std::u16string password_value = u"password-withsymbols!";
   const int kNumberOfRuns = 2000;
   const int kSpecialSymbolsAttribute =
@@ -582,10 +583,11 @@ TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
     number_of_symbol_votes += 1;
 
     int symbol = password_attributes->password_symbol_vote;
-    if (symbol == '-' || symbol == '!')
+    if (symbol == '-' || symbol == '!') {
       correct_symbol_reported += 1;
-    else
+    } else {
       wrong_symbol_reported += 1;
+    }
   }
   EXPECT_LT(0.4 * number_of_symbol_votes, correct_symbol_reported);
   EXPECT_LT(0.15 * number_of_symbol_votes, wrong_symbol_reported);

@@ -58,7 +58,6 @@ struct PasswordStoreBackendError {
   PasswordStoreBackendErrorRecoveryType recovery_type;
 };
 
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_ERROR_H_

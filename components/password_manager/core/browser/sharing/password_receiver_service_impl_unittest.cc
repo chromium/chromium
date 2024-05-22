@@ -184,19 +184,19 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   // the invitation.
   std::string GetInvitationOrigin(
       const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-      return invitation.client_only_unencrypted_data()
-          .password_group_data()
-          .element_data(0)
-          .origin();
+    return invitation.client_only_unencrypted_data()
+        .password_group_data()
+        .element_data(0)
+        .origin();
   }
 
   // Sets ths `password_value` in the `invitation`.
   void SetPasswordValueInInvitation(
       const std::u16string& password_value,
       sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-      invitation.mutable_client_only_unencrypted_data()
-          ->mutable_password_group_data()
-          ->set_password_value(base::UTF16ToUTF8(password_value));
+    invitation.mutable_client_only_unencrypted_data()
+        ->mutable_password_group_data()
+        ->set_password_value(base::UTF16ToUTF8(password_value));
   }
 
   PasswordReceiverService* password_receiver_service() {

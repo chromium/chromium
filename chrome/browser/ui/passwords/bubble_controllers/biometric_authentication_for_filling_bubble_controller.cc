@@ -30,8 +30,9 @@ void OnReauthCompleted(PrefService* prefs,
   prefs->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
 
-  if (delegate)
+  if (delegate) {
     delegate->ShowBiometricActivationConfirmation();
+  }
 }
 
 password_manager::metrics_util::UIDisplayDisposition GetDisplayDisposition(

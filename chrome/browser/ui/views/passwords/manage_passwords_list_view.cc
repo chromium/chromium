@@ -53,33 +53,33 @@ ManagePasswordsListView::ManagePasswordsListView(
           gfx::kPlaceholderColor, gfx::kFaviconSize);
     }
 
-    std::unique_ptr<RichHoverButton> list_item = std::make_unique<
-        RichHoverButton>(
-        base::BindRepeating(
-            [](base::RepeatingCallback<void(password_manager::PasswordForm)>
-                   on_row_clicked_callback,
-               const password_manager::PasswordForm& password_form) {
-              on_row_clicked_callback.Run(password_form);
-              PasswordManagementBubbleInteractions user_interaction =
-                  password_form.GetNoteWithEmptyUniqueDisplayName().empty()
-                      ? PasswordManagementBubbleInteractions::
-                            kCredentialRowWithoutNoteClicked
-                      : PasswordManagementBubbleInteractions::
-                            kCredentialRowWithNoteClicked;
-              password_manager::metrics_util::
-                  LogUserInteractionsInPasswordManagementBubble(
-                      user_interaction);
-            },
-            on_row_clicked_callback, *password_form),
-        /*main_image_icon=*/favicon,
-        /*title_text=*/GetDisplayUsername(*password_form),
-        /*secondary_text=*/std::u16string(),
-        /*tooltip_text=*/std::u16string(),
-        /*subtitle_text=*/std::u16string(),
-        /*action_image_icon=*/
-        ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
-                                       ui::kColorIcon),
-        /*state_icon=*/store_icon);
+    std::unique_ptr<RichHoverButton> list_item =
+        std::make_unique<RichHoverButton>(
+            base::BindRepeating(
+                [](base::RepeatingCallback<void(password_manager::PasswordForm)>
+                       on_row_clicked_callback,
+                   const password_manager::PasswordForm& password_form) {
+                  on_row_clicked_callback.Run(password_form);
+                  PasswordManagementBubbleInteractions user_interaction =
+                      password_form.GetNoteWithEmptyUniqueDisplayName().empty()
+                          ? PasswordManagementBubbleInteractions::
+                                kCredentialRowWithoutNoteClicked
+                          : PasswordManagementBubbleInteractions::
+                                kCredentialRowWithNoteClicked;
+                  password_manager::metrics_util::
+                      LogUserInteractionsInPasswordManagementBubble(
+                          user_interaction);
+                },
+                on_row_clicked_callback, *password_form),
+            /*main_image_icon=*/favicon,
+            /*title_text=*/GetDisplayUsername(*password_form),
+            /*secondary_text=*/std::u16string(),
+            /*tooltip_text=*/std::u16string(),
+            /*subtitle_text=*/std::u16string(),
+            /*action_image_icon=*/
+            ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                           ui::kColorIcon),
+            /*state_icon=*/store_icon);
 
     if (is_account_storage_available &&
         base::FeatureList::IsEnabled(

@@ -148,8 +148,9 @@ CSVPasswordSequence& CSVPasswordSequence::operator=(CSVPasswordSequence&&) =
 CSVPasswordSequence::~CSVPasswordSequence() = default;
 
 CSVPasswordIterator CSVPasswordSequence::begin() const {
-  if (result_ != CSVPassword::Status::kOK)
+  if (result_ != CSVPassword::Status::kOK) {
     return end();
+  }
   return CSVPasswordIterator(map_, data_rows_);
 }
 

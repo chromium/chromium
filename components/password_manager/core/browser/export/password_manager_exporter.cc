@@ -43,8 +43,9 @@ bool DoWriteOnTaskRunner(
         set_permissions_function,
     const base::FilePath& destination,
     const std::string& serialised) {
-  if (!write_function.Run(destination, serialised))
+  if (!write_function.Run(destination, serialised)) {
     return false;
+  }
 
   // Set file permissions. This is a no-op outside of Posix.
   set_permissions_function.Run(destination, 0600 /* -rw------- */);
@@ -106,8 +107,9 @@ void PasswordManagerExporter::SetDestination(
 
   destination_ = destination;
 
-  if (IsReadyForExport())
+  if (IsReadyForExport()) {
     Export();
+  }
 
   OnProgress({.status = ExportProgressStatus::kInProgress});
 }
@@ -117,8 +119,9 @@ void PasswordManagerExporter::SetSerialisedPasswordList(
     const std::string& serialised) {
   serialised_password_list_ = serialised;
   password_count_ = count;
-  if (IsReadyForExport())
+  if (IsReadyForExport()) {
     Export();
+  }
 }
 
 void PasswordManagerExporter::Cancel() {

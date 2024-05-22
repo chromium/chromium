@@ -81,8 +81,9 @@ PasswordForm HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
   }
   // If |action| is not HTTPS then it's most likely obsolete. Otherwise, it
   // may still be valid.
-  if (!http_form.action.SchemeIs(url::kHttpsScheme))
+  if (!http_form.action.SchemeIs(url::kHttpsScheme)) {
     https_form.action = https_form.url;
+  }
   https_form.form_data = autofill::FormData();
   https_form.generation_upload_status =
       PasswordForm::GenerationUploadStatus::kNoSignalSent;
@@ -96,8 +97,9 @@ void HttpPasswordStoreMigrator::OnGetPasswordStoreResults(
   results_ = std::move(results);
   got_password_store_results_ = true;
 
-  if (got_hsts_query_result_)
+  if (got_hsts_query_result_) {
     ProcessPasswordStoreResults();
+  }
 }
 
 void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
@@ -108,12 +110,14 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 
   if (is_hsts == HSTSResult::kYes) {
     SmartBubbleStatsStore* stats_store = store_->GetSmartBubbleStatsStore();
-    if (stats_store)
+    if (stats_store) {
       stats_store->RemoveSiteStats(http_origin_domain_.GetURL());
+    }
   }
 
-  if (got_password_store_results_)
+  if (got_password_store_results_) {
     ProcessPasswordStoreResults();
+  }
 }
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
@@ -130,8 +134,9 @@ void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
         HttpPasswordStoreMigrator::MigrateHttpFormToHttps(*form);
     store_->AddLogin(new_form);
 
-    if (mode_ == HttpPasswordMigrationMode::kMove)
+    if (mode_ == HttpPasswordMigrationMode::kMove) {
       store_->RemoveLogin(FROM_HERE, *form);
+    }
     *form = std::move(new_form);
   }
 
@@ -143,8 +148,9 @@ void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
                                   mode_);
   }
 
-  if (consumer_)
+  if (consumer_) {
     consumer_->ProcessMigratedForms(std::move(results_));
+  }
 }
 
 }  // namespace password_manager

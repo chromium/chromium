@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store/statistics_table.h"
+
 #include <functional>
 #include <memory>
 

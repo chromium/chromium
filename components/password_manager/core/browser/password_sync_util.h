@@ -13,7 +13,7 @@
 namespace signin {
 enum class ConsentLevel;
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace password_manager {
 

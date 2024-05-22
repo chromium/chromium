@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/navigation_throttle.h"
-
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -23,9 +22,6 @@ class AffiliationService;
 namespace content {
 class NavigationHandle;
 }  // namespace content
-
-namespace password_manager {
-}  // namespace password_manager
 
 // This NavigationThrottle checks whether a site supports the
 // .well-known/change-password url. To check whether a site supports the

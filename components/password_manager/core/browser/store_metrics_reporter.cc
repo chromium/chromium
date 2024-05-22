@@ -212,8 +212,9 @@ void ReportLoginsWithSchemesMetrics(
   int other_logins = 0;
 
   for (const auto& form : forms) {
-    if (form->blocked_by_user)
+    if (form->blocked_by_user) {
       continue;
+    }
 
     if (affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       ++android_logins;
@@ -400,18 +401,21 @@ void ReportDuplicateCredentialsMetrics(
   for (auto& entry : passwords_by_realm_and_user) {
     std::vector<std::u16string>& passwords = entry.second;
     // Only one password -> no duplicates, move on.
-    if (passwords.size() == 1)
+    if (passwords.size() == 1) {
       continue;
+    }
     std::sort(passwords.begin(), passwords.end());
     auto last = std::unique(passwords.begin(), passwords.end());
     // If |last| moved from |.end()|, that means there were duplicate
     // passwords.
-    if (last != passwords.end())
+    if (last != passwords.end()) {
       credentials_with_duplicates++;
+    }
     // If there is more than 1 password left after de-duping, then there were
     // mismatched duplicates.
-    if (std::distance(passwords.begin(), last) > 1)
+    if (std::distance(passwords.begin(), last) > 1) {
       credentials_with_mismatched_duplicates++;
+    }
   }
 
   base::UmaHistogramCustomCounts(
@@ -517,10 +521,11 @@ void ReportMultiStoreMetrics(
     if (profile_it != profile_store_results->end() &&
         account_it->first == profile_it->first) {
       // The signon_realm and username match, check the password value.
-      if (account_it->second == profile_it->second)
+      if (account_it->second == profile_it->second) {
         ++identical;
-      else
+      } else {
         ++conflicting;
+      }
 
       ++profile_it;
     } else {
@@ -700,11 +705,13 @@ StoreMetricsReporter::StoreMetricsReporter(
     }
   }
 
-  if (profile_store_)
+  if (profile_store_) {
     profile_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  }
 
-  if (account_store_)
+  if (account_store_) {
     account_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  }
 
   if (!profile_store_ && !account_store_) {
     // There is nothing else to report.

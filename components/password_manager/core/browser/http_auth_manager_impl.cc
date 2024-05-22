@@ -33,8 +33,9 @@ HttpAuthManagerImpl::HttpAuthManagerImpl(PasswordManagerClient* client,
 }
 
 HttpAuthManagerImpl::~HttpAuthManagerImpl() {
-  if (observer_)
+  if (observer_) {
     observer_->OnLoginModelDestroying();
+  }
 }
 
 void HttpAuthManagerImpl::DetachObserver(HttpAuthObserver* observer) {
@@ -53,8 +54,9 @@ void HttpAuthManagerImpl::SetObserverAndDeliverCredentials(
   // Set the observer and communicate the signon_realm.
   // If a previous view registered itself as an observer, it must be notified
   // about its replacement.
-  if (observer_)
+  if (observer_) {
     observer_->OnLoginModelDestroying();
+  }
   observer_ = observer;
 
   if (!client_->IsFillingEnabled(observed_form.url)) {
@@ -68,8 +70,9 @@ void HttpAuthManagerImpl::SetObserverAndDeliverCredentials(
 
 void HttpAuthManagerImpl::ProvisionallySaveForm(
     const PasswordForm& password_form) {
-  if (form_manager_)
+  if (form_manager_) {
     form_manager_->ProvisionallySaveHttpAuthForm(password_form);
+  }
 }
 
 void HttpAuthManagerImpl::Autofill(
@@ -107,8 +110,9 @@ void HttpAuthManagerImpl::OnDidFinishMainFrameNavigation() {
   // defer it until the password form is actually dismissed. If error pages are
   // changed to no longer double-commit, we can remove the |form_dismissed_|
   // logic.
-  if (!form_dismissed_)
+  if (!form_dismissed_) {
     return;
+  }
 
   form_dismissed_ = false;
 
@@ -128,8 +132,9 @@ void HttpAuthManagerImpl::OnLoginSuccesfull() {
 
   // ProvisionallySaveForm() might not have called, so |form_manager_| might be
   // not in submitted state. Do nothing in that case.
-  if (!form_manager_->is_submitted())
+  if (!form_manager_->is_submitted()) {
     return;
+  }
 
   if (form_manager_->GetFormFetcher()->GetState() ==
       FormFetcher::State::WAITING) {

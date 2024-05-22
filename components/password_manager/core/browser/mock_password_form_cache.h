@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FORM_CACHE_H_
 
 #include "components/password_manager/core/browser/password_form_cache.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {

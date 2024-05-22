@@ -31,8 +31,9 @@ void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
 void PasswordStoreSigninNotifierImpl::NotifySignedOut(
     const std::string& username,
     bool syncing_account) {
-  if (!reuse_manager_)
+  if (!reuse_manager_) {
     return;
+  }
 
   if (syncing_account) {
     metrics_util::LogGaiaPasswordHashChange(

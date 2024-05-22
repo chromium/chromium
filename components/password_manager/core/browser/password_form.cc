@@ -229,9 +229,10 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
 }  // namespace
 
-AlternativeElement::AlternativeElement(const AlternativeElement::Value& value,
-                           autofill::FieldRendererId field_renderer_id,
-                           const AlternativeElement::Name& name)
+AlternativeElement::AlternativeElement(
+    const AlternativeElement::Value& value,
+    autofill::FieldRendererId field_renderer_id,
+    const AlternativeElement::Name& name)
     : value(value), field_renderer_id(field_renderer_id), name(name) {}
 
 AlternativeElement::AlternativeElement(const AlternativeElement::Value& value)

@@ -203,8 +203,9 @@ void ManagePasswordsState::OnPasswordAutofilled(
   DCHECK(!password_forms.empty() ||
          (federated_matches && !federated_matches->empty()));
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
-  if (federated_matches)
+  if (federated_matches) {
     AppendDeepCopyVector(*federated_matches, &local_credentials_forms);
+  }
 
   // Delete |form_manager_| only when the parameters are processed. They may be
   // coming from |form_manager_|.
@@ -270,20 +271,24 @@ void ManagePasswordsState::TransitionToState(
 
 void ManagePasswordsState::ProcessLoginsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
-  if (state() == password_manager::ui::INACTIVE_STATE)
+  if (state() == password_manager::ui::INACTIVE_STATE) {
     return;
+  }
 
   bool applied_delete = false;
   bool all_changes_are_deletion = true;
   for (const password_manager::PasswordStoreChange& change : changes) {
-    if (change.type() != password_manager::PasswordStoreChange::REMOVE)
+    if (change.type() != password_manager::PasswordStoreChange::REMOVE) {
       all_changes_are_deletion = false;
+    }
     const PasswordForm& changed_form = change.form();
-    if (changed_form.blocked_by_user)
+    if (changed_form.blocked_by_user) {
       continue;
+    }
     if (change.type() == password_manager::PasswordStoreChange::REMOVE) {
-      if (RemoveFormFromVector(changed_form, &local_credentials_forms_))
+      if (RemoveFormFromVector(changed_form, &local_credentials_forms_)) {
         applied_delete = true;
+      }
     } else if (change.type() == password_manager::PasswordStoreChange::UPDATE) {
       UpdateFormInVector(changed_form, &local_credentials_forms_);
     } else {
@@ -296,8 +301,9 @@ void ManagePasswordsState::ProcessLoginsChanged(
   // itself adds a credential, they should not be refetched. The password
   // generation can be confused as the generated password will be refetched and
   // autofilled immediately.
-  if (applied_delete && all_changes_are_deletion)
+  if (applied_delete && all_changes_are_deletion) {
     client_->UpdateFormManagers();
+  }
 }
 
 void ManagePasswordsState::ProcessUnsyncedCredentialsWillBeDeleted(
@@ -321,10 +327,12 @@ void ManagePasswordsState::ClearData() {
 }
 
 bool ManagePasswordsState::AddForm(const PasswordForm& form) {
-  if (url::Origin::Create(form.url) != origin_)
+  if (url::Origin::Create(form.url) != origin_) {
     return false;
-  if (UpdateFormInVector(form, &local_credentials_forms_))
+  }
+  if (UpdateFormInVector(form, &local_credentials_forms_)) {
     return true;
+  }
   local_credentials_forms_.push_back(std::make_unique<PasswordForm>(form));
   return true;
 }

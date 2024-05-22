@@ -27,11 +27,13 @@ PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
     PasswordManagerMetricsRecorder&& that) noexcept = default;
 
 PasswordManagerMetricsRecorder::~PasswordManagerMetricsRecorder() {
-  if (user_modified_password_field_)
+  if (user_modified_password_field_) {
     ukm_entry_builder_->SetUserModifiedPasswordField(1);
-  if (form_manager_availability_ != FormManagerAvailable::kNotSet)
+  }
+  if (form_manager_availability_ != FormManagerAvailable::kNotSet) {
     ukm_entry_builder_->SetFormManagerAvailable(
         static_cast<int64_t>(form_manager_availability_));
+  }
   ukm_entry_builder_->Record(ukm::UkmRecorder::Get());
 }
 

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
-#include <utility>
 
 #include <unordered_map>
+#include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"

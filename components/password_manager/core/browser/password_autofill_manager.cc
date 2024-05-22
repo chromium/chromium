@@ -345,8 +345,9 @@ autofill::FillingProduct PasswordAutofillManager::GetMainFillingProduct()
 
 void PasswordAutofillManager::OnAddPasswordFillData(
     const autofill::PasswordFormFillData& fill_data) {
-  if (!autofill::IsValidPasswordFormFillData(fill_data))
+  if (!autofill::IsValidPasswordFormFillData(fill_data)) {
     return;
+  }
 
   // If the `fill_data_` changes, then it's likely that the filling context
   // changed as well, so the biometric auth is now out of scope.
@@ -372,9 +373,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
     LogAccountStoredPasswordsCountInFillDataAfterUnlock(fill_data);
   }
   UpdatePopup(suggestion_generator_.GetSuggestionsForDomain(
-      fill_data, page_favicon_, std::u16string(),
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false)));
+      fill_data, page_favicon_, std::u16string(), OffersGeneration(false),
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false)));
 }
 
 void PasswordAutofillManager::OnNoCredentialsFound() {
@@ -507,8 +507,9 @@ bool PasswordAutofillManager::ShowPopup(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction,
     const std::vector<Suggestion>& suggestions) {
-  if (!password_manager_driver_->CanShowAutofillUi())
+  if (!password_manager_driver_->CanShowAutofillUi()) {
     return false;
+  }
   if (!ContainsOtherThanManagePasswords(suggestions)) {
     autofill_client_->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kNoSuggestions);
@@ -526,8 +527,9 @@ bool PasswordAutofillManager::ShowPopup(
 }
 
 void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
-  if (!password_manager_driver_->CanShowAutofillUi())
+  if (!password_manager_driver_->CanShowAutofillUi()) {
     return;
+  }
   if (!ContainsOtherThanManagePasswords(suggestions)) {
     autofill_client_->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kNoSuggestions);
@@ -616,8 +618,9 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
 }
 
 void PasswordAutofillManager::RequestFavicon(const GURL& url) {
-  if (!password_client_)
+  if (!password_client_) {
     return;
+  }
   favicon::GetFaviconImageForPageURL(
       password_client_->GetFaviconService(), url,
       favicon_base::IconType::kFavicon,
@@ -628,8 +631,9 @@ void PasswordAutofillManager::RequestFavicon(const GURL& url) {
 
 void PasswordAutofillManager::OnFaviconReady(
     const favicon_base::FaviconImageResult& result) {
-  if (!result.image.IsEmpty())
+  if (!result.image.IsEmpty()) {
     page_favicon_ = result.image;
+  }
 }
 
 void PasswordAutofillManager::OnUnlockReauthCompleted(
@@ -660,15 +664,17 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
   authenticator_.reset();
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordFilling.AuthenticationResult", auth_succeeded);
-  if (!auth_succeeded)
+  if (!auth_succeeded) {
     return;
+  }
   bool success = FillSuggestion(GetUsernameFromSuggestion(value), type);
   DCHECK(success);
 }
 
 void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
-  if (!authenticator_)
+  if (!authenticator_) {
     return;
+  }
   authenticator_->Cancel();
   authenticator_.reset();
 }

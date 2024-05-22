@@ -38,8 +38,7 @@ void StubPasswordManagerDriver::PreviewSuggestion(
 void StubPasswordManagerDriver::PreviewGenerationSuggestion(
     const std::u16string& password) {}
 
-void StubPasswordManagerDriver::ClearPreviewedForm() {
-}
+void StubPasswordManagerDriver::ClearPreviewedForm() {}
 
 void StubPasswordManagerDriver::SetSuggestionAvailability(
     autofill::FieldRendererId generation_element_id,

@@ -78,8 +78,9 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
       content::RenderWidgetHost::KeyPressEventCallback handler) {
     DCHECK(callback_.is_null());
     content::RenderWidgetHostView* view = frame_->GetView();
-    if (!view)
+    if (!view) {
       return;
+    }
     view->GetRenderWidgetHost()->AddKeyPressEventCallback(handler);
     callback_ = std::move(handler);
   }
@@ -87,8 +88,9 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   void RemoveKeyPressHandler() {
     if (!callback_.is_null()) {
       content::RenderWidgetHostView* view = frame_->GetView();
-      if (view)
+      if (view) {
         view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(callback_);
+      }
       callback_.Reset();
     }
   }
@@ -115,8 +117,9 @@ PasswordGenerationPopupControllerImpl::GetOrCreate(
     return previous;
   }
 
-  if (previous.get())
+  if (previous.get()) {
     previous->HideImpl();
+  }
 
   PasswordGenerationPopupControllerImpl* controller =
       new PasswordGenerationPopupControllerImpl(
@@ -261,8 +264,9 @@ void PasswordGenerationPopupControllerImpl::SelectElement(
 }
 
 void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
-  if (state_ != kOfferGeneration)
+  if (state_ != kOfferGeneration) {
     return;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (kPasswordGenerationExperimentVariationParam.Get() ==
@@ -334,15 +338,17 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (observer_)
+  if (observer_) {
     observer_->OnPopupShown(state_);
+  }
 }
 
 void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
     std::u16string new_password) {
   current_generated_password_ = std::move(new_password);
-  if (view_)
+  if (view_) {
     view_->UpdateGeneratedPasswordValue();
+  }
 }
 
 void PasswordGenerationPopupControllerImpl::FrameWasScrolled() {
@@ -420,14 +426,16 @@ void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   content::WebContents* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return std::u16string();
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
+  if (!identity_manager) {
     return std::u16string();
+  }
   return base::UTF8ToUTF16(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);
@@ -471,11 +479,13 @@ void PasswordGenerationPopupControllerImpl::HideImpl() {
     driver_->ClearPreviewedForm();
   }
 
-  if (view_)
+  if (view_) {
     view_->Hide();
+  }
 
-  if (observer_)
+  if (observer_) {
     observer_->OnPopupHidden();
+  }
 
   delete this;
 }

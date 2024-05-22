@@ -46,17 +46,20 @@ bool IsSyncAccountEmail(const std::string& username,
                         const signin::IdentityManager* identity_manager,
                         signin::ConsentLevel consent_level) {
   // |identity_manager| can be null if user is not signed in.
-  if (!identity_manager)
+  if (!identity_manager) {
     return false;
+  }
 
   std::string sync_email =
       identity_manager->GetPrimaryAccountInfo(consent_level).email;
 
-  if (sync_email.empty() || username.empty())
+  if (sync_email.empty() || username.empty()) {
     return false;
+  }
 
-  if (username.find('@') == std::string::npos)
+  if (username.find('@') == std::string::npos) {
     return false;
+  }
 
   return gaia::AreEmailsSame(username, sync_email);
 }

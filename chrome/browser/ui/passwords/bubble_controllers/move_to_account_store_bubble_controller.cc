@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,12 +85,14 @@ void MoveToAccountStoreBubbleController::RejectMove() {
 }
 
 gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
-  if (!GetProfile())
+  if (!GetProfile()) {
     return gfx::Image();
+  }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
-  if (!identity_manager)
+  if (!identity_manager) {
     return gfx::Image();
+  }
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   DCHECK(!primary_account_info.IsEmpty());
@@ -121,8 +124,9 @@ std::u16string MoveToAccountStoreBubbleController::GetProfileEmail() const {
 
 void MoveToAccountStoreBubbleController::ReportInteractions() {
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   metrics_util::LogMoveUIDismissalReason(
       dismissal_reason_,

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/strings/string_piece.h"
-
 #include "url/origin.h"
 
 namespace password_manager {

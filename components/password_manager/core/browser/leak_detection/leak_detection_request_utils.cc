@@ -33,8 +33,9 @@ CoreAccountId GetAccountForRequest(
   if (result.IsEmpty()) {
     std::vector<CoreAccountInfo> all_accounts =
         identity_manager->GetAccountsWithRefreshTokens();
-    if (!all_accounts.empty())
+    if (!all_accounts.empty()) {
       result = all_accounts.front();
+    }
   }
   return result.account_id;
 }
@@ -49,8 +50,9 @@ LookupSingleLeakPayload ProduceHashes(std::string_view username,
   payload.encrypted_payload =
       ScryptHashUsernameAndPassword(canonicalized_username, password)
           .value_or("");
-  if (payload.encrypted_payload.empty())
+  if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
+  }
   return payload;
 }
 
@@ -62,8 +64,9 @@ LookupSingleLeakData PrepareLookupSingleLeakData(
     std::string_view password) {
   LookupSingleLeakData data;
   data.payload = ProduceHashes(username, password);
-  if (data.payload.encrypted_payload.empty())
+  if (data.payload.encrypted_payload.empty()) {
     return LookupSingleLeakData();
+  }
   data.payload.initiator = initiator;
   data.payload.encrypted_payload =
       CipherEncrypt(data.payload.encrypted_payload, &data.encryption_key)
@@ -80,8 +83,9 @@ LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
     std::string_view username,
     std::string_view password) {
   LookupSingleLeakPayload payload = ProduceHashes(username, password);
-  if (payload.encrypted_payload.empty())
+  if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
+  }
   payload.encrypted_payload =
       CipherEncryptWithKey(payload.encrypted_payload, encryption_key)
           .value_or("");

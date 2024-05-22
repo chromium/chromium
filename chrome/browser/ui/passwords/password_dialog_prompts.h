@@ -26,6 +26,7 @@ class AccountChooserPrompt {
   // Notifies the UI element that it's controller is no longer managing the UI
   // element. The dialog should close.
   virtual void ControllerGone() = 0;
+
  protected:
   AccountChooserPrompt() = default;
   virtual ~AccountChooserPrompt() = default;
@@ -43,6 +44,7 @@ class AutoSigninFirstRunPrompt {
   // Notifies the UI element that it's controller is no longer managing the UI
   // element. The dialog should close.
   virtual void ControllerGone() = 0;
+
  protected:
   AutoSigninFirstRunPrompt() = default;
   virtual ~AutoSigninFirstRunPrompt() = default;
