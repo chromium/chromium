@@ -191,6 +191,23 @@
         </cr-slider>
       </div>
     </div>
+    <div id="audioInputStyleTransferSubsection" class="settings-box"
+        hidden="[[!isStyleTransferSupported_]]"
+        on-click="onStyleTransferRowClicked_" actionable-row>
+      <div id="audioInputStyleTransferLabel"
+          class="settings-box-text start" aria-hidden="true">
+        $i18n{audioInputStyleTransferTitle}
+        <cros-badge>$i18n{audioInputStyleTransferBadge}</cros-badge>
+        <div class="secondary">
+          $i18n{audioInputStyleTransferDescription}
+        </div>
+      </div>
+      <cr-toggle id="audioInputStyleTransferToggle"
+          checked="{{isStyleTransferEnabled_}}"
+          aria-labelledby="audioInputStyleTransferLabel"
+          on-change="toggleStyleTransferEnabled_">
+      </cr-toggle>
+    </div>
     <div id="audioInputNoiseCancellationSubsection" class="settings-box"
         hidden="[[!isNoiseCancellationSupported_]]"
         on-click="onNoiseCancellationRowClicked_" actionable-row>

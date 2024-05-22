@@ -467,6 +467,31 @@ suite('<settings-device-page>', () => {
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
     };
 
+    const styleTransferSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActiveWithStyleTransfer,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+    };
+
+    const styleTransferNotSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+    };
+
+
     const hfpMicSrNotSupportedAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
@@ -960,6 +985,53 @@ suite('<settings-device-page>', () => {
       assertFalse(isVisible(noiseCancellationSubsection));
     });
 
+    test('simulate style transfer', async () => {
+      const mockController = new MockController();
+      const setStyleTransferEnabled = mockController.createFunctionMock(
+          crosAudioConfig, 'setStyleTransferEnabled');
+      crosAudioConfig.setAudioSystemProperties(
+          styleTransferSupportedAudioSystemProperties);
+
+      const styleTransferSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+              '#audioInputStyleTransferSubsection');
+      const styleTransferToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioInputStyleTransferToggle');
+
+      assertTrue(!!styleTransferSubsection);
+      assertTrue(isVisible(styleTransferSubsection));
+      assertTrue(!!styleTransferToggle);
+      assertFalse(styleTransferToggle.checked);
+
+      await styleTransferToggle.click();
+      await flushTasks();
+
+      assertTrue(isVisible(styleTransferSubsection));
+      assertTrue(styleTransferToggle.checked);
+      assertEquals(
+          /* expected_call_count */ 1,
+          setStyleTransferEnabled['calls_'].length);
+
+      // Clicking on the row should toggle the style transfer toggle.
+      styleTransferSubsection.click();
+      assertEquals(
+          /* expected_call_count */ 2,
+          setStyleTransferEnabled['calls_'].length);
+      const argsPassedToSetStyleTransferEnabled =
+          setStyleTransferEnabled['calls_'][1];
+      assertTrue(!!argsPassedToSetStyleTransferEnabled);
+      // "setStyleTransferEnabled" should have been called with "false"
+      // after the row was clicked on.
+      assertFalse(argsPassedToSetStyleTransferEnabled[0]);
+
+      crosAudioConfig.setAudioSystemProperties(
+          styleTransferNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertFalse(isVisible(styleTransferSubsection));
+    });
+
     test(
         'simulate hfp mic sr with flag off and unsupported state', async () => {
           const audioHfpMicSrSubsection =
@@ -1160,6 +1232,34 @@ suite('<settings-device-page>', () => {
       assertEquals(
           /* expected_call_count */ 0,
           setNoiseCancellationEnabled['calls_'].length);
+    });
+
+    test('style transfer after system properties change', async () => {
+      // System properties change should not trigger setStyleTransferEnabled
+      // to be called.
+      const mockController = new MockController();
+      const setStyleTransferEnabled = mockController.createFunctionMock(
+          crosAudioConfig, 'setStyleTransferEnabled');
+
+      assertEquals(
+          /* expected_call_count */ 0,
+          setStyleTransferEnabled['calls_'].length);
+
+      crosAudioConfig.setAudioSystemProperties(
+          styleTransferSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertEquals(
+          /* expected_call_count */ 0,
+          setStyleTransferEnabled['calls_'].length);
+
+      crosAudioConfig.setAudioSystemProperties(
+          styleTransferNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertEquals(
+          /* expected_call_count */ 0,
+          setStyleTransferEnabled['calls_'].length);
     });
 
     test('slider keypress correct increments', () => {

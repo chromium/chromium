@@ -3347,6 +3347,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage.">
     Noise cancellation
   </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer toggle under the input section in audio settings subpage.">
+    Studio mic
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_BADGE" desc="In Device Settings, the badge of the style transfer toggle under the input section in audio settings subpage.">
+    Experimental
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
+    Enhance your built-in microphone sound with various effects
+  </message>
   <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
     Front microphone
   </message>

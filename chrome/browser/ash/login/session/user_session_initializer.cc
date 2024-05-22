@@ -328,6 +328,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     if (features::IsAudioHFPMicSRToggleEnabled()) {
       CrasAudioHandler::Get()->RefreshHfpMicSrState();
     }
+
+    CrasAudioHandler::Get()->RefreshStyleTransferState();
   }
 }
 

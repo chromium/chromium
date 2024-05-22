@@ -11,6 +11,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/cros_components/badge/badge.js'; // side-effect
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
@@ -86,6 +87,14 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
       },
 
+      isStyleTransferEnabled_: {
+        type: Boolean,
+      },
+
+      isStyleTransferSupported_: {
+        type: Boolean,
+      },
+
       outputVolume_: {
         type: Number,
       },
@@ -130,6 +139,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       showHfpMicSr: {
         type: Boolean,
       },
+
+      showStyleTransfer: {
+        type: Boolean,
+      },
     };
   }
 
@@ -137,6 +150,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected showAllowAGC: boolean;
   protected isHfpMicSrEnabled: boolean;
   protected showHfpMicSr: boolean;
+  protected showStyleTransfer: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private audioSystemProperties_: AudioSystemProperties;
@@ -147,6 +161,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private isInputMuted_: boolean;
   private isNoiseCancellationEnabled_: boolean;
   private isNoiseCancellationSupported_: boolean;
+  private isStyleTransferEnabled_: boolean;
+  private isStyleTransferSupported_: boolean;
   private outputVolume_: number;
   private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
@@ -195,6 +211,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.isNoiseCancellationSupported_ =
         !(activeInputDevice?.noiseCancellationState ===
           AudioEffectState.kNotSupported);
+    this.isStyleTransferEnabled_ =
+        (activeInputDevice?.styleTransferState === AudioEffectState.kEnabled);
+    this.isStyleTransferSupported_ = activeInputDevice?.styleTransferState !==
+        AudioEffectState.kNotSupported;
     this.isAllowAGCEnabled =
         (activeInputDevice?.forceRespectUiGainsState ===
          AudioEffectState.kNotEnabled);
@@ -424,6 +444,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.crosAudioConfig_.setNoiseCancellationEnabled(e.detail);
   }
 
+  private toggleStyleTransferEnabled_(e: CustomEvent<boolean>): void {
+    this.crosAudioConfig_.setStyleTransferEnabled(e.detail);
+  }
+
   private toggleHfpMicSrEnabled_(e: CustomEvent<boolean>): void {
     this.crosAudioConfig_.setHfpMicSrEnabled(e.detail);
   }
@@ -447,6 +471,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         '#audioInputNoiseCancellationToggle', this.shadowRoot, CrToggleElement);
     this.crosAudioConfig_.setNoiseCancellationEnabled(
         !noiseCancellationToggle.checked);
+  }
+
+  private onStyleTransferRowClicked_(): void {
+    const styleTransferToggle = strictQuery(
+        '#audioInputStyleTransferToggle', this.shadowRoot, CrToggleElement);
+    this.crosAudioConfig_.setStyleTransferEnabled(!styleTransferToggle.checked);
   }
 }
 

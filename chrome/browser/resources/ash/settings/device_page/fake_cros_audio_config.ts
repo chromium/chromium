@@ -99,6 +99,17 @@ export const fakeBluetoothNbMicActiveHfpMicSrNotEnabled: AudioDevice = {
   hfpMicSrState: AudioEffectState.kNotEnabled,
 };
 
+export const fakeInternalMicActiveWithStyleTransfer: AudioDevice = {
+  id: BigInt(9),
+  displayName: 'Internal Mic',
+  isActive: true,
+  deviceType: AudioDeviceType.kInternalMic,
+  noiseCancellationState: AudioEffectState.kNotSupported,
+  styleTransferState: AudioEffectState.kNotEnabled,
+  forceRespectUiGainsState: AudioEffectState.kNotEnabled,
+  hfpMicSrState: AudioEffectState.kNotSupported,
+};
+
 export interface FakePropertiesObserverInterface {
   onPropertiesUpdated(properties: AudioSystemProperties): void;
 }
