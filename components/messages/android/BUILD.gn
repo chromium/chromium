@@ -23,7 +23,9 @@ android_library("java") {
   resources_package = "org.chromium.components.messages"
 
   deps = [
+    ":feature_flags_jni_headers_java",
     ":java_resources",
+    ":jni_headers_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/banners/android:java",
@@ -36,10 +38,7 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
-  srcjar_deps = [
-    ":jni_headers",
-    ":message_enums_java",
-  ]
+  srcjar_deps = [ ":message_enums_java" ]
 }
 
 android_library("unit_device_javatests") {
@@ -72,9 +71,13 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
-    "java/src/org/chromium/components/messages/MessageFeatureMap.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
   ]
+}
+
+generate_jni("feature_flags_jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/messages/MessageFeatureMap.java" ]
 }
 
 static_library("android") {
@@ -157,7 +160,7 @@ static_library("feature_flags") {
   ]
   deps = [
     "//base",
-    "//components/messages/android:jni_headers",
+    "//components/messages/android:feature_flags_jni_headers",
   ]
 }
 

@@ -37,7 +37,7 @@ if (is_win) {
   content_app_deps += [
     "//content/browser",
     "//content/child",
-    "//content/public/android:jni",
+    "//content/public/android:content_app_jni",
     "//device/bluetooth",
     "//device/gamepad",
     "//gpu",
