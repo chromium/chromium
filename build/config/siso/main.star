@@ -51,6 +51,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/browser/ash/unit_tests/wizard_controller_unittest.o",
         "./obj/chrome/browser/browser/browser_prefs.o",
         "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
+        "./obj/chrome/browser/browser/chrome_browser_main_extra_parts_profiles.o",
         "./obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./obj/chrome/browser/browser/render_view_context_menu.o",
         "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
