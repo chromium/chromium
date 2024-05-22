@@ -7,15 +7,16 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
@@ -59,25 +61,19 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     SupervisedUserErrorContainer::CreateForWebState(&web_state_);
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
         &web_state_);
+    scoped_feature_list_.InitAndEnableFeature(
+        supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
   }
 
   // Signs the user into `email` as the primary Chrome account and sets the
   // given parental control capabilities on this account.
   void SignIn(const std::string& email, bool is_subject_to_parental_controls) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
     AccountInfo account = signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get()),
-        email, signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account.capabilities);
-    mutator.set_is_subject_to_parental_controls(
-        is_subject_to_parental_controls);
-    // Update child status preference, which is backed by capability state.
-    // This action will not be performed by the fake account capability fetcher.
-    account.is_child_account = is_subject_to_parental_controls
-                                   ? signin::Tribool::kTrue
-                                   : signin::Tribool::kFalse;
-    signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get()),
-        account);
+        identity_manager, email, signin::ConsentLevel::kSignin);
+    supervised_user::UpdateSupervisionStatusForAccount(
+        account, identity_manager, is_subject_to_parental_controls);
 
     // Initialize supervised_user services.
     ChildAccountServiceFactory::GetForBrowserState(chrome_browser_state_.get())
@@ -89,7 +85,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     supervised_user_service->Init();
 
     EXPECT_EQ(supervised_user::IsSubjectToParentalControls(
-                  *chrome_browser_state_->GetPrefs()),
+                  chrome_browser_state_.get()),
               is_subject_to_parental_controls);
   }
 
@@ -147,6 +143,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState web_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SupervisedUserURLFilterTabHelperTest,

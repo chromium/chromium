@@ -27,11 +27,13 @@ source_set("model") {
   ]
 
   deps = [
+    ":capabilities",
     ":sync_settings_factory",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs",
     "//components/security_interstitials/core",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:list_family_members_service",
     "//components/supervised_user/core/common",
@@ -51,6 +53,26 @@ source_set("model") {
   ]
 
   public_deps = [ "//ios/web/public" ]
+}
+
+source_set("capabilities") {
+  sources = [
+    "supervised_user_capabilities.h",
+    "supervised_user_capabilities.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/web/public",
+  ]
 }
 
 source_set("sync_settings_factory") {
@@ -76,6 +98,7 @@ source_set("unit_tests") {
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
+    ":capabilities",
     ":model",
     ":sync_settings_factory",
     "//base/test:test_support",

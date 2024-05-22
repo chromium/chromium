@@ -6,13 +6,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/tribool.h"
+#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
@@ -84,11 +88,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // instead of this when available.
 // Returns true when sign-in can be enabled/disabled by the user from the
 // google service settings.
-bool IsSigninControllableByUser(const PrefService* prefService) {
-  if (prefService &&
-      supervised_user::IsSubjectToParentalControls(*prefService)) {
-    return false;
-  }
+bool IsControllingSigninAllowedByPolicy() {
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
       GetApplicationContext()->GetLocalState()->GetInteger(
           prefs::kBrowserSigninPolicy));
@@ -165,12 +165,16 @@ bool GetStatusForSigninPolicy() {
 
 @synthesize nonPersonalizedItems = _nonPersonalizedItems;
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                        userPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService {
   self = [super init];
   if (self) {
+    DCHECK(identityManager);
     DCHECK(userPrefService);
     DCHECK(localPrefService);
+    _identityManager = identityManager;
     _userPrefService = userPrefService;
     _localPrefService = localPrefService;
     _allowChromeSigninPreference =
@@ -199,7 +203,9 @@ bool GetStatusForSigninPolicy() {
 }
 
 - (TableViewItem*)allowChromeSigninItem {
-  if (IsSigninControllableByUser(self.userPrefService)) {
+  // Supervised users cannot manually enable/disable sign-in.
+  if (![self isSubjectToParentalControls] &&
+      IsControllingSigninAllowedByPolicy()) {
     return
         [self switchItemWithItemType:AllowChromeSigninItemType
                         textStringID:
@@ -240,7 +246,9 @@ bool GetStatusForSigninPolicy() {
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
             base::apple::ObjCCast<SyncSwitchItem>(item);
-        if (IsSigninControllableByUser(self.userPrefService)) {
+        // Supervised users cannot manually enable/disable sign-in.
+        if (![self isSubjectToParentalControls] &&
+            IsControllingSigninAllowedByPolicy()) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
           signinDisabledItem.on = NO;
@@ -487,8 +495,7 @@ bool GetStatusForSigninPolicy() {
 }
 
 - (BOOL)isViewControllerSubjectToParentalControls {
-  return self.userPrefService &&
-         supervised_user::IsSubjectToParentalControls(*self.userPrefService);
+  return [self isSubjectToParentalControls];
 }
 
 - (void)googleServicesSettingsViewControllerDidSelectItemAtIndexPath:
@@ -557,6 +564,21 @@ bool GetStatusForSigninPolicy() {
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   [self updateNonPersonalizedSectionWithNotification:YES];
+}
+
+#pragma mark - Private
+
+- (BOOL)isSubjectToParentalControls {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
+    return self.identityManager &&
+           supervised_user::IsPrimaryAccountSubjectToParentalControls(
+               self.identityManager) == signin::Tribool::kTrue;
+  } else {
+    return self.userPrefService &&
+           supervised_user::IsSubjectToParentalControls(*self.userPrefService);
+  }
 }
 
 @end

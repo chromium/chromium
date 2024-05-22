@@ -91,12 +91,12 @@ using signin_metrics::PromoAction;
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+                                  self.browser->GetBrowserState())
+              userPrefService:self.browser->GetBrowserState()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
   self.mediator.consumer = viewController;
   self.mediator.authService = self.authService;
-  self.mediator.identityManager = IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
   viewController.modelDelegate = self.mediator;
   viewController.serviceDelegate = self.mediator;

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
+
+#import <UIKit/UIKit.h>
 
 #import "base/check_op.h"
 #import "base/ios/device_util.h"
@@ -15,8 +15,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/download/model/mime_type_util.h"
@@ -27,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -87,8 +86,8 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 // Returns true if the primary account is subject to parental controls and the
 // URL filtering control has been enabled.
 bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  return browserState && supervised_user::IsSubjectToParentalControls(
-                             *browserState->GetPrefs());
+  return browserState &&
+         supervised_user::IsSubjectToParentalControls(browserState);
 }
 
 // Returns whether `url` can be prerendered.

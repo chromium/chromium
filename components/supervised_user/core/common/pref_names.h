@@ -94,6 +94,7 @@ inline constexpr char kSupervisedUserApprovedExtensions[] =
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // The supervised user ID.
+// TODO(b/342097235): this pref is being deprecated.
 inline constexpr char kSupervisedUserId[] = "profile.managed_user_id";
 
 // Maps host names to whether the host is manually allowed or blocked.

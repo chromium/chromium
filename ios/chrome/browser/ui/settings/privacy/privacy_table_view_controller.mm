@@ -20,7 +20,6 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -42,6 +41,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
@@ -686,8 +686,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // reauth setting's UI cell.
 - (void)didTapIncognitoReauthDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(
-                           *_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(_browserState)) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(
@@ -710,8 +709,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // interstitial setting's UI cell.
 - (void)didTapIncognitoInterstitialDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(
-                           *_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(_browserState)) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(

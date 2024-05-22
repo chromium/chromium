@@ -107,6 +107,12 @@ BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
              "WaitUntilAccessTokenAvailableForClassifyUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
+             "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }

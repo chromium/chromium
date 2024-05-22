@@ -31,6 +31,9 @@ bool IsSafeSitesEnabled(const PrefService& pref_service);
 
 // Returns true if both the primary account is a child account subject to
 // parental controls and the platform supports Family Link supervision features.
+// TODO(b/342097235): prefs::kSupervisedUserID is being deprecated. Supervision
+// status via AccountCapabilities can be obtained with
+// `IsPrimaryAccountSubjectToParentalControls`.
 bool IsSubjectToParentalControls(const PrefService& pref_service);
 
 // Returns true if the extensions permissions parental control is enabled

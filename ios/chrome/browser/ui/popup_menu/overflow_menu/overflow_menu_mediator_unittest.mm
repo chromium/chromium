@@ -27,8 +27,12 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
+#import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -68,7 +72,9 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -423,6 +429,30 @@ class OverflowMenuMediatorTest : public PlatformTest {
     return found_destination;
   }
 
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
+  }
+
+  void SignInPrimaryAccountWithSupervisionStatus(bool is_supervised) {
+    const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(
+        identity);
+    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    AccountInfo account =
+        identity_manager()->FindExtendedAccountInfo(core_account_info);
+    supervised_user::UpdateSupervisionStatusForAccount(
+        account, identity_manager(), is_supervised);
+  }
+
   web::WebTaskEnvironment task_env_;
   // Set a local state for the test ApplicationContext that is scoped to the
   // test (cleaned up on teardown). This is needed for certains factories that
@@ -630,17 +660,14 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
       {});
 
   // Add managed account to sign in with.
-  FakeSystemIdentityManager* fake_system_identity_manager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  fake_system_identity_manager->AddManagedIdentities(@[ @"managedfoo" ]);
-  ChromeAccountManagerService* account_manager =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          browser_state_.get());
+  fake_system_identity_manager()->AddManagedIdentities(@[ @"managedfoo" ]);
 
   // Emulate signing in with managed account.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+  ChromeAccountManagerService* account_manager =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          browser_state_.get());
   authentication_service->SignIn(
       account_manager->GetDefaultIdentity(),
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -693,6 +720,31 @@ TEST_F(OverflowMenuMediatorTest,
 
 // Tests that the Family Link item is hidden for non-supervised users.
 TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
+
+  // Sign in unsupervised user.
+  SignInPrimaryAccountWithSupervisionStatus(/*is_supervised=*/false);
+
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  ASSERT_FALSE(HasFamilyLinkInfoItem());
+}
+
+// Tests that the Family Link item is hidden for non-supervised users with
+// pref-based supervision status.
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
+
   supervised_user::DisableParentalControls(*browser_state_->GetPrefs());
 
   CreateMediator(/*is_incognito=*/NO);
@@ -708,6 +760,31 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
 
 // Tests that the Family Link item is shown for supervised users.
 TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
+
+  // Sign in supervised user.
+  SignInPrimaryAccountWithSupervisionStatus(/*is_supervised=*/true);
+
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  ASSERT_TRUE(HasFamilyLinkInfoItem());
+}
+
+// Tests that the Family Link item is shown for supervised users with pref-based
+// supervision status.
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShownWithSupervisionPrefs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
+
   supervised_user::EnableParentalControls(*browser_state_->GetPrefs());
 
   CreateMediator(/*is_incognito=*/NO);

@@ -23,7 +23,6 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -69,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
@@ -1322,7 +1322,7 @@ bool IsBookmarked(const GURL& url,
         });
   } else if (chrome_browser_state &&
              supervised_user::IsSubjectToParentalControls(
-                 *chrome_browser_state->GetPrefs())) {
+                 chrome_browser_state)) {
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_PARENT_MANAGED, IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE,
         kTextMenuFamilyLinkInfo, @"overflow_menu_footer_family_link", ^{

@@ -230,8 +230,9 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open tools menu to click on "Learn more" family link footer.
   [ChromeEarlGreyUI openToolsMenu];

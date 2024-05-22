@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/prerender/model/preload_controller.h"
+
 #import <memory>
 
 #import "base/ios/device_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -55,6 +63,10 @@ class PreloadControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
     chrome_browser_state_ = test_cbs_builder.Build();
     // Set up a NetworkChangeNotifier so that the test can simulate Wi-Fi vs.
     // cellular connection.
@@ -191,8 +203,37 @@ TEST_F(PreloadControllerTest, TestIsPrerenderingEnabled_preloadNever) {
 }
 
 TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
+
+  // Sign in supervised user.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account, identity_manager,
+      /*is_subject_to_parental_controls=*/true);
+
   // Never prerender pages for supervised users regardless of the setting for
   // "Preload Webpages".
+  SimulateWiFiConnection();
+
+  PreloadWebpagesAlways();
+  EXPECT_FALSE(controller_.enabled);
+
+  PreloadWebpagesWiFiOnly();
+  EXPECT_FALSE(controller_.enabled);
+
+  PreloadWebpagesNever();
+  EXPECT_FALSE(controller_.enabled);
+}
+
+TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsersWithPrefs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
   supervised_user::EnableParentalControls(*chrome_browser_state_->GetPrefs());
 
   SimulateWiFiConnection();
