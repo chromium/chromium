@@ -226,7 +226,7 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
   base::FilePath resources_path;
 #if BUILDFLAG(IS_MAC)
   base::FilePath root_path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &root_path));
+  CHECK(base::PathService::Get(base::DIR_MODULE, &root_path));
   resources_path = root_path.Append("resources");
 #else
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
