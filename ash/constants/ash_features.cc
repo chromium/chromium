@@ -1437,7 +1437,7 @@ BASE_FEATURE(kHelpAppLauncherSearch,
 // a notification to open the help app.
 BASE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification,
              "HelpAppOpensInsteadOfReleaseNotesNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable showing the welcome tips page in the help app. This feature
 // is dependent on the 'ScalableIph' feature being enabled as well.

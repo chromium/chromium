@@ -4924,7 +4924,7 @@
   {
     "name": "help-app-opens-instead-of-release-notes-notification",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 131
   },
   {
     "name": "hide-incognito-media-metadata",
