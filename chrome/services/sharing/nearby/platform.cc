@@ -30,6 +30,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/atomic_boolean.h"
@@ -278,7 +279,8 @@ std::unique_ptr<ble_v2::BleMedium> ImplementationPlatform::CreateBleV2Medium(
   // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
   // directly use the cached bluetooth::mojom::Adapter.
   if (nearby_shared_remotes &&
-      nearby_shared_remotes->bluetooth_adapter.is_bound()) {
+      nearby_shared_remotes->bluetooth_adapter.is_bound() &&
+      features::IsNearbyBleV2Enabled()) {
     return std::make_unique<chrome::BleV2Medium>(
         nearby_shared_remotes->bluetooth_adapter);
   }
