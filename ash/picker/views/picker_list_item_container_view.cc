@@ -20,9 +20,9 @@
 namespace ash {
 
 PickerListItemContainerView::PickerListItemContainerView() {
+  // Lay out items as a full-width vertical list.
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 PickerListItemContainerView::~PickerListItemContainerView() = default;
