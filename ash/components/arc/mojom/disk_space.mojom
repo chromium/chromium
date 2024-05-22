@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module arc.mojom;
+
+import "ash/components/arc/mojom/storage_manager.mojom";
 
 struct DiskSpace {
   uint64 space_in_bytes;
@@ -33,8 +35,15 @@ interface DiskSpaceHost {
   [MinVersion=2] GetFreeDiskSpace@5() => (DiskSpace? free_space);
 };
 
-// Next Method ID: 1
+// Next Method ID: 2
 interface DiskSpaceInstance {
   // Establishes full-duplex communication with the host.
   Init@0(pending_remote<DiskSpaceHost> host_remote) => ();
+
+  // Retrieves storage usage (code, data, and cache) of all applications.
+  // Returns the combined usage on internal and external storage.
+  // The `succeeded` value indicates whether there is any error on ARC side.
+  // When `succeeded` is false, `applications_size` is null.
+  [MinVersion=3] GetApplicationsSize@1()
+      => (bool succeeded, ApplicationsSize? applications_size);
 };

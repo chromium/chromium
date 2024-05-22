@@ -5,8 +5,13 @@
 #include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_disk_space_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
@@ -31,11 +36,18 @@ class ArcDiskSpaceBridgeTest : public testing::Test {
  protected:
   ArcDiskSpaceBridgeTest()
       : bridge_(ArcDiskSpaceBridge::GetForBrowserContextForTesting(&context_)) {
+    ArcServiceManager::Get()->arc_bridge_service()->disk_space()->SetInstance(
+        &disk_space_instance_);
+    WaitForInstanceReady(
+        ArcServiceManager::Get()->arc_bridge_service()->disk_space());
   }
   ArcDiskSpaceBridgeTest(const ArcDiskSpaceBridgeTest&) = delete;
   ArcDiskSpaceBridgeTest& operator=(const ArcDiskSpaceBridgeTest&) = delete;
   ~ArcDiskSpaceBridgeTest() override = default;
 
+  const FakeDiskSpaceInstance* disk_space_instance() const {
+    return &disk_space_instance_;
+  }
   ArcDiskSpaceBridge* bridge() { return bridge_; }
 
   void SetUp() override {
@@ -51,6 +63,7 @@ class ArcDiskSpaceBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
+  FakeDiskSpaceInstance disk_space_instance_;
   user_prefs::TestBrowserContextWithPrefs context_;
   const raw_ptr<ArcDiskSpaceBridge> bridge_;
 };
@@ -224,6 +237,14 @@ INSTANTIATE_TEST_SUITE_P(ArcDiskSpaceBridgeTestForR,
 INSTANTIATE_TEST_SUITE_P(ArcDiskSpaceBridgeTestForT,
                          ArcDiskSpaceBridgeWithArcVersionTest,
                          testing::Values(kArcVersionT));
+
+TEST_F(ArcDiskSpaceBridgeTest, GetApplicationsSize) {
+  ASSERT_NE(nullptr, bridge());
+  base::test::TestFuture<bool, mojom::ApplicationsSizePtr> future;
+  EXPECT_TRUE(bridge()->GetApplicationsSize(future.GetCallback()));
+  EXPECT_EQ(1u, disk_space_instance()->num_get_applications_size_called());
+  EXPECT_TRUE(future.Get<0>());
+}
 
 }  // namespace
 }  // namespace arc

@@ -87,20 +87,20 @@ class ArcDiskSpaceBridge : public KeyedService, public mojom::DiskSpaceHost {
 
   // mojom::DiskSpaceHost overrides:
   void IsQuotaSupported(IsQuotaSupportedCallback callback) override;
-
   void GetQuotaCurrentSpaceForUid(
       uint32_t uid,
       GetQuotaCurrentSpaceForUidCallback callback) override;
-
   void GetQuotaCurrentSpaceForGid(
       uint32_t gid,
       GetQuotaCurrentSpaceForGidCallback callback) override;
-
   void GetQuotaCurrentSpaceForProjectId(
       uint32_t project_id,
       GetQuotaCurrentSpaceForProjectIdCallback callback) override;
-
   void GetFreeDiskSpace(GetFreeDiskSpaceCallback) override;
+
+  using GetApplicationsSizeCallback =
+      base::OnceCallback<void(bool succeeded, mojom::ApplicationsSizePtr)>;
+  bool GetApplicationsSize(GetApplicationsSizeCallback callback);
 
   static void EnsureFactoryBuilt();
 

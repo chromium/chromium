@@ -212,6 +212,17 @@ void ArcDiskSpaceBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
   std::move(callback).Run(std::move(disk_space));
 }
 
+bool ArcDiskSpaceBridge::GetApplicationsSize(
+    GetApplicationsSizeCallback callback) {
+  auto* disk_space_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->disk_space(), GetApplicationsSize);
+  if (!disk_space_instance) {
+    return false;
+  }
+  disk_space_instance->GetApplicationsSize(std::move(callback));
+  return true;
+}
+
 // static
 void ArcDiskSpaceBridge::EnsureFactoryBuilt() {
   ArcDiskSpaceBridgeFactory::GetInstance();
