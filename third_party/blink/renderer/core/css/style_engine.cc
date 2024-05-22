@@ -812,13 +812,13 @@ void StyleEngine::UpdateCounters(const Element& element,
       ng_list_item->OrdinalValueChanged();
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
-      ng_list_item->Ordinal().MarkDirty();
+      inline_list_item->Ordinal().MarkDirty();
       inline_list_item->OrdinalValueChanged();
     }
-  }
-  if (element.GetLayoutObject() && element.GetComputedStyle() &&
-      !element.GetComputedStyle()->ContentBehavesAsNormal()) {
-    UpdateLayoutCounters(element, *element.GetLayoutObject(), context);
+    if (element.GetComputedStyle() &&
+        !element.GetComputedStyle()->ContentBehavesAsNormal()) {
+      UpdateLayoutCounters(element, *layout_object, context);
+    }
   }
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(element); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
