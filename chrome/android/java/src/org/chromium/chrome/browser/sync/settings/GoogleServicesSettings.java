@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
@@ -124,6 +125,10 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mPasswordsAccountStorage =
                 (ChromeSwitchPreference) findPreference(PREF_PASSWORDS_ACCOUNT_STORAGE);
         mPasswordsAccountStorage.setOnPreferenceChangeListener(this);
+        if (getArguments() != null
+                && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
+            mPasswordsAccountStorage.setBackgroundColor(R.color.iph_highlight_blue);
+        }
         SyncServiceFactory.getForProfile(getProfile()).addSyncStateChangedListener(this);
 
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);

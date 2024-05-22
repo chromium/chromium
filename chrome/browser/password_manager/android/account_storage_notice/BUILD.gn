@@ -37,6 +37,7 @@ android_library("java") {
     ":resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android/account_storage_toggle:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java",

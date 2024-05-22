@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
@@ -26,7 +27,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private View mView;
 
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes private Integer mBackgroundColorRes;
+    @ColorRes @Nullable private Integer mBackgroundColorRes;
 
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
@@ -125,6 +126,11 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
+    }
+
+    /** Returns the background color of the preference. */
+    public @Nullable Integer getBackgroundColor() {
+        return mBackgroundColorRes;
     }
 
     /**

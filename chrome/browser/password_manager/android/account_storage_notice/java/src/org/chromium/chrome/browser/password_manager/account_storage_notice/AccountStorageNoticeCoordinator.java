@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager.account_storage_notice;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -109,11 +111,15 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     }
 
     private void onSettingsLinkClicked() {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT, true);
+        // TODO(crbug.com/338576301): Launch the unified settings panel instead if
+        // ReplaceSyncPromosWithSignInPromos is enabled.
         Intent intent =
                 mSettingsLauncher.createSettingsActivityIntent(
                         mWindowAndroid.getContext().get(),
                         SettingsFragment.GOOGLE_SERVICES,
-                        /* fragmentArgs= */ null);
+                        fragmentArgs);
         mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
     }
 
