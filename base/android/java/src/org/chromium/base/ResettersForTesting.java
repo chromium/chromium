@@ -170,12 +170,21 @@ public class ResettersForTesting {
         Collections.reverse(resetters);
 
         sIsFlushing = true;
-        try {
-            for (Runnable resetter : resetters) {
+        Throwable firstError = null;
+        for (Runnable resetter : resetters) {
+            try {
+                // They should not throw... but when they do, they are generally independent, so
+                // continue on with remaining ones.
                 resetter.run();
+            } catch (Throwable t) {
+                if (firstError == null) {
+                    firstError = t;
+                }
             }
-        } finally {
-            sIsFlushing = false;
+        }
+        sIsFlushing = false;
+        if (firstError != null) {
+            throw new RuntimeException(firstError);
         }
     }
 

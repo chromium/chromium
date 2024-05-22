@@ -279,7 +279,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             CommandLineFlags.tearDownClass();
             runPostClassHooks(testClass);
         } finally {
-            ResettersForTesting.afterClassHooksDidExecute();
+            // Run resetters on UI thread so as to minimize the number of failed thread check
+            // assertions, and to match the semantics of Robolectric's runners.
+            BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
+                    ResettersForTesting::afterClassHooksDidExecute);
         }
     }
 
@@ -312,18 +315,23 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         runPostTestHooks(method);
         CommandLineFlags.tearDownMethod();
-        ResettersForTesting.afterHooksDidExecute();
+        try {
+            // Run resetters on UI thread so as to minimize the number of failed thread check
+            // assertions, and to match the semantics of Robolectric's runners.
+            BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
+                    ResettersForTesting::afterHooksDidExecute);
+        } finally {
+            Bundle b = new Bundle();
+            b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - start);
+            BaseChromiumAndroidJUnitRunner.sInstance.sendStatus(STATUS_CODE_TEST_DURATION, b);
 
-        Bundle b = new Bundle();
-        b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - start);
-        InstrumentationRegistry.getInstrumentation().sendStatus(STATUS_CODE_TEST_DURATION, b);
+            TestTraceEvent.end(testName);
 
-        TestTraceEvent.end(testName);
-
-        // A new instance of BaseJUnit4ClassRunner is created on the device
-        // for each new method, so runChild will only be called once. Thus, we
-        // can disable tracing, and dump the output, once we get here.
-        TestTraceEvent.disable();
+            // A new instance of BaseJUnit4ClassRunner is created on the device
+            // for each new method, so runChild will only be called once. Thus, we
+            // can disable tracing, and dump the output, once we get here.
+            TestTraceEvent.disable();
+        }
     }
 
     /** Loop through all the {@code PreTestHook}s to run them */
