@@ -665,3 +665,10 @@
 -TouchpadPinchBrowserTest.WheelListenerAllowingPinch
 -TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap
 -TouchpadPinchBrowserTest.WheelListenerPreventingPinch
+
+# TODO(crbug.com/341991542): The below tests related to the accessibility
+# have been failing since https://crrev.com/c/5513503.
+-All/DumpAccessibilityTreeTest.SelectExpandManyOptionsCrash/blink
+-CrossPlatformAccessibilityBrowserTest.SelectListWithOptgroupActiveDescendant
+-CrossPlatformAccessibilityBrowserTest.SelectSizeChangeWithOpenedPopupDoesNotCrash
+-CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
