@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './key_value_pair_entry.html.js';
+import {getCss} from './key_value_pair_entry.css.js';
+import {getHtml} from './key_value_pair_entry.html.js';
 
 export const COLLAPSE_THRESHOLD = 200;
 
@@ -20,38 +22,48 @@ const CROS_MD_DOC_URL =
     'https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/debugd/docs/log_entries.md';
 // </if>
 
-export class KeyValuePairEntryElement extends PolymerElement {
+export class KeyValuePairEntryElement extends CrLitElement {
   static get is() {
     return 'key-value-pair-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      entry: Object,
+      entry: {type: Object},
 
       collapsible_: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'computeCollabsible_(entry.statValue)',
+        reflect: true,
       },
 
       collapsed: {
         type: Boolean,
-        value: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  entry: KeyValuePairEntry;
-  collapsed: boolean;
-  private collapsible_: boolean;
+  entry: KeyValuePairEntry = {key: '', value: ''};
+  collapsed: boolean = true;
+  protected collapsible_: boolean = false;
 
-  private getHref_(): string {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('entry')) {
+      this.collapsible_ = this.entry.value.length > COLLAPSE_THRESHOLD;
+    }
+  }
+
+  protected getHref_(): string {
     // Let URL be anchor to the section of this page by default.
     let urlPrefix = '';
 
@@ -64,16 +76,12 @@ export class KeyValuePairEntryElement extends PolymerElement {
     return `${urlPrefix}#${this.entry.key}`;
   }
 
-  private computeCollabsible_(): boolean {
-    return this.entry.value.length > COLLAPSE_THRESHOLD;
-  }
-
-  private onButtonClick_() {
+  protected onButtonClick_() {
     assert(this.collapsible_);
     this.collapsed = !this.collapsed;
   }
 
-  private getButtonText_(): string {
+  protected getButtonText_(): string {
     return this.collapsed ? 'Expand…' : 'Collapse…';
   }
 }

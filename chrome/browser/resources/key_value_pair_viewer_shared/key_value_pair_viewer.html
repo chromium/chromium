@@ -1,55 +1,9 @@
-<style>
-  h2 {
-    margin: 0;
-  }
-
-  #header p {
-    color: white;
-    display: inline;
-    font-size: 0.72rem;
-    font-style: italic;
-    padding-inline-start: 6px;
-  }
-
-  #second-row {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  #second-row h2 {
-    color: rgb(58, 117, 189);
-    display: inline-block;
-    font-size: 0.92rem;
-    font-weight: normal;
-  }
-
-  #spinner {
-    display: none;
-    background-image: url(chrome://resources/images/throbber_small.svg);
-    background-size: 100%;
-    height: 20px;
-    width: 20px;
-  }
-
-  :host([loading]) #spinner {
-    display: block;
-  }
-
-  key-value-pair-entry:nth-child(odd) {
-    background: rgb(239, 243, 255);
-  }
-
-  button {
-    font-family: inherit;
-  }
-</style>
-
 <div id="second-row">
   <h2 id="tableTitle">$i18n{tableTitle}</h2>
-  <button id="expandAll" on-click="onExpandAllClick_">
+  <button id="expandAll" @click="${this.onExpandAllClick_}">
     $i18n{expandAllBtn}
   </button>
-  <button id="collapseAll" on-click="onCollapseAllClick_">
+  <button id="collapseAll" @click="${this.onCollapseAllClick_}">
     $i18n{collapseAllBtn}
   </button>
 </div>
@@ -58,7 +12,7 @@
 <div id="spinner" id="spinner"></div>
 
 <div id="table">
-  <template is="dom-repeat" items="[[entries]]">
-    <key-value-pair-entry entry="[[item]]" role="row"></key-value-pair-entry>
-  </template>
+  ${this.entries.map(item => html`
+    <key-value-pair-entry .entry="${item}" role="row"></key-value-pair-entry>
+  `)}
 </div>

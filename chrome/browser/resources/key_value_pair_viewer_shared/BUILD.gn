@@ -17,9 +17,16 @@ build_webui("build") {
 
   non_web_component_files = [ "key_value_pair_parser.ts" ]
 
+  css_files = [
+    "key_value_pair_viewer.css",
+    "key_value_pair_entry.css",
+  ]
+
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 

@@ -1,0 +1,59 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  font-family: 'Courier New', monospace;
+  gap: 1rem;
+  font-size: 0.72rem;
+
+  --cell-border: 1px solid rgb(181, 198, 222);
+}
+
+.name-cell,
+.button-cell,
+.value-cell {
+  padding: 8px 6px;
+}
+
+.name-cell {
+  border-inline-end: var(--cell-border);
+  width: 200px;
+  min-width: 200px;
+  overflow-wrap: break-word;
+}
+
+.button-cell {
+  text-align: center;
+  width: 80px;
+  min-width: 80px;
+}
+
+.value-cell {
+  border-inline-start: var(--cell-border);
+  overflow: auto;
+}
+
+.value-cell span {
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+}
+
+:host([collapsible_][collapsed]) .stat-value {
+  display: none;
+}
+
+.stat-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stat-name-link:hover {
+  text-decoration: underline;
+}

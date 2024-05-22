@@ -1,46 +1,3 @@
-<style>
-  h1 {
-    margin: 0;
-  }
-
-  #header {
-    background: rgb(60, 111, 235);
-    border: 1px solid rgb(58, 117, 189);
-    border-radius: 6px;
-    margin-bottom: 9px;
-    overflow: hidden;
-    padding: 6px 0;
-    text-shadow: 0 0 2px black;
-  }
-
-  #header h1 {
-    color: white;
-    display: inline;
-    font-size: 0.92rem;
-    font-weight: bold;
-  }
-
-  #header h1::before {
-    -webkit-mask-image: url(chrome://resources/images/icon_settings.svg);
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 24px;
-    background-color: white;
-    content: '';
-    display: inline-block;
-    height: 20px;
-    vertical-align: middle;
-    width: 37px;
-  }
-
-  #header p {
-    color: white;
-    display: inline;
-    font-size: 0.72rem;
-    font-style: italic;
-    padding-inline-start: 6px;
-  }
-</style>
 <if expr="is_chromeos">
     <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
@@ -52,9 +9,9 @@
     -->
     <div class="os-link-container-container"
 <if expr="chromeos_ash">
-        hidden$="[[!isLacrosEnabled_]]"
-        on-click="onOsLinkContainerClick_"
-        on-auxclick="onOsLinkContainerAuxClick_"
+        ?hidden="${!this.isLacrosEnabled_}"
+        @click="${this.onOsLinkContainerClick_}"
+        @auxclick="${this.onOsLinkContainerAuxClick_}"
 </if>
     >
       <div class="os-link-container">
@@ -70,5 +27,5 @@
   <p>$i18n{description}</p>
 </div>
 
-<key-value-pair-viewer loading="[[loading_]]" entries="[[entries_]]">
+<key-value-pair-viewer ?loading="${this.loading_}" .entries="${this.entries_}">
 </key-value-pair-viewer>

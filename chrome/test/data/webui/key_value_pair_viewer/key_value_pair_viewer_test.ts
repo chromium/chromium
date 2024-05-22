@@ -6,12 +6,11 @@ import 'chrome://system/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import 'chrome://system/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {COLLAPSE_THRESHOLD} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_entry.js';
 import type {KeyValuePairEntry, KeyValuePairEntryElement} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_entry.js';
 import type {KeyValuePairViewerElement} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 export const ENTRIES: KeyValuePairEntry[] = [
@@ -50,20 +49,23 @@ suite('KeyValuePairViewerTest', function() {
     });
   }
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML =
         getTrustedHtml(`<key-value-pair-viewer></key-value-pair-viewer>`);
     element = document.body.querySelector('key-value-pair-viewer')!;
     element.entries = ENTRIES;
     element.loading = false;
-    flush();
+    await microtasksFinished();
     collapsibleEntries = getCollapsibleEntries();
   });
 
-  test('SpinnerVisibilityTest', function() {
+  test('SpinnerVisibilityTest', async function() {
     element.loading = true;
+    await microtasksFinished();
     assertTrue(isVisible(element.$.spinner));
+
     element.loading = false;
+    await microtasksFinished();
     assertFalse(isVisible(element.$.spinner));
   });
 
@@ -88,22 +90,25 @@ suite('KeyValuePairViewerTest', function() {
     assertTrue(collapsibleEntries.length > 0);
     collapsibleEntries[0]!.collapsed = false;
     collapsibleEntries[collapsibleEntries.length - 1]!.collapsed = false;
+    return microtasksFinished();
   }
 
-  test('ExpandAll button expands all collapsible cells', function() {
-    expandFirstAndLastCollapsibleLogEntries();
+  test('ExpandAll button expands all collapsible cells', async function() {
+    await expandFirstAndLastCollapsibleLogEntries();
 
     element.$.expandAll.click();
+    await microtasksFinished();
 
     for (const entry of collapsibleEntries) {
       assertFalse(entry.collapsed);
     }
   });
 
-  test('CollapseAll button collapses all collapsible cells', function() {
-    expandFirstAndLastCollapsibleLogEntries();
+  test('CollapseAll button collapses all collapsible cells', async function() {
+    await expandFirstAndLastCollapsibleLogEntries();
 
     element.$.collapseAll.click();
+    await microtasksFinished();
 
     for (const entry of collapsibleEntries) {
       assertTrue(entry.collapsed);

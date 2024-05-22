@@ -5,7 +5,7 @@
 import 'chrome://system/app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {SystemAppElement} from 'chrome://system/app.js';
+import type {AppElement} from 'chrome://system/app.js';
 import {BrowserProxyImpl} from 'chrome://system/browser_proxy.js';
 import type {SystemLog} from 'chrome://system/browser_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -19,23 +19,23 @@ export const SYSTEM_LOGS: SystemLog[] = [
   {statName: 'Related Website Sets', statValue: 'Disabled'},
 ];
 
-async function createSystemAppElement(): Promise<SystemAppElement> {
+async function createAppElement(): Promise<AppElement> {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const app: SystemAppElement = document.createElement('system-app');
+  const app = document.createElement('system-app');
   document.body.appendChild(app);
   await eventToPromise('ready-for-testing', app);
   return app;
 }
 
 suite('AboutSystemTest', function() {
-  let app: SystemAppElement;
+  let app: AppElement;
   let browserProxy: TestAboutSysBrowserProxy;
 
   setup(async function() {
     browserProxy = new TestAboutSysBrowserProxy();
     browserProxy.setSystemLogs(SYSTEM_LOGS);
     BrowserProxyImpl.setInstance(browserProxy);
-    app = await createSystemAppElement();
+    app = await createAppElement();
   });
 
   test('RequestAboutSystemInfoTest', function() {

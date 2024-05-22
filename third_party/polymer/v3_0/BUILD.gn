@@ -100,7 +100,6 @@ ts_library("library") {
     # Note that Lit will be required for any new WebUI development soon
     # (targeting end of Q2 2024).
 
-    "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",
@@ -117,7 +116,6 @@ ts_library("library") {
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/intro:build_ts",
-    "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/overlay/search_bubble:build_ts",
     "//chrome/browser/resources/management:build_ts",
@@ -149,7 +147,6 @@ ts_library("library") {
     "//chrome/browser/resources/webui_gallery:build_ts",
     "//chrome/test/data/pdf:build_ts",
     "//chrome/test/data/webui:build_ts",
-    "//chrome/test/data/webui/about_sys:build_ts",
     "//chrome/test/data/webui/app_home:build_ts",
     "//chrome/test/data/webui/app_settings:build_ts",
     "//chrome/test/data/webui/bookmarks:build_ts",
@@ -160,7 +157,6 @@ ts_library("library") {
     "//chrome/test/data/webui/history:build_ts",
     "//chrome/test/data/webui/inline_login:build_ts",
     "//chrome/test/data/webui/js:build_ts",
-    "//chrome/test/data/webui/key_value_pair_viewer:build_ts",
     "//chrome/test/data/webui/new_tab_page:build_ts",
     "//chrome/test/data/webui/password_manager:build_ts",
     "//chrome/test/data/webui/print_preview:build_ts",

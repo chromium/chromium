@@ -6,11 +6,12 @@ import './key_value_pair_entry.js';
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {KeyValuePairEntry, KeyValuePairEntryElement} from './key_value_pair_entry.js';
 import {parseKeyValuePairEntry} from './key_value_pair_parser.js';
-import {getTemplate} from './key_value_pair_viewer.html.js';
+import {getCss} from './key_value_pair_viewer.css.js';
+import {getHtml} from './key_value_pair_viewer.html.js';
 
 // Limit file size to 10 MiB to prevent hanging on accidental upload.
 const MAX_FILE_SIZE = 10485760;
@@ -26,28 +27,32 @@ export interface KeyValuePairViewerElement {
   };
 }
 
-export class KeyValuePairViewerElement extends PolymerElement {
+export class KeyValuePairViewerElement extends CrLitElement {
   static get is() {
     return 'key-value-pair-viewer';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      entries: String,
+      entries: {type: String},
+
       loading: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  loading: boolean;
-  entries: KeyValuePairEntry[];
+  loading: boolean = false;
+  entries: KeyValuePairEntry[] = [];
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -68,7 +73,7 @@ export class KeyValuePairViewerElement extends PolymerElement {
     this.eventTracker_.removeAll();
   }
 
-  private onExpandAllClick_() {
+  protected onExpandAllClick_() {
     const entries = this.shadowRoot!.querySelectorAll<KeyValuePairEntryElement>(
         'key-value-pair-entry[collapsed]');
     for (const entry of entries) {
@@ -76,7 +81,7 @@ export class KeyValuePairViewerElement extends PolymerElement {
     }
   }
 
-  private onCollapseAllClick_() {
+  protected onCollapseAllClick_() {
     const entries = this.shadowRoot!.querySelectorAll<KeyValuePairEntryElement>(
         'key-value-pair-entry:not([collapsed])');
     for (const entry of entries) {
