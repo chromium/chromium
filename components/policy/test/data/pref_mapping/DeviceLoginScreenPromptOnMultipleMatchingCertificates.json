@@ -3,38 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "prompt_on_multiple_matching_certificates": {
-            "default_value": false,
-            "location": "signin_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceLoginScreenPromptOnMultipleMatchingCertificates": false
-        },
-        "prefs": {
-          "prompt_on_multiple_matching_certificates": {
-            "location": "signin_profile",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceLoginScreenPromptOnMultipleMatchingCertificates": true
-        },
-        "prefs": {
-          "prompt_on_multiple_matching_certificates": {
-            "location": "signin_profile",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "prompt_on_multiple_matching_certificates",
+      "pref_location": "signin_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

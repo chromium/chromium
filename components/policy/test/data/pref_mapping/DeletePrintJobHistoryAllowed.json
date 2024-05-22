@@ -3,17 +3,13 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeletePrintJobHistoryAllowed": false
-        },
-        "prefs": {
-          "printing.delete_print_job_history_allowed": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.delete_print_job_history_allowed",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

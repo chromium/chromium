@@ -3,18 +3,13 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceBatteryChargeCustomStartCharging": 60
-        },
-        "prefs": {
-          "ash.power.battery_charge_custom_start_charging": {
-            "location": "local_state",
-            "value": 60
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.power.battery_charge_custom_start_charging",
+      "pref_location": "local_state",
+      "default_value": -1,
+      "values_to_test": [
+        60
+      ]
+    }
   }
 ]

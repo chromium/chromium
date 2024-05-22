@@ -8,17 +8,12 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultPrinterSelection": "{ 'kind': 'local', 'namePattern': '.*' }"
-        },
-        "prefs": {
-          "printing.default_destination_selection_rules": {
-            "value": "{ 'kind': 'local', 'namePattern': '.*' }"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.default_destination_selection_rules",
+      "default_value": "",
+      "values_to_test": [
+        "{ 'kind': 'local', 'namePattern': '.*' }"
+      ]
+    }
   }
 ]

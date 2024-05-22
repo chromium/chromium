@@ -4,31 +4,14 @@
       "chromeos_ash",
       "chromeos_lacros"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DocumentScanAPITrustedExtensions": [
-            "abcdefghijklmnopabcdefghijklmnop"
-          ]
-        },
-        "prefs": {
-          "document_scan.document_scan_api_trusted_extensions": {
-            "value": [
-              "abcdefghijklmnopabcdefghijklmnop"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {
-          "DocumentScanAPITrustedExtensions": []
-        },
-        "prefs": {
-          "document_scan.document_scan_api_trusted_extensions": {
-            "value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "document_scan.document_scan_api_trusted_extensions",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "abcdefghijklmnopabcdefghijklmnop"
+        ]
+      ]
+    }
   }
 ]

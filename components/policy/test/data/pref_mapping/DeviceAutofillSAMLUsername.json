@@ -3,28 +3,13 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "saml.UrlParameterToAutofillSAMLUsername": {
-            "default_value": "",
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "DeviceAutofillSAMLUsername": "login_hint"
-        },
-        "prefs": {
-          "saml.UrlParameterToAutofillSAMLUsername": {
-            "location": "local_state",
-            "value": "login_hint"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "saml.UrlParameterToAutofillSAMLUsername",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "login_hint"
+      ]
+    }
   }
 ]

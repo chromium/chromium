@@ -5,6 +5,7 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "no policies set -> override by default_for_enterprise_users",
         "policies": {},
         "prefs": {
           "power.adaptive_charging_enabled": {

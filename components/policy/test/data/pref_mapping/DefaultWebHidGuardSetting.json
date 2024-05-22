@@ -8,27 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultWebHidGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.web_hid_guard": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultWebHidGuardSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.web_hid_guard": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.web_hid_guard",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]

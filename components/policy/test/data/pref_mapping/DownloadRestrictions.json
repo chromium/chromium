@@ -9,17 +9,16 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DownloadRestrictions": 3
-        },
-        "prefs": {
-          "download_restrictions": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "download_restrictions",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
   }
 ]

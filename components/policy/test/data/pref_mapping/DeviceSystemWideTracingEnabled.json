@@ -3,38 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "device_system_wide_tracing_enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceSystemWideTracingEnabled": true
-        },
-        "prefs": {
-          "device_system_wide_tracing_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceSystemWideTracingEnabled": false
-        },
-        "prefs": {
-          "device_system_wide_tracing_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "device_system_wide_tracing_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

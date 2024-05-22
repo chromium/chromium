@@ -8,35 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "disable_screenshots": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DisableScreenshots": false
-        },
-        "prefs": {
-          "disable_screenshots": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DisableScreenshots": true
-        },
-        "prefs": {
-          "disable_screenshots": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "disable_screenshots",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

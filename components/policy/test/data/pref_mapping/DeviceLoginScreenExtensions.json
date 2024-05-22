@@ -5,6 +5,16 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "extensions.install.forcelist": {
+            "default_value": {},
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
         "policies": {
           "DeviceLoginScreenExtensions": [
             "abcdefghijklmnopabcdefghijklmnop",
@@ -13,7 +23,6 @@
         },
         "prefs": {
           "extensions.install.forcelist": {
-            "location": "signin_profile",
             "value": {
               "aaabbbcccdddeeefffggghhhiiijjjkk": {
                 "external_update_url": "https://url.com/update_manifest.xml"
@@ -21,7 +30,8 @@
               "abcdefghijklmnopabcdefghijklmnop": {
                 "external_update_url": "https://clients2.google.com/service/update2/crx"
               }
-            }
+            },
+            "location": "signin_profile"
           }
         }
       }

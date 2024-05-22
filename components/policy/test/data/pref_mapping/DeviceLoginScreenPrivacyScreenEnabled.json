@@ -3,18 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrivacyScreenEnabled": true
-        },
-        "prefs": {
-          "settings.display.privacy_screen_enabled": {
-            "location": "signin_profile",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.display.privacy_screen_enabled",
+      "pref_location": "signin_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

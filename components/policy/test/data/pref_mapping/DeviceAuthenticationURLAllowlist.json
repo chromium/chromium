@@ -1,37 +1,18 @@
 [
   {
     "os": [
-      "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "policies": {},
-        "prefs": {
-          "policy.url_allowlist": {
-            "default_value": [],
-            "location": "signin_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceAuthenticationURLAllowlist": [
-            "*.google.com",
-            "youtube.com"
-          ]
-        },
-        "prefs": {
-          "policy.url_allowlist": {
-            "location": "signin_profile",
-            "value": [
-              "*.google.com",
-              "youtube.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.url_allowlist",
+      "pref_location": "signin_profile",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "*.google.com",
+          "youtube.com"
+        ]
+      ]
+    }
   }
 ]

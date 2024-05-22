@@ -9,27 +9,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultImagesSetting": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.images": {
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultImagesSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.images": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.images",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

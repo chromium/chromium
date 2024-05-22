@@ -9,17 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultWebUsbGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.web_usb_guard": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.web_usb_guard",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]

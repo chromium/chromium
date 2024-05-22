@@ -9,37 +9,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultNotificationsSetting": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.notifications": {
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultNotificationsSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.notifications": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultNotificationsSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.notifications": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.notifications",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2,
+        3
+      ]
+    }
   }
 ]

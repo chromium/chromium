@@ -3,18 +3,13 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePolicyRefreshRate": 300000
-        },
-        "prefs": {
-          "policy.device_refresh_rate": {
-            "location": "local_state",
-            "value": 300000
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.device_refresh_rate",
+      "pref_location": "local_state",
+      "default_value": 10800000,
+      "values_to_test": [
+        300000
+      ]
+    }
   }
 ]

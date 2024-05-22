@@ -10,27 +10,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultJavaScriptJitSetting": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.javascript_jit": {
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultJavaScriptJitSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.javascript_jit": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.javascript_jit",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

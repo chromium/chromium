@@ -8,17 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultFileSystemWriteGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.file_system_write_guard": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.file_system_write_guard",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
   }
 ]

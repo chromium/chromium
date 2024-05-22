@@ -9,27 +9,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSerialGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.serial_guard": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultSerialGuardSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.serial_guard": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.serial_guard",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]

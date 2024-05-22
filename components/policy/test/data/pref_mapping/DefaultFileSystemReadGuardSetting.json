@@ -8,17 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultFileSystemReadGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.file_system_read_guard": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.file_system_read_guard",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]

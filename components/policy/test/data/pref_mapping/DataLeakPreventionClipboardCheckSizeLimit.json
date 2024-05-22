@@ -5,18 +5,13 @@
       "chromeos_ash",
       "chromeos_lacros"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DataLeakPreventionClipboardCheckSizeLimit": 50
-        },
-        "prefs": {
-          "policy.dlp_clipboard_check_size_limit": {
-            "location": "local_state",
-            "value": 50
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.dlp_clipboard_check_size_limit",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        50
+      ]
+    }
   }
 ]

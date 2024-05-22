@@ -6,18 +6,13 @@
       "linux",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DiskCacheDir": "${user_home}/test-cache"
-        },
-        "prefs": {
-          "browser.disk_cache_dir": {
-            "location": "local_state",
-            "value": "${user_home}/test-cache"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.disk_cache_dir",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "${user_home}/test-cache"
+      ]
+    }
   }
 ]

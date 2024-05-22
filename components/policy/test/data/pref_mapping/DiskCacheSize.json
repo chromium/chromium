@@ -6,18 +6,13 @@
       "linux",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DiskCacheSize": 100
-        },
-        "prefs": {
-          "browser.disk_cache_size": {
-            "location": "local_state",
-            "value": 100
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.disk_cache_size",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        100
+      ]
+    }
   }
 ]
