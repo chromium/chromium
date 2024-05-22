@@ -46,7 +46,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-/** Controller for the Notice message for Tracking Protection. */
+/**
+ * @deprecated use {@link TrackingProtectionOnboardingController}.
+ *     <p>Controller for the Notice message for Tracking Protection.
+ *     <p>TODO(b/341968245): remove all the usages of this class
+ */
 public class TrackingProtectionNoticeController {
     private final Context mContext;
     private final TrackingProtectionBridge mTrackingProtectionBridge;
