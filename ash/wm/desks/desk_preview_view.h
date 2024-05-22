@@ -106,7 +106,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // Updates accessible name for this desk preview.
   void UpdateAccessibleName();
 
-  // views::View:
+  // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -117,6 +117,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   void OnFocus() override;
   void OnBlur() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
 
   // OverviewFocusableView:
   views::View* GetView() override;

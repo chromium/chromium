@@ -397,6 +397,12 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   RecreateDeskContentsMirrorLayers();
 
   UpdateAccessibleName();
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN));
+  AddAccelerator(ui::Accelerator(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN));
+  AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
+  AddAccelerator(
+      ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
 }
 
 DeskPreviewView::~DeskPreviewView() = default;
@@ -633,6 +639,28 @@ void DeskPreviewView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (reverse) {
     mini_view_->OnPreviewOrProfileAboutToBeFocusedByReverseTab();
   }
+}
+
+bool DeskPreviewView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (!accelerator.IsCtrlDown()) {
+    return views::Button::AcceleratorPressed(accelerator);
+  }
+
+  if (accelerator.key_code() == ui::VKEY_LEFT ||
+      accelerator.key_code() == ui::VKEY_RIGHT) {
+    Swap(/*right=*/accelerator.key_code() == ui::VKEY_RIGHT);
+    return true;
+  }
+
+  if (accelerator.key_code() == ui::VKEY_W) {
+    Close(/*primary_action=*/!accelerator.IsShiftDown());
+    return true;
+  }
+  return views::Button::AcceleratorPressed(accelerator);
+}
+
+bool DeskPreviewView::CanHandleAccelerators() const {
+  return HasFocus() && views::Button::CanHandleAccelerators();
 }
 
 views::View* DeskPreviewView::GetView() {

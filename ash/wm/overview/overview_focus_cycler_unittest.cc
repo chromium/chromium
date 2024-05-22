@@ -258,6 +258,36 @@ TEST_P(DesksOverviewFocusCyclerTest, MiniViewAccelerator) {
   EXPECT_EQ(desks_controller->active_desk(), desks[1].get());
 }
 
+TEST_P(DesksOverviewFocusCyclerTest, CloseDeskWithMiniViewAccelerator) {
+  const auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  auto* desk1 = desks_controller->GetDeskAtIndex(0);
+  auto* desk2 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_EQ(desk1, desks_controller->active_desk());
+
+  ToggleOverview();
+  const auto* desk_bar_view =
+      GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  auto* mini_view2 = desk_bar_view->mini_views()[1].get();
+
+  // Use keyboard to navigate to the miniview associated with desk 2.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_EQ(mini_view2->desk_preview(), GetHighlightedView());
+
+  // Tests that after hitting ctrl-w on the focused preview view associated with
+  // `desk2`, `desk2` is destroyed.
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
+
+  // Desks bar never goes back to zero state after it's initialized.
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
+  EXPECT_FALSE(desk_bar_view->mini_views().empty());
+}
+
 TEST_P(DesksOverviewFocusCyclerTest, DeskNameView) {
   ToggleOverview();
   const auto* desk_bar_view =

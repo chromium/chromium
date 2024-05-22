@@ -763,7 +763,6 @@ TEST_P(DesksOverviewFocusCyclerOldTest, ActivateHighlightOnMiniView) {
   EXPECT_EQ(desks_controller->active_desk(), desks[1].get());
 }
 
-// TODO(http://b/325335020): Port this test to `DesksOverviewFocusCyclerTest`.
 TEST_P(DesksOverviewFocusCyclerOldTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());

@@ -81,9 +81,10 @@ void MoveFocus(const DeskBarController::BarWidgetAndView& desk_bar,
   if (desks_controller->IsUndoToastShown() &&
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     if (focused_view) {
-      views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
-      views::View* last_focusable_view = desk_bar.GetLastFocusableView();
-      views::View* next_focusable_view =
+      const views::View* first_focusable_view =
+          desk_bar.GetFirstFocusableView();
+      const views::View* last_focusable_view = desk_bar.GetLastFocusableView();
+      const views::View* next_focusable_view =
           desk_bar.GetNextFocusableView(focused_view, reverse);
       if (((next_focusable_view == first_focusable_view && !reverse) ||
            (next_focusable_view == last_focusable_view && reverse)) &&
@@ -120,7 +121,7 @@ DeskBarController::BarWidgetAndView::operator=(BarWidgetAndView&& other) =
 
 DeskBarController::BarWidgetAndView::~BarWidgetAndView() = default;
 
-views::View* DeskBarController::BarWidgetAndView::GetNextFocusableView(
+const views::View* DeskBarController::BarWidgetAndView::GetNextFocusableView(
     views::View* starting_view,
     bool reverse) const {
   CHECK(bar_widget);
@@ -130,12 +131,13 @@ views::View* DeskBarController::BarWidgetAndView::GetNextFocusableView(
       starting_view, /*starting_widget=*/nullptr, reverse, /*dont_loop=*/false);
 }
 
-views::View* DeskBarController::BarWidgetAndView::GetFirstFocusableView()
+const views::View* DeskBarController::BarWidgetAndView::GetFirstFocusableView()
     const {
   return GetNextFocusableView(bar_view, /*reverse=*/false);
 }
 
-views::View* DeskBarController::BarWidgetAndView::GetLastFocusableView() const {
+const views::View* DeskBarController::BarWidgetAndView::GetLastFocusableView()
+    const {
   return GetNextFocusableView(bar_view, /*reverse=*/true);
 }
 
@@ -235,8 +237,6 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
 
     auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
     views::View* focused_view = focus_manager->GetFocusedView();
-    DeskPreviewView* focused_preview =
-        views::AsViewClass<DeskPreviewView>(focused_view);
     DeskNameView* focused_name_view =
         views::AsViewClass<DeskNameView>(focused_view);
 
@@ -254,8 +254,7 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
       }
       case ui::VKEY_UP:
       case ui::VKEY_DOWN:
-        MoveFocus(desk_bar,
-                  /*reverse=*/event->key_code() == ui::VKEY_UP);
+        MoveFocus(desk_bar, /*reverse=*/event->key_code() == ui::VKEY_UP);
         break;
       case ui::VKEY_TAB:
         // For alt+tab/alt+shift+tab, like other UIs on the shelf, it should
@@ -267,33 +266,12 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         break;
       case ui::VKEY_LEFT:
       case ui::VKEY_RIGHT:
-        if (focused_name_view) {
-          return;
-        }
+        // Control + left/right falls through to be handed by the desk preview
+        // to swap desks.
         if (is_control_down) {
-          if (focused_preview) {
-            focused_preview->Swap(
-                /*right=*/event->key_code() == ui::VKEY_RIGHT);
-          } else {
-            return;
-          }
-        } else {
-          MoveFocus(desk_bar,
-                    /*reverse=*/event->key_code() == ui::VKEY_LEFT);
-        }
-        break;
-      case ui::VKEY_W:
-        if (!is_control_down) {
           return;
         }
-
-        if (focused_preview) {
-          focused_preview->Close(
-              /*primary_action=*/!event->IsShiftDown());
-        } else {
-          return;
-        }
-
+        MoveFocus(desk_bar, /*reverse=*/event->key_code() == ui::VKEY_LEFT);
         break;
       case ui::VKEY_Z:
         // Ctrl + Z undos a close all operation if the toast has not yet
@@ -386,7 +364,7 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
   }
 }
 
-DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) const {
+DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) {
   auto it = base::ranges::find_if(desk_bars_,
                                   [root](const BarWidgetAndView& desk_bar) {
                                     return desk_bar.bar_view->root() == root;
