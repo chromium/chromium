@@ -6113,13 +6113,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Width" units="pixels"
-    expires_after="2024-05-05">
+    expires_after="2025-05-05">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame width in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
+
+    Warning: this histogram was expired from 2024-05-05 to 2024-05-21; data may
+    be missing.
   </summary>
 </histogram>
 
