@@ -200,8 +200,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
                     gfx::ColorSpace::CreateSRGB(), true);
     picture.set_scoped_shared_image(
         base::MakeRefCounted<Picture::ScopedSharedImage>(
-            gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
-            base::DoNothing()));
+            gpu::Mailbox::Generate(), GL_TEXTURE_2D, base::DoNothing()));
     EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(out_frame));
     if (GetParam()) {
       // TODO(sandersd): The first time a picture is output, VDAs will do so on

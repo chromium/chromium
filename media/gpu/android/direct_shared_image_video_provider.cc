@@ -143,7 +143,7 @@ void GpuSharedImageVideoFactory::CreateImage(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Generate a shared image mailbox.
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
   auto codec_image =
       base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
 

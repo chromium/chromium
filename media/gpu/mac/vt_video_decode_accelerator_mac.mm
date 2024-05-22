@@ -2274,7 +2274,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image.get()),
                           base::scoped_policy::RETAIN);
 
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool success = shared_image_stub->CreateSharedImage(
       mailbox, std::move(handle), si_format_, frame_size, color_space,
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,

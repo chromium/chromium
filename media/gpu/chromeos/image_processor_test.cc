@@ -881,8 +881,8 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
       &shared_image_manager, nullptr, false);
 
   // Wrap input and output frames in shared images.
-  auto input_mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto output_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto input_mailbox = gpu::Mailbox::Generate();
+  auto output_mailbox = gpu::Mailbox::Generate();
   viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
       viz::SharedImageFormat::PlaneConfig::kY_UV,
       viz::SharedImageFormat::Subsampling::k420,
@@ -1102,8 +1102,8 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
       &shared_image_manager, nullptr, false);
 
   // Wrap input and output frames in shared images.
-  auto input_mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto output_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto input_mailbox = gpu::Mailbox::Generate();
+  auto output_mailbox = gpu::Mailbox::Generate();
   viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
       viz::SharedImageFormat::PlaneConfig::kY_UV,
       viz::SharedImageFormat::Subsampling::k420,

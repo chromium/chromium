@@ -270,7 +270,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     CHECK_LT(buffer_handle.native_pixmap_handle.buffer_index,
              collection_it->second->GetNumBuffers());
 
-    return gpu::Mailbox::GenerateForSharedImage();
+    return gpu::Mailbox::Generate();
   }
 
   base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>

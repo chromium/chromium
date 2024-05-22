@@ -151,7 +151,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
   // The current implementation is.
   std::vector<gpu::Mailbox> mailboxes;
   for (size_t plane = 0; plane < NumPlanes(dxgi_format_); plane++) {
-    mailboxes.push_back(gpu::Mailbox::GenerateForSharedImage());
+    mailboxes.push_back(gpu::Mailbox::Generate());
     mailbox_holders_[plane] = gpu::MailboxHolder(
         mailboxes[plane], gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
   }

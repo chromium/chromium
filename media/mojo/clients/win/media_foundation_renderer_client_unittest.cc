@@ -205,8 +205,8 @@ class MediaFoundationRendererClientTest
         /*video_overlay_factory*/ nullptr,
         /*video_renderer_sink*/ nullptr, std::move(renderer_remote));
 
-    frame_server_mailbox_ = gpu::Mailbox::GenerateForSharedImage();
-    dcomp_mailbox_ = gpu::Mailbox::GenerateForSharedImage();
+    frame_server_mailbox_ = gpu::Mailbox::Generate();
+    dcomp_mailbox_ = gpu::Mailbox::Generate();
     dcomp_texture_wrapper_ = std::make_unique<FakeDCOMPTextureWrapper>(
         frame_server_mailbox_, dcomp_mailbox_);
 

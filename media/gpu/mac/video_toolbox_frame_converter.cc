@@ -203,7 +203,7 @@ void VideoToolboxFrameConverter::Convert(
   VideoPixelFormat video_pixel_format =
       PixelFormatToVideoPixelFormat(pixel_format);
 
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = sis_->CreateSharedImage(
       mailbox, std::move(handle), *format, coded_size, metadata->color_space,
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,

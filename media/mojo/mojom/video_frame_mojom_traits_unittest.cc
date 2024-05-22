@@ -213,7 +213,7 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 }
 
 TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes];
   mailbox_holder[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
@@ -269,10 +269,8 @@ TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
   gfx::BufferFormat expected_gmb_format = gmb->GetFormat();
   gfx::Size expected_gmb_size = gmb->GetSize();
   gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
-      gpu::MailboxHolder(gpu::Mailbox::GenerateForSharedImage(),
-                         gpu::SyncToken(), 5),
-      gpu::MailboxHolder(gpu::Mailbox::GenerateForSharedImage(),
-                         gpu::SyncToken(), 10)};
+      gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 5),
+      gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 10)};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, visible_rect.size(), std::move(gmb), mailbox_holders,
       base::NullCallback(), timestamp);

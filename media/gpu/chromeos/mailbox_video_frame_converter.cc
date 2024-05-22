@@ -582,7 +582,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   DCHECK(!gpu_memory_buffer_handle.is_null());
   DCHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
 
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   // The SharedImage size ultimately must correspond to the size used to import
   // the decoded frame into a graphics API (e.g., the EGL image size when using

@@ -70,8 +70,7 @@ class PictureBufferManagerImplTest : public testing::Test {
 
     picture.set_scoped_shared_image(
         base::MakeRefCounted<Picture::ScopedSharedImage>(
-            gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
-            base::DoNothing()));
+            gpu::Mailbox::Generate(), GL_TEXTURE_2D, base::DoNothing()));
 
     return pbm_->CreateVideoFrame(picture,
                                   base::TimeDelta(),  // timestamp
