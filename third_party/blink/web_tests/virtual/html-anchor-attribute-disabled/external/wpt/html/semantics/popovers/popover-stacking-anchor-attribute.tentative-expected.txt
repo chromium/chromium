@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] anchor attribute relationship
+  assert_true: expected true got false
+[FAIL] indirect anchor attribute relationship
+  assert_true: expected true got false
+[FAIL] more complex nesting, all using anchor ancestry
+  assert_equals: Popover #1 incorrect state expected true but got false
+Harness: the test ran to completion.
+

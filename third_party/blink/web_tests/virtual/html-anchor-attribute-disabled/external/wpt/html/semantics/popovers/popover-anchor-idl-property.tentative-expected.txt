@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] popover anchorElement IDL property returns the anchor element
+  assert_equals: expected (object) Element node <button id="b1">This is an anchor button</button> but got (undefined) undefined
+[FAIL] popover anchorElement is settable
+  assert_equals: expected (object) Element node <button id="b1">This is an anchor button</button> but got (undefined) undefined
+[FAIL] anchorElement affects anchor positioning
+  assert_equals: expected (object) null but got (undefined) undefined
+Harness: the test ran to completion.
+

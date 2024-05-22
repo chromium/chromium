@@ -1576,6 +1576,13 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 
+# HTML `anchor` attribute disabled virtual suite - these tests should fail:
+crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-inset-rule-display.tentative.html [ Failure ]
+crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-change-display.tentative.html [ Failure ]
+crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-display.tentative.html [ Failure ]
+crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html [ Failure ]
+crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Failure ]
+
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
 

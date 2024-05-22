@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Clicking inside a child popover shouldn't close either popover
+  assert_true: popover1 should be open expected true got false
+[FAIL] Clicking inside a parent popover should close child popover
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

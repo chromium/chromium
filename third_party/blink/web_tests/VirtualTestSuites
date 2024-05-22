@@ -1517,10 +1517,20 @@
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
-    {
-      "owners": [
-        "haoliuk@chromium.org"
-      ],
+  {
+    "prefix": "html-anchor-attribute-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/semantics/popovers"
+    ],
+    "args": ["--disable-blink-features=HTMLAnchorAttribute"],
+    "expires": "Sep 1, 2024"
+  },
+  {
+    "owners": [
+      "haoliuk@chromium.org"
+    ],
     "prefix": "expose-lcp-render-time",
     "platforms": [
       "Linux",
