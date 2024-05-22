@@ -164,7 +164,7 @@ suite('DestinationDropdown', () => {
     assertFalse(isVisible(content), 'Content closed after click');
   });
 
-  // Verify DESTINATION_DROPDOWN_UPDATE_CONTENT triggers handler in UI.
+  // Verify DESTINATION_DROPDOWN_UPDATE_DESTINATIONS triggers handler in UI.
   test(
       `element handles ${DESTINATION_DROPDOWN_UPDATE_DESTINATIONS} event`,
       async () => {
