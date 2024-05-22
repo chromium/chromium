@@ -43674,6 +43674,8 @@ should be able to be added at any place in this file.
       label="Pinned show reading list side panel button"/>
   <suffix name="PinnedShowSearchCompanionSidePanelButton"
       label="Pinned show search companion side panel button"/>
+  <suffix name="PinnedShowTranslateButton"
+      label="Pinned show translate button"/>
   <suffix name="PinnedTaskManagerButton" label="Pinned task manager button"/>
   <suffix name="ShowPerformanceSidePanelButton"
       label="Show performance side panel button"/>
