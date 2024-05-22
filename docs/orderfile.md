@@ -27,6 +27,18 @@ NB: If your checkout is non-internal you must use the `--public` option.
 To build Chrome with a locally generated orderfile, use the
 `chrome_orderfile_path=<path_to_orderfile>` GN arg.
 
+## Orderfile Performance Testing
+
+Orderfiles can be tested using
+[Pinpoint](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/perf_trybots.md).
+To do this, please create and upload a Gerrit change overriding the value of
+[`chrome_orderfile_path`](https://source.chromium.org/chromium/chromium/src/+/main:build/config/compiler/BUILD.gn;l=217-223;drc=3a829695d83990141babd25dee7f2f94c005cae4)
+to, for instance, `//path/to/my_orderfile` (relative to `src`), where
+`my_orderfile` is the orderfile that needs to be evaluated. The orderfile should
+be added to the local branch and uploaded to Gerrit along with
+`build/config/compiler/BUILD.gn`. This Gerrit change can then be used as an
+"experiment patch" for a Pinpoint try job.
+
 ## Orderfile Pipeline
 
 The `orderfile_generator_backend.py` script runs several key steps:
