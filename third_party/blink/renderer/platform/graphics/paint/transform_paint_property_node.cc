@@ -6,7 +6,6 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {

@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_grid_track_size.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
