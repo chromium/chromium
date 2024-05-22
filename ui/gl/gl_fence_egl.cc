@@ -129,7 +129,9 @@ void GLFenceEGL::Invalidate() {
 }
 
 GLFenceEGL::~GLFenceEGL() {
-  eglDestroySyncKHR(display_, sync_);
+  if (sync_ != EGL_NO_SYNC) {
+    eglDestroySyncKHR(display_, sync_);
+  }
 }
 
 }  // namespace gl
