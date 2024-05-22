@@ -388,7 +388,11 @@ AbortCallback CloudFileSystem::DeleteEntry(
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(1) << "DeleteEntry {fsid = '" << GetFileSystemId() << "', entry_path = '"
           << entry_path << "', recursive = '" << recursive << "'}";
-  return file_system_->DeleteEntry(entry_path, recursive, std::move(callback));
+  return file_system_->DeleteEntry(
+      entry_path, recursive,
+      base::BindOnce(&CloudFileSystem::OnDeleteEntryCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), entry_path,
+                     std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::CreateFile(
@@ -417,8 +421,11 @@ AbortCallback CloudFileSystem::WriteFile(
   VLOG(1) << "WriteFile {fsid = '" << GetFileSystemId() << "', file_handle = '"
           << file_handle << "', offset = '" << offset << "', length = '"
           << length << "'}";
-  return file_system_->WriteFile(file_handle, buffer, offset, length,
-                                 std::move(callback));
+  return file_system_->WriteFile(
+      file_handle, buffer, offset, length,
+      base::BindOnce(&CloudFileSystem::OnWriteFileCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), file_handle,
+                     std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::FlushFile(
@@ -594,6 +601,9 @@ void CloudFileSystem::OnCloseFileCompleted(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback,
     base::File::Error result) {
+  VLOG(2) << "OnCloseFileCompleted {fsid = " << GetFileSystemId()
+          << ", file_handle = '" << file_handle << "', result = '" << result
+          << "}";
   // Closing is always final. Even if an error happened, we remove it from the
   // list of opened files.
   const auto& opened_file = opened_files_.extract(file_handle);
@@ -608,11 +618,44 @@ void CloudFileSystem::OnGetMetadataCompleted(
     GetMetadataCallback callback,
     std::unique_ptr<EntryMetadata> entry_metadata,
     base::File::Error result) {
+  VLOG(2) << "OnGetMetadataCompleted {fsid = " << GetFileSystemId()
+          << ", entry_path = '" << entry_path << "', result = '" << result
+          << "', metadata = " << entry_metadata.get() << "}";
+
   if (content_cache_ && result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(entry_path);
   }
   std::move(callback).Run(std::move(entry_metadata), result);
+}
+
+void CloudFileSystem::OnWriteFileCompleted(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback,
+    base::File::Error result) {
+  VLOG(2) << "OnWriteFileCompleted {fsid = " << GetFileSystemId()
+          << ", file_handle = '" << file_handle << "', result = '" << result
+          << "}";
+  if (content_cache_ && result == base::File::FILE_OK) {
+    const auto& opened_file = opened_files_.extract(file_handle);
+    // The cached file is now out of date.
+    content_cache_->Evict(opened_file.mapped().file_path);
+  }
+  std::move(callback).Run(result);
+}
+
+void CloudFileSystem::OnDeleteEntryCompleted(
+    const base::FilePath& entry_path,
+    storage::AsyncFileUtil::StatusCallback callback,
+    base::File::Error result) {
+  VLOG(2) << "OnDeleteEntryCompleted {fsid = " << GetFileSystemId()
+          << ", entry_path = '" << entry_path << "', result = '" << result
+          << "}";
+  if (content_cache_ && result == base::File::FILE_OK) {
+    // The cached file should be deleted.
+    content_cache_->Evict(entry_path);
+  }
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash::file_system_provider

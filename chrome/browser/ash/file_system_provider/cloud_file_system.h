@@ -182,6 +182,18 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
                            bool has_more,
                            base::File::Error result);
 
+  // Called when the write file request is completed with either a success or
+  // an error.
+  void OnWriteFileCompleted(int file_handle,
+                            storage::AsyncFileUtil::StatusCallback callback,
+                            base::File::Error result);
+
+  // Called when the delete entry request is completed with either a success or
+  // an error.
+  void OnDeleteEntryCompleted(const base::FilePath& entry_path,
+                              storage::AsyncFileUtil::StatusCallback callback,
+                              base::File::Error result);
+
   // After the bytes have finished caching, invoke the `callback`. This is the
   // `ReadChunkReceivedCallback` above and will always be invoked as the FSP
   // successfully read the file, if the content cache fails to write the file to

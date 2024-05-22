@@ -224,6 +224,25 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     EXPECT_EQ(read_file_future.Get<base::File::Error>(), base::File::FILE_OK);
   }
 
+  void WriteFileSuccessfully(CloudFileSystem& cloud_file_system,
+                             int file_handle,
+                             scoped_refptr<net::IOBuffer> buffer,
+                             int64_t offset = 0,
+                             int length = 1) {
+    FileErrorFuture write_file_future;
+    cloud_file_system.WriteFile(file_handle, buffer.get(), offset, length,
+                                write_file_future.GetRepeatingCallback());
+    EXPECT_EQ(write_file_future.Get(), base::File::FILE_OK);
+  }
+
+  void DeleteFileSuccessfully(CloudFileSystem& cloud_file_system,
+                              const base::FilePath& entry_path) {
+    FileErrorFuture delete_file_future;
+    cloud_file_system.DeleteEntry(entry_path, /*recursive=*/false,
+                                  delete_file_future.GetRepeatingCallback());
+    EXPECT_EQ(delete_file_future.Get(), base::File::FILE_OK);
+  }
+
   int GetFileHandleFromSuccessfulOpenFile(
       CloudFileSystem& cloud_file_system,
       const base::FilePath& file_path,
@@ -235,7 +254,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
   }
 
   void DeleteEntryOnFakeFileSystem(const base::FilePath& entry_path) {
-    TestFuture<base::File::Error> delete_entry_future;
+    FileErrorFuture delete_entry_future;
     fake_provided_file_system_->DeleteEntry(entry_path, /*recursive=*/true,
                                             delete_entry_future.GetCallback());
     EXPECT_EQ(delete_entry_future.Get(), base::File::FILE_OK);
@@ -576,6 +595,35 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
                               open_file_future2.GetRepeatingCallback());
   EXPECT_EQ(open_file_future2.Get<base::File::Error>(),
             base::File::FILE_ERROR_NOT_FOUND);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest, OkFromWriteFileEvictsCachedFile) {
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystem();
+
+  // Open the `kFakeFilePath` file to stage it in the `FakeProvidedFileSystem`.
+  int file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+
+  // The file will be evicted after the successful `WriteFile` request.
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(1);
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+  WriteFileSuccessfully(*cloud_file_system, file_handle, buffer);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       OkFromDeleteEntryEvictsCachedFile) {
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystem();
+
+  // The file will be evicted after the successful `WriteFile` request.
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(1);
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+  DeleteFileSuccessfully(*cloud_file_system, fake_file_path);
 }
 
 }  // namespace
