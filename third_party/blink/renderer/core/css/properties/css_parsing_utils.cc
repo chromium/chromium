@@ -1886,6 +1886,11 @@ CSSCustomIdentValue* ConsumeDashedIdent(T& stream,
   return ConsumeCustomIdent(stream, context);
 }
 
+template CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
+                                                 const CSSParserContext&);
+template CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
+                                                 const CSSParserContext&);
+
 CSSStringValue* ConsumeString(CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kStringToken) {
     return nullptr;
@@ -4037,6 +4042,19 @@ CSSValue* ConsumeImage(
   }
   return nullptr;
 }
+
+template CSSValue* ConsumeImage(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const ConsumeGeneratedImagePolicy generated_image_policy,
+    const ConsumeStringUrlImagePolicy string_url_image_policy,
+    const ConsumeImageSetImagePolicy image_set_image_policy);
+template CSSValue* ConsumeImage(
+    CSSParserTokenRange& stream,
+    const CSSParserContext& context,
+    const ConsumeGeneratedImagePolicy generated_image_policy,
+    const ConsumeStringUrlImagePolicy string_url_image_policy,
+    const ConsumeImageSetImagePolicy image_set_image_policy);
 
 // https://drafts.csswg.org/css-shapes-1/#typedef-shape-box
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenStream& stream) {
@@ -8114,6 +8132,13 @@ CSSValue* ConsumeTransformList(T& range,
 
   return list;
 }
+
+template CSSValue* ConsumeTransformList(CSSParserTokenStream&,
+                                        const CSSParserContext&,
+                                        const CSSParserLocalContext&);
+template CSSValue* ConsumeTransformList(CSSParserTokenRange&,
+                                        const CSSParserContext&,
+                                        const CSSParserLocalContext&);
 
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
