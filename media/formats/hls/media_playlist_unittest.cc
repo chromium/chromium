@@ -7,10 +7,10 @@
 #include <initializer_list>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/media_playlist_test_builder.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"

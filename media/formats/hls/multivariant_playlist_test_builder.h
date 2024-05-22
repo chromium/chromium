@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/playlist_test_builder.h"

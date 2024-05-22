@@ -5,7 +5,7 @@
 #include "media/base/status.h"
 
 #include <memory>
-#include "base/strings/string_piece.h"
+
 #include "media/base/media_serializers.h"
 
 namespace media {

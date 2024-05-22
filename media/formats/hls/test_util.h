@@ -6,8 +6,8 @@
 #define MEDIA_FORMATS_HLS_TEST_UTIL_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/types.h"

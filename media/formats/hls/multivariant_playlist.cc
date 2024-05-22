@@ -5,6 +5,7 @@
 #include "media/formats/hls/multivariant_playlist.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"

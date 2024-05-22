@@ -4,10 +4,11 @@
 
 #include "media/formats/hls/tag_name.h"
 
+#include <string_view>
 #include <utility>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace media::hls {
 

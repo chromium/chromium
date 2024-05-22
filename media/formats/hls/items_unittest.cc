@@ -4,8 +4,9 @@
 
 #include "media/formats/hls/items.h"
 
+#include <string_view>
+
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

@@ -5,8 +5,8 @@
 #include "media/formats/hls/items.h"
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

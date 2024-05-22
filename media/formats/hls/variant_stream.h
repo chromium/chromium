@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"

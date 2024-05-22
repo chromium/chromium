@@ -6,12 +6,12 @@
 
 #include <cmath>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/multivariant_playlist.h"

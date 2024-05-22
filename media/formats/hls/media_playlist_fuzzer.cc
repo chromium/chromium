@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/hls/media_playlist.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
+
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
-#include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/playlist.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

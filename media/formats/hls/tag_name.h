@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 
 namespace media::hls {

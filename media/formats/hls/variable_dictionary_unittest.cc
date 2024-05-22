@@ -5,10 +5,10 @@
 #include "media/formats/hls/variable_dictionary.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/test_util.h"

@@ -5,10 +5,10 @@
 #ifndef MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_H_
 #define MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"

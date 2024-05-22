@@ -4,8 +4,9 @@
 
 #include "media/formats/hls/parse_status.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace media::hls {
 

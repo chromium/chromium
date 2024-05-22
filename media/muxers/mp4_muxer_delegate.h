@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"

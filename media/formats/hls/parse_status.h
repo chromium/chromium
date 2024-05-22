@@ -5,7 +5,8 @@
 #ifndef MEDIA_FORMATS_HLS_PARSE_STATUS_H_
 #define MEDIA_FORMATS_HLS_PARSE_STATUS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 

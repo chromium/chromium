@@ -4,7 +4,8 @@
 
 #include "media/formats/hls/variable_dictionary.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"

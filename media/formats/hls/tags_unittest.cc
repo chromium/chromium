@@ -6,12 +6,12 @@
 
 #include <array>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "media/base/media_serializers.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"

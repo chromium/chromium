@@ -7,9 +7,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {

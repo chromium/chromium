@@ -8,10 +8,10 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"

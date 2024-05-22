@@ -6,7 +6,8 @@
 #define MEDIA_FORMATS_HLS_SOURCE_STRING_H_
 
 #include <cstdint>
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"

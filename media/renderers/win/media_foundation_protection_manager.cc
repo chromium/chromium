@@ -8,7 +8,6 @@
 #include <windows.foundation.h>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/win/core_winrt_util.h"

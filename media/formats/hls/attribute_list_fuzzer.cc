@@ -4,9 +4,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/types.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
