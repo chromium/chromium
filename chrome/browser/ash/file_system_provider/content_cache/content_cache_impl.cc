@@ -138,12 +138,6 @@ void ContentCacheImpl::Evict(const base::FilePath& file_path) {
   EvictItems(file_paths);
 }
 
-void ContentCacheImpl::SetOnItemEvictedCallback(
-    OnItemEvictedCallback on_item_evicted_callback) {
-  DCHECK(on_item_evicted_callback_.is_null());
-  on_item_evicted_callback_ = std::move(on_item_evicted_callback);
-}
-
 void ContentCacheImpl::RemoveItems(
     std::vector<const base::FilePath>& fsp_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -275,8 +269,9 @@ void ContentCacheImpl::EvictItems(
     VLOG(1) << "Evicting '" << file_path << "'";
     ctx.set_evicted(true);
     evicted_cache_items_++;
-    if (on_item_evicted_callback_) {
-      on_item_evicted_callback_.Run(file_path);
+    // Notify all observers.
+    for (auto& observer : observers_) {
+      observer.OnItemEvicted(file_path);
     }
   }
   RemoveItems(file_paths);

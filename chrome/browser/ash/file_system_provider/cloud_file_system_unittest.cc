@@ -95,10 +95,6 @@ class MockContentCache : public ContentCache {
               (ProvidedFileSystemObserver::Changes & changes),
               (override));
   MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));
-  MOCK_METHOD(void,
-              SetOnItemEvictedCallback,
-              (OnItemEvictedCallback on_item_evicted_callback),
-              (override));
   MOCK_METHOD(const SizeInfo, GetSize, (), (const override));
   MOCK_METHOD(void, SetMaxBytesOnDisk, (int64_t), (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
@@ -113,9 +109,22 @@ class MockContentCache : public ContentCache {
   base::WeakPtrFactory<MockContentCache> weak_ptr_factory_{this};
 };
 
+class MockContentCacheObserver : public ContentCache::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnItemEvicted,
+              (const base::FilePath& fsp_path),
+              (override));
+};
+
 // Holder for the constructed mock content cache and the cloud file system.
 struct MockContentCacheAndCloudFileSystem {
   base::WeakPtr<MockContentCache> mock_content_cache;
+  std::unique_ptr<CloudFileSystem> cloud_file_system;
+};
+
+struct MockContentCacheObserverAndCloudFileSystem {
+  std::unique_ptr<MockContentCacheObserver> mock_content_cache_observer;
   std::unique_ptr<CloudFileSystem> cloud_file_system;
 };
 
@@ -163,14 +172,14 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
         std::make_unique<MockContentCache>();
     base::WeakPtr<MockContentCache> cache_weak_ptr =
         mock_content_cache->GetMockWeakPtr();
-    EXPECT_CALL(*mock_content_cache, SetOnItemEvictedCallback(_)).Times(1);
     EXPECT_CALL(mock_cache_manager_,
                 InitializeForProvider(_, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<1>(std::move(mock_content_cache)));
     return cache_weak_ptr;
   }
 
-  void CreateContentCache() {
+  std::unique_ptr<MockContentCacheObserver>
+  CreateContentCacheAndMockObserver() {
     EXPECT_TRUE(temp_cache_dir_.CreateUniqueTempDir());
 
     // Initialize a `ContextDatabase` in memory on a blocking task runner.
@@ -185,16 +194,23 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     db.AsyncCall(&ContextDatabase::Initialize).Then(future.GetCallback());
     EXPECT_TRUE(future.Get());
 
+    auto content_cache_observer = std::make_unique<MockContentCacheObserver>();
     std::unique_ptr<ContentCache> content_cache =
         ContentCacheImpl::Create(temp_cache_dir_.GetPath(), std::move(db));
+    content_cache->AddObserver(content_cache_observer.get());
+
     EXPECT_CALL(mock_cache_manager_,
                 InitializeForProvider(_, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<1>(std::move(content_cache)));
+    return content_cache_observer;
   }
 
-  std::unique_ptr<CloudFileSystem> CreateContentCacheAndCloudFileSystem() {
-    CreateContentCache();
-    return CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
+  MockContentCacheObserverAndCloudFileSystem
+  CreateContentCacheAndObserverAndCloudFileSystem() {
+    return MockContentCacheObserverAndCloudFileSystem{
+        .mock_content_cache_observer = CreateContentCacheAndMockObserver(),
+        .cloud_file_system =
+            CreateCloudFileSystem(/*with_mock_cache_manager=*/true)};
   }
 
   MockContentCacheAndCloudFileSystem
@@ -505,8 +521,8 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   // Underlying FakeProvidedFileSystem is (always) initialised with fake file
   // with kFakeFilePath.
   const base::FilePath fake_file_path(kFakeFilePath);
-  std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateContentCacheAndCloudFileSystem();
+  auto [mock_content_cache_observer, cloud_file_system] =
+      CreateContentCacheAndObserverAndCloudFileSystem();
 
   // Add file to the cache.
   int file_handle =
@@ -528,6 +544,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   DeleteEntryOnFakeFileSystem(fake_file_path);
 
   // The file will be evicted after the unsuccessful GetMetadata request.
+  EXPECT_CALL(*mock_content_cache_observer, OnItemEvicted(fake_file_path));
   GetMetadataFuture get_metadata_future;
   cloud_file_system->GetMetadata(fake_file_path,
                                  /*fields*/ {},

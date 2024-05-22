@@ -148,9 +148,7 @@ void CloudFileSystem::OnContentCacheInitialized(
       << "Error initializing the content cache: " << error_or_cache.error();
   if (error_or_cache.has_value()) {
     content_cache_ = std::move(error_or_cache.value());
-    content_cache_->SetOnItemEvictedCallback(
-        base::BindRepeating(&CloudFileSystem::OnItemEvictedFromCache,
-                            weak_ptr_factory_.GetWeakPtr()));
+    content_cache_->AddObserver(this);
     for (const base::FilePath& file_path :
          content_cache_->GetCachedFilePaths()) {
       // Notifications are received though Notify() so no notification_callback
@@ -163,18 +161,6 @@ void CloudFileSystem::OnContentCacheInitialized(
                  base::DoNothing());
     }
   }
-}
-
-void CloudFileSystem::OnItemEvictedFromCache(const base::FilePath& file_path) {
-  VLOG(1) << file_path << " evicted from the content cache";
-  RemoveWatcher(
-      GetContentCacheURL(), file_path, /*recursive=*/false,
-      base::BindOnce(
-          [](const base::FilePath& file_path, base::File::Error result) {
-            VLOG(1) << "Removed file watcher on '" << file_path
-                    << "' result: " << result;
-          },
-          file_path));
 }
 
 AbortCallback CloudFileSystem::RequestUnmount(
@@ -656,6 +642,18 @@ void CloudFileSystem::OnDeleteEntryCompleted(
     content_cache_->Evict(entry_path);
   }
   std::move(callback).Run(result);
+}
+
+void CloudFileSystem::OnItemEvicted(const base::FilePath& fsp_path) {
+  VLOG(1) << fsp_path << " evicted from the content cache";
+  RemoveWatcher(
+      GetContentCacheURL(), fsp_path, /*recursive=*/false,
+      base::BindOnce(
+          [](const base::FilePath& fsp_path, base::File::Error result) {
+            VLOG(1) << "Removed file watcher on '" << fsp_path
+                    << "' result: " << result;
+          },
+          fsp_path));
 }
 
 }  // namespace ash::file_system_provider

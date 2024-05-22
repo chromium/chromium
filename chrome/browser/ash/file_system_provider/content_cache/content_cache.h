@@ -17,20 +17,9 @@
 namespace ash::file_system_provider {
 
 using FileErrorCallback = base::OnceCallback<void(base::File::Error)>;
-using OnItemEvictedCallback =
-    base::RepeatingCallback<void(const base::FilePath&)>;
 
 // Alias to explain the inner int indicates `bytes_read`.
 using FileErrorOrBytesRead = base::FileErrorOr<int>;
-
-// When the removal process finishes, this defines the total number of items
-// removed along with the total bytes removed.
-struct RemovedItemStats {
-  int64_t num_items = 0;
-  int64_t bytes_removed = 0;
-};
-
-using RemovedItemStatsCallback = base::OnceCallback<void(RemovedItemStats)>;
 
 // The content cache for every mounted FSP. This will serve as the single point
 // of orchestration between the LRU cache and the disk persistence layer.
@@ -39,6 +28,9 @@ class ContentCache {
   // Observer class to be notified about changes happening in the ContentCache.
   class Observer : public base::CheckedObserver {
    public:
+    // Called when the cached item with `fsp_path` is evicted.
+    virtual void OnItemEvicted(const base::FilePath& fsp_path) = 0;
+
     // Called when the item on hard disk caching the contents of `fsp_path` is
     // removed.
     virtual void OnItemRemovedFromDisk(const base::FilePath& fsp_path,
@@ -101,11 +93,6 @@ class ContentCache {
   // current FSP requests. Otherwise it be be removed once the last FSP request
   // completes with `CloseFile()`.
   virtual void Evict(const base::FilePath& file_path) = 0;
-
-  // Call this on_item_evicted_callback with the item's FSP path when it is
-  // evicted.
-  virtual void SetOnItemEvictedCallback(
-      OnItemEvictedCallback on_item_evicted_callback) = 0;
 
   // A struct of size information pertaining to this cache instance.
   struct SizeInfo {

@@ -38,7 +38,8 @@ namespace ash::file_system_provider {
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
 // currently this is hidden behind the `FileSystemProviderCloudFileSystem`
 // feature flag.
-class CloudFileSystem : public ProvidedFileSystemInterface {
+class CloudFileSystem : public ProvidedFileSystemInterface,
+                        public ContentCache::Observer {
  public:
   explicit CloudFileSystem(
       std::unique_ptr<ProvidedFileSystemInterface> file_system);
@@ -135,6 +136,9 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   void Configure(storage::AsyncFileUtil::StatusCallback callback) override;
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
   std::unique_ptr<ScopedUserInteraction> StartUserInteraction() override;
+
+  // ContentCache::Observer
+  void OnItemEvicted(const base::FilePath& fsp_path) override;
 
  private:
   const std::string GetFileSystemId() const;
