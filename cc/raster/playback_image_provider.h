@@ -6,7 +6,7 @@
 #define CC_RASTER_PLAYBACK_IMAGE_PROVIDER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_id.h"
 #include "cc/paint/image_provider.h"
@@ -57,7 +57,8 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
       const DrawImage& draw_image) override;
 
  private:
-  raw_ptr<ImageDecodeCache, DanglingUntriaged> cache_;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION ImageDecodeCache* cache_ = nullptr;
   TargetColorParams target_color_params_;
   std::optional<Settings> settings_;
 };

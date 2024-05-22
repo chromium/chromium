@@ -5,7 +5,7 @@
 #ifndef UI_GL_PROGRESS_REPORTER_H_
 #define UI_GL_PROGRESS_REPORTER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 
 namespace gl {
 
@@ -20,6 +20,8 @@ class ProgressReporter {
 };
 
 class ScopedProgressReporter {
+  STACK_ALLOCATED();
+
  public:
   ScopedProgressReporter(ProgressReporter* progress_reporter)
       : progress_reporter_(progress_reporter) {
@@ -32,7 +34,7 @@ class ScopedProgressReporter {
   }
 
  private:
-  raw_ptr<ProgressReporter> progress_reporter_;
+  ProgressReporter* progress_reporter_;
 };
 
 }  // namespace gl
