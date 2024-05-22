@@ -48,31 +48,27 @@ suite('SettingsMenu', function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    const path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/reset', selector.selected.toString());
   });
 
   test('navigateToAnotherSection', function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    let path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/reset', selector.selected.toString());
 
     Router.getInstance().navigateTo(routes.PEOPLE);
     flush();
 
     assertTrue(!!selector.selected);
-    path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/people', path);
+    assertEquals('/people', selector.selected.toString());
   });
 
   test('navigateToBasic', function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    const path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/reset', selector.selected.toString());
 
     Router.getInstance().navigateTo(routes.BASIC);
     flush();
@@ -92,8 +88,7 @@ suite('SettingsMenu', function() {
     // GET_MOST_CHROME should select the 'About Chrome' entry.
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    const path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/help', path);
+    assertEquals('/help', selector.selected.toString());
   });
   // </if>
 
@@ -121,8 +116,7 @@ suite('SettingsMenu', function() {
 
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    const path = new window.URL(selector.selected.toString()).pathname;
-    assertEquals('/ai', path);
+    assertEquals('/ai', selector.selected.toString());
   });
 
   test('pageVisibility', function() {

@@ -32,9 +32,8 @@ suite('SettingsMenuPerformance', function() {
         !!menu.selected,
         'a menu item should be selected when directly navigating to the ' +
             'performance route');
-    const path = new window.URL(menu.selected.toString()).pathname;
     assertEquals(
-        '/performance', path,
+        '/performance', menu.selected.toString(),
         'the selected menu item should be for the performance settings');
   });
 
