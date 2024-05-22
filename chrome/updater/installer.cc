@@ -75,6 +75,7 @@ Installer::Installer(
     const std::string& app_id,
     const std::string& client_install_data,
     const std::string& install_data_index,
+    const std::string& install_source,
     const std::string& target_channel,
     const std::string& target_version_prefix,
     bool rollback_allowed,
@@ -86,6 +87,7 @@ Installer::Installer(
       app_id_(app_id),
       client_install_data_(client_install_data),
       install_data_index_(install_data_index),
+      install_source_(install_source),
       rollback_allowed_(rollback_allowed),
       target_channel_(target_channel),
       target_version_prefix_(target_version_prefix),
@@ -150,6 +152,7 @@ void Installer::MakeCrxComponentFromAppInfo(
       UpdateService::PolicySameVersionUpdate::kAllowed;
   component.target_version_prefix = target_version_prefix_;
   component.updates_enabled = !update_disabled_;
+  component.install_source = install_source_;
 
   std::move(callback).Run(component);
 }

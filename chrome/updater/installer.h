@@ -92,6 +92,7 @@ class Installer final : public update_client::CrxInstaller {
   Installer(const std::string& app_id,
             const std::string& client_install_data,
             const std::string& install_data_index,
+            const std::string& install_source,
             const std::string& target_channel,
             const std::string& target_version_prefix,
             bool rollback_allowed,
@@ -151,6 +152,7 @@ class Installer final : public update_client::CrxInstaller {
   const std::string app_id_;
   const std::string client_install_data_;
   const std::string install_data_index_;
+  const std::string install_source_;
   const bool rollback_allowed_;
   const std::string target_channel_;
   const std::string target_version_prefix_;

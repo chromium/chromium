@@ -795,6 +795,7 @@ if (is_win || is_mac || is_linux) {
       ":base",
       ":branding_header",
       ":constants_test",
+      ":public_sources",
       ":tagging",
       ":unit_test_util_sources",
       ":version_header",

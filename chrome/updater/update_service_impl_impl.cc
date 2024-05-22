@@ -108,6 +108,7 @@ void GetComponents(
     scoped_refptr<PersistedData> persisted_data,
     const AppClientInstallData& app_client_install_data,
     const AppInstallDataIndex& app_install_data_index,
+    const std::string& install_source,
     UpdateService::Priority priority,
     bool update_blocked,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
@@ -150,6 +151,7 @@ void GetComponents(
           auto it = app_install_data_index.find(id);
           return it != app_install_data_index.end() ? it->second : "";
         }(),
+        install_source,
         policy_service->GetTargetChannel(id).policy_or(std::string()),
         policy_service->GetTargetVersionPrefix(id).policy_or(std::string()),
         policy_service->IsRollbackToTargetVersionAllowed(id).policy_or(false),
@@ -927,7 +929,7 @@ void UpdateServiceImplImpl::Install(const RegistrationRequest& registration,
               {std::make_pair(registration.app_id, client_install_data)}),
           AppInstallDataIndex(
               {std::make_pair(registration.app_id, install_data_index)}),
-          priority,
+          kInstallSourceTaggedMetainstaller, priority,
           /*update_blocked=*/false, PolicySameVersionUpdate::kAllowed),
       MakeUpdateClientCrxStateChangeCallback(config_,
                                              config_->GetUpdaterPersistedData(),
@@ -1101,6 +1103,7 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
               install_data.app_id = app_id;
               install_data.brand = brand;
               install_data.requires_network_encryption = false;
+              install_data.install_source = kInstallSourceOffline;
               install_data.version = installer_version;
               update_client->SendPing(
                   install_data,
@@ -1197,6 +1200,9 @@ void UpdateServiceImplImpl::OnShouldBlockCheckForUpdateForMeteredNetwork(
                          config_->GetCrxVerifierFormat(),
                          config_->GetUpdaterPersistedData(),
                          AppClientInstallData(), AppInstallDataIndex(),
+                         priority == UpdateService::Priority::kForeground
+                             ? kInstallSourceOnDemand
+                             : "",
                          priority, update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(
               config_, config_->GetUpdaterPersistedData(),
@@ -1223,6 +1229,9 @@ void UpdateServiceImplImpl::OnShouldBlockUpdateForMeteredNetwork(
                          config_->GetCrxVerifierFormat(),
                          config_->GetUpdaterPersistedData(),
                          app_client_install_data, app_install_data_index,
+                         priority == UpdateService::Priority::kForeground
+                             ? kInstallSourceOnDemand
+                             : "",
                          priority, update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(
               config_, config_->GetUpdaterPersistedData(),
@@ -1257,12 +1266,13 @@ void UpdateServiceImplImpl::OnShouldBlockForceInstallForMeteredNetwork(
         base::BindOnce(
             base::IgnoreResult(&update_client::UpdateClient::Install),
             update_client_, id,
-            base::BindOnce(
-                &internal::GetComponents, config_->GetPolicyService(),
-                config_->GetCrxVerifierFormat(),
-                config_->GetUpdaterPersistedData(), app_client_install_data,
-                app_install_data_index, Priority::kBackground, update_blocked,
-                policy_same_version_update),
+            base::BindOnce(&internal::GetComponents,
+                           config_->GetPolicyService(),
+                           config_->GetCrxVerifierFormat(),
+                           config_->GetUpdaterPersistedData(),
+                           app_client_install_data, app_install_data_index,
+                           kInstallSourcePolicy, Priority::kBackground,
+                           update_blocked, policy_same_version_update),
             MakeUpdateClientCrxStateChangeCallback(
                 config_, config_->GetUpdaterPersistedData(),
                 /*new_install=*/false, state_update),

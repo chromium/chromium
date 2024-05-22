@@ -386,8 +386,12 @@ following members:
      The string should be drawn from a small set of constant values, to minimize
      entropy and the ability for the client to be fingerprinted. Default: "".
  *   `installsource`: A string describing the immediate cause of this request.
-     Known values include: "" (a normal background update) and "ondemand" (a
-     foreground, user-initiated update). Default: "".
+     Default: "". Known values include:
+      *  "" (a normal background update),
+      *  "ondemand" (a foreground, user-initiated update),
+      *  "taggedmi" (a tagged metainstaller was run),
+      *  "offline" (an offline installer was run),
+      *  "policy" (an install was triggered by group policy),
      The string should be drawn from a small set of constant values, to minimize
      entropy and the ability for the client to be fingerprinted.
  *   `ismachine`: "0" if the application is installed for the user specifically

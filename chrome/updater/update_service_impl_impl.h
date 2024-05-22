@@ -149,6 +149,7 @@ void GetComponents(
     scoped_refptr<PersistedData> persisted_data,
     const AppClientInstallData& app_client_install_data,
     const AppInstallDataIndex& app_install_data_index,
+    const std::string& install_source,
     UpdateService::Priority priority,
     bool update_blocked,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,

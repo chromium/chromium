@@ -41,8 +41,8 @@ TEST(InstallerTest, Simple) {
 
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -98,8 +98,8 @@ TEST(InstallerTest, LoadFromPath) {
   update_client::CrxComponent crx;
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -114,6 +114,7 @@ TEST(InstallerTest, LoadFromPath) {
   EXPECT_EQ(crx.version, base::Version("5.5.5.5"));
   EXPECT_EQ(crx.ap, "ap2");
   EXPECT_EQ(crx.brand, "BTWO");
+  EXPECT_EQ(crx.install_source, "install_source");
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -140,8 +141,8 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
 
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -185,8 +186,8 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   update_client::CrxComponent crx;
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)

@@ -527,6 +527,12 @@ inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT = 0x80040904;
 inline constexpr int GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING = 0x80040907;
 
+// Install Sources.
+extern const char kInstallSourceTaggedMetainstaller[];
+extern const char kInstallSourceOffline[];
+extern const char kInstallSourcePolicy[];
+extern const char kInstallSourceOnDemand[];
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_

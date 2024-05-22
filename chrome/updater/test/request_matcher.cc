@@ -168,7 +168,9 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
           if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
             if (const auto* install_source =
                     dict->FindString("installsource")) {
-              return (*install_source == "ondemand") ==
+              return (*install_source == "ondemand" ||
+                      *install_source == "taggedmi" ||
+                      *install_source == "policy") ==
                      (priority == UpdateService::Priority::kForeground);
             }
           }

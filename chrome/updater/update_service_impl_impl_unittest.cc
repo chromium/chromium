@@ -85,7 +85,7 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   base::RunLoop loop;
   internal::GetComponents(
       base::MakeRefCounted<PolicyService>(CreateExternalConstants()),
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {},
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {}, {},
       UpdateService::Priority::kForeground, false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
       {"id1", "id2", "id3", "id4"},
