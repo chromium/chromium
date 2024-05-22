@@ -33,8 +33,6 @@ constexpr char kFallbackIconQueryParams[] =
 constexpr char kDefaultAndroidIcon[] =
     "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
 
-
-
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential,
     const base::flat_set<std::string>& psl_extensions) {
@@ -89,6 +87,47 @@ std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
   }
   return key;
 }
+
+// Presents a sorted view of a span of `PasskeyCredential`s, ordered by
+// increasing user name.
+class SortedPasskeysView {
+ public:
+  class iterator {
+   public:
+    iterator(size_t i, const SortedPasskeysView* sorted)
+        : i_(i), sorted_(sorted) {}
+    void operator++() { i_++; }
+    bool operator!=(const iterator& other) const {
+      return i_ != other.i_ || sorted_ != other.sorted_;
+    }
+    const PasskeyCredential& operator*() {
+      return sorted_->passkeys_[sorted_->sorted_indexes_[i_]];
+    }
+
+   private:
+    size_t i_ = 0;
+    const raw_ptr<const SortedPasskeysView> sorted_;
+  };
+
+  explicit SortedPasskeysView(
+      const base::span<const PasskeyCredential>& passkeys)
+      : passkeys_(passkeys) {
+    sorted_indexes_.reserve(passkeys_.size());
+    for (size_t i = 0; i < passkeys_.size(); i++) {
+      sorted_indexes_.push_back(i);
+    }
+    base::ranges::sort(sorted_indexes_, [this](size_t a, size_t b) {
+      return passkeys_[a].username() < passkeys_[b].username();
+    });
+  }
+
+  iterator begin() const { return iterator(0, this); }
+  iterator end() const { return iterator(passkeys_.size(), this); }
+
+ private:
+  const base::span<const PasskeyCredential> passkeys_;
+  std::vector<size_t> sorted_indexes_;
+};
 
 }  // namespace
 
@@ -149,7 +188,7 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
     for (auto const& [username_password_key, forms] : affiliated_group.forms) {
       credentials.emplace_back(forms);
     }
-    for (auto const& passkey : affiliated_group.passkeys) {
+    for (auto const& passkey : SortedPasskeysView(affiliated_group.passkeys)) {
       credentials.emplace_back(passkey);
     }
 
@@ -199,7 +238,8 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
          affiliated_credentials.forms) {
       credentials.emplace_back(forms);
     }
-    for (const auto& passkey : affiliated_credentials.passkeys) {
+    for (const auto& passkey :
+         SortedPasskeysView(affiliated_credentials.passkeys)) {
       credentials.emplace_back(passkey);
     }
   }
