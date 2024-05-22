@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
@@ -163,7 +164,9 @@ class OopPixelTest : public testing::Test,
     bool requires_clear = false;
     bool preclear = false;
     SkColor4f preclear_color;
-    raw_ptr<ImageDecodeCache> image_cache = nullptr;
+    // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by
+    // raw_ptr. See raw_ptr.h for more information.
+    RAW_PTR_EXCLUSION ImageDecodeCache* image_cache = nullptr;
     std::vector<scoped_refptr<DisplayItemList>> additional_lists;
     raw_ptr<PaintShader> shader_with_animated_images = nullptr;
   };

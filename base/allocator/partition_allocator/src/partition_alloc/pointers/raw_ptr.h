@@ -57,6 +57,7 @@
 #endif
 
 namespace cc {
+class ImageDecodeCache;
 class Scheduler;
 class TextureLayerImpl;
 }  // namespace cc
@@ -228,6 +229,10 @@ struct IsSupportedType<blink::scheduler::NonMainThreadTaskQueue> {
 };
 // The ones below were identified from MotionMark. See crbug.com/335556942 for
 // more info.
+template <>
+struct IsSupportedType<cc::ImageDecodeCache> {
+  static constexpr bool value = false;
+};
 template <>
 struct IsSupportedType<cc::TextureLayerImpl> {
   static constexpr bool value = false;

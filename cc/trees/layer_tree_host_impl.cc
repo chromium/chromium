@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
@@ -268,7 +269,9 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
 
  private:
   std::unique_ptr<ImageDecodeCache> image_decode_cache_;
-  raw_ptr<ImageDecodeCache> image_decode_cache_ptr_ = nullptr;
+  // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by raw_ptr.
+  // See raw_ptr.h for more information.
+  RAW_PTR_EXCLUSION ImageDecodeCache* image_decode_cache_ptr_ = nullptr;
 };
 
 void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {

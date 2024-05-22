@@ -157,8 +157,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
-  raw_ptr<cc::ImageDecodeCache, DanglingUntriaged> image_decode_cache_ =
-      nullptr;
+  // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by
+  // raw_ptr. See raw_ptr.h for more information.
+  RAW_PTR_EXCLUSION cc::ImageDecodeCache* image_decode_cache_ = nullptr;
   raw_ptr<viz::TestContextProvider, DanglingUntriaged>
       raster_context_provider_ = nullptr;
 };
