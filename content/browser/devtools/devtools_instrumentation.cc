@@ -544,33 +544,6 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildBounceTrackingIssue(
   return issue;
 }
 
-std::unique_ptr<protocol::Audits::InspectorIssue>
-BuildCookieDeprecationMetadataIssue(
-    const blink::mojom::CookieDeprecationMetadataIssueDetailsPtr&
-        issue_details) {
-  auto metadata_issue_details =
-      protocol::Audits::CookieDeprecationMetadataIssueDetails::Create()
-          .SetAllowedSites(std::make_unique<protocol::Array<protocol::String>>(
-              issue_details->allowed_sites))
-          .SetOptOutPercentage(issue_details->opt_out_percentage)
-          .SetIsOptOutTopLevel(issue_details->is_opt_out_top_level)
-          .Build();
-
-  auto protocol_issue_details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetCookieDeprecationMetadataIssueDetails(
-              std::move(metadata_issue_details))
-          .Build();
-
-  auto issue = protocol::Audits::InspectorIssue::Create()
-                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
-                                CookieDeprecationMetadataIssue)
-                   .SetDetails(std::move(protocol_issue_details))
-                   .Build();
-
-  return issue;
-}
-
 void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
@@ -1816,6 +1789,34 @@ protocol::String BuildCookieOperation(blink::mojom::CookieOperation operation) {
     case blink::mojom::CookieOperation::kSetCookie:
       return protocol::Audits::CookieOperationEnum::SetCookie;
   }
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildCookieDeprecationMetadataIssue(
+    const blink::mojom::CookieDeprecationMetadataIssueDetailsPtr&
+        issue_details) {
+  auto metadata_issue_details =
+      protocol::Audits::CookieDeprecationMetadataIssueDetails::Create()
+          .SetAllowedSites(std::make_unique<protocol::Array<protocol::String>>(
+              issue_details->allowed_sites))
+          .SetOptOutPercentage(issue_details->opt_out_percentage)
+          .SetIsOptOutTopLevel(issue_details->is_opt_out_top_level)
+          .SetOperation(BuildCookieOperation(issue_details->operation))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetCookieDeprecationMetadataIssueDetails(
+              std::move(metadata_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                CookieDeprecationMetadataIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+
+  return issue;
 }
 
 }  // namespace

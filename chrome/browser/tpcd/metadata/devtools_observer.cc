@@ -50,18 +50,25 @@ void TpcdMetadataDevtoolsObserver::OnCookiesAccessedImpl(
           cookie_settings_->GetThirdPartyCookieAllowMechanism(
               details.url, details.first_party_url,
               details.cookie_setting_overrides))) {
-    EmitMetadataGrantDevtoolsIssue(details.url, details.first_party_url);
+    EmitMetadataGrantDevtoolsIssue(details.url, details.first_party_url,
+                                   details.type);
   }
 }
 
 void TpcdMetadataDevtoolsObserver::EmitMetadataGrantDevtoolsIssue(
     const GURL& third_party_url,
-    const GURL& first_party_url) {
+    const GURL& first_party_url,
+    const content::CookieAccessDetails::Type cookie_access_type) {
   auto details = blink::mojom::InspectorIssueDetails::New();
   auto metadata_issue_details =
       blink::mojom::CookieDeprecationMetadataIssueDetails::New();
 
   metadata_issue_details->allowed_sites.push_back(third_party_url.host());
+  metadata_issue_details->operation =
+      cookie_access_type == content::CookieAccessDetails::Type::kRead
+          ? blink::mojom::CookieOperation::kReadCookie
+          : blink::mojom::CookieOperation::kSetCookie;
+
   if (tpcd_metadata_manager_) {
     content_settings::SettingInfo out_info;
     bool allowed = tpcd_metadata_manager_->IsAllowed(
