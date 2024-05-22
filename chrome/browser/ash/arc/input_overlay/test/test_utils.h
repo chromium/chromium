@@ -25,6 +25,10 @@ namespace base::test {
 class TaskEnvironment;
 }  // namespace base::test
 
+namespace ukm {
+class TestAutoSetUkmRecorder;
+}  // namespace ukm
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -70,6 +74,23 @@ void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
 // - "Unassigned joystick" or "Unassigned button" if `key_string` is empty.
 std::u16string GetControlName(ActionType action_type,
                               std::u16string key_string);
+
+// Verifies UKM event entry size of EditingListFunctionTriggered is
+// `expected_entry_size` and the last entry matches
+// `expect_histograms_value`.
+void VerifyEditingListFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    int64_t expect_histograms_value);
+
+// Verifies UKM event entry size of ButtonOptionsMenuFunctionTriggered is
+// `expected_entry_size` and the entry of `index` matches
+// `expect_histograms_value`.
+void VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    size_t index,
+    int64_t expect_histograms_value);
 
 // Increases the value for `key` by one. If there is no `key`, set the value
 // to 1.

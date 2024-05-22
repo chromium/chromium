@@ -12292,6 +12292,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Default and user-added mapping"/>
 </enum>
 
+<enum name="GameControlsToggleFunction">
+  <int value="0" label="Feature"/>
+  <int value="1" label="Mapping hint"/>
+</enum>
+
 <enum name="GameDashboardFunction">
   <int value="0" label="Feedback"/>
   <int value="1" label="Help"/>

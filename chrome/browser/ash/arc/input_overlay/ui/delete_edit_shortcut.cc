@@ -120,7 +120,8 @@ void DeleteEditShortcut::UpdateTooltipText(ActionViewListItem* anchor_view) {
 }
 
 void DeleteEditShortcut::OnEditButtonPressed() {
-  RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction::kEdit);
+  RecordEditDeleteMenuFunctionTriggered(controller_->GetPackageName(),
+                                        EditDeleteMenuFunction::kEdit);
   if (auto* anchor_view =
           views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
     controller_->AddButtonOptionsMenuWidget(anchor_view->action());
@@ -128,7 +129,8 @@ void DeleteEditShortcut::OnEditButtonPressed() {
 }
 
 void DeleteEditShortcut::OnDeleteButtonPressed() {
-  RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction::kDelete);
+  RecordEditDeleteMenuFunctionTriggered(controller_->GetPackageName(),
+                                        EditDeleteMenuFunction::kDelete);
   if (auto* anchor_view =
           views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
     controller_->RemoveAction(anchor_view->action());

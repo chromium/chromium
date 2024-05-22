@@ -443,12 +443,14 @@ void EditingList::OnAddButtonPressed() {
     ash::Shell::Get()->anchored_nudge_manager()->Cancel(kKeyEditNudgeID);
   }
   controller_->EnterButtonPlaceMode(ActionType::TAP);
-  RecordEditingListFunctionTriggered(EditingListFunction::kAdd);
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kAdd);
 }
 
 void EditingList::OnDoneButtonPressed() {
   DCHECK(controller_);
-  RecordEditingListFunctionTriggered(EditingListFunction::kDone);
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kDone);
   controller_->OnCustomizeSave();
 }
 

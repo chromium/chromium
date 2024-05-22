@@ -76,7 +76,17 @@ enum class MappingSource {
   kMaxValue = kDefaultAndUserAdded,
 };
 
+// This enum should be kept in sync with the `GameControlsToggleFunction`
+// in tools/metrics/histograms/enums.xml.
+enum class GameControlsToggleFunction {
+  kFeature,
+  kMappingHint,
+  kMaxValue = kMappingHint,
+};
+
 std::string BuildGameControlsHistogramName(const std::string& name);
+
+std::string BuildGameControlsUkmEventName(const std::string& name);
 
 // Records whether the feature is on or off.
 void RecordInputOverlayFeatureState(const std::string& package_name,
@@ -106,16 +116,20 @@ void RecordInputOverlayButtonGroupReposition(
     RepositionType reposition_type,
     InputOverlayWindowStateType state_type);
 
-void RecordEditingListFunctionTriggered(EditingListFunction function);
+void RecordEditingListFunctionTriggered(const std::string& package_name,
+                                        EditingListFunction function);
 
 void RecordButtonOptionsMenuFunctionTriggered(
+    const std::string& package_name,
     ButtonOptionsMenuFunction function);
 
-void RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction function);
+void RecordEditDeleteMenuFunctionTriggered(const std::string& package_name,
+                                           EditDeleteMenuFunction function);
 
 // Records feature toggle data if `is_feature` is true. Otherwise, records the
 // hint toggle data.
-void RecordToggleWithMappingSource(bool is_feature,
+void RecordToggleWithMappingSource(const std::string& package_name,
+                                   bool is_feature,
                                    bool is_on,
                                    MappingSource source);
 

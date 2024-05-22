@@ -23,14 +23,16 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 ActionViewListItem::~ActionViewListItem() = default;
 
 void ActionViewListItem::ClickCallback() {
-  RecordEditingListFunctionTriggered(EditingListFunction::kPressListItem);
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kPressListItem);
   controller_->AddButtonOptionsMenuWidget(action_);
 }
 
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
   controller_->AddActionHighlightWidget(action_);
   controller_->AddDeleteEditShortcutWidget(this);
-  RecordEditingListFunctionTriggered(EditingListFunction::kHoverListItem);
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kHoverListItem);
 }
 
 void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {

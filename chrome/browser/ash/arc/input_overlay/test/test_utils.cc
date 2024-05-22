@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 
+#include <cstddef>
+
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -118,6 +123,37 @@ std::u16string GetControlName(ActionType action_type,
   return l10n_util::GetStringFUTF16(
       IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE,
       l10n_util::GetStringUTF16(control_type_id), key_string);
+}
+
+void VerifyEditingListFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    int64_t expect_histograms_value) {
+  EXPECT_GE(expected_entry_size, 1u);
+  const auto ukm_entries = ukm_recorder.GetEntriesByName(
+      BuildGameControlsUkmEventName(kEditingListFunctionTriggeredHistogram));
+  EXPECT_EQ(expected_entry_size, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[expected_entry_size - 1u],
+      ukm::builders::GameControls_EditingListFunctionTriggered::kFunctionName,
+      expect_histograms_value);
+}
+
+void VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    size_t index,
+    int64_t expect_histograms_value) {
+  EXPECT_LT(index, expected_entry_size);
+  const auto ukm_entries =
+      ukm_recorder.GetEntriesByName(BuildGameControlsUkmEventName(
+          kButtonOptionsMenuFunctionTriggeredHistogram));
+  EXPECT_EQ(expected_entry_size, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[index],
+      ukm::builders::GameControls_ButtonOptionsMenuFunctionTriggered::
+          kFunctionName,
+      expect_histograms_value);
 }
 
 }  // namespace arc::input_overlay

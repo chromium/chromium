@@ -10184,6 +10184,72 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GameControls.ButtonOptionsMenuFunctionTriggered">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls' options menu button functions are triggered.
+  </summary>
+  <metric name="Function" enum="GameControlsButtonOptionsMenuFunction">
+    <summary>
+      The functions on the button options menu.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameControls.EditDeleteMenuFuctionTriggered">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls edit-delete menu functions are triggered.
+  </summary>
+  <metric name="Function" enum="GameControlsEditDeleteMenuFunction">
+    <summary>
+      The functions on the edit-delete menu.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameControls.EditingListFunctionTriggered">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls editing list functions are triggered.
+  </summary>
+  <metric name="Function" enum="GameControlsEditingListFunction">
+    <summary>
+      The functions on the editing list.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameControls.ToggleWithMappingSource">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when Game Controls feature or hint is toggled on or off.
+  </summary>
+  <metric name="Function" enum="GameControlsToggleFunction">
+    <summary>
+      Toggle the feature or mapping hint.
+    </summary>
+  </metric>
+  <metric name="MappingSource" enum="GameControlsMappingSource">
+    <summary>
+      Toggle the feature or mapping hint.
+    </summary>
+  </metric>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Whether the function is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
 <event name="GameDashboard.EditControlsWithEmptyState">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
