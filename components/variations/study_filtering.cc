@@ -427,8 +427,7 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
   // Don't create two studies with the same name.
   std::set<std::string> created_studies;
 
-  for (int i = 0; i < seed.study_size(); ++i) {
-    const Study& study = seed.study(i);
+  for (const Study& study : seed.study()) {
     ProcessedStudy processed_study;
     if (!processed_study.Init(&study))
       continue;
