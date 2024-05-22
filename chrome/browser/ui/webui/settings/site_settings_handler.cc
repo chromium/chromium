@@ -1671,6 +1671,11 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Removed"));
   }
+
+  if (content_type == ContentSettingsType::TRACKING_PROTECTION) {
+    base::RecordAction(base::UserMetricsAction(
+        "Settings.TrackingProtection.SiteExceptionRemoved"));
+  }
 }
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
@@ -1749,6 +1754,11 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
       !secondary_pattern.MatchesAllHosts()) {
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Added"));
+  }
+
+  if (content_type == ContentSettingsType::TRACKING_PROTECTION) {
+    base::RecordAction(base::UserMetricsAction(
+        "Settings.TrackingProtection.SiteExceptionAdded"));
   }
 }
 

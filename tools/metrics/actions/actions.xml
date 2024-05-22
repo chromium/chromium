@@ -33587,6 +33587,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.TrackingProtection.SiteExceptionAdded">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a tracking protection site exception is added via the settings
+    page.
+  </description>
+</action>
+
+<action name="Settings.TrackingProtection.SiteExceptionRemoved">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a tracking protection site exception is removed via the
+    settings page.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -992,6 +993,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const std::string_view kCookies =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::COOKIES);
+  const std::string_view kTrackingProtection =
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::TRACKING_PROTECTION);
 
   const ContentSettingsType kPermissionNotifications =
       ContentSettingsType::NOTIFICATIONS;
@@ -2257,6 +2261,33 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
                 ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
+}
+
+TEST_F(SiteSettingsHandlerTest, IncrementsTrackingProtectionMetrics) {
+  constexpr char kOrigin[] = "https://www.test.com:443";
+  base::UserActionTester user_actions;
+
+  base::Value::List set_args;
+  set_args.Append(kOrigin);        // Primary pattern.
+  set_args.Append(std::string());  // Secondary pattern.
+  set_args.Append(kTrackingProtection);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+  EXPECT_EQ(user_actions.GetActionCount(
+                "Settings.TrackingProtection.SiteExceptionAdded"),
+            1);
+
+  base::Value::List reset_args;
+  reset_args.Append(kOrigin);        // Primary pattern.
+  reset_args.Append(std::string());  // Secondary pattern.
+  reset_args.Append(kTrackingProtection);
+  reset_args.Append(false);  // Incognito
+  handler()->HandleResetCategoryPermissionForPattern(reset_args);
+  EXPECT_EQ(user_actions.GetActionCount(
+                "Settings.TrackingProtection.SiteExceptionRemoved"),
+            1);
 }
 
 // TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
