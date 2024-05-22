@@ -705,6 +705,9 @@ bool IsPerformanceClassCompatibleWithOnDeviceModel(
   if (perf_classes_string.empty()) {
     perf_classes_string = "3,4,5,6";
   }
+  if (perf_classes_string == "*") {
+    return true;
+  }
   std::vector<std::string_view> perf_classes_list = base::SplitStringPiece(
       perf_classes_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
