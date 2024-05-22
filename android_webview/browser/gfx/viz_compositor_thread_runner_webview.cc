@@ -18,6 +18,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 
 namespace android_webview {
@@ -152,6 +153,9 @@ void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
   // Does not support software compositing.
   DCHECK(gpu_service);
 
+  shared_image_interface_provider_ =
+      std::make_unique<viz::SharedImageInterfaceProvider>(gpu_service);
+
   viz_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -170,7 +174,8 @@ void VizCompositorThreadRunnerWebView::BindFrameSinkManagerOnViz(
 
   frame_sink_manager_->BindAndSetClient(
       std::move(params->frame_sink_manager), viz_task_runner_,
-      std::move(params->frame_sink_manager_client));
+      std::move(params->frame_sink_manager_client),
+      shared_image_interface_provider_.get());
 }
 
 viz::GpuServiceImpl* VizCompositorThreadRunnerWebView::GetGpuService() {

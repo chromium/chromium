@@ -21,6 +21,7 @@ class Location;
 namespace viz {
 class FrameSinkManagerImpl;
 class ServerSharedBitmapManager;
+class SharedImageInterfaceProvider;
 }  // namespace viz
 
 namespace android_webview {
@@ -87,6 +88,9 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
+
+  std::unique_ptr<viz::SharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
   // Only accessed on |viz_task_runner_|.
   THREAD_CHECKER(viz_thread_checker_);

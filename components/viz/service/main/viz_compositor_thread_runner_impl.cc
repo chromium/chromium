@@ -206,13 +206,12 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     init_params.host_process_id = gpu_service->host_process_id();
   }
   init_params.hint_session_factory = hint_session_factory_.get();
-  init_params.shared_image_interface_provider =
-      shared_image_interface_provider_.get();
 
   frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(init_params);
   frame_sink_manager_->BindAndSetClient(
       std::move(params->frame_sink_manager), nullptr,
-      std::move(params->frame_sink_manager_client));
+      std::move(params->frame_sink_manager_client),
+      shared_image_interface_provider_.get());
 }
 
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {

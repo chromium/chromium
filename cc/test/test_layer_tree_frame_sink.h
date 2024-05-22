@@ -20,6 +20,7 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -137,6 +138,13 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   }
 
  private:
+  class StubSharedImageInterfaceProvider
+      : public viz::SharedImageInterfaceProvider {
+   public:
+    StubSharedImageInterfaceProvider();
+    gpu::SharedImageInterface* GetSharedImageInterface() override;
+  };
+
   // ExternalBeginFrameSource implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
@@ -184,6 +192,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   // interface. On closing this interface, the display compositor should drop
   // ownership of the bitmaps with these ids to avoid leaking them.
   std::set<viz::SharedBitmapId> owned_bitmaps_;
+
+  StubSharedImageInterfaceProvider shared_image_interface_provider_;
 
   base::WeakPtrFactory<TestLayerTreeFrameSink> weak_ptr_factory_{this};
 };

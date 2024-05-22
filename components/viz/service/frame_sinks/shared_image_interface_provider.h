@@ -31,7 +31,8 @@ class VIZ_SERVICE_EXPORT SharedImageInterfaceProvider
   explicit SharedImageInterfaceProvider(GpuServiceImpl* gpu_service);
   ~SharedImageInterfaceProvider() override;
 
-  gpu::SharedImageInterface* GetSharedImageInterface();
+  // Virtual for testing.
+  virtual gpu::SharedImageInterface* GetSharedImageInterface();
 
  private:
   // Sequence checker for tasks that run on the gpu "thread".

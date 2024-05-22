@@ -91,8 +91,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
     size_t max_uncommitted_frames = 0;
-    raw_ptr<SharedImageInterfaceProvider> shared_image_interface_provider =
-        nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 
@@ -110,7 +108,13 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void BindAndSetClient(
       mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      mojo::PendingRemote<mojom::FrameSinkManagerClient> client);
+      mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
+      SharedImageInterfaceProvider* shared_image_interface_provider);
+
+  void SetSharedImageInterfaceProviderForTest(
+      SharedImageInterfaceProvider* provider) {
+    shared_image_interface_provider_ = provider;
+  }
 
   // Sets up a direction connection to |client| without using Mojo.
   void SetLocalClient(
@@ -307,6 +311,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Note that if context is lost, this shared image interface will become
   // invalid. Next call to this function will create a new interface.
   // It is up to the client to detect changes in the shared image interface.
+  // This call is only valid after BindAndSetClient().
   gpu::SharedImageInterface* GetSharedImageInterface();
 
   ReservedResourceIdTracker* reserved_resource_id_tracker() {
