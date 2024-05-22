@@ -186,7 +186,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start >= text_length_ || end >= text_length_) {
+  if (start > text_length_ || end > text_length_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The %s index is out of bounds.",
@@ -199,16 +199,24 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   double accumulated_width = 0.0;
   unsigned int accumulated_string_length = 0;
 
+  // Handle start >= end case with end = 0 the same way the DOM does, returning
+  // a zero-width rect before the start of the text.
+  if (start >= end && end == 0) {
+    selection_rects.push_back(DOMRectReadOnly::Create(
+        -text_align_dx_, -font_bounding_box_ascent_, /*width=*/0, height));
+    return selection_rects;
+  }
+
   for (const auto& text_run : text_runs_) {
     // Accumulate string length to know the indexes of this run on the input
     // string.
     const unsigned int run_start_index = accumulated_string_length;
     const unsigned int run_end_index =
-        accumulated_string_length + text_run.length() - 1;
+        accumulated_string_length + text_run.length();
     accumulated_string_length += text_run.length();
 
     // Past the selection interval.
-    if (run_start_index > end) {
+    if (run_start_index >= end) {
       break;
     }
 
@@ -216,10 +224,12 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     const double left_border = accumulated_width;
     accumulated_width += font_.Width(text_run);
 
-    // Handle start > end case the same way the DOM does, returning a zero-width
-    // rect after the advance of the character at the end position.
-    if (start > end && run_start_index <= end && end <= run_end_index) {
-      const unsigned index = base::CheckSub(end, run_start_index).ValueOrDie();
+    // Handle start >= end case the same way the DOM does, returning a
+    // zero-width rect after the advance of the character right before the end
+    // position.
+    if (start >= end && run_start_index < end && end <= run_end_index) {
+      const unsigned index =
+          base::CheckSub(end - 1, run_start_index).ValueOrDie();
       gfx::RectF rect = font_.SelectionRectForText(
           text_run, gfx::PointF(left_border - text_align_dx_, y), height, index,
           index + 1);
@@ -230,7 +240,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     }
 
     // Before the selection interval.
-    if (run_end_index < start) {
+    if (run_end_index <= start) {
       continue;
     }
 
@@ -238,7 +248,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     const unsigned int starting_index =
         start > run_start_index ? start - run_start_index : 0;
     const unsigned int ending_index =
-        end < run_end_index ? end - run_start_index + 1 : text_run.length();
+        end <= run_end_index ? end - run_start_index : text_run.length();
 
     gfx::RectF selection_rect = font_.SelectionRectForText(
         text_run, gfx::PointF(left_border - text_align_dx_, y), height,
