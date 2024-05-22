@@ -11,11 +11,6 @@
     margin-inline-start: 15px;
   }
 
-  .header-with-icon {
-    align-items: center;
-    display: flex;
-  }
-
   #safetyHubTitleContainer {
     font-size: 15px;
     font-weight: 400;
@@ -52,36 +47,18 @@
   .cr-row {
     padding: 0;
   }
-
-  /* When the panel is the width of one extension card, it will reformat
-     itself. */
-  /* clean-css ignore:start */
-  @container (max-width:450px) {
-    .header-with-icon {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
-
-    #removeAllButton {
-      grid-column: 2;
-      margin-inline-start: 20px;
-      margin-inline-end: auto;
-      margin-top: 10px;
-    }
-  }
-  /* clean-css ignore:end */
-
 </style>
+
 <h2 id="safetyHubTitleContainer"
     hidden$="[[!shouldShowSafetyHubHeader_]]">
   $i18n{safetyHubHeader}
 </h2>
 <div class="panel-background" hidden$="[[shouldHideUnsafePanel_]]">
-  <cr-expand-button class="panel-header" no-hover
+  <cr-expand-button no-hover
       id="expandButton"
       expanded="{{unsafeExtensionsReviewListExpanded_}}"
       hidden$="[[!shouldShowUnsafeExtensions_]]">
-    <div class="header-with-icon" id="reviewPanelContainer">
+    <div class="panel-header" id="reviewPanelContainer">
       <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
           class="panel-header-icon">
       </cr-icon>
