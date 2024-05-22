@@ -2410,10 +2410,12 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-  const ui::ColorProvider* color_provider =
-      context.GetDocument()->GetColorProviderForPainting(
-          mojom::blink::ColorScheme::kLight);
+  const ui::ColorProvider* color_provider = nullptr;
+  if (const auto* document = context.GetDocument()) {
+    // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+    color_provider = document->GetColorProviderForPainting(
+        mojom::blink::ColorScheme::kLight);
+  }
   // TODO(crbug.com/1111385): Represent |background_color| and
   // |colors_to_compare_against| in ComputedStyle and evaluate with currentColor
   // and other variables at used-value time instead of doing it at parse time
@@ -2520,10 +2522,12 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-  const ui::ColorProvider* color_provider =
-      context.GetDocument()->GetColorProviderForPainting(
-          mojom::blink::ColorScheme::kLight);
+  const ui::ColorProvider* color_provider = nullptr;
+  if (const auto* document = context.GetDocument()) {
+    // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+    color_provider = document->GetColorProviderForPainting(
+        mojom::blink::ColorScheme::kLight);
+  }
   // TODO(crbug.com/1111385): Represent |background_color| and
   // |colors_to_compare_against| in ComputedStyle and evaluate with currentColor
   // and other variables at used-value time instead of doing it at parse time
