@@ -38,6 +38,10 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    ariaLabel: {
+      type: String,
+    },
+
     showPassword: {
       type: Boolean,
       value: false,

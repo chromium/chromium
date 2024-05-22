@@ -55,6 +55,10 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     verifyDialogShown('enterPinDialog', deviceState);
+    const enterPin = simLockDialog.$$(`#enterPin`);
+    assertTrue(!!enterPin);
+    assertEquals(
+        enterPin.ariaLabel, simLockDialog.i18n('networkSimEnterPinTitle'));
   });
 
   test('Show Change PIN dialog', async function() {

@@ -29,4 +29,12 @@ suite('CrComponentsNetworkPasswordInputTest', function() {
     assertTrue(networkPassword.showPassword);
     assertEquals('text', passwordInput.type);
   });
+
+  test('Aria label', function() {
+    networkPassword.ariaLabel = 'test_aria_label';
+    const passwordInput = networkPassword.$$('#input');
+    assertTrue(!!passwordInput);
+
+    assertEquals('test_aria_label', passwordInput.ariaLabel);
+  });
 });

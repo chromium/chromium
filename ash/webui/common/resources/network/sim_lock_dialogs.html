@@ -52,7 +52,7 @@
         on-enter="sendEnterPin_"
         disabled="[[inProgress_]]"
         invalid="[[hasErrorText_]]"
-        aria-labeledby="pinEntrySubtext">
+        aria-label="[[i18n('networkSimEnterPinTitle')]]">
     </network-password-input>
     <div class="pinEntrySubtext" aria-live="assertive">
       [[getPinEntrySubtext_(error_, deviceState)]]
