@@ -43,7 +43,6 @@ _CONFIG = [
             'gfx::HDRMetadata',
             'gfx::HdrMetadataExtendedRange',
             'gfx::ICCProfile',
-            'gfx::RadToDeg',
 
             # For fast cos/sin functions
             'gfx::SinCosDegrees',
@@ -111,6 +110,7 @@ _CONFIG = [
             'base::PersistentHash',
             'base::PlatformThread',
             'base::PlatformThreadId',
+            'base::RadToDeg',
             'base::RefCountedData',
             'base::RunLoop',
             'base::HashingLRUCache',
@@ -280,6 +280,7 @@ _CONFIG = [
             # //base/numerics/clamped_math.h.
             'base::ClampAdd',
             'base::ClampedNumeric',
+            'base::ClampMin',
             'base::ClampMax',
             'base::ClampSub',
             'base::MakeClampedNum',
@@ -649,6 +650,7 @@ _CONFIG = [
 
             # HTTP status codes
             'net::HTTP_.+',
+            'net::ERR_.*',
 
             # For ConnectionInfo enumeration
             'net::HttpConnectionInfo',
