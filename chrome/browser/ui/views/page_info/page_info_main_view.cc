@@ -553,7 +553,8 @@ gfx::Size PageInfoMainView::CalculatePreferredSize(
     width =
         std::max(width, security_container_view_->GetPreferredSize().width());
   }
-  return gfx::Size(width, views::View::GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {

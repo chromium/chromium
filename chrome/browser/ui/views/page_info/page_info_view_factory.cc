@@ -66,7 +66,6 @@ class PageInfoSubpageView : public views::View {
     // Only the with of |content_| is taken into account, because the header
     // view contains site origin in the subtitle which can be very long.
     const int width = content_->GetPreferredSize(available_size).width();
-    // TODO(crbug.com/40232718): Remove this line.
     return gfx::Size(
         width, GetLayoutManager()->GetPreferredHeightForWidth(this, width));
   }

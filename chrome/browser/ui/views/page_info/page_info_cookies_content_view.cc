@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,6 +16,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -23,9 +25,54 @@
 
 using content_settings::CookieControlsUtil;
 
-namespace views {
-class StyledLabel;
-}  // namespace views
+namespace {
+class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
+  METADATA_HEADER(ThirdPartyCookieLabelWrapper, views::BoxLayoutView)
+
+ public:
+  explicit ThirdPartyCookieLabelWrapper(std::unique_ptr<views::View> title) {
+    auto* provider = ChromeLayoutProvider::Get();
+
+    const int vertical_margin =
+        provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+    const int side_margin =
+        provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetProperty(views::kMarginsKey,
+                gfx::Insets::VH(vertical_margin, side_margin));
+
+    title_ = AddChildView(std::move(title));
+  }
+
+  ~ThirdPartyCookieLabelWrapper() override = default;
+
+ private:
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    // Set the preferred width of the label wrapper to the title width. It
+    // ensures that the title isn't truncated and it prevents the container
+    // expanding to try to fit the description (which should be wrapped).
+    const int title_width =
+        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
+            .width();
+    DCHECK(available_size.width() >= title_width);
+    const int available_width = available_size.width().is_bounded() &&
+                                        available_size.width() > title_width
+                                    ? available_size.width().value()
+                                    : title_width;
+    return views::BoxLayoutView::CalculatePreferredSize(
+        views::SizeBounds(available_width, {}));
+  }
+
+  raw_ptr<views::View> title_ = nullptr;
+};
+
+BEGIN_METADATA(ThirdPartyCookieLabelWrapper)
+END_METADATA
+
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView,
                                       kCookieDialogButton);
@@ -272,17 +319,6 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
         l10n_util::GetStringUTF16(CookieControlsUtil::GetEnforcedTooltipTextId(
             cookie_info.enforcement)));
   }
-
-  // Set the preferred width of the label wrapper to the title width. It ensures
-  // that the title isn't truncated and it prevents the container expanding to
-  // try to fit the description (which should be wrapped).
-  const int title_width = third_party_cookies_title_
-                              ->GetPreferredSize(views::SizeBounds(
-                                  third_party_cookies_title_->width(), {}))
-                              .width();
-  third_party_cookies_label_wrapper_->SetPreferredSize(gfx::Size(
-      title_width,
-      third_party_cookies_label_wrapper_->GetHeightForWidth(title_width)));
 }
 
 void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
@@ -351,12 +387,6 @@ void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
 }
 
 void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
-  auto* provider = ChromeLayoutProvider::Get();
-  const int vertical_margin =
-      provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-  const int side_margin =
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-
   third_party_cookies_container_ =
       AddChildView(std::make_unique<views::BoxLayoutView>());
   third_party_cookies_container_->SetAccessibleRole(ax::mojom::Role::kAlert);
@@ -366,18 +396,13 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
 
   third_party_cookies_label_wrapper_ =
       third_party_cookies_container_->AddChildView(
-          std::make_unique<views::BoxLayoutView>());
-  third_party_cookies_label_wrapper_->SetOrientation(
-      views::BoxLayout::Orientation::kVertical);
-  third_party_cookies_label_wrapper_->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(vertical_margin, side_margin));
-  third_party_cookies_title_ = third_party_cookies_label_wrapper_->AddChildView(
-      std::make_unique<views::Label>());
-  third_party_cookies_title_->SetTextContext(
-      views::style::CONTEXT_DIALOG_BODY_TEXT);
-  third_party_cookies_title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  third_party_cookies_title_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
+          std::make_unique<ThirdPartyCookieLabelWrapper>(
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&third_party_cookies_title_)
+                  .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                  .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .Build()));
 
   third_party_cookies_description_ =
       third_party_cookies_label_wrapper_->AddChildView(
