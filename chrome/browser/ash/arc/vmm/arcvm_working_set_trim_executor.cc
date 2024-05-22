@@ -103,7 +103,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
   // guest through ArcMemoryBridge's reclaim API (if "guest_reclaim_enabled"
   // param is enabled). Otherwise the memory should be reclaimed from host
   // through ArcSessionManager's TrimVmMemory if requested.
-  if (base::FeatureList::IsEnabled(arc::kGuestZram) &&
+  if (base::FeatureList::IsEnabled(arc::kGuestSwap) &&
       arc::kGuestReclaimEnabled.Get()) {
     if (!context) {
       LogErrorAndInvokeCallback(BROWSER_CONTEXT_ERROR_MSG, std::move(callback));

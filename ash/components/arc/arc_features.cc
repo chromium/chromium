@@ -191,29 +191,30 @@ BASE_FEATURE(kFilePickerExperimentFeature,
              "ArcFilePickerExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the guest zram is enabled. This is only for ARCVM.
-BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether the guest swap is enabled. This is only for ARCVM.
+BASE_FEATURE(kGuestSwap, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the size of the guest zram by an absolute value. Ignored if
+// Controls the size of the guest swap area by an absolute value. Ignored if
 // "size_percentage" is set.
-const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
+const base::FeatureParam<int> kGuestSwapSize{&kGuestSwap, "size", 0};
 
-// Controls the size of the guest zram by a percentage of the VM memory size.
-const base::FeatureParam<int> kGuestZramSizePercentage{&kGuestZram,
+// Controls the size of the guest swap area by a percentage of the VM memory
+// size.
+const base::FeatureParam<int> kGuestZramSizePercentage{&kGuestSwap,
                                                        "size_percentage", 0};
 
 // Controls swappiness for the ARCVM guest.
-const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
+const base::FeatureParam<int> kGuestZramSwappiness{&kGuestSwap, "swappiness",
                                                    0};
 
 // Controls whether to do per-process reclaim from the ARCVM guest.
 const base::FeatureParam<bool> kGuestReclaimEnabled{
-    &kGuestZram, "guest_reclaim_enabled", false};
+    &kGuestSwap, "guest_reclaim_enabled", false};
 
 // Controls whether only anonymous pages are reclaimed from the ARCVM guest.
 // Ignored when the "guest_reclaim_enabled" param is false.
 const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous{
-    &kGuestZram, "guest_reclaim_only_anonymous", false};
+    &kGuestSwap, "guest_reclaim_only_anonymous", false};
 
 // Controls whether enable ignoring hover event ANR in input dispatcher.
 BASE_FEATURE(kIgnoreHoverEventAnr,

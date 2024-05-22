@@ -2517,7 +2517,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSwitchToKeymint_Default) {
 // disabled.
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramDisabledSwappiness) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kGuestZram);
+  feature_list.InitAndDisableFeature(kGuestSwap);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2533,7 +2533,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
   params["swappiness"] = "90";
   params["size"] = base::NumberToString(256 * 1024 * 1024);
   params["size_percentage"] = "0";
-  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(kGuestSwap, params);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2558,7 +2558,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
   params["size"] = "2000";  // Should be ignored
   params["size_percentage"] = "50";
 
-  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(kGuestSwap, params);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
 
@@ -2583,7 +2583,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
   params["size"] = "2000";  // Should be ignored
   params["size_percentage"] = "50";
 
-  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(kGuestSwap, params);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
 
@@ -2607,7 +2607,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
   base::FieldTrialParams params;
 
   feature_list.InitWithFeaturesAndParameters(
-      {{kGuestZram, {{"size_percentage", "50"}}},
+      {{kGuestSwap, {{"size_percentage", "50"}}},
        {kVmMemorySize, {{"shift_mib", "-2048"}}}},
       {});
   StartParams start_params(GetPopulatedStartParams());

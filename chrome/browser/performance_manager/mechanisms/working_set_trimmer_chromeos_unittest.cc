@@ -215,7 +215,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestSwap, params);
   memory_instance()->set_reclaim_all_result(2, 1);
   // Making arc session trim result to be false to be sure it's not being used.
   FakeArcSessionHolder session_holder(arc_session_runner());
@@ -243,7 +243,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestSwap, params);
   memory_instance()->set_reclaim_all_result(0, 0);
 
   std::optional<bool> result;
@@ -269,7 +269,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
   params["guest_reclaim_only_anonymous"] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestSwap, params);
   memory_instance()->set_reclaim_all_result(0, 0);
   memory_instance()->set_reclaim_anon_result(2, 0);
 
@@ -293,7 +293,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   FakeArcSessionHolder session_holder(arc_session_runner());
   session_holder.session()->set_trim_result(true, "");
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(arc::kGuestZram);
+  feature_list.InitAndDisableFeature(arc::kGuestSwap);
   // If memory_instance is used then the trim operation should fail.
   memory_instance()->set_reclaim_all_result(0, 0);
 
@@ -312,7 +312,7 @@ TEST_F(
   FakeArcSessionHolder session_holder(arc_session_runner());
   session_holder.session()->set_trim_result(true, "");
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kGuestZram);
+  feature_list.InitAndEnableFeature(arc::kGuestSwap);
   // If memory_instance is used then the trim operation should fail.
   memory_instance()->set_reclaim_all_result(0, 0);
 

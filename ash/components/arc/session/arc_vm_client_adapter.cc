@@ -457,7 +457,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       base::FeatureList::IsEnabled(kBlockIoScheduler) &&
       kEnableDataBlockIoScheduler.Get());
 
-  if (base::FeatureList::IsEnabled(kGuestZram)) {
+  if (base::FeatureList::IsEnabled(kGuestSwap)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
     if (kGuestZramSizePercentage.Get() != 0) {
       // If there's no custom memory_mib set, try to get the default value to
@@ -468,7 +468,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       request.set_guest_zram_mib(request.memory_mib() *
                                  kGuestZramSizePercentage.Get() / 100);
     } else {
-      request.set_guest_zram_mib(kGuestZramSize.Get() / (1024 * 1024));
+      request.set_guest_zram_mib(kGuestSwapSize.Get() / (1024 * 1024));
     }
   }
 
