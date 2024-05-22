@@ -57,10 +57,25 @@ gfx::ImageSkia IconOrDefault(gfx::ImageSkia icon) {
                        : icon;
 }
 
+std::string GetMenuItemName(const KioskApp& app) {
+  if (!app.name().empty()) {
+    return std::string(app.name());
+  }
+  // The app name can be missing for an app that's received via policy
+  // before the CRX is loaded. Display the ChromeApp ID or URL in that case to
+  // prevent a blank menu item.
+  switch (app.id().type) {
+    case KioskAppType::kChromeApp:
+      return app.id().app_id.value();
+    case KioskAppType::kWebApp:
+      return app.url()->spec();
+  }
+}
+
 KioskAppMenuEntry ToMenuEntry(const KioskApp& app) {
-  return KioskAppMenuEntry(ToMenuEntryType(app.id().type), app.id().account_id,
-                           app.id().app_id, base::UTF8ToUTF16(app.name()),
-                           IconOrDefault(app.icon()));
+  return KioskAppMenuEntry(
+      ToMenuEntryType(app.id().type), app.id().account_id, app.id().app_id,
+      base::UTF8ToUTF16(GetMenuItemName(app)), IconOrDefault(app.icon()));
 }
 
 std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
