@@ -111,7 +111,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   void UploadModelQualityLogsWithLogEntry(
       std::unique_ptr<ModelQualityLogEntry> log_entry) {
     model_quality_logs_uploader_service_->UploadModelQualityLogs(
-        std::move(log_entry->log_ai_data_request_));
+        std::move(log_entry));
 
     RunUntilIdle();
   }
@@ -419,16 +419,16 @@ TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, CheckUploadOnDestruction) {
-  std::unique_ptr<ModelQualityLogEntry> log_entry =
+  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
                                             proto::USER_FEEDBACK_THUMBS_UP);
-  // Instead of calling UploadModelQualityLogs, resetting the log entry this
+  // Instead of calling UploadModelQualityLogs, reset the log entry this
   // shouldn't upload the logs as
-  // ModelQualityLogsUploaderService::CanUploadLogs will return false.
-  log_entry.reset();
+  // ModelQualityLogsUploaderService::CanCheckUpload will return false.
+  log_entry_1.reset();
 
-  RunUntilIdle();
-  VerifyNumberOfPendingRequests(0);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", false, 1);
 }
 
 // TODO(b/301301447): Add more tests to cover all cases.
