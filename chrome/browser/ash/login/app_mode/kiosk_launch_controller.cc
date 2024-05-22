@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
@@ -266,29 +267,7 @@ bool KioskLaunchController::TestOverrides::block_exit_on_failure = false;
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
 
-const char kKioskLaunchStateCrashKey[] = "kiosk-launch-state";
 const base::TimeDelta kDefaultKioskSplashScreenMinTime = base::Seconds(10);
-
-std::string KioskLaunchStateToString(KioskLaunchState state) {
-  switch (state) {
-    case KioskLaunchState::kAttemptToLaunch:
-      return "attempt-to-launch";
-    case KioskLaunchState::kStartLaunch:
-      return "start-launch";
-    case KioskLaunchState::kLauncherStarted:
-      return "launcher-started";
-    case KioskLaunchState::kLaunchFailed:
-      return "launch-failed";
-    case KioskLaunchState::kAppWindowCreated:
-      return "app-window-created";
-  }
-}
-
-void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
-  static crash_reporter::CrashKeyString<32> crash_key(
-      kKioskLaunchStateCrashKey);
-  crash_key.Set(KioskLaunchStateToString(state));
-}
 
 class KioskLaunchController::ScopedAcceleratorDisabler {
  public:

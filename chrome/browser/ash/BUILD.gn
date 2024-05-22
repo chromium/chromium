@@ -161,6 +161,8 @@ source_set("ash") {
     "app_mode/kiosk_external_update_validator.h",
     "app_mode/kiosk_external_updater.cc",
     "app_mode/kiosk_external_updater.h",
+    "app_mode/kiosk_launch_state.cc",
+    "app_mode/kiosk_launch_state.h",
     "app_mode/kiosk_mode_idle_app_name_notification.cc",
     "app_mode/kiosk_mode_idle_app_name_notification.h",
     "app_mode/kiosk_profile_load_failed_observer.h",
