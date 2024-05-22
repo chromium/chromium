@@ -63,6 +63,8 @@ class ShoppingServiceHandler
 
     virtual void OpenUrlInNewTab(const GURL& url) = 0;
 
+    virtual void SwitchToOrOpenTab(const GURL& url) = 0;
+
     virtual void ShowBookmarkEditorForCurrentUrl() = 0;
 
     virtual void ShowFeedback() = 0;
@@ -109,6 +111,7 @@ class ShoppingServiceHandler
   void GetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SetPriceTrackingStatusForCurrentUrl(bool track) override;
+  void SwitchToOrOpenTab(const GURL& url) override;
   void OpenUrlInNewTab(const GURL& url) override;
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;

@@ -9,11 +9,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
+#include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -95,10 +95,31 @@ void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
     return;
   }
 
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  NavigateToUrl(browser, url);
+}
+
+void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  auto* browser = chrome::FindBrowserWithActiveWindow();
+  if (!browser) {
+    browser = chrome::FindLastActive();
+  }
+  if (!browser) {
+    return;
+  }
+
+  auto* tab_strip_model = browser->tab_strip_model();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+    if (web_contents->GetLastCommittedURL() == url) {
+      tab_strip_model->ActivateTabAt(i);
+      return;
+    }
+  }
+
+  NavigateToUrl(browser, url);
 }
 
 void ShoppingUiHandlerDelegate::ShowFeedback() {
@@ -146,6 +167,14 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
     return ukm::kInvalidSourceId;
   }
   return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+}
+
+void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,
+                                              const GURL& url) {
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 }  // namespace commerce

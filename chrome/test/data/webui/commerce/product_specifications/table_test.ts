@@ -145,7 +145,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(0, event.detail.index);
   });
 
-  test('opens new tab', async () => {
+  test('opens tab when `openTabButton` is clicked', async () => {
     // Arrange
     const testUrl = 'https://example.com';
     tableElement.columns = [
@@ -172,8 +172,9 @@ suite('ProductSpecificationsTableTest', () => {
     openTabButton!.click();
 
     // Assert.
-    assertEquals(1, shoppingServiceApi.getCallCount('openUrlInNewTab'));
-    assertEquals(testUrl, shoppingServiceApi.getArgs('openUrlInNewTab')[0].url);
+    assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
+    assertEquals(
+        testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
   });
 
   test('shows open tab button when hovered', async () => {

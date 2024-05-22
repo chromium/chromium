@@ -54,6 +54,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getUrlInfosForRecentlyViewedTabs',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
+      'switchToOrOpenTab',
       'showFeedback',
       'isShoppingListEligible',
       'getShoppingCollectionBookmarkFolderId',
@@ -139,6 +140,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   openUrlInNewTab() {
     this.methodCalled('openUrlInNewTab');
+  }
+
+  switchToOrOpenTab() {
+    this.methodCalled('switchToOrOpenTab');
   }
 
   showFeedback() {

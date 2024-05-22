@@ -92,6 +92,7 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   MOCK_METHOD(std::optional<GURL>, GetCurrentTabUrl, (), (override));
   MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
   MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
+  MOCK_METHOD(void, SwitchToOrOpenTab, (const GURL& url), (override));
   MOCK_METHOD(void, ShowFeedback, (), (override));
   MOCK_METHOD(const bookmarks::BookmarkNode*,
               GetOrAddBookmarkForCurrentUrl,
@@ -660,6 +661,13 @@ TEST_F(ShoppingServiceHandlerTest, TestOpenUrlInNewTab) {
   EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
 
   handler_->OpenUrlInNewTab(url);
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestSwitchToOrOpenTab) {
+  const GURL url = GURL("http://example.com/");
+  EXPECT_CALL(*delegate_, SwitchToOrOpenTab(url)).Times(1);
+
+  handler_->SwitchToOrOpenTab(url);
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestShowFeedback) {

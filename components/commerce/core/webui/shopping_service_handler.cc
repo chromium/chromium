@@ -686,6 +686,12 @@ void ShoppingServiceHandler::OpenUrlInNewTab(const GURL& url) {
   }
 }
 
+void ShoppingServiceHandler::SwitchToOrOpenTab(const GURL& url) {
+  if (delegate_) {
+    delegate_->SwitchToOrOpenTab(url);
+  }
+}
+
 void ShoppingServiceHandler::ShowFeedback() {
   if (delegate_) {
     delegate_->ShowFeedback();

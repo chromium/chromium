@@ -63,7 +63,7 @@ export class TableElement extends PolymerElement {
   }
 
   private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn, CustomEvent>) {
-    this.shoppingApi_.openUrlInNewTab(
+    this.shoppingApi_.switchToOrOpenTab(
         {url: this.columns[e.model.index].selectedItem.url});
   }
 

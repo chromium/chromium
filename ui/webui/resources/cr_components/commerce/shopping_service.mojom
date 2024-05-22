@@ -199,8 +199,11 @@ interface ShoppingServiceHandler {
   // Sets the price tracking status of the current URL.
   SetPriceTrackingStatusForCurrentUrl(bool track);
 
-  // Open url in a new tab.
+  // Opens url in a new tab.
   OpenUrlInNewTab(url.mojom.Url url);
+
+  // Opens |url| in an existing or new tab.
+  SwitchToOrOpenTab(url.mojom.Url url);
 
   // Returns the name of the parent bookmark folder of the current URL. This
   // will only be called when the current page is bookmarked.

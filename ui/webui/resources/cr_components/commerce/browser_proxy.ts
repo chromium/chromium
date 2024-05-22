@@ -29,6 +29,7 @@ export interface BrowserProxy {
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
   setPriceTrackingStatusForCurrentUrl(track: boolean): void;
   openUrlInNewTab(url: Url): void;
+  switchToOrOpenTab(url: Url): void;
   getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
   showBookmarkEditorForCurrentUrl(): void;
   showFeedback(): void;
@@ -126,6 +127,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   openUrlInNewTab(url: Url) {
     this.handler.openUrlInNewTab(url);
+  }
+
+  switchToOrOpenTab(url: Url) {
+    this.handler.switchToOrOpenTab(url);
   }
 
   getParentBookmarkFolderNameForCurrentUrl() {
