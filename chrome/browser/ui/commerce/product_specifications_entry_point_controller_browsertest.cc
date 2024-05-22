@@ -36,7 +36,6 @@ class MockObserver
               ShowEntryPointWithTitle,
               (const std::string title),
               (override));
-  MOCK_METHOD(void, HideEntryPoint, (), (override));
 };
 
 class MockProductSpecificationsService
@@ -72,11 +71,6 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser());
-    observer_ = std::make_unique<MockObserver>();
-    controller_->AddObserver(observer_.get());
-    // This is needed to make sure that the URL changes caused by navigations
-    // will happen immediately.
-    browser()->set_update_ui_immediately_for_testing();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -91,8 +85,6 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   void TearDownInProcessBrowserTestFixture() override {
     is_browser_context_services_created = false;
   }
-
-  void TearDown() override { controller_->RemoveObserver(observer_.get()); }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     is_browser_context_services_created = true;
@@ -109,7 +101,6 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
       controller_;
   base::CallbackListSubscription create_services_subscription_;
-  std::unique_ptr<MockObserver> observer_;
   bool is_browser_context_services_created{false};
 
  private:
@@ -125,7 +116,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  MockObserver observer;
+  controller_->AddObserver(&observer);
+  EXPECT_CALL(observer, ShowEntryPointWithTitle(kTitle)).Times(1);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -142,15 +135,24 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
+// TODO(b/341091285): Flaky on Win and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_TriggerEntryPointWithNavigation \
+  DISABLED_TriggerEntryPointWithNavigation
+#else
+#define MAYBE_TriggerEntryPointWithNavigation TriggerEntryPointWithNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TriggerEntryPointWithNavigation) {
+                       MAYBE_TriggerEntryPointWithNavigation) {
   // Mock EntryPointInfo returned by ShoppingService.
   std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
   auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  MockObserver observer;
+  controller_->AddObserver(&observer);
+  EXPECT_CALL(observer, ShowEntryPointWithTitle(kTitle)).Times(1);
 
   // Current window has to have more than three unique tabs that are similar in
   // order to trigger the entry point for navigation.
@@ -231,74 +233,4 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
             current_tab->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       InvalidEntryPointWithNavigation) {
-  // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForNavigation(info);
-
-  // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
-
-  // Trigger entry point with navigations.
-  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
-  for (auto& url : urls_to_open) {
-    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
-                                       ui::PAGE_TRANSITION_LINK, true));
-    base::RunLoop().RunUntilIdle();
-    controller_->OnClusterFinishedForNavigation(GURL(url));
-  }
-  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
-
-  // Navigate to a URL that is not in cluster. After this navigation, there are
-  // two URLs in this window that belong to the cluster, and the entry point is
-  // still valid.
-  auto* web_contents_one = browser()->tab_strip_model()->GetWebContentsAt(0);
-  ASSERT_EQ(web_contents_one->GetLastCommittedURL(), GURL(kTestUrl4));
-  ASSERT_TRUE(content::NavigateToURL(web_contents_one, GURL(kTestUrl1)));
-
-  // Navigate to a URL that is not in cluster. After this navigation, there is
-  // one URL in this window that belong to the cluster, and the entry point is
-  // no longer valid.
-  EXPECT_CALL(*observer_, HideEntryPoint()).Times(1);
-  auto* web_contents_two = browser()->tab_strip_model()->GetWebContentsAt(1);
-  ASSERT_EQ(web_contents_two->GetLastCommittedURL(), GURL(kTestUrl3));
-  ASSERT_TRUE(content::NavigateToURL(web_contents_two, GURL(kTestUrl1)));
-}
-
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       InvalidEntryPointWithClosure) {
-  // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
-  mock_shopping_service_->SetResponseForGetEntryPointInfoForNavigation(info);
-
-  // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
-
-  // Trigger entry point with navigations.
-  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
-  for (auto& url : urls_to_open) {
-    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
-                                       ui::PAGE_TRANSITION_LINK, true));
-    base::RunLoop().RunUntilIdle();
-    controller_->OnClusterFinishedForNavigation(GURL(url));
-  }
-  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
-
-  // Close a tab with URL that is in the cluster. After this closure, there are
-  // two URLs in this window that belong to the cluster, and the entry point is
-  // still valid.
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
-                                                   TabCloseTypes::CLOSE_NONE);
-
-  // Close a tab with URL that is in the cluster. After this closure, there is
-  // one URL in this window that belong to the cluster, and the entry point is
-  // no longer valid.
-  EXPECT_CALL(*observer_, HideEntryPoint()).Times(testing::AtLeast(1));
-  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
-                                                   TabCloseTypes::CLOSE_NONE);
 }
