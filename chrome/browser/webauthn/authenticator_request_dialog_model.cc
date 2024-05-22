@@ -2557,15 +2557,8 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     }
 
     if (windows_handles_hybrid) {
-      // If Windows supports hybrid and the enclave is not available, we defer
-      // to the platform.
-      const bool enclave_available = base::ranges::any_of(
-          model_->mechanisms, [](const Mechanism& m) -> bool {
-            return absl::holds_alternative<Mechanism::Enclave>(m.type);
-          });
-      if (!enclave_available || enclave_decline_limit_reached) {
-        priority_list.emplace_back(Mechanism::WindowsAPI());
-      }
+      // If Windows supports hybrid we defer to the platform.
+      priority_list.emplace_back(Mechanism::WindowsAPI());
     }
 
 #if BUILDFLAG(IS_MAC)
