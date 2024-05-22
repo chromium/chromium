@@ -567,15 +567,13 @@ void AutofillAgent::FocusedElementChanged(
 }
 
 void AutofillAgent::ObserveCaret(WebElement element) {
-  if (auto control = element.DynamicTo<WebFormControlElement>();
-      !element.IsContentEditable() && !form_util::IsTextAreaElement(control)) {
-    return;
-  }
   if (!base::FeatureList::IsEnabled(features::kAutofillCaretExtraction)) {
     return;
   }
 
-  if (!element.IsNull()) {
+  if (element && (element.IsContentEditable() ||
+                  form_util::IsTextAreaElement(
+                      element.DynamicTo<WebFormControlElement>()))) {
     caret_state_.remove_listener = element.GetDocument().AddEventListener(
         WebNode::EventType::kSelectionchange,
         base::BindRepeating(&AutofillAgent::HandleCaretMovedInFormField,
@@ -610,7 +608,7 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
         }
       }
     }
-    if (element.IsContentEditable()) {
+    if (element && element.IsContentEditable()) {
       if (std::optional<FormData> form =
               form_util::FindFormForContentEditable(element)) {
         CHECK_EQ(form->fields.size(), 1u);

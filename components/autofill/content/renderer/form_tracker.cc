@@ -98,8 +98,9 @@ blink::WebElement FieldRef::GetContentEditable() const {
       ShouldReplaceElementsByRendererIds()
           ? form_util::GetContentEditableByRendererId(field_renderer_id_)
           : field_;
-  return content_editable.IsContentEditable() ? content_editable
-                                              : blink::WebElement();
+  return content_editable && content_editable.IsContentEditable()
+             ? content_editable
+             : blink::WebElement();
 }
 
 FieldRendererId FieldRef::GetId() const {

@@ -83,11 +83,6 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString TextContentAbridged(unsigned int max_length) const;
   WebString InnerHTML() const;
 
-  // Returns true if the element's contenteditable attribute is in the true
-  // state or in the plaintext-only state:
-  // https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
-  bool IsContentEditable() const;
-
   // Returns true if the element's computed writing suggestions value is true.
   // https://html.spec.whatwg.org/#writing-suggestions:computed-writing-suggestions-value
   bool WritingSuggestions() const;
