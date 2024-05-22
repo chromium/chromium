@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1088,7 +1089,7 @@ std::string ReadAnythingAppModel::GetHtmlTag(
     int32_t hierarchical_level =
         ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     if (hierarchical_level) {
-      return std::format("h{}", hierarchical_level);
+      return base::StringPrintf("h%" PRId32, hierarchical_level);
     }
   }
 
@@ -1188,7 +1189,7 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
   int32_t hierarchical_level =
       ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
   if (hierarchical_level) {
-    return std::format("h{}", hierarchical_level);
+    return base::StringPrintf("h%" PRId32, hierarchical_level);
   }
   return html_tag;
 }
