@@ -19,6 +19,9 @@ namespace {
 
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSkip[] = "skip";
+constexpr const char kUserActionLoaded[] = "loaded";
+
+constexpr const base::TimeDelta kDelayOverviewStepTime = base::Seconds(2);
 
 bool HasBeenSelected(std::string category_id) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -133,8 +136,20 @@ void CategoriesSelectionScreen::OnSelect(base::Value::List categories) {
   prefs->SetList(prefs::kOobeCategoriesSelected, std::move(categories));
 }
 
+void CategoriesSelectionScreen::ShowOverviewStep() {
+  if (view_) {
+    view_->SetOverviewStep();
+  }
+}
+
 void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionLoaded) {
+    delay_overview_timer_.Start(FROM_HERE, kDelayOverviewStepTime, this,
+                                &CategoriesSelectionScreen::ShowOverviewStep);
+    return;
+  }
 
   if (action_id == kUserActionSkip) {
     PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();

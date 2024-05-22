@@ -34,6 +34,7 @@ enum UserAction {
   SKIP = 'skip',
   NEXT = 'next',
   BACK = 'back',
+  LOADED = 'loaded',
 }
 
 export const PersonalizedRecommedAppsElementBase =
@@ -78,6 +79,7 @@ export class PersonalizedRecommedAppsElement extends
   override get EXTERNAL_API(): string[] {
     return [
       'setCategoriesAppsMapData',
+      'setOverviewStep',
     ];
   }
 
@@ -105,16 +107,20 @@ export class PersonalizedRecommedAppsElement extends
             categoriesData);
   }
 
-  /**
-   * Handles event when contents in the webview is generated.
-   */
-  private onFullyLoaded(): void {
+  setOverviewStep(): void {
     this.setUIStep(PersonalizedAppsStep.OVERVIEW);
     const categoriesAppsList =
         this.shadowRoot?.querySelector<HTMLElement>('#categoriesAppsList');
     if (categoriesAppsList instanceof HTMLElement) {
       categoriesAppsList.focus();
     }
+  }
+
+  /**
+   * Handles event when contents in the webview is generated.
+   */
+  private onFullyLoaded(): void {
+    this.userActed(UserAction.LOADED);
   }
 
   override ready(): void {

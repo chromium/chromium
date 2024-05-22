@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_types.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -51,6 +52,15 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
                           AppsFetchingResult result);
 
   void OnInstall(base::Value::List selected_apps_package_ids) const;
+
+  void ShowOverviewStep();
+  void SetCategoriesAppsMapData();
+
+  base::Value::Dict apps_category_map_;
+
+  base::OneShotTimer delay_set_apps_timer_;
+
+  base::OneShotTimer delay_overview_timer_;
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;

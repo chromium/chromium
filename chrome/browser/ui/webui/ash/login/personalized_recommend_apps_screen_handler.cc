@@ -42,6 +42,10 @@ void PersonalizedRecommendAppsScreenHandler::SetCategoriesAppsMapData(
   CallExternalAPI("setCategoriesAppsMapData", std::move(categoriesApps));
 }
 
+void PersonalizedRecommendAppsScreenHandler::SetOverviewStep() {
+  CallExternalAPI("setOverviewStep");
+}
+
 base::WeakPtr<PersonalizedRecommendAppsScreenView>
 PersonalizedRecommendAppsScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

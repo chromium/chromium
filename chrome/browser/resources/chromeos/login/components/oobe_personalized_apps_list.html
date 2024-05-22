@@ -95,16 +95,16 @@
   </style>
 <div id="personalizedApps">
     <template is="dom-repeat"
-        items="{{getCategories(catgoriesMapApps)}}" as="category">
+        items="{{categoriesItemRendered}}" as="category">
       <div class="category-title"
           tabindex="0"
           role="heading" aria-level="2"
           hidden="[[shouldShowCategoriesTitle(catgoriesMapApps)]]">
-        {{category}}
+        {{category.id}}
       </div>
       <div id="appsList">
-          <template is="dom-repeat" rendered-item-count="{{itemRendered}}"
-                items="{{getApps(category)}}">
+          <template is="dom-repeat" rendered-item-count="{{category.count}}"
+                items="{{getApps(category.id)}}">
             <div id="[[getAppId(item.appId)]]"
                 class="app-item"
                 role="checkbox"

@@ -49,6 +49,7 @@ enum CaegoriesStep {
 enum UserAction {
   SKIP = 'skip',
   NEXT = 'next',
+  LOADED = 'loaded',
 }
 
 interface CategoriesScreenData {
@@ -92,6 +93,7 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
   override get EXTERNAL_API(): string[] {
     return [
       'setCategoriesData',
+      'setOverviewStep',
     ];
   }
 
@@ -104,6 +106,15 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
     assert('categories' in categoriesData);
     this.shadowRoot!.querySelector<OobeCategoriesList>('#categoriesList')!
           .init(categoriesData['categories']);
+  }
+
+  setOverviewStep(): void {
+    this.setUIStep(CaegoriesStep.OVERVIEW);
+    const categoriesList =
+        this.shadowRoot?.querySelector<HTMLElement>('#categoriesList');
+    if (categoriesList instanceof HTMLElement) {
+      categoriesList.focus();
+    }
   }
 
   /**
@@ -122,12 +133,7 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
    * Handles event when contents in the webview is generated.
    */
   private onFullyLoaded(): void {
-    this.setUIStep(CaegoriesStep.OVERVIEW);
-    const categoriesList =
-        this.shadowRoot?.querySelector<HTMLElement>('#categoriesList');
-    if (categoriesList instanceof HTMLElement) {
-      categoriesList.focus();
-    }
+    this.userActed(UserAction.LOADED);
   }
 
   private onNextClicked(): void {

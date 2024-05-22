@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -48,8 +49,12 @@ class CategoriesSelectionScreen : public BaseScreen {
                           const std::vector<OOBEDeviceUseCase>& categories,
                           AppsFetchingResult result);
 
+  void ShowOverviewStep();
+
   // Called when the user selects categories on the screen.
   void OnSelect(base::Value::List screens);
+
+  base::OneShotTimer delay_overview_timer_;
 
   base::WeakPtr<CategoriesSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;
