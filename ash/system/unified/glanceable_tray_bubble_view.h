@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/screen_layout_observer.h"
@@ -36,7 +37,7 @@ struct GlanceablesClassroomAssignment;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
 // container for the child `tasks` and `classroom` glanceables.
-class GlanceableTrayBubbleView
+class ASH_EXPORT GlanceableTrayBubbleView
     : public TrayBubbleView,
       public ScreenLayoutObserver,
       public GlanceablesTimeManagementBubbleView::Observer {

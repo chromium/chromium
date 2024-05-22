@@ -3,19 +3,31 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
+#include "ash/glanceables/common/glanceables_util.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "ash/style/counter_expand_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
+#include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -72,6 +84,310 @@ TEST_F(GlanceablesTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
   // Close Glanceables.
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+}
+
+class GlanceablesTasksAndClassroomTest : public AshTestBase {
+ public:
+  GlanceablesTasksAndClassroomTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kGlanceablesTimeManagementTasksView,
+         features::kGlanceablesTimeManagementClassroomStudentView},
+        /*disabled_features=*/{});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    SimulateUserLogin(account_id_);
+    fake_glanceables_tasks_client_ =
+        glanceables_tasks_test_util::InitializeFakeTasksClient(
+            base::Time::Now());
+    fake_glanceables_classroom_client_ =
+        std::make_unique<FakeGlanceablesClassroomClient>();
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_,
+        GlanceablesController::ClientsRegistration{
+            .classroom_client = fake_glanceables_classroom_client_.get(),
+            .tasks_client = fake_glanceables_tasks_client_.get()});
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetTasksClient());
+
+    date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
+    date_tray_->ShowGlanceableBubble(/*from_keyboard=*/false);
+    view_ = views::AsViewClass<GlanceableTrayBubbleView>(
+        date_tray_->glanceables_bubble_for_test()->GetBubbleView());
+
+    glanceables_util::SetIsNetworkConnectedForTest(true);
+  }
+
+  void TearDown() override {
+    date_tray_->HideGlanceableBubble();
+    view_ = nullptr;
+    date_tray_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
+  // Populates `num` of tasks to the default task list.
+  void PopulateTasks(size_t num) {
+    for (size_t i = 0; i < num; ++i) {
+      auto num_string = base::NumberToString(i);
+      fake_glanceables_tasks_client_->AddTask(
+          "TaskListID1", base::StrCat({"title_", num_string}),
+          base::DoNothing());
+    }
+
+    // Simulate closing the glanceables bubble to cache the tasks.
+    fake_glanceables_tasks_client_->OnGlanceablesBubbleClosed(
+        base::DoNothing());
+
+    // Recreate the tasks view to update the task views.
+    date_tray_->ShowGlanceableBubble(/*from_keyboard=*/false);
+    view_ = views::AsViewClass<GlanceableTrayBubbleView>(
+        date_tray_->glanceables_bubble_for_test()->GetBubbleView());
+  }
+
+  GlanceablesTasksView* GetTasksView() const {
+    return views::AsViewClass<GlanceablesTasksView>(view_->GetTasksView());
+  }
+
+  CounterExpandButton* GetTasksExpandButtonView() const {
+    return views::AsViewClass<CounterExpandButton>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton)));
+  }
+
+  views::ScrollView* GetTasksScrollView() const {
+    return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView)));
+  }
+
+  GlanceablesClassroomStudentView* GetClassroomView() const {
+    return views::AsViewClass<GlanceablesClassroomStudentView>(
+        view_->GetClassroomStudentView());
+  }
+
+  CounterExpandButton* GetClassroomExpandButtonView() const {
+    return views::AsViewClass<CounterExpandButton>(
+        GetClassroomView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kClassroomBubbleExpandButton)));
+  }
+
+  GlanceableTrayBubbleView* view() const { return view_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  AccountId account_id_ =
+      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<FakeGlanceablesClassroomClient>
+      fake_glanceables_classroom_client_;
+
+  raw_ptr<DateTray> date_tray_ = nullptr;
+  raw_ptr<GlanceableTrayBubbleView> view_ = nullptr;
+};
+
+TEST_F(GlanceablesTasksAndClassroomTest, Basics) {
+  auto* const tasks_view = GetTasksView();
+  EXPECT_TRUE(tasks_view);
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_TRUE(classroom_view);
+
+  // Check that both views have their own backgrounds.
+  EXPECT_TRUE(tasks_view->GetBackground());
+  EXPECT_TRUE(classroom_view->GetBackground());
+
+  // Check that both views contain their expand buttons.
+  EXPECT_TRUE(GetTasksExpandButtonView());
+  EXPECT_TRUE(GetClassroomExpandButtonView());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+
+  // Initially both views are expanded.
+  // TODO(b/338917100): Consider having a half folded state.
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
+  auto* const tasks_expand_button = GetTasksExpandButtonView();
+  ASSERT_TRUE(tasks_expand_button);
+  LeftClickOn(tasks_expand_button);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  LeftClickOn(tasks_expand_button);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Same for `classroom_view`.
+  auto* const classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  LeftClickOn(classroom_expand_button);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       TrackpadScrollingDownFromTheBottomOfTasksExpandsClassroom) {
+  // Increase the number of tasks to ensure the scroll contents overflow.
+  PopulateTasks(10);
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+
+  // Expand `tasks_view`.
+  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
+  // button should expand tasks.
+  auto* const classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const tasks_scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(tasks_scroll_bar->GetVisible());
+  const gfx::Point tasks_scroll_view_center =
+      GetTasksScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
+                                 tasks_scroll_bar->GetMinPosition() + 10;
+
+  auto generate_trackpad_scroll_event = [&](bool upward) {
+    GetEventGenerator()->ScrollSequence(
+        tasks_scroll_view_center, base::TimeDelta(), /*x_offset=*/0,
+        upward ? distance_to_scroll : -distance_to_scroll, /*steps=*/20,
+        /*num_fingers=*/2);
+  };
+
+  // Scrolling upward at the top of the scroll view doesn't change expand state.
+  generate_trackpad_scroll_event(/*upward=*/true);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Scrolling downward when there is scrollable content doesn't change expand
+  // state.
+  generate_trackpad_scroll_event(/*upward=*/false);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Scrolling downward at the bottom of the scroll view changes expand state.
+  generate_trackpad_scroll_event(/*upward=*/false);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       GestureScrollingDownFromTheBottomOfTasksExpandsClassroom) {
+  // Increase the number of tasks to ensure the scroll contents overflow.
+  PopulateTasks(10);
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+
+  // Expand `tasks_view`.
+  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
+  // button should expand tasks.
+  auto* const classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const tasks_scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(tasks_scroll_bar->GetVisible());
+  const gfx::Point tasks_scroll_view_center =
+      GetTasksScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
+                                 tasks_scroll_bar->GetMinPosition() + 10;
+
+  auto generate_gesture_scroll_event = [&](bool upward) {
+    // Scrolling upward needs to scroll downward using the gesture.
+    const gfx::Vector2d scroll_distance =
+        upward ? gfx::Vector2d(0, distance_to_scroll)
+               : gfx::Vector2d(0, -distance_to_scroll);
+    GetEventGenerator()->GestureScrollSequence(
+        tasks_scroll_view_center, tasks_scroll_view_center + scroll_distance,
+        base::Milliseconds(100), /*steps=*/10);
+  };
+
+  // Scrolling upward at the top of the scroll view doesn't change expand state.
+  generate_gesture_scroll_event(/*upward=*/true);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Scrolling downward when there is scrollable content doesn't change expand
+  // state.
+  generate_gesture_scroll_event(/*upward=*/false);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Scrolling downward at the bottom of the scroll view changes expand state.
+  generate_gesture_scroll_event(/*upward=*/false);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       MouseWheelScrollingDownFromTheBottomOfTasksDoesNotExpandsClassroom) {
+  // Increase the number of tasks to ensure the scroll contents overflow.
+  PopulateTasks(10);
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+
+  // Expand `tasks_view`.
+  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
+  // button should expand tasks.
+  auto* const classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const tasks_scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(tasks_scroll_bar->GetVisible());
+  const gfx::Point tasks_scroll_view_center =
+      GetTasksScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
+                                 tasks_scroll_bar->GetMinPosition() + 10;
+
+  // Using mouse wheel doesn't change expand state in either direction.
+  GetEventGenerator()->MoveMouseTo(tasks_scroll_view_center);
+  GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
 }
 
 }  // namespace ash
