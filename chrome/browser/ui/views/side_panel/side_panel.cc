@@ -447,7 +447,9 @@ void SidePanel::RecordMetricsIfResized() {
     std::optional<SidePanelEntry::Id> id =
         SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
             ->GetCurrentEntryId();
-    CHECK(id.has_value());
+    if (!id.has_value()) {
+      return;
+    }
     int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
     SidePanelUtil::RecordSidePanelResizeMetrics(
