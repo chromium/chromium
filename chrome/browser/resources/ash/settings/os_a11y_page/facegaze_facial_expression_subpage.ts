@@ -107,6 +107,17 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         },
       },
 
+      mouseLongClickLeftPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'MOUSE_LONG_CLICK_LEFT_pref',
+          };
+        },
+      },
+
       resetCursorPref_: {
         type: Object,
         value(): chrome.settingsPrivate.PrefObject {
@@ -274,6 +285,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     return [
       'updateLeftClickPref_(leftClickPref_.*)',
       'updateRightClickPref_(rightClickPref_.*)',
+      'updateLongClickLeftPref_(longClickLeftPref_.*)',
       'updateResetCursorPref_(resetCursorPref_.*)',
       'updateToggleDictationPref_(toggleDictationPref_.*)',
       'updateKeyPressSpacePref_(keyPressSpacePref_.*)',
@@ -301,6 +313,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
   private leftClickMenuOptions_: DropdownMenuOptionList;
   private rightClickMenuOptions_: DropdownMenuOptionList;
+  private longClickLeftMenuOptions_: DropdownMenuOptionList;
   private resetCursorMenuOptions_: DropdownMenuOptionList;
   private toggleDictationMenuOptions_: DropdownMenuOptionList;
   private keyPressSpaceMenuOptions_: DropdownMenuOptionList;
@@ -310,6 +323,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private keyPressUpMenuOptions_: DropdownMenuOptionList;
   private leftClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private rightClickPref_: chrome.settingsPrivate.PrefObject<string>;
+  private longClickLeftPref_: chrome.settingsPrivate.PrefObject<string>;
   private resetCursorPref_: chrome.settingsPrivate.PrefObject<string>;
   private toggleDictationPref_: chrome.settingsPrivate.PrefObject<string>;
   private keyPressSpacePref_: chrome.settingsPrivate.PrefObject<string>;
@@ -338,6 +352,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
     this.leftClickMenuOptions_ = this.getGestureMenuOptions_();
     this.rightClickMenuOptions_ = this.getGestureMenuOptions_();
+    this.longClickLeftMenuOptions_ = this.getGestureMenuOptions_();
     this.resetCursorMenuOptions_ = this.getGestureMenuOptions_();
     this.toggleDictationMenuOptions_ = this.getGestureMenuOptions_();
     this.keyPressSpaceMenuOptions_ = this.getGestureMenuOptions_();
@@ -435,6 +450,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         this.updateVirtualPref_(macrosToGestures, MacroName.MOUSE_CLICK_LEFT);
     this.rightClickPref_ =
         this.updateVirtualPref_(macrosToGestures, MacroName.MOUSE_CLICK_RIGHT);
+    this.longClickLeftPref_ = this.updateVirtualPref_(
+        macrosToGestures, MacroName.MOUSE_LONG_CLICK_LEFT);
     this.resetCursorPref_ =
         this.updateVirtualPref_(macrosToGestures, MacroName.RESET_CURSOR);
     this.toggleDictationPref_ =
@@ -477,6 +494,11 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private updateRightClickPref_(): void {
     this.updateFromVirtualPref_(
         MacroName.MOUSE_CLICK_RIGHT, this.rightClickPref_.value);
+  }
+
+  private updateLongClickLeftPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.MOUSE_LONG_CLICK_LEFT, this.longClickLeftPref_.value);
   }
 
   private updateResetCursorPref_(): void {
@@ -532,6 +554,8 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
     const newLeftClickMenuOptions = Object.assign(this.leftClickMenuOptions_);
     const newRightClickMenuOptions = Object.assign(this.rightClickMenuOptions_);
+    const newLongClickLeftMenuOptions =
+        Object.assign(this.longClickLeftMenuOptions_);
     const newResetCursorMenuOptions =
         Object.assign(this.resetCursorMenuOptions_);
     const newToggleDictationMenuOptions =
@@ -548,6 +572,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     const newMenuOptions = [
       newLeftClickMenuOptions,
       newRightClickMenuOptions,
+      newLongClickLeftMenuOptions,
       newResetCursorMenuOptions,
       newToggleDictationMenuOptions,
       newKeyPressSpaceMenuOptions,
@@ -592,6 +617,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         this.setDropdownMenuOptionsHiddenForGesture_(
             newRightClickMenuOptions, value, true);
       }
+      if (macro !== MacroName.MOUSE_LONG_CLICK_LEFT) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newLongClickLeftMenuOptions, value, true);
+      }
       if (macro !== MacroName.RESET_CURSOR) {
         this.setDropdownMenuOptionsHiddenForGesture_(
             newResetCursorMenuOptions, value, true);
@@ -629,10 +658,12 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     // TODO(b:322510392): This isn't working consistently.
     this.leftClickMenuOptions_ = [];
     this.rightClickMenuOptions_ = [];
+    this.longClickLeftMenuOptions_ = [];
     this.resetCursorMenuOptions_ = [];
     this.toggleDictationMenuOptions_ = [];
     this.leftClickMenuOptions_ = newLeftClickMenuOptions;
     this.rightClickMenuOptions_ = newRightClickMenuOptions;
+    this.longClickLeftMenuOptions_ = newLongClickLeftMenuOptions;
     this.resetCursorMenuOptions_ = newResetCursorMenuOptions;
     this.toggleDictationMenuOptions_ = newToggleDictationMenuOptions;
     this.keyPressSpaceMenuOptions_ = newKeyPressSpaceMenuOptions;

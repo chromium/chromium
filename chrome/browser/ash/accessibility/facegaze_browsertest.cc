@@ -306,7 +306,39 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
       Config()
           .Default()
           .WithGesturesToMacros(
-              {{FaceGazeGesture::MOUTH_RIGHT, MacroName::MOUSE_CLICK_LEFT}})
+              {{FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_PUCKER, 50}}));
+  event_handler().ClearEvents();
+
+  // Move mouth right to trigger mouse press event.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_PUCKER, 60));
+  std::vector<ui::MouseEvent> mouse_events = event_handler().mouse_events();
+  ASSERT_EQ(2u, mouse_events.size());
+  ASSERT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  ASSERT_TRUE(mouse_events[0].IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
+  ASSERT_TRUE(mouse_events[0].IsSynthesized());
+  ASSERT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+  ASSERT_TRUE(mouse_events[1].IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), mouse_events[1].root_location());
+  ASSERT_TRUE(mouse_events[1].IsSynthesized());
+
+  // Release doesn't trigger anything else.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_PUCKER, 30));
+  mouse_events = event_handler().mouse_events();
+  ASSERT_EQ(0u, mouse_events.size());
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
+                       MouseLongPressAndReleaseEvents) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_RIGHT,
+                                  MacroName::MOUSE_LONG_CLICK_LEFT}})
           .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}}));
   event_handler().ClearEvents();
 

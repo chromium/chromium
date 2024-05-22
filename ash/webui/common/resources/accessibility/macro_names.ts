@@ -158,6 +158,9 @@ export enum MacroName {
   // Pauses/plays active media.
   KEY_PRESS_MEDIA_PLAY_PAUSE = 44,
 
+  // Generates a synthetic long click event.
+  MOUSE_LONG_CLICK_LEFT = 45,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

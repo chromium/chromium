@@ -17,14 +17,22 @@ export class MouseClickMacro extends Macro {
   private leftClick_: boolean;
   private location_: ScreenPoint|undefined;
   private runCount_ = 0;
+  private clickImmediately_: boolean;
 
   /**
-   * Pass the location in density-independent pixels. Defaults to left click.
+   * Pass the location in density-independent pixels. Defaults to left click and
+   * clicking immediately.
    */
-  constructor(location: ScreenPoint|undefined, leftClick = true) {
-    super(leftClick ? MacroName.MOUSE_CLICK_LEFT : MacroName.MOUSE_CLICK_RIGHT);
+  constructor(
+      location: ScreenPoint|undefined, leftClick = true,
+      clickImmediately = true) {
+    super(
+        leftClick ? (clickImmediately ? MacroName.MOUSE_CLICK_LEFT :
+                                        MacroName.MOUSE_LONG_CLICK_LEFT) :
+                    MacroName.MOUSE_CLICK_RIGHT);
     this.leftClick_ = leftClick;
     this.location_ = location;
+    this.clickImmediately_ = clickImmediately;
   }
 
   /**
@@ -32,14 +40,16 @@ export class MouseClickMacro extends Macro {
    * again when it ends.
    */
   override triggersAtActionStartAndEnd(): boolean {
-    return true;
+    return !this.clickImmediately_;
   }
 
   /** Invalid context if location isn't set. */
   override checkContext(): CheckContextResult {
     if (!this.location_) {
       return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
-    } else if (this.runCount_ > 2) {
+    }
+    if ((this.clickImmediately_ && this.runCount_ > 0) ||
+        (!this.clickImmediately_ && this.runCount_ > 2)) {
       return this.createFailureCheckContextResult_(
           MacroError.INVALID_USER_INTENT);
     } else {
@@ -57,12 +67,20 @@ export class MouseClickMacro extends Macro {
     }
     const mouseButton = this.leftClick_ ? SyntheticMouseEventButton.LEFT :
                                           SyntheticMouseEventButton.RIGHT;
+
     if (this.runCount_ === 0) {
       EventGenerator.sendMousePress(
           this.location_.x, this.location_.y, mouseButton);
-    } else if (this.runCount_ === 1) {
+      if (this.clickImmediately_) {
+        // Increment run count so we perform the click release.
+        this.runCount_++;
+      }
+    }
+
+    if (this.runCount_ === 1) {
       EventGenerator.sendMouseRelease(this.location_.x, this.location_.y);
     }
+
     this.runCount_++;
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }

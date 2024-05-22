@@ -120,10 +120,18 @@ export class GestureHandler {
     for (const [macroName, gesture] of macroNames) {
       const macro = this.macroFromName_(macroName);
       if (macro) {
+        if (macro instanceof MouseClickMacro) {
+          // Don't add mouse click macros if we are in the middle of long click.
+          if ([...this.macrosToCompleteLater_.values()].some(
+                  (savedMacro: Macro) => savedMacro.getName() ===
+                      MacroName.MOUSE_LONG_CLICK_LEFT)) {
+            continue;
+          }
+        }
         result.push(macro);
         if (macro.triggersAtActionStartAndEnd()) {
-          // Cache this macro to be run a second time later, for the key
-          // release.
+          // Cache this macro to be run a second time later,
+          // e.g. for the mouse or key release.
           this.macrosToCompleteLater_.set(gesture, macro);
         }
       }
@@ -169,6 +177,10 @@ export class GestureHandler {
       case MacroName.MOUSE_CLICK_RIGHT:
         return new MouseClickMacro(
             this.mouseController_.mouseLocation(), /*leftClick=*/ false);
+      case MacroName.MOUSE_LONG_CLICK_LEFT:
+        return new MouseClickMacro(
+            this.mouseController_.mouseLocation(), /*leftClick=*/ true,
+            /*clickImmediately=*/ false);
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
       case MacroName.KEY_PRESS_SPACE:
