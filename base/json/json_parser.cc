@@ -189,50 +189,6 @@ int JSONParser::error_column() const {
   return error_column_;
 }
 
-// StringBuilder ///////////////////////////////////////////////////////////////
-
-JSONParser::StringBuilder::StringBuilder() : StringBuilder(nullptr) {}
-
-JSONParser::StringBuilder::StringBuilder(const char* pos)
-    : pos_(pos), length_(0) {}
-
-JSONParser::StringBuilder::~StringBuilder() = default;
-
-JSONParser::StringBuilder& JSONParser::StringBuilder::operator=(
-    StringBuilder&& other) = default;
-
-void JSONParser::StringBuilder::Append(base_icu::UChar32 point) {
-  DCHECK(IsValidCodepoint(point));
-
-  if (point < kExtendedASCIIStart) {
-    if (!string_) {
-      DCHECK_EQ(static_cast<char>(point), pos_[length_]);
-      ++length_;
-    } else {
-      string_->push_back(static_cast<char>(point));
-    }
-  } else {
-    Convert();
-    if (UNLIKELY(point == kUnicodeReplacementPoint)) {
-      string_->append(kUnicodeReplacementString);
-    } else {
-      WriteUnicodeCharacter(point, &*string_);
-    }
-  }
-}
-
-void JSONParser::StringBuilder::Convert() {
-  if (string_)
-    return;
-  string_.emplace(pos_, length_);
-}
-
-std::string JSONParser::StringBuilder::DestructiveAsString() {
-  if (string_)
-    return std::move(*string_);
-  return std::string(pos_, length_);
-}
-
 // JSONParser private //////////////////////////////////////////////////////////
 
 std::optional<std::string_view> JSONParser::PeekChars(size_t count) {
@@ -444,8 +400,8 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
     }
 
     // First consume the key.
-    StringBuilder key;
-    if (!ConsumeStringRaw(&key)) {
+    std::optional<std::string> key = ConsumeStringRaw();
+    if (!key) {
       return std::nullopt;
     }
 
@@ -464,7 +420,7 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
       return std::nullopt;
     }
 
-    values.emplace_back(key.DestructiveAsString(), std::move(*value));
+    values.emplace_back(std::move(*key), std::move(*value));
 
     token = GetNextToken();
     if (token == T_LIST_SEPARATOR) {
@@ -532,176 +488,208 @@ std::optional<Value> JSONParser::ConsumeList() {
 }
 
 std::optional<Value> JSONParser::ConsumeString() {
-  StringBuilder string;
-  if (!ConsumeStringRaw(&string))
+  std::optional<std::string> string = ConsumeStringRaw();
+  if (!string) {
     return std::nullopt;
-  return Value(string.DestructiveAsString());
+  }
+  return Value(std::move(*string));
 }
 
-bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
+std::optional<std::string> JSONParser::ConsumeStringRaw() {
   if (ConsumeChar() != '"') {
     ReportError(JSON_UNEXPECTED_TOKEN, 0);
-    return false;
+    return std::nullopt;
   }
 
-  // StringBuilder will internally build a std::string_view unless a UTF-16
-  // conversion occurs, at which point it will perform a copy into a
-  // std::string.
-  StringBuilder string(pos());
+  std::string string;
+  for (;;) {
+    auto [result, consumed] = ConsumeStringPart();
+    switch (result) {
+      case StringResult::kError:
+        return std::nullopt;
 
+      case StringResult::kDone:
+        // This is the last time we're appending, so pre-reserve the desired
+        // size, to prevent `+=` from overallocating. (In other cases, the
+        // overallocating is desirable for amortization.) In particular,
+        // the common case is that `string` is empty and we return in one step.
+        string.reserve(string.size() + consumed.size());
+        string += consumed;
+        return std::move(string);
+
+      case StringResult::kReplacementCharacter:
+        string += consumed;
+        string += kUnicodeReplacementString;
+        break;  // Keep parsing.
+
+      case StringResult::kEscape:
+        string += consumed;
+        std::optional<char> escape_char = ConsumeChar();
+        if (!escape_char) {
+          ReportError(JSON_INVALID_ESCAPE, -1);
+          return std::nullopt;
+        }
+
+        switch (*escape_char) {
+          // Allowed esape sequences:
+          case 'x': {  // UTF-8 sequence.
+            // UTF-8 \x escape sequences are not allowed in the spec, but they
+            // are supported here for backwards-compatiblity with the old
+            // parser.
+            UmaHistogramEnumeration(kExtensionHistogramName,
+                                    ChromiumJsonExtension::kXEscape);
+            if (!(options_ & JSON_ALLOW_X_ESCAPES)) {
+              ReportError(JSON_INVALID_ESCAPE, -1);
+              return std::nullopt;
+            }
+
+            std::optional<std::string_view> escape_sequence = ConsumeChars(2);
+            if (!escape_sequence) {
+              ReportError(JSON_INVALID_ESCAPE, -3);
+              return std::nullopt;
+            }
+
+            int hex_digit = 0;
+            if (!UnprefixedHexStringToInt(*escape_sequence, &hex_digit) ||
+                !IsValidCharacter(hex_digit)) {
+              ReportError(JSON_INVALID_ESCAPE, -3);
+              return std::nullopt;
+            }
+
+            WriteUnicodeCharacter(hex_digit, &string);
+            break;
+          }
+          case 'u': {  // UTF-16 sequence.
+            // UTF units are of the form \uXXXX.
+            base_icu::UChar32 code_point;
+            if (!DecodeUTF16(&code_point)) {
+              ReportError(JSON_INVALID_ESCAPE, -1);
+              return std::nullopt;
+            }
+            WriteUnicodeCharacter(code_point, &string);
+            break;
+          }
+          case '"':
+            string.push_back('"');
+            break;
+          case '\\':
+            string.push_back('\\');
+            break;
+          case '/':
+            string.push_back('/');
+            break;
+          case 'b':
+            string.push_back('\b');
+            break;
+          case 'f':
+            string.push_back('\f');
+            break;
+          case 'n':
+            string.push_back('\n');
+            break;
+          case 'r':
+            string.push_back('\r');
+            break;
+          case 't':
+            string.push_back('\t');
+            break;
+          case 'v':  // Not listed as valid escape sequence in the RFC.
+            UmaHistogramEnumeration(kExtensionHistogramName,
+                                    ChromiumJsonExtension::kVerticalTabEscape);
+            if (!(options_ & JSON_ALLOW_VERT_TAB)) {
+              ReportError(JSON_INVALID_ESCAPE, -1);
+              return std::nullopt;
+            }
+            string.push_back('\v');
+            break;
+          // All other escape squences are illegal.
+          default:
+            ReportError(JSON_INVALID_ESCAPE, -1);
+            return std::nullopt;
+        }
+        break;  // Keep parsing.
+    }
+  }
+}
+
+std::pair<JSONParser::StringResult, std::string_view>
+JSONParser::ConsumeStringPart() {
+  const size_t start_index = index_;
   while (std::optional<char> c = PeekChar()) {
-    base_icu::UChar32 next_char = 0;
-    if (static_cast<unsigned char>(*c) < kExtendedASCIIStart) {
-      // Fast path for ASCII.
-      next_char = *c;
-    } else if (!ReadUnicodeCharacter(input_.data(), input_.length(), &index_,
-                                     &next_char)) {
-      if ((options_ & JSON_REPLACE_INVALID_CHARACTERS) == 0) {
-        ReportError(JSON_UNSUPPORTED_ENCODING, 0);
-        return false;
+    // Handle non-ASCII characters, which never trigger any special handling
+    // beyond needing to be valid UTF-8. ASCII characters will be handled
+    // separately below.
+    if (static_cast<unsigned char>(*c) >= kExtendedASCIIStart) {
+      base_icu::UChar32 next_char = 0;
+      size_t last_index = index_;
+      if (!ReadUnicodeCharacter(input_.data(), input_.length(), &index_,
+                                &next_char)) {
+        if ((options_ & JSON_REPLACE_INVALID_CHARACTERS) == 0) {
+          ReportError(JSON_UNSUPPORTED_ENCODING, 0);
+          // No need to return consumed data.
+          return {StringResult::kError, {}};
+        }
+        ConsumeChar();
+        return {StringResult::kReplacementCharacter,
+                input_.substr(start_index, last_index - start_index)};
       }
+
+      // Valid UTF-8 will be copied as-is into the output, so keep processing.
+      DCHECK_GT(next_char, kExtendedASCIIStart);
       ConsumeChar();
-      string.Append(kUnicodeReplacementPoint);
       continue;
     }
 
-    if (next_char == '"') {
+    if (*c == '"') {
+      std::string_view ret = input_.substr(start_index, index_ - start_index);
       ConsumeChar();
-      *out = std::move(string);
-      return true;
+      return {StringResult::kDone, ret};
     }
-    if (next_char != '\\') {
-      // Per Section 7, "All Unicode characters may be placed within the
-      // quotation marks, except for the characters that MUST be escaped:
-      // quotation mark, reverse solidus, and the control characters (U+0000
-      // through U+001F)".
-      if (next_char == '\n' || next_char == '\r') {
-        UmaHistogramEnumeration(kExtensionHistogramName,
-                                ChromiumJsonExtension::kNewlineInString);
-        if (!(options_ &
-              (JSON_ALLOW_NEWLINES_IN_STRINGS | JSON_ALLOW_CONTROL_CHARS))) {
-          ReportError(JSON_UNSUPPORTED_ENCODING, -1);
-          return false;
-        }
-      } else if (next_char <= 0x1F) {
-        UmaHistogramEnumeration(kExtensionHistogramName,
-                                ChromiumJsonExtension::kControlCharacter);
-        if (!(options_ & JSON_ALLOW_CONTROL_CHARS)) {
-          ReportError(JSON_UNSUPPORTED_ENCODING, -1);
-          return false;
-        }
-      }
-
-      // If this character is not an escape sequence, track any line breaks and
-      // copy next_char to the StringBuilder. The JSON spec forbids unescaped
-      // ASCII control characters within a string, including '\r' and '\n', but
-      // this implementation is more lenient.
-      if ((next_char == '\r') || (next_char == '\n')) {
-        index_last_line_ = index_;
-        // Don't increment line_number_ twice for "\r\n". We are guaranteed
-        // that (index_ > 0) because we are consuming a string, so we must have
-        // seen an opening '"' quote character.
-        if ((next_char == '\r') || (input_[index_ - 1] != '\r')) {
-          ++line_number_;
-        }
-      }
+    if (*c == '\\') {
+      std::string_view ret = input_.substr(start_index, index_ - start_index);
       ConsumeChar();
-      string.Append(next_char);
-    } else {
-      // And if it is an escape sequence, the input string will be adjusted
-      // (either by combining the two characters of an encoded escape sequence,
-      // or with a UTF conversion), so using std::string_view isn't possible --
-      // force a conversion.
-      string.Convert();
+      return {StringResult::kEscape, ret};
+    }
 
-      // Read past the escape '\' and ensure there's a character following.
-      std::optional<std::string_view> escape_sequence = ConsumeChars(2);
-      if (!escape_sequence) {
-        ReportError(JSON_INVALID_ESCAPE, -1);
-        return false;
+    // Per Section 7, "All Unicode characters may be placed within the
+    // quotation marks, except for the characters that MUST be escaped:
+    // quotation mark, reverse solidus, and the control characters (U+0000
+    // through U+001F)".
+    if (*c == '\n' || *c == '\r') {
+      UmaHistogramEnumeration(kExtensionHistogramName,
+                              ChromiumJsonExtension::kNewlineInString);
+      if (!(options_ &
+            (JSON_ALLOW_NEWLINES_IN_STRINGS | JSON_ALLOW_CONTROL_CHARS))) {
+        ReportError(JSON_UNSUPPORTED_ENCODING, -1);
+        return {StringResult::kError, {}};  // No need to return consumed data.
       }
-
-      switch ((*escape_sequence)[1]) {
-        // Allowed esape sequences:
-        case 'x': {  // UTF-8 sequence.
-          // UTF-8 \x escape sequences are not allowed in the spec, but they
-          // are supported here for backwards-compatiblity with the old parser.
-          UmaHistogramEnumeration(kExtensionHistogramName,
-                                  ChromiumJsonExtension::kXEscape);
-          if (!(options_ & JSON_ALLOW_X_ESCAPES)) {
-            ReportError(JSON_INVALID_ESCAPE, -1);
-            return false;
-          }
-
-          escape_sequence = ConsumeChars(2);
-          if (!escape_sequence) {
-            ReportError(JSON_INVALID_ESCAPE, -3);
-            return false;
-          }
-
-          int hex_digit = 0;
-          if (!UnprefixedHexStringToInt(*escape_sequence, &hex_digit) ||
-              !IsValidCharacter(hex_digit)) {
-            ReportError(JSON_INVALID_ESCAPE, -3);
-            return false;
-          }
-
-          string.Append(hex_digit);
-          break;
-        }
-        case 'u': {  // UTF-16 sequence.
-          // UTF units are of the form \uXXXX.
-          base_icu::UChar32 code_point;
-          if (!DecodeUTF16(&code_point)) {
-            ReportError(JSON_INVALID_ESCAPE, -1);
-            return false;
-          }
-          string.Append(code_point);
-          break;
-        }
-        case '"':
-          string.Append('"');
-          break;
-        case '\\':
-          string.Append('\\');
-          break;
-        case '/':
-          string.Append('/');
-          break;
-        case 'b':
-          string.Append('\b');
-          break;
-        case 'f':
-          string.Append('\f');
-          break;
-        case 'n':
-          string.Append('\n');
-          break;
-        case 'r':
-          string.Append('\r');
-          break;
-        case 't':
-          string.Append('\t');
-          break;
-        case 'v':  // Not listed as valid escape sequence in the RFC.
-          UmaHistogramEnumeration(kExtensionHistogramName,
-                                  ChromiumJsonExtension::kVerticalTabEscape);
-          if (!(options_ & JSON_ALLOW_VERT_TAB)) {
-            ReportError(JSON_INVALID_ESCAPE, -1);
-            return false;
-          }
-          string.Append('\v');
-          break;
-        // All other escape squences are illegal.
-        default:
-          ReportError(JSON_INVALID_ESCAPE, -1);
-          return false;
+    } else if (*c <= 0x1F) {
+      UmaHistogramEnumeration(kExtensionHistogramName,
+                              ChromiumJsonExtension::kControlCharacter);
+      if (!(options_ & JSON_ALLOW_CONTROL_CHARS)) {
+        ReportError(JSON_UNSUPPORTED_ENCODING, -1);
+        return {StringResult::kError, {}};  // No need to return consumed data.
       }
     }
+
+    // If this character is not an escape sequence, track any line breaks and
+    // keep parsing. The JSON spec forbids unescaped ASCII control characters
+    // within a string, including '\r' and '\n', but this implementation is more
+    // lenient.
+    if (*c == '\r' || *c == '\n') {
+      index_last_line_ = index_;
+      // Don't increment line_number_ twice for "\r\n". We are guaranteed that
+      // (index_ > 0) because we are consuming a string, so we must have seen an
+      // opening '"' quote character.
+      if ((*c == '\r') || (input_[index_ - 1] != '\r')) {
+        ++line_number_;
+      }
+    }
+    ConsumeChar();
   }
 
   ReportError(JSON_SYNTAX_ERROR, -1);
-  return false;
+  return {StringResult::kError, {}};  // No need to return consumed data.
 }
 
 // Entry is at the first X in \uXXXX.

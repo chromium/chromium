@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -114,50 +115,6 @@ class BASE_EXPORT JSONParser {
     T_INVALID_TOKEN,
   };
 
-  // A helper class used for parsing strings. One optimization performed is to
-  // create base::Value with a std::string_view to avoid unnecessary std::string
-  // copies. This is not possible if the input string needs to be decoded from
-  // UTF-16 to UTF-8, or if an escape sequence causes characters to be skipped.
-  // This class centralizes that logic.
-  class StringBuilder {
-   public:
-    // Empty constructor. Used for creating a builder with which to assign to.
-    StringBuilder();
-
-    // |pos| is the beginning of an input string, excluding the |"|.
-    explicit StringBuilder(const char* pos);
-
-    ~StringBuilder();
-
-    StringBuilder& operator=(StringBuilder&& other);
-
-    // Appends the Unicode code point |point| to the string, either by
-    // increasing the |length_| of the string if the string has not been
-    // converted, or by appending the UTF8 bytes for the code point.
-    void Append(base_icu::UChar32 point);
-
-    // Converts the builder from its default std::string_view to a full
-    // std::string, performing a copy. Once a builder is converted, it cannot be
-    // made a std::string_view again.
-    void Convert();
-
-    // Returns the builder as a string, invalidating all state. This allows
-    // the internal string buffer representation to be destructively moved
-    // in cases where the builder will not be needed any more.
-    std::string DestructiveAsString();
-
-   private:
-    // The beginning of the input string.
-    const char* pos_;
-
-    // Number of bytes in |pos_| that make up the string being built.
-    size_t length_;
-
-    // The copied string representation. Will be unset until Convert() is
-    // called.
-    std::optional<std::string> string_;
-  };
-
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain.
   std::optional<std::string_view> PeekChars(size_t count);
@@ -205,10 +162,34 @@ class BASE_EXPORT JSONParser {
   std::optional<Value> ConsumeString();
 
   // Assuming that the parser is wound to a double quote, this parses a string,
-  // decoding any escape sequences and converts UTF-16 to UTF-8. Returns true on
-  // success and places result into |out|. Returns false on failure with
-  // error information set.
-  bool ConsumeStringRaw(StringBuilder* out);
+  // decoding any escape sequences and validating UTF-8. Returns the string on
+  // success or std::nullopt on error, with error information set.
+  std::optional<std::string> ConsumeStringRaw();
+
+  enum class StringResult {
+    // Parsing stopped because of invalid input. Error information has been set.
+    // The caller should return failure.
+    kError,
+    // Parsing stopped because the string is finished. The parser is wound to
+    // just paste the closing quote. The caller should stop parsing the string.
+    kDone,
+    // Parsing stopped because of invalid Unicode which should be replaced with
+    // a replacement character. The parser is wound to just past the input that
+    // should be a replacement character. The caller should add a replacement
+    // character and continue parsing.
+    kReplacementCharacter,
+    // Parsing stopped because of an escape sequence. The parser is wound to
+    // just past the backslash. The caller should consume the escape sequence
+    // and continue parsing.
+    kEscape,
+  };
+
+  // Consumes the portion of a JavaScript string which may be copied to the
+  // input with no conversions, stopping at one of the events above. Returns the
+  // reason parsing stopped and the data that was consumed. This should be
+  // called in a loop, handling all the cases above until reaching kDone.
+  std::pair<StringResult, std::string_view> ConsumeStringPart();
+
   // Helper function for ConsumeStringRaw() that consumes the next four or 10
   // bytes (parser is wound to the first character of a HEX sequence, with the
   // potential for consuming another \uXXXX for a surrogate). Returns true on
