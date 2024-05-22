@@ -1279,7 +1279,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method arcTo
 [Worker]     method beginLayer
 [Worker]     method beginPath
-[Worker]     method beginWebGPUAccess
 [Worker]     method bezierCurveTo
 [Worker]     method clearRect
 [Worker]     method clip
@@ -1298,7 +1297,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawMesh
 [Worker]     method ellipse
 [Worker]     method endLayer
-[Worker]     method endWebGPUAccess
 [Worker]     method fill
 [Worker]     method fillRect
 [Worker]     method fillText
@@ -1327,6 +1325,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stroke
 [Worker]     method strokeRect
 [Worker]     method strokeText
+[Worker]     method transferFromWebGPU
+[Worker]     method transferToWebGPU
 [Worker]     method transform
 [Worker]     method translate
 [Worker]     setter direction

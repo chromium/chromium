@@ -6,9 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas WebGPU Access: endWebGPUAccess-exchanges-texture</h1>
+<h1>Canvas2D WebGPU Transfer: transferFromWebGPU-exchanges-texture</h1>
 
-<p>endWebGPUAccess() should allow two canvases to exchange their textures.</p>
+<p>transferFromWebGPU() should allow two canvases to exchange their
+textures.</p>
 
 <!-- Each canvas has a different size. -->
 <canvas id="c1" width="50" height="50"></canvas>
@@ -19,36 +20,36 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_exchanges_texture(
+      return test_transferFromWebGPU_exchanges_texture(
                  device,
                  document.getElementById('c1'),
                  document.getElementById('c2'));
     });
   },
-  'endWebGPUAccess() should allow canvases to exchange textures.'
+  'transferFromWebGPU() should allow canvases to exchange textures.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_exchanges_texture(
+      return test_transferFromWebGPU_exchanges_texture(
                  device,
                  new OffscreenCanvas(50, 50),
                  new OffscreenCanvas(60, 60));
     });
   },
-  'endWebGPUAccess() should allow offscreen canvases to exchange textures.'
+  'transferFromWebGPU() should allow offscreen canvases to exchange textures.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_exchanges_texture(
+      return test_transferFromWebGPU_exchanges_texture(
                  device,
                  document.getElementById('c3'),
                  new OffscreenCanvas(50, 50));
     });
   },
-  'endWebGPUAccess() with a mix of canvas types should allow the exchange of ' +
-  'textures.'
+  'transferFromWebGPU() with a mix of canvas types should allow the exchange ' +
+  'of textures.'
 );
 
 </script>

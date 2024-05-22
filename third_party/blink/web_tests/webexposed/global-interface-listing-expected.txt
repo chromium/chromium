@@ -1276,7 +1276,6 @@ interface CanvasRenderingContext2D
     method arcTo
     method beginLayer
     method beginPath
-    method beginWebGPUAccess
     method bezierCurveTo
     method clearRect
     method clip
@@ -1296,7 +1295,6 @@ interface CanvasRenderingContext2D
     method drawMesh
     method ellipse
     method endLayer
-    method endWebGPUAccess
     method fill
     method fillRect
     method fillText
@@ -1327,6 +1325,8 @@ interface CanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
+    method transferFromWebGPU
+    method transferToWebGPU
     method transform
     method translate
     setter direction
@@ -7082,7 +7082,6 @@ interface OffscreenCanvasRenderingContext2D
     method arcTo
     method beginLayer
     method beginPath
-    method beginWebGPUAccess
     method bezierCurveTo
     method clearRect
     method clip
@@ -7101,7 +7100,6 @@ interface OffscreenCanvasRenderingContext2D
     method drawMesh
     method ellipse
     method endLayer
-    method endWebGPUAccess
     method fill
     method fillRect
     method fillText
@@ -7130,6 +7128,8 @@ interface OffscreenCanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
+    method transferFromWebGPU
+    method transferToWebGPU
     method transform
     method translate
     setter direction

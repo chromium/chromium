@@ -136,13 +136,13 @@ function test_getTextureFormat_rgba16f(device, canvas) {
   assert_equals(ctx.getTextureFormat(), 'rgba16float');
 }
 
-/** beginWebGPUAccess() should create a texture from an uninitialized canvas. */
-function test_beginWebGPUAccess_untouched_canvas(device, canvas) {
+/** transferToWebGPU() should create a texture from an uninitialized canvas. */
+function test_transferToWebGPU_untouched_canvas(device, canvas) {
   // Leave the canvas untouched; it won't have a Canvas2DLayerBridge yet.
 
-  // Next, call beginWebGPUAccess.
+  // Next, call transferToWebGPU.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.beginWebGPUAccess({device: device, label: "hello, webgpu!"});
+  const tex = ctx.transferToWebGPU({device: device, label: "hello, webgpu!"});
 
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
@@ -151,15 +151,15 @@ function test_beginWebGPUAccess_untouched_canvas(device, canvas) {
   assert_equals(tex.height, canvas.height);
 }
 
-/** beginWebGPUAccess() should create a texture from an initialized canvas. */
-function test_beginWebGPUAccess_initialized_canvas(device, canvas) {
+/** transferToWebGPU() should create a texture from an initialized canvas. */
+function test_transferToWebGPU_initialized_canvas(device, canvas) {
   // Paint into the canvas to ensure it has a valid Canvas2DLayerBridge.
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, 100, 50);
 
-  // Next, call beginWebGPUAccess.
-  const tex = ctx.beginWebGPUAccess({device: device, label: "hello, webgpu!"});
+  // Next, call transferToWebGPU.
+  const tex = ctx.transferToWebGPU({device: device, label: "hello, webgpu!"});
 
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
@@ -169,17 +169,17 @@ function test_beginWebGPUAccess_initialized_canvas(device, canvas) {
 }
 
 /**
- * beginWebGPUAccess() texture should retain the contents of the canvas, and
+ * transferToWebGPU() texture should retain the contents of the canvas, and
  * readback works. Returns a promise.
  */
-function test_beginWebGPUAccess_texture_readback(device, canvas) {
+function test_transferToWebGPU_texture_readback(device, canvas) {
   // Fill the canvas with a color containing distinct values in each channel.
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = "#4080C0";
   ctx.fillRect(0, 0, 50, 50);
 
   // Convert the canvas to a texture.
-  const tex = ctx.beginWebGPUAccess({device: device,
+  const tex = ctx.transferToWebGPU({device: device,
                                      usage: GPUTextureUsage.COPY_SRC});
 
   // Copy the top-left pixel from the texture into a buffer.
@@ -199,17 +199,17 @@ function test_beginWebGPUAccess_texture_readback(device, canvas) {
 };
 
 /**
- * beginWebGPUAccess() disallows repeated calls without a call to
- * endWebGPUAccess().
+ * transferToWebGPU() disallows repeated calls without a call to
+ * transferFromWebGPU().
  */
-function test_beginWebGPUAccess_unbalanced_access(device, canvas) {
+function test_transferToWebGPU_unbalanced_access(device, canvas) {
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.beginWebGPUAccess({device: device});
+  const tex = ctx.transferToWebGPU({device: device});
 
   try {
     // Try to start a second WebGPU access session.
-    tex = ctx.beginWebGPUAccess({device: device});
+    tex = ctx.transferToWebGPU({device: device});
     assert_unreached('InvalidStateError should have been thrown.');
   } catch (ex) {
     assert_true(ex instanceof DOMException);
@@ -218,21 +218,21 @@ function test_beginWebGPUAccess_unbalanced_access(device, canvas) {
 }
 
 /**
- * beginWebGPUAccess() should allow repeated calls after a call to
- * endWebGPUAccess().
+ * transferToWebGPU() should allow repeated calls after a call to
+ * transferFromWebGPU().
  */
-function test_beginWebGPUAccess_balanced_access(device, canvas) {
+function test_transferToWebGPU_balanced_access(device, canvas) {
   const ctx = canvas.getContext('2d');
 
   // Begin and end a WebGPU access session several times.
   for (let count = 0; count < 10; ++count) {
-    const tex = ctx.beginWebGPUAccess({device: device});
-    ctx.endWebGPUAccess(tex);
+    const tex = ctx.transferToWebGPU({device: device});
+    ctx.transferFromWebGPU(tex);
   }
 }
 
-/** endWebGPUAccess() should preserve texture changes on the 2D canvas. */
-function test_endWebGPUAccess_canvas_readback(adapterInfo, device,
+/** transferFromWebGPU() should preserve texture changes on the 2D canvas. */
+function test_transferFromWebGPU_canvas_readback(adapterInfo, device,
                                               canvas, canvasFormat) {
   // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
   if (isMacSwiftShader(adapterInfo)) {
@@ -241,24 +241,24 @@ function test_endWebGPUAccess_canvas_readback(adapterInfo, device,
 
   // Convert the canvas to a texture.
   const ctx = canvas.getContext('2d', canvasFormat);
-  const tex = ctx.beginWebGPUAccess({device: device});
+  const tex = ctx.transferToWebGPU({device: device});
 
   // Fill the texture with a color containing distinct values in each channel.
   clearTextureToColor(device, tex,
                       { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
 
   // Finish our WebGPU pass and restore the canvas.
-  ctx.endWebGPUAccess(tex);
+  ctx.transferFromWebGPU(tex);
 
   // Verify that the canvas contains our chosen color across every pixel.
   checkCanvasColor(ctx, [0x40, 0x80, 0xC0, 0xFF]);
 }
 
-/** endWebGPUAccess() should be a no-op if the canvas context is lost. */
-function test_endWebGPUAccess_context_lost(device, canvas) {
+/** transferFromWebGPU() should be a no-op if the canvas context is lost. */
+function test_transferFromWebGPU_context_lost(device, canvas) {
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.beginWebGPUAccess({device: device});
+  const tex = ctx.transferToWebGPU({device: device});
 
   // Forcibly lose the canvas context.
   assert_true(!!window.internals, 'Internal APIs unavailable.');
@@ -266,21 +266,21 @@ function test_endWebGPUAccess_context_lost(device, canvas) {
 
   // End the WebGPU access session. Nothing should be thrown.
   try {
-    ctx.endWebGPUAccess(tex);
+    ctx.transferFromWebGPU(tex);
   } catch {
-    assert_unreached('endWebGPUAccess should be safe when context is lost.');
+    assert_unreached('transferFromWebGPU should be safe when context is lost.');
   }
 }
 
 /**
- * endWebGPUAccess() should cause the GPUTexture returned by beginWebGPUAccess()
- * to enter a destroyed state.
+ * transferFromWebGPU() should cause the GPUTexture returned by
+ * transferToWebGPU() to enter a destroyed state.
  */
-function test_endWebGPUAccess_destroys_texture(device, canvas) {
+function test_transferFromWebGPU_destroys_texture(device, canvas) {
   // Briefly begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.beginWebGPUAccess({device: device});
-  ctx.endWebGPUAccess(tex);
+  const tex = ctx.transferToWebGPU({device: device});
+  ctx.transferFromWebGPU(tex);
 
   // `tex` should be in a destroyed state. Unfortunately, there isn't a
   // foolproof way to test for this state in WebGPU. The best we can do is try
@@ -310,7 +310,7 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
 
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.beginWebGPUAccess({device: device,
+  const tex = ctx.transferToWebGPU({device: device,
                                      usage: GPUTextureUsage.COPY_SRC});
 
   // Reset the canvas. This should abort the WebGPU access session. The canvas'
@@ -323,10 +323,10 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
   }
 
   // Verify that the WebGPU access was terminated by starting a new WebGPU
-  // access session. This would throw if the initial beginWebGPUAccess session
+  // access session. This would throw if the initial transferToWebGPU session
   // were still active.
-  const anotherTex = ctx.beginWebGPUAccess({device: device});
-  ctx.endWebGPUAccess(anotherTex);
+  const anotherTex = ctx.transferToWebGPU({device: device});
+  ctx.transferFromWebGPU(anotherTex);
 
   // Verify that the texture from the initial WebGPU access session is still
   // usable by accessing its contents. This would cause a GPUValidationError if
@@ -340,10 +340,10 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
 }
 
 /**
- * beginWebGPUAccess() should create a texture which honors the requested usage
+ * transferToWebGPU() should create a texture which honors the requested usage
  * flags.
  */
-function test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
+function test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
                                             canvas) {
   // Create a base-case promise that just resolves immediately.
   let promise = new Promise((resolve, reject) => { resolve(true); });
@@ -357,7 +357,7 @@ function test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
   const testOneUsageFlag = function(device, canvas, usageToEnable,
                                     usageToTest) {
     const ctx = canvas.getContext('2d');
-    const tex = ctx.beginWebGPUAccess({device: device, usage: usageToEnable});
+    const tex = ctx.transferToWebGPU({device: device, usage: usageToEnable});
 
     // Check that the GPUTexture's usage flags match our requested flags.
     assert_equals(tex.usage, usageToEnable);
@@ -387,7 +387,7 @@ function test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
         assert_not_equals(errors, null, 'enabled ' + usageToEnable +
                                         ', tested ' + usageToTest);
       }
-      ctx.endWebGPUAccess(tex);
+      ctx.transferFromWebGPU(tex);
     });
   };
 
@@ -411,9 +411,9 @@ function test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
 }
 
 /**
- * endWebGPUAccess() should allow two canvases to exchange their textures.
+ * transferFromWebGPU() should allow two canvases to exchange their textures.
  */
-function test_endWebGPUAccess_exchanges_texture(device, canvasA, canvasB) {
+function test_transferFromWebGPU_exchanges_texture(device, canvasA, canvasB) {
   const ctxA = canvasA.getContext('2d');
   const ctxB = canvasB.getContext('2d');
 
@@ -424,18 +424,18 @@ function test_endWebGPUAccess_exchanges_texture(device, canvasA, canvasB) {
   ctxB.fillRect(0, 0, canvasB.width, canvasB.height);
 
   // First, we start a WebGPU access session on both contexts at once.
-  const texA = ctxA.beginWebGPUAccess({device: device});
-  const texB = ctxB.beginWebGPUAccess({device: device});
+  const texA = ctxA.transferToWebGPU({device: device});
+  const texB = ctxB.transferToWebGPU({device: device});
 
   // We should be able to return context A's texture to context B.
   // TODO(crbug.com/339846593): we do not yet honor the passed-in GPUTexture, so
   // we can only return a texture to its own context for now.
-  ctxB.endWebGPUAccess(texB);
+  ctxB.transferFromWebGPU(texB);
 
   // Likewise for the opposite pairing.
   // TODO(crbug.com/339846593): we do not yet honor the passed-in GPUTexture, so
   // we can only return a texture to its own context for now.
-  ctxA.endWebGPUAccess(texA);
+  ctxA.transferFromWebGPU(texA);
 
   // Confirm that the canvases' colors reflect the texture transfers.
   checkCanvasColor(ctxA, [0xFF, 0x00, 0x00, 0xFF]);
@@ -444,7 +444,7 @@ function test_endWebGPUAccess_exchanges_texture(device, canvasA, canvasB) {
   // Passing a texture that has already been transferred to a canvas should not
   // be allowed; that GPUTexture is in a destroyed state already.
   try {
-    ctxA.endWebGPUAccess(texA);
+    ctxA.transferFromWebGPU(texA);
     assert_unreached('InvalidStateError should have been thrown.');
   } catch (ex) {
     assert_true(ex instanceof DOMException);
@@ -452,7 +452,7 @@ function test_endWebGPUAccess_exchanges_texture(device, canvasA, canvasB) {
   }
 
   try {
-    ctxB.endWebGPUAccess(texB);
+    ctxB.transferFromWebGPU(texB);
     assert_unreached('InvalidStateError should have been thrown.');
   } catch (ex) {
     assert_true(ex instanceof DOMException);
@@ -471,9 +471,9 @@ function test_canvas_works_after_cpu_downgrade(adapterInfo, device, canvas) {
   internals.disableCanvasAcceleration(canvas);
 
   // Perform a GPU clear to demonstrate that the canvas still works in WebGPU.
-  const tex = ctx.beginWebGPUAccess({device: device});
+  const tex = ctx.transferToWebGPU({device: device});
   clearTextureToColor(device, tex, { r: 0.0, g: 1.0, b: 0.0, a: 1.0 });
-  ctx.endWebGPUAccess(tex);
+  ctx.transferFromWebGPU(tex);
 
   // Verify that WebGPU did its job; every pixel on the canvas should be green.
   // TODO(crbug.com/40218893): Linux with an Intel GPU returns the wrong color.

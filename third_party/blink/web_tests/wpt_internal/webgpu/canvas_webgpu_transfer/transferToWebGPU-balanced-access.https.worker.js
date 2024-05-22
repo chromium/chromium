@@ -5,17 +5,16 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels endWebGPUAccess-canvas-readback.https.html.
+// This test parallels transferToWebGPU-balanced-access.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_canvas_readback(
-          adapterInfo,
+      test_transferToWebGPU_balanced_access(
           device,
-          new OffscreenCanvas(50, 50),
-          {});
+          new OffscreenCanvas(50, 50));
     });
   },
-  'endWebGPUAccess() should preserve texture changes when called from a worker.'
+  'transferToWebGPU() in a worker allows repeated calls after a call to ' +
+  'transferFromWebGPU().'
 );
 
 done();

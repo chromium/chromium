@@ -6,9 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas WebGPU Access: beginWebGPUAccess-texture-readback</h1>
+<h1>Canvas2D WebGPU Transfer: transferToWebGPU-texture-readback</h1>
 
-<p>beginWebGPUAccess() texture retains the contents of the canvas, and readback
+<p>transferToWebGPU() texture retains the contents of the canvas, and readback
 works.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
@@ -17,23 +17,23 @@ works.</p>
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_beginWebGPUAccess_texture_readback(
+      return test_transferToWebGPU_texture_readback(
                  device,
                  document.getElementById('c'));
     });
   },
-  'beginWebGPUAccess() texture retains the contents of the canvas, ' +
+  'transferToWebGPU() texture retains the contents of the canvas, ' +
   'and readback works.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_beginWebGPUAccess_texture_readback(
+      return test_transferToWebGPU_texture_readback(
                  device,
                  new OffscreenCanvas(50, 50));
     });
   },
-  'beginWebGPUAccess() texture retains the contents of the offscreen canvas, ' +
+  'transferToWebGPU() texture retains the contents of the offscreen canvas, ' +
   'and readback works.'
 );
 

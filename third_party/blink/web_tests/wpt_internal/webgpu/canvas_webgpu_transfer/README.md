@@ -1,4 +1,4 @@
-# WebGPU access tests for Chromium
+# WebGPU transfer tests for Chromium
 
 Explainer:
 https://github.com/fserb/canvas2D/blob/master/spec/webgpu.md

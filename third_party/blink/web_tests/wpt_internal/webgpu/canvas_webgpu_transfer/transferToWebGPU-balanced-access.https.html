@@ -6,10 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas WebGPU Access: beginWebGPUAccess-balanced-access</h1>
+<h1>Canvas2D WebGPU Transfer: transferToWebGPU-balanced-access</h1>
 
-<p>beginWebGPUAccess() allows repeated calls after a call to endWebGPUAccess().
-</p>
+<p>transferToWebGPU() allows repeated calls after a call to
+transferFromWebGPU().</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -17,23 +17,24 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_beginWebGPUAccess_balanced_access(
+      test_transferToWebGPU_balanced_access(
           device,
           document.getElementById('c'));
     });
   },
-  'beginWebGPUAccess() allows repeated calls after a call to endWebGPUAccess().'
+  'transferToWebGPU() allows repeated calls after a call to ' +
+  'transferFromWebGPU().'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_beginWebGPUAccess_balanced_access(
+      test_transferToWebGPU_balanced_access(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'beginWebGPUAccess() on an offscreen context allows repeated calls after a ' +
-  'call to endWebGPUAccess().'
+  'transferToWebGPU() on an offscreen context allows repeated calls after a ' +
+  'call to transferFromWebGPU().'
 );
 
 </script>

@@ -29,7 +29,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_webgpu_access_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_webgpu_transfer_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
@@ -3470,8 +3470,8 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
   return *format;
 }
 
-GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
-    const CanvasWebGPUAccessOption* access_options,
+GPUTexture* BaseRenderingContext2D::transferToWebGPU(
+    const Canvas2dWebGPUTransferOption* access_options,
     ExceptionState& exception_state) {
   if (!OriginClean()) {
     exception_state.ThrowSecurityError(
@@ -3486,12 +3486,12 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
     return nullptr;
   }
 
-  // Prevent unbalanced calls to beginWebGPUAccess without a later call to
-  // endWebGPUAccess.
+  // Prevent unbalanced calls to `transferToWebGPU` without a later call to
+  // `transferFromWebGPU`.
   if (webgpu_access_texture_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "This canvas is already in use by WebGPU.");
+        "This canvas has already been transferred to WebGPU.");
     return nullptr;
   }
 
@@ -3609,8 +3609,9 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
   return true;
 }
 
-void BaseRenderingContext2D::endWebGPUAccess(blink::GPUTexture* tex,
-                                             ExceptionState& exception_state) {
+void BaseRenderingContext2D::transferFromWebGPU(
+    blink::GPUTexture* tex,
+    ExceptionState& exception_state) {
   // If the context is lost or doesn't exist, this call should be a no-op.
   // We don't want to throw an exception or attempt any changes if
   // `endWebGPUAccess` is called during teardown.
@@ -3645,7 +3646,7 @@ void BaseRenderingContext2D::endWebGPUAccess(blink::GPUTexture* tex,
   }
 
   // Destroy the WebGPU texture to prevent it from being used after
-  // endWebGPUAccess.
+  // `transferFromWebGPU`.
   webgpu_access_texture_->destroy();
 
   // We are finished with the WebGPU texture and its associated device.

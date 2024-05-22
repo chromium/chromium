@@ -559,6 +559,10 @@
       status: "experimental",
     },
     {
+      name: "Canvas2dWebGPUTransfer",
+      status: "experimental",
+    },
+    {
       name: "CanvasFloatingPoint",
       status: "experimental",
     },
@@ -574,10 +578,6 @@
       // Kill switch for https://crbug.com/330506337.
       name: "CanvasUsesArcPaintOp",
       status: "stable",
-    },
-    {
-      name: "CanvasWebGPUAccess",
-      status: "experimental",
     },
     {
       name: "CapabilityDelegationDisplayCaptureRequest",

@@ -5,16 +5,16 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels beginWebGPUAccess-untouched-canvas.https.html.
+// This test parallels transferFromWebGPU-destroys-texture.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_beginWebGPUAccess_untouched_canvas(
+      return test_transferFromWebGPU_destroys_texture(
           device,
-          new OffscreenCanvas(50, 50));
+          new OffscreenCanvas(50, 50),
+          {});
     });
   },
-  'beginWebGPUAccess() in a worker should create a texture from an ' +
-  'uninitialized canvas.'
+  'transferFromWebGPU() on a worker should destroy the associated GPUTexture.'
 );
 
 done();

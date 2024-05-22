@@ -43,7 +43,7 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 
 class BeginLayerOptions;
 class CanvasImageSource;
-class CanvasWebGPUAccessOption;
+class Canvas2dWebGPUTransferOption;
 class Color;
 class Image;
 class Mesh2DVertexBuffer;
@@ -279,17 +279,18 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
   // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
-  // can be bound as a color attachment and modified. After beginWebGPUAccess is
-  // called, the Canvas2D context will become unavailable until endWebGPUAccess
-  // is called.
-  GPUTexture* beginWebGPUAccess(const CanvasWebGPUAccessOption*,
-                                ExceptionState& exception_state);
+  // can be bound as a color attachment and modified. After its texture is
+  // transferred, the canvas will be reset into an empty, freshly-initialized
+  // state.
+  GPUTexture* transferToWebGPU(const Canvas2dWebGPUTransferOption*,
+                               ExceptionState& exception_state);
 
   // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
   // The GPUTexture immediately becomes inaccessible to WebGPU.
   // A GPUValidationError will occur if the GPUTexture is used after
   // endWebGPUAccess is called.
-  void endWebGPUAccess(blink::GPUTexture* tex, ExceptionState& exception_state);
+  void transferFromWebGPU(blink::GPUTexture* tex,
+                          ExceptionState& exception_state);
 
   // Returns the format of the GPUTexture that beginWebGPUAccess will return.
   // This is useful if you need to create the WebGPU render pipeline before

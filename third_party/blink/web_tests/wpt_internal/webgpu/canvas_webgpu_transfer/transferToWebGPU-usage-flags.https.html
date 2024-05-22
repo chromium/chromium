@@ -6,9 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas WebGPU Access: beginWebGPUAccess-usage-flags</h1>
+<h1>Canvas2D WebGPU Transfer: transferToWebGPU-usage-flags</h1>
 
-<p>beginWebGPUAccess() creates a texture honoring the requested usage flags.</p>
+<p>transferToWebGPU() creates a texture honoring the requested usage flags.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -16,21 +16,21 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
+      return test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
                                                 document.getElementById('c'));
     });
   },
-  'beginWebGPUAccess() should create a texture which honors the requested ' +
+  'transferToWebGPU() should create a texture which honors the requested ' +
   'usage flags.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_beginWebGPUAccess_usage_flags(adapter, adapterInfo, device,
+      return test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
                                                 new OffscreenCanvas(50, 50));
     });
   },
-  'beginWebGPUAccess() on an offscreen canvas should create a texture which ' +
+  'transferToWebGPU() on an offscreen canvas should create a texture which ' +
   'honors the requested usage flags.'
 );
 

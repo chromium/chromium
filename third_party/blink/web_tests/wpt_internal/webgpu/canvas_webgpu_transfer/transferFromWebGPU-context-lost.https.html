@@ -6,9 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas WebGPU Access: endWebGPUAccess-canvas-readback</h1>
+<h1>Canvas2D WebGPU Transfer: transferFromWebGPU-context-lost</h1>
 
-<p>endWebGPUAccess() should preserve texture changes on the 2D canvas.</p>
+<p>transferFromWebGPU() should be a no-op if the canvas context is lost.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -16,26 +16,24 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_canvas_readback(
-                 adapterInfo,
+      return test_transferFromWebGPU_context_lost(
                  device,
                  document.getElementById('c'),
                  {});
     });
   },
-  'endWebGPUAccess() should preserve texture changes on the 2D canvas.'
+  'transferFromWebGPU() should be a no-op if the 2D context is lost.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_endWebGPUAccess_canvas_readback(
-                 adapterInfo,
+      return test_transferFromWebGPU_context_lost(
                  device,
                  new OffscreenCanvas(50, 50),
                  {});
     });
   },
-  'endWebGPUAccess() should preserve texture changes on a 2D offscreen canvas.'
+  'transferFromWebGPU() should be a no-op if the offscreen context is lost.'
 );
 
 </script>
