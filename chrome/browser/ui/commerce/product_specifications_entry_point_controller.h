@@ -28,6 +28,9 @@ class ProductSpecificationsEntryPointController
    public:
     // Called when entry points should show with `title`.
     virtual void ShowEntryPointWithTitle(const std::string title) {}
+
+    // Called when entry points should hide.
+    virtual void HideEntryPoint() {}
   };
 
   explicit ProductSpecificationsEntryPointController(Browser* browser);
@@ -68,6 +71,8 @@ class ProductSpecificationsEntryPointController
   }
 
  private:
+  void MaybeHideEntryPoint();
+
   // Info of the entry point that is currently showing, when available.
   std::optional<EntryPointInfo> current_entry_point_info_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
