@@ -25,7 +25,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -115,8 +114,6 @@ class AutocompleteMediator
     private boolean mIsInZeroPrefixContext;
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
-    private boolean mClearFocusAfterNavigation;
-    private boolean mClearFocusAfterNavigationAsynchronously;
     // When set, indicates an active omnibox session.
     private boolean mIsActive;
     // When set, specifies the system time of the most recent suggestion list request.
@@ -375,15 +372,6 @@ class AutocompleteMediator
     void onNativeInitialized() {
         mNativeInitialized = true;
         OmniboxActionFactoryImpl.get().initNativeFactory();
-        // TODO(b/277805322): remove this Feature and parameter once we've run a holdback
-        // experiment.
-        mClearFocusAfterNavigation =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION);
-        mClearFocusAfterNavigationAsynchronously =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
-                        "clear_focus_asynchronously",
-                        true);
         mDropdownViewInfoListManager.onNativeInitialized();
         mDropdownViewInfoListBuilder.onNativeInitialized();
         runPendingAutocompleteRequests();
@@ -969,22 +957,6 @@ class AutocompleteMediator
             // This normally happens when the target site loads and focus is moved to the
             // webcontents. On Android T we occasionally observe focus events to be lost, resulting
             // with Suggestions list obscuring the view.
-            // TODO(crbug.com/40233313): clearing the Omnibox focus is slow, so we want to
-            // experiment
-            // with two alternatives:
-            // 1) Clear the Omnibox focus in a follow-up task. From a latency perspective, this is
-            //    the best option: the navigation gets kicked off right away, and important
-            //    navigation tasks can get scheduled between the current task and the task clearing
-            //    the Omnibox focus. The ClearOmniboxFocusAfterNavigation feature with the
-            //    clear_focus_asynchronously = false parameter (default) implements this option.
-            // 2) Clear the Omnibox focus synchronously *after* the navigation has been kicked off.
-            //    This allows some navigation work outside the browser process (e.g. running
-            //    beforeunload handlers) to start ASAP. This is implemented by the setting the
-            //    clear_focus_asynchronously = true parameter.
-            if (!mClearFocusAfterNavigation) {
-                finishInteraction();
-            }
-
             var autocompleteLoadCallback =
                     new AutocompleteLoadCallback() {
                         @Override
@@ -1013,11 +985,7 @@ class AutocompleteMediator
                                 .build());
             }
 
-            if (mClearFocusAfterNavigationAsynchronously) {
-                mHandler.post(mClearFocusCallback);
-            } else if (mClearFocusAfterNavigation) {
-                finishInteraction();
-            }
+            mHandler.post(mClearFocusCallback);
         }
     }
 

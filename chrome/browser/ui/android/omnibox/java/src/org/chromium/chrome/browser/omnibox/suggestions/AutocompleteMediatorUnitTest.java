@@ -59,7 +59,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -114,10 +113,7 @@ import java.util.Set;
             AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
             ShadowLooper.class
         })
-@EnableFeatures({
-    ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
-    OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS
-})
+@EnableFeatures(OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS)
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;

@@ -180,7 +180,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
-    &kClearOmniboxFocusAfterNavigation,
     &kCCTBeforeUnload,
     &kCCTClientDataHeader,
     &kCCTExtendTrustedCdnPublisher,
@@ -491,10 +490,6 @@ BASE_FEATURE(kCacheActivityTaskID,
 BASE_FEATURE(kCastDeviceFilter,
              "CastDeviceFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
-             "ClearOmniboxFocusAfterNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBeforeUnload,
              "CCTBeforeUnload",
