@@ -24,8 +24,6 @@ _IGNORE_WARNINGS = (
     # apk_under_test have no shared_libraries.
     # https://crbug.com/1364192 << To fix this in a better way.
     r'Missing class org.chromium.build.NativeLibraries',
-    # Caused by internal protobuf package: https://crbug.com/1183971
-    r'referenced from: com\.google\.protobuf\.GeneratedMessageLite\$GeneratedExtension',  # pylint: disable=line-too-long
     # Caused by protobuf runtime using -identifiernamestring in a way that
     # doesn't work with R8. Looks like:
     # Rule matches the static final field `...`, which may have been inlined...
