@@ -29,6 +29,7 @@ static_library("file") {
 
 static_library("status") {
   sources = [
+    "reporting_errors.h",
     "status.cc",
     "status.h",
     "statusor.cc",

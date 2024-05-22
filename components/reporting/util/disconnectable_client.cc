@@ -12,8 +12,10 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -33,6 +35,10 @@ void DisconnectableClient::MaybeMakeCall(std::unique_ptr<Delegate> delegate) {
   if (!is_available_) {
     delegate->Respond(Status(error::UNAVAILABLE,
                              disconnectable_client::kErrorServiceUnavailable));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::CLIENT_NOT_CONNECTED_TO_MISSIVE,
+        UnavailableErrorReason::MAX_VALUE);
     return;
   }
   // Add the delegate to the map.
@@ -71,6 +77,10 @@ void DisconnectableClient::SetAvailability(bool is_available) {
       // Respond through the |delegate|.
       delegate->Respond(Status(
           error::UNAVAILABLE, disconnectable_client::kErrorServiceUnavailable));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::CLIENT_NOT_CONNECTED_TO_MISSIVE,
+          UnavailableErrorReason::MAX_VALUE);
     }
   }
 }

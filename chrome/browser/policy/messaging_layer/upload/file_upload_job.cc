@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -32,6 +33,7 @@
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -51,6 +53,10 @@ void CallInitiateOnSequence(
   if (!delegate) {
     std::move(cb).Run(base::unexpected(
         Status(error::UNAVAILABLE, "Delegate is unavailable")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::FILE_UPLOAD_JOB_DELEGATE_IS_NULL,
+        UnavailableErrorReason::MAX_VALUE);
     return;
   }
   delegate->DoInitiate(origin_path, upload_parameters, std::move(cb));
@@ -68,6 +74,10 @@ void CallNextStepOnSequence(
   if (!delegate) {
     std::move(cb).Run(base::unexpected(
         Status(error::UNAVAILABLE, "Delegate is unavailable")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::FILE_UPLOAD_JOB_DELEGATE_IS_NULL,
+        UnavailableErrorReason::MAX_VALUE);
     return;
   }
   delegate->DoNextStep(total, uploaded, session_token,
@@ -81,6 +91,10 @@ void CallFinalizeOnSequence(
   if (!delegate) {
     std::move(cb).Run(base::unexpected(
         Status(error::UNAVAILABLE, "Delegate is unavailable")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::FILE_UPLOAD_JOB_DELEGATE_IS_NULL,
+        UnavailableErrorReason::MAX_VALUE);
     return;
   }
   delegate->DoFinalize(session_token, std::move(cb));

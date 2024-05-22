@@ -415,6 +415,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tab shown twice without being hidden"/>
 </enum>
 
+<enum name="UnavailableErrorReasonBrowser">
+  <summary>
+    Defined as UnavailableErrorReason in
+    components/reporting/util/reporting_errors.h.
+  </summary>
+  <int value="0" label="CANNOT_GET_CLOUD_POLICY_MANAGER_FOR_BROWSER"/>
+  <int value="1" label="CANNOT_GET_CLOUD_POLICY_MANAGER_FOR_PROFILE"/>
+  <int value="2" label="CLIENT_NOT_CONNECTED_TO_MISSIVE"/>
+  <int value="3" label="DEVICE_DM_TOKEN_NOT_SET"/>
+  <int value="4" label="FAILED_TO_CREATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="5" label="FILE_NOT_OPEN"/>
+  <int value="6" label="FILE_UPLOAD_DELEGATE_IS_NULL"/>
+  <int value="7" label="FILE_UPLOAD_JOB_DELEGATE_IS_NULL"/>
+  <int value="8" label="REPORTING_CLIENT_IS_NULL"/>
+  <int value="9" label="REPORT_QUEUE_DESTRUCTED"/>
+  <int value="10" label="REPORT_QUEUE_IS_NULL"/>
+  <int value="11" label="REPORT_QUEUE_PROVIDER_DESTRUCTED"/>
+  <int value="12" label="STORAGE_QUEUE_SHUTDOWN"/>
+  <int value="13" label="UNABLE_TO_BUILD_REPORT_QUEUE"/>
+  <int value="14" label="UPLOAD_PROVIDER_IS_NULL"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

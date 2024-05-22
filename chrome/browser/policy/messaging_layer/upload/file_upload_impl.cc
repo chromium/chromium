@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -166,6 +168,10 @@ class FileUploadDelegate::AccessTokenRetriever
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -225,6 +231,10 @@ class FileUploadDelegate::InitContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -241,6 +251,10 @@ class FileUploadDelegate::InitContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -393,6 +407,10 @@ class FileUploadDelegate::NextStepContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -435,6 +453,10 @@ class FileUploadDelegate::NextStepContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -544,6 +566,10 @@ class FileUploadDelegate::NextStepContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -680,6 +706,10 @@ class FileUploadDelegate::FinalContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 
@@ -721,6 +751,10 @@ class FileUploadDelegate::FinalContext
     if (!delegate()) {
       Complete(base::unexpected(
           Status(error::UNAVAILABLE, "Delegate is unavailable")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::FILE_UPLOAD_DELEGATE_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
 

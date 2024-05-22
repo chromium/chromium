@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +27,7 @@
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -151,6 +153,10 @@ void ReportQueueProvider::CreateNewQueue(
             if (!provider) {
               std::move(cb).Run(base::unexpected(
                   Status(error::UNAVAILABLE, "Provider has been shut down")));
+              base::UmaHistogramEnumeration(
+                  reporting::kUmaUnavailableErrorReason,
+                  UnavailableErrorReason::REPORT_QUEUE_PROVIDER_DESTRUCTED,
+                  UnavailableErrorReason::MAX_VALUE);
               return;
             }
             // Configure report queue config with an appropriate DM token and
@@ -278,6 +284,10 @@ void ReportQueueProvider::OnStorageModuleConfigured(
       std::move(report_queue_request->release_create_cb())
           .Run(base::unexpected(
               Status(error::UNAVAILABLE, "Unable to build a ReportQueue")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::UNABLE_TO_BUILD_REPORT_QUEUE,
+          UnavailableErrorReason::MAX_VALUE);
       create_request_queue_.pop();
     }
     return;

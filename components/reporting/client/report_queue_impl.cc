@@ -35,6 +35,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -318,6 +319,10 @@ void SpeculativeReportQueueImpl::Flush(Priority priority,
             if (!self) {
               std::move(callback).Run(
                   Status(error::UNAVAILABLE, "Queue has been destructed"));
+              base::UmaHistogramEnumeration(
+                  reporting::kUmaUnavailableErrorReason,
+                  UnavailableErrorReason::REPORT_QUEUE_DESTRUCTED,
+                  UnavailableErrorReason::MAX_VALUE);
               return;
             }
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -404,6 +409,10 @@ void SpeculativeReportQueueImpl::EnqueuePendingRecordProducers() const {
                 if (!self) {
                   std::move(callback).Run(
                       Status(error::UNAVAILABLE, "Queue has been destructed"));
+                  base::UmaHistogramEnumeration(
+                      reporting::kUmaUnavailableErrorReason,
+                      UnavailableErrorReason::REPORT_QUEUE_DESTRUCTED,
+                      UnavailableErrorReason::MAX_VALUE);
                   return;
                 }
                 std::move(callback).Run(status);

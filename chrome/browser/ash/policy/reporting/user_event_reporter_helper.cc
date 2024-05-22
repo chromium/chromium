@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -16,6 +17,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -74,6 +76,9 @@ void UserEventReporterHelper::ReportEvent(
   if (!report_queue_) {
     std::move(enqueue_cb)
         .Run(Status(error::UNAVAILABLE, "Reporting queue is null."));
+    base::UmaHistogramEnumeration(reporting::kUmaUnavailableErrorReason,
+                                  UnavailableErrorReason::REPORT_QUEUE_IS_NULL,
+                                  UnavailableErrorReason::MAX_VALUE);
     return;
   }
   report_queue_->Enqueue(std::move(record), priority, std::move(enqueue_cb));
