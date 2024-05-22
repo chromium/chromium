@@ -67,13 +67,6 @@
       default_value: "false",
     },
     {
-      name: "OversizedImages",
-      document_policy_name: "oversized-images",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
       name: "JSProfiling",
       document_policy_name: "js-profiling",
       value_type: "Bool",

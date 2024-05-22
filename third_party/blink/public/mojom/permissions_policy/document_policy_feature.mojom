@@ -20,7 +20,7 @@ enum DocumentPolicyFeature {
   // kLossyImagesMaxBpp = 5, // Removed.
   // Takes a parameter, |scale_ratio|, and restricts source image sizes to be
   // no more than |scale_ratio| x larger than the image's containing block.
-  kOversizedImages = 6,
+  // kOversizedImages = 6, // Removed.
   // Controls the layout size of intrinsically sized images and videos. When
   // disabled, default size (300 x 150) is used to prevent relayout.
   // kUnsizedMedia = 7, // Removed.
