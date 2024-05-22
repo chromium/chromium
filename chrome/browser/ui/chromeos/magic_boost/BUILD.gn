@@ -16,6 +16,7 @@ source_set("magic_boost") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/chromeos",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/ui/vector_icons",

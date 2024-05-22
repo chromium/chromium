@@ -44,6 +44,11 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#endif
+
 #if DCHECK_IS_ON()
 #include "base/functional/callback_helpers.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -153,6 +158,7 @@ void MahiWebContentsManager::Initialize() {
                                  weak_pointer_factory_.GetWeakPtr()));
   content_extraction_delegate_ =
       std::make_unique<MahiContentExtractionDelegate>();
+
   is_initialized_ = true;
 }
 
@@ -239,11 +245,13 @@ bool MahiWebContentsManager::IsFocusedPageDistillable() {
 
 bool MahiWebContentsManager::GetPrefValue() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile || !profile->GetPrefs()) {
+  auto* session_controller = ash::Shell::Get()->session_controller();
+
+  if (!session_controller || !session_controller->GetActivePrefService()) {
     return false;
   }
-  return profile->GetPrefs()->GetBoolean(ash::prefs::kMahiEnabled);
+  return session_controller->GetActivePrefService()->GetBoolean(
+      ash::prefs::kMahiEnabled);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

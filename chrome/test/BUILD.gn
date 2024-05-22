@@ -8610,6 +8610,7 @@ test("unit_tests") {
     sources += [
       "../browser/accessibility/media_app/ax_media_app_untrusted_handler_unittest.cc",
       "../browser/browser_process_platform_part_ash_unittest.cc",
+      "../browser/chromeos/mahi/mahi_prefs_controller_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",

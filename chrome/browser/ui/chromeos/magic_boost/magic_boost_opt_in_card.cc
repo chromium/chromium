@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
@@ -249,7 +250,9 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   auto* controller = MagicBoostController::Get();
   controller->CloseOptInUi();
   // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
-  // is pressed.
+  // is pressed. We should also use `MagicBoostState::Get()` here instead when
+  // it is available.
+  mahi::MahiPrefsController::Get()->SetMahiEnabled(false);
 }
 
 BEGIN_METADATA(MagicBoostOptInCard)

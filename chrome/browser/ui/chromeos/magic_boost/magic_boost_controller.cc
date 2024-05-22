@@ -5,9 +5,18 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/mahi/mahi_prefs_controller_ash.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/mahi/mahi_prefs_controller_lacros.h"
+#endif
 
 namespace chromeos {
 
@@ -26,7 +35,13 @@ MagicBoostController* MagicBoostController::Get() {
   return instance.get();
 }
 
-MagicBoostController::MagicBoostController() = default;
+MagicBoostController::MagicBoostController() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  mahi_prefs_controller_ = std::make_unique<mahi::MahiPrefsControllerAsh>();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  mahi_prefs_controller_ = std::make_unique<mahi::MahiPrefsControllerLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 MagicBoostController::~MagicBoostController() = default;
 
@@ -54,8 +69,8 @@ void MagicBoostController::CloseDisclaimerUi() {
 }
 
 bool MagicBoostController::ShouldQuickAnswersAndMahiShowOptIn() {
-  // TODO(b/339043693): Implement this function.
-  return false;
+  // TODO(b/341485303): Check for Magic Boost consent status.
+  return true;
 }
 
 void MagicBoostController::SetAllFeaturesState(bool enabled) {
@@ -64,7 +79,9 @@ void MagicBoostController::SetAllFeaturesState(bool enabled) {
 }
 
 void MagicBoostController::SetQuickAnswersAndMahiFeaturesState(bool enabled) {
-  // TODO(b/339043693): Implement this function.
+  mahi_prefs_controller_->SetMahiEnabled(enabled);
+
+  // TODO(b/339043693): Enable/disable Quick Answers.
 }
 
 void MagicBoostController::SetIsOrcaIncludedForTest(bool include) {

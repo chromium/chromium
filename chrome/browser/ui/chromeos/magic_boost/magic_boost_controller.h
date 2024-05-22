@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
 #define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -15,6 +17,10 @@ class Rect;
 namespace views {
 class Widget;
 }  // namespace views
+
+namespace mahi {
+class MahiPrefsController;
+}  // namespace mahi
 
 namespace chromeos {
 
@@ -69,6 +75,8 @@ class MagicBoostController {
 
   views::UniqueWidgetPtr opt_in_widget_;
   views::UniqueWidgetPtr disclaimer_widget_;
+
+  std::unique_ptr<::mahi::MahiPrefsController> mahi_prefs_controller_;
 };
 
 // Helper class to automatically set and reset the `MagicBoostController` global
