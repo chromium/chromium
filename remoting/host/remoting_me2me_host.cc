@@ -616,12 +616,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 
     // Read config from stdin if necessary.
     if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
-      const size_t kBufferSize = 4096;
-      std::unique_ptr<char[]> buf(new char[kBufferSize]);
-      size_t len;
-      while ((len = fread(buf.get(), 1, kBufferSize, stdin)) > 0) {
-        host_config_.append(buf.get(), len);
-      }
+      base::ReadStreamToString(stdin, &host_config_);
     }
   } else {
     base::FilePath default_config_dir = remoting::GetConfigDir();
