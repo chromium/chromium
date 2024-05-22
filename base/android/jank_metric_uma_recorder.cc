@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "base/base_jni/JankMetricUMARecorder_jni.h"
+#include "base/jank_tracker_jni/JankMetricUMARecorder_jni.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"

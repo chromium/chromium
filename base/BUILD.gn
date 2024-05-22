@@ -1278,6 +1278,7 @@ component("base") {
       ":base_shared_preferences_jni",
       ":callback_jni",
       ":command_line_jni",
+      ":jank_tracker_jni",
       ":library_loader_jni",
       ":memory_jni",
       ":metrics_jni",
@@ -4346,7 +4347,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
     ]
 
     if (use_clang_profiling) {
@@ -4506,19 +4506,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/UserDataHost.java",
       "android/java/src/org/chromium/base/ValueChangedCallback.java",
       "android/java/src/org/chromium/base/WrappedClassLoader.java",
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankActivityTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankEndScenarioTime.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingRunnable.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingScheduler.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankScenario.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerStateController.java",
-      "android/java/src/org/chromium/base/jank_tracker/PlaceholderJankTracker.java",
     ]
 
     if (use_clang_profiling) {
@@ -4538,6 +4525,7 @@ if (is_android) {
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
+      ":jank_tracker_java",
       ":library_loader_java",
       ":lifetime_java",
       ":log_java",
@@ -4596,6 +4584,39 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jank_tracker_jni") {
+    sources = [ "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java" ]
+  }
+
+  android_library("jank_tracker_java") {
+    srcjar_deps = [ ":jank_tracker_jni" ]
+    sources = [
+      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
+      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankActivityTracker.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankEndScenarioTime.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankReportingRunnable.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankReportingScheduler.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankScenario.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankTracker.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankTrackerStateController.java",
+      "android/java/src/org/chromium/base/jank_tracker/PlaceholderJankTracker.java",
+    ]
+    deps = [
+      ":activity_state_java",
+      ":lifetime_java",
+      ":log_java",
+      ":tasks_java",
+      ":time_utils_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
