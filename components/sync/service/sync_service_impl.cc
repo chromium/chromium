@@ -1424,17 +1424,17 @@ bool SyncServiceImpl::IsCustomPassphraseAllowed() const {
 SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Local sync does not require an actual signed in account to be running.
-  if (!IsSignedIn() && !IsLocalSyncEnabled()) {
+  if (IsLocalSyncEnabled()) {
+    // Local sync should behave like a syncing user.
+    return SyncPrefs::SyncAccountState::kSyncing;
+  }
+  if (!IsSignedIn()) {
     return SyncPrefs::SyncAccountState::kNotSignedIn;
   }
-  if (!IsSetupInProgress() && UseTransportOnlyMode()) {
-    // While the setup for Sync-the-feature is in progress, the account state
-    // should be syncing so that the user can properly select the types they
-    // want to sync.
-    return SyncPrefs::SyncAccountState::kSignedInNotSyncing;
-  }
-  return SyncPrefs::SyncAccountState::kSyncing;
+  // This doesn't check IsSyncFeatureEnabled() so it covers the case of advanced
+  // sync setup, where IsInitialSyncFeatureSetupComplete() is not true yet.
+  return HasSyncConsent() ? SyncPrefs::SyncAccountState::kSyncing
+                          : SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
 CoreAccountInfo SyncServiceImpl::GetSyncAccountInfoForPrefs() const {
