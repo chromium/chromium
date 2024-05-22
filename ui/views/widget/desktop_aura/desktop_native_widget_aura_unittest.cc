@@ -54,10 +54,11 @@ TEST_F(DesktopNativeWidgetAuraTest, CreateWithParentNotInRootWindow) {
   std::unique_ptr<aura::Window> window(new aura::Window(nullptr));
   window->Init(ui::LAYER_NOT_DRAWN);
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.parent = window.get();
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(params));
 }
 
@@ -69,13 +70,15 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowSizeTest) {
   // On Linux we test this with popup windows because the WM may ignore the size
   // suggestion for normal windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
 #else
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 #endif
 
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(init_params));
 
   gfx::Rect bounds(0, 0, 100, 100);
@@ -102,8 +105,8 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowSizeTest) {
 TEST_F(DesktopNativeWidgetAuraTest, NativeViewInitiallyHidden) {
   Widget widget;
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(init_params));
   EXPECT_FALSE(widget.GetNativeView()->IsVisible());
 }
@@ -112,8 +115,9 @@ TEST_F(DesktopNativeWidgetAuraTest, NativeViewInitiallyHidden) {
 TEST_F(DesktopNativeWidgetAuraTest, NativeViewNoActivate) {
   // Widget of TYPE_POPUP can't be activated.
   Widget widget;
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget.Init(std::move(init_params));
 
   EXPECT_FALSE(widget.CanActivate());
@@ -127,8 +131,8 @@ TEST_F(DesktopNativeWidgetAuraTest, NativeViewNoActivate) {
 TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
   Widget widget;
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(init_params));
   ShowWindow(widget.GetNativeView()->GetHost()->GetAcceleratedWidget(),
              SW_SHOWNORMAL);
@@ -148,14 +152,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
   // Create two native widgets, each owning different root windows.
   Widget widget_a;
   Widget::InitParams init_params_a =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params_a.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget_a.Init(std::move(init_params_a));
 
   Widget widget_b;
   Widget::InitParams init_params_b =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params_b.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget_b.Init(std::move(init_params_b));
 
   aura::client::CursorClient* cursor_client_a = aura::client::GetCursorClient(
@@ -240,8 +244,8 @@ TEST_F(DesktopNativeWidgetAuraTest, DontAccessContentWindowDuringDestruction) {
   {
     Widget widget;
     Widget::InitParams init_params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW);
-    init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     widget.Init(std::move(init_params));
 
     // Owned by |widget|.
@@ -258,8 +262,8 @@ namespace {
 
 std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
   auto widget = std::make_unique<Widget>();
-  Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                            Widget::InitParams::TYPE_CONTROL);
   params.parent = parent;
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
@@ -282,8 +286,8 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
   // Create the parent widget.
   Widget parent;
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   parent.Init(std::move(init_params));
   parent.Show();
 
@@ -328,9 +332,10 @@ void QuitNestedLoopAndCloseWidget(std::unique_ptr<Widget> widget,
 // Verifies that a widget can be destroyed when running a nested message-loop.
 TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   std::unique_ptr<Widget> widget(new Widget);
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
   widget->Show();
 
@@ -380,8 +385,9 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
     DesktopNativeWidgetAuraTest::SetUp();
     Widget widget;
     desktop_native_widget_ = new TestDesktopNativeWidgetAura(&widget);
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.native_widget = desktop_native_widget_;
     widget.Init(std::move(params));
     widget.Show();
@@ -536,10 +542,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   }
 
   void CreateTopLevelWindow(const gfx::Rect& bounds, bool fullscreen) {
-    Widget::InitParams init_params;
-    init_params.type = Widget::InitParams::TYPE_WINDOW;
+    Widget::InitParams init_params(
+        Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        Widget::InitParams::TYPE_WINDOW);
     init_params.bounds = bounds;
-    init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     init_params.layer_type = ui::LAYER_NOT_DRAWN;
     init_params.accept_events = fullscreen;
 
@@ -741,7 +747,8 @@ void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
   // |widget| is deleted by CloseWidgetView.
   Widget* widget = new Widget;
   Widget::InitParams params =
-      test->CreateParams(Widget::InitParams::TYPE_POPUP);
+      test->CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 50, 100);
   widget->Init(std::move(params));
   widget->SetContentsView(std::make_unique<CloseWidgetView>(last_event_type));
@@ -772,11 +779,11 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   // Create a top level widget.
   Widget top_level_widget;
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   init_params.show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   top_level_widget.Init(std::move(init_params));
   top_level_widget.Show();
   EXPECT_TRUE(top_level_widget.IsVisible());
@@ -842,7 +849,9 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
 // active.
 TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
   TestDesktopWidgetDelegate widget_delegate;
-  widget_delegate.InitWidget(CreateParams(Widget::InitParams::TYPE_WINDOW));
+  widget_delegate.InitWidget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW));
 
   Widget* top_level_widget = widget_delegate.GetWidget();
   top_level_widget->Show();
@@ -879,8 +888,9 @@ TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
 TEST_F(DesktopNativeWidgetAuraTest,
        CharMessagesAsKeyboardMessagesDoesNotCrash) {
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(params));
   widget.Show();
 
@@ -903,11 +913,11 @@ TEST_F(DesktopNativeWidgetAuraTest,
 TEST_F(DesktopNativeWidgetAuraTest, Reparent) {
   Widget root, widget;
   Widget::InitParams root_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  root_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   Widget::InitParams widget_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  widget_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   root.Init(std::move(root_params));
   widget.Init(std::move(widget_params));
 

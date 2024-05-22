@@ -135,10 +135,10 @@ class DesktopWindowTreeHostPlatformImplTest : public ViewsTestBase {
  protected:
   // Creates a widget of size 100x100.
   std::unique_ptr<Widget> CreateWidget(WidgetDelegate* delegate) {
-    std::unique_ptr<Widget> widget(new Widget);
-    Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW);
     params.delegate = delegate;
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.remove_standard_frame = true;
     params.bounds = gfx::Rect(100, 100, 100, 100);
     widget->Init(std::move(params));
@@ -150,15 +150,15 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
        ChildWindowDestructionDuringTearDown) {
   Widget parent_widget;
   Widget::InitParams parent_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  parent_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   parent_widget.Init(std::move(parent_params));
   parent_widget.Show();
 
   Widget child_widget;
   Widget::InitParams child_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  child_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   child_params.parent = parent_widget.GetNativeWindow();
   child_widget.Init(std::move(child_params));
   child_widget.Show();
@@ -247,9 +247,10 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   // We want the widget to be initialized with a non-default z order to check
   // that it gets initialized with the correct z order.
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(params));
   widget.Show();
 

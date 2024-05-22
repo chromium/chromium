@@ -110,10 +110,11 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
 
     child_window->SetBounds(gfx::Rect(bounds.size()));
 
-    Widget::InitParams init_params;
-    init_params.type = full_screen ? Widget::InitParams::TYPE_WINDOW
-                       : is_menu   ? Widget::InitParams::TYPE_MENU
-                                   : Widget::InitParams::TYPE_POPUP;
+    Widget::InitParams init_params(
+        Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        full_screen ? Widget::InitParams::TYPE_WINDOW
+        : is_menu   ? Widget::InitParams::TYPE_MENU
+                    : Widget::InitParams::TYPE_POPUP);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Evaluate if the window needs shadow.
@@ -130,7 +131,6 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
       init_params.remove_standard_frame = true;
 #endif
     init_params.bounds = bounds;
-    init_params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
     init_params.layer_type = ui::LAYER_NOT_DRAWN;
     init_params.activatable = full_screen
                                   ? Widget::InitParams::Activatable::kYes

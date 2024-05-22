@@ -1159,7 +1159,7 @@ using ClientOwnsWidgetTest = WidgetOwnershipTest;
 TEST_F(ClientOwnsWidgetTest, Ownership) {
   auto widget = std::make_unique<OwnershipTestWidget>(state());
   Widget::InitParams params =
-      CreateParamsForTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                 Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.native_widget = CreatePlatformNativeWidgetImpl(
       widget.get(), kStubCapture, &state()->native_widget_deleted);

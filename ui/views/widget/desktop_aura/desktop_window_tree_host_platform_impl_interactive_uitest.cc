@@ -56,8 +56,8 @@ bool IsNonClientComponent(int hittest) {
 
 std::unique_ptr<Widget> CreateWidget(const gfx::Rect& bounds) {
   std::unique_ptr<Widget> widget(new Widget);
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.remove_standard_frame = true;
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
   params.bounds = bounds;
@@ -268,13 +268,13 @@ class DesktopWindowTreeHostPlatformImplTest
     Widget* toplevel = new Widget;
     delegate_ = std::make_unique<HitTestWidgetDelegate>();
     Widget::InitParams toplevel_params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW);
+        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
     host_ = new TestDesktopWindowTreeHostPlatformImpl(toplevel, native_widget);
     toplevel_params.desktop_window_tree_host = host_.get();
     toplevel_params.delegate = delegate_.get();
-    toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     toplevel_params.bounds = bounds;
     toplevel_params.remove_standard_frame = true;
     toplevel->Init(std::move(toplevel_params));

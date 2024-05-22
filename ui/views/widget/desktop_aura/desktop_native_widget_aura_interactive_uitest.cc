@@ -21,15 +21,16 @@ using DesktopNativeWidgetAuraTest = DesktopWidgetTestInteractive;
 // crbug.com/1284537).
 TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   auto widget1 = std::make_unique<Widget>();
-  Widget::InitParams params1(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params1(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params1.context = GetContext();
   params1.native_widget = new DesktopNativeWidgetAura(widget1.get());
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget1->Init(std::move(params1));
 
   auto widget1_child = std::make_unique<Widget>();
-  Widget::InitParams params_child(Widget::InitParams::TYPE_BUBBLE);
-  params_child.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params_child(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      Widget::InitParams::TYPE_BUBBLE);
   params_child.parent = widget1->GetNativeView();
   params_child.native_widget =
       CreatePlatformNativeWidgetImpl(widget1_child.get(), kDefault, nullptr);
@@ -37,10 +38,10 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   widget1_child->widget_delegate()->SetCanActivate(true);
 
   auto widget2 = std::make_unique<Widget>();
-  Widget::InitParams params2(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params2(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params2.context = GetContext();
   params2.native_widget = new DesktopNativeWidgetAura(widget2.get());
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget2->Init(std::move(params2));
 
   auto* activation_client1 =
@@ -104,15 +105,16 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
 TEST_F(DesktopNativeWidgetAuraTest,
        DesktopWidgetsRegainFocusWhenChildWidgetClosed) {
   auto widget = std::make_unique<Widget>();
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.context = GetContext();
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
 
   auto widget_child = std::make_unique<Widget>();
-  Widget::InitParams params_child(Widget::InitParams::TYPE_BUBBLE);
-  params_child.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params_child(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      Widget::InitParams::TYPE_BUBBLE);
   params_child.parent = widget->GetNativeView();
   params_child.native_widget =
       CreatePlatformNativeWidgetImpl(widget_child.get(), kDefault, nullptr);
