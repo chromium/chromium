@@ -16,13 +16,13 @@ namespace mojo {
 
 template <>
 struct StructTraits<viz::mojom::SharedBitmapIdDataView, viz::SharedBitmapId> {
-  static base::span<const int8_t> name(
+  static base::span<const uint8_t> name(
       const viz::SharedBitmapId& shared_bitmap_id) {
     return shared_bitmap_id.name;
   }
   static bool Read(viz::mojom::SharedBitmapIdDataView data,
                    viz::SharedBitmapId* out) {
-    base::span<int8_t> shared_bitmap_id_name(out->name);
+    base::span<uint8_t> shared_bitmap_id_name(out->name);
     return data.ReadName(&shared_bitmap_id_name);
   }
 };

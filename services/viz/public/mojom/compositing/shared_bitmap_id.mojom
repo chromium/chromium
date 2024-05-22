@@ -6,7 +6,6 @@ module viz.mojom;
 
 // See components/viz/common/resources/shared_bitmap_id.h
 struct SharedBitmapId {
-  // TODO(crbug.com/337538024): Figure out how to best clarify/dedupe the
-  // constant "16" with the C++ SharedBitmapId struct.
-  array<int8, 16> name;
+  // The length must match that used in the C++ struct.
+  array<uint8, 16> name;
 };

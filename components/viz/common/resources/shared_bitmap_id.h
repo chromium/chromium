@@ -7,15 +7,9 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <array>
 
 #include "components/viz/common/viz_common_export.h"
-
-// From gpu/GLES2/gl2extchromium.h
-// TODO(crbug.com/337538024): Eliminate GL references from this implementation.
-#ifndef GL_MAILBOX_SIZE_CHROMIUM
-#define GL_MAILBOX_SIZE_CHROMIUM 16
-#endif
 
 namespace viz {
 
@@ -24,18 +18,19 @@ namespace viz {
 // This name can be passed across processes permitting one context to share
 // memory with another. The name consists of a random set of bytes.
 struct VIZ_COMMON_EXPORT SharedBitmapId {
-  using Name = int8_t[GL_MAILBOX_SIZE_CHROMIUM];
-
-  SharedBitmapId();
+  SharedBitmapId() = default;
 
   static SharedBitmapId Generate();
 
   bool IsZero() const;
 
-  bool operator==(const SharedBitmapId& other) const;
-  std::strong_ordering operator<=>(const SharedBitmapId& other) const;
+  std::strong_ordering operator<=>(const SharedBitmapId& other) const = default;
 
-  Name name;
+  // NOTE: The specific value used here is chosen to keep compatibility with
+  // the time when SharedBitmapId was an alias for gpu::Mailbox. There is no
+  // particular need for it to stay 16 at this point, but there is no particular
+  // reason to change it either.
+  std::array<uint8_t, 16> name = {};
 };
 
 }  // namespace viz
