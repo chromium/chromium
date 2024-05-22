@@ -941,6 +941,59 @@ void WaitForResizeComplete(WebContents* web_contents) {
 }
 #endif
 
+void NotifyCopyableViewInWebContents(WebContents* web_contents,
+                                     base::OnceClosure done_callback) {
+  NotifyCopyableViewInFrame(web_contents->GetPrimaryMainFrame(),
+                            std::move(done_callback));
+}
+
+void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
+                               base::OnceClosure done_callback) {
+  RenderWidgetHostImpl* rwhi = static_cast<RenderWidgetHostImpl*>(
+      render_frame_host->GetView()->GetRenderWidgetHost());
+
+  // Note: this function intentionally avoids using RunLoops, which would make
+  // the code easier to read, so that it can be used on Android which doesn't
+  // support nested run loops.
+
+  auto first_frame_done = base::BindOnce(
+      [](base::WeakPtr<RenderWidgetHostImpl> rwhi,
+         base::OnceClosure done_callback, bool success) {
+        // This is invoked when the first `CompositorFrame` is submitted from
+        // the renderer to the GPU. However, we want to wait until the Viz
+        // process has received the new `CompositorFrame` so that the previously
+        // submitted frame is available for copy. Waiting for a second frame to
+        // be submitted guarantees this, since the second frame cannot be sent
+        // until the first frame was ACKed by Viz.
+
+        if (!rwhi || !success) {
+          std::move(done_callback).Run();
+          return;
+        }
+
+        // Force a redraw to ensure the callback below goes through the complete
+        // compositing pipeline.
+        rwhi->ForceRedrawForTesting();
+        rwhi->InsertVisualStateCallback(base::BindOnce(
+            [](base::WeakPtr<RenderWidgetHostImpl> rwhi,
+               base::OnceClosure final_done_callback, bool success) {
+              if (rwhi) {
+                // `IsSurfaceAvailableForCopy` actually only checks if the
+                // browser currently embeds a surface or not (as opposed to
+                // sending a IPC to the GPU). However if the browser does not
+                // embed any surface, we won't be able to issue any copy
+                // requests.
+                ASSERT_TRUE(rwhi->GetView()->IsSurfaceAvailableForCopy());
+              }
+              std::move(final_done_callback).Run();
+            },
+            rwhi->GetWeakPtr(), std::move(done_callback)));
+      },
+      rwhi->GetWeakPtr(), std::move(done_callback));
+
+  rwhi->InsertVisualStateCallback(std::move(first_frame_done));
+}
+
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
                         blink::WebMouseEvent::Button button) {

@@ -16,11 +16,19 @@ namespace gesturenav {
 
 void OnNavScreenshotAvailableForTesting(int nav_entry_index,
                                         const SkBitmap& bitmap,
-                                        bool requested) {
-  Java_ScreenshotCaptureTestHelper_onNavScreenshotAvailable(
-      jni_zero::AttachCurrentThread(), java_handler_for_testing_,
-      nav_entry_index,
-      bitmap.isNull() ? nullptr : gfx::ConvertToJavaBitmap(bitmap), requested);
+                                        bool requested,
+                                        SkBitmap& out_override_bitmap) {
+  base::android::ScopedJavaLocalRef<jobject> override_bitmap =
+      Java_ScreenshotCaptureTestHelper_onNavScreenshotAvailable(
+          jni_zero::AttachCurrentThread(), java_handler_for_testing_,
+          nav_entry_index,
+          bitmap.isNull() ? nullptr : gfx::ConvertToJavaBitmap(bitmap),
+          requested);
+  if (!override_bitmap.is_null()) {
+    gfx::JavaBitmap java_bitmap(override_bitmap);
+    SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap);
+    out_override_bitmap = skbitmap;
+  }
 }
 
 // ----------------------------------------------------------------------------

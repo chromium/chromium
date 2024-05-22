@@ -27,6 +27,7 @@ namespace {
 
 using NavigationDirection =
     BackForwardTransitionAnimationManager::NavigationDirection;
+using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwitchSpringReason = PhysicsModel::SwitchSpringReason;
 
 void ResetTransformForLayer(cc::slim::Layer* layer) {
@@ -419,6 +420,17 @@ void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
     // Let the cancel animation finish playing. We will advance to
     // `State::kAnimationFinished`.
     CHECK_EQ(state_, State::kDisplayingCancelAnimation);
+  }
+}
+
+AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
+  switch (state_) {
+    case State::kDisplayingInvokeAnimation:
+      return AnimationStage::kInvokeAnimation;
+    case State::kAnimationFinished:
+      return AnimationStage::kNone;
+    default:
+      return AnimationStage::kOther;
   }
 }
 

@@ -15,6 +15,8 @@ namespace {
 
 using NavigationDirection =
     BackForwardTransitionAnimationManager::NavigationDirection;
+
+using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
 
 bool ShouldSkipDefaultNavTransitionForPendingUX(
@@ -129,6 +131,12 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
     navigation_controller_->GoToIndex(destination_entry_index_);
   }
   destination_entry_index_ = -1;
+}
+
+AnimationStage
+BackForwardTransitionAnimationManagerAndroid::GetCurrentAnimationStage() {
+  return animator_ ? animator_->GetCurrentAnimationStage()
+                   : AnimationStage::kNone;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::

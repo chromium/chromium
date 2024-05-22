@@ -31,6 +31,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/android/content_jni_headers/WebContentsImpl_jni.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/message_port_provider.h"
@@ -909,6 +910,15 @@ void WebContentsAndroid::NotifyBrowserControlsHeightChanged(JNIEnv* env) {
 
 bool WebContentsAndroid::NeedToFireBeforeUnloadOrUnloadEvents(JNIEnv* env) {
   return web_contents_->NeedToFireBeforeUnloadOrUnloadEvents();
+}
+
+jint WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
+  auto stage = BackForwardTransitionAnimationManager::AnimationStage::kNone;
+  if (auto* animation =
+          web_contents_->GetBackForwardTransitionAnimationManager()) {
+    stage = animation->GetCurrentAnimationStage();
+  }
+  return static_cast<jint>(stage);
 }
 
 }  // namespace content

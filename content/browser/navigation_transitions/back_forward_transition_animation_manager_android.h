@@ -49,6 +49,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnGestureProgressed(const ui::BackGestureEvent& gesture) override;
   void OnGestureCancelled() override;
   void OnGestureInvoked() override;
+  AnimationStage GetCurrentAnimationStage() override;
 
   // This is called before the `old_host` is swapped out and before the
   // `new_host` is swapped in.

@@ -18,7 +18,8 @@ ScopedScreenshotCapturedObserverForTesting::
   NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(
       base::BindRepeating(
           [](base::RepeatingClosure callback, int expected_nav_entry_index,
-             int nav_entry_index, const SkBitmap& bitmap, bool requested) {
+             int nav_entry_index, const SkBitmap& bitmap, bool requested,
+             SkBitmap& out_override) {
             CHECK_EQ(nav_entry_index, expected_nav_entry_index);
             CHECK(requested);
             std::move(callback).Run();
@@ -30,8 +31,8 @@ ScopedScreenshotCapturedObserverForTesting::
     ~ScopedScreenshotCapturedObserverForTesting() {
   // Reset the RepeatingCallback to a no-op.
   NavigationTransitionUtils::SetNavScreenshotCallbackForTesting(
-      base::BindRepeating(
-          [](int nav_entry_dex, const SkBitmap& bitmap, bool requested) {}));
+      base::BindRepeating([](int nav_entry_dex, const SkBitmap& bitmap,
+                             bool requested, SkBitmap& out_override) {}));
 }
 
 void ScopedScreenshotCapturedObserverForTesting::Wait() {

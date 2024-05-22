@@ -48,6 +48,8 @@ public class HistoryNavigationCoordinator
 
     private Supplier<TouchEventProvider> mTouchEventProvider;
 
+    private boolean mForceFeatureEnabledForTesting;
+
     /**
      * Creates the coordinator for gesture navigation and initializes internal objects.
      *
@@ -187,6 +189,10 @@ public class HistoryNavigationCoordinator
      * @return {@code} true if the feature is enabled.
      */
     private boolean isFeatureEnabled() {
+        if (mForceFeatureEnabledForTesting) {
+            return true;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return true;
         } else {
@@ -339,5 +345,10 @@ public class HistoryNavigationCoordinator
 
     HistoryNavigationLayout getLayoutForTesting() {
         return mNavigationLayout;
+    }
+
+    void forceFeatureEnabledForTesting() {
+        mForceFeatureEnabledForTesting = true;
+        onNavigationStateChanged();
     }
 }

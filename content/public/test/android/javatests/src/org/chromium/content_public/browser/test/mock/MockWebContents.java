@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -371,5 +372,10 @@ public class MockWebContents implements WebContents {
     @Override
     public boolean needToFireBeforeUnloadOrUnloadEvents() {
         return false;
+    }
+
+    @Override
+    public int getCurrentBackForwardTransitionStage() {
+        return AnimationStage.NONE;
     }
 }

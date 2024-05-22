@@ -26,6 +26,19 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   // history navigation.
   enum class NavigationDirection { kForward, kBackward };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.content_public.browser.back_forward_transition)
+  enum class AnimationStage {
+    // Indicates no gesture is active or no animation is being done for a
+    // gesture.
+    kNone = 0,
+    // Indicates that an ongoing gesture has invoked. An animation to remove the
+    // content of the entry the user is navigation away from is in progress.
+    kInvokeAnimation,
+    // All other stages for an active animation.
+    kOther,
+  };
+
   virtual ~BackForwardTransitionAnimationManager() = default;
 
   // Called when the user gesture for showing the history preview starts. This
@@ -60,6 +73,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   // completely out of the viewport, and puts the new page to the center of the
   // viewport. This API also starts the session history navigation.
   virtual void OnGestureInvoked() = 0;
+
+  // Get current stage of the back forward transition.
+  virtual AnimationStage GetCurrentAnimationStage() = 0;
 };
 
 }  // namespace content

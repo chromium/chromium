@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -1132,32 +1133,9 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents) {
 }
 
 void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
-  auto* rwhv = render_frame_host->GetView();
-  {
-    MainThreadFrameObserver obs(rwhv->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
-  // renderer to the GPU. However, we want to wait until the Viz process has
-  // received the new `CompositorFrame` so that the previously submitted frame
-  // is available for copy. Waiting for a second frame to be submitted
-  // guarantees this, since the second frame cannot be sent until the first
-  // frame was ACKed by Viz.
-  {
-    // Force a redraw to ensure the wait below goes through the complete
-    // compositing pipeline.
-    static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
-        ->ForceRedrawForTesting();
-
-    MainThreadFrameObserver obs(rwhv->GetRenderWidgetHost());
-    obs.Wait();
-  }
-
-  // `IsSurfaceAvailableForCopy` actually only checks if the browser currently
-  // embeds a surface or not (as opposed to sending a IPC to the GPU). However
-  // if the browser does not embed any surface, we won't be able to issue any
-  // copy requests.
-  ASSERT_TRUE(rwhv->IsSurfaceAvailableForCopy());
+  base::test::TestFuture<void> future;
+  NotifyCopyableViewInFrame(render_frame_host, future.GetCallback());
+  CHECK(future.Wait());
 }
 
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {

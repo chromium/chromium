@@ -15,7 +15,10 @@ import org.jni_zero.NativeMethods;
 public class ScreenshotCaptureTestHelper {
 
     interface NavScreenshotCallback {
-        void onAvailable(int navIndex, Bitmap bitmap, boolean requested);
+        // If non-null, the returned Bitmap is used as the screenshot.
+        // TODO(https://crbug.com/337886037) Remove return Bitmap once emulator-GPU issues are
+        // worked out.
+        Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested);
     }
 
     private NavScreenshotCallback mNavScreenshotCallback;
@@ -26,9 +29,9 @@ public class ScreenshotCaptureTestHelper {
     }
 
     @CalledByNative
-    void onNavScreenshotAvailable(int navIndex, Bitmap bitmap, boolean requested) {
-        if (mNavScreenshotCallback == null) return;
-        mNavScreenshotCallback.onAvailable(navIndex, bitmap, requested);
+    Bitmap onNavScreenshotAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+        if (mNavScreenshotCallback == null) return null;
+        return mNavScreenshotCallback.onAvailable(navIndex, bitmap, requested);
     }
 
     @NativeMethods

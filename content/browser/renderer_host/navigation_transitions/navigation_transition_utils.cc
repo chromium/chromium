@@ -45,17 +45,21 @@ enum ShouldCapture {
 // DO NOT invoke the test callback if the entry no longer exists.
 void InvokeTestCallbackForNoScreenshot(
     const NavigationRequest& navigation_request) {
+  SkBitmap override_unused;
   GetTestScreenshotCallback().Run(navigation_request.frame_tree_node()
                                       ->navigator()
                                       .controller()
                                       .GetLastCommittedEntryIndex(),
-                                  {}, false);
+                                  {}, false, override_unused);
 }
 
-void InvokeTestCallback(int index, const SkBitmap bitmap, bool requested) {
+void InvokeTestCallback(int index,
+                        const SkBitmap bitmap,
+                        bool requested,
+                        SkBitmap& override_bitmap) {
   SkBitmap test_copy(bitmap);
   test_copy.setImmutable();
-  GetTestScreenshotCallback().Run(index, test_copy, requested);
+  GetTestScreenshotCallback().Run(index, test_copy, requested, override_bitmap);
 }
 
 // Returns the first entry that matches `destination_token`. Returns null if no
@@ -98,24 +102,29 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
     return;
   }
 
-  if (bitmap.drawsNothing()) {
+  SkBitmap bitmap_copy(bitmap);
+
+  if (GetTestScreenshotCallback()) {
+    SkBitmap override_bitmap;
+    InvokeTestCallback(
+        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap, true,
+        override_bitmap);
+    if (!override_bitmap.drawsNothing()) {
+      bitmap_copy = override_bitmap;
+    }
+  }
+
+  if (bitmap_copy.drawsNothing()) {
     // The GPU is not able to produce a valid bitmap. This is an error case.
     LOG(ERROR) << "Cannot generate a valid bitmap for entry "
                << entry.GetUniqueID() << " url " << entry.GetURL();
     return;
   }
 
-  if (GetTestScreenshotCallback()) {
-    InvokeTestCallback(
-        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
-        true);
-  }
-
-  SkBitmap immutable_copy(bitmap);
-  immutable_copy.setImmutable();
+  bitmap_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      immutable_copy, entry.GetUniqueID());
+      bitmap_copy, entry.GetUniqueID());
   NavigationEntryScreenshotCache* cache =
       controller.GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(&entry, std::move(screenshot));

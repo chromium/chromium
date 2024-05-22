@@ -75,6 +75,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
+  BackForwardTransitionAnimationManager::AnimationStage
+  GetCurrentAnimationStage();
 
  protected:
   BackForwardTransitionAnimator(

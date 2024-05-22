@@ -174,6 +174,29 @@ public class WebContentsUtils {
         callback.handleJavaScriptResult(jsonResult);
     }
 
+    /**
+     * Blocks the current execution until the primary main frame is in a steady state so the caller
+     * can issue an `viz::CopyOutputRequest` against it.
+     *
+     * <p>See also, WaitForCopyableViewInFrame in content_browser_test_utils_internal.h.
+     *
+     * @param webContents The WebContents whose main frame we wish to wait on.
+     */
+    public static void waitForCopyableViewInWebContents(final WebContents webContents)
+            throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsUtilsJni.get()
+                            .notifyCopyableViewInWebContents(
+                                    webContents,
+                                    () -> {
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
+        callbackHelper.waitForFirst();
+    }
+
     @NativeMethods
     interface Natives {
         void reportAllFrameSubmissions(WebContents webContents, boolean enabled);
@@ -184,5 +207,7 @@ public class WebContentsUtils {
                 WebContents webContents, String script, @Nullable JavaScriptCallback callback);
 
         void crashTab(WebContents webContents);
+
+        void notifyCopyableViewInWebContents(WebContents webContents, Runnable doneCallback);
     }
 }

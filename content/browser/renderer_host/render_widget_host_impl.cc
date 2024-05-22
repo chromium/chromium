@@ -1598,6 +1598,13 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
 
   // Early out if necessary, prior to performing latency logic.
   if (IsIgnoringWebInputEvents(gesture_event)) {
+    // IgnoreWebInputEvents is primarily concerned with suppressing event
+    // dispatch to the renderer. However, the embedder may be filtering gesture
+    // events to drive its own UI so we still give it an opportunity to see
+    // these events.
+    if (GetView()) {
+      GetView()->FilterInputEvent(gesture_event);
+    }
     return;
   }
 

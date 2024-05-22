@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -599,9 +600,15 @@ public interface WebContents extends Parcelable {
     void tearDownDialogOverlays();
 
     /**
-     * This function checks all frames in this WebContents (not just the main
-     * frame) and returns true if at least one frame has either a beforeunload or
-     * an unload/pagehide/visibilitychange handler.
+     * This function checks all frames in this WebContents (not just the main frame) and returns
+     * true if at least one frame has either a beforeunload or an unload/pagehide/visibilitychange
+     * handler.
      */
     boolean needToFireBeforeUnloadOrUnloadEvents();
+
+    /**
+     * @return {@link AnimationStage} the current stage of back forward transition.
+     */
+    @AnimationStage
+    int getCurrentBackForwardTransitionStage();
 }

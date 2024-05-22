@@ -228,6 +228,8 @@ class CONTENT_EXPORT WebContentsAndroid {
   void AddDestructionObserver(DestructionObserver* observer);
   void RemoveDestructionObserver(DestructionObserver* observer);
 
+  jint GetCurrentBackForwardTransitionStage(JNIEnv* env);
+
   // Adds a crash report, like DumpWithoutCrashing(), including the Java stack
   // trace from which `web_contents` was created. This is meant to help debug
   // cases where BrowserContext is destroyed before its WebContents.

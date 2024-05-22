@@ -77,6 +77,14 @@ public final class GestureNavigationUtils {
         swipe(leftEdge, startx, endx, yMiddle);
     }
 
+    /**
+     * Enables gestural navigation for use in tests. Tests are responsible for manually injecting
+     * simulated "back" gesture progress events.
+     */
+    public void enableGestureNavigationForTesting() {
+        getNavigationCoordinator().forceFeatureEnabledForTesting();
+    }
+
     private void swipe(boolean leftEdge, float startx, float endx, float y) {
         swipeAndHold(leftEdge, startx, endx, y);
         TestThreadUtils.runOnUiThreadBlocking(

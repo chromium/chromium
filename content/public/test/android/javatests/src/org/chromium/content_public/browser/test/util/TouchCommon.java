@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
  * of the test), and simulating the touch events in the manner used here is just as effective.
  */
 public class TouchCommon {
-
     // The amount of time between a pointer up and the last move event such that the pointer is
     // considered to be stopped. This must be larger than kAssumePointerUpStoppedTime in
     // ui/events/velocity_tracker/velocity_tracker.cc.
@@ -50,8 +49,17 @@ public class TouchCommon {
             float toY,
             int stepCount,
             long duration) {
+        int dispatchIntervalMs = (int) duration / stepCount;
         performDragInternal(
-                view, fromX, toX, fromY, toY, stepCount, duration, /* preventFling= */ false);
+                view,
+                fromX,
+                toX,
+                fromY,
+                toY,
+                stepCount,
+                dispatchIntervalMs,
+                /* useWallClock= */ false,
+                /* preventFling= */ false);
     }
 
     /**
@@ -77,8 +85,95 @@ public class TouchCommon {
             float toY,
             int stepCount,
             long duration) {
+        int dispatchIntervalMs = (int) duration / stepCount;
         performDragInternal(
-                view, fromX, toX, fromY, toY, stepCount, duration, /* preventFling= */ true);
+                view,
+                fromX,
+                toX,
+                fromY,
+                toY,
+                stepCount,
+                dispatchIntervalMs,
+                /* useWallClock= */ false,
+                /* preventFling= */ true);
+    }
+
+    /**
+     * Synchronously perform a start-to-end drag event on the specified view, using real wall clock
+     * time when dispatching events.
+     *
+     * <p>This method will actually wait (i.e. sleep) between event dispatches to simulate a real
+     * touch stream. This will make a test slow so use only when needed. This can be useful when
+     * events are sent to the renderer - doing so with deterministic, simulated time means many
+     * events may be coalesced, unpredictably, into a single event.
+     *
+     * @param view The view to dispatch events to.
+     * @param fromX X coordinate of the initial touch, in screen coordinates.
+     * @param toX X coordinate of the drag destination, in screen coordinates.
+     * @param fromY X coordinate of the initial touch, in screen coordinates.
+     * @param toY Y coordinate of the drag destination, in screen coordinates.
+     * @param duration The amount of time over which move touches will be dispatched.
+     * @param preventFling If true, pause before lifting finger to prevent a fling from being
+     *     synthesized.
+     */
+    public static void performWallClockDrag(
+            View view,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            long duration,
+            int dispatchIntervalMs,
+            boolean preventFling) {
+        int stepCount = (int) duration / dispatchIntervalMs;
+        performDragInternal(
+                view,
+                fromX,
+                toX,
+                fromY,
+                toY,
+                stepCount,
+                dispatchIntervalMs,
+                /* useWallClock= */ true,
+                /* preventFling= */ preventFling);
+    }
+
+    /**
+     * Synchronously perform a start-to-end drag event on the specified view, using real wall clock
+     * time when dispatching events.
+     *
+     * <p>This method will actually wait (i.e. sleep) between event dispatches to simulate a real
+     * touch stream. This will make a test slow so use only when needed. This can be useful when
+     * events are sent to the renderer - doing so with deterministic, simulated time means many
+     * events may be coalesced, unpredictably, into a single event.
+     *
+     * @param activity The main activity to dispatch events to.
+     * @param fromX X coordinate of the initial touch, in screen coordinates.
+     * @param toX X coordinate of the drag destination, in screen coordinates.
+     * @param fromY X coordinate of the initial touch, in screen coordinates.
+     * @param toY Y coordinate of the drag destination, in screen coordinates.
+     * @param duration The amount of time over which move touches will be dispatched.
+     * @param preventFling If true, pause before lifting finger to prevent a fling from being
+     *     synthesized.
+     */
+    public static void performWallClockDrag(
+            Activity activity,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            long duration,
+            int dispatchIntervalMs,
+            boolean preventFling) {
+        performWallClockDrag(
+                getRootViewForActivity(activity),
+                fromX,
+                toX,
+                fromY,
+                toY,
+                duration,
+                dispatchIntervalMs,
+                preventFling);
     }
 
     private static void performDragInternal(
@@ -88,7 +183,8 @@ public class TouchCommon {
             float fromY,
             float toY,
             int stepCount,
-            long duration,
+            int dispatchIntervalMs,
+            boolean useWallClock,
             boolean preventFling) {
         // Use the current time as the base to add to.
         final long downTime = SystemClock.uptimeMillis();
@@ -110,7 +206,12 @@ public class TouchCommon {
         for (int i = 0; i < stepCount; ++i) {
             y += yStep;
             x += xStep;
-            eventTime += duration / stepCount;
+            if (useWallClock) {
+                SystemClock.sleep(dispatchIntervalMs);
+                eventTime = SystemClock.uptimeMillis();
+            } else {
+                eventTime += dispatchIntervalMs;
+            }
             windowXY = screenToWindowCoordinates(view, x, y);
             dispatchTouchEvent(
                     view,
@@ -207,8 +308,8 @@ public class TouchCommon {
     }
 
     /**
-     * Drags / moves (synchronously) to the specified coordinates. Normally preceeded by
-     * dragStart() and followed by dragEnd()
+     * Drags / moves (synchronously) to the specified coordinates. Normally preceded by dragStart()
+     * and followed by dragEnd()
      *
      * @activity activity The activity where the touch action is being performed.
      * @param fromX X coordinate of the initial touch, in screen coordinates.

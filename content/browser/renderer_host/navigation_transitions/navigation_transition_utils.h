@@ -20,8 +20,11 @@ class NavigationRequest;
 
 struct NavigationTransitionUtils {
   // See ScreenshotCallback in NavigationTransitionTestUtils.
-  using ScreenshotCallback = base::RepeatingCallback<
-      void(int nav_entry_index, const SkBitmap& bitmap, bool requested)>;
+  using ScreenshotCallback =
+      base::RepeatingCallback<void(int nav_entry_index,
+                                   const SkBitmap& bitmap,
+                                   bool requested,
+                                   SkBitmap& out_override)>;
 
   // Capture the `NavigationEntryScreenshot` for the old page, and store the
   // screenshot in the old page's NavigationEntry.

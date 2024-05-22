@@ -131,6 +131,7 @@ static_library("content_native_test_support") {
     "//base",
     "//content/browser:for_content_tests",
     "//content/public/browser",
+    "//content/test:test_support",
     "//device/gamepad",
     "//media/midi",
     "//ui/android",

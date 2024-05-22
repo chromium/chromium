@@ -61,6 +61,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -1225,6 +1226,14 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         mTearDownDialogOverlaysHandlers.removeObserver(handler);
     }
 
+    @Override
+    @AnimationStage
+    public int getCurrentBackForwardTransitionStage() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get()
+                .getCurrentBackForwardTransitionStage(mNativeWebContentsAndroid);
+    }
+
     private void checkNotDestroyed() {
         if (mNativeWebContentsAndroid != 0) return;
         throw new IllegalStateException(
@@ -1429,5 +1438,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         boolean isBeingDestroyed(long nativeWebContentsAndroid);
 
         boolean needToFireBeforeUnloadOrUnloadEvents(long nativeWebContentsAndroid);
+
+        @AnimationStage
+        int getCurrentBackForwardTransitionStage(long nativeWebContentsAndroid);
     }
 }
