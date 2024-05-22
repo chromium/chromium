@@ -15,7 +15,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -113,6 +115,17 @@ public class BlankCTATabInitialStateRule implements TestRule {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity.getCurrentWebContents().getNavigationController().clearHistory();
+                    TabModelFilter filter =
+                            sActivity
+                                    .getTabModelSelector()
+                                    .getTabModelFilterProvider()
+                                    .getTabModelFilter(/* incognito= */ false);
+                    Tab activityTab = sActivity.getActivityTab();
+                    if (filter.isTabInTabGroup(activityTab)) {
+                        ((TabGroupModelFilter) filter)
+                                .moveTabOutOfGroupInDirection(
+                                        activityTab.getId(), /* trailing= */ false);
+                    }
                 });
     }
 

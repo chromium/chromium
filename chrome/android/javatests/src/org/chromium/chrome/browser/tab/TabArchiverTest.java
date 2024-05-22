@@ -186,9 +186,6 @@ public class TabArchiverTest {
 
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
-
-        // Reset the group to prevent affecting other tabs.
-        runOnUiThreadBlocking(() -> mRegularTabModel.getTabAt(0).setTabGroupId(null));
     }
 
     @Test
