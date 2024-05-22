@@ -135,6 +135,25 @@ class GraphBuilderTflite final {
                                           int32_t rhs_tensor_index,
                                           int32_t output_tensor_index);
 
+  // A helper function is used to emulate batch, layer or instance
+  // normalization.
+  OperatorOffset SerializeNormalizationOperation(
+      base::span<const int32_t> input_dimensions,
+      ::tflite::TensorType input_tensor_type,
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
+      int32_t mean_tensor_index,
+      int32_t variance_tensor_index,
+      float epsilon,
+      std::optional<int32_t> scale_tensor_index,
+      std::optional<int32_t> bias_tensor_index);
+
+  // This function is called by `SerializeReshape` to serialize WebNN
+  // reshape operator or used to emulate WebNN operations.
+  OperatorOffset SerializeReshapeOperation(int32_t input_tensor_index,
+                                           int32_t output_tensor_index,
+                                           base::span<const int32_t> new_shape);
+
   // This function is called by `SerializeLinear` to serialize WebNN linear or
   // used to emulate WebNN operation that isn't supported in TFLite schema.
   OperatorOffset SerializeLinearOperation(
@@ -170,6 +189,8 @@ class GraphBuilderTflite final {
   // functions in the same order as in webnn_graph.mojom.
   base::expected<OperatorOffset, std::string> SerializeArgMinMax(
       const mojom::ArgMinMax& arg_min_max);
+  base::expected<OperatorOffset, std::string> SerializeBatchNormalization(
+      const mojom::BatchNormalization& batch_normalization);
   base::expected<OperatorOffset, std::string> SerializeClamp(
       const mojom::Clamp& clamp);
   base::expected<OperatorOffset, std::string> SerializeConv2d(

@@ -317,6 +317,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
                        SerializeArgMinMax(*op.get_arg_min_max()));
       break;
     }
+    case mojom::Operation::Tag::kBatchNormalization: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeBatchNormalization(
+                                            *op.get_batch_normalization()));
+      break;
+    }
     case mojom::Operation::Tag::kClamp: {
       ASSIGN_OR_RETURN(operator_offset, SerializeClamp(*op.get_clamp()));
       break;
@@ -427,7 +432,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
-    case mojom::Operation::Tag::kBatchNormalization:
     case mojom::Operation::Tag::kExpand:
     case mojom::Operation::Tag::kGelu:
     case mojom::Operation::Tag::kGru:
@@ -636,6 +640,88 @@ auto GraphBuilderTflite::SerializeLinearOperation(
                                   output_tensor_index);
 }
 
+auto GraphBuilderTflite::SerializeNormalizationOperation(
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType input_tensor_type,
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
+    int32_t mean_tensor_index,
+    int32_t variance_tensor_index,
+    float epsilon,
+    std::optional<int32_t> scale_tensor_index,
+    std::optional<int32_t> bias_tensor_index) -> OperatorOffset {
+  // Emulate normalization follows the expression `Scale * ((Input - Mean) /
+  // sqrt(Variance + Epsilon)) + Bias`
+  //
+  // Serialize the subtraction operation for expression `Input - Mean`.
+  CHECK_EQ(input_tensor_type, ::tflite::TensorType_FLOAT32);
+  const int32_t output_tensor_index_of_sub =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
+      output_tensor_index_of_sub));
+
+  // Serialize the subset expression `sqrt(Variance + Epsilon)`.
+  const int32_t epsilon_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{epsilon},
+      /*dimensions=*/{});
+  const int32_t output_tensor_index_of_add =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_ADD, variance_tensor_index,
+      epsilon_tensor_index, output_tensor_index_of_add));
+  const int32_t output_tensor_index_of_sqrt =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_SQRT, output_tensor_index_of_add,
+      output_tensor_index_of_sqrt));
+
+  // Serialize the intermediate expression `Scale * (output_tensor_of_sub /
+  // output_tensor_of_sqrt)`.
+  int32_t output_tensor_index_of_div = output_tensor_index;
+  if (scale_tensor_index || bias_tensor_index) {
+    output_tensor_index_of_div =
+        SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  }
+  OperatorOffset normalization_offset = SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_DIV, output_tensor_index_of_sub,
+      output_tensor_index_of_sqrt, output_tensor_index_of_div);
+  int32_t output_tensor_index_of_mul = output_tensor_index_of_div;
+  if (scale_tensor_index) {
+    operators_.emplace_back(normalization_offset);
+    output_tensor_index_of_mul =
+        bias_tensor_index
+            ? SerializeTemporaryTensor(input_dimensions, input_tensor_type)
+            : output_tensor_index;
+    normalization_offset = SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, *scale_tensor_index,
+        output_tensor_index_of_div, output_tensor_index_of_mul);
+  }
+
+  if (bias_tensor_index) {
+    operators_.emplace_back(normalization_offset);
+    normalization_offset = SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_ADD, output_tensor_index_of_mul,
+        *bias_tensor_index, output_tensor_index);
+  }
+
+  return normalization_offset;
+}
+
+auto GraphBuilderTflite::SerializeReshapeOperation(
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
+    base::span<const int32_t> new_shape) -> OperatorOffset {
+  const auto reshape_options = ::tflite::CreateReshapeOptions(
+      builder_,
+      /*new_shape=*/builder_.CreateVector<int32_t>(new_shape));
+
+  return SerializeUnaryOperation(::tflite::BuiltinOperator_RESHAPE,
+                                 input_tensor_index, output_tensor_index,
+                                 ::tflite::BuiltinOptions_ReshapeOptions,
+                                 reshape_options.Union());
+}
+
 auto GraphBuilderTflite::SerializeTransposeOperation(
     int32_t input_tensor_index,
     int32_t output_tensor_index,
@@ -807,6 +893,84 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs),
                                   builtin_options_type, builtin_options);
+}
+
+auto GraphBuilderTflite::SerializeBatchNormalization(
+    const mojom::BatchNormalization& batch_normalization)
+    -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand =
+      GetOperand(batch_normalization.input_operand_id);
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type is not supported.");
+  }
+  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  CHECK_LT(batch_normalization.axis, signed_input_dimensions->size());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t dimension_on_axis =
+      (*signed_input_dimensions)[batch_normalization.axis];
+  std::vector<int32_t> new_shape(signed_input_dimensions->size(), 1);
+  new_shape[batch_normalization.axis] = dimension_on_axis;
+
+  // Reshape the 1-D tensor of the mean operand to the new shape.
+  const mojom::Operand& mean_operand =
+      GetOperand(batch_normalization.mean_operand_id);
+  CHECK_EQ(mean_operand.dimensions.size(), 1u);
+  const int32_t reshape_mean_tensor_index =
+      SerializeTemporaryTensor(new_shape, input_tensor_type);
+  operators_.emplace_back(SerializeReshapeOperation(
+      operand_to_index_map_.at(batch_normalization.mean_operand_id),
+      reshape_mean_tensor_index, new_shape));
+
+  // Reshape the 1-D tensor of the variance operand to the new shape.
+  const mojom::Operand& variance_operand =
+      GetOperand(batch_normalization.variance_operand_id);
+  CHECK_EQ(variance_operand.dimensions.size(), 1u);
+  const int32_t reshape_variance_tensor_index =
+      SerializeTemporaryTensor(new_shape, input_tensor_type);
+  operators_.emplace_back(SerializeReshapeOperation(
+      operand_to_index_map_.at(batch_normalization.variance_operand_id),
+      reshape_variance_tensor_index, new_shape));
+
+  // Reshape the 1-D tensor of the scale operand to the new shape if needed.
+  std::optional<int32_t> reshape_scale_tensor_index;
+  if (batch_normalization.scale_operand_id) {
+    const mojom::Operand& scale_operand =
+        GetOperand(*batch_normalization.scale_operand_id);
+    CHECK_EQ(scale_operand.dimensions.size(), 1u);
+    reshape_scale_tensor_index =
+        SerializeTemporaryTensor(new_shape, input_tensor_type);
+    operators_.emplace_back(SerializeReshapeOperation(
+        operand_to_index_map_.at(*batch_normalization.scale_operand_id),
+        *reshape_scale_tensor_index, new_shape));
+  }
+
+  // Reshape the 1-D tensor of the bias operand to the new shape if needed.
+  std::optional<int32_t> reshape_bias_tensor_index;
+  if (batch_normalization.bias_operand_id) {
+    const mojom::Operand& bias_operand =
+        GetOperand(*batch_normalization.bias_operand_id);
+    CHECK_EQ(bias_operand.dimensions.size(), 1u);
+    reshape_bias_tensor_index =
+        SerializeTemporaryTensor(new_shape, input_tensor_type);
+    operators_.emplace_back(SerializeReshapeOperation(
+        operand_to_index_map_.at(*batch_normalization.bias_operand_id),
+        *reshape_bias_tensor_index, new_shape));
+  }
+
+  return SerializeNormalizationOperation(
+      new_shape, input_tensor_type,
+      operand_to_index_map_.at(batch_normalization.input_operand_id),
+      operand_to_index_map_.at(batch_normalization.output_operand_id),
+      reshape_mean_tensor_index, reshape_variance_tensor_index,
+      batch_normalization.epsilon, reshape_scale_tensor_index,
+      reshape_bias_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
@@ -1702,16 +1866,9 @@ auto GraphBuilderTflite::SerializeReshape(uint64_t input_operand_id,
   ASSIGN_OR_RETURN(std::vector<int32_t> signed_output_dimensions,
                    ToSignedDimensions(output_operand.dimensions));
 
-  const auto reshape_options = ::tflite::CreateReshapeOptions(
-      builder_,
-      /*new_shape=*/builder_.CreateVector<int32_t>(
-          std::move(signed_output_dimensions)));
-
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_RESHAPE,
-                                 operand_to_index_map_.at(input_operand_id),
-                                 operand_to_index_map_.at(output_operand_id),
-                                 ::tflite::BuiltinOptions_ReshapeOptions,
-                                 reshape_options.Union());
+  return SerializeReshapeOperation(operand_to_index_map_.at(input_operand_id),
+                                   operand_to_index_map_.at(output_operand_id),
+                                   std::move(signed_output_dimensions));
 }
 
 auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
