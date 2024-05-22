@@ -1623,7 +1623,8 @@
                   'chrome/browser/resources/ash/settings/nearby_share_page/|'\
                   'chrome/browser/ui/webui/nearby_internals/|'\
                   'chrome/browser/ui/webui/nearby_share/|'\
-                  'chrome/services/sharing/'
+                  'chrome/services/sharing/|'\
+                  'chromeos/ash/components/nearby/common/'
     },
     'nearby_presence': {
       'filepath': 'chrome/browser/ash/nearby/|'\
@@ -3062,7 +3063,6 @@
                    'creis+watch@chromium.org',
                    'navigation-cc+reviews@chromium.org'],
     'nearby': ['ajayramamurthy+watch-nearby@google.com',
-               'cclem+watch-nearby@google.com',
                'crisrael+watch-nearby@google.com',
                'dclasson+watch-nearby@google.com',
                'hais+watch-nearby@google.com',
@@ -3241,7 +3241,6 @@
                       'alexmos+watch@chromium.org',
                       'creis+watch@chromium.org'],
     'smartlock': ['bhartmire+watch-smartlock@google.com',
-                  'cclem+watch-smartlock@google.com',
                   'ajayramamurthy+watch-smartlock@google.com',
                   'hansberry+watch-smartlock@chromium.org',
                   'jackshira+watch-smartlock@google.com',
@@ -3295,7 +3294,6 @@
     'test_runner': ['einbinder+watch-test-runner@chromium.org'],
     'tests': [],
     'tether': ['bhartmire+watch-tether@google.com',
-               'cclem+watch-tether@google.com',
                'ajayramamurthy+watch-tether@google.com',
                'hansberry+watch-tether@chromium.org',
                'jackshira+watch-tether@google.com',
