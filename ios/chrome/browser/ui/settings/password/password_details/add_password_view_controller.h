@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 
 @protocol ApplicationCommands;
-@protocol AddPasswordHandler;
 @protocol PasswordDetailsHandler;
 @protocol AddPasswordViewControllerDelegate;
 @protocol ReauthenticationProtocol;
@@ -24,9 +23,6 @@
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-
-// Handler for AddPasswordDetails related actions.
-@property(nonatomic, weak) id<AddPasswordHandler> addPasswordHandler;
 
 // Delegate for PasswordDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<AddPasswordViewControllerDelegate> delegate;

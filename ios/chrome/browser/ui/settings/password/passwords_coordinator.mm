@@ -302,8 +302,7 @@ using password_manager::WarningType;
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:self.browser
-                    reauthModule:self.reauthModule];
+                         browser:self.browser];
   self.addPasswordCoordinator.delegate = self;
   [self.addPasswordCoordinator start];
 }

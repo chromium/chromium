@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -22,19 +21,16 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@interface AddPasswordCoordinator () <AddPasswordHandler,
-                                      AddPasswordMediatorDelegate,
+@interface AddPasswordCoordinator () <AddPasswordMediatorDelegate,
                                       ReauthenticationCoordinatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>
 
@@ -43,13 +39,6 @@
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) AddPasswordMediator* mediator;
-
-// Module containing the reauthentication mechanism for editing existing
-// passwords.
-@property(nonatomic, weak) id<ReauthenticationProtocol> reauthenticationModule;
-
-// Modal alert for interactions with password.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 // Dispatcher.
 @property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
@@ -68,14 +57,10 @@
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              reauthModule:
-                                  (id<ReauthenticationProtocol>)reauthModule {
+                                   browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     DCHECK(viewController);
-    DCHECK(reauthModule);
-    _reauthenticationModule = reauthModule;
     _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
   }
@@ -97,8 +82,6 @@
                                browserState)];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
-  self.viewController.addPasswordHandler = self;
-  self.viewController.reauthModule = self.reauthenticationModule;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];
@@ -115,9 +98,7 @@
                                          kAddPassword];
   [_visitsRecorder maybeRecordVisitMetric];
 
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinator];
-  }
+  [self startReauthCoordinator];
 }
 
 - (void)stop {
@@ -139,7 +120,6 @@
                            completion:nil];
   }
 
-  [self dismissAlertCoordinator];
   self.mediator = nil;
   self.viewController = nil;
 
@@ -170,41 +150,6 @@
                                                     coordinator:self];
 }
 
-#pragma mark - AddPasswordHandler
-
-- (void)showPasscodeDialog {
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  NSString* message =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser
-                                                     title:title
-                                                   message:message];
-
-  __weak __typeof(self) weakSelf = self;
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:^{
-                                     [weakSelf dismissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
-
-  [self.alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [self.alertCoordinator start];
-}
-
 #pragma mark - ReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
@@ -219,15 +164,10 @@
 }
 
 - (void)willPushReauthenticationViewController {
-  [self dismissAlertCoordinator];
+  // No-op as the surface does not present other surfaces.
 }
 
 #pragma mark - Private
-
-- (void)dismissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
-}
 
 // Starts reauthCoordinator.
 // Local authentication is required every time the current
@@ -236,7 +176,7 @@
   _reauthCoordinator = [[ReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
-                reauthenticationModule:_reauthenticationModule
+                reauthenticationModule:nil
                            authOnStart:NO];
 
   _reauthCoordinator.delegate = self;

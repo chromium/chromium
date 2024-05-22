@@ -63,7 +63,6 @@ source_set("password_details") {
 source_set("password_details_ui") {
   sources = [
     "add_password_details_consumer.h",
-    "add_password_handler.h",
     "add_password_view_controller.h",
     "add_password_view_controller.mm",
     "add_password_view_controller_delegate.h",
@@ -163,6 +162,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password/password_details/cells",
+    "//ios/chrome/browser/ui/settings/password/password_settings:common",
     "//ios/chrome/browser/ui/settings/password/password_sharing:password_sharing_metrics",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",

@@ -6,12 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/device_reauth/device_reauth_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -27,11 +24,9 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -43,10 +38,7 @@
 
 namespace {
 
-using base::UmaHistogramEnumeration;
-using device_reauth::ReauthResult;
 using password_manager::constants::kMaxPasswordNoteLength;
-using password_manager::metrics_util::LogPasswordSettingsReauthResult;
 using password_manager::metrics_util::PasswordCheckInteraction;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -395,14 +387,8 @@ const int kMinNoteCharAmountForWarning = 901;
               AddCredentialFromSettingsUserInteractions::
                   kDuplicateCredentialViewed);
 
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
     NSString* usernameTextValue = _usernameTextItem.textFieldValue;
     [_delegate showExistingCredential:usernameTextValue];
-  } else {
-    // Require auth before showing existing credential if authentication wasn't
-    // required to open the password manager in the first place.
-    [self reauthAndShowExistingCredential];
-  }
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
@@ -770,35 +756,6 @@ const int kMinNoteCharAmountForWarning = 901;
   }
 }
 
-- (void)reauthAndShowExistingCredential {
-  if ([self.reauthModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    void (^viewExistingPasswordHandler)(ReauthenticationResult) = ^(
-        ReauthenticationResult result) {
-      AddPasswordViewController* strongSelf = weakSelf;
-      if (!strongSelf)
-        return;
-      [strongSelf logPasswordSettingsReauthResult:result];
-
-      if (result == ReauthenticationResult::kFailure) {
-        return;
-      }
-
-      [strongSelf.delegate
-          showExistingCredential:strongSelf.usernameTextItem.textFieldValue];
-    };
-
-    [self.reauthModule
-        attemptReauthWithLocalizedReason:
-            l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
-                    canReusePreviousAuth:YES
-                                 handler:viewExistingPasswordHandler];
-  } else {
-    DCHECK(self.addPasswordHandler);
-    [self.addPasswordHandler showPasscodeDialog];
-  }
-}
-
 // Enables/Disables the right bar button item in the navigation bar.
 - (void)toggleNavigationBarRightButtonItem {
   self.navigationItem.rightBarButtonItem.enabled =
@@ -884,24 +841,6 @@ const int kMinNoteCharAmountForWarning = 901;
   errorInfoPopover.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
-}
-
-#pragma mark - Metrics
-
-// Logs metrics for the given reauthentication `result` (success, failure or
-// skipped).
-- (void)logPasswordSettingsReauthResult:(ReauthenticationResult)result {
-  switch (result) {
-    case ReauthenticationResult::kSuccess:
-      LogPasswordSettingsReauthResult(ReauthResult::kSuccess);
-      break;
-    case ReauthenticationResult::kFailure:
-      LogPasswordSettingsReauthResult(ReauthResult::kFailure);
-      break;
-    case ReauthenticationResult::kSkipped:
-      LogPasswordSettingsReauthResult(ReauthResult::kSkipped);
-      break;
-  }
 }
 
 #pragma mark - ForTesting
