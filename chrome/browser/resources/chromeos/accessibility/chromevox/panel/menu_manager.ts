@@ -274,6 +274,16 @@ export class MenuManager {
   }
 
   /**
+   * Advance the index of the current active menu item by |delta|.
+   * @param delta The number to add to the active menu item index.
+   */
+  advanceItemBy(delta: number): void {
+    if (this.activeMenu_) {
+      this.activeMenu_.advanceItemBy(delta);
+    }
+  }
+
+  /**
    * Clear any previous menus. The menus are all regenerated each time the
    * menus are opened.
    */
@@ -576,6 +586,16 @@ export class MenuManager {
               'panel_menu_item_none'), '', '', '', () => Promise.resolve());
     }
     this.searchMenu_.activateItem(0);
+  }
+
+  /** Sets the index of the current active menu to be the last index. */
+  scrollToBottom(): void {
+    this.activeMenu_!.scrollToBottom();
+  }
+
+  /** Sets the index of the current active menu to be 0. */
+  scrollToTop(): void {
+    this.activeMenu_!.scrollToTop();
   }
 
   // The following getters and setters are temporary during the migration from

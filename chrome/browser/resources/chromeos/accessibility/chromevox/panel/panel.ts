@@ -394,28 +394,6 @@ export class Panel implements PanelInterface {
     }
   }
 
-  /** Sets the index of the current active menu to be 0. */
-  private scrollToTop_(): void {
-    // TODO(b/314203187): Not nulls asserted, check that this is correct.
-    this.menuManager_.activeMenu!.scrollToTop();
-  }
-
-  /** Sets the index of the current active menu to be the last index. */
-  private scrollToBottom_(): void {
-    // TODO(b/314203187): Not nulls asserted, check that this is correct.
-    this.menuManager_.activeMenu!.scrollToBottom();
-  }
-
-  /**
-   * Advance the index of the current active menu item by |delta|.
-   * @param delta The number to add to the active menu item index.
-   */
-  private advanceItemBy_(delta: number): void {
-    if (this.menuManager_.activeMenu) {
-      this.menuManager_.activeMenu.advanceItemBy(delta);
-    }
-  }
-
   /**
    * Called when a key is pressed. Handle arrow keys to navigate the menus,
    * Esc to close, and Enter/Space to activate an item.
@@ -470,25 +448,25 @@ export class Panel implements PanelInterface {
         this.menuManager_.advanceActiveMenuBy(1);
         break;
       case 'ArrowUp':
-        this.advanceItemBy_(-1);
+        this.menuManager_.advanceItemBy(-1);
         break;
       case 'ArrowDown':
-        this.advanceItemBy_(1);
+        this.menuManager_.advanceItemBy(1);
         break;
       case 'Escape':
         this.closeMenusAndRestoreFocus();
         break;
       case 'PageUp':
-        this.advanceItemBy_(10);
+        this.menuManager_.advanceItemBy(10);
         break;
       case 'PageDown':
-        this.advanceItemBy_(-10);
+        this.menuManager_.advanceItemBy(-10);
         break;
       case 'Home':
-        this.scrollToTop_();
+        this.menuManager_.scrollToTop();
         break;
       case 'End':
-        this.scrollToBottom_();
+        this.menuManager_.scrollToBottom();
         break;
       case 'Enter':
       case ' ':
