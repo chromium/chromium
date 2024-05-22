@@ -87,6 +87,12 @@ BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Enables promo card in settings encouraging users to enable screenlock reauth
+// before filling passwords.
+BASE_DECLARE_FEATURE(kScreenlockReauthPromoCard);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // Enables the notification UI that is displayed to the user when visiting a
 // website for which a stored password has been shared by another user.
 BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);

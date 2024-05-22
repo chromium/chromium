@@ -4601,6 +4601,11 @@ extern const char kRestartToGainAccessToKeychainName[];
 extern const char kRestartToGainAccessToKeychainDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const char kScreenlockReauthPromoCardName[];
+extern const char kScreenlockReauthPromoCardDescription[];
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kFollowingFeedSidepanelName[];
