@@ -1183,8 +1183,9 @@ void TextRunHarfBuzz::UpdateFontParamsAndShape(
     // Note that |new_shape.glyph_to_char| is indexed from the beginning of
     // |range|, while |shape.glyph_to_char| is indexed from the beginning of
     // its embedding text.
-    for (size_t i = 0; i < shape.glyph_to_char.size(); ++i)
-      shape.glyph_to_char[i] += range.start();
+    for (auto& glyph_to_char : shape.glyph_to_char) {
+      glyph_to_char += range.start();
+    }
   }
 }
 
