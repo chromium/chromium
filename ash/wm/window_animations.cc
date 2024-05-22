@@ -21,12 +21,14 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -41,6 +43,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -106,6 +109,31 @@ base::TimeDelta GetCrossFadeDuration(aura::Window* window,
   const auto kRange = kCrossFadeMaxDuration - kCrossFadeDuration;
   return kCrossFadeDuration + factor * kRange;
 }
+
+// Defines an observer that can be used to monitor the destruction of a given
+// layer and dump without crashing when that happens. This is needed to
+// investigate a crash that happens within `CrossFadeAnimationInternal()` due to
+// using a layer after it has been destroyed.
+// TODO(http://b/333095196): Remove this once the root cause of the crash is
+// found and fixed.
+class LayerDeletionDumper : public ui::LayerObserver {
+ public:
+  explicit LayerDeletionDumper(ui::Layer* layer) {
+    observation_.Observe(layer);
+  }
+  LayerDeletionDumper(const LayerDeletionDumper&) = delete;
+  LayerDeletionDumper& operator=(const LayerDeletionDumper&) = delete;
+  ~LayerDeletionDumper() override = default;
+
+  // ui::LayerObserver:
+  void LayerDestroyed(ui::Layer* layer) override {
+    observation_.Reset();
+    base::debug::DumpWithoutCrashing();
+  }
+
+ private:
+  base::ScopedObservation<ui::Layer, ui::LayerObserver> observation_{this};
+};
 
 // Observer for a window cross-fade animation. If either the window closes or
 // the layer's animation completes, it deletes the layer and removes itself as
@@ -271,7 +299,16 @@ void CrossFadeAnimationInternal(
     std::optional<gfx::Tween::Type> tween_type,
     std::optional<std::string> histogram_name) {
   ui::Layer* old_layer = old_layer_owner->root();
-  ui::Layer* new_layer = window->layer();
+
+  // The window's layer can get recreated within the stack of this function due
+  // to various reasons. We should never cache the layer as local, and always
+  // get the layer from the window directly. See http://b/333095196 and
+  // http://b/40059305. For example in http://b/40059305, if Overview exit
+  //  animation is in the sequence, stopping animation may trigger
+  // `OverviewController::OnEndingAnimationComplete` which may finally start the
+  // frame animation. 'FrameHeader::FrameAnimatorView::StartAnimation' recreates
+  // the window's layer.
+  auto new_layer = [window]() -> ui::Layer* { return window->layer(); };
 
   DCHECK(old_layer);
   const gfx::Rect old_bounds(old_layer->bounds());
@@ -292,13 +329,13 @@ void CrossFadeAnimationInternal(
   SCOPED_CRASH_KEY_STRING256("333095196", "window_title",
                              base::UTF16ToUTF8(window->GetTitle()));
   SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_begin",
-                             base::StringPrintf("%p", new_layer));
+                             base::StringPrintf("%p", new_layer()));
 
   // Ensure the higher-resolution layer is on top.
   if (old_on_top)
-    old_layer->parent()->StackBelow(new_layer, old_layer);
+    old_layer->parent()->StackBelow(new_layer(), old_layer);
   else
-    old_layer->parent()->StackAbove(new_layer, old_layer);
+    old_layer->parent()->StackAbove(new_layer(), old_layer);
 
   // Shorten the animation if there's not much visual movement.
   const base::TimeDelta animation_duration = duration.value_or(
@@ -309,16 +346,6 @@ void CrossFadeAnimationInternal(
   // Scale up the old layer while translating to new position.
   {
     old_layer->GetAnimator()->StopAnimating();
-    // If Overview exit animation is in the sequence, stopping animation may
-    // trigger `OverviewController::OnEndingAnimationComplete` which may finally
-    // start the frame animation.
-    // 'FrameHeader::FrameAnimatorView::StartAnimation' recreates the window
-    // layer such that the `new_layer` is no longer the window's current layer.
-    // Therefore, we should update the `new_layer`. Refer to
-    // https://crbug.com/1313977.
-    // TODO(zxdan): find a way to change the window state after exiting Overview
-    // or avoid frame animation when setting bounds.
-    new_layer = window->layer();
     old_layer->SetTransform(old_transform);
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
     settings.SetTransitionDuration(animation_duration);
@@ -359,7 +386,15 @@ void CrossFadeAnimationInternal(
   }
 
   SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_mid",
-                             base::StringPrintf("%p", new_layer));
+                             base::StringPrintf("%p", new_layer()));
+
+  // Create an observer that would dump without crashing if `new_layer()` gets
+  // destroyed within the remaining scope of this function. This is needed to
+  // investigate the root cause of http://b/333095196.
+  // TODO(http://b/333095196): Remove this code and all crash keys once the
+  // issue is resolved.
+  LayerDeletionDumper deletion_dumper(new_layer());
+
   // Set the new layer's current transform, such that the user sees a scaled
   // version of the window with the original bounds at the original position.
   gfx::Transform in_transform;
@@ -370,11 +405,11 @@ void CrossFadeAnimationInternal(
   in_transform.Translate(old_transformed_bounds.x() - new_bounds.x(),
                          old_transformed_bounds.y() - new_bounds.y());
   in_transform.Scale(scale_x, scale_y);
-  new_layer->SetTransform(in_transform);
+  new_layer()->SetTransform(in_transform);
   if (!old_on_top) {
     // The new layer is on top and should fade in.  The old layer below will
     // stay opaque and block the desktop.
-    new_layer->SetOpacity(kWindowAnimation_HideOpacity);
+    new_layer()->SetOpacity(kWindowAnimation_HideOpacity);
   }
   {
     // Animation observer owns the old layer and deletes itself. It should be
@@ -389,7 +424,7 @@ void CrossFadeAnimationInternal(
 
     // Animate the new layer to the identity transform, so the window goes to
     // its newly set bounds.
-    ui::ScopedLayerAnimationSettings settings(new_layer->GetAnimator());
+    ui::ScopedLayerAnimationSettings settings(new_layer()->GetAnimator());
     settings.AddObserver(observer);
     settings.SetTransitionDuration(animation_duration);
     settings.SetTweenType(animation_tween_type);
@@ -397,18 +432,19 @@ void CrossFadeAnimationInternal(
     if (!old_on_top) {
       // Only caching render surface when there is an opacity animation and
       // multiple layers.
-      if (!new_layer->children().empty())
+      if (!new_layer()->children().empty()) {
         settings.CacheRenderSurface();
+      }
       // New layer is on top, fade it in.
-      new_layer->SetOpacity(kWindowAnimation_ShowOpacity);
+      new_layer()->SetOpacity(kWindowAnimation_ShowOpacity);
     }
     SCOPED_CRASH_KEY_NUMBER("333095196", "animation_duration_ms",
                             animation_duration.InMillisecondsF());
     SCOPED_CRASH_KEY_BOOL("333095196", "is_destroying",
                           window->is_destroying());
     SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_end",
-                               base::StringPrintf("%p", window->layer()));
-    new_layer->SetTransform(gfx::Transform());
+                               base::StringPrintf("%p", new_layer()));
+    new_layer()->SetTransform(gfx::Transform());
   }
 }
 
