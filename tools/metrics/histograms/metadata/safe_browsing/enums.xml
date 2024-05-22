@@ -324,6 +324,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WithoutToken"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingEsbDownloadRowPromoOutcome) -->
+
+<enum name="SafeBrowsingEsbDownloadRowPromoOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads_dom_handler.h:SafeBrowsingEsbDownloadRowPromoOutcome) -->
+
 <enum name="SafeBrowsingHPRTOperationOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Parse response error"/>

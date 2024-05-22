@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -707,6 +708,11 @@ void DownloadsDOMHandler::OpenEsbSettings() {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser->profile());
   tracker->NotifyEvent("esb_download_promo_row_clicked");
+  base::RecordAction(
+      base::UserMetricsAction("SafeBrowsing.EsbDownloadRowPromo.Click"));
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.EsbDownloadRowPromo.Outcome",
+      SafeBrowsingEsbDownloadRowPromoOutcome::kClicked);
 }
 
 void DownloadsDOMHandler::IsEligibleForEsbPromo(
@@ -748,6 +754,8 @@ void DownloadsDOMHandler::LogEsbPromotionRowViewed() {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           manager->GetBrowserContext());
   tracker->NotifyEvent("esb_download_promo_row_viewed");
+  base::UmaHistogramEnumeration("SafeBrowsing.EsbDownloadRowPromo.Outcome",
+                                SafeBrowsingEsbDownloadRowPromoOutcome::kShown);
 }
 
 // DownloadsDOMHandler, private: --------------------------------------------

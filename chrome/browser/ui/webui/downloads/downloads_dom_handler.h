@@ -31,6 +31,20 @@ namespace download {
 class DownloadItem;
 }
 
+// Represents the possible outcomes of showing a ESB download row promotion.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SafeBrowsingEsbDownloadRowPromoOutcome)
+enum class SafeBrowsingEsbDownloadRowPromoOutcome {
+  // The kShown and kClicked values are not meant to be mutually exclusive,
+  // the same promo row can be shown AND clicked.
+  kShown = 0,
+  kClicked = 1,
+  kMaxValue = kClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingEsbDownloadRowPromoOutcome)
+
 // The handler for Javascript messages related to the "downloads" view,
 // also observes changes to the download manager.
 // TODO(calamity): Remove WebUIMessageHandler.

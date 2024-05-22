@@ -743,6 +743,19 @@ chromium-metrics-reviews@google.com.
       variants="MetricsCollectorTimesDisabledEnabledDuration"/>
 </histogram>
 
+<histogram name="SafeBrowsing.EsbDownloadRowPromo.Outcome"
+    enum="SafeBrowsingEsbDownloadRowPromoOutcome" expires_after="2024-10-06">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the outcome of showing an ESB promotion on a download item on the
+    chrome://downloads page. Promotions are only shown on downloads that have
+    been determined to be dangerous and only when the user is able to enable
+    enhanced protection. The histogram outcome is recorded on display and on
+    every click on the promotion.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.EsbPromotionFlow.IphShown"
     enum="SafeBrowsingReferralMethod" expires_after="2024-10-06">
   <owner>awado@google.com</owner>

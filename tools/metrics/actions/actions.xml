@@ -31425,6 +31425,15 @@ should be able to be added at any place in this file.
   <description>A download warning is shown.</description>
 </action>
 
+<action name="SafeBrowsing.EsbDownloadRowPromo.Click">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks on the Enhanced Safe Browsing (ESB) download row promotion on
+    chrome://downloads.
+  </description>
+</action>
+
 <action name="SafeBrowsing.Settings.DisableSafeBrowsingClicked">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
