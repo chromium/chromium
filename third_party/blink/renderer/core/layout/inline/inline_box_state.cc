@@ -532,8 +532,12 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
   }
 
   for (const auto& logical_column : ruby_column_list_) {
-    unsigned base_start = logical_column->start_index;
-    if (box->fragment_start <= base_start && base_start < fragment_end) {
+    // Skip a LogicalRubyColumn for which PlaceRubyAnnotation() is not done yet.
+    if (!logical_column->annotation_items) {
+      continue;
+    }
+    if (box->fragment_start <= logical_column->start_index &&
+        logical_column->EndIndex() <= fragment_end) {
       if (!box_data.ruby_column_list) {
         box_data.ruby_column_list =
             MakeGarbageCollected<HeapVector<Member<LogicalRubyColumn>>>();

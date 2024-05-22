@@ -994,5 +994,25 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceNone) {
 }
 
 #undef MAYBE_VerticalAlignBottomReplaced
+
+// crbug.com/341126037
+TEST_F(InlineLayoutAlgorithmTest, BoxFragmentInRubyCrash) {
+  SetBodyInnerHTML(R"HTML(
+<table>
+<caption>
+<ruby>
+<select></select>
+<svg></svg>
+<span dir="rtl">
+</span>
+foo
+<rt>
+<input></ruby>)HTML");
+  // We had a crash in a case that the first base item in a kOpenRubyColumn
+  // InlineItemResult creates a BoxFragment
+
+  // This test passes if no crashes.
+}
+
 }  // namespace
 }  // namespace blink
