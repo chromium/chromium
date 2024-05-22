@@ -18,12 +18,16 @@
 #include "media/audio/audio_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/gfx/native_widget_types.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
+#if BUILDFLAG(IS_WIN)
 intptr_t GetHWNDFromWebContents(content::WebContents* web_contents) {
   // Get the HWND for the window containing the web contents (Recreation
   // of HWNDForNativeView).
@@ -34,6 +38,7 @@ intptr_t GetHWNDFromWebContents(content::WebContents* web_contents) {
   }
   return -1;
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -140,8 +145,9 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   // controls object.
   intptr_t window = -1;
   if (!existing_controls) {
+#if BUILDFLAG(IS_WIN)
     window = GetHWNDFromWebContents(web_contents);
-
+#endif  // BUILDFLAG(IS_WIN)
     std::unique_ptr<system_media_controls::SystemMediaControls>
         system_media_controls =
             system_media_controls::SystemMediaControls::Create(

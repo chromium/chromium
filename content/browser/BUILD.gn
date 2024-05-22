@@ -2634,6 +2634,7 @@ source_set("browser") {
       "AppKit.framework",
       "AVFAudio.framework",
       "Carbon.framework",
+      "Cocoa.framework",
       "CoreGraphics.framework",
       "QuartzCore.framework",
       "IOSurface.framework",
@@ -2811,10 +2812,6 @@ source_set("browser") {
       "media/dcomp_surface_registry_broker.h",
       "media/key_system_support_win.cc",
       "media/key_system_support_win.h",
-      "media/web_app_system_media_controls.cc",
-      "media/web_app_system_media_controls.h",
-      "media/web_app_system_media_controls_manager.cc",
-      "media/web_app_system_media_controls_manager.h",
       "memory/swap_metrics_driver_impl_win.cc",
       "network/network_service_process_tracker_win.cc",
       "network/network_service_process_tracker_win.h",
@@ -2853,6 +2850,15 @@ source_set("browser") {
       "portabledeviceguids.lib",
       "uiautomationcore.lib",
       "wtsapi32.lib",
+    ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [
+      "media/web_app_system_media_controls.cc",
+      "media/web_app_system_media_controls.h",
+      "media/web_app_system_media_controls_manager.cc",
+      "media/web_app_system_media_controls_manager.h",
     ]
   }
 
