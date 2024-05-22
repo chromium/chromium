@@ -1111,7 +1111,7 @@ TEST_P(TextAutosizerTest, AfterPrint) {
   Element* target = GetElementById("target");
   EXPECT_FLOAT_EQ(20.0f * device_scale,
                   target->GetLayoutObject()->StyleRef().ComputedFontSize());
-  GetDocument().GetFrame()->StartPrinting(print_size, 1.0);
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(print_size));
   EXPECT_FLOAT_EQ(8.0f,
                   target->GetLayoutObject()->StyleRef().ComputedFontSize());
   GetDocument().GetFrame()->EndPrinting();

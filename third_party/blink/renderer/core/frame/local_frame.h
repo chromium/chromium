@@ -106,7 +106,6 @@ namespace gfx {
 class Point;
 class Range;
 class Size;
-class SizeF;
 }  // namespace gfx
 
 namespace network {
@@ -403,10 +402,9 @@ class CORE_EXPORT LocalFrame final
 
   // Begin printing.
   // If too large (in the inline direction), the frame content will fit to the
-  // page size with the specified maximum shrink ratio.
+  // page size with the specified maximum shrink ratio, if this value is larger
+  // than 1. If this value is 1 or less, there will be no shrinking.
   void StartPrinting(const WebPrintParams&, float maximum_shrink_ratio = 0);
-  void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
-                     float maximum_shrink_ratio = 0);
 
   void EndPrinting();
   bool ShouldUsePrintingLayout() const;

@@ -1379,11 +1379,6 @@ void LocalFrame::StartPrinting(const WebPrintParams& print_params,
   SetPrinting(true, maximum_shrink_ratio);
 }
 
-void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
-                               float maximum_shrink_ratio) {
-  StartPrinting(WebPrintParams(page_size), maximum_shrink_ratio);
-}
-
 void LocalFrame::EndPrinting() {
   RestoreScrollOffsets();
   SetPrinting(false, 0);
@@ -1420,10 +1415,11 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
   for (Frame* child = Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
-      if (printing)
-        child_local_frame->StartPrinting();
-      else
+      if (printing) {
+        child_local_frame->StartPrinting(WebPrintParams());
+      } else {
         child_local_frame->EndPrinting();
+      }
     }
   }
 
