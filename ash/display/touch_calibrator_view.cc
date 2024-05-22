@@ -86,8 +86,9 @@ constexpr float kHandIconHorizontalOffsetFactor = 7.f / 32.f;
 // Returns the initialization params for the widget that contains the touch
 // calibrator view.
 views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = kWidgetName;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;

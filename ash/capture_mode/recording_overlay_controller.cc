@@ -167,6 +167,7 @@ RecordingOverlayController::RecordingOverlayController(
     const gfx::Rect& initial_bounds_in_parent) {
   DCHECK(window_being_recorded);
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "RecordingOverlayWidget";
   params.child = true;

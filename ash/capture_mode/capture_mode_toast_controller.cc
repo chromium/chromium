@@ -46,7 +46,9 @@ std::u16string GetCaptureToastTextOnToastType(
 
 // Returns the init params that will be used for the toast widget.
 views::Widget::InitParams CreateWidgetParams(aura::Window* parent) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent;
   params.name = "CaptureModeToastWidget";

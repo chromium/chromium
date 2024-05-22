@@ -48,9 +48,9 @@ views::Widget* CreateTestWidgetWithParent(views::Widget::InitParams::Type type,
                                           gfx::NativeView parent,
                                           const gfx::Rect& bounds,
                                           bool child) {
-  views::Widget::InitParams params(type);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, type);
   params.delegate = nullptr;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent;
   params.bounds = bounds;
   params.child = child;

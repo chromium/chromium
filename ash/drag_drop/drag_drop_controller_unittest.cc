@@ -528,9 +528,9 @@ class DragDropControllerTest : public AshTestBase {
  protected:
   std::unique_ptr<views::Widget> CreateFramelessWidget() {
     std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-    views::Widget::InitParams params;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();

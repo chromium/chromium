@@ -290,7 +290,9 @@ void CaptureModeEducationController::ShowQuickSettingsNudge() {
 void CaptureModeEducationController::CreateAndShowTutorialDialog() {
   // As we are creating a system modal dialog, it will automatically be parented
   // to `kShellWindowId_SystemModalContainer`.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.delegate = CreateDialogView().release();
   params.name = "CaptureModeEducationTutorialWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;

@@ -178,7 +178,9 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
 
 // Returns the widget init params needed to create the camera preview widget.
 views::Widget::InitParams CreateWidgetParams(const gfx::Rect& bounds) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.parent =
       CaptureModeController::Get()->GetOnCaptureSurfaceWidgetParentWindow();
   params.bounds = bounds;

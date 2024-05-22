@@ -139,15 +139,15 @@ gfx::Point GetPillOrigin(const gfx::Size& pill_size,
 
 views::Widget::InitParams CreateInitParams(int64_t display_id,
                                            const std::string& target_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 
   aura::Window* root =
       Shell::GetRootWindowControllerWithDisplayId(display_id)->GetRootWindow();
 
   params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership =
-      views::Widget::InitParams::Ownership::WIDGET_OWNS_NATIVE_WIDGET;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.name = target_name;

@@ -40,9 +40,9 @@ std::vector<std::unique_ptr<ui::Layer>> InitWidgetLayers(
 }
 
 views::Widget::InitParams GetWidgetInitParams(aura::Window* parent) {
-  views::Widget::InitParams result;
-  result.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  result.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams result(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   result.name = "CurtainOverlayWidget";
   result.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   result.parent = parent;

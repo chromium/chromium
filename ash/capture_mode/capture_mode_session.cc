@@ -220,7 +220,9 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
                                              const std::string& name) {
   // Use a popup widget to get transient properties, such as not needing to
   // click on the widget first to get capture before receiving events.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent;
   params.bounds = bounds;
