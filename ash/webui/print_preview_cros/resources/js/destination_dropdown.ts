@@ -9,7 +9,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_dropdown.html.js';
-import {DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
+import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
 import {Destination} from './utils/print_preview_cros_app_types.js';
 
 
@@ -50,6 +50,9 @@ export class DestinationDropdownElement extends PolymerElement {
     this.eventTracker.add(
         this.controller, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION,
         (): void => this.onDestinationDropdownUpdateSelectedDestination());
+    this.eventTracker.add(
+        this.controller, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS,
+        (): void => this.onDestinationDropdownUpdateDestinations());
 
     // Initialize properties using the controller.
     this.selectedDestination = this.controller.getSelectedDestination();
@@ -64,6 +67,12 @@ export class DestinationDropdownElement extends PolymerElement {
   // Handles toggling visibility of dropdown content.
   onSelectedClicked(): void {
     this.open = !this.open;
+  }
+
+  // Handles updating dropdown UI content when update content event occurs.
+  private onDestinationDropdownUpdateDestinations(): void {
+    // Use spread operator to ensure Polymer registers array update.
+    this.destinations = [...this.controller.getDestinations()];
   }
 
   // Handles updating UI when update selected destination event occurs.

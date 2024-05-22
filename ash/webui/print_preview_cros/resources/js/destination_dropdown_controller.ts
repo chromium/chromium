@@ -4,7 +4,7 @@
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DestinationManager} from './data/destination_manager.js';
 import {createCustomEvent} from './utils/event_utils.js';
 import {Destination} from './utils/print_preview_cros_app_types.js';
 
@@ -15,6 +15,8 @@ import {Destination} from './utils/print_preview_cros_app_types.js';
  * `destination-dropdown` element to update.
  */
 
+export const DESTINATION_DROPDOWN_UPDATE_DESTINATIONS =
+    'destination-dropdown.update-destinations';
 export const DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION =
     'destination-dropdown.update-selected-destination';
 
@@ -30,6 +32,9 @@ export class DestinationDropdownController extends EventTarget {
     eventTracker.add(
         this.destinationManager, DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
         (): void => this.onDestinationManagerActiveDestinationChanged());
+    eventTracker.add(
+        this.destinationManager, DESTINATION_MANAGER_DESTINATIONS_CHANGED,
+        (): void => this.onDestinationManagerDestinationsChanged());
   }
 
   // Handles logic for notifying UI to update when destination manager
@@ -37,6 +42,13 @@ export class DestinationDropdownController extends EventTarget {
   private onDestinationManagerActiveDestinationChanged(): void {
     this.dispatchEvent(
         createCustomEvent(DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION));
+  }
+
+  // Handles logic for notifying UI to update when destination manager
+  // destinations change.
+  private onDestinationManagerDestinationsChanged(): void {
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_DROPDOWN_UPDATE_DESTINATIONS));
   }
 
   getSelectedDestination(): Destination|null {
@@ -53,6 +65,7 @@ export class DestinationDropdownController extends EventTarget {
 
 declare global {
   interface HTMLElementEventMap {
+    [DESTINATION_DROPDOWN_UPDATE_DESTINATIONS]: CustomEvent<void>;
     [DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION]: CustomEvent<void>;
   }
 }
