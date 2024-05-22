@@ -854,26 +854,32 @@ void DocumentLoader::InjectAutoSpeculationRules(
 
   const auto& config = AutoSpeculationRulesConfig::GetInstance();
 
+  const Vector<String> from_url_speculation_rules = config.ForUrl(Url());
+  for (const auto& speculation_rules : from_url_speculation_rules) {
+    InjectSpeculationRulesFromString(speculation_rules);
+  }
+
   for (const auto& detected_version : result.detected_versions) {
     if (String speculation_rules =
             config.ForFramework(detected_version.first)) {
-      auto* source = SpeculationRuleSet::Source::FromBrowserInjected(
-          speculation_rules, this->Url());
-      auto* rule_set = SpeculationRuleSet::Parse(source, frame_->DomWindow());
-      CHECK(rule_set);
-
-      // The JSON string in speculation_rules comes from a potentially-fallible
-      // remote config, so this should not be a CHECK failure.
-      if (rule_set->HasError()) {
-        LOG(ERROR) << "Failed to parse speculation rules for "
-                   << detected_version.first << ": " << speculation_rules;
-        continue;
-      }
-
-      DocumentSpeculationRules::From(*frame_->GetDocument())
-          .AddRuleSet(rule_set);
+      InjectSpeculationRulesFromString(speculation_rules);
     }
   }
+}
+
+void DocumentLoader::InjectSpeculationRulesFromString(const String& string) {
+  auto* source = SpeculationRuleSet::Source::FromBrowserInjected(string, Url());
+  auto* rule_set = SpeculationRuleSet::Parse(source, frame_->DomWindow());
+  CHECK(rule_set);
+
+  // The JSON string in speculation_rules comes from a potentially-fallible
+  // remote config, so this should not be a CHECK failure.
+  if (rule_set->HasError()) {
+    LOG(ERROR) << "Failed to parse auto speculation rules " << string;
+    return;
+  }
+
+  DocumentSpeculationRules::From(*frame_->GetDocument()).AddRuleSet(rule_set);
 }
 
 // static

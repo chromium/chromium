@@ -628,6 +628,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // contents (currently only detected JavaScript frameworks). Configured by the
   // AutoSpeculationRules feature.
   void InjectAutoSpeculationRules(const JavaScriptFrameworkDetectionResult&);
+  void InjectSpeculationRulesFromString(const String&);
 
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
