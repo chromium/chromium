@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/safe_browsing/android/native_j_unittests_jni_headers/SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_jni.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -134,6 +135,11 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         ToJavaIntArray(env_, int_threat_attributes,
                        returned_threat_attributes.size()),
         static_cast<int>(returned_response_status));
+  }
+
+  void SetVerifyAppsResult(VerifyAppsEnabledResult result) {
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setVerifyAppsResult(
+        env_, static_cast<int>(result));
   }
 
   void RunHashDatabaseUrlCheck(
@@ -815,6 +821,22 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(hash_realtime_safe_url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, IsVerifyAppsEnabled) {
+  SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_ENABLED);
+  base::test::TestFuture<VerifyAppsEnabledResult> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartIsVerifyAppsEnabled(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), VerifyAppsEnabledResult::SUCCESS_ENABLED);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, EnableVerifyApps) {
+  SetVerifyAppsResult(VerifyAppsEnabledResult::TIMEOUT);
+  base::test::TestFuture<VerifyAppsEnabledResult> result_future;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartEnableVerifyApps(
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), VerifyAppsEnabledResult::TIMEOUT);
 }
 
 class SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest

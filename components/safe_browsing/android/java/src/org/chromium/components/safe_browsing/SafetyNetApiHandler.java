@@ -23,9 +23,7 @@ public interface SafetyNetApiHandler {
                 String metadata,
                 long checkDelta);
 
-        // TODO(crbug.com/341790041): Remove the default implementation
-        // here since it's not suitable for production use.
-        default void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result) {}
+        void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
     }
 
     // Possible values for resultStatus. Native side has the same definitions.

@@ -31,6 +31,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static final long DEFAULT_CHECK_DELTA_MS = 10;
         // See safe_browsing_handler_util.h --> JavaThreatTypes
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
+        // The result that will be returned in {@link #isVerifyAppsEnabled(long)} or {@link
+        // #enableVerifyApps(long)}.
+        private static int sVerifyAppsResult = VerifyAppsResult.FAILED;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
@@ -67,6 +70,16 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
         }
 
+        @Override
+        public void isVerifyAppsEnabled(final long callbackId) {
+            mObserver.onVerifyAppsEnabledDone(callbackId, sVerifyAppsResult);
+        }
+
+        @Override
+        public void enableVerifyApps(final long callbackId) {
+            mObserver.onVerifyAppsEnabledDone(callbackId, sVerifyAppsResult);
+        }
+
         public static void tearDown() {
             sThreatsOfInterestMap.clear();
             sMetadataMap.clear();
@@ -88,6 +101,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         public static void setResult(int result) {
             sResult = result;
+        }
+
+        public static void setVerifyAppsResult(int result) {
+            sVerifyAppsResult = result;
         }
     }
 
@@ -265,5 +282,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     @CalledByNative
     static long getSafeBrowsingApiUrlCheckTimeObserverResult() {
         return sSafeBrowsingApiUrlCheckTimeObserver.getCapturedUrlCheckTimeDeltaMicros();
+    }
+
+    @CalledByNative
+    static void setVerifyAppsResult(int result) {
+        MockSafetyNetApiHandler.setVerifyAppsResult(result);
     }
 }

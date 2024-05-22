@@ -214,6 +214,13 @@ public final class SafeBrowsingApiBridge {
                                 callbackId, resultStatus, metadata, checkDelta);
             }
         }
+
+        @Override
+        public void onVerifyAppsEnabledDone(long callbackId, int result) {
+            synchronized (sSafetyNetApiHandlerLock) {
+                SafeBrowsingApiBridgeJni.get().onVerifyAppsEnabledDone(callbackId, result);
+            }
+        }
     }
 
     private static class SafeBrowsingApiLookupDoneObserver
@@ -321,6 +328,34 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
+    /**
+     * Check if app verification is enabled through the SafetyNet API.
+     *
+     * <p>Must only be called if {@link #ensureSafetyNetApiInitialized()} returns true.
+     */
+    @CalledByNative
+    public static void isVerifyAppsEnabled(long callbackId) {
+        synchronized (sSafetyNetApiHandlerLock) {
+            assert sSafetyNetApiHandlerInitCalled;
+            assert sSafetyNetApiHandler != null;
+            sSafetyNetApiHandler.isVerifyAppsEnabled(callbackId);
+        }
+    }
+
+    /**
+     * Prompt the user to enable app verification through the SafetyNet API.
+     *
+     * <p>Must only be called if {@link #ensureSafetyNetApiInitialized()} returns true.
+     */
+    @CalledByNative
+    public static void enableVerifyApps(long callbackId) {
+        synchronized (sSafetyNetApiHandlerLock) {
+            assert sSafetyNetApiHandlerInitCalled;
+            assert sSafetyNetApiHandler != null;
+            sSafetyNetApiHandler.enableVerifyApps(callbackId);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onUrlCheckDoneBySafetyNetApi(
@@ -333,5 +368,7 @@ public final class SafeBrowsingApiBridge {
                 int[] threatAttributes,
                 int responseStatus,
                 long checkDelta);
+
+        void onVerifyAppsEnabledDone(long callbackId, int result);
     }
 }

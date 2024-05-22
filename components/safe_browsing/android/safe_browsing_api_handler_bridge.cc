@@ -422,6 +422,19 @@ PendingSafeBrowsingCallbacksMap& GetPendingSafeBrowsingCallbacksMap() {
   return *pending_safe_browsing_callbacks;
 }
 
+using PendingVerifyAppsCallbacksMap = std::unordered_map<
+    jlong,
+    SafeBrowsingApiHandlerBridge::VerifyAppsResponseCallback>;
+PendingVerifyAppsCallbacksMap& GetPendingVerifyAppsCallbacks() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Holds the list of callback objects that we are currently waiting to hear
+  // the result of from GmsCore.
+  // The key is a unique count-up integer.
+  static base::NoDestructor<PendingVerifyAppsCallbacksMap> pending_callbacks;
+  return *pending_callbacks;
+}
+
 bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
@@ -614,6 +627,30 @@ void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
                      response_status, check_delta_microseconds));
 }
 
+void OnVerifyAppsEnabledDone(jlong callback_id, jint j_result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PendingVerifyAppsCallbacksMap& pending_callbacks =
+      GetPendingVerifyAppsCallbacks();
+  bool found = base::Contains(pending_callbacks, callback_id);
+  DCHECK(found) << "Not found in pending_verify_apps_callbacks: "
+                << callback_id;
+  if (!found) {
+    return;
+  }
+
+  SafeBrowsingApiHandlerBridge::VerifyAppsResponseCallback callback =
+      std::move(pending_callbacks[callback_id]);
+  std::move(callback).Run(static_cast<VerifyAppsEnabledResult>(j_result));
+}
+
+void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
+                                                       jlong callback_id,
+                                                       jint j_result) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OnVerifyAppsEnabledDone, callback_id, j_result));
+}
+
 //
 // SafeBrowsingApiHandlerBridge
 //
@@ -729,6 +766,31 @@ bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
     return false;
   return StartAllowlistCheck(
       url, safe_browsing::SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST);
+}
+
+void SafeBrowsingApiHandlerBridge::StartIsVerifyAppsEnabled(
+    VerifyAppsResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
+    std::move(callback).Run(VerifyAppsEnabledResult::FAILED);
+  }
+
+  jlong callback_id = next_verify_apps_callback_id_++;
+  GetPendingVerifyAppsCallbacks().insert({callback_id, std::move(callback)});
+  Java_SafeBrowsingApiBridge_isVerifyAppsEnabled(env, callback_id);
+}
+void SafeBrowsingApiHandlerBridge::StartEnableVerifyApps(
+    VerifyAppsResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
+    std::move(callback).Run(VerifyAppsEnabledResult::FAILED);
+  }
+
+  jlong callback_id = next_verify_apps_callback_id_++;
+  GetPendingVerifyAppsCallbacks().insert({callback_id, std::move(callback)});
+  Java_SafeBrowsingApiBridge_enableVerifyApps(env, callback_id);
 }
 
 void SafeBrowsingApiHandlerBridge::OnSafeBrowsingApiNonRecoverableFailure() {

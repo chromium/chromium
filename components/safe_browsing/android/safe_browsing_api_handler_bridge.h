@@ -26,6 +26,8 @@ class SafeBrowsingApiHandlerBridge {
  public:
   using ResponseCallback =
       base::OnceCallback<void(SBThreatType, const ThreatMetadata&)>;
+  using VerifyAppsResponseCallback =
+      base::OnceCallback<void(VerifyAppsEnabledResult)>;
 
   SafeBrowsingApiHandlerBridge() = default;
 
@@ -50,6 +52,14 @@ class SafeBrowsingApiHandlerBridge {
                                  const SBThreatTypeSet& threat_types);
 
   bool StartCSDAllowlistCheck(const GURL& url);
+
+  // Query whether app verification is enabled. Will run `callback` with
+  // the result of the query.
+  void StartIsVerifyAppsEnabled(VerifyAppsResponseCallback callback);
+
+  // Prompt the user to enable app verification. Will run `callback`
+  // with the result of the query.
+  void StartEnableVerifyApps(VerifyAppsResponseCallback callback);
 
   // Called when a non-recoverable failure is encountered from SafeBrowsing API.
   void OnSafeBrowsingApiNonRecoverableFailure();
@@ -82,6 +92,10 @@ class SafeBrowsingApiHandlerBridge {
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore SafeBrowsing API.
   jlong next_safe_browsing_callback_id_ = 0;
+
+  // Used as a key to identify unique requests sent to Java related to
+  // SafetyNet app verification.
+  jlong next_verify_apps_callback_id_ = 0;
 
   // Whether SafeBrowsing API is available. Set to false if previous call to
   // SafeBrowsing API has encountered a non-recoverable failure. If set to

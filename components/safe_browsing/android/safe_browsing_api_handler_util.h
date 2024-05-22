@@ -125,6 +125,17 @@ enum class UmaRemoteCallResult {
   MAX_VALUE
 };
 
+// LINT.IfChange
+// The result of either SafetyNet.isVerifyAppsEnabled or
+// SafetyNet.enableVerifyApps.
+enum class VerifyAppsEnabledResult {
+  SUCCESS_ENABLED = 0,
+  SUCCESS_NOT_ENABLED = 1,
+  TIMEOUT = 2,
+  FAILED = 3,
+};
+// LINT.ThenChange(/components/safe_browsing/android/java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java)
+
 // This parses the JSON from the GMSCore API and then:
 //   1) Picks the most severe threat type
 //   2) Parses that threat's key/value pairs into the metadata struct.
