@@ -121,7 +121,7 @@ void VideoStreamCoordinator::StopInternal(
                                                          actual_fps);
       video_stream_start_time_.reset();
 
-      if (rendered_frame_count > 0) {
+      if (GetVideoStreamView()) {
         float rendered_percent = static_cast<double>(rendered_frame_count) /
                                  video_stream_total_frames_;
         media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
