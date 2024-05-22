@@ -49,7 +49,8 @@ GenericFontFamilySettings::GenericFontFamilySettings(
       sans_serif_font_family_map_(other.sans_serif_font_family_map_),
       cursive_font_family_map_(other.cursive_font_family_map_),
       fantasy_font_family_map_(other.fantasy_font_family_map_),
-      math_font_family_map_(other.math_font_family_map_) {}
+      math_font_family_map_(other.math_font_family_map_),
+      first_available_font_for_families_(other.first_available_font_for_families_) {}
 
 GenericFontFamilySettings& GenericFontFamilySettings::operator=(
     const GenericFontFamilySettings& other) {
@@ -60,6 +61,7 @@ GenericFontFamilySettings& GenericFontFamilySettings::operator=(
   cursive_font_family_map_ = other.cursive_font_family_map_;
   fantasy_font_family_map_ = other.fantasy_font_family_map_;
   math_font_family_map_ = other.math_font_family_map_;
+  first_available_font_for_families_ = other.first_available_font_for_families_;
   return *this;
 }
 
