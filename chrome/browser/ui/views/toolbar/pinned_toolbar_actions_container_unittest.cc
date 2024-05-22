@@ -77,7 +77,8 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
         // should be visible since buttons in the toolbar are only removed after
         // animations finish running, which is not reliable in unit tests on
         // Mac.
-        if (!container()->IsActionPinnedOrPoppedOut(button->GetActionId())) {
+        if (!container()->IsActionPinned(button->GetActionId()) &&
+            !container()->IsActionPoppedOutForTesting(button->GetActionId())) {
           continue;
         }
 #endif

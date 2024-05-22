@@ -252,7 +252,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<TranslateIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
+                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kVirtualCardEnroll:
         add_page_action_icon(

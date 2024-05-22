@@ -63,14 +63,12 @@ PageActionIconView::PageActionIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
     const char* name_for_histograms,
-    actions::ActionId action_id,
     bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       command_updater_(command_updater),
       delegate_(delegate),
       command_id_(command_id),
-      action_id_(action_id),
       name_for_histograms_(name_for_histograms),
       ephemeral_(ephemeral) {
   DCHECK(delegate_);

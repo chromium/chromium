@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -19,8 +18,7 @@ class TranslateIconView : public PageActionIconView {
  public:
   TranslateIconView(CommandUpdater* command_updater,
                     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-                    PageActionIconView::Delegate* page_action_icon_delegate,
-                    Browser* browser);
+                    PageActionIconView::Delegate* page_action_icon_delegate);
   TranslateIconView(const TranslateIconView&) = delete;
   TranslateIconView& operator=(const TranslateIconView&) = delete;
   ~TranslateIconView() override;
@@ -38,8 +36,6 @@ class TranslateIconView : public PageActionIconView {
  private:
   // Returns the Partial Translate bubble instance for the Translate icon.
   views::BubbleDialogDelegate* GetPartialTranslateBubble() const;
-
-  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_
