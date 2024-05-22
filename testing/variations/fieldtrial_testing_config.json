@@ -5121,6 +5121,21 @@
             ]
         }
     ],
+    "CrOSBluetoothFlossTelephony": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BluetoothFlossTelephony"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothHfpSuperWideband": [
         {
             "platforms": [
