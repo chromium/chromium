@@ -693,7 +693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.QueueSize" units="count"
-    expires_after="2024-07-01">
+    expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1612,7 +1612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Trash.DirectorySetupFailed"
-    enum="FileManagerTrashDirectorySetupFailedStep" expires_after="2024-06-30">
+    enum="FileManagerTrashDirectorySetupFailedStep" expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1622,7 +1622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Trash.FailedTrashing" enum="FailedTrashingType"
-    expires_after="2024-06-30">
+    expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1631,7 +1631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Trash.RestoreFailedNoParent"
-    enum="RestoreFailedNoParentType" expires_after="2024-06-30">
+    enum="RestoreFailedNoParentType" expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
