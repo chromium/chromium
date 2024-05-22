@@ -535,9 +535,9 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Simulate URL being focus changes.
-        mMediator.onOmniboxSessionStateChange(true);
-        mMediator.onOmniboxSessionStateChange(false);
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(false);
+        mMediator.propagateOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
@@ -850,7 +850,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn(url.getSpec());
 
         mMediator.onNativeInitialized();
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController)
                 .startZeroSuggest(url.getSpec(), url, pageClassification, title);
@@ -872,7 +872,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
@@ -1042,7 +1042,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -1077,7 +1077,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -1087,7 +1087,7 @@ public class AutocompleteMediatorUnitTest {
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
 
         // Cancel the interaction.
-        mMediator.onOmniboxSessionStateChange(false);
+        mMediator.propagateOmniboxSessionStateChange(false);
 
         // Report last results. Observe no final report.
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
@@ -1108,12 +1108,12 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
         // Cancel the interaction.
-        mMediator.onOmniboxSessionStateChange(false);
+        mMediator.propagateOmniboxSessionStateChange(false);
 
         // Report first results. Observe no report (no focus).
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
@@ -1139,7 +1139,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -1164,7 +1164,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.propagateOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
