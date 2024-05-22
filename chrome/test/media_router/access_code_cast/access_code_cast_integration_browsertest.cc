@@ -293,13 +293,15 @@ content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
   // won't do anything and the test will hang.
   EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
+  // Setting the flag to prevent widget deactivation before creating the dialog.
+  AccessCodeCastDialog::ShouldBlockWidgetActivationChangedForTest(true);
+
   // This string is empty since the ShowUi function requires a string. We do not
   // need one in the context we are using the function.
   ShowUi("");
   EXPECT_TRUE(VerifyUi());
   content::WebContents* dialog_contents = observer.GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
-  AccessCodeCastDialog::ShouldBlockWidgetActivationChangedForTest(true);
 
   return dialog_contents;
 }
