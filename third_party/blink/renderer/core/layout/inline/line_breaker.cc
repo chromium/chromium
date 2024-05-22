@@ -3343,6 +3343,19 @@ bool LineBreaker::IsMonolithicRuby(
     return true;
   }
 
+  if (!auto_wrap_) {
+    return true;
+  }
+
+  // We don't break rubies in text-wrap:balance and text-wrap:pretty
+  // because the sum of broken ruby inline-size can be different from the
+  // inline-size of a non-broken ruby.
+  TextWrap container_wrap = node_.Style().GetTextWrap();
+  if (container_wrap != TextWrap::kWrap &&
+      container_wrap != TextWrap::kNoWrap) {
+    return true;
+  }
+
   // Not breakable if the number of the base letters is <= 4 and the number of
   // the annotation letters is <= 8.
   //
