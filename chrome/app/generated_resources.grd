@@ -16337,6 +16337,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
         This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.
       </message>
 
+      <!-- Web-modal dialog shown during Digital Credential request -->
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">
+        Retrieve credentials from phone or tablet.
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY" translateable="false">
+        Scan this QR code with a camera on the device from which you want to retrieve credentials for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT" translateable="false">
+        QR code
+      </message>
+
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">
         Side Search

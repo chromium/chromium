@@ -512,6 +512,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/webid/digital_identity_provider_desktop.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -7880,12 +7881,16 @@ void ChromeContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
       base::BindOnce(&RunDigitalIdentityCallback, std::move(bridge),
                      std::move(callback)));
 }
+#endif
 
 std::unique_ptr<content::DigitalIdentityProvider>
 ChromeContentBrowserClient::CreateDigitalIdentityProvider() {
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<DigitalIdentityProviderAndroid>();
-}
+#else
+  return std::make_unique<DigitalIdentityProviderDesktop>();
 #endif
+}
 
 bool ChromeContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {

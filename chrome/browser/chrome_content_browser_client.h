@@ -911,10 +911,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin,
       bool is_only_requesting_age,
       DigitalIdentityInterstitialCallback callback) override;
+#endif
 
   std::unique_ptr<content::DigitalIdentityProvider>
   CreateDigitalIdentityProvider() override;
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
