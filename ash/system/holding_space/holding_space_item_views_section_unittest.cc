@@ -67,7 +67,8 @@ class HoldingSpaceItemViewsSectionTest
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
     widget_ = std::make_unique<views::Widget>();
-    widget_->Init(views::Widget::InitParams{});
+    widget_->Init(views::Widget::InitParams{
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET});
 
     view_delegate_ = std::make_unique<HoldingSpaceViewDelegate>(nullptr);
 

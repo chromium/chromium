@@ -93,11 +93,11 @@ LoginShelfWidget::LoginShelfWidget(Shelf* shelf, aura::Window* container)
           ->lock_screen_action_background_controller()));
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "LoginShelfWidget";
   params.delegate = delegate_;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = container;
   Init(std::move(params));
   SetContentsView(delegate_);

@@ -280,9 +280,9 @@ AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
   views::Widget* const parent = host_view_->GetWidget();
 
   widget_ = new views::Widget();
-  views::Widget::InitParams params;
-
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = parent->GetNativeWindow();
   params.delegate = dialog.release();

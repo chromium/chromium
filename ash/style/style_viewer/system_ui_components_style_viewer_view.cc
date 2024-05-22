@@ -221,10 +221,11 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   // Show PillButton on start.
   viewer_view->ShowComponentInstances(u"PillButton");
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.parent =
       desks_util::GetActiveDeskContainerForRoot(Shell::GetPrimaryRootWindow());
-  params.type = views::Widget::InitParams::TYPE_WINDOW;
   params.delegate = viewer_view;
 
   // The widget is owned by the native widget.

@@ -103,11 +103,11 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
   dialog->SetMiddleContentView(std::move(list_view));
   dialog->SetMiddleContentAlignment(views::LayoutAlignment::kStart);
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.context = Shell::GetPrimaryRootWindow();
   params.delegate = dialog.release();
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-
   dialog_widget_ = new views::Widget();
   dialog_widget_->Init(std::move(params));
 

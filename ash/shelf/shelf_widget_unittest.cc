@@ -430,7 +430,9 @@ TEST_F(ShelfWidgetTest, CheckVerticalShelfCornersInOverviewMode) {
 // Verifies when the shell is deleted with a full screen window we don't crash.
 TEST_F(ShelfWidgetTest, DontReferenceShelfAfterDeletion) {
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   // Widget is now owned by the parent window.
@@ -510,7 +512,9 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
 
   // Create a widget to make sure that the shelf does auto-hide.
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   // Widget is now owned by the parent window.
@@ -572,7 +576,9 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
                          shelf_bounds.y() - kWindowHeight + kOverlapSize,
                          kWindowWidth, kWindowHeight);
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = bounds;
   params.context = GetContext();
   // Widget is now owned by the parent window.

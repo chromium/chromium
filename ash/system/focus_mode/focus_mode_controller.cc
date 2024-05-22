@@ -555,12 +555,12 @@ void FocusModeController::CreateMediaWidget() {
   CHECK(in_focus_session());
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "FocusModeMediaWidget";
   params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                       kShellWindowId_OverlayContainer);
   params.child = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
   // The media window should be hidden.
   params.layer_type = ui::LAYER_NOT_DRAWN;

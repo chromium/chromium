@@ -76,8 +76,8 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
   // Create widget if we are testing views.
   void CreateWidget() {
     views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 400, 80);
     widget_ = std::make_unique<views::Widget>();
     widget_->Init(std::move(params));

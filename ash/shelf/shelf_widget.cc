@@ -680,10 +680,10 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
   DCHECK(shelf_container);
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "ShelfWidget";
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.delegate = delegate_view_.get();
   params.parent = shelf_container;
 

@@ -255,7 +255,9 @@ TEST_P(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
   // Create a test widget to make auto-hiding work. Auto-hidden shelf will
   // remain visible if no windows are shown, making it impossible to properly
   // test.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   views::Widget* widget = new views::Widget;

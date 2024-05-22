@@ -199,7 +199,9 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
 }
 
 views::Widget* ShelfLayoutManagerTestBase::CreateTestWidget() {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   views::Widget* widget = new views::Widget;

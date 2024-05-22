@@ -793,11 +793,11 @@ void HotseatWidget::Initialize(aura::Window* container, Shelf* shelf) {
   DCHECK(shelf);
   shelf_ = shelf;
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "HotseatWidget";
   params.delegate = delegate_view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = container;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   Init(std::move(params));

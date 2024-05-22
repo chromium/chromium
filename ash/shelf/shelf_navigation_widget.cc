@@ -408,11 +408,11 @@ ShelfNavigationWidget::~ShelfNavigationWidget() {
 void ShelfNavigationWidget::Initialize(aura::Window* container) {
   DCHECK(container);
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "ShelfNavigationWidget";
   params.delegate = delegate_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = container;
   Init(std::move(params));
   set_focus_on_creation(false);

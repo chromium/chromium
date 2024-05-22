@@ -83,6 +83,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetName();
   // TODO(b/319467834): Decide what container this widget should be on.

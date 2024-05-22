@@ -594,7 +594,9 @@ void Combobox::ShowDropDownMenu() {
       std::make_unique<ComboboxMenuView>(weak_ptr_factory_.GetWeakPtr());
   menu_view_ = menu_view.get();
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = kMenuShadowElevation;
