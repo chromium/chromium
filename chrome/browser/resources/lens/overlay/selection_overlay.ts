@@ -137,6 +137,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private screenshotDataUri: string;
   private cursorImgUri: string = 'lens.svg';
   private isPointerInside = false;
+  private isPointerInsideContextMenu = false;
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
@@ -325,12 +326,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handlePointerEnter() {
     this.isPointerInside = true;
-    this.dispatchEvent(
-        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-          bubbles: true,
-          composed: true,
-          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
-        }));
+    if (!this.isPointerInsideContextMenu) {
+      this.dispatchEvent(
+          new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+            bubbles: true,
+            composed: true,
+            detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+          }));
+    }
   }
 
   private handlePointerLeave(event: PointerEvent) {
@@ -343,7 +346,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         boundingRect.top <= event.clientY &&
         boundingRect.right >= event.clientX &&
         boundingRect.bottom >= event.clientY;
-    if (!pointerInBounds) {
+    if (!pointerInBounds && !this.isPointerInsideContextMenu) {
       this.dispatchEvent(
           new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
             bubbles: true,
@@ -594,11 +597,20 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Make the cursor disappear over the context menu, as if leaving the overlay.
   private handlePointerEnterContextMenu() {
     this.isPointerInside = false;
+    this.isPointerInsideContextMenu = true;
+    // Hide the cursor tooltip.
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.NONE},
+        }));
     unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handlePointerLeaveContextMenu() {
     this.isPointerInside = true;
+    this.isPointerInsideContextMenu = false;
   }
 }
 

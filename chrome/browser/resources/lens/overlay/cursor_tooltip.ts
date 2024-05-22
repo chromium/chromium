@@ -16,10 +16,11 @@ export interface CursorTooltipData {
 }
 
 export enum CursorTooltipType {
-  REGION_SEARCH = 0,
-  TEXT_HIGHLIGHT = 1,
-  CLICK_SEARCH = 2,
-  LIVE_PAGE = 3,
+  NONE = 0,
+  REGION_SEARCH = 1,
+  TEXT_HIGHLIGHT = 2,
+  CLICK_SEARCH = 3,
+  LIVE_PAGE = 4,
 }
 
 export interface CursorTooltipElement {
@@ -56,7 +57,13 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
         reflectToAttribute: true,
       },
 
-      disableRendering: {
+      tooltipHidden: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      isNoneType: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
@@ -68,6 +75,9 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
 
   // The tooltip message string.
   private tooltipMessage: string;
+
+  // The queued tooltip type.
+  private queuedTooltipType?: CursorTooltipType;
 
   // The queued tooltip message string.
   private queuedTooltipMessage: string;
@@ -81,8 +91,12 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
   // The queued tooltip offset pixels.
   private queuedOffsetTopPx = 0;
 
-  // Whether or not to disable rendering the tooltip.
-  private disableRendering: boolean;
+  // Whether or not the tooltip is hidden.
+  private tooltipHidden: boolean;
+
+  // Whether or not the type is NONE and the tooltip should not be
+  // rendered.
+  private isNoneType: boolean;
 
   // Whether or not to pause tooltip changes. If true, the tooltip changes
   // will be queued and applied when this becomes unset. This allows the
@@ -100,26 +114,41 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
   }
 
   hideTooltip() {
-    this.disableRendering = true;
+    this.tooltipHidden = true;
   }
 
-  showTooltip() {
-    this.disableRendering = false;
+  unhideTooltip() {
+    this.tooltipHidden = false;
   }
 
   setPauseTooltipChanges(shouldPauseTooltipChanges: boolean) {
     this.shouldPauseTooltipChanges = shouldPauseTooltipChanges;
-    if (!shouldPauseTooltipChanges) {
-      this.setTooltipFromQueued();
+    if (!shouldPauseTooltipChanges && this.queuedTooltipType) {
+      this.setTooltipImmediately(this.queuedTooltipType);
     }
   }
 
   setTooltip(type: CursorTooltipType) {
+    if (this.shouldPauseTooltipChanges) {
+      this.queuedTooltipType = type;
+    } else {
+      this.setTooltipImmediately(type);
+    }
+  }
+
+  private setTooltipImmediately(type: CursorTooltipType) {
+    if (type === CursorTooltipType.NONE) {
+      this.isNoneType = true;
+      return;
+    }
+    this.queuedTooltipType = undefined;
+    this.isNoneType = false;
     let offsetLeftPx = 0;
     let offsetTopPx = 0;
+    let tooltipMessage = '';
     if (type === CursorTooltipType.LIVE_PAGE) {
       offsetTopPx = 24;
-      this.queuedTooltipMessage = this.i18n('cursorTooltipLivePageMessage');
+      tooltipMessage = this.i18n('cursorTooltipLivePageMessage');
     } else {
       // Add half the width of the cursor tooltip icon.
       offsetLeftPx += 16;
@@ -129,36 +158,29 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
       if (type === CursorTooltipType.REGION_SEARCH) {
         offsetTopPx += 6;
         offsetLeftPx += 3;
-        this.queuedTooltipMessage = this.i18n('cursorTooltipDragMessage');
+        tooltipMessage = this.i18n('cursorTooltipDragMessage');
       } else if (type === CursorTooltipType.TEXT_HIGHLIGHT) {
         offsetTopPx += 8;
         offsetLeftPx += 3;
-        this.queuedTooltipMessage =
-            this.i18n('cursorTooltipTextHighlightMessage');
+        tooltipMessage = this.i18n('cursorTooltipTextHighlightMessage');
       } else if (type === CursorTooltipType.CLICK_SEARCH) {
         offsetTopPx += 8;
         offsetLeftPx += 4;
-        this.queuedTooltipMessage = this.i18n('cursorTooltipClickMessage');
+        tooltipMessage = this.i18n('cursorTooltipClickMessage');
       }
       // LINT.ThenChange(//chrome/browser/resources/lens/overlay/selection_overlay.ts:CursorOffsetValues)
     }
-    this.queuedOffsetLeftPx = offsetLeftPx;
-    this.queuedOffsetTopPx = offsetTopPx;
-    if (!this.shouldPauseTooltipChanges) {
-      this.setTooltipFromQueued();
-    }
-  }
 
-  private setTooltipFromQueued() {
-    this.style.setProperty('--offset-top', toPixels(this.queuedOffsetTopPx));
-    this.style.setProperty('--offset-left', toPixels(this.queuedOffsetLeftPx));
-    this.tooltipMessage = this.queuedTooltipMessage;
+    this.style.setProperty('--offset-top', toPixels(offsetTopPx));
+    this.style.setProperty('--offset-left', toPixels(offsetLeftPx));
+    this.tooltipMessage = tooltipMessage;
   }
 
   private getHiddenCursorClass(
       isPointerInside: boolean, canShowTooltipFromPrefs: boolean,
-      disableRendering: boolean): string {
-    return (isPointerInside && canShowTooltipFromPrefs && !disableRendering) ?
+      tooltipHidden: boolean, isNoneType: boolean): string {
+    return (isPointerInside && canShowTooltipFromPrefs && !tooltipHidden &&
+            !isNoneType) ?
         '' :
         'hidden';
   }

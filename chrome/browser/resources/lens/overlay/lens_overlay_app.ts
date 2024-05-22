@@ -125,7 +125,7 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   private handlePointerLeaveActionButton() {
-    this.$.cursorTooltip.showTooltip();
+    this.$.cursorTooltip.unhideTooltip();
   }
 
   private onBackgroundScrimClicked() {
