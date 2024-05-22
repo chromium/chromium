@@ -21,7 +21,7 @@
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/LibraryLoader_jni.h"  // nogncheck
 #else
-#include "base/base_jni/LibraryLoader_jni.h"
+#include "base/library_loader_jni/LibraryLoader_jni.h"
 #endif
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)

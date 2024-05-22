@@ -10,7 +10,7 @@
 #include "base/system/sys_info.h"
 
 // Must come after other headers because it uses JSONVerbosityLevel.
-#include "base/base_jni/StatisticsRecorderAndroid_jni.h"
+#include "base/metrics_jni/StatisticsRecorderAndroid_jni.h"
 
 namespace base {
 namespace android {

@@ -17,7 +17,7 @@
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/TraceEvent_jni.h"  // nogncheck
 #else
-#include "base/base_jni/TraceEvent_jni.h"
+#include "base/tasks_jni/TraceEvent_jni.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

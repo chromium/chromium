@@ -15,7 +15,7 @@
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/Callback_jni.h"  // nogncheck
 #else
-#include "base/base_jni/Callback_jni.h"
+#include "base/callback_jni/Callback_jni.h"
 #endif
 
 namespace base {

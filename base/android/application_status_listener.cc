@@ -6,11 +6,11 @@
 
 #include <jni.h>
 
-#include "base/base_jni/ApplicationStatus_jni.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/tasks_jni/ApplicationStatus_jni.h"
 #include "base/trace_event/base_tracing.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

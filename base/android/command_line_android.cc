@@ -10,7 +10,7 @@
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/CommandLine_jni.h"  // nogncheck
 #else
-#include "base/base_jni/CommandLine_jni.h"
+#include "base/command_line_jni/CommandLine_jni.h"
 #endif
 
 using base::android::ConvertUTF8ToJavaString;
