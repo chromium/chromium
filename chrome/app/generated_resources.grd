@@ -16910,6 +16910,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_INFO_BUTTON_LABEL" desc="Text that is shown in the tooltip of the info button in the Lens Overlay.">
       Learn more
     </message>
+    <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL" desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature.">
+      Select anything to search with Google Lens or press escape to exit Google Lens
+    </message>
     <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE" desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
       Select anything to search with Google Lens
     </message>

@@ -46,6 +46,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("dismiss",
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString("info", IDS_LENS_OVERLAY_INFO_BUTTON_LABEL);
+  html_source->AddLocalizedString("initialToastLabel",
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL);
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK_LABEL);
