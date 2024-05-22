@@ -414,8 +414,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   metadata.alpha_type = kOpaque_SkAlphaType;
   metadata.usage = 0;
 
-  return ImportUnowned(ExportedSharedImage(
-      Mailbox::GenerateForSharedImage(), metadata, SyncToken(), GL_TEXTURE_2D));
+  return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
+                                           SyncToken(), GL_TEXTURE_2D));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;

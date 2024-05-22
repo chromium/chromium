@@ -69,7 +69,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(
@@ -110,7 +110,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
   {
     base::AutoLock lock(lock_);
@@ -154,7 +154,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(
@@ -249,7 +249,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
 #endif
 
   auto client_buffer_handle = buffer_handle.Clone();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(
@@ -278,7 +278,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   CHECK(!si_info.meta.format.PrefersExternalSampler());
 #endif
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto gmb_type = buffer_handle.type;
   {
     base::AutoLock lock(lock_);
@@ -330,7 +330,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
       gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
   handle.region = std::move(shared_memory_region);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
@@ -380,7 +380,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   DCHECK(IsPlaneValidForGpuMemoryBufferFormat(plane,
                                               gpu_memory_buffer->GetFormat()));
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
   {
     base::AutoLock lock(lock_);

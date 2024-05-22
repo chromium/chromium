@@ -47,8 +47,7 @@ class StubSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle) override {
-    mailbox_for_most_recently_created_shared_image_ =
-        gpu::Mailbox::GenerateForSharedImage();
+    mailbox_for_most_recently_created_shared_image_ = gpu::Mailbox::Generate();
     auto gmb_handle_type = emulate_client_provided_native_buffer_
                                ? GetNativeBufferType()
                                : gfx::EMPTY_BUFFER;
@@ -160,7 +159,7 @@ class StubSharedImageInterface : public SharedImageInterface {
 }  // namespace
 
 TEST(ClientSharedImageTest, ImportUnowned) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =

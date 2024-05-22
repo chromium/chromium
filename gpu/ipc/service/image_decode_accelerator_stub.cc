@@ -298,7 +298,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     // the buffer belongs to, but here we already have the buffer handle, so it
     // should be OK to pass a null SurfaceHandle (it's not clear what
     // SurfaceHandle was used to create the original buffers).
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
     if (!channel_->shared_image_stub()->CreateSharedImage(
             mailbox, std::move(plane_handle), plane_format, plane_size,
             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,

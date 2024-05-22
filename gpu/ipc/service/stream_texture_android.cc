@@ -234,7 +234,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   // need to ensure that it gets updated here.
 
   auto scoped_make_current = MakeCurrent(context_state_.get());
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   // TODO(vikassoni): Hardcoding colorspace to SRGB. Figure how if we have a
   // colorspace and wire it here.

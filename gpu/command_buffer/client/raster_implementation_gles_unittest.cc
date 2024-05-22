@@ -354,7 +354,7 @@ TEST_F(RasterImplementationGLESTest, GetQueryObjectui64vEXT) {
 
 TEST_F(RasterImplementationGLESTest, CreateAndConsumeForGpuRaster) {
   const GLuint kTextureId = 23;
-  const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const auto mailbox = gpu::Mailbox::Generate();
   EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name))
       .WillOnce(Return(kTextureId));
   GLuint texture_id = ri_->CreateAndConsumeForGpuRaster(mailbox);

@@ -238,7 +238,7 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
 gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   DCHECK(channel_);
 
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   // Use DCOMPTextureBacking as the backing to hold DCOMPSurfaceProxy i.e. this,
   // and be able to retrieve it later via ProduceOverlay.
