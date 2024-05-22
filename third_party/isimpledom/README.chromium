@@ -1,7 +1,8 @@
 Name: ISimpleDOM COM interfaces for accessibility
 Short Name: ISimpleDOM
-URL: http://developer.mozilla.org/en-US/docs/Accessibility/AT-APIs
-Version: unknown
+URL: https://searchfox.org/mozilla-central/source/accessible/interfaces/msaa/
+Version: N/A
+Date: 2010-07-02
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: LICENSE
 Security Critical: yes
