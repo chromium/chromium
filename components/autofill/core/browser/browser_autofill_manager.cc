@@ -1298,8 +1298,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback) {
-  std::vector<Suggestion> suggestions;
-  GetAvailableSuggestions(form, field, trigger_source, suggestions, context);
+  std::vector<Suggestion> suggestions =
+      GetAvailableSuggestions(form, field, trigger_source, context);
 
   auto ShouldSuppressSuggestions = [&] {
     switch (context.suppress_reason) {
@@ -1704,10 +1704,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // suggestions generated, but only the way suggestions behave when they are
   // accepted. For this reason, checking whether suggestions are available can
   // be done with the `kUnspecified` suggestion trigger source.
-  std::vector<Suggestion> suggestions;
-  GetAvailableSuggestions(form, field,
-                          AutofillSuggestionTriggerSource::kUnspecified,
-                          suggestions, context);
+  std::vector<Suggestion> suggestions = GetAvailableSuggestions(
+      form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2749,36 +2747,34 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
   }
 }
 
-void BrowserAutofillManager::GetAvailableSuggestions(
+std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    std::vector<Suggestion>& suggestions,
     SuggestionsContext& context) {
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
-    suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
+    return client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(),
         client().ClassifyAsPasswordForm(*this, form.global_id(),
                                         field.global_id()),
         field.value(), trigger_source);
-    return;
   }
 
   if (context.should_show_mixed_content_warning) {
     Suggestion warning_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
     warning_suggestion.type = SuggestionType::kMixedFormMessage;
-    suggestions.emplace_back(warning_suggestion);
-    return;
+    return {warning_suggestion};
   }
 
   if (!context.is_autofill_available ||
       context.do_not_generate_autofill_suggestions) {
-    return;
+    return {};
   }
 
+  std::vector<Suggestion> suggestions;
   if (context.filling_product == FillingProduct::kCreditCard) {
     FieldType trigger_field_type =
         context.focused_field ? context.focused_field->Type().GetStorableType()
@@ -2847,13 +2843,12 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     if (!suggestions.empty() && ablation_group == AblationGroup::kAblation) {
       // Logic for disabling/ablating autofill.
       context.suppress_reason = SuppressReason::kAblation;
-      suggestions.clear();
-      return;
+      return {};
     }
   }
   if (suggestions.empty() ||
       context.filling_product != FillingProduct::kCreditCard) {
-    return;
+    return suggestions;
   }
   // Don't provide credit card suggestions for non-secure pages, but do
   // provide them for secure pages with passive mixed content (see
@@ -2868,6 +2863,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         SuggestionType::kInsecureContextPaymentDisabledMessage;
     suggestions.assign(1, warning_suggestion);
   }
+  return suggestions;
 }
 
 autofill_metrics::FormEventLoggerBase*

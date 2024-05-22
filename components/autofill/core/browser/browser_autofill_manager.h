@@ -530,19 +530,18 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Replaces the contents of `suggestions` with available suggestions for
-  // `field`. Which fields of the `form` are filled depends on the
-  // `trigger_source`.
-  // `context` could contain additional information about the suggestions, such
-  // as ablation study related fields.
+  // Returns a list with the suggestions available for `field`. Which fields of
+  // the `form` are filled depends on the `trigger_source`. `context` could
+  // contain additional information about the suggestions, such as ablation
+  // study related fields.
   // TODO(b/340494671): Rename to GetAvailableAddressAndCreditCardSuggestions.
   // TODO(b/340494671): Move ablation study fields out of the function and make
   // the context a const ref.
-  void GetAvailableSuggestions(const FormData& form,
-                               const FormFieldData& field,
-                               AutofillSuggestionTriggerSource trigger_source,
-                               std::vector<Suggestion>& suggestions,
-                               SuggestionsContext& context);
+  std::vector<Suggestion> GetAvailableSuggestions(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext& context);
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout,
