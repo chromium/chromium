@@ -12,11 +12,16 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.ui.base.WindowAndroid;
+
 /** JNI wrapper to trigger Android bottom sheet prompting the user to save their IBAN locally. */
 @JNINamespace("autofill")
 public class AutofillSaveIbanBottomSheetBridge {
     private long mNativeAutofillSaveIbanBottomSheetBridge;
     private CoordinatorFactory mCoordinatorFactory;
+    private WindowAndroid mWindow;
+    private TabModel mTabModel;
     @Nullable private AutofillSaveIbanBottomSheetCoordinator mCoordinator;
 
     /**
@@ -24,11 +29,17 @@ public class AutofillSaveIbanBottomSheetBridge {
      *
      * @param nativeAutofillSaveIbanBottomSheetBridge The bridge to trigger UI flow events
      *     (OnUiCanceled, OnUiAccepted, etc.).
+     * @param window The window where the bottom sheet should be shown.
+     * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
+     *     tab change.
      */
     @CalledByNative
     @VisibleForTesting
-    private AutofillSaveIbanBottomSheetBridge(long nativeAutofillSaveIbanBottomSheetBridge) {
+    private AutofillSaveIbanBottomSheetBridge(
+            long nativeAutofillSaveIbanBottomSheetBridge, WindowAndroid window, TabModel tabModel) {
         this(nativeAutofillSaveIbanBottomSheetBridge, AutofillSaveIbanBottomSheetCoordinator::new);
+        mWindow = window;
+        mTabModel = tabModel;
     }
 
     @VisibleForTesting

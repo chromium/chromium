@@ -9,7 +9,14 @@
 
 #include <memory>
 #include <string_view>
+
 #include "base/android/scoped_java_ref.h"
+
+class TabModel;
+
+namespace ui {
+class WindowAndroid;
+}
 
 namespace autofill {
 
@@ -19,7 +26,9 @@ class AutofillSaveIbanDelegate;
 // to trigger the save IBAN bottom sheet on Android.
 class AutofillSaveIbanBottomSheetBridge {
  public:
-  AutofillSaveIbanBottomSheetBridge();
+  // The window and tab model must not be null.
+  AutofillSaveIbanBottomSheetBridge(ui::WindowAndroid* window_android,
+                                    TabModel* tab_model);
 
   AutofillSaveIbanBottomSheetBridge(const AutofillSaveIbanBottomSheetBridge&) =
       delete;
@@ -36,9 +45,9 @@ class AutofillSaveIbanBottomSheetBridge {
   void OnUiCanceled(JNIEnv* env);
   void OnUiIgnored(JNIEnv* env);
 
+ private:
   void ResetSaveIbanDelegate();
 
- private:
   base::android::ScopedJavaGlobalRef<jobject>
       java_autofill_save_iban_bottom_sheet_bridge_;
   std::unique_ptr<AutofillSaveIbanDelegate> save_iban_delegate_;

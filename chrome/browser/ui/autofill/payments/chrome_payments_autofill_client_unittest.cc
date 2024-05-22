@@ -148,6 +148,21 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(*save_card_bridge, Hide());
   chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
 }
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       GetOrCreateAutofillSaveIbanBottomSheetBridge_IsNotNull) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
+
+  TestTabModel tab_model(profile());
+  tab_model.SetWebContentsList({web_contents()});
+  TabModelList::AddTabModel(&tab_model);
+
+  EXPECT_NE(
+      chrome_payments_client()->GetOrCreateAutofillSaveIbanBottomSheetBridge(),
+      nullptr);
+}
 #else   // !BUILDFLAG(IS_ANDROID)
 // Test that calling CreditCardUploadCompleted calls
 // SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.

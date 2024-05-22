@@ -24,6 +24,7 @@ namespace autofill {
 
 class AutofillErrorDialogControllerImpl;
 class AutofillSaveCardBottomSheetBridge;
+class AutofillSaveIbanBottomSheetBridge;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -60,6 +61,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #if BUILDFLAG(IS_ANDROID)
   AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge() override;
+  AutofillSaveIbanBottomSheetBridge*
+  GetOrCreateAutofillSaveIbanBottomSheetBridge();
 #else   // !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
@@ -149,6 +152,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillSaveCardBottomSheetBridge>
       autofill_save_card_bottom_sheet_bridge_;
+
+  std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
+      autofill_save_iban_bottom_sheet_bridge_;
 #endif
   const raw_ref<ContentAutofillClient> client_;
 

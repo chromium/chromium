@@ -39,6 +39,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
@@ -89,6 +91,23 @@ ChromePaymentsAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
     }
   }
   return autofill_save_card_bottom_sheet_bridge_.get();
+}
+
+AutofillSaveIbanBottomSheetBridge*
+ChromePaymentsAutofillClient::GetOrCreateAutofillSaveIbanBottomSheetBridge() {
+  if (!autofill_save_iban_bottom_sheet_bridge_) {
+    // During shutdown the window may be null. There is no need to show the
+    // bottom sheet during shutdown.
+    auto* window_android = web_contents()->GetTopLevelNativeWindow();
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    if (window_android && tab_model) {
+      autofill_save_iban_bottom_sheet_bridge_ =
+          std::make_unique<AutofillSaveIbanBottomSheetBridge>(window_android,
+                                                              tab_model);
+    }
+  }
+  return autofill_save_iban_bottom_sheet_bridge_.get();
 }
 #else   // !BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
@@ -193,7 +212,17 @@ void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableLocalIban)) {
+    // For new IBANs, the save IBAN prompt is shown in a bottom sheet.
+    if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
+      auto save_iban_delegate = std::make_unique<AutofillSaveIbanDelegate>(
+          std::move(callback), web_contents());
+      bridge->RequestShowContent(iban.GetIdentifierStringForAutofillDisplay(),
+                                 std::move(save_iban_delegate));
+    }
+  }
+#else
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())
