@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/paint/image_transfer_cache_entry.h"
+
 #include <stdint.h>
 
 #include <algorithm>
@@ -12,10 +14,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_op_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -119,27 +121,26 @@ class ImageTransferCacheEntryTest
   // is released by Skia, that flag will be set to true. Returns an empty vector
   // on failure.
   std::vector<sk_sp<SkImage>> CreateTestYUVImage(
-      std::unique_ptr<bool[]>* release_flags) {
+      base::HeapArray<bool>& release_flags) {
     std::vector<sk_sp<SkImage>> plane_images;
-    *release_flags = nullptr;
+    release_flags = base::HeapArray<bool>();
     if (GetParam() == SkYUVAInfo::PlaneConfig::kY_U_V ||
         GetParam() == SkYUVAInfo::PlaneConfig::kY_V_U) {
-      *release_flags =
-          std::unique_ptr<bool[]>(new bool[3]{false, false, false});
-      plane_images = {
-          CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT, SkColors::kWhite,
-                           release_flags->get()),
-          CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT, SkColors::kWhite,
-                           release_flags->get() + 1),
-          CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT, SkColors::kWhite,
-                           release_flags->get() + 2)};
+      release_flags = base::HeapArray<bool>::CopiedFrom(
+          std::to_array<bool>({false, false, false}));
+      plane_images = {CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT,
+                                       SkColors::kWhite, &release_flags[0]),
+                      CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT,
+                                       SkColors::kWhite, &release_flags[1]),
+                      CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT,
+                                       SkColors::kWhite, &release_flags[2])};
     } else if (GetParam() == SkYUVAInfo::PlaneConfig::kY_UV) {
-      *release_flags = std::unique_ptr<bool[]>(new bool[2]{false, false});
-      plane_images = {
-          CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT, SkColors::kWhite,
-                           release_flags->get()),
-          CreateSolidPlane(gr_context(), 32, 32, GL_RG8_EXT, SkColors::kWhite,
-                           release_flags->get() + 1)};
+      release_flags = base::HeapArray<bool>::CopiedFrom(
+          std::to_array<bool>({false, false}));
+      plane_images = {CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT,
+                                       SkColors::kWhite, &release_flags[0]),
+                      CreateSolidPlane(gr_context(), 32, 32, GL_RG8_EXT,
+                                       SkColors::kWhite, &release_flags[1])};
     } else {
       NOTREACHED_IN_MIGRATION();
       return {};
@@ -269,11 +270,12 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
 }
 
 TEST_P(ImageTransferCacheEntryTest, HardwareDecodedNoMipsAtCreation) {
-  std::unique_ptr<bool[]> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
+  base::HeapArray<bool> release_flags;
+  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
   const size_t plane_images_size = plane_images.size();
   ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
             plane_images_size);
+  ASSERT_EQ(release_flags.size(), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and do not
   // request generating mipmap chains. The |buffer_byte_size| is only used for
@@ -286,21 +288,20 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedNoMipsAtCreation) {
 
   // We didn't request generating mipmap chains, so the textures we created
   // above should stay alive until after the cache entry is deleted.
-  EXPECT_TRUE(std::none_of(release_flags.get(),
-                           release_flags.get() + plane_images_size,
+  EXPECT_TRUE(std::none_of(release_flags.begin(), release_flags.end(),
                            [](bool released) { return released; }));
   entry.reset();
-  EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images_size,
+  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
                           [](bool released) { return released; }));
 }
 
 TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
-  std::unique_ptr<bool[]> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
+  base::HeapArray<bool> release_flags;
+  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
   const size_t plane_images_size = plane_images.size();
   ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
             plane_images_size);
+  ASSERT_EQ(release_flags.size(), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and request
   // generating mipmap chains at creation time. The |buffer_byte_size| is only
@@ -313,8 +314,7 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
 
   // We requested generating mipmap chains at creation time, so the textures we
   // created above should be released by now.
-  EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images_size,
+  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
                           [](bool released) { return released; }));
   DeletePendingTextures();
 
@@ -328,11 +328,12 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
 }
 
 TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
-  std::unique_ptr<bool[]> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
+  base::HeapArray<bool> release_flags;
+  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
   const size_t plane_images_size = plane_images.size();
   ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
             plane_images_size);
+  ASSERT_EQ(release_flags.size(), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and do not
   // request generating mipmap chains at creation time. The |buffer_byte_size|
@@ -345,16 +346,14 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
 
   // We didn't request generating mip chains, so the textures we created above
   // should stay alive for now.
-  EXPECT_TRUE(std::none_of(release_flags.get(),
-                           release_flags.get() + plane_images_size,
+  EXPECT_TRUE(std::none_of(release_flags.begin(), release_flags.end(),
                            [](bool released) { return released; }));
 
   // Now request generating the mip chains.
   entry->EnsureMips();
 
   // Now the original textures should have been released.
-  EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images_size,
+  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
                           [](bool released) { return released; }));
   DeletePendingTextures();
 
