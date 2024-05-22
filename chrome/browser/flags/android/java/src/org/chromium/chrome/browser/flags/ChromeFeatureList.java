@@ -173,6 +173,7 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterRescueKillswitch";
     public static final String ANDROID_TAB_GROUP_STABLE_IDS = "AndroidTabGroupStableIds";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
+    public static final String APP_INFO_TAB_RESUMPTION_MODULE = "AppInfoTabResumptionModule";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ARCHIVE_TAB_SERVICE = "ArchiveTabService";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
@@ -529,6 +530,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidHub = newCachedFlag(ANDROID_HUB, true);
     public static final CachedFlag sAndroidTabGroupStableIds =
             newCachedFlag(ANDROID_TAB_GROUP_STABLE_IDS, true);
+    public static final CachedFlag sAppInfoTabResumptionModule =
+            newCachedFlag(APP_INFO_TAB_RESUMPTION_MODULE, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, false);
     public static final CachedFlag sArchiveTabService = newCachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sAsyncNotificationManager =
@@ -688,6 +691,7 @@ public abstract class ChromeFeatureList {
                     sAndroidElegantTextHeight,
                     sAndroidHub,
                     sAndroidTabGroupStableIds,
+                    sAppInfoTabResumptionModule,
                     sAppSpecificHistory,
                     sArchiveTabService,
                     sAsyncNotificationManager,
