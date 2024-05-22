@@ -133,16 +133,19 @@ class PdfViewerStreamManager
   // This returns true for both hosts. Depending on what navigation step the
   // frame is on, callers can also check the last committed origin to
   // differentiate between the hosts.
-  bool IsPdfExtensionHost(content::RenderFrameHost* render_frame_host);
+  bool IsPdfExtensionHost(
+      const content::RenderFrameHost* render_frame_host) const;
 
   // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
   // extension frame under `embedder_host`, false otherwise.
-  bool IsPdfExtensionFrameTreeNodeId(content::RenderFrameHost* embedder_host,
-                                     int frame_tree_node_id);
+  bool IsPdfExtensionFrameTreeNodeId(
+      const content::RenderFrameHost* embedder_host,
+      int frame_tree_node_id) const;
 
   // Returns true if `embedder_host` has a PDF extension frame and it has
   // already finished its navigation, false otherwise.
-  bool DidPdfExtensionFinishNavigation(content::RenderFrameHost* embedder_host);
+  bool DidPdfExtensionFinishNavigation(
+      const content::RenderFrameHost* embedder_host) const;
 
   // Returns true if `render_frame_host` is a content host for a PDF. During a
   // PDF load, the initial RFH for the content frame attempts to navigate to the
@@ -150,19 +153,22 @@ class PdfViewerStreamManager
   // returns true for both hosts. Depending on what navigation step the frame is
   // on, callers can also check the last committed URL to differentiate between
   // the hosts.
-  bool IsPdfContentHost(content::RenderFrameHost* render_frame_host);
+  bool IsPdfContentHost(
+      const content::RenderFrameHost* render_frame_host) const;
 
   // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
   // content frame under `embedder_host`, false otherwise.
-  bool IsPdfContentFrameTreeNodeId(content::RenderFrameHost* embedder_host,
-                                   int frame_tree_node_id);
+  bool IsPdfContentFrameTreeNodeId(
+      const content::RenderFrameHost* embedder_host,
+      int frame_tree_node_id) const;
 
   // Returns true if `embedder_host` has a PDF content frame and it has already
   // finished its navigation, false otherwise.
-  bool DidPdfContentNavigate(content::RenderFrameHost* embedder_host);
+  bool DidPdfContentNavigate(
+      const content::RenderFrameHost* embedder_host) const;
 
   // Returns whether the PDF plugin should handle save events.
-  bool PluginCanSave(content::RenderFrameHost* embedder_host);
+  bool PluginCanSave(const content::RenderFrameHost* embedder_host) const;
 
   // Set whether the PDF plugin should handle save events.
   void SetPluginCanSave(content::RenderFrameHost* embedder_host,
@@ -304,7 +310,10 @@ class PdfViewerStreamManager
 
   // Returns the stream info claimed by `embedder_host`, or nullptr if there's
   // no existing stream.
-  StreamInfo* GetClaimedStreamInfo(content::RenderFrameHost* embedder_host);
+  StreamInfo* GetClaimedStreamInfo(
+      const content::RenderFrameHost* embedder_host);
+  const StreamInfo* GetClaimedStreamInfo(
+      const content::RenderFrameHost* embedder_host) const;
 
   // Returns the stream info for a PDF content navigation.
   StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
