@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_group.h"
 #include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom.h"
@@ -46,6 +47,7 @@ class WifiDirectConnection : public mojom::WifiDirectConnection {
   mojo::PendingRemote<mojom::WifiDirectConnection> CreateRemote(
       base::OnceClosure disconnect_handler);
 
+  base::ElapsedTimer duration_timer_;
   mojo::Receiver<mojom::WifiDirectConnection> receiver_{this};
   WifiP2PGroup group_metadata_;
 };

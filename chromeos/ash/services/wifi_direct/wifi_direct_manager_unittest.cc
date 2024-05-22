@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/sync_socket.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -15,6 +16,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
+#include "chromeos/ash/components/wifi_p2p/wifi_p2p_metrics_logger.h"
 #include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom-test-utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -33,6 +35,13 @@ constexpr char kDefaultPassphrase[] = "direct-passphrase";
 constexpr char kAssignedSSID[] = "DIRECT-1a";
 constexpr char kAssignedPassphrase[] = "test_passphrase";
 const int kTestShillId = 0;
+const base::TimeDelta kDurationTime = base::Seconds(123);
+constexpr char kWifiP2PConnectionDurationHistogram[] =
+    "Network.Ash.WiFiDirect.Connection.Duration";
+constexpr char kGroupOwnerDisconnectReasonHistogram[] =
+    "Network.Ash.WiFiDirect.GroupOwner.DisconnectReason";
+constexpr char kGroupClientDisconnectReasonHistogram[] =
+    "Network.Ash.WiFiDirect.GroupClient.DisconnectReason";
 
 }  // namespace
 
@@ -120,11 +129,12 @@ class WifiDirectManagerTest : public testing::Test {
               wifi_direct_manager_->GetConnectionsCountForTesting());
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<WifiDirectManager> wifi_direct_manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
@@ -154,12 +164,21 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
       /*success=*/false);
   EXPECT_FALSE(AssociateSocket(wifi_direct_connection));
 
+  task_environment_.FastForwardBy(kDurationTime);
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
   EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
                               ->GetTestInterface()
                               ->GetRecentlyDestroyedP2PGroupId());
+  histogram_tester_.ExpectTotalCount(kGroupOwnerDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupOwnerDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kClientInitiated, 1);
+
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
 }
 
 TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupNoCredentials_Success) {
@@ -180,9 +199,18 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupNoCredentials_Success) {
   EXPECT_EQ(kDefaultSSID, properties->credentials->ssid);
   EXPECT_EQ(kDefaultPassphrase, properties->credentials->passphrase);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
+
+  task_environment_.FastForwardBy(kDurationTime);
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
+  histogram_tester_.ExpectTotalCount(kGroupOwnerDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupOwnerDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kClientInitiated, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
 }
 
 TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupFailure_InvalidCredentials) {
@@ -244,12 +272,20 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
       /*success=*/false);
   EXPECT_FALSE(AssociateSocket(wifi_direct_connection));
 
+  task_environment_.FastForwardBy(kDurationTime);
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
   EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
                               ->GetTestInterface()
                               ->GetRecentlyDisconnectedP2PGroupId());
+  histogram_tester_.ExpectTotalCount(kGroupClientDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupClientDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kClientInitiated, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
 }
 
 TEST_F(WifiDirectManagerTest, GroupClientEvents) {
@@ -270,6 +306,7 @@ TEST_F(WifiDirectManagerTest, GroupClientEvents) {
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
 
+  task_environment_.FastForwardBy(kDurationTime);
   auto p2pclient_dict =
       base::Value::Dict().Set(shill::kP2PClientInfoShillIDProperty, 0);
   p2pclient_dict.Set(shill::kP2PClientInfoStateProperty,
@@ -282,6 +319,13 @@ TEST_F(WifiDirectManagerTest, GroupClientEvents) {
       shill::kP2PClientInfosProperty, base::Value(p2pclient_list.Clone()));
 
   ExpectConnectionsCount(0);
+  histogram_tester_.ExpectTotalCount(kGroupClientDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupClientDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kInternalError, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
 }
 
 TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {
@@ -314,6 +358,7 @@ TEST_F(WifiDirectManagerTest, GroupOwnerEvents) {
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
 
+  task_environment_.FastForwardBy(kDurationTime);
   auto p2pgroup_dict =
       base::Value::Dict().Set(shill::kP2PGroupInfoShillIDProperty, 0);
   p2pgroup_dict.Set(shill::kP2PGroupInfoStateProperty,
@@ -326,6 +371,13 @@ TEST_F(WifiDirectManagerTest, GroupOwnerEvents) {
       shill::kP2PGroupInfosProperty, base::Value(p2pgroup_list.Clone()));
 
   ExpectConnectionsCount(0);
+  histogram_tester_.ExpectTotalCount(kGroupOwnerDisconnectReasonHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGroupOwnerDisconnectReasonHistogram,
+      WifiP2PMetricsLogger::DisconnectReason::kInternalError, 1);
+  histogram_tester_.ExpectTotalCount(kWifiP2PConnectionDurationHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kWifiP2PConnectionDurationHistogram,
+                                          kDurationTime, 1);
 }
 
 TEST_F(WifiDirectManagerTest, GetWifiP2PCapabilities) {

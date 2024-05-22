@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 
 namespace ash {
@@ -15,6 +16,14 @@ namespace ash {
 // and emits UMA metrics to the related histogram.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
  public:
+  // Represents the Wifi P2P disconnect reason. Entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class DisconnectReason {
+    kClientInitiated = 0,
+    kInternalError = 1,
+    kMaxValue = kInternalError,
+  };
+
   // Emits whenever client queries the Wifi P2P capabilities.
   static void RecordWifiP2PCapabilities(
       const WifiP2PController::WifiP2PCapabilities& capablities);
@@ -26,6 +35,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
 
   // Emits whenever a tag socket operation is attempted.
   static void RecordTagSocketOperationResult(bool success);
+
+  // Emits when the Wifi P2P connection is finished.
+  static void RecordWifiP2PConnectionDuration(const base::TimeDelta& duration);
+
+  // Emit when the Wifi P2P connection disconnects.
+  static void RecordWifiP2PDisconnectReason(DisconnectReason reason,
+                                            bool is_owner);
 
   WifiP2PMetricsLogger() = default;
   ~WifiP2PMetricsLogger() = default;
@@ -72,6 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PMetricsLogger {
   static const char kDisconnectP2PGroupHistogram[];
   static const char kDestroyP2PGroupHistogram[];
   static const char kTagSocketHistogram[];
+  static const char kWifiP2PConnectionDurationHistogram[];
+  static const char kGroupOwnerDisconnectReasonHistogram[];
+  static const char kGroupClientDisconnectReasonHistogram[];
 
   static WifiP2PMetricsCapabilities GetWifiP2PMetricsCapabilities(
       const WifiP2PController::WifiP2PCapabilities& capablities);

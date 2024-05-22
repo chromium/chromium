@@ -2595,6 +2595,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both group owner and client are ready."/>
 </enum>
 
+<enum name="WifiP2PDisconnectReason">
+  <int value="0" label="Client Initiated."/>
+  <int value="1" label="Internal Error."/>
+</enum>
+
 <enum name="WifiP2POperationResult">
   <int value="0" label="Success."/>
   <int value="1" label="Operation not allowed."/>

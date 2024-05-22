@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/wifi_direct/wifi_direct_connection.h"
 
+#include "chromeos/ash/components/wifi_p2p/wifi_p2p_metrics_logger.h"
+
 namespace ash::wifi_direct {
 
 namespace {
@@ -41,7 +43,10 @@ WifiDirectConnection::WifiDirectConnection(const WifiP2PGroup& group_metadata)
   CHECK(WifiP2PController::IsInitialized());
 }
 
-WifiDirectConnection::~WifiDirectConnection() = default;
+WifiDirectConnection::~WifiDirectConnection() {
+  WifiP2PMetricsLogger::RecordWifiP2PConnectionDuration(
+      duration_timer_.Elapsed());
+}
 
 void WifiDirectConnection::GetProperties(GetPropertiesCallback callback) {
   std::move(callback).Run(GetMojoProperties(group_metadata_));
