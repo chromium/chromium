@@ -138,6 +138,9 @@ class TestingProfileManager : public ProfileObserver {
   // Sets the last used profile; also sets the active time to now.
   void UpdateLastUser(Profile* last_active);
 
+  // Get the full profile path from the profile name.
+  base::FilePath GetProfilePath(const std::string& profile_name);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetAccountProfileMapper(std::unique_ptr<AccountProfileMapper> mapper);
 #endif

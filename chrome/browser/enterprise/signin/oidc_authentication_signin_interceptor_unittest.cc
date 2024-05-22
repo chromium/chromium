@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
@@ -32,6 +33,7 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -114,6 +116,12 @@ class FakeUserPolicyOidcSigninService
   bool will_policy_fetch_succeed_;
 };
 
+std::unique_ptr<KeyedService> CreateProfileIDService(
+    content::BrowserContext* context) {
+  static constexpr char kFakeProfileID[] = "fake-profile-id";
+  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileID);
+}
+
 std::unique_ptr<KeyedService> BuildMockInterceptor(
     int number_of_windows,
     content::BrowserContext* context) {
@@ -157,6 +165,10 @@ class UnittestProfileManager : public FakeProfileManager {
         OidcAuthenticationSigninInterceptorFactory::GetInstance(),
         base::BindRepeating(&BuildMockInterceptor,
                             std::move(number_of_windows_)));
+
+    builder.AddTestingFactory(
+        enterprise::ProfileIdServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateProfileIDService));
 
     return IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
@@ -250,6 +262,12 @@ class OidcAuthenticationSigninInterceptorTest
     added_profile_ = nullptr;
     unit_test_profile_manager_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  // BrowserWithTestWindowTest overrides.
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{enterprise::ProfileIdServiceFactory::GetInstance(),
+             base::BindRepeating(&CreateProfileIDService)}};
   }
 
   // If the 3P identity is not synced to Google, the interceptor should follow

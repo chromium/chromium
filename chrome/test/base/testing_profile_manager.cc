@@ -95,24 +95,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
 
-  // Create a path for the profile based on the name.
-  base::FilePath profile_path(profiles_path_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::IsUserBrowserContextBaseName(base::FilePath(profile_name))) {
-    const std::string fake_email =
-        profile_name.find('@') == std::string::npos
-            ? base::ToLowerASCII(profile_name) + "@test"
-            : profile_name;
-    profile_path =
-        profile_path.Append(ash::ProfileHelper::Get()->GetUserProfileDir(
-            user_manager::FakeUserManager::GetFakeUsernameHash(
-                AccountId::FromUserEmail(fake_email))));
-  } else {
-    profile_path = profile_path.AppendASCII(profile_name);
-  }
-#else
-  profile_path = profile_path.AppendASCII(profile_name);
-#endif
+  base::FilePath profile_path = GetProfilePath(profile_name);
 
   // Create the profile and register it.
   TestingProfile::Builder builder;
@@ -292,6 +275,29 @@ void TestingProfileManager::UpdateLastUser(Profile* last_active) {
 #if !BUILDFLAG(IS_ANDROID)
   profile_manager_->UpdateLastUser(last_active);
 #endif
+}
+
+base::FilePath TestingProfileManager::GetProfilePath(
+    const std::string& profile_name) {
+  // Create a path for the profile based on the name.
+  base::FilePath profile_path(profiles_path_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::IsUserBrowserContextBaseName(base::FilePath(profile_name))) {
+    const std::string fake_email =
+        profile_name.find('@') == std::string::npos
+            ? base::ToLowerASCII(profile_name) + "@test"
+            : profile_name;
+    profile_path =
+        profile_path.Append(ash::ProfileHelper::Get()->GetUserProfileDir(
+            user_manager::FakeUserManager::GetFakeUsernameHash(
+                AccountId::FromUserEmail(fake_email))));
+  } else {
+    profile_path = profile_path.AppendASCII(profile_name);
+  }
+#else
+  profile_path = profile_path.AppendASCII(profile_name);
+#endif
+  return profile_path;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

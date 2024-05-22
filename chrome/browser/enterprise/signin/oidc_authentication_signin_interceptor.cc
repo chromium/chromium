@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_managed_profile_creation_delegate.h"
@@ -38,6 +40,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/identifiers/identifiers_prefs.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -55,6 +59,8 @@ using profile_management::features::kOidcAuthStubClientId;
 using profile_management::features::kOidcAuthStubDmToken;
 using profile_management::features::kOidcAuthStubUserEmail;
 using profile_management::features::kOidcAuthStubUserName;
+
+using enterprise::ProfileIdServiceFactory;
 
 namespace {
 
@@ -193,9 +199,34 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   client_for_testing_ = nullptr;
 }
 
-void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
-    ClientRegisterCallback callback) {
+void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
+  std::string preset_profile_guid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  auto device_id = enterprise::ProfileIdDelegateImpl::GetId();
+  // We are supplying the GUID and only using current profile's ID service to
+  // calculate the new profile ID. Since the two profiles share the same device,
+  // the device id should be the same.
+  std::optional<std::string> preset_profile_id =
+      ProfileIdServiceFactory::GetForProfile(profile_)
+          ->GetProfileIdWithGuidAndDeviceId(preset_profile_guid, device_id);
+
+  if (preset_profile_id == std::nullopt || preset_profile_id.value().empty()) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Failed to create a preset profile ID for the new profile";
+    interception_status_ = OidcInterceptionStatus::kError;
+    Reset();
+
+    return;
+  }
+  preset_profile_id_ = preset_profile_id.value();
+
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Starting OIDC registration process for profile "
+      << preset_profile_id_;
+
   VLOG_POLICY(2, OIDC_ENROLLMENT) << "Starting OIDC registration process";
+
   policy::DeviceManagementService* device_management_service =
       g_browser_process->browser_policy_connector()
           ->device_management_service();
@@ -209,9 +240,7 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
   auto client = client_for_testing_
                     ? std::move(client_for_testing_)
                     : std::make_unique<CloudPolicyClient>(
-                          /*profile_id=*/base::Uuid::GenerateRandomV4()
-                              .AsLowercaseString(),
-                          device_management_service,
+                          preset_profile_id_, device_management_service,
                           g_browser_process->shared_url_loader_factory(),
                           CloudPolicyClient::DeviceDMTokenCallback());
 
@@ -221,9 +250,9 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
 
   // Using a raw pointer to |this| is okay, because the service owns
   // |registration_helper_for_temporary_client_|.
-  auto registration_callback =
-      base::BindOnce(&OidcAuthenticationSigninInterceptor::OnClientRegistered,
-                     base::Unretained(this), std::move(client));
+  auto registration_callback = base::BindOnce(
+      &OidcAuthenticationSigninInterceptor::OnClientRegistered,
+      base::Unretained(this), std::move(client), preset_profile_guid);
 
   registration_helper_for_temporary_client_->StartRegistrationWithOidcTokens(
       oidc_tokens_.auth_token, oidc_tokens_.id_token, std::string(),
@@ -231,7 +260,8 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
 }
 
 void OidcAuthenticationSigninInterceptor::OnClientRegistered(
-    std::unique_ptr<CloudPolicyClient> client) {
+    std::unique_ptr<CloudPolicyClient> client,
+    std::string preset_profile_guid) {
   if (client->last_dm_status() != policy::DM_STATUS_SUCCESS) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "OIDC client registration failed with DM Status: "
@@ -285,7 +315,8 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
           user_display_name_, user_email_),
       base::BindOnce(
           &OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      preset_profile_guid);
 }
 
 void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
@@ -315,10 +346,8 @@ void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
             base::Unretained(this)));
   } else {
     kOidcAuthStubDmToken.Get().empty()
-        ? StartOidcRegistration(base::BindOnce(
-              &OidcAuthenticationSigninInterceptor::OnClientRegistered,
-              weak_factory_.GetWeakPtr()))
-        : OnClientRegistered(nullptr);
+        ? StartOidcRegistration()
+        : OnClientRegistered(nullptr, std::string());
   }
 }
 
@@ -354,8 +383,14 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
       policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
           new_profile.get());
 
+  CHECK_EQ(ProfileIdServiceFactory::GetForProfile(new_profile.get())
+               ->GetProfileId()
+               .value(),
+           preset_profile_id_);
+
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Starting policy fetch process for OIDC-managed profile";
+
   interception_status_ = OidcInterceptionStatus::kPolicyFetch;
 
   policy_service->FetchPolicyForSignedInUser(

@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 
 using ProfileCreationCallback =
     base::OnceCallback<void(base::WeakPtr<Profile>)>;
@@ -40,7 +42,8 @@ class ManagedProfileCreationDelegate {
 };
 
 // Base level class for creating managed profiles.
-class ManagedProfileCreator : public ProfileAttributesStorageObserver {
+class ManagedProfileCreator : public ProfileAttributesStorageObserver,
+                              public ProfileManagerObserver {
  public:
   // Creates a new managed profile by using the provided `delegate`.
   // The callback is called with the new profile or nullptr in case of failure.
@@ -52,7 +55,8 @@ class ManagedProfileCreator : public ProfileAttributesStorageObserver {
       const std::string& id,
       const std::u16string& local_profile_name,
       std::unique_ptr<ManagedProfileCreationDelegate> delegate,
-      ProfileCreationCallback callback);
+      ProfileCreationCallback callback,
+      std::string preset_guid = std::string());
 
   // Uses this version when the profile already exists at `target_profile_path`
   // but may not be loaded in memory. The profile is loaded if necessary.
@@ -69,6 +73,10 @@ class ManagedProfileCreator : public ProfileAttributesStorageObserver {
   // ProfileAttributesStorageObserver:
   void OnProfileAdded(const base::FilePath& profile_path) override;
 
+  // ProfileManagerObserver:
+  void OnProfileCreationStarted(Profile* profile) override;
+  void OnProfileAdded(Profile* profile) override {}
+
  private:
   void OnNewProfileCreated(Profile* new_profile);
   void OnNewProfileInitialized(Profile* new_profile);
@@ -78,9 +86,12 @@ class ManagedProfileCreator : public ProfileAttributesStorageObserver {
   std::unique_ptr<ManagedProfileCreationDelegate> delegate_;
   base::FilePath expected_profile_path_;
   ProfileCreationCallback callback_;
+  std::string preset_guid_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
   base::WeakPtrFactory<ManagedProfileCreator> weak_pointer_factory_{this};
 };
 
