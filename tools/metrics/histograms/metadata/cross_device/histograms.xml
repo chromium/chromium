@@ -2189,6 +2189,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PushNotification.ChromeOS.GCM.Token.RetrievalTime" units="ms"
+    expires_after="2025-05-05">
+  <owner>akingsb@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to retrieve a GCM token. Emitted in the
+    initialization flow after token has been received. Only emitted if the token
+    was retrieved successfully.
+  </summary>
+</histogram>
+
 <histogram name="SmartLock.AuthMethodChoice.Unlock"
     enum="SmartLockAuthMethodChoice" expires_after="2025-05-05">
   <owner>hansberry@chromium.org</owner>

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_DESKTOP_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client.h"
 #include "components/gcm_driver/gcm_app_handler.h"
@@ -80,7 +81,8 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
   // add/remove clients immediately so clients can interact with object without
   // waiting for initialization to complete.
   void Initialize();
-  void OnTokenReceived(const std::string& token,
+  void OnTokenReceived(base::TimeTicks token_request_start_time,
+                       const std::string& token,
                        instance_id::InstanceID::Result result);
 
   void OnPushNotificationRegistrationSuccess(

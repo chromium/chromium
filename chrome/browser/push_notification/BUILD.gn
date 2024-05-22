@@ -6,6 +6,8 @@ assert(is_chromeos, "Push Notification is CrOS only")
 
 source_set("push_notification") {
   sources = [
+    "metrics/push_notification_metrics.cc",
+    "metrics/push_notification_metrics.h",
     "prefs/push_notification_prefs.cc",
     "prefs/push_notification_prefs.h",
     "push_notification_service_desktop_impl.cc",

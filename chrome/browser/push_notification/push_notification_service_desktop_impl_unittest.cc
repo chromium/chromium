@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/push_notification/prefs/push_notification_prefs.h"
 #include "chrome/browser/push_notification/server_client/fake_push_notification_server_client.h"
@@ -29,6 +30,8 @@ const char kSenderIdFCMToken[] = "sharing_fcm_token";
 const char kSharingSenderID[] = "745476177629";
 const char kTestMessage[] = "This is a test message";
 const char kTestRepresentativeTargetId[] = "0123456789";
+const char kTotalTokenRetrievalTime[] =
+    "PushNotification.ChromeOS.GCM.Token.RetrievalTime";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -142,6 +145,7 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
             identity_test_env_->identity_manager(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_));
+    histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 0);
   }
 
   void TearDown() override {
@@ -192,6 +196,7 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<PushNotificationServiceDesktopImpl>
       push_notification_service_;
@@ -219,6 +224,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
                                ->GetRequestProto()
                                .target()
                                .representative_target_id());
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
 }
 
@@ -240,6 +246,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
                 ->GetRequestProto()
                 .target()
                 .representative_target_id());
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
 }
 
@@ -261,6 +268,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPrefStoreReset) {
                 ->GetRequestProto()
                 .target()
                 .representative_target_id());
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
   push_notification_service_->OnStoreReset();
   EXPECT_EQ(std::string(),
@@ -280,6 +288,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceTokenFailure) {
           ->second.fake_scheduler;
   registration_scheduler->InvokeRequestCallback();
 
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 0);
   EXPECT_FALSE(fake_client_factory_.fake_server_client());
   EXPECT_FALSE(push_notification_service_->IsServiceInitialized());
 }
@@ -297,6 +306,7 @@ TEST_F(PushNotificationServiceDesktopImplTest,
           ->second.fake_scheduler;
   registration_scheduler->InvokeRequestCallback();
 
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
@@ -315,18 +325,21 @@ TEST_F(PushNotificationServiceDesktopImplTest,
           ->second.fake_scheduler;
   registration_scheduler->InvokeRequestCallback();
 
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
 
   registration_scheduler->InvokeRequestCallback();
 
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 2);
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
 
   registration_scheduler->InvokeRequestCallback();
 
+  histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 3);
   CheckForSuccessfulRegistration();
 }
 

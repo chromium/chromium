@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/push_notification/metrics/push_notification_metrics.h"
 #include "chrome/browser/push_notification/prefs/push_notification_prefs.h"
 #include "chrome/browser/push_notification/protos/notifications_multi_login_update.pb.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
@@ -135,10 +136,12 @@ void PushNotificationServiceDesktopImpl::Initialize() {
           kPushNotificationSenderId, kPushNotificationScope,
           /*time_to_live=*/base::TimeDelta(), /*flags=*/{},
           base::BindOnce(&PushNotificationServiceDesktopImpl::OnTokenReceived,
-                         base::Unretained(this)));
+                         base::Unretained(this), /*token_request_start_time=*/
+                         base::TimeTicks::Now()));
 }
 
 void PushNotificationServiceDesktopImpl::OnTokenReceived(
+    base::TimeTicks token_request_start_time,
     const std::string& token,
     instance_id::InstanceID::Result result) {
   if (result != instance_id::InstanceID::Result::SUCCESS) {
@@ -149,6 +152,9 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
   }
 
   VLOG(1) << "Successfully retrieved GCM token. ";
+  metrics::RecordPushNotificationServiceTimeToRetrieveToken(
+      /*total_retrieval_time=*/base::TimeTicks::Now() -
+      token_request_start_time);
   token_ = token;
 
   // Add `PushNotificationService` as a GCM app handler.
