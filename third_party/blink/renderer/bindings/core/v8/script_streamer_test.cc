@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -152,11 +153,11 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   };
 };
 
-void AppendDataToDataPipe(const char* data,
+void AppendDataToDataPipe(std::string_view data,
                           mojo::ScopedDataPipeProducerHandle& producer_handle) {
-  size_t data_len = strlen(data);
+  size_t data_len = data.size();
   MojoResult result = producer_handle->WriteData(
-      data, &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+      data.data(), &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   EXPECT_EQ(result, MOJO_RESULT_OK);
 
   // In case the mojo datapipe is being read on the main thread, we need to
@@ -174,6 +175,8 @@ void AppendDataToDataPipe(const char* data,
   // it will get both chunks together).
   test::YieldCurrentThread();
 }
+
+const uint32_t kDataPipeSize = 1024;
 
 }  // namespace
 
@@ -194,8 +197,9 @@ class ScriptStreamingTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
 
-    EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle_, consumer_handle_),
-              MOJO_RESULT_OK);
+    EXPECT_EQ(
+        mojo::CreateDataPipe(kDataPipeSize, producer_handle_, consumer_handle_),
+        MOJO_RESULT_OK);
 
     ResourceRequest request(url_);
     request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
@@ -227,7 +231,7 @@ class ScriptStreamingTest : public testing::Test {
   }
 
  protected:
-  void AppendData(const char* data) {
+  void AppendData(std::string_view data) {
     AppendDataToDataPipe(data, producer_handle_);
   }
 
@@ -962,7 +966,9 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
  protected:
   void Init(v8::Isolate* isolate,
             bool is_module_script = false,
-            std::optional<WTF::TextEncoding> charset = std::nullopt) {
+            std::optional<WTF::TextEncoding> charset = std::nullopt,
+            v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+                v8_compile_hints_consumer = nullptr) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
@@ -975,8 +981,9 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
 
-    EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle_, consumer_handle_),
-              MOJO_RESULT_OK);
+    EXPECT_EQ(
+        mojo::CreateDataPipe(kDataPipeSize, producer_handle_, consumer_handle_),
+        MOJO_RESULT_OK);
 
     ResourceRequest request(url_);
     request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
@@ -992,12 +999,10 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
     }
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
         kNoCompileHintsProducer = nullptr;
-    constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
-        kNoCompileHintsConsumer = nullptr;
-    resource_ =
-        ScriptResource::Fetch(params, fetcher, resource_client_, isolate,
-                              ScriptResource::kAllowStreaming,
-                              kNoCompileHintsProducer, kNoCompileHintsConsumer);
+    resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
+                                      isolate, ScriptResource::kAllowStreaming,
+                                      kNoCompileHintsProducer,
+                                      v8_compile_hints_consumer);
     resource_->AddClient(resource_client_, main_thread_task_runner.get());
 
     CHECK(dummy_loader_factory->load_started());
@@ -1017,7 +1022,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
   }
 
  protected:
-  void AppendData(const char* data) {
+  void AppendData(std::string_view data) {
     AppendDataToDataPipe(data, producer_handle_);
   }
 
@@ -1727,6 +1732,60 @@ TEST_F(BackgroundResourceScriptStreamerTest,
 
   // Unblock the background thread.
   waitable_event.Signal();
+
+  task_environment_.RunUntilIdle();
+}
+
+// Regression test for https://crbug.com/341473518.
+TEST_F(BackgroundResourceScriptStreamerTest,
+       DeletingBackgroundProcessorWhileParsingShouldNotCrash) {
+  V8TestingScope scope;
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+      v8_compile_hints_consumer = MakeGarbageCollected<
+          v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>();
+  Vector<int64_t> dummy_data(v8_compile_hints::kBloomFilterInt32Count / 2);
+  v8_compile_hints_consumer->SetData(dummy_data.data(), dummy_data.size());
+
+  Init(scope.GetIsolate(), /*is_module_script=*/false, /*charset=*/std::nullopt,
+       v8_compile_hints_consumer);
+  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+  }));
+
+  std::string comment_line =
+      base::StrCat({std::string(kDataPipeSize - 1, '/'), "\n"});
+  AppendData(comment_line);
+
+  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+    // Call YieldCurrentThread() until the parser thread reads the
+    // `comment_line` form the data pipe.
+    while (!producer_handle_->QuerySignalsState().writable()) {
+      test::YieldCurrentThread();
+    }
+    const std::string kFunctionScript = "function a() {console.log('');}";
+    const std::string function_line = base::StrCat(
+        {kFunctionScript,
+         std::string(kDataPipeSize - kFunctionScript.size(), '/')});
+    size_t data_len = function_line.size();
+    MojoResult result = producer_handle_->WriteData(
+        function_line.data(), &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+    EXPECT_EQ(result, MOJO_RESULT_OK);
+    // Busyloop until the parser thread reads the `function_line` form the data
+    // pipe.
+    while (!producer_handle_->QuerySignalsState().writable()) {
+    }
+    // Delete the BackgroundProcessor. This is intended to make sure that
+    // deleting the BackgroundProcessor while the parser thread is parsing the
+    // script should not cause a crash.
+    background_response_processor_.reset();
+  }));
+
+  producer_handle_.reset();
 
   task_environment_.RunUntilIdle();
 }

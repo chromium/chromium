@@ -108,10 +108,10 @@ ScriptResource* ScriptResource::Fetch(
       params.GetResourceRequest().GetRequestContext()));
   auto* resource = To<ScriptResource>(fetcher->RequestResource(
       params,
-      ScriptResourceFactory(isolate, streaming_allowed, params.GetScriptType()),
+      ScriptResourceFactory(isolate, streaming_allowed,
+                            v8_compile_hints_producer,
+                            v8_compile_hints_consumer, params.GetScriptType()),
       client));
-  resource->v8_compile_hints_producer_ = v8_compile_hints_producer;
-  resource->v8_compile_hints_consumer_ = v8_compile_hints_consumer;
   return resource;
 }
 
@@ -126,7 +126,9 @@ ScriptResource* ScriptResource::CreateForTest(
   TextResourceDecoderOptions decoder_options(
       TextResourceDecoderOptions::kPlainTextContent, encoding);
   return MakeGarbageCollected<ScriptResource>(
-      request, options, decoder_options, isolate, kNoStreaming, script_type);
+      request, options, decoder_options, isolate, kNoStreaming,
+      /*v8_compile_hints_producer=*/nullptr,
+      /*v8_compile_hints_consumer=*/nullptr, script_type);
 }
 
 ScriptResource::ScriptResource(
@@ -135,6 +137,10 @@ ScriptResource::ScriptResource(
     const TextResourceDecoderOptions& decoder_options,
     v8::Isolate* isolate,
     StreamingAllowed streaming_allowed,
+    v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+        v8_compile_hints_producer,
+    v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+        v8_compile_hints_consumer,
     mojom::blink::ScriptType initial_request_script_type)
     : TextResource(resource_request,
                    ResourceType::kScript,
@@ -146,7 +152,9 @@ ScriptResource::ScriptResource(
       consume_cache_state_(ConsumeCacheState::kWaitingForCache),
       initial_request_script_type_(initial_request_script_type),
       stream_text_decoder_(
-          std::make_unique<TextResourceDecoder>(decoder_options)) {
+          std::make_unique<TextResourceDecoder>(decoder_options)),
+      v8_compile_hints_producer_(v8_compile_hints_producer),
+      v8_compile_hints_consumer_(v8_compile_hints_consumer) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
   // TODO(leszeks): This could be static to avoid the cost of feature flag

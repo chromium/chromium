@@ -1184,6 +1184,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
       std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
       SourceStream* source_stream_ptr,
       ScriptDecoderPtr script_decoder,
+      std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> compile_hints,
       base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr);
 
   void SetState(BackgroundProcessorState state);
@@ -1549,7 +1550,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
           &BackgroundProcessor::RunScriptStreamingTask, script_url_string_,
           script_resource_identifier_, std::move(script_streaming_task),
           std::move(streamed_source), CrossThreadUnretained(source_stream_ptr_),
-          std::move(script_decoder), weak_factory_.GetWeakPtr()));
+          std::move(script_decoder), std::move(compile_hints_),
+          weak_factory_.GetWeakPtr()));
   return true;
 }
 
@@ -1563,6 +1565,8 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
         std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
         SourceStream* source_stream_ptr,
         ScriptDecoderPtr script_decoder,
+        std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
+            compile_hints,
         base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr) {
   TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                "BackgroundProcessor::RunScriptStreamingTask", "url",

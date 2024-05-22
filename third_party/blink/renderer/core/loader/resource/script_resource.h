@@ -91,6 +91,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
                  const TextResourceDecoderOptions&,
                  v8::Isolate*,
                  StreamingAllowed,
+                 v8_compile_hints::V8CrowdsourcedCompileHintsProducer*,
+                 v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*,
                  mojom::blink::ScriptType);
   ~ScriptResource() override;
 
@@ -221,11 +223,17 @@ class CORE_EXPORT ScriptResource final : public TextResource {
     explicit ScriptResourceFactory(
         v8::Isolate* isolate,
         StreamingAllowed streaming_allowed,
+        v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+            v8_compile_hints_producer,
+        v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+            v8_compile_hints_consumer,
         mojom::blink::ScriptType initial_request_script_type)
         : ResourceFactory(ResourceType::kScript,
                           TextResourceDecoderOptions::kPlainTextContent),
           isolate_(isolate),
           streaming_allowed_(streaming_allowed),
+          v8_compile_hints_producer_(v8_compile_hints_producer),
+          v8_compile_hints_consumer_(v8_compile_hints_consumer),
           initial_request_script_type_(initial_request_script_type) {}
 
     Resource* Create(
@@ -234,12 +242,17 @@ class CORE_EXPORT ScriptResource final : public TextResource {
         const TextResourceDecoderOptions& decoder_options) const override {
       return MakeGarbageCollected<ScriptResource>(
           request, options, decoder_options, isolate_, streaming_allowed_,
+          v8_compile_hints_producer_, v8_compile_hints_consumer_,
           initial_request_script_type_);
     }
 
    private:
     v8::Isolate* isolate_;
     StreamingAllowed streaming_allowed_;
+    v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+        v8_compile_hints_producer_;
+    v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+        v8_compile_hints_consumer_;
     mojom::blink::ScriptType initial_request_script_type_;
   };
 
