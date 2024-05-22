@@ -519,7 +519,6 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
     WebContents* web_contents = GetActiveWebContents();
 
-    // The context menu will be created inside the extension frame.
     extension_frame_ =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     if (!extension_frame_) {
@@ -528,7 +527,18 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     }
     EXPECT_NE(extension_frame_, web_contents->GetPrimaryMainFrame());
 
-    if (!UseOopif()) {
+    // The target frame for the context menu.
+    content::RenderFrameHost* target_frame;
+
+    if (UseOopif()) {
+      // In OOPIF PDF viewer, the target frame should be the PDF plugin frame.
+      target_frame =
+          pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+      if (!target_frame) {
+        ADD_FAILURE() << "Failed to get PDF plugin frame.";
+        return nullptr;
+      }
+    } else {
       content::BrowserPluginGuestManager* guest_manager =
           web_contents->GetBrowserContext()->GetGuestManager();
       WebContents* guest_contents =
@@ -538,11 +548,15 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
         return nullptr;
       }
       EXPECT_EQ(extension_frame_, guest_contents->GetPrimaryMainFrame());
+
+      // In GuestView PDF viewer, the target frame should be the PDF extension
+      // frame.
+      target_frame = extension_frame_;
     }
 
     content::ContextMenuParams params;
     params.page_url = page_url;
-    params.frame_url = extension_frame_->GetLastCommittedURL();
+    params.frame_url = target_frame->GetLastCommittedURL();
     params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
     params.media_flags |= blink::ContextMenuData::kMediaCanRotate;
     params.selection_text = info.selection_text;
@@ -551,7 +565,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
       params.edit_flags |= blink::ContextMenuDataEditFlags::kCanCopy;
 
     auto menu =
-        std::make_unique<TestRenderViewContextMenu>(*extension_frame_, params);
+        std::make_unique<TestRenderViewContextMenu>(*target_frame, params);
     menu->Init();
     return menu;
   }
@@ -612,6 +626,40 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
     // The full page related items such as 'reload' should not be displayed.
     ASSERT_FALSE(menu.IsItemPresent(IDC_RELOAD));
+  }
+
+  // Helper method for testing rotation items in the context menu.
+  void TestRotate(std::unique_ptr<TestRenderViewContextMenu> menu,
+                  content::RenderFrameHost* target_rfh) {
+    auto cb = [](base::OnceClosure quit_loop,
+                 content::RenderFrameHost* expected_rfh,
+                 blink::mojom::PluginActionType expected_action_type,
+                 content::RenderFrameHost* rfh,
+                 blink::mojom::PluginActionType action_type) {
+      EXPECT_EQ(expected_rfh, rfh);
+      EXPECT_EQ(expected_action_type, action_type);
+      std::move(quit_loop).Run();
+    };
+
+    {
+      // Rotate clockwise.
+      base::RunLoop run_loop;
+      menu->RegisterExecutePluginActionCallbackForTesting(
+          base::BindOnce(cb, run_loop.QuitClosure(), target_rfh,
+                         blink::mojom::PluginActionType::kRotate90Clockwise));
+      menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ROTATECW, 0);
+      run_loop.Run();
+    }
+
+    {
+      // Rotate counterclockwise.
+      base::RunLoop run_loop;
+      menu->RegisterExecutePluginActionCallbackForTesting(base::BindOnce(
+          cb, run_loop.QuitClosure(), target_rfh,
+          blink::mojom::PluginActionType::kRotate90Counterclockwise));
+      menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ROTATECCW, 0);
+      run_loop.Run();
+    }
   }
 
   content::RenderFrameHost* extension_frame() { return extension_frame_; }
@@ -2803,40 +2851,60 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
 }
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
-                       Rotate) {
+                       RotateInFullPagePdf) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
   content::RenderFrameHost* target_rfh =
       pdf_frame_util::FindPdfChildFrame(extension_frame());
-  auto cb = [](base::OnceClosure quit_loop,
-               content::RenderFrameHost* expected_rfh,
-               blink::mojom::PluginActionType expected_action_type,
-               content::RenderFrameHost* rfh,
-               blink::mojom::PluginActionType action_type) {
-    EXPECT_EQ(expected_rfh, rfh);
-    EXPECT_EQ(expected_action_type, action_type);
-    std::move(quit_loop).Run();
-  };
 
-  {
-    // Rotate clockwise.
-    base::RunLoop run_loop;
-    menu->RegisterExecutePluginActionCallbackForTesting(
-        base::BindOnce(cb, run_loop.QuitClosure(), target_rfh,
-                       blink::mojom::PluginActionType::kRotate90Clockwise));
-    menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ROTATECW, 0);
-    run_loop.Run();
-  }
+  TestRotate(std::move(menu), target_rfh);
+}
 
-  {
-    // Rotate counterclockwise.
-    base::RunLoop run_loop;
-    menu->RegisterExecutePluginActionCallbackForTesting(base::BindOnce(
-        cb, run_loop.QuitClosure(), target_rfh,
-        blink::mojom::PluginActionType::kRotate90Counterclockwise));
-    menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ROTATECCW, 0);
-    run_loop.Run();
-  }
+class OopifPdfPluginContextMenuBrowserTest
+    : public PdfPluginContextMenuBrowserTest {
+ public:
+  OopifPdfPluginContextMenuBrowserTest() = default;
+
+  OopifPdfPluginContextMenuBrowserTest(const PdfPluginContextMenuBrowserTest&) =
+      delete;
+  OopifPdfPluginContextMenuBrowserTest& operator=(
+      const OopifPdfPluginContextMenuBrowserTest&) = delete;
+
+  ~OopifPdfPluginContextMenuBrowserTest() override = default;
+
+  bool UseOopif() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(OopifPdfPluginContextMenuBrowserTest,
+                       RotateInEmbeddedPdf) {
+  // Load a page with a PDF file inside.
+  const GURL page_url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  WebContents* web_contents = GetActiveWebContents();
+
+  // Wait for the PDF content frame to be created.
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                  ->WaitUntilPdfLoadedInFirstChild());
+
+  // Get the PDF content frame.
+  content::RenderFrameHost* content_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(content_frame);
+
+  // Create a context menu in the PDF content frame.
+  content::ContextMenuParams params;
+  params.page_url = page_url;
+  params.frame_url = content_frame->GetLastCommittedURL();
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*content_frame, params);
+  menu->Init();
+
+  ASSERT_TRUE(menu);
+  content::RenderFrameHost* target_rfh = menu->GetRenderFrameHost();
+
+  TestRotate(std::move(menu), target_rfh);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
