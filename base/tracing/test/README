@@ -10,7 +10,6 @@ Currently, the diff tests only run on Linux. You can build and run the diff test
 
 ```
 $ gn gen --args='' out/Linux
-$ gclient sync
 $ autoninja -C out/Linux perfetto_diff_tests
 $ out/Linux/bin/run_perfetto_diff_tests
 ```
@@ -23,34 +22,13 @@ Your new diff test should go in `base/tracing/test/trace_processor/diff_tests/ch
 
 If you are adding a **new TestSuite**, be sure to add it to `include_index.py` so the runner knows to run this new TestSuite.
 
-### Adding New Test Data
-
-If your test requires modifying or adding new test data i.e. a new trace in `base/tracing/test/data`, you will need to upload this to the GCS bucket.
+If your test requires modifying or adding new test data i.e. a new trace in `base/tracing/test/data`, you will need to upload this to the GCS bucket. These trace files are too large to be checked-in to the codebase so we check-in only `.sha256` files. You can upload any new traces with this script:
 
 ```
-$ base/tracing/test/test_data.py upload <path_to_file>
+$ base/tracing/test/test_data.py upload --verbose
 ```
 
-This script will output a deps entry which you will need to add to the [DEPS file](../../../DEPS) (see examples in the `src/base/tracing/test/data` entry).
-```
-{
-  "path": {
-    "dep_type": "gcs",
-    "bucket": "perfetto",
-    "objects": [
-      {
-        "object_name": "test_data/file_name-a1b2c3f4",
-        "sha256sum": "a1b2c3f4",
-        "size_bytes": 12345,
-        "generation": 1234567
-      }
-    ]
-  }
-}
-```
-You will need to **manually** add this to the deps entry. After adding this entry, running `gclient sync` will download the test files in your local repo. See these [docs](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gcs_dependencies.md) for the GCS dependency workflow.
-
-Perfetto has it's own way to download GCS objects with the [test_data](../../../third_party/perfetto/tools/test_data) script. This script uses .sha256 files to download. The `test_data.py upload` command will also generate the `file_name-a1b2c3f4.sha256` in `base/tracing/test/data`. You will need to check-in these files in the codebase so they can by rolled to Perfetto, so the tests can work there too.
+This script will upload your file and generate the `.sha256` file in the `base/tracing/test/data/` directory. You can then upload this file with your CL.
 
 ## Writing TestTraceProcessor Tests
 
