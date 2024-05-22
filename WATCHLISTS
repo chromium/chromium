@@ -1385,6 +1385,9 @@
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
     },
+    'ios_web_view': {
+      'filepath': 'ios/web_view/',
+    },
     'ios_widget_kit': {
       'filepath': 'ios/chrome/common/widget_kit|'\
                   'ios/chrome/browser/widget_kit|'\
@@ -2983,6 +2986,7 @@
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
+    'ios_web_view': ['ios-web-view-eng+reviews@google.com'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ip_protection': ['aakallam+watch@chromium.org',
                       'awillia@chromium.org',
