@@ -146,6 +146,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
                                            base::OnceClosure close_callback,
                                            base::OnceClosure open_now_callback);
 
+  // Called to verify if `result` is considered as a failure and the scan should
+  // end early.
+  bool ShouldTerminateEarly(BinaryUploadService::Result result);
+
   // Called to open the download. This is triggered by the timeout modal dialog.
   void OpenDownload();
 
@@ -161,13 +165,21 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
       const base::FilePath& current_path,
       std::unique_ptr<FileAnalysisRequest> deep_scan_request);
 
-  // Wrapper around OnDownloadRequestReady to facilitate opening files in
-  // parallel for save package scans.
-  void OnGotRequestData(const base::FilePath& final_path,
-                        const base::FilePath& current_path,
-                        std::unique_ptr<FileAnalysisRequest> request,
-                        BinaryUploadService::Result result,
-                        BinaryUploadService::Request::Data data);
+  // Callback invoked in `StartSingleFileScan` to check if `data` has been
+  // successfully fetched and ready for deep scanning if needed.
+  void OnGetFileRequestData(const base::FilePath& file_path,
+                            std::unique_ptr<FileAnalysisRequest> request,
+                            BinaryUploadService::Result result,
+                            BinaryUploadService::Request::Data data);
+
+  // Callback invoked in `StartSavePackageScan` to check if `data` of a file in
+  // package has been successfully fetched and ready for deep scanning if
+  // needed.
+  void OnGetPackageFileRequestData(const base::FilePath& final_path,
+                                   const base::FilePath& current_path,
+                                   std::unique_ptr<FileAnalysisRequest> request,
+                                   BinaryUploadService::Result result,
+                                   BinaryUploadService::Request::Data data);
 
   // Helper function to simplify checking if the report-only feature is set in
   // conjunction with the corresponding policy value.

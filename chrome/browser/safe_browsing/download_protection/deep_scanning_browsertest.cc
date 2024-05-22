@@ -839,16 +839,11 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
-// When the resumable protocol is used for deep scans, the fact that the
-// a file is password protected does not affect whether it is blocked or
-// not.  The final verdict is determined by the server.  So this test
-// applies only to the multi-part upload protocol.
+// Regardless of resumable or multipart upload protocol, when a file is password
+// protected and the `block_password_protected` setting is on, the file should
+// be blocked.
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       PasswordProtectedTxtFilesAreBlocked_MultipartOnly) {
-  if (is_resumable()) {
-    return;
-  }
-
+                       PasswordProtectedTxtFilesAreBlocked) {
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.
   base::ScopedAllowBlockingForTesting allow_blocking;
