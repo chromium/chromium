@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
+import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
@@ -939,6 +940,68 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 mAwContents, "awMessagePort", new String[] {"*"}, listener);
 
         // Wait until prerendering is canceled for the listener addition.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests that WebViewCompat.addDocumentStartJavascript() cancels prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingCanceledWhenAddingDocumentStartJavascript() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kAllPrerenderingCanceled*/ 81)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Add a document start javascript. This should cancel prerendering.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mAwContents.addDocumentStartJavaScript(
+                                "console.log(\"hello world\");", new String[] {"*"}));
+
+        // Wait until prerendering is canceled for the start script addition.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests that removing document start javascript cancels prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingCanceledWhenRemovingDocumentStartJavascript() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        // Add a document start javascript. This should cancel prerendering.
+        ScriptHandler handler =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mAwContents.addDocumentStartJavaScript(
+                                        "console.log(\"hello world\");", new String[] {"*"}));
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kAllPrerenderingCanceled*/ 81)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Remove the document start javascript. This should cancel prerendering.
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+
+        // Wait until prerendering is canceled for the start script addition.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 

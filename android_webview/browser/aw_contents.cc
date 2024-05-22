@@ -1318,6 +1318,7 @@ jint AwContents::AddDocumentStartJavaScript(
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
   web_contents()->GetController().GetBackForwardCache().Flush();
+  web_contents()->CancelAllPrerendering();
   auto result = GetJsCommunicationHost()->AddDocumentStartJavaScript(
       base::android::ConvertJavaStringToUTF16(env, script),
       native_allowed_origin_rule_strings);
@@ -1331,6 +1332,7 @@ jint AwContents::AddDocumentStartJavaScript(
 }
 
 void AwContents::RemoveDocumentStartJavaScript(JNIEnv* env, jint script_id) {
+  web_contents()->CancelAllPrerendering();
   GetJsCommunicationHost()->RemoveDocumentStartJavaScript(script_id);
 }
 
