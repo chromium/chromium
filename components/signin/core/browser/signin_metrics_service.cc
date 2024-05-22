@@ -144,7 +144,9 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 
   if (error.IsPersistentError()) {
-    pref_service_->SetTime(kSigninPendingStartTimePref, base::Time::Now());
+    if (!pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
+      pref_service_->SetTime(kSigninPendingStartTimePref, base::Time::Now());
+    }
   } else if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
     RecordSigninPendingResolution(
         SigninPendingResolution::kReauth,

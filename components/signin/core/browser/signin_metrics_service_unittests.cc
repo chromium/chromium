@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -115,10 +116,22 @@ class SigninMetricsServiceTest : public ::testing::Test {
     // Calling
     // `IdentityTestEnvironment::SetInvalidRefreshTokenForPrimaryAccount()` will
     // not fire the notification event in unit tests. Directly fire it here.
+    GoogleServiceAuthError error1 =
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
     identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
-        account_id, GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                            CREDENTIALS_REJECTED_BY_CLIENT));
+        account_id, error1);
+
+    // Trigger two different errors to make sure the effect of the error is well
+    // propagated and not dismissed due to caching the last error.
+    GoogleServiceAuthError error2 =
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_CLIENT);
+    ASSERT_NE(error1, error2);
+    identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
+        account_id, error2);
   }
 
   base::test::TaskEnvironment task_environment_;
