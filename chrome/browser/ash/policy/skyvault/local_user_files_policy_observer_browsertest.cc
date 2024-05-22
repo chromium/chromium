@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/skyvault/observer.h"
+#include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +18,9 @@
 
 namespace policy::local_user_files {
 
-class TestObserver : Observer {
+namespace {
+
+class TestObserver : LocalUserFilesPolicyObserver {
  public:
   void OnLocalUserFilesPolicyChanged() override {
     local_user_files_allowed_ = g_browser_process->local_state()->GetBoolean(
@@ -31,12 +33,14 @@ class TestObserver : Observer {
   bool local_user_files_allowed_;
 };
 
-class LocalUserFilesObserverBrowserTest : public policy::PolicyTest {
+}  // namespace
+
+class LocalUserFilesPolicyObserverTest : public policy::PolicyTest {
  public:
-  LocalUserFilesObserverBrowserTest() {
+  LocalUserFilesPolicyObserverTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
   }
-  ~LocalUserFilesObserverBrowserTest() override = default;
+  ~LocalUserFilesPolicyObserverTest() override = default;
 
  protected:
   void SetPolicyValue(bool local_user_files_allowed) {
@@ -50,7 +54,7 @@ class LocalUserFilesObserverBrowserTest : public policy::PolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LocalUserFilesObserverBrowserTest, CheckPolicyValue) {
+IN_PROC_BROWSER_TEST_F(LocalUserFilesPolicyObserverTest, CheckPolicyValue) {
   TestObserver observer;
 
   SetPolicyValue(/*local_user_files_allowed=*/true);

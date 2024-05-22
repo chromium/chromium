@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
-#include "chrome/browser/ash/policy/skyvault/observer.h"
+#include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -75,7 +75,7 @@ class EventRouter
       chromeos::DlpClient::Observer,
       apps::AppRegistryCache::Observer,
       network::NetworkConnectionTracker::NetworkConnectionObserver,
-      policy::local_user_files::Observer {
+      policy::local_user_files::LocalUserFilesPolicyObserver {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,

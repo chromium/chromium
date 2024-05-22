@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_OBSERVER_H_
-#define CHROME_BROWSER_ASH_POLICY_SKYVAULT_OBSERVER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_USER_FILES_POLICY_OBSERVER_H_
+#define CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_USER_FILES_POLICY_OBSERVER_H_
 
 #include "components/prefs/pref_change_registrar.h"
 
 namespace policy::local_user_files {
 
-// Observer interface for LocalUserFilesEnabled policy changes.
-class Observer {
+// LocalUserFilesAllowed policy observer interface.
+class LocalUserFilesPolicyObserver {
  public:
-  Observer();
-  virtual ~Observer();
+  LocalUserFilesPolicyObserver();
+  virtual ~LocalUserFilesPolicyObserver();
 
   // Called when the value of the LocalUserFilesEnabled policy changes.
   virtual void OnLocalUserFilesPolicyChanged() {}
@@ -24,4 +24,4 @@ class Observer {
 
 }  // namespace policy::local_user_files
 
-#endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_OBSERVER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_USER_FILES_POLICY_OBSERVER_H_

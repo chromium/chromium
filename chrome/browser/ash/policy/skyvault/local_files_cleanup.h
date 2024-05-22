@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_CLEANUP_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/skyvault/observer.h"
+#include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 
 namespace policy::local_user_files {
 
 // Kicks-off user files removal when LocalUserFilesEnabled is set to 'false'.
-class LocalFilesCleanup : public Observer {
+class LocalFilesCleanup : public LocalUserFilesPolicyObserver {
  public:
   LocalFilesCleanup();
   ~LocalFilesCleanup() override;
