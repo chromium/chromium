@@ -1315,9 +1315,9 @@ crbug.com/1361922 virtual/view-transition-wide-gamut/external/wpt/css/css-view-t
 crbug.com/1361922 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Slow ]
 crbug.com/1361922 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-opacity.html [ Slow ]
 crbug.com/1361922 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-container-writing-modes.html [ Slow ]
-crbug.com/1361922 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Slow ]
-crbug.com/1361922 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Slow ]
-crbug.com/1361922 virtual/view-transition/external/wpt/css/css-view-transitions/japanese-tag.html [ Slow ]
+crbug.com/1361922 virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Slow ]
+crbug.com/1361922 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Slow ]
+crbug.com/1361922 virtual/threaded/external/wpt/css/css-view-transitions/japanese-tag.html [ Slow ]
 
 crbug.com/1381545 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
 crbug.com/1381545 [ Mac11 Release ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]

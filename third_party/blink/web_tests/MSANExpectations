@@ -94,12 +94,12 @@ crbug.com/1361922 [ Linux ] virtual/view-transition-wide-gamut/external/wpt/css/
 crbug.com/1361922 [ Linux ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/object-view-box-old-image.html [ Skip ]
 crbug.com/1361922 [ Linux ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Skip ]
 crbug.com/1361922 [ Linux ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-opacity.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/content-with-transform-old-image.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/new-content-container-writing-modes.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/object-view-box-old-image.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Skip ]
-crbug.com/1361922 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-opacity.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/content-with-transform-old-image.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-container-writing-modes.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/object-view-box-old-image.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Skip ]
+crbug.com/1361922 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-opacity.html [ Skip ]
 
 # use-of-uninitialized-value
 crbug.com/887140 [ Linux ] virtual/hdr/color-jpeg-with-color-profile.html [ Skip ]

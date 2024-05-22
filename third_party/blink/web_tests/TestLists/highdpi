@@ -1561,7 +1561,7 @@ virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html
-virtual/view-transition/external/wpt/css/css-view-transitions/
+virtual/threaded/external/wpt/css/css-view-transitions/
 virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html
