@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -65,13 +66,16 @@ static const CGFloat kLabelButtonSpacing = 2;
 
 - (void)setLabelText:(NSString*)text
         buttonTitles:(NSArray<NSString*>*)buttonTitles {
+  UIFont* font =
+      [UIFont preferredFontForTextStyle:IsKeyboardAccessoryUpgradeEnabled()
+                                            ? UIFontTextStyleCaption2
+                                            : UIFontTextStyleFootnote];
   _label.attributedText = [[NSMutableAttributedString alloc]
       initWithString:[NSString stringWithFormat:@"%@", text]
           attributes:@{
             NSForegroundColorAttributeName :
                 [UIColor colorNamed:kTextSecondaryColor],
-            NSFontAttributeName :
-                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+            NSFontAttributeName : font
           }];
   _label.accessibilityIdentifier = text;
 
