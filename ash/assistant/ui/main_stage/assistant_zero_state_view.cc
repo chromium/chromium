@@ -19,7 +19,6 @@
 #include "ash/style/ash_color_id.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"

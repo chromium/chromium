@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 
 namespace arc {
 

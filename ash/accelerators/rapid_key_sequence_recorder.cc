@@ -5,7 +5,6 @@
 #include "ash/accelerators/rapid_key_sequence_recorder.h"
 
 #include <optional>
-#include <string_view>
 #include <tuple>
 
 #include "ash/events/event_rewriter_controller_impl.h"
@@ -14,7 +13,6 @@
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"

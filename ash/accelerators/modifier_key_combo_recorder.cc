@@ -5,7 +5,6 @@
 #include "ash/accelerators/modifier_key_combo_recorder.h"
 
 #include <optional>
-#include <string_view>
 #include <tuple>
 
 #include "ash/events/event_rewriter_controller_impl.h"
@@ -15,7 +14,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
