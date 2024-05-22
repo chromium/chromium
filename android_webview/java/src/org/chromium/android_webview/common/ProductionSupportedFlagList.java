@@ -1004,6 +1004,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("WebViewVizUseThreadPool"),
         Flag.baseFeature("InProcessGpuUseIOThread"),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),
+        Flag.baseFeature("NetworkServiceDedicatedThread"),
+        Flag.baseFeature("BrowserThreadPoolAdjustment"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

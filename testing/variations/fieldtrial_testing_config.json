@@ -23852,6 +23852,39 @@
             ]
         }
     ],
+    "WebViewThreadReduction": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "ReduceAllThreads",
+                    "params": {
+                        "BrowserThreadPoolCoresMultiplierFor16GBAndAbove": "0.4",
+                        "BrowserThreadPoolCoresMultiplierFor1GBTo2GB": "0.4",
+                        "BrowserThreadPoolCoresMultiplierFor2GBTo4GB": "0.4",
+                        "BrowserThreadPoolCoresMultiplierFor4GBTo8GB": "0.4",
+                        "BrowserThreadPoolCoresMultiplierFor512MBTo1GB": "0.4",
+                        "BrowserThreadPoolCoresMultiplierFor8GBTo16GB": "0.4",
+                        "BrowserThreadPoolCoresMultiplierForLessThan512MB": "0.4",
+                        "BrowserThreadPoolMinFor16GBAndAbove": "2",
+                        "BrowserThreadPoolMinFor1GBTo2GB": "2",
+                        "BrowserThreadPoolMinFor2GBTo4GB": "2",
+                        "BrowserThreadPoolMinFor4GBTo8GB": "2",
+                        "BrowserThreadPoolMinFor512MBTo1GB": "2",
+                        "BrowserThreadPoolMinFor8GBTo16GB": "2",
+                        "BrowserThreadPoolMinForLessThan512MB": "2"
+                    },
+                    "enable_features": [
+                        "BrowserThreadPoolAdjustment",
+                        "InProcessGpuUseIOThread",
+                        "NetworkServiceDedicatedThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewThreadSafeMedia": [
         {
             "platforms": [
