@@ -26,6 +26,7 @@ An archive of all packages built so far is at https://is.gd/chromeclang
 	successfully finished, run
 	[go/chrome-promote-clang](https://goto.google.com/chrome-promote-clang)
 	on the new Clang package name.
+1.  Run `tools/clang/scripts/sync_deps.py` to update the deps entries in DEPS.
 1.  Run an exhaustive set of try jobs to test the new compiler. The CL
     description created previously by upload_revision.py includes
     `Cq-Include-Trybots:` lines for all needed bots, so it's sufficient to just
