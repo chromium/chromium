@@ -132,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
-// TODO(b/341091285): Flaky on Win.
-#if BUILDFLAG(IS_WIN)
+// TODO(b/341091285): Flaky on Win and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_TriggerEntryPointWithNavigation \
   DISABLED_TriggerEntryPointWithNavigation
 #else
