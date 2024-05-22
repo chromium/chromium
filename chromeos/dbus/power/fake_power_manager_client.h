@@ -215,6 +215,11 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SendAmbientLightSensorEnabledChanged(
       const power_manager::AmbientLightSensorChange& proto);
 
+  // Notifies observers about changes to the Keyboard Ambient Light Sensor
+  // status.
+  void SendKeyboardAmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& proto);
+
   // Notifies observers about the screen idle state changing.
   void SendScreenIdleStateChanged(const power_manager::ScreenIdleState& proto);
 

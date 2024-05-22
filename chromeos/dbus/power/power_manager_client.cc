@@ -203,6 +203,9 @@ class PowerManagerClientImpl : public PowerManagerClient {
          &PowerManagerClientImpl::ScreenBrightnessChangedReceived},
         {power_manager::kAmbientLightSensorEnabledChangedSignal,
          &PowerManagerClientImpl::AmbientLightSensorEnabledChangedReceived},
+        {power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal,
+         &PowerManagerClientImpl::
+             KeyboardAmbientLightSensorEnabledChangedReceived},
         {power_manager::kAmbientColorTemperatureChangedSignal,
          &PowerManagerClientImpl::AmbientColorTemperatureChangedReceived},
         {power_manager::kKeyboardBrightnessChangedSignal,
@@ -852,6 +855,23 @@ class PowerManagerClientImpl : public PowerManagerClient {
                      << proto.sensor_enabled() << ": cause " << proto.cause();
     for (auto& observer : observers_) {
       observer.AmbientLightSensorEnabledChanged(proto);
+    }
+  }
+
+  void KeyboardAmbientLightSensorEnabledChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::AmbientLightSensorChange proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR)
+          << "Unable to decode protocol buffer from "
+          << power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal
+          << " signal";
+      return;
+    }
+    POWER_LOG(DEBUG) << "Keyboard ambient Light Sensor enabled changed to "
+                     << proto.sensor_enabled() << ": cause " << proto.cause();
+    for (auto& observer : observers_) {
+      observer.KeyboardAmbientLightSensorEnabledChanged(proto);
     }
   }
 

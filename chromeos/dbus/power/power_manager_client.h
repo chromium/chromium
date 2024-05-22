@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     virtual void AmbientLightSensorEnabledChanged(
         const power_manager::AmbientLightSensorChange& change) {}
 
+    // Called when the keyboard ambient light sensor status changes.
+    virtual void KeyboardAmbientLightSensorEnabledChanged(
+        const power_manager::AmbientLightSensorChange& change) {}
+
     // Called when the ambient light changed.
     virtual void AmbientColorChanged(const int32_t color_temperature) {}
 

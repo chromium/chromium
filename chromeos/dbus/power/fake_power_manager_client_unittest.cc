@@ -37,6 +37,10 @@ class TestObserver : public PowerManagerClient::Observer {
   last_ambient_light_sensor_change() const {
     return last_ambient_light_sensor_change_;
   }
+  const power_manager::AmbientLightSensorChange&
+  last_keyboard_ambient_light_sensor_change() const {
+    return last_keyboard_ambient_light_sensor_change_;
+  }
 
   void ClearProps() { props_.Clear(); }
 
@@ -56,11 +60,18 @@ class TestObserver : public PowerManagerClient::Observer {
     last_ambient_light_sensor_change_ = change;
   }
 
+  void KeyboardAmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    last_keyboard_ambient_light_sensor_change_ = change;
+  }
+
  private:
   int num_power_changed_;
   power_manager::PowerSupplyProperties props_;
   power_manager::BatterySaverModeState battery_saver_state_;
   power_manager::AmbientLightSensorChange last_ambient_light_sensor_change_;
+  power_manager::AmbientLightSensorChange
+      last_keyboard_ambient_light_sensor_change_;
 };
 
 void SetTestProperties(power_manager::PowerSupplyProperties* props) {
@@ -349,6 +360,70 @@ TEST(FakePowerManagerClientTest, AmbientLightSensorEnabled) {
   EXPECT_TRUE(test_observer.last_ambient_light_sensor_change().has_cause());
   EXPECT_EQ(
       test_observer.last_ambient_light_sensor_change().cause(),
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+}
+
+// Test that observers are notified asynchronously when the Keyboard Ambient
+// Light Sensor status changes.
+TEST(FakePowerManagerClientTest, KeyboardAmbientLightSensorEnabled) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  FakePowerManagerClient client;
+  TestObserver test_observer;
+
+  client.AddObserver(&test_observer);
+
+  // The Keyboard Ambient Light Sensor is enabled by default.
+  EXPECT_FALSE(test_observer.last_keyboard_ambient_light_sensor_change()
+                   .has_sensor_enabled());
+  EXPECT_FALSE(
+      test_observer.last_keyboard_ambient_light_sensor_change().has_cause());
+
+  // Turn the Keyboard Ambient Light Sensor off, and check that observers are
+  // notified asynchronously.
+  client.SetKeyboardAmbientLightSensorEnabled(false);
+
+  // The Keyboard Ambient Light Sensor should not be disabled synchronously,
+  // since the real client waits for a response from Power Manager.
+  EXPECT_FALSE(test_observer.last_keyboard_ambient_light_sensor_change()
+                   .has_sensor_enabled());
+  EXPECT_FALSE(
+      test_observer.last_keyboard_ambient_light_sensor_change().has_cause());
+  base::RunLoop().RunUntilIdle();
+
+  // The Keyboard Ambient Light Sensor should be disabled now.
+  EXPECT_TRUE(test_observer.last_keyboard_ambient_light_sensor_change()
+                  .has_sensor_enabled());
+  EXPECT_FALSE(test_observer.last_keyboard_ambient_light_sensor_change()
+                   .sensor_enabled());
+  // The change cause should be USER_REQUEST_SETTINGS_APP because the change was
+  // triggered via the PowerManagerClient function.
+  EXPECT_TRUE(
+      test_observer.last_keyboard_ambient_light_sensor_change().has_cause());
+  EXPECT_EQ(
+      test_observer.last_keyboard_ambient_light_sensor_change().cause(),
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // Turn the Keyboard Ambient Light Sensor on, and check that observers are
+  // notified asynchronously.
+  client.SetKeyboardAmbientLightSensorEnabled(true);
+
+  // The Keyboard Ambient Light Sensor should not be enabled synchronously,
+  // since the real client waits for a response from Power Manager.
+  EXPECT_TRUE(test_observer.last_keyboard_ambient_light_sensor_change()
+                  .has_sensor_enabled());
+  EXPECT_FALSE(test_observer.last_keyboard_ambient_light_sensor_change()
+                   .sensor_enabled());
+  base::RunLoop().RunUntilIdle();
+
+  // The Keyboard Ambient Light Sensor should be enabled now.
+  EXPECT_TRUE(test_observer.last_keyboard_ambient_light_sensor_change()
+                  .sensor_enabled());
+  // The cause should be the same as before.
+  EXPECT_TRUE(
+      test_observer.last_keyboard_ambient_light_sensor_change().has_cause());
+  EXPECT_EQ(
+      test_observer.last_keyboard_ambient_light_sensor_change().cause(),
       power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
 }
 

@@ -185,7 +185,10 @@ class TestObserver : public PowerManagerClient::Observer {
   last_ambient_light_sensor_change() const {
     return last_ambient_light_sensor_change_;
   }
-
+  const power_manager::AmbientLightSensorChange&
+  last_keyboard_ambient_light_sensor_change() const {
+    return last_keyboard_ambient_light_sensor_change_;
+  }
   void set_should_block_suspend(bool take_callback) {
     should_block_suspend_ = take_callback;
   }
@@ -238,6 +241,10 @@ class TestObserver : public PowerManagerClient::Observer {
       const power_manager::AmbientLightSensorChange& change) override {
     last_ambient_light_sensor_change_ = change;
   }
+  void KeyboardAmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    last_keyboard_ambient_light_sensor_change_ = change;
+  }
 
  private:
   raw_ptr<PowerManagerClient> client_;  // Not owned.
@@ -269,6 +276,10 @@ class TestObserver : public PowerManagerClient::Observer {
 
   // Last-set ambient light sensor change.
   power_manager::AmbientLightSensorChange last_ambient_light_sensor_change_;
+
+  // Last-set keyboard ambient light sensor change.
+  power_manager::AmbientLightSensorChange
+      last_keyboard_ambient_light_sensor_change_;
 };
 
 // Stub implementation of PowerManagerClient::RenderProcessManagerDelegate.
@@ -1050,6 +1061,73 @@ TEST_F(PowerManagerClientTest, AmbientLightSensorEnabledChanged) {
     EXPECT_TRUE(observer.last_ambient_light_sensor_change().has_cause());
     EXPECT_EQ(proto.cause(),
               observer.last_ambient_light_sensor_change().cause());
+  }
+}
+
+// Tests that observers are notified about changes to the Keyboard ambient Light
+// Sensor status.
+TEST_F(PowerManagerClientTest, KeyboardAmbientLightSensorEnabledChanged) {
+  TestObserver observer(client_);
+
+  EXPECT_FALSE(observer.last_keyboard_ambient_light_sensor_change()
+                   .has_sensor_enabled());
+  EXPECT_FALSE(
+      observer.last_keyboard_ambient_light_sensor_change().has_cause());
+
+  {
+    // When PowerManagerClient receives a signal saying that the Keyboard
+    // Ambient Light Sensor is disabled, observers should be notified.
+    power_manager::AmbientLightSensorChange proto;
+    proto.set_sensor_enabled(false);
+    proto.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+
+    dbus::Signal signal(
+        kInterface,
+        power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+    EmitSignal(&signal);
+
+    EXPECT_TRUE(observer.last_keyboard_ambient_light_sensor_change()
+                    .has_sensor_enabled());
+    EXPECT_EQ(
+        proto.sensor_enabled(),
+        observer.last_keyboard_ambient_light_sensor_change().sensor_enabled());
+
+    // The change cause should be USER_REQUEST_SETTINGS_APP because the change
+    // was triggered via the PowerManagerClient function.
+    EXPECT_TRUE(
+        observer.last_keyboard_ambient_light_sensor_change().has_cause());
+    EXPECT_EQ(proto.cause(),
+              observer.last_keyboard_ambient_light_sensor_change().cause());
+  }
+
+  {
+    // When PowerManagerClient receives a signal saying that the Ambient Light
+    // Sensor is enabled, observers should be notified.
+    power_manager::AmbientLightSensorChange proto;
+    proto.set_sensor_enabled(true);
+    proto.set_cause(
+        power_manager::
+            AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+    dbus::Signal signal(
+        kInterface,
+        power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+    EmitSignal(&signal);
+
+    EXPECT_TRUE(observer.last_keyboard_ambient_light_sensor_change()
+                    .has_sensor_enabled());
+    EXPECT_EQ(
+        proto.sensor_enabled(),
+        observer.last_keyboard_ambient_light_sensor_change().sensor_enabled());
+
+    // The change cause should be USER_REQUEST_SETTINGS_APP because the change
+    // was triggered via the PowerManagerClient function.
+    EXPECT_TRUE(
+        observer.last_keyboard_ambient_light_sensor_change().has_cause());
+    EXPECT_EQ(proto.cause(),
+              observer.last_keyboard_ambient_light_sensor_change().cause());
   }
 }
 

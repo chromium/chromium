@@ -236,7 +236,22 @@ void FakePowerManagerClient::ToggleKeyboardBacklight() {}
 
 void FakePowerManagerClient::SetKeyboardAmbientLightSensorEnabled(
     bool enabled) {
+  // If this is a no-op, don't emit a signal.
+  if (keyboard_ambient_light_sensor_enabled_ == enabled) {
+    return;
+  }
   keyboard_ambient_light_sensor_enabled_ = enabled;
+
+  power_manager::AmbientLightSensorChange change;
+  change.set_sensor_enabled(keyboard_ambient_light_sensor_enabled_);
+  change.set_cause(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FakePowerManagerClient::SendKeyboardAmbientLightSensorEnabledChanged,
+          weak_ptr_factory_.GetWeakPtr(), change));
 }
 
 void FakePowerManagerClient::GetKeyboardAmbientLightSensorEnabled(
@@ -591,6 +606,13 @@ void FakePowerManagerClient::SendAmbientLightSensorEnabledChanged(
     const power_manager::AmbientLightSensorChange& proto) {
   for (auto& observer : observers_) {
     observer.AmbientLightSensorEnabledChanged(proto);
+  }
+}
+
+void FakePowerManagerClient::SendKeyboardAmbientLightSensorEnabledChanged(
+    const power_manager::AmbientLightSensorChange& proto) {
+  for (auto& observer : observers_) {
+    observer.KeyboardAmbientLightSensorEnabledChanged(proto);
   }
 }
 
