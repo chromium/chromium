@@ -161,6 +161,10 @@ bool WebNode::IsContentEditable() const {
   return blink::IsEditable(*private_);
 }
 
+WebElement WebNode::RootEditableElement() const {
+  return blink::RootEditableElement(*private_);
+}
+
 bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
   return AXObjectCache::IsInsideFocusableElementOrARIAWidget(
       *this->ConstUnwrap<Node>());

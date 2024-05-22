@@ -101,6 +101,10 @@ class BLINK_EXPORT WebNode {
   bool IsElementNode() const;
   void SimulateClick();
 
+  // Returns the top-most ancestor such this WebNode and that ancestor and all
+  // nodes in between are contenteditable.
+  WebElement RootEditableElement() const;
+
   // See cc/paint/element_id.h for the definition of these ids.
   cc::ElementId ScrollingElementIdForTesting() const;
 

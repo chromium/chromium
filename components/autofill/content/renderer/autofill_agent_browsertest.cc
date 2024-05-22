@@ -47,6 +47,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AtMost;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -171,6 +172,27 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     return form_util::GetFieldRendererId(
         GetMainFrame()->GetDocument().GetElementById(
             blink::WebString::FromUTF8(id)));
+  }
+
+  void Focus(const char* id) {
+    ExecuteJavaScriptForTests(base::StringPrintf(R"(
+      document.getElementById('%s').focus();
+    )",
+                                                 id));
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+    task_environment_.RunUntilIdle();
+  }
+
+  void Click(std::string_view target) {
+    SimulatePointClick(
+        GetWebElementById(target).BoundsInWidget().CenterPoint());
+    task_environment_.RunUntilIdle();
+  }
+
+  void RightClick(std::string_view target) {
+    SimulatePointRightClick(
+        GetWebElementById(target).BoundsInWidget().CenterPoint());
+    task_environment_.RunUntilIdle();
   }
 
   void SimulateUserEditField(const blink::WebFormElement& form,
@@ -1305,14 +1327,6 @@ class AutofillAgentTestCaret
 
   blink::WebElement GetElement() { return GetWebElementById("f"); }
 
-  void Focus() {
-    ExecuteJavaScriptForTests(R"(
-      document.getElementById('f').focus();
-    )");
-    task_environment_.FastForwardBy(base::Milliseconds(500));
-    task_environment_.RunUntilIdle();
-  }
-
   void TriggerAskForValuesToFill() {
     switch (form_control_type()) {
       case FormControlType::kContentEditable:
@@ -1367,7 +1381,7 @@ TEST_P(AutofillAgentTestCaret, AskForValuesToFillContainsCaret) {
   gfx::Rect caret_bounds;
   EXPECT_CALL(autofill_driver(), AskForValuesToFill)
       .WillOnce(DoAll(SaveArg<1>(&field), SaveArg<2>(&caret_bounds)));
-  Focus();
+  Focus("f");
   TriggerAskForValuesToFill();
   EXPECT_FALSE(field.bounds().IsEmpty());
   EXPECT_FALSE(caret_bounds.origin().IsOrigin());
@@ -1395,7 +1409,7 @@ TEST_P(AutofillAgentTestCaret, MovingCaretSlowlyFiresEvent) {
     EXPECT_CALL(checkpoint, Call("done"));
   }
   checkpoint.Call("focus");
-  Focus();
+  Focus("f");
   checkpoint.Call("first move");
   SetCaret(1, 1, /*pause_for=*/base::Seconds(1));
   checkpoint.Call("second move");
@@ -1431,7 +1445,7 @@ TEST_P(AutofillAgentTestCaret, MovingCaretFastThrottlesEvent) {
     EXPECT_CALL(checkpoint, Call("done"));
   }
   checkpoint.Call("focus");
-  Focus();
+  Focus("f");
   checkpoint.Call("first move");
   SetCaret(1, 1, /*pause_for=*/base::Milliseconds(1));
   checkpoint.Call("second move is ignored");
@@ -1460,10 +1474,92 @@ TEST_P(AutofillAgentTestCaret, SelectionFiresEvent) {
     EXPECT_CALL(checkpoint, Call("done"));
   }
   checkpoint.Call("focus");
-  Focus();
+  Focus("f");
   checkpoint.Call("selection");
   SetCaret(1, 4, /*pause_for=*/base::Seconds(1));
   checkpoint.Call("done");
+}
+
+// Tests fixture for click handling.
+class AutofillAgentTestClick
+    : public AutofillAgentTest,
+      public ::testing::WithParamInterface<const char*> {
+ public:
+  const char* field_html() const { return GetParam(); }
+
+  void SetUp() override {
+    AutofillAgentTest::SetUp();
+    // The DIV and SPAN dimensions are chosen so that
+    // - an empty DIV is clickable and
+    // - clicking on a non-empty DIV hits the node (a text node or SPAN) inside
+    //   that DIV.
+    LoadHTML(base::StringPrintf(R"(<html>
+                                   <style>
+                                   div { width: 5em; height: 2ex; }
+                                   </style>
+                                   <body>
+                                   <div id=other></div>
+                                   %s)",
+                                field_html()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillContentEditableLeftClickFix};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAgentTest,
+    AutofillAgentTestClick,
+    ::testing::Values(R"(<input id=f>)",
+                      R"(<textarea id=f></textarea>)",
+                      R"(<div contenteditable id=f></div>)",
+                      R"(<div contenteditable id=f>Hello world</div>)",
+                      R"(<div contenteditable id=f><div></div></div>)"));
+
+// Tests that clicking on a field triggers AskForValuesToFillOnClick().
+// TODO(crbug.com/342126797): Fix Android's OnAskForValuesToFill() event.
+#if !BUILDFLAG(IS_ANDROID)
+#define MAYBE_AskForValuesToFillOnClick AskForValuesToFillOnClick
+#else
+#define MAYBE_AskForValuesToFillOnClick DISABLED_AskForValuesToFillOnClick
+#endif
+TEST_P(AutofillAgentTestClick, MAYBE_AskForValuesToFillOnClick) {
+  testing::MockFunction<void(std::string_view)> checkpoint;
+  {
+    testing::InSequence s;
+    FieldRendererId field = GetFieldRendererIdById("f");
+
+    EXPECT_CALL(checkpoint, Call("click on field"));
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(_, HasFieldId(field), _, _));
+
+    EXPECT_CALL(checkpoint, Call("click on field"));
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(_, HasFieldId(field), _, _));
+
+    EXPECT_CALL(checkpoint, Call("click outside of field"));
+    EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
+
+    EXPECT_CALL(checkpoint, Call("right click on field"));
+    EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick))
+        .Times(AtMost(1));
+  }
+
+  WaitForFormsSeen();
+  checkpoint.Call("click on field");
+  Click("f");
+  checkpoint.Call("click on field");
+  Click("f");
+  checkpoint.Call("click outside of field");
+  Click("other");
+  checkpoint.Call("right click on field");
+  RightClick("f");
 }
 
 }  // namespace
