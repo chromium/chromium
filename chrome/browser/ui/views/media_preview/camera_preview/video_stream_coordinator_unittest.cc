@@ -84,6 +84,10 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   video_source_receiver_.Bind(video_source.BindNewPipeAndPassReceiver());
   coordinator_->ConnectToDevice(GetVideoCaptureDeviceInfo(),
                                 std::move(video_source));
+
+  coordinator_->GetVideoStreamView()->SetPreferredSize(gfx::Size{250, 180});
+  coordinator_->GetVideoStreamView()->SizeToPreferredSize();
+
   EXPECT_TRUE(fake_video_source_.WaitForCreatePushSubscription());
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionActivated());
 
@@ -104,10 +108,10 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
 
-  // The selected pixel height is 120, so it will be logged in the 1 bucket.
+  // The selected pixel height is 500, so it will be logged in the 406 bucket.
   histogram_tester_.ExpectUniqueSample(
       "MediaPreviews.UI.Permissions.Camera.PixelHeight",
-      /*bucket_min_value=*/1, 1);
+      /*bucket_min_value=*/406, 1);
   histogram_tester_.ExpectUniqueSample(
       "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
       /*bucket_min_value=*/30, 1);
