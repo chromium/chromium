@@ -1259,6 +1259,7 @@ policies:
   1258: KeyboardFocusableScrollersEnabled
   1259: ExtensibleEnterpriseSSOEnabled
   1260: CSSCustomStateDeprecatedSyntaxEnabled
+  1261: MemorySaverModeSavings
 atomic_groups:
   1: Homepage
   2: RemoteAccess
