@@ -275,10 +275,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #if BUILDFLAG(IS_WIN)
       {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
 #elif BUILDFLAG(IS_MAC)
-      {"createPasskeysInICloudKeychainLabel",
-       IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_LABEL},
-      {"createPasskeysInICloudKeychainSubLabel",
-       IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_SUBLABEL},
       {"managePasskeysLabel",
        IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
 #endif

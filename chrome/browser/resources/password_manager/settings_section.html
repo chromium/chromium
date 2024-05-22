@@ -127,14 +127,6 @@
         sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
   </template>
-  <if expr="is_macosx">
-    <pref-toggle-button id="createPasskeysInICloudKeychainRow" class="hr"
-        label="$i18n{createPasskeysInICloudKeychainLabel}"
-        sub-label="$i18n{createPasskeysInICloudKeychainSubLabel}"
-        on-click="onCreatePasskeysInICloudKeychainClick_"
-        pref="{{prefs.webauthn.create_in_icloud_keychain}}">
-    </pref-toggle-button>
-  </if>
   <template is="dom-if" if="[[isConnectedToCloudAuthenticator_]]" restamp>
     <cr-link-row id="disconnectCloudAuthenticatorRow"
         class="cr-row settings-cr-link-row"
