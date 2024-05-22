@@ -83,9 +83,7 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // to append third-party origin trials as well. If a token in `tokens` is a
   // third-party origin trial token, and the corresponding origin is present in
   // `script_tokens`, then the trial will be enabled for the origin stored in
-  // the token itself, rather than any origin found in `script_origins`. This
-  // limitation means that subdomain matching does not work for third-party
-  // origin trial tokens using this method.
+  // the token itself, rather than any origin found in `script_origins`.
   virtual void PersistAdditionalTrialsFromTokens(
       const url::Origin& origin,
       const url::Origin& partition_origin,
