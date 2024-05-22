@@ -2,17 +2,17 @@ Document
 ++Button Name='Button pointing to hidden popover' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Edit
 ++Text Name='Text input pointing to hidden popover '
-++Button Name='Hide button pointing to hidden manual'
+++Button Name='Hide button pointing to hidden manual' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Edit
 ++Text Name='Email input pointing to hidden manual '
-++Button Name='Button pointing to hint popover'
-++Button Name='Button pointing to "rich" hint popover'
+++Button Name='Button pointing to hint popover' ExpandCollapse.ExpandCollapseState='Collapsed'
+++Button Name='Button pointing to "rich" hint popover' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Button Name='Button pointing to non-popover'
 ++Edit
 ++Text Name='Text input pointing to non-popover'
 ++Group IsControlElement=false
 ++++Text Name='No popover attribute'
-++Button Name='Button pointing to invalid popover value'
+++Button Name='Button pointing to invalid popover value' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Edit
 ++Text Name='Text input pointing to invalid popover value'
 ++Group IsControlElement=false
@@ -28,10 +28,10 @@ Document
 ++++Text Name='Popover (showing)'
 ++++Group IsControlElement=false
 ++++++Text Name='Nested popover (showing)'
-++Button Name='Hide button pointing to showing manual (should add aria-details)'
+++Button Name='Hide button pointing to showing manual (should add aria-details)' ExpandCollapse.ExpandCollapseState='Expanded'
 ++Edit
 ++Text Name='Url input pointing to showing manual '
-++Button Name='Hide button pointing to showing manual (should NOT add aria-details)'
+++Button Name='Hide button pointing to showing manual (should NOT add aria-details)' ExpandCollapse.ExpandCollapseState='Expanded'
 ++Group IsControlElement=false
 ++++Text Name='Manual (showing)'
 ++Group IsControlElement=false

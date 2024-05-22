@@ -28,10 +28,10 @@
 ++++[static] name='Popover (showing)'
 ++++[panel] details-for=[push button]
 ++++++[static] name='Nested popover (showing)'
-++[push button] name='Hide button pointing to showing manual (should add aria-details)' details=[panel] details-roles:popover
+++[push button] name='Hide button pointing to showing manual (should add aria-details)' expanded details=[panel] details-roles:popover
 ++[entry] selectable-text
 ++[static] name='Url input pointing to showing manual '
-++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)'
+++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)' expanded
 ++[panel] details-for=[push button]
 ++++[static] name='Manual (showing)'
 ++[panel]
