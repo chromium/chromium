@@ -69,6 +69,16 @@ ThreadPoolInstance::ScopedBestEffortExecutionFence::
   g_thread_pool->EndBestEffortFence();
 }
 
+ThreadPoolInstance::ScopedRestrictedTasks::ScopedRestrictedTasks() {
+  DCHECK(g_thread_pool);
+  g_thread_pool->BeginRestrictedTasks();
+}
+
+ThreadPoolInstance::ScopedRestrictedTasks::~ScopedRestrictedTasks() {
+  DCHECK(g_thread_pool);
+  g_thread_pool->EndRestrictedTasks();
+}
+
 ThreadPoolInstance::ScopedFizzleBlockShutdownTasks::
     ScopedFizzleBlockShutdownTasks() {
   // It's possible for this to be called without a ThreadPool present in tests.

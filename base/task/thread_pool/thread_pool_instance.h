@@ -125,6 +125,16 @@ class BASE_EXPORT ThreadPoolInstance {
     ~ScopedBestEffortExecutionFence();
   };
 
+  // Used to restrict the maximum number of concurrent tasks that can run in a
+  // scope.
+  class BASE_EXPORT ScopedRestrictedTasks {
+   public:
+    ScopedRestrictedTasks();
+    ScopedRestrictedTasks(const ScopedRestrictedTasks&) = delete;
+    ScopedRestrictedTasks& operator=(const ScopedRestrictedTasks&) = delete;
+    ~ScopedRestrictedTasks();
+  };
+
   // Used to allow posting `BLOCK_SHUTDOWN` tasks after shutdown in a scope. The
   // tasks will fizzle (not run) but not trigger any checks that aim to catch
   // this class of ordering bugs.
@@ -286,6 +296,9 @@ class BASE_EXPORT ThreadPoolInstance {
   virtual void EndFence() = 0;
   virtual void BeginBestEffortFence() = 0;
   virtual void EndBestEffortFence() = 0;
+
+  virtual void BeginRestrictedTasks() = 0;
+  virtual void EndRestrictedTasks() = 0;
 };
 
 }  // namespace base

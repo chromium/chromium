@@ -187,6 +187,7 @@ void ThreadGroup::StartImpl(
   CheckedAutoLock auto_lock(lock_);
 
   max_tasks_ = max_tasks;
+  baseline_max_tasks_ = max_tasks;
   DCHECK_GE(max_tasks_, 1U);
   in_start().initial_max_tasks = std::min(max_tasks_, kMaxNumberOfWorkers);
   max_best_effort_tasks_ = max_best_effort_tasks;
@@ -214,6 +215,17 @@ void ThreadGroup::UnbindFromCurrentThread() {
 
 bool ThreadGroup::IsBoundToCurrentThread() const {
   return current_thread_group == this;
+}
+
+void ThreadGroup::SetMaxTasks(size_t max_tasks) {
+  CheckedAutoLock auto_lock(lock_);
+  size_t extra_tasks = max_tasks_ - baseline_max_tasks_;
+  baseline_max_tasks_ = std::min(max_tasks, after_start().initial_max_tasks);
+  max_tasks_ = baseline_max_tasks_ + extra_tasks;
+}
+
+void ThreadGroup::ResetMaxTasks() {
+  SetMaxTasks(after_start().initial_max_tasks);
 }
 
 size_t

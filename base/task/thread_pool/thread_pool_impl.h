@@ -76,6 +76,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   void EndFence() override;
   void BeginBestEffortFence() override;
   void EndBestEffortFence() override;
+  void BeginRestrictedTasks() override;
+  void EndRestrictedTasks() override;
   void BeginFizzlingBlockShutdownTasks() override;
   void EndFizzlingBlockShutdownTasks() override;
 

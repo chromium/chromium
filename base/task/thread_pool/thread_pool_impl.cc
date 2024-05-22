@@ -277,6 +277,26 @@ bool ThreadPoolImpl::WasStartedUnsafe() const {
   return TS_UNCHECKED_READ(started_);
 }
 
+void ThreadPoolImpl::BeginRestrictedTasks() {
+  foreground_thread_group_->SetMaxTasks(2);
+  if (utility_thread_group_) {
+    utility_thread_group_->SetMaxTasks(1);
+  }
+  if (background_thread_group_) {
+    background_thread_group_->SetMaxTasks(1);
+  }
+}
+
+void ThreadPoolImpl::EndRestrictedTasks() {
+  foreground_thread_group_->ResetMaxTasks();
+  if (utility_thread_group_) {
+    utility_thread_group_->ResetMaxTasks();
+  }
+  if (background_thread_group_) {
+    background_thread_group_->ResetMaxTasks();
+  }
+}
+
 bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
                                      const TaskTraits& traits,
                                      OnceClosure task,

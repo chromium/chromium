@@ -103,6 +103,14 @@ class BASE_EXPORT ThreadGroup {
   // Returns true if the thread group is registered in TLS.
   bool IsBoundToCurrentThread() const;
 
+  // Sets a new maximum number of concurrent tasks, subject to adjustments for
+  // blocking tasks.
+  void SetMaxTasks(size_t max_tasks);
+
+  // Resets the maximum number of concurrent tasks to the default provided
+  // in constructor, subject to adjustments for blocking tasks.
+  void ResetMaxTasks();
+
   // Removes |task_source| from |priority_queue_|. Returns a
   // RegisteredTaskSource that evaluats to true if successful, or false if
   // |task_source| is not currently in |priority_queue_|, such as when a worker
@@ -481,7 +489,10 @@ class BASE_EXPORT ThreadGroup {
   bool shutdown_started_ GUARDED_BY(lock_) = false;
 
   // Maximum number of tasks of any priority / BEST_EFFORT priority that can run
-  // concurrently in this thread group.
+  // concurrently in this thread group currently, excluding adjustment for
+  // blocking tasks.
+  size_t baseline_max_tasks_ GUARDED_BY(lock_) = 0;
+  // Same as `baseline_max_tasks_`, but including adjustment for blocking tasks.
   size_t max_tasks_ GUARDED_BY(lock_) = 0;
   size_t max_best_effort_tasks_ GUARDED_BY(lock_) = 0;
 

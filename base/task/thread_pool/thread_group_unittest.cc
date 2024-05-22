@@ -382,6 +382,56 @@ TEST_F(ThreadGroupTest, CanRunPolicyShouldYield) {
       thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
 }
 
+TEST_F(ThreadGroupTest, SetMaxTasks) {
+  StartThreadGroup();
+
+  constexpr size_t kNewMaxTasks = kMaxTasks / 2;
+
+  ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+  thread_group_->SetMaxTasks(kNewMaxTasks);
+  ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kNewMaxTasks);
+
+  TestWaitableEvent threads_running;
+  TestWaitableEvent busy_threads_continue;
+  const scoped_refptr<TaskRunner> task_runner =
+      test::CreatePooledTaskRunner({MayBlock(), WithBaseSyncPrimitives()},
+                                   &mock_pooled_task_runner_delegate_);
+
+  RepeatingClosure threads_running_barrier = BarrierClosure(
+      kNewMaxTasks,
+      BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
+
+  // Posting these tasks should cause new workers to be created.
+  for (size_t i = 0; i < kNewMaxTasks; ++i) {
+    task_runner->PostTask(
+        FROM_HERE, BindLambdaForTesting(
+                       [&busy_threads_continue, &threads_running_barrier]() {
+                         threads_running_barrier.Run();
+                         busy_threads_continue.Wait();
+                       }));
+  }
+  threads_running.Wait();
+
+  AtomicFlag is_exiting;
+  // These tasks should not get executed until after other tasks become
+  // unblocked.
+  for (size_t i = 0; i < kNewMaxTasks; ++i) {
+    task_runner->PostTask(FROM_HERE, BindOnce(
+                                         [](AtomicFlag* is_exiting) {
+                                           EXPECT_TRUE(is_exiting->IsSet());
+                                         },
+                                         Unretained(&is_exiting)));
+  }
+  // Give time for those idle workers to possibly do work (which should not
+  // happen).
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+  is_exiting.Set();
+  thread_group_->ResetMaxTasks();
+  busy_threads_continue.Signal();
+  task_tracker_.FlushForTesting();
+}
+
 // Verify that the maximum number of BEST_EFFORT tasks that can run concurrently
 // in a thread group does not affect Sequences with a priority that was
 // increased from BEST_EFFORT to USER_BLOCKING.
