@@ -93,6 +93,12 @@ GURL GetLearnMoreUrl(Profile* profile);
 // Gets the display name of the specified `guest` running under `profile`.
 std::string GetDisplayName(Profile* profile, guest_os::GuestId guest);
 
+// Returns whether the default Bruschetta VM is running for the user.
+bool IsBruschettaRunning(Profile* profile);
+
+// Gets the display name for the default Bruschetta VM.
+std::string GetBruschettaDisplayName(Profile* profile);
+
 }  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

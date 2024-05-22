@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -544,6 +545,10 @@ void AddTerminalMenuItems(Profile* profile, apps::MenuItems& menu_items) {
   if (crostini::IsCrostiniRunning(profile)) {
     apps::AddCommandItem(ash::SHUTDOWN_GUEST_OS,
                          IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM, menu_items);
+  }
+  if (bruschetta::IsBruschettaRunning(profile)) {
+    apps::AddCommandItem(ash::SHUTDOWN_BRUSCHETTA_OS,
+                         IDS_BRUSCHETTA_SHUT_DOWN_LINUX_MENU_ITEM, menu_items);
   }
 }
 

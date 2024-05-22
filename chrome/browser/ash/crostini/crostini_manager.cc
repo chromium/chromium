@@ -1568,7 +1568,7 @@ void CrostiniManager::StopRunningVms(CrostiniResultCallback callback) {
                         },
                         std::move(callback)));
   for (const auto& name : names) {
-    LOG(WARNING) << "Stopping vm " << name;
+    VLOG(1) << "Stopping vm " << name;
     StopVm(name, barrier);
   }
 }

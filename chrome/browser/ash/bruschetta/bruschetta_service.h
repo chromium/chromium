@@ -72,6 +72,12 @@ class BruschettaService : public KeyedService,
   void RemoveVm(const guest_os::GuestId& guest_id,
                 base::OnceCallback<void(bool)> callback);
 
+  // Checks if the vm identified by `vm_name` is in the running list.
+  bool IsVmRunning(std::string_view vm_name);
+
+  // Stops all running VMs.
+  void StopRunningVms();
+
  private:
   struct VmRegistration {
     std::unique_ptr<BruschettaLauncher> launcher;

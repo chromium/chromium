@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -35,6 +38,7 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
@@ -120,7 +124,8 @@ AppServiceShelfContextMenu::~AppServiceShelfContextMenu() = default;
 
 ui::ImageModel AppServiceShelfContextMenu::GetIconForCommandId(
     int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
+  if (command_id == ash::LAUNCH_NEW ||
+      command_id == ash::SHUTDOWN_BRUSCHETTA_OS) {
     const gfx::VectorIcon& icon =
         GetCommandIdVectorIcon(command_id, launch_new_string_id_);
     return ui::ImageModel::FromVectorIcon(
@@ -137,6 +142,11 @@ std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
         << item().id.app_id << "; app type = " << apps::EnumToString(app_type_)
         << "; submenu items count = " << submenu_->GetItemCount();
     return l10n_util::GetStringUTF16(launch_new_string_id_);
+  } else if (command_id == ash::SHUTDOWN_BRUSCHETTA_OS) {
+    return l10n_util::GetStringFUTF16(
+        IDS_BRUSCHETTA_SHUT_DOWN_LINUX_MENU_ITEM,
+        base::UTF8ToUTF16(
+            bruschetta::GetBruschettaDisplayName(controller()->profile())));
   }
   return ShelfContextMenu::GetLabelForCommandId(command_id);
 }
@@ -203,6 +213,16 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       } else {
         LOG(ERROR) << "App " << item().id.app_id
                    << " should not have a shutdown guest OS command.";
+      }
+      break;
+
+    case ash::SHUTDOWN_BRUSCHETTA_OS:
+      if (item().id.app_id == guest_os::kTerminalSystemAppId) {
+        bruschetta::BruschettaService::GetForProfile(controller()->profile())
+            ->StopRunningVms();
+      } else {
+        LOG(ERROR) << "App " << item().id.app_id
+                   << " should not have a shutdown Bruschetta command.";
       }
       break;
 
@@ -317,6 +337,7 @@ bool AppServiceShelfContextMenu::IsCommandIdEnabled(int command_id) const {
 bool AppServiceShelfContextMenu::IsItemForCommandIdDynamic(
     int command_id) const {
   return command_id == ash::LAUNCH_NEW ||
+         command_id == ash::SHUTDOWN_BRUSCHETTA_OS ||
          ShelfContextMenu::IsItemForCommandIdDynamic(command_id);
 }
 

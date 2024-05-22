@@ -8,12 +8,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -425,6 +428,43 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
       menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
   EXPECT_EQ(menu_section->menu_model->GetLabelAt(menu_section->command_index),
             u"Shut down Linux");
+  EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
+                .GetVectorIcon()
+                .vector_icon(),
+            &kShutdownGuestOsIcon);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
+                       ShutDownBruschettaOs) {
+  ash::SystemWebAppManager::Get(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  auto menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_BRUSCHETTA_OS);
+  ASSERT_FALSE(menu_section);
+
+  guest_os::GuestId id(guest_os::VmType::BRUSCHETTA,
+                       bruschetta::kBruschettaVmName, "");
+  guest_os::GuestOsSessionTracker::GetForProfile(browser()->profile())
+      ->AddGuestForTesting(id, guest_os::GuestInfo{id, 0, {}, {}, {}, {}});
+
+  auto* bruschetta_service =
+      bruschetta::BruschettaService::GetForProfile(browser()->profile());
+  bruschetta_service->RegisterVmLaunch(bruschetta::kBruschettaVmName,
+                                       bruschetta::RunningVmPolicy{false});
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_BRUSCHETTA_OS);
+  ASSERT_TRUE(menu_section);
+
+  EXPECT_GT(menu_section->command_index, 0u);
+  EXPECT_FALSE(
+      menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
+  EXPECT_NE(menu_section->menu_model->GetLabelAt(menu_section->command_index)
+                .find(base::ASCIIToUTF16(bruschetta::GetBruschettaDisplayName(
+                    browser()->profile()))),
+            std::string::npos);
   EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
                 .GetVectorIcon()
                 .vector_icon(),

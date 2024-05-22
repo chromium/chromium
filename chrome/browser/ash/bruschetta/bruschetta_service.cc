@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -191,6 +193,13 @@ void BruschettaService::BlockLaunch(guest_os::GuestId guest_id) {
   runnable_vms_.erase(it);
 }
 
+void BruschettaService::StopRunningVms() {
+  for (const auto& [name, _] : running_vms_) {
+    VLOG(1) << "Stopping vm " << name;
+    StopVm(std::move(name));
+  }
+}
+
 void BruschettaService::StopVm(std::string vm_name) {
   auto* client = ash::ConciergeClient::Get();
   DCHECK(client);
@@ -350,4 +359,9 @@ void BruschettaService::OnUninstallAllDlcs(
 
   std::move(callback).Run(true);
 }
+
+bool BruschettaService::IsVmRunning(std::string_view vm_name) {
+  return running_vms_.contains(vm_name);
+}
+
 }  // namespace bruschetta

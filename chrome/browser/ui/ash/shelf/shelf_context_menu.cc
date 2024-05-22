@@ -248,6 +248,8 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return gfx::kNoneIcon;
     case ash::SHUTDOWN_GUEST_OS:
       return kShutdownGuestOsIcon;
+    case ash::SHUTDOWN_BRUSCHETTA_OS:
+      return kShutdownGuestOsIcon;
     case ash::CROSTINI_USE_HIGH_DENSITY:
       return views::kLinuxHighDensityIcon;
     case ash::CROSTINI_USE_LOW_DENSITY:

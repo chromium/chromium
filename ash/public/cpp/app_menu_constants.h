@@ -82,6 +82,7 @@ enum CommandId {
   // Command for shutting down a VM associated with an App. Used by
   // AppContextMenu and ShelfContextMenu.
   SHUTDOWN_GUEST_OS = 2000,
+  SHUTDOWN_BRUSCHETTA_OS = 2001,
 
   // Range of command IDs reserved for shelf app menu items when there are
   // multiple instances of the same app.
