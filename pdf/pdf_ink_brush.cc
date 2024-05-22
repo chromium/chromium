@@ -4,11 +4,25 @@
 
 #include "pdf/pdf_ink_brush.h"
 
+#include <numbers>
 #include <optional>
 
 #include "base/check_op.h"
+#include "pdf/ink/ink_brush.h"
+#include "pdf/ink/ink_brush_family.h"
+#include "pdf/ink/ink_brush_paint.h"
+#include "pdf/ink/ink_brush_tip.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+std::string CreateBrushUri() {
+  // TODO(crbug.com/335524380): Use real value here.
+  return "ink://ink/texture:test-texture";
+}
+
+}  // namespace
 
 // static
 std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
@@ -30,8 +44,32 @@ PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
 PdfInkBrush::~PdfInkBrush() = default;
 
 std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
-  // TODO(crbug.com/335524382): Implement this.
-  return nullptr;
+  // TODO(crbug.com/335524380): Use real values here.
+  InkBrushTip tip;
+  tip.corner_rounding = 0;
+  tip.opacity_multiplier = 1.0f;
+
+  InkBrushPaint::TextureLayer layer;
+  layer.color_texture_uri = CreateBrushUri();
+  layer.mapping = InkBrushPaint::TextureMapping::kWinding;
+  layer.size_unit = InkBrushPaint::TextureSizeUnit::kBrushSize;
+  layer.size_x = 3;
+  layer.size_y = 5;
+  layer.size_jitter_x = 0.1;
+  layer.size_jitter_y = 2;
+  layer.keyframes = {
+      {.progress = 0.1, .rotation_in_radians = std::numbers::pi_v<float> / 4}};
+  layer.blend_mode = InkBrushPaint::BlendMode::kSrcIn;
+
+  InkBrushPaint paint;
+  paint.texture_layers.push_back(layer);
+  auto family = InkBrushFamily::Create(tip, paint, "");
+  CHECK(family);
+
+  // TODO(crbug.com/335524382): Use the color and size fields in `PdfInkBrush`.
+  return InkBrush::Create(std::move(family),
+                          /*color=*/SkColorSetRGB(0x18, 0x80, 0x38),
+                          /*size=*/1.0f, /*epsilon=*/0.1f);
 }
 
 }  // namespace chrome_pdf

@@ -31,6 +31,7 @@ class PointF;
 namespace chrome_pdf {
 
 class InkStroke;
+class PdfInkBrush;
 
 class InkModule {
  public:
@@ -73,6 +74,9 @@ class InkModule {
   const raw_ref<Client> client_;
 
   bool enabled_ = false;
+
+  // The current brush to use for drawing strokes.
+  std::unique_ptr<PdfInkBrush> pdf_ink_brush_;
 
   // Set when InkModule is in the middle of drawing a stroke.
   std::optional<base::Time> ink_start_time_;

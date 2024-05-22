@@ -5,7 +5,6 @@
 #include "pdf/ink_module.h"
 
 #include <memory>
-#include <numbers>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -18,14 +17,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/ink/ink_brush.h"
-#include "pdf/ink/ink_brush_family.h"
-#include "pdf/ink/ink_brush_paint.h"
-#include "pdf/ink/ink_brush_tip.h"
 #include "pdf/ink/ink_in_progress_stroke.h"
 #include "pdf/ink/ink_stroke.h"
 #include "pdf/ink/ink_stroke_input_batch.h"
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdf_ink_brush.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -36,54 +33,36 @@ namespace chrome_pdf {
 
 namespace {
 
-std::string CreateBrushUri() {
-  // TODO(crbug.com/335524380): Use real value here.
-  return "ink://ink/texture:test-texture";
-}
-
-std::unique_ptr<InkBrush> CreateBrush() {
-  // TODO(crbug.com/335524380): Use real values here.
-  InkBrushTip tip;
-  tip.corner_rounding = 0;
-  tip.opacity_multiplier = 1.0f;
-
-  InkBrushPaint::TextureLayer layer;
-  layer.color_texture_uri = CreateBrushUri();
-  layer.mapping = InkBrushPaint::TextureMapping::kWinding;
-  layer.size_unit = InkBrushPaint::TextureSizeUnit::kBrushSize;
-  layer.size_x = 3;
-  layer.size_y = 5;
-  layer.size_jitter_x = 0.1;
-  layer.size_jitter_y = 2;
-  layer.keyframes = {
-      {.progress = 0.1, .rotation_in_radians = std::numbers::pi_v<float> / 4}};
-  layer.blend_mode = InkBrushPaint::BlendMode::kSrcIn;
-
-  InkBrushPaint paint;
-  paint.texture_layers.push_back(layer);
-  auto family = InkBrushFamily::Create(tip, paint, "");
-  CHECK(family);
-  return InkBrush::Create(std::move(family),
-                          /*color=*/SkColorSetRGB(0x18, 0x80, 0x38),
-                          /*size=*/1.0f, /*epsilon=*/0.1f);
+// Default to a black pen brush.
+std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
+  const PdfInkBrush::Params kDefaultBrushParams = {SK_ColorBLACK, 1.0f};
+  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                       kDefaultBrushParams);
 }
 
 }  // namespace
 
-InkModule::InkModule(Client& client) : client_(client) {
+InkModule::InkModule(Client& client)
+    : client_(client), pdf_ink_brush_(CreateDefaultBrush()) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
 }
 
 InkModule::~InkModule() = default;
 
 void InkModule::Draw(SkCanvas& canvas) {
+  // TODO(crbug.com/335524381): Strokes should still be drawn, even when the
+  // brush type is eraser.
+  if (!pdf_ink_brush_) {
+    return;
+  }
+
   auto stroke = InkInProgressStroke::Create();
   // TODO(crbug.com/339682315): This should not fail with the wrapper.
   if (!stroke) {
     return;
   }
 
-  std::unique_ptr<InkBrush> brush = CreateBrush();
+  std::unique_ptr<InkBrush> brush = pdf_ink_brush_->CreateInkBrush();
   CHECK(brush);
   stroke->Start(*brush);
   auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
@@ -212,9 +191,13 @@ void InkModule::HandleSetAnnotationModeMessage(
 }
 
 void InkModule::ConvertInkInputsIntoStroke() {
+  if (!pdf_ink_brush_) {
+    return;
+  }
+
   auto stroke = InkInProgressStroke::Create();
   CHECK(stroke);
-  std::unique_ptr<InkBrush> brush = CreateBrush();
+  std::unique_ptr<InkBrush> brush = pdf_ink_brush_->CreateInkBrush();
   CHECK(brush);
   stroke->Start(*brush);
   // TODO(crbug.com/335524380): Add `event` to `ink_inputs_`?
