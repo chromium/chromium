@@ -55,7 +55,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
-      CHECK_DEREF(browser_state->GetPrefs()), variations_country_id);
+      CHECK_DEREF(browser_state->GetPrefs()),
+      GetApplicationContext()->GetLocalState(), variations_country_id);
 }
 
 web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(

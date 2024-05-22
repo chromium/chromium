@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -26,7 +27,7 @@ class IconUtilsTest : public ::testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            pref_service_);
+            pref_service_, g_browser_process->local_state());
   }
 
   ~IconUtilsTest() override = default;

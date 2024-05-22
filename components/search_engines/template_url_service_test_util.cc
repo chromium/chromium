@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -68,7 +69,8 @@ TemplateURLServiceUnitTestBase::~TemplateURLServiceUnitTestBase() = default;
 
 void TemplateURLServiceUnitTestBase::SetUp() {
   RegisterPrefsForTemplateURLService(pref_service_.registry());
-
+  local_state_.registry()->RegisterBooleanPref(
+      metrics::prefs::kMetricsReportingEnabled, true);
   // Bypass the country checks.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry,
@@ -76,7 +78,7 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, country_codes::kCountryIDUnknown);
+          pref_service_, &local_state_, country_codes::kCountryIDUnknown);
 
   template_url_service_ = CreateService();
 }

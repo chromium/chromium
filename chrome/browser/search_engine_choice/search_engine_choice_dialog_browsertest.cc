@@ -504,16 +504,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                             EntryPoint::kDialog);
 }
 
-// TODO(b/341643240): Fix test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DialogDoesNotShowAgainAfterSettingPref \
-  DISABLED_DialogDoesNotShowAgainAfterSettingPref
-#else
-#define MAYBE_DialogDoesNotShowAgainAfterSettingPref \
-  DialogDoesNotShowAgainAfterSettingPref
-#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       MAYBE_DialogDoesNotShowAgainAfterSettingPref) {
+                       DialogDoesNotShowAgainAfterSettingPref) {
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile()));

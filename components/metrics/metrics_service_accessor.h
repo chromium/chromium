@@ -35,9 +35,9 @@ class MetricsServiceAccessor {
   MetricsServiceAccessor() {}
 
   // Returns whether metrics reporting is enabled, using the value of the
-  // kMetricsReportingEnabled pref in |pref_service| to determine whether user
+  // kMetricsReportingEnabled pref in |local_state| to determine whether user
   // has enabled reporting.
-  static bool IsMetricsReportingEnabled(PrefService* pref_service);
+  static bool IsMetricsReportingEnabled(PrefService* local_state);
 
   // Registers a field trial name and group with |metrics_service| (if not
   // null), to be used to annotate a UMA report with a particular configuration

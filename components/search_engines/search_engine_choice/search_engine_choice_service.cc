@@ -158,11 +158,16 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
+                                                     PrefService* local_state,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
       variations_country_id_(variations_country_id) {
+  if (local_state) {
+    ProcessPendingChoiceScreenDisplayState(*local_state);
+  } else {
+    CHECK_IS_TEST();
+  }
   PreprocessPrefsForReprompt();
-  ProcessPendingChoiceScreenDisplayState();
 }
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
@@ -507,7 +512,8 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 }
 
-void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
+void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState(
+    PrefService& local_state) {
   if (!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
     return;
@@ -515,7 +521,7 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
 
   // The display state should not be cached when UMA is disabled.
   if (!SearchEngineChoiceMetricsServiceAccessor::IsMetricsReportingEnabled(
-          &profile_prefs_.get())) {
+          &local_state)) {
     profile_prefs_->ClearPref(
         prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
     return;

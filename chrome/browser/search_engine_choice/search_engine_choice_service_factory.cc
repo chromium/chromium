@@ -25,8 +25,9 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
   }
 
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
-  return std::make_unique<SearchEngineChoiceService>(*profile.GetPrefs(),
-                                                     variations_country_id);
+  return std::make_unique<SearchEngineChoiceService>(
+      *profile.GetPrefs(), g_browser_process->local_state(),
+      variations_country_id);
 }
 }  // namespace
 

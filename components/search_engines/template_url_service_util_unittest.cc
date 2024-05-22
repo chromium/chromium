@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -308,8 +310,11 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   TemplateURLServiceUtilLoadTest() {
     TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
     TemplateURLService::RegisterProfilePrefs(prefs_.registry());
+    local_state_.registry()->RegisterBooleanPref(
+        metrics::prefs::kMetricsReportingEnabled, true);
     search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(prefs_);
+        std::make_unique<search_engines::SearchEngineChoiceService>(
+            prefs_, &local_state_);
   }
 
   // Simulates how the search providers are loaded during Chrome init by
@@ -358,6 +363,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
 };

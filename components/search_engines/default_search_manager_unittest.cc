@@ -15,7 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -104,9 +106,12 @@ class DefaultSearchManagerTest : public testing::Test {
     TemplateURLService::RegisterProfilePrefs(pref_service_->registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
 
+    local_state_.registry()->RegisterBooleanPref(
+        metrics::prefs::kMetricsReportingEnabled, true);
+
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            *pref_service_);
+            *pref_service_, &local_state_);
 
     // Override the country checks to simulate being in the US.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -124,6 +129,7 @@ class DefaultSearchManagerTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
 };

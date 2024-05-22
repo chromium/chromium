@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/test/base/testing_profile.h"
@@ -147,7 +148,7 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          *profile_->GetPrefs());
+          *profile_->GetPrefs(), g_browser_process->local_state());
 
   ResetModel(false);
 }
