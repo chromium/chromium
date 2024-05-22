@@ -206,10 +206,6 @@ class OpenXrRenderLoop : public XRThread,
   void OnSessionStart();
   bool HasSessionEnded();
   bool SubmitCompositedFrame();
-  void EnableSupportedFeatures(
-      device::mojom::XRSessionMode mode,
-      const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
-      const std::vector<device::mojom::XRSessionFeature>& optionalFeatures);
 
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
@@ -275,7 +271,6 @@ class OpenXrRenderLoop : public XRThread,
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
   // Owned by OpenXrStatics
   XrInstance instance_;

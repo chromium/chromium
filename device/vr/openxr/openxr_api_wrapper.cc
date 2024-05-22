@@ -197,6 +197,7 @@ void OpenXrApiWrapper::Reset() {
   frame_state_ = {};
   input_helper_.reset();
 
+  session_options_.reset();
   on_session_started_callback_.Reset();
   on_session_ended_callback_.Reset();
   visibility_changed_callback_.Reset();
@@ -267,7 +268,8 @@ void OpenXrApiWrapper::Uninitialize() {
   // that it failed, so that the browser doesn't think there's still a pending
   // session request, and can try again (though it may not recover).
   if (on_session_started_callback_) {
-    std::move(on_session_started_callback_).Run(XR_ERROR_INITIALIZATION_FAILED);
+    std::move(on_session_started_callback_)
+        .Run(std::move(session_options_), XR_ERROR_INITIALIZATION_FAILED);
   }
 
   Reset();
@@ -317,6 +319,11 @@ bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
 
 bool OpenXrApiWrapper::HasFrameState() const {
   return frame_state_.type == XR_TYPE_FRAME_STATE;
+}
+
+bool OpenXrApiWrapper::IsFeatureEnabled(
+    device::mojom::XRSessionFeature feature) const {
+  return base::Contains(enabled_features_, feature);
 }
 
 XrResult OpenXrApiWrapper::InitializeViewConfig(
@@ -434,7 +441,8 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
 
 OpenXrAnchorManager* OpenXrApiWrapper::GetOrCreateAnchorManager(
     const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !anchor_manager_) {
+  if (session_ && !anchor_manager_ &&
+      IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
     anchor_manager_ =
         extension_helper.CreateAnchorManager(session_, local_space_);
   }
@@ -443,12 +451,48 @@ OpenXrAnchorManager* OpenXrApiWrapper::GetOrCreateAnchorManager(
 
 OpenXrLightEstimator* OpenXrApiWrapper::GetOrCreateLightEstimator(
     const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !light_estimator_) {
+  if (session_ && !light_estimator_ &&
+      IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
     light_estimator_ =
         extension_helper.CreateLightEstimator(session_, local_space_);
   }
 
   return light_estimator_.get();
+}
+
+OpenXRSceneUnderstandingManager*
+OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
+    const OpenXrExtensionHelper& extension_helper) {
+  if (session_ && !scene_understanding_manager_ &&
+      IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
+    scene_understanding_manager_ =
+        extension_helper.CreateSceneUnderstandingManager(session_,
+                                                         local_space_);
+  }
+  return scene_understanding_manager_.get();
+}
+
+void OpenXrApiWrapper::EnableSupportedFeatures(
+    const OpenXrExtensionHelper& extension_helper,
+    device::mojom::XRSessionMode mode,
+    const std::vector<device::mojom::XRSessionFeature>& required_features,
+    const std::vector<device::mojom::XRSessionFeature>& optional_features) {
+  enabled_features_.clear();
+
+  auto enable_function = [&extension_helper,
+                          mode](device::mojom::XRSessionFeature feature) {
+    return IsFeatureSupportedForMode(feature, mode) &&
+           extension_helper.IsFeatureSupported(feature);
+  };
+
+  base::ranges::copy_if(
+      required_features,
+      std::inserter(enabled_features_, enabled_features_.begin()),
+      enable_function);
+  base::ranges::copy_if(
+      optional_features,
+      std::inserter(enabled_features_, enabled_features_.begin()),
+      enable_function);
 }
 
 bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
@@ -463,39 +507,31 @@ bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
   return !IsInitialized();
 }
 
-OpenXRSceneUnderstandingManager*
-OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
-    const OpenXrExtensionHelper& extension_helper) {
-  if (session_ && !scene_understanding_manager_) {
-    scene_understanding_manager_ =
-        extension_helper.CreateSceneUnderstandingManager(session_,
-                                                         local_space_);
-  }
-  return scene_understanding_manager_.get();
-}
-
 // Callers of this function must check the XrResult return value and destroy
 // this OpenXrApiWrapper object on failure to clean up any intermediate
 // objects that may have been created before the failure.
 XrResult OpenXrApiWrapper::InitSession(
-    const std::unordered_set<mojom::XRSessionFeature>& enabled_features,
+    mojom::XRRuntimeSessionOptionsPtr options,
     const OpenXrExtensionHelper& extension_helper,
     SessionStartedCallback on_session_started_callback,
     SessionEndedCallback on_session_ended_callback,
     VisibilityChangedCallback visibility_changed_callback) {
   DCHECK(IsInitialized());
+  DCHECK(options);
 
-  enabled_features_ = enabled_features;
+  EnableSupportedFeatures(extension_helper, options->mode,
+                          options->required_features,
+                          options->optional_features);
+  if (!base::ranges::all_of(
+          options->required_features,
+          [this](const device::mojom::XRSessionFeature& feature) {
+            return base::Contains(enabled_features_, feature);
+          })) {
+    std::move(on_session_started_callback)
+        .Run(std::move(options), XR_ERROR_INITIALIZATION_FAILED);
+  }
 
-  // These are the only features that use stage parameters. If none of them were
-  // requested for the session, we can avoid querying this every frame.
-  stage_parameters_enabled_ = base::ranges::any_of(
-      enabled_features_, [](mojom::XRSessionFeature feature) {
-        return feature == mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR ||
-               feature == mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR ||
-               feature == mojom::XRSessionFeature::ANCHORS;
-      });
-
+  session_options_ = std::move(options);
   on_session_started_callback_ = std::move(on_session_started_callback);
   on_session_ended_callback_ = std::move(on_session_ended_callback);
   visibility_changed_callback_ = std::move(visibility_changed_callback);
@@ -508,8 +544,7 @@ XrResult OpenXrApiWrapper::InitSession(
 
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_, extension_helper, session_, local_space_,
-      base::Contains(enabled_features_, mojom::XRSessionFeature::HAND_INPUT),
-      &input_helper_));
+      IsFeatureEnabled(mojom::XRSessionFeature::HAND_INPUT), &input_helper_));
 
   // Make sure all of the objects we initialized are there.
   DCHECK(HasSession());
@@ -517,6 +552,15 @@ XrResult OpenXrApiWrapper::InitSession(
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_VIEW));
   DCHECK(input_helper_);
+
+  // These are the only features that use stage parameters. If none of them were
+  // requested for the session, we can avoid querying this every frame.
+  stage_parameters_enabled_ = base::ranges::any_of(
+      enabled_features_, [](mojom::XRSessionFeature feature) {
+        return feature == mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR ||
+               feature == mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR ||
+               feature == mojom::XRSessionFeature::ANCHORS;
+      });
 
   if (stage_parameters_enabled_) {
     bounds_provider_ = extension_helper.CreateStageBoundsProvider(session_);
@@ -603,8 +647,7 @@ bool OpenXrApiWrapper::RecomputeSwapchainSizeAndViewports() {
   }
   primary_view_config_.SetViewport(0, 0, total_width, total_height);
 
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (auto& secondary_view_config : secondary_view_configs_) {
       OpenXrViewConfiguration& view_config = secondary_view_config.second;
       if (view_config.Active()) {
@@ -742,8 +785,7 @@ XrResult OpenXrApiWrapper::BeginSession() {
   XrSecondaryViewConfigurationSessionBeginInfoMSFT secondary_view_config_info =
       {XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT};
   std::vector<XrViewConfigurationType> secondary_view_config_types;
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     secondary_view_config_types.reserve(secondary_view_configs_.size());
     for (const auto& secondary_view_config : secondary_view_configs_) {
       secondary_view_config_types.emplace_back(secondary_view_config.first);
@@ -759,7 +801,8 @@ XrResult OpenXrApiWrapper::BeginSession() {
   if (XR_SUCCEEDED(xr_result))
     session_running_ = true;
 
-  std::move(on_session_started_callback_).Run(xr_result);
+  std::move(on_session_started_callback_)
+      .Run(std::move(session_options_), xr_result);
 
   return xr_result;
 }
@@ -778,8 +821,7 @@ XrResult OpenXrApiWrapper::BeginFrame() {
       XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT};
   std::vector<XrSecondaryViewConfigurationStateMSFT>
       secondary_view_config_states;
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     secondary_view_config_states.resize(
         secondary_view_configs_.size(),
         {XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT});
@@ -793,8 +835,7 @@ XrResult OpenXrApiWrapper::BeginFrame() {
   RETURN_IF_XR_FAILED(xrWaitFrame(session_, &wait_frame_info, &frame_state));
   frame_state_ = frame_state;
 
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     RETURN_IF_XR_FAILED(
         UpdateSecondaryViewConfigStates(secondary_view_config_states));
   }
@@ -822,8 +863,7 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
   graphics_binding_->PrepareViewConfigForRender(color_swapchain_,
                                                 primary_view_config_);
 
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (auto& view_config : secondary_view_configs_) {
       OpenXrViewConfiguration& config = view_config.second;
       if (config.Active()) {
@@ -841,8 +881,7 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
 // swapchain has also likely changed, so re-create the swapchain.
 XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
     const std::vector<XrSecondaryViewConfigurationStateMSFT>& states) {
-  DCHECK(base::Contains(enabled_features_,
-                        mojom::XRSessionFeature::SECONDARY_VIEWS));
+  DCHECK(IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS));
 
   bool state_changed = false;
   for (const XrSecondaryViewConfigurationStateMSFT& state : states) {
@@ -899,8 +938,7 @@ XrResult OpenXrApiWrapper::EndFrame() {
                       primary_view_config_.ProjectionViews());
 
   // Gather all the layers for active secondary views.
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (const auto& secondary_view_config : secondary_view_configs_) {
       const OpenXrViewConfiguration& view_config = secondary_view_config.second;
       if (view_config.Active()) {
@@ -1017,6 +1055,11 @@ mojom::XRViewPtr OpenXrApiWrapper::CreateView(
   return view;
 }
 
+const std::unordered_set<mojom::XRSessionFeature>&
+OpenXrApiWrapper::GetEnabledFeatures() const {
+  return enabled_features_;
+}
+
 std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetViews() const {
   // Since WebXR expects all views to be defined in a single swapchain texture,
   // we need to compute where in the texture each view begins. Each view is
@@ -1032,8 +1075,7 @@ std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetViews() const {
     x_offset += primary_view_config_.Properties()[i].Width();
   }
 
-  if (base::Contains(enabled_features_,
-                     mojom::XRSessionFeature::SECONDARY_VIEWS)) {
+  if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (const auto& secondary_view_config : secondary_view_configs_) {
       const OpenXrViewConfiguration& view_config = secondary_view_config.second;
       if (view_config.Active()) {
