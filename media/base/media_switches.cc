@@ -1353,7 +1353,7 @@ BASE_FEATURE(kMediaFoundationVideoCapture,
 // please use IsMediaFoundationD3D11VideoCaptureEnabled() instead.
 BASE_FEATURE(kMediaFoundationD3D11VideoCapture,
              "MediaFoundationD3D11VideoCapture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable zero-copy based on MediaFoundation video capture with D3D11.
 BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
