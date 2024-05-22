@@ -386,6 +386,7 @@
 <translation id="1305400589435476516">如果將這項政策設為啟用，將允許裝置使用漫遊服務功能。
 
       如果將這項政策設為停用或不設定，系統會停用漫遊服務功能。</translation>
+<translation id="1306041796676461437">停用 Extensible Enterprise SSO 支援功能</translation>
 <translation id="1308526987406924874">你可以透過這項政策建立網址模式清單，用於指定無法要求使用者授予序列埠存取權的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -3258,6 +3259,13 @@
 <translation id="3606571057705314194">瀏覽器啟動時不顯示設定檔選擇畫面</translation>
 <translation id="3608206578291537084">啟用加密報告管道</translation>
 <translation id="3608281460204780443">在 <ph name="PRODUCT_OS_NAME" /> 啟動器和新分頁顯示 Chrome 線上應用程式商店圖示</translation>
+<translation id="3608411984079625468">透過企業單一登入 (SSO) 擴充功能，為具有驗證服務的帳戶設定使用者自動登入。如果將這項政策設為 1 (<ph name="POLICY_VALUE_ENABLED" />) 或未設定，具有 SSO 擴充功能的驗證服務供應商就會在裝置上使用該擴充功能驗證嘗試登入的使用者。
+
+如果將這項政策設為 0 (<ph name="POLICY_VALUE_DISABLED" />)，系統就會停用上述自動登入機制。
+
+這項功能已自 MacOS Catalina 起推出。
+
+注意：這項政策不適用於無痕或訪客模式。</translation>
 <translation id="3612482251405108708">在螢幕鎖定畫面上自動啟動線上重新驗證</translation>
 <translation id="3616490235694929053">這項政策可控管是否要在使用者第一次登入時顯示「顯示大小」設定畫面。
       如果設為 False，系統就不會顯示「顯示大小」設定畫面。
@@ -5133,6 +5141,7 @@
       設定這項裝置桌布政策後，在沒有任何使用者登入裝置時，Chrome OS 裝置會下載桌布圖片並顯示在登入畫面上。只要有使用者登入裝置，系統就會改用使用者的桌布政策。
 
       如果未設定這項裝置桌布政策，使用者本身若設有桌布政策，則會由使用者桌布政策決定要顯示的圖片。</translation>
+<translation id="5217106427763720473">啟用 Extensible Enterprise SSO 支援功能</translation>
 <translation id="5219844027738217407">這項政策對 Android 應用程式的影響僅限於麥克風。將這項政策設為 true 時，所有 Android 應用程式皆無法使用麥克風 (設為靜音)，沒有任何例外。</translation>
 <translation id="5222325605346216869">強制啟用背景 JavaScript 計時器的節流功能</translation>
 <translation id="5223606242837275233">禁止網站透過網址捲動至特定文字片段</translation>

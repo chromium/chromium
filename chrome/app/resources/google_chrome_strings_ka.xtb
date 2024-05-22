@@ -127,6 +127,7 @@
 <translation id="2770231113462710648">შეცვალეთ ნაგულისხმევი ბრაუზერი-ით:</translation>
 <translation id="2775140325783767197">Chrome ვერ ახერხებს პაროლების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
+<translation id="2825024317344269723">სახიფათო საიტი Chrome-მა ამოშალა შეტყობინებები.</translation>
 <translation id="2846251086934905009">შეცდომა ინსტალაციისას: ინსტალატორის მუშაობა ვერ დასრულდა. ინსტალაცია შეწყდა.</translation>
 <translation id="2847461019998147611">Google Chrome-ის ამ ენაზე ჩვენება</translation>
 <translation id="2853415089995957805">Chrome წინასწარ ჩატვირთავს გვერდებს, რომელთა ნახვასაც, სავარაუდოდ, დააპირებთ — ამგვარად, ამ გვერდებზე გადასვლისას, ისინი უფრო სწრაფად ჩაიტვირთება</translation>
@@ -188,6 +189,7 @@
 <translation id="3583751698304738917">თქვენ უკვე შესული ხართ Chrome-ის სხვა პროფილში როგორც <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3595784445906693824">გსურთ, შეხვიდეთ Chrome-ის ახალ პროფილში?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას}=1{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას. თქვენი ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}other{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას. თქვენი # ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}}</translation>
+<translation id="3609788354808247807">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">ადვილი გახდა თქვენი Google-ის ანგარიშის მეშვეობით Chrome-ის გამოყენება და საერთო მოხმარების კომპიუტერებზეც.</translation>
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="3667616615096815454">ინსტალაცია ვერ მოხერხდა, რადგან აპლიკაცია სერვერისთვის ცნობილი არ არის.</translation>
@@ -337,6 +339,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="5947104538377036631">Chrome-ის მალსახმობი</translation>
+<translation id="5953954252731207958">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="HOURS" /> საათი</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ში არსებული ხელსაწყოები<ph name="END_LINK" /> დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>
@@ -351,6 +354,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
+<translation id="6200139057479872438">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="624230925347970731">Chrome მალე დაიხურება</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>
@@ -449,6 +453,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7651907282515937834">Chrome Enterprise-ის ლოგო</translation>
 <translation id="76531479118467370">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან Safe Browsing გამორთეთ და ფაილის შემოწმება ვერ ხერხდება</translation>
 <translation id="7655455401911432608">თქვენ მიერ ვების დათვალიერების ისტორია, ამ მოწყობილობაზე თქვენ მიერ Chrome-ის მეშვეობით მონახულებული საიტების ჩანაწერი.</translation>
+<translation id="7661924425853052955">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">შეასრულეთ ამოცანები, მაგალითად, თარგმნა, გამოთვლა და სხვა, უშუალოდ მისამართთა ზოლიდან</translation>
 <translation id="769538538642757151">Chrome გაცნობებთ, თუ რაიმეს შემოწმება დაგჭირდებათ</translation>
 <translation id="7747138024166251722">ინსტალერმა ვერ შექმნა დროებითი დირექტორია. გთხოვთ, გადაამოწმოთ დისკზე თავისუფალი სივრცე და პროგრამული უზრუნველყოფის დაყენების ნებართვა.</translation>

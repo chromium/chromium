@@ -120,6 +120,7 @@
 <translation id="1592864538817356322">நிலையான பாதுகாப்பு:</translation>
 <translation id="1594635596540195766">இந்தப் பட்டியலில் <ph name="SUGGESTIONS_COUNT" /> பரிந்துரைகள் உள்ளன.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தைப் பயன்படுத்துங்கள்</translation>
+<translation id="160275202205869636">இயக்கப்பட்டிருந்தால் உங்கள் Google கணக்கில் தரவைப் பயன்படுத்தலாம் சேமிக்கலாம். முடக்கப்பட்டிருந்தால் இந்தச் சாதனத்தில் மட்டும் தரவு சேமிக்கப்படும்.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{தேர்ந்தெடுத்த 1 உருப்படியை அகற்றும்}other{தேர்ந்தெடுத்த # உருப்படிகளை அகற்றும்}}</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> அன்றைக்கான இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
@@ -308,6 +309,7 @@
 <translation id="2650348088770008516">தனியுரிமை வழிகாட்டியின் விளக்கம் மூடப்பட்டது</translation>
 <translation id="2650408372219180431">இந்தச் சாதனத்தில் சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை ஏற்றும் மற்றும் நீக்கும்</translation>
 <translation id="2650751991977523696">ஃபைலை மீண்டும் பதிவிறக்கவா?</translation>
+<translation id="2651465929321991146">இதுவரை பார்த்தவை மற்றும் பக்கங்கள்</translation>
 <translation id="265156376773362237">இயல்பான முன்கூட்டிய ஏற்றுதல்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2656405586795711023">இணைய ஆப்ஸ்</translation>
@@ -1106,7 +1108,6 @@
 <translation id="6645629752388991326">எந்தெந்தச் சாதனங்கள் இந்தச் சாதனத்தைப் பாதுகாப்பு விசையாகப் பயன்படுத்தி உள்நுழையலாம் என்பதைக் கட்டுப்படுத்தும்.</translation>
 <translation id="6646696210740573446">உங்கள் IP முகவரியை மறைக்கும் தனிப்பட்ட சேவையகம் வழியாக URLலின் கடிமான பகுதியை Googleளுக்கு அனுப்பும். ஒரு தளம் உங்கள் கடவுச்சொல்லைத் திருட முயன்றாலோ தீங்கிழைக்கும் ஃபைலை நீங்கள் பதிவிறக்கினாலோ பக்க உள்ளடக்கத்தின் சிறிய பகுதிகள் உட்பட URLகளையும் Googleளுக்கு Chrome அனுப்பக்கூடும்.</translation>
 <translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
-<translation id="6648459603387803038">உலாவியின் அமைவை உங்கள் நிர்வாகியால் தொலைநிலையிலிருந்தே மாற்ற முடியும். இந்தச் சாதனத்தின் செயல்பாடுகளை Chromeமுக்கு வெளியிலிருந்தும் நிர்வகிக்கலாம்.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்பு}other{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்புகள்}}</translation>
 <translation id="6649642165559792194">மாதிரிக்காட்சி <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>

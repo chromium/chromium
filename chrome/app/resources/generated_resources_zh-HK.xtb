@@ -2515,6 +2515,7 @@
 <translation id="2806372837663997957">您嘗試分享檔案的目標裝置並未接受檔案分享</translation>
 <translation id="2806891468525657116">捷徑已存在</translation>
 <translation id="2807517655263062534">您下載的檔案會在這裡顯示</translation>
+<translation id="2809946454624727734">你可在「已儲存的地址」中存取地址。</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">已儲存網絡和密碼，方便即時連線</translation>
@@ -2729,6 +2730,7 @@
 <translation id="2976557544729462544">部分裝置需要停用資料存取保護才能正常運作或發揮最佳效能。</translation>
 <translation id="2976639738101799892">每次瀏覽都能善用「Google 搜尋」和 Google 智能功能</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
+<translation id="2979493931538961252">當 Chromebook 離線且有可用的熱點時</translation>
 <translation id="2979639724566107830">在新視窗中開啟</translation>
 <translation id="2979893796619951531">排除網站</translation>
 <translation id="2981033191524548279">抱歉，發生問題。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。只要重新開機並重試，就能修正此錯誤。</translation>
@@ -3164,6 +3166,7 @@
 <translation id="3317521105713541270">建立群組</translation>
 <translation id="3317678681329786349">已禁止使用相機和麥克風</translation>
 <translation id="3319306431415395200">透過 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻譯圖片中的文字</translation>
+<translation id="3319863571062685443">地址已儲存</translation>
 <translation id="3320271870899888245">無法連線至 OneDrive，請再試一次。</translation>
 <translation id="3320630259304269485">安全瀏覽功能 (可防範危險網站) 和其他安全性設定</translation>
 <translation id="3321460131042519426">啟用自動換行功能</translation>
@@ -3406,6 +3409,7 @@
 <translation id="3508492320654304609">無法刪除您的登入資料</translation>
 <translation id="3508920295779105875">選擇另一個資料夾…</translation>
 <translation id="3509379002674019679">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。</translation>
+<translation id="3510471875518562537">在 iPhone 上使用此地址</translation>
 <translation id="3511200754045804813">重新掃描</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
@@ -4173,6 +4177,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}other{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將其 Google 帳戶電郵地址加入您的通訊錄。}}</translation>
 <translation id="4050225813016893843">驗證方法</translation>
 <translation id="4050534976465737778">請確保兩部裝置都已解鎖並放在一起，確保藍牙功能已開啟。如果要與未設定為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用「咫尺共享」分享設定 (開啟狀態區，然後啟動「咫尺共享」分享設定)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4050931325744810690">如要切換至上次使用的輸入法，請按下 <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">搜尋鍵 + 向右箭咀鍵</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4052913941260326985">建立 QR code(&amp;Q)</translation>
@@ -5162,7 +5167,6 @@
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回使用「Google 搜尋」嗎？</translation>
 <translation id="4837926214103741331">您無權使用這部裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
-<translation id="4837952862063191349">如果要解鎖並還原您的本機資料，請輸入您的舊 <ph name="DEVICE_TYPE" /> 密碼。</translation>
 <translation id="4838170306476614339">查看手機上的相片、媒體和通知</translation>
 <translation id="4838836835474292213">已允許讀取剪貼簿</translation>
 <translation id="4838907349371614303">已更新密碼</translation>
@@ -6005,6 +6009,7 @@
 <translation id="5486261815000869482">確認密碼</translation>
 <translation id="5486561344817861625">模擬瀏覽器重新啟動</translation>
 <translation id="5486748931874756433">此變更會在你收到下次更新並重新啟動 <ph name="DEVICE_TYPE" /> 時生效。此變更無法復原，且會套用至此裝置的所有使用者。</translation>
+<translation id="5487214759202665349">在 iPhone 上使用此地址</translation>
 <translation id="5487460042548760727">將設定檔重新改名做「<ph name="PROFILE_NAME" />」</translation>
 <translation id="5488093641312826914">已複製「<ph name="COPIED_ITEM_NAME" />」</translation>
 <translation id="5488508217173274228">同步加密選項</translation>
@@ -6568,6 +6573,7 @@
 <translation id="5910363049092958439">另存圖片為(&amp;V)…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 已離線</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
+<translation id="5911497236110691522">如要切換至下一個輸入法，請按下 <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">快速鍵檢視器</translation>
 <translation id="5911545422157959623">在訪客模式下無法使用書籤</translation>
 <translation id="5914724413750400082">模數 (<ph name="MODULUS_NUM_BITS" /> 位元)：
@@ -7635,7 +7641,6 @@
 <translation id="6746124502594467657">向下移</translation>
 <translation id="674632704103926902">啟用輕觸拖曳</translation>
 <translation id="67465227497040338">顯示 <ph name="DOMAIN" /> 嘅密碼</translation>
-<translation id="6748465660675848252">您可以繼續，但是只有您的同步資料和設定會被還原。所有本機資料將會遺失。</translation>
 <translation id="6748980958975836188">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750757184909117990">停用流動網絡</translation>
@@ -8531,6 +8536,7 @@
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">透過 <ph name="DEVICE_NAME" /> 撥打電話</translation>
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂部模擬展示可重新整理的點字顯示器輸出結果</translation>
+<translation id="7429568074268678162"><ph name="FILENAME" /> 可能唔安全。如果要 Chrome 驗證檔案，可以加個密碼。你亦可以直接下載檔案。</translation>
 <translation id="7431719494109538750">找不到 HID 裝置</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7432200167665670017">管理員已封鎖「<ph name="EXTENSION_NAME" />」(應用程式 ID：<ph name="EXTENSION_ID" />)</translation>
@@ -8624,7 +8630,6 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android 應用程式</translation>
 <translation id="7495217365392072364">整理類似的分頁</translation>
-<translation id="7495778526395737099">忘記舊密碼了嗎？</translation>
 <translation id="7497981768003291373">您最近並未擷取 WebRTC 文字記錄。</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">加去「一律啟用這些網站」清單</translation>
@@ -8947,6 +8952,7 @@
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充程式已變更此頁面</translation>
 <translation id="7732702411411810416">請確保已連接互聯網，然後再試一次</translation>
 <translation id="773511996612364297">重音符號</translation>
+<translation id="7736119438443237821">你即將移除此裝置的密鑰存取權</translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
 <translation id="7737203573077018777">已接收「<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />」指示</translation>
 <translation id="7737846262459425222">您可隨時在 [設定] &gt; [Google 助理] &gt; [畫面內容] 中變更此設定。</translation>
@@ -9458,6 +9464,7 @@
 <translation id="8090513782447872344">您日後可隨時返回查看</translation>
 <translation id="8090579562279016251">降低效能但提高 V8 防範攻擊的能力</translation>
 <translation id="8090686009202681725">以 AI 製作主題</translation>
+<translation id="8091655032047076676">實驗性</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> 沒有回應</translation>
 <translation id="8094536695728193970">杏色</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。<ph name="END_PARAGRAPH1" />
@@ -9545,6 +9552,7 @@
 <translation id="8151748163667572916">關閉「即時熱點」</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與您的管理員聯絡。</translation>
+<translation id="8155214519979960765">如要再次在此裝置上使用密鑰登入，請驗證身分。你亦可改用其他方式 (例如密碼) 登入帳戶。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{找不到被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="8157248655669507702">啟用流動數據以安裝 eSIM 卡設定檔</translation>
 <translation id="8157704005178149728">正在設定監控功能</translation>
@@ -9833,6 +9841,7 @@
 <translation id="8371695176452482769">請說話</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{將單一網站靜音}other{將多個網站靜音}}</translation>
 <translation id="8372441176515901959">關閉要求</translation>
+<translation id="8372678064309688510">地址已儲存</translation>
 <translation id="8373652277231415614">Crostini 共用目錄</translation>
 <translation id="8374243500935816406">不要允許網站在您所有的顯示屏上管理視窗</translation>
 <translation id="8376137163494131156">將 Google Cast 的問題告訴我們。</translation>
@@ -10426,7 +10435,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">系統會根據語言偏好設定來提供拼字檢查使用的語言</translation>
 <translation id="8814644416678422095">硬碟</translation>
-<translation id="8816338928816567244">加密方式</translation>
 <translation id="881782782501875829">新增連接埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>

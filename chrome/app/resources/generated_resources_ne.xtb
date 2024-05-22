@@ -5160,7 +5160,6 @@
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4837128290434901661">फेरि Google खोज प्रयोग गर्ने हो?</translation>
 <translation id="4837926214103741331">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार दिइएको छैन। साइन-इन अनुमतिको लागि यन्त्र मालिकसँग सम्पर्क गर्नुहोस्।</translation>
-<translation id="4837952862063191349">तपाईँको स्थानीय डेटा रिस्टोर गर्न, कृपया तपाईँको पुरानो <ph name="DEVICE_TYPE" /> पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="4838170306476614339">आफ्नो फोनका फोटो, मिडिया तथा सूचनाहरू हेर्नुहोस्</translation>
 <translation id="4838836835474292213">क्लिपबोर्ड पढ्ने पहुँच दिइयो</translation>
 <translation id="4838907349371614303">पासवर्ड अपडेट गरियो</translation>
@@ -7642,7 +7641,6 @@
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
 <translation id="674632704103926902">ट्याप तान्नु सक्षम गर्नुहोस्</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> को पासवर्ड देखाउनुहोस्</translation>
-<translation id="6748465660675848252">तपाईँले अघि बढ्न सक्नुहुन्छ, तर केवल तपाईँको सिंक भएको डेटा र सेटिङहरू मात्र पुनःप्राप्त हुनुे छ। सबै स्थानीय डेटा नष्ट हुने छन्।</translation>
 <translation id="6748980958975836188">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
 <translation id="6749473226660745022">फोटोहरू</translation>
 <translation id="6750757184909117990">सेलुलर नेटवर्क असक्षम पार्नुहोस्</translation>
@@ -8632,7 +8630,6 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android एप</translation>
 <translation id="7495217365392072364">उस्तै खालका ट्याबहरू व्यवस्थित गर्नुहोस्</translation>
-<translation id="7495778526395737099">तपाईँले पुरानो पासवर्ड बिर्सनुभयो?</translation>
 <translation id="7497981768003291373">तपाईंसँग हालै क्याप्चर गरिएको WebRTC पाठको कुनै पनि लग छैन।</translation>
 <translation id="7501957181231305652">वा</translation>
 <translation id="7502220299952823578">"यी साइटहरू सधैँ सक्रिय राख्नुहोस्" नामक सूचीमा हाल्नुहोस्</translation>
@@ -9465,6 +9462,7 @@
 <translation id="8090513782447872344">तपाईं पछि जुनसुकै बेला यहाँ आएर यो "गोपनीयतासम्बन्धी गाइड" फेरि हेर्न सक्नुहुन्छ</translation>
 <translation id="8090579562279016251">पर्फर्मेन्सको स्तर घटाउँछ तर साइबर आक्रमणबाट बच्ने V8 को क्षमता बढाउँछ</translation>
 <translation id="8090686009202681725">AI प्रयोग गरी थिम सिर्जना गर्नुहोस्</translation>
+<translation id="8091655032047076676">प्रयोगात्मक</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन</translation>
 <translation id="8094536695728193970">एपिकोर्ट</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ड्राइभमा ब्याकअप गर्नुहोस्। जुनसुकै बेला सजिलैसँग आफ्नो डेटा पुनर्स्थापना गर्नुहोस् वा यन्त्र बदल्नुहोस्। तपाईंको ब्याकअपमा एपको डेटा समावेश हुन्छ।<ph name="END_PARAGRAPH1" />
@@ -10435,7 +10433,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">हिज्जे जाँच गर्ने सुविधा कुन कुन भाषामा उपलब्ध हुन्छ भन्ने कुरा तपाईंको भाषासम्बन्धी प्राथमिकताले तय गर्छ</translation>
 <translation id="8814644416678422095">हार्ड ड्राइभ</translation>
-<translation id="8816338928816567244">निम्न एल्गोरिदम प्रयोग गरी इन्क्रिप्ट गरिएको छ:</translation>
 <translation id="881782782501875829">पोर्ट नम्बर थप्नुहोस्</translation>
 <translation id="881799181680267069">अन्यलाई लुकाउनुहोस्</translation>
 <translation id="8818152010000655963">वालपेपर</translation>

@@ -69,6 +69,8 @@
 <translation id="2174917724755363426">Установка не завершена. Отменить ее?</translation>
 <translation id="2185166961232948079">Chromium – вход в сеть – "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2190166659037789668">Ошибка проверки обновлений: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2210682093923538346">Опасный сайт. Браузер Chromium отозвал разрешение на показ уведомлений.</translation>
+<translation id="2240214816234246077">Вы давно не посещали сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />".</translation>
 <translation id="2241627712206172106">Если, кроме вас, компьютером пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
 <translation id="2313870531055795960">Сверяет URL со списком небезопасных сайтов в Chromium. Если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chromium может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="2329088755516916767">Когда этот параметр включен, Chromium предварительно загружает страницы, ускоряя работу браузера и поиска.</translation>
@@ -265,6 +267,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
 <translation id="569897634095159764">Не удалось подключиться к интернету. Прокси-сервер требует пройти аутентификацию.</translation>
+<translation id="5761096224651992291">Вы давно не посещали сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
 <translation id="5800158606660203929">Настройка Chromium и управление им. Сделайте Chromium браузером по умолчанию.</translation>
 <translation id="5809516625706423866">Не удалось подключиться к интернету. Ошибка HTTP 401: нет авторизации. Проверьте настройки прокси-сервера.</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
@@ -350,6 +353,7 @@
 <translation id="6729124504294600478">Чтобы настроить персонализацию и другие функции, добавьте Chromium в историю приложений и веб-поиска и связанные сервисы Google</translation>
 <translation id="6734291798041940871">Chromium уже установлен для всех пользователей вашего компьютера</translation>
 <translation id="673636774878526923">Чтобы получить доступ к данным в Chromium на всех своих устройствах, выполните вход и включите синхронизацию.</translation>
+<translation id="674245979920622322">Вы давно не посещали сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и другие (ещё <ph name="COUNT" />).</translation>
 <translation id="67706546131546258">Chromium рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="6779406956731413166">Chromium OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
@@ -399,6 +403,7 @@
 <translation id="753534427205733210">{0,plural, =1{Chromium перезапустится через 1 минуту}one{Chromium перезапустится через # минуту}few{Chromium перезапустится через # минуты}many{Chromium перезапустится через # минут}other{Chromium перезапустится через # минуты}}</translation>
 <translation id="7582945390259497898">Chromium может предполагать, какие темы вас интересуют. Сайты, которые вы посетите в дальнейшем, могут обращаться к Chromium, чтобы получать сведения о ваших интересах и показывать вам подходящую рекламу.</translation>
 <translation id="7583399374488819119">Установщик <ph name="COMPANY_NAME" /></translation>
+<translation id="7585391435984513350">Вы давно не посещали сайт. Браузер Chromium отозвал разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="761356813943268536">Chromium использует камеру и микрофон.</translation>
 <translation id="7617377681829253106">Chromium становится все лучше</translation>
 <translation id="7649070708921625228">Справка</translation>
