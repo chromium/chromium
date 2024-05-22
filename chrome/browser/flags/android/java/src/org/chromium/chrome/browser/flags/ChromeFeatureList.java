@@ -553,7 +553,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
     public static final CachedFlag sCctIntentFeatureOverrides =
             newCachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
-    public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, false);
+    public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, true);
     public static final CachedFlag sCctPageInsightsHub = newCachedFlag(CCT_PAGE_INSIGHTS_HUB, true);
     public static final CachedFlag sCctNavigationalPrefetch =
             newCachedFlag(CCT_NAVIGATIONAL_PREFETCH, false);
