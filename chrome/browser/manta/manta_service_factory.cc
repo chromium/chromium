@@ -52,6 +52,9 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* const profile = Profile::FromBrowserContext(context);
+
+  bool is_otr_profile = !profile->IsRegularProfile();
+
   std::string chrome_version, locale;
   if (PrefService* pref_service = profile->GetPrefs()) {
     chrome_version = pref_service->GetString(prefs::kProfileCreatedByVersion);
@@ -62,7 +65,7 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile), is_demo_mode,
-      chrome_version, locale);
+      is_otr_profile, chrome_version, locale);
 }
 
 }  // namespace manta

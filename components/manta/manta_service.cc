@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
+#include "components/manta/anchovy_provider.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -58,11 +59,13 @@ MantaService::MantaService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     signin::IdentityManager* identity_manager,
     bool is_demo_mode,
+    bool is_otr_profile,
     const std::string& chrome_version,
     const std::string& locale)
     : shared_url_loader_factory_(shared_url_loader_factory),
       identity_manager_(identity_manager),
       is_demo_mode_(is_demo_mode),
+      is_otr_profile_(is_otr_profile),
       chrome_version_(chrome_version),
       locale_(locale) {}
 
@@ -92,6 +95,18 @@ FeatureSupportStatus MantaService::SupportsOrca() {
   // TODO(b:321624868): Switch to using Orca's own capability.
   return ConvertToMantaFeatureSupportStatus(
       extended_account_info.capabilities.can_use_manta_service());
+}
+
+std::unique_ptr<AnchovyProvider> MantaService::CreateAnchovyProvider() {
+  if (!identity_manager_) {
+    // Anchovy Provider supports API Key Requests.
+    return std::make_unique<AnchovyProvider>(shared_url_loader_factory_,
+                                             nullptr, is_otr_profile_,
+                                             chrome_version_, locale_);
+  }
+  return std::make_unique<AnchovyProvider>(shared_url_loader_factory_,
+                                           identity_manager_, is_otr_profile_,
+                                           chrome_version_, locale_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

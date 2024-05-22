@@ -19,22 +19,21 @@ constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 std::string GetProviderEndpoint(bool use_prod) {
   return use_prod ? kProdEndpointUrl : kAutopushEndpointUrl;
 }
-// BaseProvider::BaseProvider() : is_demo_mode_(false), chrome_version_("") {}
-BaseProvider::BaseProvider() : is_demo_mode_(false) {}
+
+BaseProvider::BaseProvider() : use_api_key_(false) {}
 BaseProvider::BaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode,
+    bool use_api_key,
     const std::string& chrome_version,
     const std::string& locale)
     : url_loader_factory_(url_loader_factory),
-      is_demo_mode_(is_demo_mode),
+      use_api_key_(use_api_key),
       chrome_version_(chrome_version),
       locale_(locale) {
-  // Guest mode and demo mode also have valid identity_manager instance, so it's
-  // OK to CHECK here.
-  CHECK(identity_manager);
-  identity_manager_observation_.Observe(identity_manager);
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
 }
 
 BaseProvider::~BaseProvider() = default;
@@ -53,7 +52,7 @@ void BaseProvider::RequestInternal(
     manta::proto::Request& request,
     const MantaMetricType metric_type,
     MantaProtoResponseCallback done_callback) {
-  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
+  if (!use_api_key_ && !identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
     return;
@@ -77,7 +76,7 @@ void BaseProvider::RequestInternal(
 
   base::Time start_time = base::Time::Now();
 
-  if (is_demo_mode_) {
+  if (use_api_key_) {
     std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
         url, annotation_tag, serialized_request);
     EndpointFetcher* const fetcher_ptr = fetcher.get();

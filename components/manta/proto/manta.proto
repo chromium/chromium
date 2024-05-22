@@ -21,6 +21,8 @@ enum FeatureName {
   CHROMEOS_READER_Q_AND_A = 313;
   CHROMEOS_SPARKY = 314;
   reserved 304 to 311;
+
+  ACCESSIBILITY_IMAGE_DESCRIPTION = 700;
 }
 
 message ClientInfo {

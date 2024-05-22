@@ -84,6 +84,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.SparkyProvider.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kAnchovy:
+      base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
+                              time_cost);
+      break;
   }
 }
 }  // namespace

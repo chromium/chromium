@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   BaseProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_demo_mode,
+      bool use_api_key,
       const std::string& chrome_version = std::string(),
       const std::string& locale = std::string());
 
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       const std::string& post_data);
 
   // Useful client info for particular providers.
-  const bool is_demo_mode_;
+  const bool use_api_key_;
   const std::string chrome_version_;
   const std::string locale_;
 };

@@ -259,6 +259,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="MantaMetricType">
+  <variant name="AnchovyProvider" summary="Request from Anchovy provider"/>
   <variant name="MahiProvider.Outline"
       summary="Request from Mahi provider for outline"/>
   <variant name="MahiProvider.QA" summary="Request from Mahi provider for QA"/>
