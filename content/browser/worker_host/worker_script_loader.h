@@ -54,8 +54,9 @@ class ServiceWorkerMainResourceLoaderInterceptor;
 // starting a new loader and becoming the client of that.
 //
 // Lives on the UI thread.
-class WorkerScriptLoader : public network::mojom::URLLoader,
-                           public network::mojom::URLLoaderClient {
+class CONTENT_EXPORT WorkerScriptLoader
+    : public network::mojom::URLLoader,
+      public network::mojom::URLLoaderClient {
  public:
   // Returns the browser context, or nullptr during shutdown. Must be called on
   // the UI thread.
@@ -114,6 +115,8 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
     return std::move(subresource_loader_params_);
   }
 
+  void OnFetcherCallbackCalled();
+
   base::WeakPtr<WorkerScriptLoader> GetWeakPtr();
 
  private:
@@ -123,7 +126,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       ServiceWorkerMainResourceLoaderInterceptor* interceptor,
       std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
   void LoadFromNetwork();
-  void CommitCompleted(const network::URLLoaderCompletionStatus& status);
+  void CommitCompleted();
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
@@ -150,7 +153,23 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   // request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  bool completed_ = false;
+  // Valid transitions:
+  // - kInitial -> kFetcherCallbackCalled or kOnCompleteCalled -> kCompleted
+  // - kInitial -> kCompleted (failure cases only)
+  // See the comment at the `CommitCompleted()` definition for more context.
+  enum class State {
+    kInitial,
+
+    // `WorkerScriptFetcher::callback_` was invoked.
+    kFetcherCallbackCalled,
+
+    // `WorkerScriptLoader::OnComplete()` was called.
+    kOnCompleteCalled,
+
+    // `WorkerScriptLoader::CommitCompleted()` was called.
+    kCompleted,
+  } state_{State::kInitial};
+  std::optional<network::URLLoaderCompletionStatus> complete_status_;
 
   base::WeakPtrFactory<WorkerScriptLoader> weak_factory_{this};
 };

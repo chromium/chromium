@@ -693,6 +693,7 @@ void WorkerScriptFetcher::OnReceiveResponse(
     std::move(callback_).Run(std::move(main_script_load_params_),
                              std::move(subresource_loader_params_),
                              nullptr /* completion_status */);
+    script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
     delete this;
     return;
   }
@@ -739,6 +740,7 @@ void WorkerScriptFetcher::OnComplete(
 
   std::move(callback_).Run(/*main_script_load_params=*/nullptr,
                            /*subresource_loader_params=*/{}, &status);
+  script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
   delete this;
 }
 
@@ -753,6 +755,7 @@ void WorkerScriptFetcher::DidParseHeaders(
   std::move(callback_).Run(std::move(main_script_load_params_),
                            std::move(subresource_loader_params_),
                            nullptr /* completion_status */);
+  script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
   delete this;
 }
 

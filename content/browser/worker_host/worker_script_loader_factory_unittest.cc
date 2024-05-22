@@ -11,6 +11,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/worker_host/worker_script_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/isolation_info.h"
@@ -107,12 +108,20 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(url, factory.get(), &client);
+  base::RunLoop().RunUntilIdle();
+
+  // `SetExecutionReady()` should wait for `OnFetcherCallbackCalled()`.
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      service_worker_handle_->service_worker_client();
+  EXPECT_FALSE(service_worker_client->is_response_committed());
+  EXPECT_FALSE(service_worker_client->is_execution_ready());
+
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
   client.RunUntilComplete();
+
   EXPECT_EQ(net::OK, client.completion_status().error_code);
 
   // The container host should be set up.
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      service_worker_handle_->service_worker_client();
   EXPECT_TRUE(service_worker_client->is_response_committed());
   EXPECT_TRUE(service_worker_client->is_execution_ready());
   EXPECT_EQ(url, service_worker_client->url());
