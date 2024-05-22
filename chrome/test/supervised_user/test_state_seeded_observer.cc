@@ -235,9 +235,8 @@ void BrowserState::Seed(const FamilyMember& supervising_user,
                            intent_->GetRequest());
 }
 
-base::RepeatingCallback<bool(void)> BrowserState::GetIntendedStateCheck(
-    const FamilyMember& browser_user) const {
-  return intent_->GetBrowserCheck(browser_user);
+bool BrowserState::Check(const FamilyMember& browser_user) const {
+  return intent_->Check(browser_user);
 }
 
 std::string BrowserState::ToString() const {
@@ -256,9 +255,10 @@ const FetcherConfig& BrowserState::ResetIntent::GetConfig() const {
 std::string BrowserState::ResetIntent::ToString() const {
   return "Reset";
 }
-base::RepeatingCallback<bool(void)> BrowserState::ResetIntent::GetBrowserCheck(
-    const FamilyMember& browser_user) const {
-  return base::BindRepeating(&UrlFiltersAreEmpty, std::ref(browser_user));
+bool BrowserState::ResetIntent::Check(const FamilyMember& browser_user) const {
+  bool result = UrlFiltersAreEmpty(browser_user);
+  LOG(WARNING) << "BrowserState::ResetIntent = " << (result ? "true" : "false");
+  return result;
 }
 
 BrowserState::DefineManualSiteListIntent::DefineManualSiteListIntent() =
@@ -303,34 +303,13 @@ std::string BrowserState::DefineManualSiteListIntent::ToString() const {
   bits.push_back("]");
   return base::StrCat(bits);
 }
-base::RepeatingCallback<bool(void)>
-BrowserState::DefineManualSiteListIntent::GetBrowserCheck(
+bool BrowserState::DefineManualSiteListIntent::Check(
     const FamilyMember& browser_user) const {
-  return base::BindRepeating(&UrlFiltersAreConfigured, std::ref(browser_user),
-                             std::ref(allowed_url_), std::ref(blocked_url_));
-}
-
-BrowserState::Observer::Observer(SupervisedUserService* service,
-                                 base::RepeatingCallback<bool(void)> condition)
-    : ui::test::ObservationStateObserver<SeedingStatus,
-                                         SupervisedUserService,
-                                         SupervisedUserServiceObserver>(
-          service),
-      condition_(condition) {}
-BrowserState::Observer::~Observer() = default;
-
-BrowserState::SeedingStatus
-BrowserState::Observer::GetStateObserverInitialState() const {
-  return SeedingStatus::kPending;
-}
-
-void BrowserState::Observer::OnURLFilterChanged() {
-  if (!condition_.Run()) {
-    // Not yet in the intended state.
-    return;
-  }
-
-  OnStateObserverStateChanged(SeedingStatus::kCompleted);
+  bool result =
+      UrlFiltersAreConfigured(browser_user, allowed_url_, blocked_url_);
+  LOG(WARNING) << "BrowserState::DefineManualSiteListIntent = "
+               << (result ? "true" : "false");
+  return result;
 }
 
 }  // namespace supervised_user

@@ -155,21 +155,11 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
     const BrowserState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
-      If(state.GetIntendedStateCheck(browser_user),
-         /* then_steps= */
-         Log(base::StrCat(
-             {"WaitForState[", state.ToString(), "]: not needed"})),
-         /* else_steps= */
-         Steps(
-             ObserveState(id,
-                          base::BindOnce(&FamilyMember::supervised_user_service,
-                                         base::Unretained(&browser_user)),
-                          base::BindOnce(&BrowserState::GetIntendedStateCheck,
-                                         base::Unretained(&state),
-                                         std::ref(browser_user))),
-             Do([&]() { state.Seed(rpc_issuer, browser_user); }),
-             WaitForState(id, BrowserState::SeedingStatus::kCompleted),
-             StopObservingState(id))),
+      Do([&]() { state.Seed(rpc_issuer, browser_user); }),
+      PollState(
+          id, [&]() { return state.Check(browser_user); },
+          /* polling_interval= */ base::Seconds(2)),
+      WaitForState(id, true), StopObservingState(id),
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
 }
 
