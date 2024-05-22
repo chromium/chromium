@@ -40,7 +40,7 @@ sys.exit(
             'histograms/expand_owners_unittest.py',
             'histograms/extract_histograms_test.py',
             'histograms/generate_expired_histograms_array_unittest.py',
-            'histograms/generate_histograms_variants_allowlist_unittest.py',
+            'histograms/generate_allowlist_from_histograms_file_unittest.py',
             'histograms/merge_xml_test.py',
             'histograms/pretty_print_test.py',
             'histograms/validate_token_test.py',

@@ -187,8 +187,7 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
                              supports_draggable_regions,
                              T::GetWebUIName()),
         webui_url_(webui_url) {
-    static_assert(
-        views_metrics::IsValidWebUINameVariant("." + T::GetWebUIName()));
+    static_assert(views_metrics::IsValidWebUIName("." + T::GetWebUIName()));
     if (is_ready_to_show()) {
       CHECK(GetWebUIController());
       GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());

@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates a C++ header file that contains a list of values under a specific variant
+# or enum. The list can be used for ensuring that values in C++ are in sync with the
+# histogram file. The header file provides a function to check if a value in is the list.
+#
+# Parameters:
+#   input_xml_file: Input file that contains the allow list. This should be a
+#     .xml file under path //tools/metrics/histograms/ or its subfolders.
+#
+#   namespace:
+#     C++ namespace in which the generated code should be scoped.
+#
+#   tag:
+#     XML tag that contains the values. Should be either "variant" or "enum".
+#
+#   allow_list_name:
+#     Name of the variant or enum list in the histogram file.
+#
+#   output_file:
+#     Name of the generated file to be used for checking if a value exists in the list.
+#
+template("generate_allowlist_from_histograms_file") {
+  action(target_name) {
+    output_file = "$target_gen_dir/" + invoker.output_file
+
+    script =
+        "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py"
+    outputs = [ output_file ]
+    sources = [ invoker.input_xml_file ]
+
+    args = [
+      "--allow_list_name=" + invoker.allow_list_name,
+      "--namespace=" + invoker.namespace,
+      "--tag=" + invoker.tag,
+      "--output_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "--file=" + rebase_path(output_file, root_gen_dir),
+      "--input=" + rebase_path(invoker.input_xml_file, root_build_dir),
+    ]
+  }
+}

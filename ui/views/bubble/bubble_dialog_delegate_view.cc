@@ -909,7 +909,7 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
                         bubble_name.value())) {
       return;
     }
-  } else if (!views_metrics::IsValidBubbleNameVariant(bubble_name.value())) {
+  } else if (!views_metrics::IsValidBubbleName(bubble_name.value())) {
     return;
   }
 

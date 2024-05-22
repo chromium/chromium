@@ -10,7 +10,7 @@ import sys
 import extract_histograms
 import xml.dom.minidom
 
-_SCRIPT_NAME = "generate_histograms_variants_allowlist.py"
+_SCRIPT_NAME = "generate_allowlist_from_histograms_file.py"
 _FILE = """// Generated from {script_name}. Do not edit!
 
 #ifndef {include_guard}
@@ -21,14 +21,14 @@ _FILE = """// Generated from {script_name}. Do not edit!
 
 namespace {namespace} {{
 
-inline constexpr std::string_view k{variant_name}VariantAllowList[] = {{
-{variants}
+inline constexpr std::string_view k{allow_list_name}AllowList[] = {{
+{values}
 }};
 
-constexpr bool IsValid{variant_name}Variant(std::string_view s) {{
+constexpr bool IsValid{allow_list_name}(std::string_view s) {{
   return std::binary_search(
-    std::cbegin(k{variant_name}VariantAllowList),
-    std::cend(k{variant_name}VariantAllowList),
+    std::cbegin(k{allow_list_name}AllowList),
+    std::cend(k{allow_list_name}AllowList),
     s);
 }}
 
@@ -42,59 +42,70 @@ class Error(Exception):
   pass
 
 
-def _GenerateStaticFile(file_path, namespace, variant_list, allow_list_name):
+def _GenerateStaticFile(file_path, namespace, values, allow_list_name):
   """Generates a header file with constexpr facilities to check for the
-    existence of a variant.
+    existence of a variant or enum in a histograms.xml file.
 
   Args:
     namespace: A namespace to contain generated array.
-    variant_list(List[Dict]]):
-      A list of variant objects [{variant: {name, summary, ...}}]
+    values(List[str|int]]): A list of variant or enum values.
     allow_list_name: A name of the variant list for an allow list.
   Returns:
-    String with the generated content.
+    String with the generated header file content.
   """
-  variant_list = sorted(variant_list, key=lambda d: d['name'])
+  values = sorted(values, key=lambda d: str(d))
   include_guard = file_path.replace('\\', '_').replace('/', '_').replace(
       '.', '_').upper() + "_"
 
-  variants = "\n".join(
-      ["  \"{name}\",".format(name=value['name']) for value in variant_list])
+  values_string = "\n".join(
+      ["  \"{name}\",".format(name=value) for value in values])
   return _FILE.format(script_name=_SCRIPT_NAME,
                       include_guard=include_guard,
                       namespace=namespace,
-                      variants=variants,
-                      variant_name=allow_list_name)
+                      values=values_string,
+                      allow_list_name=allow_list_name)
 
 
-def _GenerateVariantList(histograms, allow_list_name):
-  all_variants, had_errors = extract_histograms.ExtractVariantsFromXmlTree(
-      histograms)
+def _GenerateValueList(histograms, tag, allow_list_name):
+  if tag == "variant":
+    values, had_errors = extract_histograms.ExtractVariantsFromXmlTree(
+        histograms)
+  elif tag == "enum":
+    values, had_errors = extract_histograms.ExtractEnumsFromXmlTree(histograms)
+  else:
+    raise Error("'tag' must be either 'variant' or 'enum'")
+
   if had_errors:
     raise Error("Error parsing inputs.")
 
-  if (allow_list_name not in all_variants):
+  if (allow_list_name not in values):
     raise Error("AllowListName is missing in variants list")
 
-  return all_variants[allow_list_name]
+  if tag == "variant":
+    return [value["name"] for value in values[allow_list_name]]
+  else:
+    return list(values[allow_list_name]["values"].keys())
 
 
 def _GenerateFile(arguments):
-  """Generates header file containing array with Variant names.
+  """Generates C++ header file containing values of a variant or enum from
+  a .xml file.
 
   Args:
     arguments: An object with the following attributes:
       arguments.input: An xml file with histogram descriptions.
       arguments.file: A filename of the generated source file.
+      arguments.tag: A XML tag, can be "enum" or "variant".
       arguments.namespace: A namespace to contain generated array.
       arguments.output_dir: A directory to put the generated file.
-      arguments.allow_list_name: A name of the variant list for an allow list.
+      arguments.allow_list_name: A name of the variant or enum list.
   """
   histograms = xml.dom.minidom.parse(arguments.input)
-  variants = _GenerateVariantList(histograms, arguments.allow_list_name)
+  values = _GenerateValueList(histograms, arguments.tag,
+                              arguments.allow_list_name)
 
   static_check_header_file_content = _GenerateStaticFile(
-      arguments.file, arguments.namespace, variants, arguments.allow_list_name)
+      arguments.file, arguments.namespace, values, arguments.allow_list_name)
   with open(os.path.join(arguments.output_dir, arguments.file),
             "w") as generated_file:
     generated_file.write(static_check_header_file_content)
@@ -103,26 +114,25 @@ def _GenerateFile(arguments):
 def _ParseArguments():
   """Defines and parses arguments from the command line."""
   arg_parser = argparse.ArgumentParser(
-      description="Generate an array of AllowList based on variants.")
+      description="Generate an array of allowlist from a histograms.xml file."
+  )
   arg_parser.add_argument("--output_dir",
-                          "-o",
                           required=True,
                           help="Base directory to for generated files.")
   arg_parser.add_argument("--file",
-                          "-f",
                           required=True,
                           help="File name of the generated file.")
   arg_parser.add_argument(
       "--allow_list_name",
-      "-a",
       required=True,
-      help="Name of variant list that should be part of the allow list.")
+      help="Name of the variant / enum list in the histograms.xml file.")
   arg_parser.add_argument("--namespace",
-                          "-n",
                           required=True,
                           help="Namespace of the allow list array.")
+  arg_parser.add_argument("--tag",
+                          required=True,
+                          help="XML tag name of either 'enum' or 'variant'.")
   arg_parser.add_argument("--input",
-                          "-i",
                           help="Path to .xml file with histogram descriptions.")
   return arg_parser.parse_args()
 
