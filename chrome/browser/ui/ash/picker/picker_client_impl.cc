@@ -75,15 +75,13 @@ bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
   return false;
 }
 
-std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalFiles(
+std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
     std::vector<PickerFileSuggester::LocalFile> files) {
   std::vector<ash::PickerSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::LocalFile& file : files) {
-    if (IsSupportedLocalFileFormat(file.path)) {
-      results.push_back(ash::PickerSearchResult::LocalFile(
-          std::move(file.title), std::move(file.path)));
-    }
+    results.push_back(ash::PickerSearchResult::LocalFile(std::move(file.title),
+                                                         std::move(file.path)));
   }
   return results;
 }
@@ -399,8 +397,8 @@ void PickerClientImpl::GetSuggestedEditorResults(
 }
 
 void PickerClientImpl::GetRecentLocalFileResults(RecentFilesCallback callback) {
-  file_suggester_->GetRecentLocalFiles(
-      base::BindOnce(CreateSearchResultsForRecentLocalFiles)
+  file_suggester_->GetRecentLocalImages(
+      base::BindOnce(CreateSearchResultsForRecentLocalImages)
           .Then(std::move(callback)));
 }
 

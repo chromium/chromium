@@ -320,15 +320,13 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsFilteredFiles) {
+TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
   SetRecentFiles(profile(),
                  {
                      CreateRecentFile(base::FilePath("aaa.jpg"),
-                                      storage::kFileSystemTypeLocal),
-                     CreateRecentFile(base::FilePath("bbb.mp4"),
                                       storage::kFileSystemTypeLocal),
                      CreateRecentFile(base::FilePath("ccc.png"),
                                       storage::kFileSystemTypeLocal),
@@ -385,7 +383,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesWithNoFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsDriveFiles) {
+TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;

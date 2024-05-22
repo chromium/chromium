@@ -29,7 +29,7 @@ class PickerFileSuggester {
     GURL url;
   };
 
-  using RecentLocalFilesCallback =
+  using RecentLocalImagesCallback =
       base::OnceCallback<void(std::vector<LocalFile>)>;
   using RecentDriveFilesCallback =
       base::OnceCallback<void(std::vector<DriveFile>)>;
@@ -40,12 +40,12 @@ class PickerFileSuggester {
   PickerFileSuggester& operator=(const PickerFileSuggester&) = delete;
 
   // Any in-flight requests are cancelled when this object is destroyed.
-  void GetRecentLocalFiles(RecentLocalFilesCallback callback);
+  void GetRecentLocalImages(RecentLocalImagesCallback callback);
   void GetRecentDriveFiles(RecentDriveFilesCallback callback);
 
  private:
-  void OnGetRecentLocalFiles(RecentLocalFilesCallback callback,
-                             const std::vector<ash::RecentFile>& recent_files);
+  void OnGetRecentLocalImages(RecentLocalImagesCallback callback,
+                              const std::vector<ash::RecentFile>& recent_files);
   void OnGetRecentDriveFiles(RecentDriveFilesCallback callback,
                              const std::vector<ash::RecentFile>& recent_files);
 

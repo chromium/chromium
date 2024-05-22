@@ -30,6 +30,7 @@ storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
 }
 
 void GetRecentFiles(Profile* profile,
+                    ash::RecentSource::FileType file_type,
                     ash::RecentModel::GetRecentFilesCallback callback) {
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       GetFileSystemContextForProfile(profile);
@@ -43,6 +44,7 @@ void GetRecentFiles(Profile* profile,
   }
   ash::RecentModelOptions options = {
       .now_delta = kMaxFileRecencyDelta,
+      .file_type = file_type,
   };
 
   model->GetRecentFiles(file_system_context.get(), GURL(), /*query=*/"",
@@ -96,24 +98,24 @@ PickerFileSuggester::PickerFileSuggester(Profile* profile)
 
 PickerFileSuggester::~PickerFileSuggester() = default;
 
-void PickerFileSuggester::GetRecentLocalFiles(
-    RecentLocalFilesCallback callback) {
+void PickerFileSuggester::GetRecentLocalImages(
+    RecentLocalImagesCallback callback) {
   GetRecentFiles(
-      profile_,
-      base::BindOnce(&PickerFileSuggester::OnGetRecentLocalFiles,
+      profile_, ash::RecentSource::FileType::kImage,
+      base::BindOnce(&PickerFileSuggester::OnGetRecentLocalImages,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PickerFileSuggester::GetRecentDriveFiles(
     RecentDriveFilesCallback callback) {
   GetRecentFiles(
-      profile_,
+      profile_, ash::RecentSource::FileType::kAll,
       base::BindOnce(&PickerFileSuggester::OnGetRecentDriveFiles,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void PickerFileSuggester::OnGetRecentLocalFiles(
-    RecentLocalFilesCallback callback,
+void PickerFileSuggester::OnGetRecentLocalImages(
+    RecentLocalImagesCallback callback,
     const std::vector<ash::RecentFile>& recent_files) {
   std::vector<LocalFile> files;
   files.reserve(recent_files.size());
