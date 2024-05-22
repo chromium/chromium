@@ -1,0 +1,5 @@
+include_rules = [
+  "+ui/aura/screen_ozone.h",
+  "+remoting/host/x11_desktop_resizer.h",
+  "+remoting/host/desktop_geometry.h"
+]
