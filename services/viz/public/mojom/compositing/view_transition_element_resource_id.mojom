@@ -25,6 +25,6 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 // transition. The `local_id` identifies a specific snapshot resource and is
 // unique only with respect to a given `transition_token`.
 struct ViewTransitionElementResourceId {
-  blink.mojom.ViewTransitionToken transition_token;
+  blink.mojom.ViewTransitionToken? transition_token;
   uint32 local_id;
 };

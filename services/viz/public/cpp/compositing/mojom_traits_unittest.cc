@@ -633,6 +633,25 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
       frame, output));
 }
 
+TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
+  ViewTransitionElementResourceId empty_id;
+  ASSERT_FALSE(empty_id.IsValid());
+  ViewTransitionElementResourceId empty_output_id;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<
+          mojom::ViewTransitionElementResourceId>(empty_id, empty_output_id));
+  ASSERT_FALSE(empty_output_id.IsValid());
+
+  ViewTransitionElementResourceId valid_id(blink::ViewTransitionToken(), 2u);
+  ASSERT_TRUE(valid_id.IsValid());
+  ViewTransitionElementResourceId valid_output_id;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<
+          mojom::ViewTransitionElementResourceId>(valid_id, valid_output_id));
+  ASSERT_TRUE(valid_output_id.IsValid());
+  ASSERT_EQ(valid_output_id, valid_id);
+}
+
 TEST_F(StructTraitsTest, SurfaceInfo) {
   const SurfaceId surface_id(
       FrameSinkId(1234, 4321),

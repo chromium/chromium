@@ -19,20 +19,27 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
     return resource_id.local_id();
   }
 
-  static const blink::ViewTransitionToken& transition_token(
+  static std::optional<blink::ViewTransitionToken> transition_token(
       const viz::ViewTransitionElementResourceId& resource_id) {
-    return resource_id.transition_token();
+    if (resource_id.IsValid()) {
+      return {resource_id.transition_token()};
+    }
+    return std::nullopt;
   }
 
   static bool Read(viz::mojom::ViewTransitionElementResourceIdDataView data,
                    viz::ViewTransitionElementResourceId* out) {
-    blink::ViewTransitionToken transition_token;
+    std::optional<blink::ViewTransitionToken> transition_token;
     if (!data.ReadTransitionToken(&transition_token)) {
       return false;
     }
-    *out =
-        viz::ViewTransitionElementResourceId(transition_token, data.local_id());
-    return out->IsValid();
+    if (transition_token) {
+      *out = viz::ViewTransitionElementResourceId(*transition_token,
+                                                  data.local_id());
+    } else {
+      *out = viz::ViewTransitionElementResourceId();
+    }
+    return true;
   }
 };
 
