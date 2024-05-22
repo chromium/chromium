@@ -17,6 +17,10 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "url/gurl.h"
 
+// TODO(b/281812289): Remove this include when all dependencies switch to
+// including this file directly instead of relying on credit_card.h.
+#include "components/autofill/core/browser/data_model/credit_card_network_identifiers.h"
+
 namespace autofill {
 
 // Unicode characters used in card number obfuscation:
@@ -25,20 +29,6 @@ namespace autofill {
 //  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
 inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
 inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
-
-// The string identifiers for credit card icon resources.
-inline constexpr char kAmericanExpressCard[] = "americanExpressCC";
-inline constexpr char kDinersCard[] = "dinersCC";
-inline constexpr char kDiscoverCard[] = "discoverCC";
-inline constexpr char kEloCard[] = "eloCC";
-inline constexpr char kGenericCard[] = "genericCC";
-inline constexpr char kJCBCard[] = "jcbCC";
-inline constexpr char kMasterCard[] = "masterCardCC";
-inline constexpr char kMirCard[] = "mirCC";
-inline constexpr char kTroyCard[] = "troyCC";
-inline constexpr char kUnionPay[] = "unionPayCC";
-inline constexpr char kVerveCard[] = "verveCC";
-inline constexpr char kVisaCard[] = "visaCC";
 
 struct AutofillMetadata;
 

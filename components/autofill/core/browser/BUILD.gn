@@ -176,6 +176,7 @@ static_library("browser") {
     "data_model/credit_card_benefit.h",
     "data_model/credit_card_cloud_token_data.cc",
     "data_model/credit_card_cloud_token_data.h",
+    "data_model/credit_card_network_identifiers.h",
     "data_model/data_model_utils.cc",
     "data_model/data_model_utils.h",
     "data_model/form_group.cc",
