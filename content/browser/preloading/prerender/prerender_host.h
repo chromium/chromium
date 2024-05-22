@@ -149,6 +149,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   int GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
+  FrameTree* GetOwnedPictureInPictureFrameTree() override;
+  FrameTree* GetPictureInPictureOpenerFrameTree() override;
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChangedFromController(

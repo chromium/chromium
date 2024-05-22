@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -304,6 +305,18 @@ void Shell::AddNewContents(WebContents* source,
                            const blink::mojom::WindowFeatures& window_features,
                            bool user_gesture,
                            bool* was_blocked) {
+#if !BUILDFLAG(IS_ANDROID)
+  // If the shell is opening a document picture-in-picture window, it needs to
+  // inform the DocumentPictureInPictureWindowController.
+  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    DocumentPictureInPictureWindowController* controller =
+        PictureInPictureWindowController::
+            GetOrCreateDocumentPictureInPictureController(source);
+    controller->SetChildWebContents(new_contents.get());
+    controller->Show();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   CreateShell(
       std::move(new_contents), AdjustWindowSize(window_features.bounds.size()),
       !delay_popup_contents_delegate_for_testing_ /* should_set_delegate */);

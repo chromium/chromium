@@ -527,6 +527,14 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
                 mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
                     remote_frame_receiver);
 
+  // Notifies a specific frame that it now has user activation. Used to prevent
+  // duplicated logic in `NotifyUserActivationInFrameTree()`, which notifies
+  // various sets of Frames that they're now activated.
+  static void NotifyUserActivationInFrame(
+      Frame* node,
+      mojom::blink::UserActivationNotificationType notification_type,
+      bool sticky_only);
+
   Member<FrameClient> client_;
   const Member<WindowProxyManager> window_proxy_manager_;
   FrameLifecycle lifecycle_;

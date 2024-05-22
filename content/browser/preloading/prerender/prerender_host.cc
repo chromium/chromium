@@ -325,6 +325,14 @@ void PrerenderHost::SetFocusedFrame(FrameTreeNode* node,
   NOTREACHED_NORETURN();
 }
 
+FrameTree* PrerenderHost::GetOwnedPictureInPictureFrameTree() {
+  return nullptr;
+}
+
+FrameTree* PrerenderHost::GetPictureInPictureOpenerFrameTree() {
+  return nullptr;
+}
+
 int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   // A prerendered FrameTree is not "inner to" or "nested inside" another
   // FrameTree; it exists in parallel to the primary FrameTree of the current

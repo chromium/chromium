@@ -40,6 +40,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
@@ -67,6 +68,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 namespace blink {
 
@@ -296,16 +301,25 @@ void Frame::NotifyUserActivationInFrameTree(
     mojom::blink::UserActivationNotificationType notification_type,
     bool sticky_only) {
   for (Frame* node = this; node; node = node->Tree().Parent()) {
-    if (sticky_only) {
-      node->user_activation_state_.SetHasBeenActive();
-    } else {
-      node->user_activation_state_.Activate(notification_type);
-    }
-    auto* local_node = DynamicTo<LocalFrame>(node);
-    if (local_node) {
-      local_node->SetHadUserInteraction(true);
+    NotifyUserActivationInFrame(node, notification_type, sticky_only);
+  }
+
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+  if (RuntimeEnabledFeatures::DocumentPictureInPictureUserActivationEnabled()) {
+    // If we are contained in a document picture-in-picture window, then also
+    // propagate the activation up to our opener frame.
+    auto* local_top_frame = DynamicTo<LocalFrame>(Tree().Top());
+    if (local_top_frame && local_top_frame->GetDocument()) {
+      LocalDOMWindow* pip_owner =
+          PictureInPictureController::GetDocumentPictureInPictureOwner(
+              *local_top_frame->GetDocument());
+      if (pip_owner) {
+        NotifyUserActivationInFrame(pip_owner->GetFrame(), notification_type,
+                                    sticky_only);
+      }
     }
   }
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
@@ -321,14 +335,33 @@ void Frame::NotifyUserActivationInFrameTree(
       if (local_frame_node &&
           security_origin->CanAccess(
               local_frame_node->GetSecurityContext()->GetSecurityOrigin())) {
-        if (sticky_only) {
-          node->user_activation_state_.SetHasBeenActive();
-        } else {
-          node->user_activation_state_.Activate(notification_type);
-        }
-        local_frame_node->SetHadUserInteraction(true);
+        NotifyUserActivationInFrame(node, notification_type, sticky_only);
       }
     }
+
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+    if (RuntimeEnabledFeatures::
+            DocumentPictureInPictureUserActivationEnabled()) {
+      // If we are contained in a frame that owns a document picture-in-picture
+      // window, then also activate same-origin frames in the document
+      // picture-in-picture window.
+      auto* local_top_frame = DynamicTo<LocalFrame>(Tree().Top());
+      if (local_top_frame) {
+        LocalDOMWindow* pip_window =
+            PictureInPictureController::GetDocumentPictureInPictureWindow(
+                *local_top_frame->GetDocument());
+        for (Frame* node = pip_window ? pip_window->GetFrame() : nullptr; node;
+             node = node->Tree().TraverseNext()) {
+          auto* local_frame_node = DynamicTo<LocalFrame>(node);
+          if (local_frame_node &&
+              security_origin->CanAccess(local_frame_node->GetSecurityContext()
+                                             ->GetSecurityOrigin())) {
+            NotifyUserActivationInFrame(node, notification_type, sticky_only);
+          }
+        }
+      }
+    }
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
   }
 }
 
@@ -343,6 +376,34 @@ bool Frame::ConsumeTransientUserActivationInFrameTree() {
 
   for (Frame* node = &root; node; node = node->Tree().TraverseNext())
     node->user_activation_state_.ConsumeIfActive();
+
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+  if (RuntimeEnabledFeatures::DocumentPictureInPictureUserActivationEnabled()) {
+    auto* local_top_frame = DynamicTo<LocalFrame>(Tree().Top());
+    if (local_top_frame) {
+      // If we are contained in a document picture-in-picture window, then also
+      // consume user activation in our owner.
+      LocalDOMWindow* pip_owner =
+          PictureInPictureController::GetDocumentPictureInPictureOwner(
+              *local_top_frame->GetDocument());
+      for (Frame* node = pip_owner ? pip_owner->GetFrame() : nullptr; node;
+           node = node->Tree().TraverseNext()) {
+        node->user_activation_state_.ConsumeIfActive();
+      }
+
+      // If we are contained in a frame that owns a document picture-in-picture
+      // window, then also consume user activation in same-origin frames in the
+      // document picture-in-picture window.
+      LocalDOMWindow* pip_window =
+          PictureInPictureController::GetDocumentPictureInPictureWindow(
+              *local_top_frame->GetDocument());
+      for (Frame* node = pip_window ? pip_window->GetFrame() : nullptr; node;
+           node = node->Tree().TraverseNext()) {
+        node->user_activation_state_.ConsumeIfActive();
+      }
+    }
+  }
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   return was_active;
 }
@@ -881,6 +942,23 @@ bool Frame::SwapImpl(
   }
 
   return true;
+}
+
+// static
+void Frame::NotifyUserActivationInFrame(
+    Frame* node,
+    mojom::blink::UserActivationNotificationType notification_type,
+    bool sticky_only) {
+  CHECK(node);
+  if (sticky_only) {
+    node->user_activation_state_.SetHasBeenActive();
+  } else {
+    node->user_activation_state_.Activate(notification_type);
+  }
+  auto* local_node = DynamicTo<LocalFrame>(node);
+  if (local_node) {
+    local_node->SetHadUserInteraction(true);
+  }
 }
 
 void Frame::RemoveChild(Frame* child) {

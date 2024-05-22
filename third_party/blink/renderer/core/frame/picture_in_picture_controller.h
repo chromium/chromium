@@ -45,6 +45,12 @@ class CORE_EXPORT PictureInPictureController
   // Document or if PictureInPictureController is not attached to the Document.
   static LocalDOMWindow* GetDocumentPictureInPictureWindow(const Document&);
 
+  // If the provided document is attached to a document picture-in-picture
+  // window, then this returns the LocalDOMWindow that owns and originally
+  // opened the document picture-in-picture window. Returns null if the provided
+  // document is not attached to a document picture-in-picture window.
+  static LocalDOMWindow* GetDocumentPictureInPictureOwner(const Document&);
+
   // List of Picture-in-Picture support statuses. If status is kEnabled,
   // Picture-in-Picture is enabled for a document or element, otherwise it is
   // not supported.
@@ -109,6 +115,12 @@ class CORE_EXPORT PictureInPictureController
   // It is protected so that clients use the static method
   // GetDocumentPictureInPictureWindow() that avoids creating the controller.
   virtual LocalDOMWindow* GetDocumentPictureInPictureWindow() const = 0;
+
+  // If this is attached to a document picture-in-picture window, then this
+  // returns the LocalDOMWindow that owns and originally opened the document
+  // picture-in-picture window. Returns null if the this is not attached to a
+  // document picture-in-picture window.
+  virtual LocalDOMWindow* GetDocumentPictureInPictureOwner() const = 0;
 #endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 };
 

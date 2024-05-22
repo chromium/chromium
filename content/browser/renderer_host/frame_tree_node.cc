@@ -754,6 +754,20 @@ bool FrameTreeNode::NotifyUserActivation(
     rfh->ActivateUserActivation(notification_type, sticky_only);
   }
 
+  // If we're in a picture-in-picture frame tree, then also activate the opener
+  // frame of the picture-in-picture root.
+  FrameTree* pip_opener =
+      frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDocumentPictureInPictureUserActivation) &&
+      pip_opener) {
+    RenderFrameHostImpl* opener_frame_host =
+        pip_opener->root()->current_frame_host();
+
+    opener_frame_host->DidReceiveUserActivation();
+    opener_frame_host->ActivateUserActivation(notification_type, sticky_only);
+  }
+
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
       true);
 
@@ -770,6 +784,24 @@ bool FrameTreeNode::NotifyUserActivation(
                                                            sticky_only);
       }
     }
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kDocumentPictureInPictureUserActivation)) {
+      // If we own a picture-in-picture window, then also activate same-origin
+      // frames within the picture-in-picture window.
+      FrameTree* picture_in_picture_frame_tree =
+          frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+      if (picture_in_picture_frame_tree) {
+        for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
+          if (node->current_frame_host()
+                  ->GetLastCommittedOrigin()
+                  .IsSameOriginWith(current_origin)) {
+            node->current_frame_host()->ActivateUserActivation(
+                notification_type, sticky_only);
+          }
+        }
+      }
+    }
   }
 
   navigator().controller().NotifyUserActivation();
@@ -783,12 +815,39 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
   for (FrameTreeNode* node : frame_tree().Nodes()) {
     node->current_frame_host()->ConsumeTransientUserActivation();
   }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDocumentPictureInPictureUserActivation)) {
+    // If we're consuming user activation in a picture-in-picture window, ensure
+    // that its opener's frames also consume activation.
+    FrameTree* pip_opener =
+        frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+    if (pip_opener) {
+      for (FrameTreeNode* node : pip_opener->Nodes()) {
+        node->current_frame_host()->ConsumeTransientUserActivation();
+      }
+    }
+
+    // If we own a picture-in-picture window, ensure that its frames also
+    // consume activation.
+    FrameTree* picture_in_picture_frame_tree =
+        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+    if (picture_in_picture_frame_tree) {
+      for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
+        node->current_frame_host()->ConsumeTransientUserActivation();
+      }
+    }
+  }
+
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
       false);
   return was_active;
 }
 
 bool FrameTreeNode::ClearUserActivation() {
+  // Note that we don't need to clear user activation for the picture-in-picture
+  // subtree here since this is only called for a navigation, which closes the
+  // picture-in-picture window.
   for (FrameTreeNode* node : frame_tree().SubtreeNodes(this))
     node->current_frame_host()->ClearUserActivation();
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(

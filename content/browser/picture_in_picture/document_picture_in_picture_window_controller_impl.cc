@@ -39,10 +39,6 @@ DocumentPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
   // This is a no-op if the controller already exists.
   CreateForWebContents(web_contents);
   auto* controller = FromWebContents(web_contents);
-  // The controller must not have pre-existing web content. It's supposed
-  // to have been destroyed by NotifyClosedAndStopObserving() if it's being
-  // reused.
-  DCHECK(!controller->GetChildWebContents());
   return controller;
 }
 

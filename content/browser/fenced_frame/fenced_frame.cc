@@ -210,6 +210,14 @@ void FencedFrame::SetFocusedFrame(FrameTreeNode* node,
   web_contents_->SetFocusedFrame(node, source);
 }
 
+FrameTree* FencedFrame::GetOwnedPictureInPictureFrameTree() {
+  return nullptr;
+}
+
+FrameTree* FencedFrame::GetPictureInPictureOpenerFrameTree() {
+  return nullptr;
+}
+
 RenderFrameProxyHost*
 FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,

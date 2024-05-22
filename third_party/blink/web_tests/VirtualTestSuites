@@ -2960,6 +2960,18 @@
     ]
   },
   {
+    "prefix": "document-picture-in-picture-user-activation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/document-picture-in-picture/propagate-user-activation-from-opener.https.html",
+      "external/wpt/document-picture-in-picture/propagate-user-activation-to-opener.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-blink-features=DocumentPictureInPictureUserActivation"],
+    "expires": "Dec 1, 2024",
+    "owners": ["steimel@chromium.org", "liberato@chromium.org"]
+  },
+  {
     "prefix": "font-variant-emoji",
     "platforms": ["Linux"],
     "bases": [

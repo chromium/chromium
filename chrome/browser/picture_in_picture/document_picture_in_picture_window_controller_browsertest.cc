@@ -88,6 +88,62 @@ namespace {
 const base::FilePath::CharType kPictureInPictureDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
 
+// Observes a views::Widget and waits for it to be active or inactive.
+class WidgetActivationWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetActivationWaiter(views::Widget* widget) : widget_(widget) {
+    CHECK(widget_);
+    widget_->AddObserver(this);
+  }
+  WidgetActivationWaiter(const WidgetActivationWaiter&) = delete;
+  WidgetActivationWaiter& operator=(const WidgetActivationWaiter&) = delete;
+  ~WidgetActivationWaiter() override {
+    if (widget_) {
+      widget_->RemoveObserver(this);
+      widget_ = nullptr;
+    }
+  }
+
+  // Eventually returns true if the actual activation state matches `activated`.
+  // Returns false if the Widget is destroyed before that activation state ever
+  // matches `activated`.
+  bool WaitForActivationState(bool activated) {
+    if (!widget_) {
+      return false;
+    }
+
+    if (widget_->IsActive() == activated) {
+      return true;
+    }
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+
+    if (!widget_) {
+      return false;
+    }
+    return widget_->IsActive() == activated;
+  }
+
+  // views::WidgetObserver:
+
+  void OnWidgetDestroying(views::Widget*) override {
+    widget_->RemoveObserver(this);
+    widget_ = nullptr;
+    run_loop_->Quit();
+  }
+
+  void OnWidgetActivationChanged(views::Widget*, bool active) override {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+ private:
+  raw_ptr<views::Widget> widget_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 class DocumentPictureInPictureWindowControllerBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<gfx::Size> {
@@ -808,4 +864,30 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* pip_browser = chrome::FindBrowserWithTab(pip_web_contents);
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
   EXPECT_EQ(size, browser_view->GetContentsSize());
+}
+
+// When `window.open()` is called from a picture-in-picture window, it must lose
+// focus to the newly opened window to prevent multiple popunders from opening
+// when a user types multiple keys in a picture-in-picture window.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       WindowOpenLosesFocus) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* web_contents = window_controller()->GetChildWebContents();
+  ASSERT_TRUE(web_contents);
+  views::Widget* pip_widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(pip_widget);
+  WidgetActivationWaiter widget_activation_waiter(pip_widget);
+
+  // Ensure that the picture-in-picture window has system focus.
+  pip_widget->Activate();
+  ASSERT_TRUE(widget_activation_waiter.WaitForActivationState(true));
+
+  // Call `window.open()` to open a popup window.
+  EXPECT_TRUE(
+      ExecJs(web_contents,
+             "window.open('about:blank', '_blank', 'width=300,height=300');"));
+
+  // The picture-in-picture window should no longer have system focus.
+  EXPECT_TRUE(widget_activation_waiter.WaitForActivationState(false));
 }

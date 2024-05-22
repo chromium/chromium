@@ -193,6 +193,13 @@ class CONTENT_EXPORT FrameTree {
     // changing the focused frame tree in the case of inner/outer FrameTrees.
     virtual void SetFocusedFrame(FrameTreeNode* node,
                                  SiteInstanceGroup* source) = 0;
+
+    // Returns this FrameTree's picture-in-picture FrameTree if it has one.
+    virtual FrameTree* GetOwnedPictureInPictureFrameTree() = 0;
+
+    // Returns this FrameTree's opener if this FrameTree represents a
+    // picture-in-picture window.
+    virtual FrameTree* GetPictureInPictureOpenerFrameTree() = 0;
   };
 
   // Type of FrameTree instance.

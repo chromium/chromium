@@ -1328,6 +1328,15 @@
         "default": "stable",
       },
     },
+    // Enables propagating user activation from a document picture-in-picture
+    // window up to its opener window and vice versa.
+    {
+      name: "DocumentPictureInPictureUserActivation",
+      status: {
+        "Android": "",
+        "default": "stable",
+      },
+    },
     // Enables the ability to use Document Policy header to control feature
     // DocumentDomain.
     {
