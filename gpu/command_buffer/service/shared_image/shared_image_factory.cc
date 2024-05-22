@@ -203,6 +203,13 @@ operator()(const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
   return lhs->mailbox() == rhs;
 }
 
+bool SharedImageFactory::SharedImageRepresentationFactoryRefKeyEqual::
+operator()(
+    const gpu::Mailbox& lhs,
+    const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const {
+  return lhs == rhs->mailbox();
+}
+
 SharedImageFactory::SharedImageFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,

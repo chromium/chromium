@@ -805,6 +805,12 @@ bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
   return lhs.mailbox() == rhs;
 }
 
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
+    const gpu::Mailbox& lhs,
+    const OverlayData& rhs) const {
+  return lhs == rhs.mailbox();
+}
+
 void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {
   presenter_->SetVSyncDisplayID(display_id);
 }

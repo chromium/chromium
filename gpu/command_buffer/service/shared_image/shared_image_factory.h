@@ -194,6 +194,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
     bool operator()(
         const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
         const gpu::Mailbox& rhs) const;
+    bool operator()(
+        const gpu::Mailbox& lhs,
+        const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const;
   };
 
   // The set of SharedImages which have been created (and are being kept alive)
