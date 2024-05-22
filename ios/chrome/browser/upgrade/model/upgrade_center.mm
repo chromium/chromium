@@ -11,6 +11,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -411,7 +412,12 @@ class UpgradeInfoBarDismissObserver
     // The application may crash if the URL is invalid. As the URL is defined
     // externally to the application it needs to bail right away and ignore the
     // upgrade notification.
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR) << "Upgrade URL invalid: " << upgradeUrl.possibly_invalid_spec()
+               << "for Upgrade Version: " << details.next_version;
+
+    base::UmaHistogramEnumeration("IOS.UpgradeCenter.UpgradeFailed",
+                                  UpgradeCenterFailureReason::kInvalidURL);
+
     return;
   }
 
@@ -419,7 +425,12 @@ class UpgradeInfoBarDismissObserver
       !base::Version(details.next_version).IsValid()) {
     // If the upgrade version is not known or is invalid just ignore the
     // upgrade notification.
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR) << "Upgrade Version invalid: " << details.next_version
+               << " for Upgrade URL: " << upgradeUrl.possibly_invalid_spec();
+
+    base::UmaHistogramEnumeration("IOS.UpgradeCenter.UpgradeFailed",
+                                  UpgradeCenterFailureReason::kInvalidVersion);
+
     return;
   }
 

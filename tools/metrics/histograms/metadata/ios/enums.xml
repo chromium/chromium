@@ -876,6 +876,11 @@ the generic promo launch. -->
   <int value="3" label="Error"/>
 </enum>
 
+<enum name="IOSUpgradeCenterFailureReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="Invalid Version"/>
+</enum>
+
 <enum name="IOSWebFileInputAttributes">
   <int value="0" label="No Accept"/>
   <int value="1" label="No Accept, Multiple files"/>
