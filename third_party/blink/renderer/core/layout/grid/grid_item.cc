@@ -95,6 +95,7 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
       }
       return is_for_columns ? logical.InlineEnd() : logical.BlockEnd();
     }
+    case ItemPosition::kAnchorCenter:
     case ItemPosition::kCenter:
       return AxisEdge::kCenter;
     case ItemPosition::kFlexStart:
@@ -126,9 +127,6 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
     case ItemPosition::kAuto:
       NOTREACHED_IN_MIGRATION();
       return AxisEdge::kStart;
-    case ItemPosition::kAnchorCenter:
-      NOTREACHED_IN_MIGRATION();
-      return AxisEdge::kCenter;
   }
 }
 
