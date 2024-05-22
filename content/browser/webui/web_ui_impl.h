@@ -45,9 +45,6 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // opening a new tab).
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host);
 
-  // Called when a RenderFrame is reused for the same WebUI type (i.e. reload).
-  void RenderFrameReused(RenderFrameHost* render_frame_host);
-
   // Called when the owning RenderFrameHost has started unloading.
   void RenderFrameHostUnloading();
 

@@ -1946,7 +1946,6 @@ void RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
                WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
                    browser_context, request->common_params().url))
           << "WebUI type mismatch for " << request->common_params().url;
-      render_frame_host_->web_ui()->RenderFrameReused(render_frame_host_.get());
     } else if (!render_frame_host_->web_ui()) {
       // It is possible to reuse a RenderFrameHost when going to a WebUI URL
       // and not have created a WebUI instance. An example is a WebUI main

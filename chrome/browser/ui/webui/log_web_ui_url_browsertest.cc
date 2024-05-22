@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/hash/hash.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -41,13 +42,11 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
 
   ~LogWebUIUrlTest() override {}
 
-  void RunTest(int title_ids, const GURL& url) {
+  void RunTest(std::u16string title, const GURL& url) {
+    EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),
+                ::testing::IsEmpty());
+
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-    // When a page does not have a dedicated title the URL with a trailing slash
-    // is displayed as the title.
-    std::u16string title =
-        title_ids == -1 ? base::UTF8ToUTF16(url.GetWithEmptyPath().spec())
-                        : l10n_util::GetStringUTF16(title_ids);
     content::TitleWatcher title_watcher(tab, title);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -61,25 +60,32 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestExtensionsPage) {
-  RunTest(IDS_MANAGE_EXTENSIONS_SETTING_WINDOWS_TITLE,
-          GURL(chrome::kChromeUIExtensionsURL));
+  RunTest(
+      l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS_SETTING_WINDOWS_TITLE),
+      GURL(chrome::kChromeUIExtensionsURL));
 }
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestHistoryPage) {
-  RunTest(IDS_HISTORY_TITLE, GURL(chrome::kChromeUIHistoryURL));
+  RunTest(l10n_util::GetStringUTF16(IDS_HISTORY_TITLE),
+          GURL(chrome::kChromeUIHistoryURL));
 }
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestSettingsPage) {
-  RunTest(IDS_SETTINGS_SETTINGS, GURL(chrome::kChromeUISettingsURL));
+  RunTest(l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS),
+          GURL(chrome::kChromeUISettingsURL));
 }
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestDinoPage) {
-  RunTest(-1, content::GetWebUIURL(content::kChromeUIDinoHost));
+  GURL url = content::GetWebUIURL(content::kChromeUIDinoHost);
+  // When a page does not have a dedicated title the URL with a trailing slash
+  // is displayed as the title.
+  RunTest(base::UTF8ToUTF16(url.GetWithEmptyPath().spec()), url);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestChromeUntrustedPage) {
-  RunTest(-1, GURL(chrome::kChromeUIUntrustedPrintURL));
+  RunTest(u"", GURL(base::StrCat(
+                   {chrome::kChromeUIUntrustedPrintURL, "1/1/print.pdf"})));
 }
 #endif
 

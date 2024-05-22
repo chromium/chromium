@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
-#include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
 #include "chrome/browser/ui/webui/net_export_ui.h"
@@ -809,9 +808,6 @@ ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
   WebUIFactoryFunction function = GetWebUIFactoryFunction(web_ui, profile, url);
   if (!function)
     return nullptr;
-
-  if (web_ui->GetWebContents()->GetPrimaryMainFrame())
-    webui::LogWebUIUrl(url);
 
   return base::WrapUnique((*function)(web_ui, url));
 }

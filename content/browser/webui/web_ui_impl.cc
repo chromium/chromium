@@ -28,7 +28,6 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_main_frame_observer.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -140,14 +139,6 @@ void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
 
 void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
   controller_->WebUIRenderFrameCreated(render_frame_host);
-}
-
-void WebUIImpl::RenderFrameReused(RenderFrameHost* render_frame_host) {
-  // This is expected to be called only for outermost main frames.
-  if (!render_frame_host->GetParentOrOuterDocument()) {
-    GURL site_url = render_frame_host->GetSiteInstance()->GetSiteURL();
-    GetContentClient()->browser()->LogWebUIUrl(site_url);
-  }
 }
 
 void WebUIImpl::RenderFrameHostUnloading() {
