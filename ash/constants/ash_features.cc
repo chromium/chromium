@@ -4151,7 +4151,8 @@ bool IsOobeLazyLoadingEnabled() {
 }
 
 bool IsOobeQuickStartEnabled() {
-  return base::FeatureList::IsEnabled(kOobeQuickStart);
+  return base::FeatureList::IsEnabled(kAllowCrossDeviceFeatureSuite) &&
+         base::FeatureList::IsEnabled(kOobeQuickStart);
 }
 
 bool IsOobeQuickStartOnLoginScreenEnabled() {
