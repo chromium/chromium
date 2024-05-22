@@ -25,8 +25,8 @@ class PrefService;
 // to/from their signed-in account. The sheet contains:
 //   - A "Got it" button, which closes the sheet on click.
 //   - A link to the settings page, in case they want to disable account
-//     passwords via the appropriate toggle. The sheet remains open in the
-//     meantime.
+//     passwords via the appropriate toggle. The sheet is auto-closed after the
+//     user closes settings.
 // The sheet can also be closed by swiping, pressing back or navigating away.
 class AccountStorageNotice : public CoordinatorObserver {
  public:

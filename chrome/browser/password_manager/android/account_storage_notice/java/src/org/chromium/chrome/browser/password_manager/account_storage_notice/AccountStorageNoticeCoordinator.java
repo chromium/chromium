@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.account_storage_notice;
 
-import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
@@ -28,8 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Coordinator for the UI described in account_storage_notice.h, meant to be used from native. */
 class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     private final SettingsLauncher mSettingsLauncher;
-    private final Context mContext;
-    private final BottomSheetController mBottomSheetController;
+    private final WindowAndroid mWindowAndroid;
     private final AccountStorageNoticeView mView;
 
     private long mNativeCoordinatorObserver;
@@ -62,23 +61,20 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
 
         prefService.setBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN, true);
         AccountStorageNoticeCoordinator coordinator =
-                new AccountStorageNoticeCoordinator(
-                        windowAndroid.getContext().get(), controller, view, settingsLauncher);
+                new AccountStorageNoticeCoordinator(windowAndroid, view, settingsLauncher);
         return coordinator;
     }
 
     private AccountStorageNoticeCoordinator(
-            Context context,
-            BottomSheetController bottomSheetController,
+            WindowAndroid windowAndroid,
             AccountStorageNoticeView view,
             SettingsLauncher settingsLauncher) {
         mSettingsLauncher = settingsLauncher;
-        mContext = context;
-        mBottomSheetController = bottomSheetController;
+        mWindowAndroid = windowAndroid;
         mView = view;
         mView.setButtonCallback(this::onButtonClicked);
         mView.setSettingsLinkCallback(this::onSettingsLinkClicked);
-        mBottomSheetController.addObserver(this);
+        BottomSheetControllerProvider.from(mWindowAndroid).addObserver(this);
     }
 
     @CalledByNative
@@ -89,8 +85,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     /** If the notice is still showing, hides it promptly without animation. Otherwise, no-op. */
     @CalledByNative
     public void hideImmediatelyIfShowing() {
-        if (mBottomSheetController.getCurrentSheetContent() == mView) {
-            mBottomSheetController.hideContent(mView, /* animate= */ false);
+        BottomSheetController controller = BottomSheetControllerProvider.from(mWindowAndroid);
+        if (controller.getCurrentSheetContent() == mView) {
+            controller.hideContent(mView, /* animate= */ false);
         }
     }
 
@@ -99,7 +96,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         // This waits for the sheet to close, then stops the observation and notifies native.
         if (newState == SheetState.HIDDEN) {
-            mBottomSheetController.removeObserver(this);
+            BottomSheetControllerProvider.from(mWindowAndroid).removeObserver(this);
             if (mNativeCoordinatorObserver != 0) {
                 AccountStorageNoticeCoordinatorJni.get().onClosed(mNativeCoordinatorObserver);
             }
@@ -107,12 +104,24 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     }
 
     private void onButtonClicked() {
-        mBottomSheetController.hideContent(mView, /* animate= */ true);
+        BottomSheetControllerProvider.from(mWindowAndroid).hideContent(mView, /* animate= */ true);
         // onSheetStateChanged() will take care of notifying native.
     }
 
     private void onSettingsLinkClicked() {
-        mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.GOOGLE_SERVICES);
+        Intent intent =
+                mSettingsLauncher.createSettingsActivityIntent(
+                        mWindowAndroid.getContext().get(),
+                        SettingsFragment.GOOGLE_SERVICES,
+                        /* fragmentArgs= */ null);
+        mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
+    }
+
+    private void onSettingsClosed(int resultCode, Intent unused) {
+        // Note: closing settings via user interaction should map to Activity.RESULT_CANCELED here,
+        // but we want to hide the sheet no matter what `resultCode` is.
+        BottomSheetControllerProvider.from(mWindowAndroid).hideContent(mView, /* animate= */ true);
+        // onSheetStateChanged() will take care of notifying native.
     }
 
     @NativeMethods
