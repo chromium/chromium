@@ -63,6 +63,9 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // Adjust the init params for the widget. By default makes no change.
   virtual void AdjustWidgetInitParams(views::Widget::InitParams* params) {}
 
+  // Brings the dialog window to the front.
+  void StackAtTop();
+
   // Focuses the dialog window. Note: No-op for modal dialogs, see
   // implementation for details.
   void Focus();
@@ -97,6 +100,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogLoginTest, NonModalTest);
+  FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, StackAtTop);
 
   // Returns the dialog window (pointer to |aura::Window|). This will be a
   // |nullptr| if the dialog has not been created yet.

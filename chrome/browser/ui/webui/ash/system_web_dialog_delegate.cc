@@ -165,6 +165,10 @@ std::string SystemWebDialogDelegate::Id() {
   return GetDialogContentURL().spec();
 }
 
+void SystemWebDialogDelegate::StackAtTop() {
+  views::Widget::GetWidgetForNativeWindow(dialog_window())->StackAtTop();
+}
+
 void SystemWebDialogDelegate::Focus() {
   // Focusing a modal dialog does not make it the topmost dialog and does not
   // enable interaction. It does however remove focus from the current dialog,

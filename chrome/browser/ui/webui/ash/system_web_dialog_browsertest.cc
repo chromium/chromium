@@ -148,4 +148,27 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, PageZoom) {
       << dialog_level;
 }
 
+IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, StackAtTop) {
+  const char* kDialogId1 = "dialog_id1";
+  const char* kDialogId2 = "dialog_id2";
+  auto* dialog1 = new MockSystemWebDialog(kDialogId1);
+  auto* dialog2 = new MockSystemWebDialog(kDialogId2);
+  dialog1->ShowSystemDialog();
+  dialog2->ShowSystemDialog();
+  auto* widget1 =
+      views::Widget::GetWidgetForNativeWindow(dialog1->dialog_window());
+  auto* widget2 =
+      views::Widget::GetWidgetForNativeWindow(dialog2->dialog_window());
+
+  dialog1->StackAtTop();
+  // Expect dialog1 brought to the top level.
+  EXPECT_TRUE(widget1->IsStackedAbove(widget2->GetNativeView()));
+  EXPECT_TRUE(widget1->is_top_level());
+
+  dialog2->StackAtTop();
+  // Expect dialog2 brought to the top level.
+  EXPECT_TRUE(widget2->IsStackedAbove(widget1->GetNativeView()));
+  EXPECT_TRUE(widget2->is_top_level());
+}
+
 }  // namespace ash

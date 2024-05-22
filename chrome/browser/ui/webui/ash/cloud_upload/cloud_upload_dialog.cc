@@ -983,8 +983,9 @@ bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
     SetupOrMoveDialogPage dialog_page) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
-  if (SystemWebDialogDelegate::HasInstance(
-          GURL(chrome::kChromeUICloudUploadURL))) {
+  SystemWebDialogDelegate* existing_dialog =
+      SystemWebDialogDelegate::FindInstance(chrome::kChromeUICloudUploadURL);
+  if (existing_dialog) {
     LOG(WARNING) << "Another cloud upload dialog is already being shown";
     if (dialog_page == SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive ||
         dialog_page == SetupOrMoveDialogPage::kMoveConfirmationOneDrive) {
@@ -994,6 +995,8 @@ bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
       cloud_open_metrics_->LogTaskResult(
           OfficeTaskResult::kCannotShowSetupDialog);
     }
+    // Bring the existing dialog to the front to prompt the user to keep going.
+    existing_dialog->StackAtTop();
     return false;
   }
 
