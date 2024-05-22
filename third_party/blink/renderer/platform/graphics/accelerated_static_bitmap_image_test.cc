@@ -49,7 +49,7 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 }
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),

@@ -553,7 +553,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsSingleBuffered());
 
   viz::TransferableResource tr;
-  tr.set_mailbox(gpu::Mailbox::GenerateForSharedImage());
+  tr.set_mailbox(gpu::Mailbox::Generate());
   tr.set_texture_target(GL_TEXTURE_2D);
   tr.set_sync_token(gpu::SyncToken());
   tr.size = kSize;
