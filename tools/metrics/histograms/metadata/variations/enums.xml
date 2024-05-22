@@ -138,6 +138,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Unknown fields"/>
   <int value="7" label="Layer ID is not unique"/>
   <int value="8" label="Limited layer dropped"/>
+  <int value="9" label="Duplicated layer member ID"/>
 </enum>
 
 <enum name="VariationsInvalidStudyReason">

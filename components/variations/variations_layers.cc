@@ -6,9 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <set>
 #include <type_traits>
 
 #include "base/check_op.h"
@@ -143,6 +145,17 @@ const base::FieldTrial::EntropyProvider& SelectEntropyProviderForSlot(
   } else {
     return entropy_providers.default_entropy();
   }
+}
+
+bool AreLayerMemberIDsUnique(const Layer& layer_proto) {
+  std::set<uint32_t> member_ids;
+  for (const auto& member : layer_proto.members()) {
+    if (member_ids.contains(member.id())) {
+      return false;
+    }
+    member_ids.insert(member.id());
+  }
+  return true;
 }
 
 }  // namespace
@@ -349,6 +362,11 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
     // doesn't divide the low entropy range, so don't support them at all.
     LogInvalidLayerReason(
         InvalidLayerReason::kSlotsDoNotDivideLowEntropyDomain);
+    return;
+  }
+
+  if (!AreLayerMemberIDsUnique(layer_proto)) {
+    LogInvalidLayerReason(InvalidLayerReason::kDuplicatedLayerMemberID);
     return;
   }
 

@@ -329,6 +329,42 @@ TEST_F(VariationsLayersTest, InvalidSlotBounds_ReferringToOutOfBoundsSlot) {
   EXPECT_FALSE(VariationsLayers::AreSlotBoundsValid(layer));
 }
 
+TEST_F(VariationsLayersTest, UniqueLayerMemberIDs) {
+  const auto layer =
+      CreateLayer({.id = 1u,
+                   .num_slots = 10u,
+                   .entropy_mode = Layer::DEFAULT,
+                   .layer_members = {{.id = 1u, .start = 0u, .end = 4u},
+                                     {.id = 2u, .start = 5u, .end = 9u}}});
+  auto seed = CreateSeed({.layers = {layer}, .studies = {}});
+
+  VariationsLayers layers(seed, entropy_providers_);
+
+  // One of the two layer members must be active since together they are
+  // covering all slots.
+  EXPECT_TRUE(layers.IsLayerMemberActive(1u, 1u) ||
+              layers.IsLayerMemberActive(1u, 2u));
+  histogram_tester_.ExpectTotalCount("Variations.InvalidLayerReason", 0);
+}
+
+TEST_F(VariationsLayersTest, DuplicatedLayerMemberIDs) {
+  // There are two layer members with ID=1 in this layer.
+  const auto layer =
+      CreateLayer({.id = 1u,
+                   .num_slots = 10u,
+                   .entropy_mode = Layer::DEFAULT,
+                   .layer_members = {{.id = 1u, .start = 0u, .end = 4u},
+                                     {.id = 1u, .start = 5u, .end = 9u}}});
+  auto seed = CreateSeed({.layers = {layer}, .studies = {}});
+
+  VariationsLayers layers(seed, entropy_providers_);
+
+  EXPECT_FALSE(layers.IsLayerMemberActive(1u, 1u));
+  const int expected_bucket = 9;  // kDuplicatedLayerMemberID
+  histogram_tester_.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                       expected_bucket, 1);
+}
+
 TEST_F(VariationsLayersTest, LowEntropyStudy) {
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
   AddGoogleExperimentIds(&study);
