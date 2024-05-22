@@ -12,13 +12,19 @@ source_set("connectors") {
     "connectors_prefs.h",
     "device_trust/prefs.cc",
     "device_trust/prefs.h",
+    "enterprise_connectors_policy_handler.cc",
+    "enterprise_connectors_policy_handler.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
 
   deps = [
     "//base",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/prefs",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
   ]
 
   if (enterprise_client_certificates) {
@@ -29,12 +35,18 @@ source_set("connectors") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "service_provider_config_unittest.cc" ]
+  sources = [
+    "enterprise_connectors_policy_handler_unittest.cc",
+    "service_provider_config_unittest.cc",
+  ]
 
   public_deps = [ ":connectors" ]
 
   deps = [
     "//base",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//testing/gtest",
     "//url:url",
   ]

@@ -3934,8 +3934,6 @@ static_library("browser") {
       "enterprise/connectors/connectors_manager.h",
       "enterprise/connectors/connectors_service.cc",
       "enterprise/connectors/connectors_service.h",
-      "enterprise/connectors/enterprise_connectors_policy_handler.cc",
-      "enterprise/connectors/enterprise_connectors_policy_handler.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",
       "enterprise/connectors/reporting/browser_crash_event_router.h",
       "enterprise/connectors/reporting/crash_reporting_context.cc",
