@@ -131,7 +131,7 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // A parameter which reflects the delay when the local passwords migration is
 // triggered after Chrome startup in seconds.
 constexpr base::FeatureParam<int>

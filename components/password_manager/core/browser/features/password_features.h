@@ -129,6 +129,9 @@ inline constexpr int kDefaultLocalUpmMinGmsVersion = 240212000;
 inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 
 // Same as above, but for automotive.
+//
+// IMPORTANT: as the flags have been enabled by default, this is now the only
+// feature guard remaining on automotive!
 inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
     "min_gms_version_for_auto";
 inline constexpr int kDefaultLocalUpmMinGmsVersionForAuto =
