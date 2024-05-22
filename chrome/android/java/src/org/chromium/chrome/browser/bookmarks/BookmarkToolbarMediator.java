@@ -286,7 +286,6 @@ class BookmarkToolbarMediator
     @Override
     public void onFolderStateSet(BookmarkId folder) {
         mCurrentFolder = folder;
-        mModel.set(BookmarkToolbarProperties.CURRENT_FOLDER, mCurrentFolder);
 
         BookmarkItem folderItem =
                 mCurrentFolder == null ? null : mBookmarkModel.getBookmarkById(mCurrentFolder);

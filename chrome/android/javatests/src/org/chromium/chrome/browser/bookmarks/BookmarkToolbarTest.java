@@ -285,7 +285,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void onNavigationBack() {
         initializeNormal();
-        mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
         mBookmarkToolbar.onNavigationBack();
         Mockito.verify(mNavigateBackRunnable).run();
     }

@@ -54,8 +54,6 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID) {
             bookmarkToolbar.setCheckedViewMenuId(
                     model.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
-        } else if (key == BookmarkToolbarProperties.CURRENT_FOLDER) {
-            bookmarkToolbar.setCurrentFolder(model.get(BookmarkToolbarProperties.CURRENT_FOLDER));
         } else if (key == BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE) {
             bookmarkToolbar.setNavigateBackRunnable(
                     model.get(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE));

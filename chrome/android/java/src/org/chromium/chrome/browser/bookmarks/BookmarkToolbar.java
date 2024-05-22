@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MenuCompat;
 
@@ -40,8 +39,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private BookmarkOpener mBookmarkOpener;
     private SelectionDelegate<BookmarkId> mSelectionDelegate;
 
-    // The current folder can be null before being set by the mediator.
-    private @Nullable BookmarkItem mCurrentFolder;
     private @BookmarkUiMode int mBookmarkUiMode;
     private boolean mSoftKeyboardVisible;
     // Whether the selection ui is currently showing. This isn't captured by an explicit
@@ -145,10 +142,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setCheckedViewMenuId(@IdRes int id) {
         getMenu().findItem(id).setChecked(true);
-    }
-
-    void setCurrentFolder(BookmarkId folder) {
-        mCurrentFolder = mBookmarkModel.getBookmarkById(folder);
     }
 
     void setNavigateBackRunnable(Runnable navigateBackRunnable) {
