@@ -5,8 +5,8 @@
 #include "base/android/memory_pressure_listener_android.h"
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
-#include "base/base_jni/MemoryPressureListener_jni.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory_jni/MemoryPressureListener_jni.h"
 
 using base::android::JavaParamRef;
 

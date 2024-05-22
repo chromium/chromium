@@ -1279,6 +1279,7 @@ component("base") {
       ":callback_jni",
       ":command_line_jni",
       ":library_loader_jni",
+      ":memory_jni",
       ":metrics_jni",
       ":process_launcher_jni",
       ":sys_utils_jni",
@@ -4337,7 +4338,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
       "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
-      "android/java/src/org/chromium/base/MemoryPressureListener.java",
       "android/java/src/org/chromium/base/PathService.java",
       "android/java/src/org/chromium/base/PathUtils.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
@@ -4347,9 +4347,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
-      "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
-      "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
-      "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
     ]
 
     if (use_clang_profiling) {
@@ -4488,7 +4485,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/MathUtils.java",
-      "android/java/src/org/chromium/base/MemoryPressureListener.java",
       "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
@@ -4523,12 +4519,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
       "android/java/src/org/chromium/base/jank_tracker/JankTrackerStateController.java",
       "android/java/src/org/chromium/base/jank_tracker/PlaceholderJankTracker.java",
-      "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
-      "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
-      "android/java/src/org/chromium/base/memory/MemoryPressureCallback.java",
-      "android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
-      "android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
-      "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
     ]
 
     if (use_clang_profiling) {
@@ -4551,6 +4541,7 @@ if (is_android) {
       ":library_loader_java",
       ":lifetime_java",
       ":log_java",
+      ":memory_java",
       ":metrics_java",
       ":promise_java",
       ":resetters_java",
@@ -4605,6 +4596,46 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  java_cpp_enum("memory_pressure_level_enum_srcjar") {
+    sources = [ "memory/memory_pressure_listener.h" ]
+  }
+
+  generate_jni("memory_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/MemoryPressureListener.java",
+      "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
+      "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
+      "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+    ]
+  }
+
+  android_library("memory_java") {
+    srcjar_deps = [
+      ":memory_jni",
+      ":memory_pressure_level_enum_srcjar",
+    ]
+    sources = [
+      "android/java/src/org/chromium/base/MemoryPressureListener.java",
+      "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
+      "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
+      "android/java/src/org/chromium/base/memory/MemoryPressureCallback.java",
+      "android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
+      "android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
+      "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+    ]
+    deps = [
+      ":library_loader_java",
+      ":supplier_java",
+      ":tasks_java",
+      "//base:log_java",
+      "//base:metrics_java",
+      "//base:resetters_java",
+      "//base:time_utils_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -5310,7 +5341,6 @@ if (is_android) {
   java_cpp_enum("base_android_java_enums_srcjar") {
     sources = [
       "android/child_process_binding_types.h",
-      "memory/memory_pressure_listener.h",
       "process/kill.h",
       "task/task_traits.h",
     ]
