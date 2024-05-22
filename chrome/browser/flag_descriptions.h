@@ -1806,6 +1806,9 @@ extern const char kRoundedDisplayDescription[];
 extern const char kRoundedWindows[];
 extern const char kRoundedWindowsDescription[];
 
+extern const char kRubyShortHeuristicsName[];
+extern const char kRubyShortHeuristicsDescription[];
+
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 

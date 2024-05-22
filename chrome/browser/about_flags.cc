@@ -11425,6 +11425,10 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kScreenlockReauthPromoCard)},
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+    {"ruby-short-heuristics", flag_descriptions::kRubyShortHeuristicsName,
+     flag_descriptions::kRubyShortHeuristicsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kRubyShortHeuristics)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
