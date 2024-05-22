@@ -723,10 +723,6 @@ enum class LcppResourceLoadPriority {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
     kLCPCriticalPathPredictorImageLoadPriority;
 
-// Enables LCPP ElementLocator performance improvements
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements;
-
 // Enable ResourceLoadPriority changes for all HTMLImageElement loaded images.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement;

@@ -139,7 +139,7 @@ TEST_F(TokenStreamMatcherTest, SingleId) {
       {.type = kEndTag, .tag_name = "h1"},
       {.tag_name = "p"},
       {.tag_name = "input"},
-      {.tag_name = "div", .id_attr = "target", .should_match = true},
+      {.tag_name = "img", .id_attr = "target", .should_match = true},
       {.type = kEndTag, .tag_name = "div"},
   };
 
@@ -149,21 +149,15 @@ TEST_F(TokenStreamMatcherTest, SingleId) {
 TEST_F(TokenStreamMatcherTest, SingleNth) {
   ElementLocator locator;
   auto* c = locator.add_components()->mutable_nth();
-  c->set_tag_name("span");
+  c->set_tag_name("img");
   c->set_index(2);
 
   element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {
-      {.tag_name = "div"},
-      {.tag_name = "span"},
-      {.type = kEndTag, .tag_name = "span"},
-      {.tag_name = "span"},
-      {.type = kEndTag, .tag_name = "span"},
-      {.tag_name = "span", .should_match = true},
-      {.type = kEndTag, .tag_name = "span"},
-      {.tag_name = "span"},
-      {.type = kEndTag, .tag_name = "span"},
-      {.type = kEndTag, .tag_name = "div"},
+      {.tag_name = "div"},  {.tag_name = "img"},
+      {.tag_name = "span"}, {.type = kEndTag, .tag_name = "span"},
+      {.tag_name = "img"},  {.tag_name = "img", .should_match = true},
+      {.tag_name = "img"},  {.type = kEndTag, .tag_name = "div"},
   };
 
   TestMatch(matcher, exps);
@@ -172,23 +166,27 @@ TEST_F(TokenStreamMatcherTest, SingleNth) {
 TEST_F(TokenStreamMatcherTest, CloseAPElement) {
   ElementLocator locator;
   auto* c0 = locator.add_components()->mutable_nth();
-  c0->set_tag_name("p");
-  c0->set_index(2);
-  auto* c1 = locator.add_components()->mutable_id();
-  c1->set_id_attr("container");
+  c0->set_tag_name("img");
+  c0->set_index(0);
+  auto* c1 = locator.add_components()->mutable_nth();
+  c1->set_tag_name("p");
+  c1->set_index(2);
+  auto* c2 = locator.add_components()->mutable_id();
+  c2->set_id_attr("container");
 
-  EXPECT_EQ(String("/p[2]/#container"),
+  EXPECT_EQ(String("/img[0]/p[2]/#container"),
             element_locator::ToStringForTesting(locator));
 
   element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {
+
       {.tag_name = "div", .id_attr = "container"},
       {.tag_name = "p"},
       {.tag_name = "img"},
       {.tag_name = "p"},
-      {.tag_name = "p", .should_match = true},
-      {.type = kEndTag, .tag_name = "div"},
-  };
+      {.tag_name = "p"},
+      {.tag_name = "img", .should_match = true},
+      {.type = kEndTag, .tag_name = "div"}};
 
   TestMatch(matcher, exps);
 }
@@ -228,7 +226,7 @@ TEST_F(TokenStreamMatcherTest, Complicated) {
   TestMatch(matcher, exps);
 }
 
-TEST_F(TokenStreamMatcherTest, DontMatchNonImgWhenRestrictedModeOn) {
+TEST_F(TokenStreamMatcherTest, DontMatchNonImg) {
   ElementLocator locator;
   auto* c0 = locator.add_components()->mutable_nth();
   c0->set_tag_name("p");
@@ -239,7 +237,7 @@ TEST_F(TokenStreamMatcherTest, DontMatchNonImgWhenRestrictedModeOn) {
   EXPECT_EQ(String("/p[2]/#container"),
             element_locator::ToStringForTesting(locator));
 
-  element_locator::TokenStreamMatcher matcher({locator}, true);
+  element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {
       {.tag_name = "div", .id_attr = "container"},
       {.tag_name = "p"},
@@ -247,41 +245,6 @@ TEST_F(TokenStreamMatcherTest, DontMatchNonImgWhenRestrictedModeOn) {
       {.tag_name = "p"},
       {.tag_name = "p", .should_match = false},
       {.type = kEndTag, .tag_name = "div"},
-  };
-
-  TestMatch(matcher, exps);
-}
-
-TEST_F(TokenStreamMatcherTest, MatchImgWhenRestrictedModeOn) {
-  ElementLocator locator;
-  auto* c0 = locator.add_components()->mutable_nth();
-  c0->set_tag_name("img");
-  c0->set_index(1);
-  auto* c1 = locator.add_components()->mutable_nth();
-  c1->set_tag_name("article");
-  c1->set_index(2);
-  auto* c2 = locator.add_components()->mutable_id();
-  c2->set_id_attr("container");
-
-  EXPECT_EQ(String("/img[1]/article[2]/#container"),
-            element_locator::ToStringForTesting(locator));
-
-  element_locator::TokenStreamMatcher matcher({locator}, true);
-  Vector<Expectation> exps = {
-      {.tag_name = "section", .id_attr = "container"},
-      {.tag_name = "article"},
-      {.type = kEndTag, .tag_name = "article"},
-      {.tag_name = "article"},
-      {.type = kEndTag, .tag_name = "article"},
-      {.tag_name = "article"},
-      {.tag_name = "h2"},
-      {.type = kEndTag, .tag_name = "h2"},
-      {.tag_name = "img"},
-      {.tag_name = "img", .should_match = true},
-      {.type = kEndTag, .tag_name = "article"},
-      {.tag_name = "article"},
-      {.type = kEndTag, .tag_name = "article"},
-      {.type = kEndTag, .tag_name = "section"},
   };
 
   TestMatch(matcher, exps);

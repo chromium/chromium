@@ -187,10 +187,8 @@ void TokenStreamMatcher::InitSets() {
   }
 }
 
-TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators,
-                                       bool enable_perf_optimizations)
-    : locators_(locators),
-      enable_perf_optimizations_(enable_perf_optimizations) {}
+TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators)
+    : locators_(locators) {}
 
 TokenStreamMatcher::~TokenStreamMatcher() = default;
 namespace {
@@ -263,7 +261,7 @@ void TokenStreamMatcher::ObserveEndTag(const StringImpl* tag_name) {
   CHECK(!html_stack_.empty());
 
   // Don't build stack if locators are empty.
-  if (enable_perf_optimizations_ && locators_.empty()) {
+  if (locators_.empty()) {
     return;
   }
 
@@ -319,7 +317,7 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
   }
 
   // Don't build stack if locators are empty.
-  if (enable_perf_optimizations_ && locators_.empty()) {
+  if (locators_.empty()) {
     return false;
   }
 
@@ -342,9 +340,7 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
 
   bool matched = false;
   // Invoke matching only if set to match all tags, or this is an IMG tag.
-  bool should_match_at_this_tag =
-      !enable_perf_optimizations_ || (RestrictedTagSubset().Contains(tag_name));
-  if (should_match_at_this_tag) {
+  if (RestrictedTagSubset().Contains(tag_name)) {
     auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
     for (const ElementLocator& locator : locators_) {
       if (MatchLocator(locator, stack_span)) {
