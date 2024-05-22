@@ -452,20 +452,17 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
 
   // Enable mirror syncing.
-  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future1;
+  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future;
   ToggleMirrorSync(true);
   EXPECT_TRUE(drive_service->IsMirroringEnabled());
-  drive_service->GetSyncingPaths(future1.GetCallback());
+  drive_service->GetSyncingPaths(future.GetCallback());
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
-  EXPECT_THAT(future1.Get<1>(), testing::ElementsAre(my_files_path));
+  EXPECT_THAT(future.Get<1>(), testing::ElementsAre(my_files_path));
 
   // Disable mirroring and ensure the integration service has it disabled.
-  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future2;
   ToggleMirrorSync(false);
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
-  drive_service->GetSyncingPaths(future2.GetCallback());
-  EXPECT_THAT(future2.Get<1>(), testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
@@ -541,6 +538,58 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       ToggleSyncForPath_MirroringEnabledAddSamePath) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  // Enable mirror sync.
+  ToggleMirrorSync(true);
+
+  base::ScopedTempDir temp_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  }
+
+  {
+    base::FilePath sync_path = temp_dir.GetPath();
+    TestFuture<drive::FileError> toggle_sync_future;
+    drive_service->ToggleSyncForPath(sync_path,
+                                     drivefs::mojom::MirrorPathStatus::kStart,
+                                     toggle_sync_future.GetCallback());
+    EXPECT_EQ(toggle_sync_future.Get(), drive::FILE_ERROR_OK);
+
+    // GetSyncingPath should have 2 paths: "MyFiles" and the above sync path.
+    TestFuture<drive::FileError, const std::vector<base::FilePath>&>
+        get_syncing_paths_future;
+    drive_service->GetSyncingPaths(get_syncing_paths_future.GetCallback());
+    EXPECT_EQ(get_syncing_paths_future.Get<0>(), drive::FILE_ERROR_OK);
+    EXPECT_EQ(get_syncing_paths_future.Get<1>().size(), 2u);
+
+    // Toggle sync for the same path again.
+    TestFuture<drive::FileError> toggle_sync_same_path_future;
+    drive_service->ToggleSyncForPath(
+        sync_path, drivefs::mojom::MirrorPathStatus::kStart,
+        toggle_sync_same_path_future.GetCallback());
+    EXPECT_EQ(toggle_sync_same_path_future.Get(), drive::FILE_ERROR_OK);
+
+    // GetSyncingPath should still have 2 paths because it ignores the duplicate
+    // path.
+    TestFuture<drive::FileError, const std::vector<base::FilePath>&>
+        get_syncing_paths_again_future;
+    drive_service->GetSyncingPaths(
+        get_syncing_paths_again_future.GetCallback());
+    EXPECT_EQ(get_syncing_paths_again_future.Get<0>(), drive::FILE_ERROR_OK);
+    EXPECT_EQ(get_syncing_paths_again_future.Get<1>().size(), 2u);
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.Delete());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
                        GetSyncingPaths_MirroringDisabled) {
   auto* drive_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
@@ -583,12 +632,12 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
     EXPECT_EQ(toggle_sync_future.Get(), drive::FILE_ERROR_OK);
 
     TestFuture<drive::FileError, const std::vector<base::FilePath>&>
-        get_syncing_path_future;
-    drive_service->GetSyncingPaths(get_syncing_path_future.GetCallback());
+        get_syncing_paths_future;
+    drive_service->GetSyncingPaths(get_syncing_paths_future.GetCallback());
     const base::FilePath my_files_path =
         file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
-    EXPECT_EQ(get_syncing_path_future.Get<0>(), drive::FILE_ERROR_OK);
-    EXPECT_THAT(get_syncing_path_future.Get<1>(),
+    EXPECT_EQ(get_syncing_paths_future.Get<0>(), drive::FILE_ERROR_OK);
+    EXPECT_THAT(get_syncing_paths_future.Get<1>(),
                 testing::ElementsAre(my_files_path, sync_path));
   }
 
