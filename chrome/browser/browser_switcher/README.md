@@ -69,7 +69,7 @@ Enterprise admins and developers can visit the
 `chrome://browser-switch/internals` page to view the state of LBS. This page
 displays the list of rules, and lets you re-download XML sitelists immediately.
 
-## BHO
+## BHO (unsupported)
 
 On Windows, a BHO (an IE add-on) can be used to automatically bounce back to
 Chrome from IE when visiting a non-whitelisted URL.
@@ -86,3 +86,18 @@ removed, it re-writes the `cache.dat` file.
 
 This is the same mechanism that the old extension uses, so this feature is
 compatible with the old BHO.
+
+## Edge extension
+
+When Edge switched to a Chromium-based fork, they added an IE integration mode.
+This is how Microsoft recommends running legacy applications, and standalone IE
+is [unsupported since June
+2022](https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge).
+For instance, Windows 11's version of IExplore.exe cannot be used as an actual
+browser.
+
+We offer an Edge extension, which is functionally and architecturally similar to
+the old IE BHO.
+
+You can find the extension here:
+https://microsoftedge.microsoft.com/addons/detail/legacy-browser-support-fo/acallcpknnnjahhhapgkajgnkfencieh
