@@ -185,7 +185,9 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // certain navigations before they result in an error page, we should make
   // sure these error pages don't commit and instead open these URLs in a new
   // tab.
-  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL())) {
+  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL()) &&
+      lens::GetSearchResultsUrlFromRedirectUrl(navigation_handle->GetURL())
+          .is_empty()) {
     auto params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

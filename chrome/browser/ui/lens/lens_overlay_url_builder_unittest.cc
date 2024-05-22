@@ -16,6 +16,7 @@
 namespace lens {
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+constexpr char kResultsRedirectBaseUrl[] = "https://www.google.com/url";
 constexpr char kLanguage[] = "en-US";
 constexpr char kPageUrl[] = "https://www.google.com";
 constexpr char kPageTitle[] = "Page Title";
@@ -482,6 +483,24 @@ TEST_F(LensOverlayUrlBuilderTest, RemoveViewportParamFromURL) {
 
   EXPECT_EQ(lens::RemoveUrlViewportParams(GURL(initial_url)),
             GURL(expected_url));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, GetSearchResultsUrlFromRedirectUrl) {
+  std::string text_query = "Apples";
+  std::string viewport_width = "400";
+  std::string viewport_height = "500";
+  std::string relative_search_url = base::StringPrintf(
+      "/search?q=%s&gsc=1&hl=%s&biw=%s&bih=%s", text_query.c_str(), kLanguage,
+      viewport_width.c_str(), viewport_height.c_str());
+  std::string escaped_relative_search_url =
+      base::EscapeUrlEncodedData(relative_search_url, /*use_plus=*/false);
+  GURL search_url = GURL(kResultsSearchBaseUrl).Resolve(relative_search_url);
+
+  std::string initial_url =
+      base::StringPrintf("%s?url=%s", kResultsRedirectBaseUrl,
+                         escaped_relative_search_url.c_str());
+  EXPECT_EQ(lens::GetSearchResultsUrlFromRedirectUrl(GURL(initial_url)),
+            GURL(search_url));
 }
 
 }  // namespace lens

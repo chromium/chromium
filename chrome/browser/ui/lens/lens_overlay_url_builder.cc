@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 
 #include "base/base64url.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -79,6 +80,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 // Query parameter for the Lens footprint.
 inline constexpr char kLensFootprintParameterKey[] = "lns_fp";
 inline constexpr char kLensFootprintParameterValue[] = "1";
+
+// Url path for redirects from the results base URL.
+inline constexpr char kUrlRedirectPath[] = "/url";
+
+// Query parameter for the URL to redirect to.
+inline constexpr char kUrlQueryParameterKey[] = "url";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
@@ -279,6 +286,36 @@ bool IsValidSearchResultsUrl(const GURL& url) {
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
+  const GURL results_url(lens::features::GetLensOverlayResultsSearchURL());
+  // The URL should always be valid, have the same domain or host, and share the
+  // same scheme as the base search results URL.
+  if (!url.is_valid() || !results_url.SchemeIs(url.scheme()) ||
+      !net::registry_controlled_domains::SameDomainOrHost(
+          results_url, url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return GURL();
+  }
+
+  // We only allow paths from `/url` if they are redirecting to a search URL.
+  std::string url_redirect_string;
+  if (url.path() == kUrlRedirectPath &&
+      net::GetValueForKeyInQuery(url, kUrlQueryParameterKey,
+                                 &url_redirect_string)) {
+    // The redirecting URL should be relative. Return false if not.
+    GURL url_to_redirect_to = results_url.Resolve(url_redirect_string);
+    if (!url_to_redirect_to.is_empty() && url_to_redirect_to.is_valid() &&
+        results_url.path() == url_to_redirect_to.path()) {
+      // Decode the url if needed since it should be encoded.
+      url_to_redirect_to = GURL(base::UnescapeURLComponent(
+          url_to_redirect_to.spec(), base::UnescapeRule::SPACES));
+      return url_to_redirect_to;
+    }
+  }
+
+  return GURL();
 }
 
 GURL RemoveUrlViewportParams(const GURL& url) {

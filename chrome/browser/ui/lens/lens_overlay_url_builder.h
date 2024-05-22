@@ -60,6 +60,11 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // finch configured flag.
 bool IsValidSearchResultsUrl(const GURL& url);
 
+// Returns whether the given |url| is a valid lens overlay search redirect URL.
+// This could differ from values in common APIs since the search URL is set via
+// a finch configured flag.
+GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
+
 // Removes the viewport width (biw) and viewport height (bih) params from the
 // search url. This allows us to compare search url's accurately in
 // AddQueryToHistory when the side panel is resized.
