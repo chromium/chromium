@@ -207,6 +207,8 @@ class CORE_EXPORT LineInfo {
   unsigned EndItemIndex() const { return end_item_index_; }
   void SetEndItemIndex(unsigned index) { end_item_index_ = index; }
 
+  bool GlyphCountIsGreaterThan(wtf_size_t limit) const;
+
   // The base direction of this line for the bidi algorithm.
   TextDirection BaseDirection() const { return base_direction_; }
   void SetBaseDirection(TextDirection direction) {

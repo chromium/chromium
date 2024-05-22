@@ -3361,17 +3361,15 @@ bool LineBreaker::IsMonolithicRuby(
   // Not breakable if the number of the base letters is <= 4 and the number of
   // the annotation letters is <= 8.
   //
-  // TODO(layout-dev): Should we count glyphs?  Should we take into account of
-  // East Asian Width?
+  // TODO(layout-dev): Should we take into account of East Asian Width?
   constexpr wtf_size_t kBaseLetterLimit = 4;
   constexpr wtf_size_t kAnnotationLetterLimit = 8;
-  if (base_line.EndTextOffset() - base_line.StartOffset() <= kBaseLetterLimit) {
-    auto iter =
-        std::find_if(annotation_line_list.begin(), annotation_line_list.end(),
-                     [](const LineInfo& line) {
-                       return line.EndTextOffset() - line.StartOffset() >
-                              kAnnotationLetterLimit;
-                     });
+  if (!base_line.GlyphCountIsGreaterThan(kBaseLetterLimit)) {
+    auto iter = std::find_if(
+        annotation_line_list.begin(), annotation_line_list.end(),
+        [](const LineInfo& line) {
+          return line.GlyphCountIsGreaterThan(kAnnotationLetterLimit);
+        });
     if (iter == annotation_line_list.end()) {
       return true;
     }

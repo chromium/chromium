@@ -17,6 +17,23 @@ namespace {
 inline bool IsHangingSpace(UChar c) {
   return c == kSpaceCharacter || Character::IsOtherSpaceSeparator(c);
 }
+
+wtf_size_t GlyphCount(const InlineItemResult& item_result) {
+  if (item_result.shape_result) {
+    return item_result.shape_result->NumGlyphs();
+  } else if (item_result.layout_result) {
+    return 1;
+  } else if (item_result.IsRubyColumn()) {
+    wtf_size_t count = 0;
+    for (const auto& nested_result :
+         item_result.ruby_column->base_line.Results()) {
+      count += GlyphCount(nested_result);
+    }
+    return count;
+  }
+  return 0;
+}
+
 }  // namespace
 
 void LineInfo::Trace(Visitor* visitor) const {
@@ -198,6 +215,17 @@ unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
     }
   }
   return StartOffset();
+}
+
+bool LineInfo::GlyphCountIsGreaterThan(wtf_size_t limit) const {
+  wtf_size_t count = 0;
+  for (const auto& item_result : Results()) {
+    count += GlyphCount(item_result);
+    if (count > limit) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool LineInfo::ShouldHangTrailingSpaces() const {
