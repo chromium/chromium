@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UninstallResult" enum="CrostiniUninstallResult"
-    expires_after="2024-11-03">
+    expires_after="2025-06-30">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UninstallResult.Reason" enum="CrostiniResult"
-    expires_after="2024-06-30">
+    expires_after="2025-06-30">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
