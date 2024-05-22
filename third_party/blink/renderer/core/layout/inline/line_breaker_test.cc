@@ -1191,6 +1191,14 @@ C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   // This test passes if no CHECK failures.
 }
 
+TEST_F(LineBreakerTest, MinMaxWithAtomicInlineInRuby) {
+  InlineNode node = CreateInlineNode(R"HTML(
+<div id="container">
+<ruby><svg></svg><rt></ruby>)HTML");
+  ComputeMinMaxSizes(node);
+  // This test passes if no CHECK failures.
+}
+
 struct CanBreakInsideTestData {
   bool can_break_insde;
   const char* html;

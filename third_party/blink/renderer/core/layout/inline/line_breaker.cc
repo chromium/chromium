@@ -3107,16 +3107,18 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
   CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();
-  if (mode_ == LineBreakerMode::kMinContent) {
+  const LineBreaker* main_breaker = parent_breaker_ ? parent_breaker_ : this;
+  if (main_breaker->mode_ == LineBreakerMode::kMinContent) {
     item_result->inline_size = result.sizes.min_size + inline_margins;
     if (depends_on_block_constraints_out_)
       *depends_on_block_constraints_out_ |= result.depends_on_block_constraints;
-    if (max_size_cache_) {
-      if (max_size_cache_->empty())
-        max_size_cache_->resize(Items().size());
+    if (MaxSizeCache* size_cache = main_breaker->max_size_cache_) {
+      if (size_cache->empty()) {
+        size_cache->resize(Items().size());
+      }
       const unsigned item_index =
           base::checked_cast<unsigned>(&item - Items().begin());
-      (*max_size_cache_)[item_index] = result.sizes.max_size + inline_margins;
+      (*size_cache)[item_index] = result.sizes.max_size + inline_margins;
     }
     return;
   }
