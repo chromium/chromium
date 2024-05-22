@@ -94,7 +94,7 @@ BASE_FEATURE(kSearchEngineChoice,
 
 BASE_FEATURE(kSearchEnginePromoDialogRewrite,
              "SearchEnginePromoDialogRewrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace switches
