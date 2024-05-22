@@ -1008,7 +1008,7 @@
       // Flag for supporting scroll-state() and container-type: scroll-state
       // Implied by supporting at least one of the scroll-state query features.
       name: "CSSScrollStateContainerQueries",
-      implied_by: ["CSSStickyContainerQueries", "CSSStickyContainerQueries"],
+      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries"],
     },
     {
       name: "CSSSelectorFragmentAnchor",
