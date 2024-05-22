@@ -8,19 +8,23 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import '//resources/cr_elements/icons_lit.html.js';
-import '../demo.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_url_list_item_demo.html.js';
+import {getCss} from './cr_url_list_item_demo.css.js';
+import {getHtml} from './cr_url_list_item_demo.html.js';
 
-class CrUrlListItemDemoElement extends PolymerElement {
+export class CrUrlListItemDemoElement extends CrLitElement {
   static get is() {
     return 'cr-url-list-item-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
 
