@@ -1186,10 +1186,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
             kTestSuggestSignals);
 
-  // And the current page URL should be made available for use by the searchbox.
-  EXPECT_TRUE(base::EndsWith(controller->GetPageURLForTesting().spec(),
-                             kDocumentWithNamedElement,
-                             base::CompareCase::INSENSITIVE_ASCII));
+  // TODO(b/335234545): The current page URL should be made available for use by
+  // the searchbox.
+  EXPECT_TRUE(controller->GetPageURLForTesting().is_empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

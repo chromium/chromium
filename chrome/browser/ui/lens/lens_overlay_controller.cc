@@ -1089,13 +1089,13 @@ void LensOverlayController::OnFullscreenStateChanged() {
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
-  content::WebContents* contents = tab_->GetContents();
-  return contents ? contents->GetVisibleURL() : GURL::EmptyGURL();
+  // TODO(b/335234545): Return the page URL when appropriate.
+  return GURL::EmptyGURL();
 }
 
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
-  // TODO(b/332787629): Return CONTEXTUAL_SEARCHBOX when appropriate.
+  // TODO(b/335234545): Return CONTEXTUAL_SEARCHBOX when appropriate.
   return thumbnail_uri_.empty()
              ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
              : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
