@@ -646,15 +646,10 @@ bool PinnedToolbarActionsContainer::IsActionPinned(
   return button != nullptr;
 }
 
-bool PinnedToolbarActionsContainer::IsActionPoppedOut(
+bool PinnedToolbarActionsContainer::IsActionPoppedOutForTesting(
     const actions::ActionId& id) {
   PinnedActionToolbarButton* button = GetPoppedOutButtonFor(id);
   return button != nullptr;
-}
-
-bool PinnedToolbarActionsContainer::IsActionPinnedOrPoppedOut(
-    const actions::ActionId& id) {
-  return IsActionPinned(id) || IsActionPoppedOut(id);
 }
 
 void PinnedToolbarActionsContainer::ReorderViews() {

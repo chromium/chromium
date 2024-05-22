@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
@@ -116,24 +115,6 @@ class BrowserCommandControllerBrowserTestRefreshOnly
     net::NetworkChangeNotifier::CreateMockIfNeeded();
     browser()->command_controller()->TabStateChanged();
   }
-};
-// Test case for actions behind Toolbar Pinning.
-class BrowserCommandControllerBrowserTestToolbarPinningOnly
-    : public BrowserCommandControllerBrowserTestRefreshOnly {
- public:
-  BrowserCommandControllerBrowserTestToolbarPinningOnly() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kToolbarPinning}, {});
-  }
-  BrowserCommandControllerBrowserTestToolbarPinningOnly(
-      const BrowserCommandControllerBrowserTestToolbarPinningOnly&) = delete;
-  BrowserCommandControllerBrowserTestToolbarPinningOnly& operator=(
-      const BrowserCommandControllerBrowserTestToolbarPinningOnly&) = delete;
-
-  ~BrowserCommandControllerBrowserTestToolbarPinningOnly() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that showing a constrained window disables find.
@@ -451,37 +432,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowTranslateBubble) {
   LoadAndWaitForLanguage("/french_page.html");
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_TRANSLATE));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
-                       ShowTranslateStatusChromePage) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = GURL("chrome://new-tab-page/");
-  translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
-  net::NetworkChangeNotifier::CreateMockIfNeeded();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  browser()->command_controller()->TabStateChanged();
-
-  EXPECT_FALSE(actions::ActionManager::GetForTesting()
-                   .FindAction(kActionShowTranslate)
-                   ->GetEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
-                       ShowTranslateStatusEnglishPage) {
-  LoadAndWaitForLanguage("/english_page.html");
-  EXPECT_TRUE(actions::ActionManager::GetForTesting()
-                  .FindAction(kActionShowTranslate)
-                  ->GetEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
-                       ShowTranslateStatusFrenchPage) {
-  LoadAndWaitForLanguage("/french_page.html");
-  EXPECT_TRUE(actions::ActionManager::GetForTesting()
-                  .FindAction(kActionShowTranslate)
-                  ->GetEnabled());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
