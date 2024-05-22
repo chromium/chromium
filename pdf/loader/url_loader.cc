@@ -216,7 +216,8 @@ void UrlLoader::DidReceiveData(const char* data, int data_length) {
   if (data_length < 1)
     return;
 
-  buffer_.insert(buffer_.end(), data, data + data_length);
+  // TODO(crbug.com/40284755): spanify to fix the errors.
+  buffer_.insert(buffer_.end(), data, UNSAFE_BUFFERS(data + data_length));
 
   // Defer loading if the buffer is too full.
   if (!deferring_loading_ && buffer_.size() >= buffer_upper_threshold_) {

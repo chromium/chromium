@@ -66,8 +66,8 @@ class DataDocumentLoader : public DocumentLoader {
     if (!IsDataAvailable(position, size)) {
       return false;
     }
-
-    memcpy(buf, pdf_data_.data() + position, size);
+    auto copy_span = pdf_data_.subspan(position, size);
+    memcpy(buf, copy_span.data(), copy_span.size());
     return true;
   }
   bool IsDataAvailable(uint32_t position, uint32_t size) const override {

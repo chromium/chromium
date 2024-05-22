@@ -90,7 +90,6 @@
 -native_client/
 -native_client_sdk/
 -net/
--pdf/
 -ppapi/
 -printing/
 -remoting/

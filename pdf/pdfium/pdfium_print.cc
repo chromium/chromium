@@ -234,9 +234,11 @@ int GetBlockForJpeg(void* param,
                     unsigned char* buf,
                     unsigned long size) {
   std::vector<uint8_t>* data_vector = static_cast<std::vector<uint8_t>*>(param);
-  if (pos + size < pos || pos + size > data_vector->size())
+  if (pos + size < pos || pos + size > data_vector->size()) {
     return 0;
-  memcpy(buf, data_vector->data() + pos, size);
+  }
+  auto data_span = base::make_span(*data_vector).subspan(pos, size);
+  memcpy(buf, data_span.data(), data_span.size());
   return 1;
 }
 

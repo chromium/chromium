@@ -8,6 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -88,7 +89,9 @@ bool TestDocumentLoader::GetBlock(uint32_t position,
   if (!IsDataAvailable(position, size))
     return false;
 
-  auto dest_span = base::make_span(static_cast<uint8_t*>(buf), size);
+  // TODO(crbug.com/40284755): spanify function signature to fix the errors.
+  auto dest_span =
+      UNSAFE_BUFFERS(base::make_span(static_cast<uint8_t*>(buf), size));
   dest_span.copy_from(base::make_span(pdf_data_).subspan(position, size));
   return true;
 }
