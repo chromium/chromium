@@ -124,25 +124,14 @@ public class UrlImageProvider {
      * Asynchronously fetches a salient image for a URL, and fallback to fetch the favicon if there
      * isn't any salient image available.
      */
-    public void fetchSalientImageWithFallback(
+    public void fetchSalientImage(
             @NonNull GURL pageUrl,
             boolean showBigImage,
-            Callback<Bitmap> onSalientImageReadyCallback,
-            UrlImageCallback fallback) {
+            Callback<Bitmap> onSalientImageReadyCallback) {
         assert mUseSalientImage && mImageServiceBridge != null;
         int imageSize = showBigImage ? mSalientImageSizeBigPx : mSalientImageSizeSmallPx;
 
         mImageServiceBridge.fetchImageFor(
-                /* isAccountData= */ true,
-                pageUrl,
-                imageSize,
-                (bitmap) -> {
-                    if (bitmap != null) {
-                        onSalientImageReadyCallback.onResult((Bitmap) bitmap);
-                    } else {
-                        // Fallback to fetch the favicon.
-                        fetchImageForUrl(pageUrl, fallback);
-                    }
-                });
+                /* isAccountData= */ true, pageUrl, imageSize, onSalientImageReadyCallback);
     }
 }

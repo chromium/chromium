@@ -17,12 +17,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /** The view containing suggestion tiles on the tab resumption module. */
@@ -235,28 +236,41 @@ public class TabResumptionTileContainerView extends LinearLayout {
     }
 
     /** Loads the main URL image of a {@link TabResumptionTileView}. */
-    private void loadTileUrlImage(
+    @VisibleForTesting
+    void loadTileUrlImage(
             SuggestionEntry entry,
             UrlImageProvider urlImageProvider,
             TabResumptionTileView tileView,
             boolean isSingle,
             boolean useSalientImage) {
-        UrlImageCallback callback =
-                (Bitmap bitmap) -> {
-                    onImageAvailable(
-                            bitmap, tileView, useSalientImage, /* isSalientImage= */ false);
+        Runnable fetchRegularImage =
+                () -> {
+                    urlImageProvider.fetchImageForUrl(
+                            entry.url,
+                            (bitmap) -> {
+                                onImageAvailable(
+                                        bitmap,
+                                        tileView,
+                                        useSalientImage,
+                                        /* isSalientImage= */ false);
+                            });
                 };
         if (useSalientImage) {
-            urlImageProvider.fetchSalientImageWithFallback(
-                    entry.url,
-                    isSingle,
+            Callback<Bitmap> fetchSalientImageCallback =
                     (bitmap) -> {
-                        onImageAvailable(
-                                bitmap, tileView, useSalientImage, /* isSalientImage= */ true);
-                    },
-                    callback);
+                        if (bitmap != null) {
+                            onImageAvailable(
+                                    bitmap,
+                                    tileView,
+                                    /* useSalientImage= */ true,
+                                    /* isSalientImage= */ true);
+                        } else {
+                            fetchRegularImage.run();
+                        }
+                    };
+            urlImageProvider.fetchSalientImage(entry.url, isSingle, fetchSalientImageCallback);
         } else {
-            urlImageProvider.fetchImageForUrl(entry.url, callback);
+            fetchRegularImage.run();
         }
     }
 

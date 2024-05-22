@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -37,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -223,13 +228,11 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Capture call to fetch image.
         verify(mUrlImageProvider, atLeastOnce())
-                .fetchSalientImageWithFallback(
+                .fetchSalientImage(
                         mFetchImagePageUrlCaptor.capture(),
                         eq(true),
-                        mFetchSalientImageCallbackCaptor.capture(),
-                        mFetchImageCallbackCaptor.capture());
+                        mFetchSalientImageCallbackCaptor.capture());
         Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
-        Assert.assertEquals(1, mFetchSalientImageCallbackCaptor.getAllValues().size());
         Assert.assertEquals(
                 JUnitTestGURLs.GOOGLE_URL_DOG, mFetchImagePageUrlCaptor.getAllValues().get(0));
 
@@ -261,6 +264,66 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         tile1.performClick();
         Assert.assertEquals(1, mClickCount);
         Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickUrl);
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadTileUrlImageWithSalientImage() {
+        String histogramName = "MagicStack.Clank.TabResumption.IsSalientImageAvailable";
+        GURL expectedUrl = JUnitTestGURLs.BLUE_3;
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        /* sourceName= */ "My Tablet",
+                        /* url= */ expectedUrl,
+                        /* title= */ "Blue website with a very long title that might not fit",
+                        /* timestamp= */ makeTimestamp(24 - 1, 60 - 16, 0),
+                        /* id= */ 50);
+        TabResumptionTileView tile1 = Mockito.mock(TabResumptionTileView.class);
+
+        mTileContainerView.loadTileUrlImage(
+                entry1,
+                mUrlImageProvider,
+                tile1,
+                /* isSingle= */ false,
+                /* usSalientImage= */ true);
+
+        verify(mUrlImageProvider)
+                .fetchSalientImage(
+                        eq(expectedUrl),
+                        /* isSingle= */ eq(false),
+                        mFetchSalientImageCallbackCaptor.capture());
+
+        // Verifies the case that a salient image is returned.
+        Bitmap bitmap = makeBitmap(100, 100);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectBooleanRecord(histogramName, true).build();
+        mFetchSalientImageCallbackCaptor.getValue().onResult(bitmap);
+        verify(tile1).setImageDrawable(any(Drawable.class));
+        verify(tile1).updateForSalientImage();
+        histogramWatcher.assertExpected();
+
+        // Verifies the case that no salient image is available.
+        mFetchSalientImageCallbackCaptor.getValue().onResult(null);
+        verify(mUrlImageProvider)
+                .fetchImageForUrl(eq(expectedUrl), mFetchImageCallbackCaptor.capture());
+
+        // Verifies the case there isn't a fallback image is available.
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectBooleanRecord(histogramName, false).build();
+        mFetchImageCallbackCaptor.getValue().onBitmap(null);
+        verify(tile1, times(2)).setImageDrawable(any(Drawable.class));
+        // Verifies that the tile isn't updated for salient image.
+        verify(tile1).updateForSalientImage();
+        histogramWatcher.assertExpected();
+
+        // Verifies the case there is a fallback image available.
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectBooleanRecord(histogramName, false).build();
+        mFetchImageCallbackCaptor.getValue().onBitmap(bitmap);
+        verify(tile1, times(3)).setImageDrawable(any(Drawable.class));
+        // Verifies that the tile isn't updated for salient image.
+        verify(tile1).updateForSalientImage();
+        histogramWatcher.assertExpected();
     }
 
     @Test
