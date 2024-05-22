@@ -34,6 +34,7 @@ export LC_ALL=C
 BASE=$(pwd)
 SRC="${BASE}/source/libaom"
 CFG="${BASE}/source/config"
+TMP="$(mktemp -d "${BASE}/build.XXXX")"
 
 function cleanup() {
   rm -rf "${TMP}"
@@ -112,7 +113,6 @@ git -C "${SRC}" fetch --tags
 
 # Scope 'trap' error reporting to configuration generation.
 (
-TMP=$(mktemp -d "${BASE}/build.XXXX")
 cd "${TMP}"
 
 trap '{
