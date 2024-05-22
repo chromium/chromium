@@ -288,10 +288,10 @@ bool IsValidType(const std::string& type) {
 // Validate that |dict| only contains attributes that are allowed for the
 // corresponding value of 'type'. Also ensure that all of those attributes are
 // of the expected type. |options| can be used to ignore unknown attributes.
-bool ValidateAttributesAndTypes(const base::Value::Dict& dict,
-                                const std::string& type,
-                                int options,
-                                std::string* error) {
+base::expected<void, std::string> ValidateAttributesAndTypes(
+    const base::Value::Dict& dict,
+    const std::string& type,
+    int options) {
   const SchemaKeyToValueType* begin = nullptr;
   const SchemaKeyToValueType* end = nullptr;
   if (type == schema::kArray) {
@@ -324,60 +324,62 @@ bool ValidateAttributesAndTypes(const base::Value::Dict& dict,
   for (auto it : dict) {
     if (MapSchemaKeyToValueType(it.first, begin, end, &expected_type)) {
       if (!CheckType(&it.second, expected_type)) {
-        *error = base::StringPrintf("Invalid type for attribute '%s'",
-                                    it.first.c_str());
-        return false;
+        return base::unexpected(base::StringPrintf(
+            "Invalid type for attribute '%s'", it.first.c_str()));
       }
     } else if (!IgnoreUnknownAttributes(options)) {
-      *error = base::StringPrintf("Unknown attribute '%s'", it.first.c_str());
-      return false;
+      return base::unexpected(
+          base::StringPrintf("Unknown attribute '%s'", it.first.c_str()));
     }
   }
-  return true;
+  return base::ok();
 }
 
 // Validates that |enum_list| is a list and its items are all of type |type|.
-bool ValidateEnum(const base::Value* enum_list,
-                  const std::string& type,
-                  std::string* error) {
+base::expected<void, std::string> ValidateEnum(const base::Value* enum_list,
+                                               const std::string& type) {
   if (!enum_list->is_list() || enum_list->GetList().empty()) {
-    *error = "Attribute 'enum' must be a non-empty list.";
-    return false;
+    return base::unexpected("Attribute 'enum' must be a non-empty list.");
   }
   base::Value::Type expected_item_type = base::Value::Type::NONE;
   MapSchemaKeyToValueType(type, kSchemaTypesToValueTypes,
                           kSchemaTypesToValueTypesEnd, &expected_item_type);
   for (const base::Value& item : enum_list->GetList()) {
     if (item.type() != expected_item_type) {
-      *error = base::StringPrintf(
+      return base::unexpected(base::StringPrintf(
           "Attribute 'enum' for type '%s' contains items with invalid types",
-          type.c_str());
-      return false;
+          type.c_str()));
     }
   }
-  return true;
+  return base::ok();
 }
 
 // Forward declaration (used in ValidateProperties).
-bool IsValidSchema(const base::Value::Dict& dict,
-                   int options,
-                   std::string* error);
+base::expected<void, std::string> IsValidSchema(const base::Value::Dict& dict,
+                                                int options);
 
 // Validates that the values in the |properties| dict are valid schemas.
-bool ValidateProperties(const base::Value::Dict& properties,
-                        int options,
-                        std::string* error) {
+base::expected<void, std::string> ValidateProperties(
+    const base::Value::Dict& properties,
+    int options) {
   for (auto dict_it : properties) {
     if (!dict_it.second.is_dict()) {
-      *error = base::StringPrintf("Schema for property '%s' must be a dict.",
-                                  dict_it.first.c_str());
-      return false;
+      return base::unexpected(base::StringPrintf(
+          "Schema for property '%s' must be a dict.", dict_it.first.c_str()));
     }
-    if (!IsValidSchema(dict_it.second.GetDict(), options, error)) {
-      return false;
-    }
+    RETURN_IF_ERROR(IsValidSchema(dict_it.second.GetDict(), options));
   }
-  return true;
+  return base::ok();
+}
+
+base::expected<void, std::string> IsFieldTypeObject(
+    const base::Value& field,
+    const std::string& field_name) {
+  if (!field.is_dict()) {
+    return base::unexpected(base::StringPrintf("Field '%s' must be an object.",
+                                               field_name.c_str()));
+  }
+  return base::ok();
 }
 
 // Checks whether the passed dict is a valid schema. See
@@ -388,43 +390,39 @@ bool ValidateProperties(const base::Value::Dict& properties,
 // attribute and keys for 'patternProperties' are not checked for valid regular
 // expression syntax. Invalid regular expressions will cause a value validation
 // error.
-bool IsValidSchema(const base::Value::Dict& dict,
-                   int options,
-                   std::string* error) {
+base::expected<void, std::string> IsValidSchema(const base::Value::Dict& dict,
+                                                int options) {
   // Validate '$ref'.
   if (dict.contains(schema::kRef)) {
-    return ValidateAttributesAndTypes(dict, schema::kRef, options, error);
+    return ValidateAttributesAndTypes(dict, schema::kRef, options);
   }
 
   // Validate 'type'.
   if (!dict.contains(schema::kType)) {
-    *error = "Each schema must have a 'type' or '$ref'.";
-    return false;
+    return base::unexpected("Each schema must have a 'type' or '$ref'.");
   }
 
   const std::string* type = dict.FindString(schema::kType);
   if (!type) {
-    *error = "Attribute 'type' must be a string.";
-    return false;
+    return base::unexpected("Attribute 'type' must be a string.");
   }
   const std::string& type_string = *type;
   if (!IsValidType(type_string)) {
-    *error = base::StringPrintf("Unknown type '%s'.", type_string.c_str());
-    return false;
+    return base::unexpected(
+        base::StringPrintf("Unknown type '%s'.", type_string.c_str()));
   }
 
   // Validate attributes and expected types.
-  if (!ValidateAttributesAndTypes(dict, type_string, options, error)) {
-    return false;
-  }
+  RETURN_IF_ERROR(ValidateAttributesAndTypes(dict, type_string, options));
 
   // Validate 'enum' attribute.
   if (type_string == schema::kString || type_string == schema::kInteger) {
-    const base::Value* enum_list = dict.Find(schema::kEnum);
-    if (enum_list && !ValidateEnum(enum_list, type_string, error))
-      return false;
+    if (const base::Value* enum_list = dict.Find(schema::kEnum)) {
+      RETURN_IF_ERROR(ValidateEnum(enum_list, type_string));
+    }
   }
 
+  // TODO(b/341873894): Refactor type validation to helper functions.
   if (type_string == schema::kInteger) {
     // Validate 'minimum' > 'maximum'.
     const std::optional<double> minimum_value =
@@ -433,77 +431,60 @@ bool IsValidSchema(const base::Value::Dict& dict,
         dict.FindDouble(schema::kMaximum);
     if (minimum_value && maximum_value) {
       if (minimum_value.value() > maximum_value.value()) {
-        *error =
+        return base::unexpected(
             base::StringPrintf("Invalid range specified [%f;%f].",
-                               minimum_value.value(), maximum_value.value());
-        return false;
+                               minimum_value.value(), maximum_value.value()));
       }
     }
   } else if (type_string == schema::kArray) {
     // Validate type 'array'.
     const base::Value* items = dict.Find(schema::kItems);
     if (!items || !items->is_dict()) {
-      *error =
+      return base::unexpected(
           "Schema of type 'array' must have a schema in 'items' of type "
-          "dictionary.";
-      return false;
+          "dictionary.");
     }
-    if (!IsValidSchema(items->GetDict(), options, error)) {
-      return false;
-    }
+    RETURN_IF_ERROR(IsValidSchema(items->GetDict(), options));
   } else if (type_string == schema::kObject) {
     // Validate type 'object'.
     const base::Value* properties = dict.Find(schema::kProperties);
     if (properties) {
-      if (!properties->is_dict()) {
-        return false;
-      }
-      if (!ValidateProperties(properties->GetDict(), options, error)) {
-        return false;
-      }
+      RETURN_IF_ERROR(IsFieldTypeObject(*properties, schema::kProperties));
+      RETURN_IF_ERROR(ValidateProperties(properties->GetDict(), options));
     }
 
-    const base::Value* pattern_properties =
-        dict.Find(schema::kPatternProperties);
-    if (pattern_properties) {
-      if (!pattern_properties->is_dict()) {
-        return false;
-      }
-      if (!ValidateProperties(pattern_properties->GetDict(), options, error)) {
-        return false;
-      }
+    if (const base::Value* pattern_properties =
+            dict.Find(schema::kPatternProperties)) {
+      RETURN_IF_ERROR(
+          IsFieldTypeObject(*pattern_properties, schema::kPatternProperties));
+      RETURN_IF_ERROR(
+          ValidateProperties(pattern_properties->GetDict(), options));
     }
 
-    const base::Value* additional_properties =
-        dict.Find(schema::kAdditionalProperties);
-    if (additional_properties) {
-      if (!additional_properties->is_dict()) {
-        return false;
-      }
-      if (!IsValidSchema(additional_properties->GetDict(), options, error)) {
-        return false;
-      }
+    if (const base::Value* additional_properties =
+            dict.Find(schema::kAdditionalProperties)) {
+      RETURN_IF_ERROR(IsFieldTypeObject(*additional_properties,
+                                        schema::kAdditionalProperties));
+      RETURN_IF_ERROR(IsValidSchema(additional_properties->GetDict(), options));
     }
 
-    const base::Value::List* required = dict.FindList(schema::kRequired);
-    if (required) {
+    if (const base::Value::List* required = dict.FindList(schema::kRequired)) {
       for (const base::Value& item : *required) {
         if (!item.is_string()) {
-          *error = "Attribute 'required' may only contain strings.";
-          return false;
+          return base::unexpected(
+              "Attribute 'required' may only contain strings.");
         }
         const std::string property_name = item.GetString();
         if (!properties || !properties->GetDict().contains(property_name)) {
-          *error = base::StringPrintf(
+          return base::unexpected(base::StringPrintf(
               "Attribute 'required' contains unknown property '%s'.",
-              property_name.c_str());
-          return false;
+              property_name.c_str()));
         }
       }
     }
   }
 
-  return true;
+  return base::ok();
 }
 
 }  // namespace
@@ -687,8 +668,7 @@ Schema::InternalStorage::ParseSchema(const base::Value::Dict& schema) {
   short root_index = kInvalid;
   ReferencesAndIDs references_and_ids;
 
-  RETURN_IF_ERROR(storage->Parse(schema, &root_index, &references_and_ids),
-                  [](auto e) { return std::move(e); });
+  RETURN_IF_ERROR(storage->Parse(schema, &root_index, &references_and_ids));
 
   if (root_index == kInvalid) {
     return base::unexpected("The main schema can't have a $ref");
@@ -867,24 +847,19 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
   SchemaNode* schema_node = &schema_nodes_.back();
 
   if (type == base::Value::Type::DICT) {
-    RETURN_IF_ERROR(ParseDictionary(schema, schema_node, references_and_ids),
-                    [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(ParseDictionary(schema, schema_node, references_and_ids));
   } else if (type == base::Value::Type::LIST) {
-    RETURN_IF_ERROR(ParseList(schema, schema_node, references_and_ids),
-                    [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(ParseList(schema, schema_node, references_and_ids));
   } else if (schema.contains(schema::kEnum)) {
-    RETURN_IF_ERROR(ParseEnum(schema, type, schema_node),
-                    [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(ParseEnum(schema, type, schema_node));
   } else if (schema.contains(schema::kPattern)) {
-    RETURN_IF_ERROR(ParseStringPattern(schema, schema_node),
-                    [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(ParseStringPattern(schema, schema_node));
   } else if (schema.contains(schema::kMinimum) ||
              schema.contains(schema::kMaximum)) {
     if (type != base::Value::Type::INTEGER) {
       return base::unexpected("Only integers can have minimum and maximum");
     }
-    RETURN_IF_ERROR(ParseRangedInt(schema, schema_node),
-                    [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(ParseRangedInt(schema, schema_node));
   }
   const std::string* id = schema.FindString(schema::kId);
   if (id) {
@@ -909,10 +884,9 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
   const base::Value::Dict* additional_properties =
       schema.FindDict(schema::kAdditionalProperties);
   if (additional_properties) {
-    RETURN_IF_ERROR(
-        Parse(*additional_properties, &properties_nodes_[extra].additional,
-              references_and_ids),
-        [](auto e) { return std::move(e); });
+    RETURN_IF_ERROR(Parse(*additional_properties,
+                          &properties_nodes_[extra].additional,
+                          references_and_ids));
   }
 
   properties_nodes_[extra].begin = static_cast<int>(property_nodes_.size());
@@ -947,8 +921,8 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
         return base::unexpected(std::string());
       }
       RETURN_IF_ERROR(Parse(property.second.GetDict(),
-                            &property_nodes_[index].schema, references_and_ids),
-                      [](auto e) { return std::move(e); });
+                            &property_nodes_[index].schema,
+                            references_and_ids));
       ++index;
     }
     CHECK_EQ(static_cast<int>(properties->size()), index - base_index);
@@ -971,8 +945,8 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
         return base::unexpected(std::string());
       }
       RETURN_IF_ERROR(Parse(pattern_property.second.GetDict(),
-                            &property_nodes_[index].schema, references_and_ids),
-                      [](auto e) { return std::move(e); });
+                            &property_nodes_[index].schema,
+                            references_and_ids));
       ++index;
     }
     CHECK_EQ(static_cast<int>(pattern_properties->size()), index - base_index);
@@ -1434,61 +1408,60 @@ void Schema::MaskSensitiveValues(base::Value* value) const {
 }
 
 // static
-Schema Schema::Parse(const std::string& content, std::string* error) {
+base::expected<Schema, std::string> Schema::Parse(const std::string& content) {
   // Validate as a generic JSON schema, and ignore unknown attributes; they
   // may become used in a future version of the schema format.
-  std::optional<base::Value::Dict> dict = Schema::ParseToDictAndValidate(
-      content, kSchemaOptionsIgnoreUnknownAttributes, error);
-  if (!dict.has_value())
-    return Schema();
+  ASSIGN_OR_RETURN(auto dict,
+                   Schema::ParseToDictAndValidate(
+                       content, kSchemaOptionsIgnoreUnknownAttributes));
 
   // Validate the main type.
-  const std::string* type = dict->FindString(schema::kType);
+  const std::string* type = dict.FindString(schema::kType);
   if (!type || *type != schema::kObject) {
-    *error =
-        "The main schema must have a type attribute with \"object\" value.";
-    return Schema();
+    return base::unexpected(
+        "The main schema must have a type attribute with \"object\" value.");
   }
 
   // Checks for invalid attributes at the top-level.
-  if (dict.value().contains(schema::kAdditionalProperties) ||
-      dict.value().contains(schema::kPatternProperties)) {
-    *error =
+  if (dict.contains(schema::kAdditionalProperties) ||
+      dict.contains(schema::kPatternProperties)) {
+    return base::unexpected(
         "\"additionalProperties\" and \"patternProperties\" are not "
-        "supported at the main schema.";
-    return Schema();
+        "supported at the main schema.");
   }
 
-  ASSIGN_OR_RETURN(auto storage, InternalStorage::ParseSchema(dict.value()),
-                   [&error](const auto& e) {
-                     *error = e;
-                     return Schema();
-                   });
-  return Schema(storage, storage->root_node());
+  ASSIGN_OR_RETURN(auto storage, InternalStorage::ParseSchema(dict));
+  return base::ok(Schema(storage, storage->root_node()));
 }
 
 // static
-std::optional<base::Value::Dict> Schema::ParseToDictAndValidate(
-    const std::string& schema,
-    int validator_options,
-    std::string* error) {
-  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
-      schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
-                  base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS);
+Schema Schema::Parse(const std::string& content, std::string* error) {
+  base::expected<Schema, std::string> result = Schema::Parse(content);
 
-  if (!value_with_error.has_value()) {
-    *error = value_with_error.error().message;
-    return std::nullopt;
+  if (!result.has_value()) {
+    *error = result.error();
+    return Schema();
   }
-  base::Value json = std::move(*value_with_error);
+  return result.value();
+}
+
+// static
+base::expected<base::Value::Dict, std::string> Schema::ParseToDictAndValidate(
+    const std::string& schema,
+    int validator_options) {
+  ASSIGN_OR_RETURN(
+      auto json,
+      base::JSONReader::ReadAndReturnValueWithError(
+          schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
+                      base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS),
+      [](auto e) { return std::move(e.ToString()); });
+
   if (!json.is_dict()) {
-    *error = "Schema must be a JSON object";
-    return std::nullopt;
+    return base::unexpected("Schema must be a JSON object");
   }
-  if (!IsValidSchema(json.GetDict(), validator_options, error)) {
-    return std::nullopt;
-  }
-  return std::move(json).TakeDict();
+  RETURN_IF_ERROR(IsValidSchema(json.GetDict(), validator_options));
+
+  return base::ok(std::move(json).TakeDict());
 }
 
 base::Value::Type Schema::type() const {

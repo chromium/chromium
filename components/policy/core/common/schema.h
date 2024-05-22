@@ -12,6 +12,7 @@
 #include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
@@ -118,25 +119,28 @@ class POLICY_EXPORT Schema {
   // be quickly loaded at runtime.
   static Schema Wrap(const internal::SchemaData* data);
 
+  // Parses a JSON schema. If the input `content` represents a valid schema,
+  // returns a Schema. Otherwise, returns an error message containing a reason
+  // for the failure.
+  static base::expected<Schema, std::string> Parse(const std::string& content);
+
   // Parses the JSON schema in |schema| and returns a Schema that owns
   // the internal representation. If |schema| is invalid then an invalid Schema
   // is returned and |error| contains a reason for the failure.
+  // TODO(b/341876066): Migrate all callers to use the base::expected function.
   static Schema Parse(const std::string& schema, std::string* error);
 
   // Verifies if |schema| is a valid JSON v3 schema. When this validation passes
   // then |schema| is valid JSON that can be parsed into a Value::Dict which can
   // be used to build a |Schema|. Returns the parsed Value::Dict when |schema|
-  // validated, otherwise returns nullopt. In that case, |error| contains an
-  // error description. For performance reasons, currently IsValidSchema() won't
-  // check the correctness of regular expressions used in "pattern" and
-  // "patternProperties" and in Validate() invalid regular expression don't
-  // accept any strings.
-  // |options| is a bitwise-OR combination of the options above (see
-  // |kSchemaOptions*| above).
-  static std::optional<base::Value::Dict> ParseToDictAndValidate(
+  // validated, otherwise returns an error description. For performance reasons,
+  // currently IsValidSchema() won't check the correctness of regular
+  // expressions used in "pattern" and "patternProperties" and in Validate()
+  // invalid regular expression don't accept any strings. |options| is a
+  // bitwise-OR combination of the options above (see |kSchemaOptions*| above).
+  static base::expected<base::Value::Dict, std::string> ParseToDictAndValidate(
       const std::string& schema,
-      int options,
-      std::string* error);
+      int options);
 
   // Returns true if this Schema is valid. Schemas returned by the methods below
   // may be invalid, and in those cases the other methods must not be used.

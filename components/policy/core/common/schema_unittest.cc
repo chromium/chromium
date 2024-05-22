@@ -1462,73 +1462,70 @@ TEST(SchemaTest, RangedRestriction) {
 }
 
 TEST(SchemaTest, ParseToDictAndValidate) {
-  std::string error;
-  EXPECT_FALSE(Schema::ParseToDictAndValidate("", kSchemaOptionsNone, &error))
-      << error;
-  EXPECT_FALSE(Schema::ParseToDictAndValidate("\0", kSchemaOptionsNone, &error))
-      << error;
   EXPECT_FALSE(
-      Schema::ParseToDictAndValidate("string", kSchemaOptionsNone, &error))
-      << error;
+      Schema::ParseToDictAndValidate("", kSchemaOptionsNone).has_value());
   EXPECT_FALSE(
-      Schema::ParseToDictAndValidate(R"("string")", kSchemaOptionsNone, &error))
-      << error;
-  EXPECT_FALSE(Schema::ParseToDictAndValidate("[]", kSchemaOptionsNone, &error))
-      << error;
-  EXPECT_FALSE(Schema::ParseToDictAndValidate("{}", kSchemaOptionsNone, &error))
-      << error;
-  EXPECT_FALSE(Schema::ParseToDictAndValidate(R"({ "type": 123 })",
-                                              kSchemaOptionsNone, &error))
-      << error;
+      Schema::ParseToDictAndValidate("\0", kSchemaOptionsNone).has_value());
+  EXPECT_FALSE(
+      Schema::ParseToDictAndValidate("string", kSchemaOptionsNone).has_value());
+  EXPECT_FALSE(Schema::ParseToDictAndValidate(R"("string")", kSchemaOptionsNone)
+                   .has_value());
+  EXPECT_FALSE(
+      Schema::ParseToDictAndValidate("[]", kSchemaOptionsNone).has_value());
+  EXPECT_FALSE(
+      Schema::ParseToDictAndValidate("{}", kSchemaOptionsNone).has_value());
+  EXPECT_FALSE(
+      Schema::ParseToDictAndValidate(R"({ "type": 123 })", kSchemaOptionsNone)
+          .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(R"({ "type": "invalid" })",
-                                              kSchemaOptionsNone, &error))
-      << error;
+                                              kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "properties": []
       })",  // Invalid properties type.
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "string",
         "enum": [ {} ]
       })",  // "enum" dict values must contain "name".
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "string",
         "enum": [ { "name": {} } ]
       })",  // "enum" name must be a simple value.
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "array",
         "items": [ 123 ],
       })",  // "items" must contain a schema or schemas.
-      kSchemaOptionsNone, &error))
-      << error;
-  EXPECT_TRUE(Schema::ParseToDictAndValidate(
-      R"({ "type": "object" })", kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
+  EXPECT_TRUE(Schema::ParseToDictAndValidate(R"({ "type": "object" })",
+                                             kSchemaOptionsNone)
+                  .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({ "type": ["object", "array"] })", kSchemaOptionsNone, &error))
-      << error;
+                   R"({ "type": ["object", "array"] })", kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "array",
         "items": [
           { "type": "string" },
           { "type": "integer" }
         ]
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_TRUE(Schema::ParseToDictAndValidate(
-      R"({
+                  R"({
         "type": "object",
           "properties": {
             "string-property": {
@@ -1554,10 +1551,10 @@ TEST(SchemaTest, ParseToDictAndValidate) {
           "type": "boolean"
         }
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                  kSchemaOptionsNone)
+                  .has_value());
   EXPECT_TRUE(Schema::ParseToDictAndValidate(
-      R"#({
+                  R"#({
         "type": "object",
         "patternProperties": {
           ".": { "type": "boolean" },
@@ -1569,61 +1566,61 @@ TEST(SchemaTest, ParseToDictAndValidate) {
           "(left)|(right)": { "type": "boolean" }
         }
       })#",
-      kSchemaOptionsNone, &error))
-      << error;
+                  kSchemaOptionsNone)
+                  .has_value());
   EXPECT_TRUE(Schema::ParseToDictAndValidate(
-      R"({
+                  R"({
         "type": "object",
         "unknown attribute": "that should just be ignored"
       })",
-      kSchemaOptionsIgnoreUnknownAttributes, &error))
-      << error;
+                  kSchemaOptionsIgnoreUnknownAttributes)
+                  .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "unknown attribute": "that will cause a failure"
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "properties": {"foo": {"type": "number"}},
         "required": 123
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "properties": {"foo": {"type": "number"}},
         "required": [ 123 ]
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "properties": {"foo": {"type": "number"}},
         "required": ["bar"]
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_FALSE(Schema::ParseToDictAndValidate(
-      R"({
+                   R"({
         "type": "object",
         "required": ["bar"]
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                   kSchemaOptionsNone)
+                   .has_value());
   EXPECT_TRUE(Schema::ParseToDictAndValidate(
-      R"({
+                  R"({
         "type": "object",
         "properties": {"foo": {"type": "number"}},
         "required": ["foo"]
       })",
-      kSchemaOptionsNone, &error))
-      << error;
+                  kSchemaOptionsNone)
+                  .has_value());
 }
 
 TEST(SchemaTest, ErrorPathToString) {
