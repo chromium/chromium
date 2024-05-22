@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-Copyright 2018 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -108,7 +108,24 @@ found in the LICENSE file.
       }
     </style>
   </head>
-  <body >
+  
+  <script type="text/javascript" src="bench.js"></script>
+  <script type="text/javascript">
+    function draw() {
+      let opacity = document.getElementById("animatingDiv").style.opacity * 100;
+      opacity = 50 + ((opacity + 1) % 50);
+      document.getElementById("animatingDiv").style.opacity = opacity / 100;
+    };
+
+    function init() {
+      bench.run(draw);
+    }
+
+    // call init once the document is fully loaded
+    window.addEventListener('load', init, false);
+  </script>
+
+  <body>
     <div id="runway">
       <template>
         <div class="item conversation">
@@ -127,7 +144,7 @@ found in the LICENSE file.
         </div>
       </template>
     </div>
-    <div class="fixed">This div element has position: fixed</div>
+    <div id="animatingDiv" class="fixed">This div element has position: fixed</div>
     <script>
       var qs = (function(a) {
         if (a == "") return {};

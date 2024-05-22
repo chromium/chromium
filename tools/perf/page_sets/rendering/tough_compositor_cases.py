@@ -374,3 +374,43 @@ class InfiniteScrollRootFixedNLayers99(InfiniteScrollRootNLayersPage):
   SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
   URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
          'infinite_scroll_root_fixed_n_layers.html?layer_count=306')
+
+
+# Why: Infinite root scroller + animating element, with 1 layer baseline """
+class InfiniteScrollRootFixedRafNLayers0(InfiniteScrollRootNLayersPage):
+  BASE_NAME = 'infinite_scroll_root_fixed_raf_n_layers_0'
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'infinite_scroll_root_fixed_raf_n_layers.html?layer_count=1')
+
+
+# Why: Infinite root scroller + animating element, with 50%-ile layer count"""
+class InfiniteScrollRootFixedRafNLayers50(InfiniteScrollRootNLayersPage):
+  BASE_NAME = 'infinite_scroll_root_fixed_raf_n_layers_50'
+  SUPPORTED_PLATFORMS = platforms.NO_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'infinite_scroll_root_fixed_raf_n_layers.html?layer_count=31')
+
+
+# Why: Infinite root scroller + animating element, with 75%-ile layer count"""
+class InfiniteScrollRootFixedRafNLayers75(InfiniteScrollRootNLayersPage):
+  BASE_NAME = 'infinite_scroll_root_fixed_raf_n_layers_75'
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'infinite_scroll_root_fixed_raf_n_layers.html?layer_count=53')
+
+
+# Why: Infinite root scroller + animating element, with 95%-ile layer count"""
+class InfiniteScrollRootFixedRafNLayers95(InfiniteScrollRootNLayersPage):
+  BASE_NAME = 'infinite_scroll_root_fixed_raf_n_layers_95'
+  SUPPORTED_PLATFORMS = platforms.NO_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'infinite_scroll_root_fixed_raf_n_layers.html?layer_count=144')
+
+
+# Why: Infinite root scroller + animating element, with 99%-ile layer count"""
+class InfiniteScrollRootFixedRafNLayers99(InfiniteScrollRootNLayersPage):
+  BASE_NAME = 'infinite_scroll_root_fixed_raf_n_layers_99'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'infinite_scroll_root_fixed_raf_n_layers.html?layer_count=306')
