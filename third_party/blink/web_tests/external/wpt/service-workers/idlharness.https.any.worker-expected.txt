@@ -38,7 +38,7 @@ Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
 [FAIL] ServiceWorkerContainer interface: attribute ready
   assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-[FAIL] ServiceWorkerContainer interface: operation register(USVString, optional RegistrationOptions)
+[FAIL] ServiceWorkerContainer interface: operation register((TrustedScriptURL or USVString), optional RegistrationOptions)
   assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
 [FAIL] ServiceWorkerContainer interface: operation getRegistration(optional USVString)
   assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
@@ -60,9 +60,9 @@ Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "ready" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "register(USVString, optional RegistrationOptions)" with the proper type
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "register((TrustedScriptURL or USVString), optional RegistrationOptions)" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] ServiceWorkerContainer interface: calling register(USVString, optional RegistrationOptions) on navigator.serviceWorker with too few arguments must throw TypeError
+[FAIL] ServiceWorkerContainer interface: calling register((TrustedScriptURL or USVString), optional RegistrationOptions) on navigator.serviceWorker with too few arguments must throw TypeError
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "getRegistration(optional USVString)" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
