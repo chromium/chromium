@@ -532,6 +532,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                             /* isScrollableMvtEnabled= */ true,
                             /* mostRecentTab= */ null,
                             /* singleTabCardClickedCallback= */ null,
+                            /* seeMoreLinkClickedCallback= */ null,
                             /* snapshotParentViewRunnable= */ null,
                             mTabContentManager,
                             /* uiConfig= */ null,

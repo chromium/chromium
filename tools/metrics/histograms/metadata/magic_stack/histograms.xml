@@ -70,6 +70,16 @@ chromium-metrics-reviews@google.com.
   <token key="ToggleState" variants="ToggleState"/>
 </histogram>
 
+<histogram name="MagicStack.Clank.SingleTab.SeeMoreLinkClicked" enum="Boolean"
+    expires_after="2024-11-03">
+  <owner>hanxi@google.com</owner>
+  <owner>huangs@google.com</owner>
+  <summary>
+    Records each time the Single Tab Card's &quot;See more&quot; link is
+    clicked, Android-only.
+  </summary>
+</histogram>
+
 <histogram name="MagicStack.Clank.TabResumption.ClickInfo"
     enum="MagicStack.Clank.TabResumption.ClickInfo" expires_after="2024-09-01">
   <owner>huangs@google.com</owner>

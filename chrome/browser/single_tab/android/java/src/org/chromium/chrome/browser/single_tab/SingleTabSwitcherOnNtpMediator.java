@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLI
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.SEE_MORE_LINK_CLICK_LISTENER;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TITLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
@@ -24,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -45,6 +47,9 @@ import org.chromium.url.GURL;
 
 /** Mediator of the single tab switcher in the new tab page on tablet. */
 public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObserver {
+    private static final String HISTOGRAM_SEE_MORE_LINK_CLICKED =
+            "MagicStack.Clank.SingleTab.SeeMoreLinkClicked";
+
     private final Context mContext;
     private final PropertyModel mPropertyModel;
     private final TabListFaviconProvider mTabListFaviconProvider;
@@ -62,6 +67,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
     private boolean mIsScrollableMvtEnabled;
 
     private Callback<Integer> mSingleTabCardClickedCallback;
+    private Runnable mSeeMoreLinkClickedCallback;
     private boolean mIsSurfacePolishEnabled;
     private ThumbnailProvider mThumbnailProvider;
     private Size mThumbnailSize;
@@ -77,6 +83,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
             Tab mostRecentTab,
             boolean isScrollableMvtEnabled,
             Callback<Integer> singleTabCardClickedCallback,
+            @Nullable Runnable seeMoreLinkClickedCallback,
             @Nullable TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
             boolean isTablet,
@@ -88,6 +95,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
         mMostRecentTab = mostRecentTab;
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
+        mSeeMoreLinkClickedCallback = seeMoreLinkClickedCallback;
         mIsSurfacePolishEnabled = tabContentManager != null;
         mUiConfig = uiConfig;
         mIsTablet = isTablet;
@@ -132,6 +140,16 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
                     if (mSingleTabCardClickedCallback != null) {
                         mSingleTabCardClickedCallback.onResult(mMostRecentTab.getId());
                         mSingleTabCardClickedCallback = null;
+                    }
+                });
+        mPropertyModel.set(
+                SEE_MORE_LINK_CLICK_LISTENER,
+                () -> {
+                    if (mSeeMoreLinkClickedCallback != null) {
+                        mSeeMoreLinkClickedCallback.run();
+                        mSeeMoreLinkClickedCallback = null;
+                        RecordHistogram.recordBooleanHistogram(
+                                HISTOGRAM_SEE_MORE_LINK_CLICKED, true);
                     }
                 });
 

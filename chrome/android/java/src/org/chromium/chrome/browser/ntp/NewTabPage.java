@@ -1182,6 +1182,7 @@ public class NewTabPage
                         isScrollableMvtEnabled(mContext),
                         mostRecentTab,
                         this::onSingleTabCardClicked,
+                        /* seeMoreLinkClickedCallback= */ null,
                         () -> mSnapshotSingleTabCardChanged = true,
                         mTabContentManagerSupplier.get()
                         /* tabContentManager= */ ,

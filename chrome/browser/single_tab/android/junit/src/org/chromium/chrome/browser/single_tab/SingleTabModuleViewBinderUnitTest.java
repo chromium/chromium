@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLI
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.SEE_MORE_LINK_CLICK_LISTENER;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TITLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
@@ -70,6 +71,7 @@ public class SingleTabModuleViewBinderUnitTest {
     private PropertyModel mPropertyModel;
 
     @Mock private View.OnClickListener mClickListener;
+    @Mock private Runnable mSeeMoreLinkClickListener;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabListFaviconProvider mTabListFaviconProvider;
@@ -187,6 +189,13 @@ public class SingleTabModuleViewBinderUnitTest {
         mPropertyModel.set(CLICK_LISTENER, mClickListener);
         mSingleTabModuleView.performClick();
         verify(mClickListener).onClick(any());
+
+        mPropertyModel.set(SEE_MORE_LINK_CLICK_LISTENER, mSeeMoreLinkClickListener);
+        TextView seeMoreLinkView =
+                mSingleTabModuleView.findViewById(R.id.tab_switcher_see_more_link);
+        assertNotNull(seeMoreLinkView);
+        seeMoreLinkView.performClick();
+        verify(mSeeMoreLinkClickListener).run();
     }
 
     @Test

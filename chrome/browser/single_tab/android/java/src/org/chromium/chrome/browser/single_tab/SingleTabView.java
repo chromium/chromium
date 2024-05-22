@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -23,6 +24,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 /** View of the tab on the single tab tab switcher. */
 class SingleTabView extends LinearLayout {
+    @Nullable private TextView mSeeMoreLinkView;
     private ImageView mFavicon;
     private TextView mTitle;
     @Nullable private TabThumbnailView mTabThumbnail;
@@ -37,6 +39,7 @@ class SingleTabView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mSeeMoreLinkView = findViewById(R.id.tab_switcher_see_more_link);
         mFavicon = findViewById(R.id.tab_favicon_view);
         mTitle = findViewById(R.id.tab_title_view);
         mTabThumbnail = findViewById(R.id.tab_thumbnail);
@@ -88,7 +91,22 @@ class SingleTabView extends LinearLayout {
     }
 
     /**
+     * Set the listener for "See more" link, which gets shown if `listener` is non-null.
+     *
+     * @param listener The given listener.
+     */
+    public void setOnSeeMoreLinkClickListener(@Nullable Runnable listener) {
+        if (mSeeMoreLinkView != null) {
+            mSeeMoreLinkView.setVisibility((listener != null) ? View.VISIBLE : View.GONE);
+            if (listener != null) {
+                mSeeMoreLinkView.setOnClickListener(v -> listener.run());
+            }
+        }
+    }
+
+    /**
      * Set the favicon.
+     *
      * @param favicon The given favicon {@link Drawable}.
      */
     public void setFavicon(Drawable favicon) {

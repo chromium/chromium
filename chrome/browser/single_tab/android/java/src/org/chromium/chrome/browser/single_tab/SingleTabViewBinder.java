@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLI
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.SEE_MORE_LINK_CLICK_LISTENER;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TITLE;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
@@ -24,6 +25,9 @@ public class SingleTabViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
+        } else if (propertyKey == SEE_MORE_LINK_CLICK_LISTENER) {
+            ((SingleTabView) view)
+                    .setOnSeeMoreLinkClickListener(model.get(SEE_MORE_LINK_CLICK_LISTENER));
         } else if (propertyKey == FAVICON) {
             ((SingleTabView) view).setFavicon(model.get(FAVICON));
         } else if (propertyKey == TAB_THUMBNAIL) {

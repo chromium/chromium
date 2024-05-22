@@ -93,7 +93,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private UiConfig mUiConfig;
     @Mock private ModuleDelegate mModuleDelegate;
-    @Mock Callback<Integer> mSingleTabClickedCallback;
+    @Mock private Callback<Integer> mSingleTabClickedCallback;
+    @Mock private Runnable mSeeMoreLinkClickedCallback;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
     @Captor private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
 
@@ -134,6 +135,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab,
                         false,
                         mSingleTabClickedCallback,
+                        mSeeMoreLinkClickedCallback,
                         null,
                         null,
                         isTablet,
@@ -189,6 +191,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab,
                         false,
                         mSingleTabClickedCallback,
+                        mSeeMoreLinkClickedCallback,
                         mTabContentManager,
                         null,
                         isTablet,
@@ -252,6 +255,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         null,
                         false,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         null,
                         null,
                         true,
@@ -287,6 +291,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab,
                         false,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         null,
                         null,
                         isTablet,
@@ -334,6 +339,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         false,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         null,
                         null,
                         isTablet,
@@ -358,6 +364,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ true,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         null,
                         null,
                         true,
@@ -404,6 +411,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ true,
                         /* singleTabCardClickedCallback= */ null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         /* tabContentManager= */ null,
                         /* uiConfig= */ null,
                         /* isTablet= */ false,
@@ -437,6 +445,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ true,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         mTabContentManager,
                         null,
                         /* isTablet= */ false,
@@ -473,6 +482,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ false,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         null,
                         null,
                         true,
@@ -518,6 +528,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ false,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         tabContentManager,
                         null,
                         true,
@@ -545,6 +556,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 mTab3,
                 /* isScrollableMvtEnabled= */ false,
                 callback,
+                /* seeMoreLinkClickedCallback= */ null,
                 null,
                 null,
                 true,
@@ -571,6 +583,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTab3,
                         /* isScrollableMvtEnabled= */ true,
                         null,
+                        /* seeMoreLinkClickedCallback= */ null,
                         mTabContentManager,
                         mUiConfig,
                         true,
