@@ -73,25 +73,17 @@ QueryResultOrError TestTraceProcessorImpl::ExecuteQuery(
   return QueryResultOrError(result);
 }
 
-absl::Status TestTraceProcessorImpl::ParseTrace(std::unique_ptr<uint8_t[]> buf,
-                                                size_t size) {
+absl::Status TestTraceProcessorImpl::ParseTrace(
+    const std::vector<char>& raw_trace) {
   auto status =
       trace_processor_->Parse(perfetto::trace_processor::TraceBlobView(
-          perfetto::trace_processor::TraceBlob::TakeOwnership(std::move(buf),
-                                                              size)));
+          perfetto::trace_processor::TraceBlob::CopyFrom(raw_trace.data(),
+                                                         raw_trace.size())));
   // TODO(rasikan): Add DCHECK that the trace is well-formed and parsing doesn't
   // have any errors (e.g. to catch the cases when someone emits overlapping
   // trace events on the same track).
   trace_processor_->NotifyEndOfFile();
   return status.ok() ? absl::OkStatus() : absl::UnknownError(status.message());
-}
-
-absl::Status TestTraceProcessorImpl::ParseTrace(
-    const std::vector<char>& raw_trace) {
-  auto size = raw_trace.size();
-  std::unique_ptr<uint8_t[]> data_copy(new uint8_t[size]);
-  std::copy(raw_trace.begin(), raw_trace.end(), data_copy.get());
-  return ParseTrace(std::move(data_copy), size);
 }
 
 absl::Status TestTraceProcessorImpl::OverrideSqlModule(

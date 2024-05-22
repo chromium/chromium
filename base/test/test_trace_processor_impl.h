@@ -75,8 +75,6 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
                                  const PerfettoSQLModule& module);
 
  private:
-  absl::Status ParseTrace(std::unique_ptr<uint8_t[]> buf, size_t size);
-
   std::unique_ptr<perfetto::trace_processor::Config> config_;
   std::unique_ptr<perfetto::trace_processor::TraceProcessor> trace_processor_;
 };
