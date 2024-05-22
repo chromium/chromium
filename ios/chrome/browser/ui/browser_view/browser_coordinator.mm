@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -95,7 +96,6 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/phone_number_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -301,7 +301,7 @@ enum class ToolbarKind {
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
     PriceNotificationsCommands,
-    PhoneNumberCommands,
+    AddContactsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
@@ -914,7 +914,7 @@ enum class ToolbarKind {
     @protocol(MiniMapCommands),
     @protocol(ParcelTrackingOptInCommands),
     @protocol(UnitConversionCommands),
-    @protocol(PhoneNumberCommands),
+    @protocol(AddContactsCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -2243,7 +2243,7 @@ enum class ToolbarKind {
   return findBarCoordinator;
 }
 
-#pragma mark - PhoneNumberCommands
+#pragma mark - AddContactsCommands
 
 - (void)presentAddContactsForPhoneNumber:(NSString*)phoneNumber {
   _addContactsCoordinator = [[AddContactsCoordinator alloc]
