@@ -122,6 +122,15 @@ TEST_F(MediaItemUIUpdatedViewTest, ProgressViewCheck) {
   view()->OnKeyPressed(key_event);
 }
 
+TEST_F(MediaItemUIUpdatedViewTest, OnMousePressed) {
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             0);
+  EXPECT_CALL(observer(),
+              OnMediaItemUIClicked(kTestId, /*activate_original_media=*/true));
+  view()->OnMousePressed(mouse_event);
+}
+
 TEST_F(MediaItemUIUpdatedViewTest,
        UpdateWithMediaSessionInfoForPlayPauseButton) {
   EnableAllMediaActions();

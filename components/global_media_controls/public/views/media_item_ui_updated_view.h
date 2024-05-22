@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void AddedToWidget() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
   // MediaItemUI:
   void AddObserver(MediaItemUIObserver* observer) override;

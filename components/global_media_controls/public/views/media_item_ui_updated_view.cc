@@ -256,6 +256,15 @@ bool MediaItemUIUpdatedView::OnKeyPressed(const ui::KeyEvent& event) {
   return progress_view_->OnKeyPressed(event);
 }
 
+bool MediaItemUIUpdatedView::OnMousePressed(const ui::MouseEvent& event) {
+  // Activate the original source page if it exists when any part of the media
+  // background view is pressed.
+  for (auto& observer : observers_) {
+    observer.OnMediaItemUIClicked(id_, /*activate_original_media=*/true);
+  }
+  return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MediaItemUI implementations:
 
