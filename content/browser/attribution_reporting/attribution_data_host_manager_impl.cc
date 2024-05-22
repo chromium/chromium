@@ -758,51 +758,29 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         base::FeatureList::IsEnabled(
             network::features::kAttributionReportingCrossAppWeb);
 
-    std::optional<std::string> web_source_header;
-    {
-      std::string value;
-      size_t iter = 0;
-      while (headers->EnumerateHeader(
-          &iter,
-          attribution_reporting::kAttributionReportingRegisterSourceHeader,
-          &value)) {
-        if (web_source_header.has_value()) {
-          // TODO(https://crbug.com/40242261): Log an audit issue.
-          return std::nullopt;
-        }
-        web_source_header = std::move(value);
+    const auto get_header = [&](std::string_view header,
+                                bool enabled =
+                                    true) -> std::optional<std::string> {
+      if (!enabled) {
+        return std::nullopt;
       }
-    }
-
-    std::optional<std::string> web_trigger_header;
-    {
       std::string value;
-      size_t iter = 0;
-      while (headers->EnumerateHeader(
-          &iter,
-          attribution_reporting::kAttributionReportingRegisterTriggerHeader,
-          &value)) {
-        if (web_trigger_header.has_value()) {
-          // TODO(https://crbug.com/40242261): Log an audit issue.
-          return std::nullopt;
-        }
-        web_trigger_header = std::move(value);
-      }
-    }
-
-    const auto get_os_header = [&](std::string_view header) {
-      std::string value;
-      return cross_app_web_enabled &&
-                     headers->GetNormalizedHeader(header, &value)
+      return headers->GetNormalizedHeader(header, &value)
                  ? std::make_optional(std::move(value))
                  : std::nullopt;
     };
 
-    std::optional<std::string> os_source_header = get_os_header(
-        attribution_reporting::kAttributionReportingRegisterOsSourceHeader);
+    std::optional<std::string> web_source_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterSourceHeader);
+    std::optional<std::string> web_trigger_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterTriggerHeader);
 
-    std::optional<std::string> os_trigger_header = get_os_header(
-        attribution_reporting::kAttributionReportingRegisterOsTriggerHeader);
+    std::optional<std::string> os_source_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterOsSourceHeader,
+        cross_app_web_enabled);
+    std::optional<std::string> os_trigger_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterOsTriggerHeader,
+        cross_app_web_enabled);
 
     const bool has_source =
         web_source_header.has_value() || os_source_header.has_value();
@@ -2147,9 +2125,8 @@ void AttributionDataHostManagerImpl::MaybeBufferOsRegistrations(
   CHECK(not_buffered.empty());
 }
 
-void AttributionDataHostManagerImpl::OnOsHeaderParsed(
-    RegistrationsId id,
-    OsParseResult result) {
+void AttributionDataHostManagerImpl::OnOsHeaderParsed(RegistrationsId id,
+                                                      OsParseResult result) {
   auto registrations = registrations_.find(id);
   CHECK(registrations != registrations_.end());
 
