@@ -422,7 +422,7 @@ TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
             CallGetPicture(decoder.get(), &picture, &uncalled_cb));
   ASSERT_FALSE(uncalled_cb.called());
 
-  const auto mailbox1 = gpu::Mailbox::GenerateForSharedImage();
+  const auto mailbox1 = gpu::Mailbox::Generate();
   // Send a shared image ready message for Decode call 1. The GetPicture
   // callback should complete.
   SendSharedImageReady(params, 1U, mailbox1);
@@ -434,7 +434,7 @@ TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
 
   // Send a shared image ready message for Decode call 2. Since there is no
   // pending GetPicture call, the picture should be queued.
-  const auto mailbox2 = gpu::Mailbox::GenerateForSharedImage();
+  const auto mailbox2 = gpu::Mailbox::Generate();
   SendSharedImageReady(params, 2U, mailbox2);
 
   // The next GetPicture should return synchronously.
@@ -468,7 +468,7 @@ TEST_F(VideoDecoderResourceTest, RecyclePicture) {
   ASSERT_EQ(PP_OK_COMPLETIONPENDING,
             CallGetPicture(decoder.get(), &picture, &get_picture_cb));
 
-  const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const auto mailbox = gpu::Mailbox::Generate();
   SendSharedImageReady(params, 0U, mailbox);
 
   CallRecyclePicture(decoder.get(), picture);
@@ -494,7 +494,7 @@ TEST_F(VideoDecoderResourceTest, Flush) {
   CheckDecodeMsg(&params, &shm_id, &decode_size, &decode_id);
   SendDecodeReply(params, 0U);
 
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   SendSharedImageReady(params, 0U, mailbox);
 
   PP_VideoPicture picture;
