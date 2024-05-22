@@ -16,18 +16,19 @@ class OobeMojoBinder;
 // Base class for creating mojo binding to a receiver.
 // It can be used by all OOBE screens that need to support
 // communication from browser to renderer.
-template <typename Receiver>
-class OobeMojoBinder<Receiver> {
+template <typename PageHandler>
+class OobeMojoBinder<PageHandler> {
  public:
-  explicit OobeMojoBinder(Receiver* impl) : receiver_(impl) {}
+  explicit OobeMojoBinder(PageHandler* impl) : page_handler_receiver_(impl) {}
 
-  void BindReceiver(mojo::PendingReceiver<Receiver> receiver) {
-    CHECK(!receiver_.is_bound());
-    receiver_.Bind(std::move(receiver));
+  void BindPageHandlerReceiver(
+      mojo::PendingReceiver<PageHandler> pending_receiver) {
+    CHECK(!page_handler_receiver_.is_bound());
+    page_handler_receiver_.Bind(std::move(pending_receiver));
   }
 
  private:
-  mojo::Receiver<Receiver> receiver_;
+  mojo::Receiver<PageHandler> page_handler_receiver_;
 };
 
 // Base class for creating mojo binding to a receiver and
@@ -35,24 +36,30 @@ class OobeMojoBinder<Receiver> {
 // It can be used by all OOBE screens that need to support
 // communication from browser to render, and from renderer
 // to browser
-template <typename Receiver, typename Remote>
-class OobeMojoBinder<Receiver, Remote> {
+template <typename PageHandler, typename Page>
+class OobeMojoBinder<PageHandler, Page> {
  public:
-  explicit OobeMojoBinder(Receiver* impl) : receiver_(impl) {}
-
-  void BindRemoteAndReceiver(mojo::PendingRemote<Remote> remote,
-                             mojo::PendingReceiver<Receiver> receiver) {
-    CHECK(!receiver_.is_bound());
-    CHECK(!remote_.is_bound());
-    receiver_.Bind(std::move(receiver));
-    remote_.Bind(std::move(remote));
+  explicit OobeMojoBinder(PageHandler* impl) : page_handler_receiver_(impl) {
+    page_pending_receiver_ = page_remote_.BindNewPipeAndPassReceiver();
   }
 
-  mojo::Remote<Remote>* GetRemote() { return &remote_; }
+  void BindPageHandlerReceiver(
+      mojo::PendingReceiver<PageHandler> pending_receiver) {
+    CHECK(!page_handler_receiver_.is_bound());
+    page_handler_receiver_.Bind(std::move(pending_receiver));
+  }
+
+  mojo::Remote<Page>* GetRemote() { return &page_remote_; }
+
+  void PassPagePendingReceiverWithCallback(
+      base::OnceCallback<void(mojo::PendingReceiver<Page>)> callback) {
+    std::move(callback).Run(std::move(page_pending_receiver_));
+  }
 
  private:
-  mojo::Remote<Remote> remote_;
-  mojo::Receiver<Receiver> receiver_;
+  mojo::PendingReceiver<Page> page_pending_receiver_;
+  mojo::Remote<Page> page_remote_;
+  mojo::Receiver<PageHandler> page_handler_receiver_;
 };
 
 }  // namespace ash

@@ -49,64 +49,66 @@ void OobeScreensHandlerFactory::UnbindScreensHandlerFactory() {
   page_factory_receiver_.reset();
 }
 
-void OobeScreensHandlerFactory::CreateDrivePinningScreenHandler(
-    mojo::PendingRemote<screens_common::mojom::DrivePinningPage> page,
+void OobeScreensHandlerFactory::EstablishDrivePinningScreenPipe(
     mojo::PendingReceiver<screens_common::mojom::DrivePinningPageHandler>
-        receiver) {
+        receiver,
+    EstablishDrivePinningScreenPipeCallback callback) {
   CHECK(WizardController::default_controller());
   DrivePinningScreen* drive_pinning =
       WizardController::default_controller()->GetScreen<DrivePinningScreen>();
-  drive_pinning->BindRemoteAndReceiver(std::move(page), std::move(receiver));
+  drive_pinning->BindPageHandlerReceiver(std::move(receiver));
+  drive_pinning->PassPagePendingReceiverWithCallback(std::move(callback));
 }
 
-void OobeScreensHandlerFactory::CreateGestureNavigationPageHandler(
+void OobeScreensHandlerFactory::EstablishGestureNavigationScreenPipe(
     mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
         receiver) {
   CHECK(WizardController::default_controller());
   GestureNavigationScreen* gesture_navigation =
       WizardController::default_controller()
           ->GetScreen<GestureNavigationScreen>();
-  gesture_navigation->BindReceiver(std::move(receiver));
+  gesture_navigation->BindPageHandlerReceiver(std::move(receiver));
 }
 
-void OobeScreensHandlerFactory::CreateGaiaInfoScreenHandler(
-    mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
-    mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
-        receiver) {
+void OobeScreensHandlerFactory::EstablishGaiaInfoScreenPipe(
+    mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler> receiver,
+    EstablishGaiaInfoScreenPipeCallback callback) {
   CHECK(WizardController::default_controller());
   GaiaInfoScreen* gaia_info =
       WizardController::default_controller()->GetScreen<GaiaInfoScreen>();
-  gaia_info->BindRemoteAndReceiver(std::move(page), std::move(receiver));
+  gaia_info->BindPageHandlerReceiver(std::move(receiver));
+  gaia_info->PassPagePendingReceiverWithCallback(std::move(callback));
 }
 
-void OobeScreensHandlerFactory::CreateConsumerUpdatePageHandler(
-    mojo::PendingRemote<screens_oobe::mojom::ConsumerUpdatePage> page,
+void OobeScreensHandlerFactory::EstablishConsumerUpdateScreenPipe(
     mojo::PendingReceiver<screens_oobe::mojom::ConsumerUpdatePageHandler>
-        handler) {
+        handler,
+    EstablishConsumerUpdateScreenPipeCallback callback) {
   CHECK(WizardController::default_controller());
   ConsumerUpdateScreen* consumer_update =
       WizardController::default_controller()->GetScreen<ConsumerUpdateScreen>();
-  consumer_update->BindRemoteAndReceiver(std::move(page), std::move(handler));
+  consumer_update->BindPageHandlerReceiver(std::move(handler));
+  consumer_update->PassPagePendingReceiverWithCallback(std::move(callback));
 }
 
-void OobeScreensHandlerFactory::CreatePackagedLicensePageHandler(
+void OobeScreensHandlerFactory::EstablishPackagedLicenseScreenPipe(
     mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
         receiver) {
   CHECK(WizardController::default_controller());
   PackagedLicenseScreen* packaged_license =
       WizardController::default_controller()
           ->GetScreen<PackagedLicenseScreen>();
-  packaged_license->BindReceiver(std::move(receiver));
+  packaged_license->BindPageHandlerReceiver(std::move(receiver));
 }
 
-void OobeScreensHandlerFactory::CreateLocalDataLossWarningPageHandler(
+void OobeScreensHandlerFactory::EstablishLocalDataLossWarningScreenPipe(
     mojo::PendingReceiver<
         screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver) {
   CHECK(WizardController::default_controller());
   LocalDataLossWarningScreen* local_data_loss_warning =
       WizardController::default_controller()
           ->GetScreen<LocalDataLossWarningScreen>();
-  local_data_loss_warning->BindReceiver(std::move(receiver));
+  local_data_loss_warning->BindPageHandlerReceiver(std::move(receiver));
 }
 
 }  // namespace ash

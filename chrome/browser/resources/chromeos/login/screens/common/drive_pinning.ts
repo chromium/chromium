@@ -101,9 +101,12 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     this.callbackRouter = new DrivePinningPageCallbackRouter();
     this.handler = new DrivePinningPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createDrivePinningScreenHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote(),
-            this.handler.$.bindNewPipeAndPassReceiver());
+        .screenFactory
+        .establishDrivePinningScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
     this.callbackRouter.setRequiredSpaceInfo.addListener(
       this.setRequiredSpaceInfo.bind(this));
   }

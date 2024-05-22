@@ -86,9 +86,12 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     this.callbackRouter = new GaiaInfoPageCallbackRouter();
     this.handler = new GaiaInfoPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createGaiaInfoScreenHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote(),
-            this.handler.$.bindNewPipeAndPassReceiver());
+        .screenFactory
+        .establishGaiaInfoScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
     this.callbackRouter.setQuickStartVisible.addListener(() => {
       this.setQuickStartVisible();
     });

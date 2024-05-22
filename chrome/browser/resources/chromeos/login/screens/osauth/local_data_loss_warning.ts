@@ -85,7 +85,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     this.disabled = false;
     this.handler = new LocalDataLossWarningPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createLocalDataLossWarningPageHandler(
+        .screenFactory.establishLocalDataLossWarningScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
   }
 

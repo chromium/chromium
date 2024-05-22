@@ -52,7 +52,7 @@ export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
     super();
     this.handler = new PackagedLicensePageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createPackagedLicensePageHandler(
+        .screenFactory.establishPackagedLicenseScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
   }
 

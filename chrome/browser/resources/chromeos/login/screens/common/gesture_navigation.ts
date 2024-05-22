@@ -64,7 +64,7 @@ export class GestureNavigation extends GestureScreenElementBase {
     super();
     this.handler = new GestureNavigationPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createGestureNavigationPageHandler(
+        .screenFactory.establishGestureNavigationScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
   }
 

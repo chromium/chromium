@@ -160,9 +160,12 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
     this.callbackRouter = new ConsumerUpdatePageCallbackRouter();
     this.handler = new ConsumerUpdatePageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.createConsumerUpdatePageHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote(),
-            this.handler.$.bindNewPipeAndPassReceiver());
+        .screenFactory
+        .establishConsumerUpdateScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
 
     this.callbackRouter.showSkipButton.addListener(
         this.showSkipButton.bind(this));
