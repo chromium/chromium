@@ -116,6 +116,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      darkenDefaultScrim: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -139,6 +143,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
+  // Whether the default background scrim is currently being darkened.
+  private darkenDefaultScrim: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -198,6 +204,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.showTextContextMenu = false;
       this.textSelectionStartIndex = -1;
       this.textSelectionEndIndex = -1;
+    });
+    this.eventTracker_.add(document, 'darken-default-scrim-opacity', () => {
+      this.darkenDefaultScrim = true;
+    });
+    this.eventTracker_.add(document, 'lighten-default-scrim-opacity', () => {
+      this.darkenDefaultScrim = false;
     });
   }
 

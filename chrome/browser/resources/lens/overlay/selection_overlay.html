@@ -68,7 +68,12 @@
   #defaultScrim {
     background-color: #151C26;
     opacity: 5%;
+    transition: opacity 0.8s ease-out;
     pointer-events: none;
+  }
+
+  :host([darken-default-scrim]) #defaultScrim {
+    opacity: 25%;
   }
 
   #selectionElements > * {

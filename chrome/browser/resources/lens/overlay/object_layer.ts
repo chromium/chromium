@@ -189,6 +189,10 @@ export class ObjectLayerElement extends PolymerElement {
           composed: true,
           detail: {tooltipType: CursorTooltipType.CLICK_SEARCH},
         }));
+    this.dispatchEvent(new CustomEvent('darken-default-scrim-opacity', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onSegmentationUnhovered() {
@@ -205,6 +209,10 @@ export class ObjectLayerElement extends PolymerElement {
           composed: true,
           detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
         }));
+    this.dispatchEvent(new CustomEvent('lighten-default-scrim-opacity', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private handlePointerEnter(event: PointerEvent) {
@@ -305,8 +313,8 @@ export class ObjectLayerElement extends PolymerElement {
     // Stroke the path on top of the image.
     context.lineCap = 'round';
     context.lineJoin = 'round';
-    context.lineWidth = 2;
-    context.filter = 'blur(4px)';
+    context.lineWidth = 6;
+    context.filter = 'blur(8px)';
     // Fit a square around the bounding box to use for gradient coordinates.
     const objectBoundingBox = object.geometry.boundingBox;
     const longestEdge =
@@ -323,8 +331,10 @@ export class ObjectLayerElement extends PolymerElement {
         right,
         bottom,
     );
-    gradient.addColorStop(0, '#ffffff');
-    gradient.addColorStop(1, '#ffffff');
+    gradient.addColorStop(
+        0, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
+    gradient.addColorStop(
+        1, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
     context.strokeStyle = gradient;
     context.stroke();
   }
