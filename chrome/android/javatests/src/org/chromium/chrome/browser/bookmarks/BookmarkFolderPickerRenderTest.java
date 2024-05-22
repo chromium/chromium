@@ -91,7 +91,7 @@ public class BookmarkFolderPickerRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 

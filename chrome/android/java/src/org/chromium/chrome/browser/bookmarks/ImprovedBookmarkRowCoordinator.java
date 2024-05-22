@@ -180,6 +180,11 @@ public class ImprovedBookmarkRowCoordinator {
                 ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                 BookmarkUtils.getChildCountForDisplay(bookmarkItem.getId(), mBookmarkModel));
         propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
+                BookmarkUtils.isSpecialFolder(mBookmarkModel, bookmarkItem)
+                        ? R.style.TextAppearance_SpecialFolderChildCount
+                        : R.style.TextAppearance_RegularFolderChildCount);
+        propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
                 BookmarkUtils.getIconBackground(mContext, mBookmarkModel, bookmarkItem));
         propertyModel.set(

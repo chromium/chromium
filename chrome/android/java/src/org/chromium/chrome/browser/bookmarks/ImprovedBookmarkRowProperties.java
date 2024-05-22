@@ -105,6 +105,8 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableObjectPropertyKey<LazyOneshotSupplier<Pair<Drawable, Drawable>>>
             FOLDER_START_IMAGE_FOLDER_DRAWABLES = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey FOLDER_CHILD_COUNT_TEXT_STYLE =
+            new WritableIntPropertyKey();
 
     private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {
         ENABLED,
@@ -133,7 +135,8 @@ public class ImprovedBookmarkRowProperties {
         FOLDER_START_ICON_TINT,
         FOLDER_START_ICON_DRAWABLE,
         FOLDER_START_IMAGE_FOLDER_DRAWABLES,
-        FOLDER_CHILD_COUNT
+        FOLDER_CHILD_COUNT,
+        FOLDER_CHILD_COUNT_TEXT_STYLE
     };
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -179,6 +180,10 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     @SuppressWarnings("SetTextI18n")
     void setChildCount(int count) {
         mChildCount.setText(Integer.toString(count));
+    }
+
+    void setChildCountStyle(@StyleRes int styleRes) {
+        mChildCount.setTextAppearance(styleRes);
     }
 
     private void updateChildCountContainer(int numberOfImages) {

@@ -83,7 +83,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
@@ -142,6 +142,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     PropertyModelChangeProcessor.create(
                             mModel, row, ImprovedBookmarkRowViewBinder::bind);
                     mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 5);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
+                            R.style.TextAppearance_RegularFolderChildCount);
                 });
     }
 
@@ -205,6 +208,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             ColorStateList.valueOf(
                                     SemanticColorUtils.getDefaultIconColorAccent1(
                                             mActivityTestRule.getActivity())));
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
+                            R.style.TextAppearance_SpecialFolderChildCount);
                 });
         mRenderTestRule.render(mFolderView, "no_image_bookmarks_bar");
     }
@@ -234,6 +240,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             ColorStateList.valueOf(
                                     SemanticColorUtils.getDefaultIconColorAccent1(
                                             mActivityTestRule.getActivity())));
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
+                            R.style.TextAppearance_SpecialFolderChildCount);
                 });
         mRenderTestRule.render(mFolderView, "no_image_reading_list");
     }
