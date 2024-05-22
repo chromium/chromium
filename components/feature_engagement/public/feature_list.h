@@ -467,6 +467,8 @@ DEFINE_VARIATION_PARAM(kIPHDesktopPWAsLinkCapturingLaunch,
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 DEFINE_VARIATION_PARAM(kIPHiOSPasswordPromoDesktopFeature,
                        "IPH_iOSPasswordPromoDesktop");
+DEFINE_VARIATION_PARAM(kIPHiOSAddressPromoDesktopFeature,
+                       "IPH_iOSAddressPromoDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -723,6 +725,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
         VARIATION_ENTRY(kIPHiOSPasswordPromoDesktopFeature),
+        VARIATION_ENTRY(kIPHiOSAddressPromoDesktopFeature),
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 

@@ -308,6 +308,7 @@ BASE_DECLARE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch);
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kIPHiOSPasswordPromoDesktopFeature);
+BASE_DECLARE_FEATURE(kIPHiOSAddressPromoDesktopFeature);
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace feature_engagement

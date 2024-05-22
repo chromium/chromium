@@ -753,6 +753,9 @@ BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
 BASE_FEATURE(kIPHiOSPasswordPromoDesktopFeature,
              "IPH_iOSPasswordPromoDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSAddressPromoDesktopFeature,
+             "IPH_iOSAddressPromoDesktop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

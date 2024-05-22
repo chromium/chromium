@@ -267,6 +267,7 @@ const base::Feature* const kAllFeatures[] = {
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     &kIPHiOSPasswordPromoDesktopFeature,
+    &kIPHiOSAddressPromoDesktopFeature,
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 }  // namespace

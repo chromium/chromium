@@ -749,10 +749,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (kIPHiOSPasswordPromoDesktopFeature.name == feature->name) {
     // A config for allowing other IPH's to explicitly block the iOS password
-    // promo bubble on desktop if needed. By default it is non-blocking and
-    // non-blocked by other IPH due it being highly contextual, but this FET
-    // config and feature exist to allow some FET control over this promo if
-    // needed.
+    // promo bubble on desktop if needed. Blocked and blocking by default, so
+    // won't appear at the same time as other IPH, but without any session rate
+    // impact.
 
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -765,6 +764,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("ios_password_promo_bubble_on_desktop_interacted_with",
                     Comparator(ANY, 0), 0, 0);
     config->trigger = EventConfig("ios_password_promo_bubble_on_desktop_shown",
+                                  Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
+  if (kIPHiOSAddressPromoDesktopFeature.name == feature->name) {
+    // A config for allowing other IPH's to explicitly block the iOS address
+    // promo bubble on desktop if needed. Blocked and blocking by default, so
+    // won't appear at the same time as other IPH, but without any session rate
+    // impact.
+
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::ALL;
+    config->blocking.type = Blocking::Type::ALL;
+    config->used =
+        EventConfig("ios_address_promo_bubble_on_desktop_interacted_with",
+                    Comparator(ANY, 0), 0, 0);
+    config->trigger = EventConfig("ios_address_promo_bubble_on_desktop_shown",
                                   Comparator(ANY, 0), 0, 0);
     return config;
   }
