@@ -298,12 +298,13 @@ String LayoutTheme::ExtraDefaultStyleSheet() {
     //
     // Avoid to write "video::cue" for a false-positive by
     // audit_non_blink_usage.py.
-    return "video::"
+    return "@namespace 'http://www.w3.org/1999/xhtml';\n"
+           "video::"
            "cue(rt) { display: ruby-text !important; }\n"
            "video::"
            "cue(ruby) { display: ruby; }\n";
   }
-  return g_empty_string;
+  return "@namespace 'http://www.w3.org/1999/xhtml';\n";
 }
 
 String LayoutTheme::ExtraFullscreenStyleSheet() {

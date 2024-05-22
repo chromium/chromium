@@ -7,6 +7,12 @@
  * linux.css when StylableSelect is enabled and the flag is removed.
  */
 
+/* This sheet is appended to LayoutTheme::ExtraDefaultStyleSheet() before
+   parsing which means the selectors below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
 select:not(:-internal-list-box) {
     /* Selects with popup menus look like buttons with a drop down triangle on Linux. */
     background-color: -internal-appearance-auto-base-select(ButtonFace, transparent);

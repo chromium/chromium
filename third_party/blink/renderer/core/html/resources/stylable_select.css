@@ -6,6 +6,8 @@
  * feature is enabled.
  */
 
+@namespace "http://www.w3.org/1999/xhtml";
+
 select {
   background-color: -internal-appearance-auto-base-select(Field, transparent);
   border: -internal-appearance-auto-base-select(1px, 0px),
