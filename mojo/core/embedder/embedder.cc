@@ -50,6 +50,7 @@ std::atomic<bool> g_mojo_ipcz_enabled{false};
 std::atomic<bool> g_mojo_ipcz_enabled{true};
 #endif
 
+bool g_mojo_ipcz_force_disabled = false;
 bool g_enable_memv2 = false;
 
 std::optional<std::string> GetMojoIpczEnvVar() {
@@ -118,12 +119,9 @@ void Init(const Configuration& configuration) {
   internal::g_configuration = configuration;
 
   if (configuration.disable_ipcz) {
-    // Allow the caller to override MojoIpcz even when enabled as a Feature.
-    g_mojo_ipcz_enabled.store(false, std::memory_order_release);
-  } else if (IsMojoIpczForceEnabledByEnvironment()) {
-    // Allow the environment to force-enable MojoIpcz even if the feature is not
-    // enabled.
-    g_mojo_ipcz_enabled.store(true, std::memory_order_release);
+    // Allow the caller to override MojoIpcz even when enabled by Feature or
+    // environment.
+    g_mojo_ipcz_force_disabled = true;
   }
 
   if (IsMojoIpczEnabled()) {
@@ -165,11 +163,15 @@ bool IsMojoIpczEnabled() {
   // Because Mojo and FeatureList are both brought up early in many binaries, it
   // can be tricky to ensure there aren't races that would lead to two different
   // Mojo implementations being selected at different points throughout the
-  // process's lifetime. We cache the result of the first atomic load of this
-  // flag; but we also DCHECK that any subsequent loads would match the cached
-  // value, as a way to detect initialization races.
-  static bool enabled = g_mojo_ipcz_enabled.load(std::memory_order_acquire);
-  DCHECK_EQ(enabled, g_mojo_ipcz_enabled.load(std::memory_order_acquire));
+  // process's lifetime. We cache the result of the first call to this function
+  // and DCHECK that every subsequent call produces the same result. Note that
+  // setting `disable_ipcz` in the Mojo config overrides both the Feature value
+  // and the environment variable if set.
+  const bool enabled = (g_mojo_ipcz_enabled.load(std::memory_order_acquire) ||
+                        IsMojoIpczForceEnabledByEnvironment()) &&
+                       !g_mojo_ipcz_force_disabled;
+  static bool enabled_on_first_call = enabled;
+  DCHECK_EQ(enabled, enabled_on_first_call);
   return enabled;
 }
 
