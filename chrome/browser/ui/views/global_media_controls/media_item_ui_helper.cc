@@ -255,32 +255,30 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
   // Show a footer view for a Cast item.
   if (item->GetSourceType() == media_message_center::SourceType::kCast &&
       media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    auto media_cast_item =
+        static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI) &&
         media_color_theme.has_value()) {
       return std::make_unique<MediaItemUICastFooterView>(
-          base::BindRepeating(
-              &CastMediaNotificationItem::StopCasting,
-              static_cast<CastMediaNotificationItem*>(item.get())
-                  ->GetWeakPtr()),
+          base::BindRepeating(&CastMediaNotificationItem::StopCasting,
+                              media_cast_item),
           media_color_theme.value());
     }
 #else
     if (media_color_theme.has_value()) {
       return std::make_unique<CastDeviceFooterView>(
-          base::BindRepeating(
-              &CastMediaNotificationItem::StopCasting,
-              static_cast<CastMediaNotificationItem*>(item.get())
-                  ->GetWeakPtr()),
+          media_cast_item->device_name(),
+          base::BindRepeating(&CastMediaNotificationItem::StopCasting,
+                              media_cast_item),
           media_color_theme.value());
     }
 #endif
 
     return std::make_unique<MediaItemUILegacyCastFooterView>(
-        base::BindRepeating(
-            &CastMediaNotificationItem::StopCasting,
-            static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr()));
+        base::BindRepeating(&CastMediaNotificationItem::StopCasting,
+                            media_cast_item));
   }
 
   base::RepeatingClosure stop_casting_cb =
@@ -291,8 +289,12 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (media_color_theme.has_value()) {
-    return std::make_unique<CastDeviceFooterView>(std::move(stop_casting_cb),
-                                                  media_color_theme.value());
+    auto* media_session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    return std::make_unique<CastDeviceFooterView>(
+        media_session_item->device_name(), std::move(stop_casting_cb),
+        media_color_theme.value());
   }
 #endif
 

@@ -25,6 +25,7 @@ class CastDeviceFooterView : public global_media_controls::MediaItemUIFooter {
 
  public:
   explicit CastDeviceFooterView(
+      std::optional<std::string> device_name,
       base::RepeatingClosure stop_casting_callback,
       media_message_center::MediaColorTheme media_color_theme);
   ~CastDeviceFooterView() override;

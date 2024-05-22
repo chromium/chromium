@@ -30,6 +30,7 @@ constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(14, 16);
 }  // namespace
 
 CastDeviceFooterView::CastDeviceFooterView(
+    std::optional<std::string> device_name,
     base::RepeatingClosure stop_casting_callback,
     media_message_center::MediaColorTheme media_color_theme)
     : stop_casting_callback_(std::move(stop_casting_callback)) {
@@ -52,8 +53,10 @@ CastDeviceFooterView::CastDeviceFooterView(
           kDeviceIconSize)));
 
   // Add the device name.
-  // TODO(yrw): Add in the correct device name.
-  device_name_ = AddChildView(std::make_unique<views::Label>(u"Test Device"));
+  device_name_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
+  if (device_name.has_value()) {
+    device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
+  }
   device_name_->SetTextStyle(views::style::STYLE_BODY_2);
   device_name_->SetEnabledColorId(
       media_color_theme.device_selector_foreground_color_id);

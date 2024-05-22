@@ -140,6 +140,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   bool frozen() const { return frozen_; }
 
+  std::optional<std::string> device_name() const { return device_name_; }
+
   // Returns nullptr if `remote_playback_disabled` is true in `session_info_` or
   // the media duration is too short.
   media_session::mojom::RemotePlaybackMetadataPtr GetRemotePlaybackMetadata()
@@ -153,6 +155,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
                            GetSessionMetadata);
+#if !BUILDFLAG(IS_CHROMEOS)
+  FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
+                           GetSessionMetadataForUpdatedUI);
+#endif
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
                            GetMediaSessionActions);
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
