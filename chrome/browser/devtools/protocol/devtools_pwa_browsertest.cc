@@ -322,6 +322,26 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_WithManifestId) {
   ASSERT_EQ(*result->FindString("id"), InstallableWebAppUrl().spec());
 }
 
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_IconWithNoSizes) {
+  ReattachToWebContents(embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?icon_with_no_sizes.json"));
+  const base::Value::Dict* result =
+      SendCommandSync("Page.getAppManifest",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec()));
+  ASSERT_TRUE(result);
+  auto* manifest = result->FindDict("manifest");
+  ASSERT_TRUE(manifest);
+  auto* icons = manifest->FindList("icons");
+  ASSERT_TRUE(icons);
+  ASSERT_EQ(icons->size(), 1u);
+  auto* icon = (*icons)[0].GetIfDict();
+  ASSERT_TRUE(icon);
+  auto* sizes = icon->FindString("sizes");
+  ASSERT_TRUE(sizes);
+  EXPECT_EQ(*sizes, "");
+}
+
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_MismatchId) {
   ReattachToWebContents(InstallableWebAppUrl());
   ASSERT_FALSE(SendCommandSync(
