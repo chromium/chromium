@@ -187,8 +187,6 @@ bool PrivateAggregationHost::BindNewReceiver(
   }
 
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
-      !base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     // Override with the default if a non-default coordinator is specified when
     // the feature is disabled.

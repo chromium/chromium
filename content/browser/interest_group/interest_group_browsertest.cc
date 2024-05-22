@@ -5119,10 +5119,8 @@ class InterestGroupAggregationCoordinatorBrowserTest
     : public InterestGroupBrowserTest {
  public:
   InterestGroupAggregationCoordinatorBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrivateAggregationApiMultipleCloudProviders,
-         aggregation_service::kAggregationServiceMultipleCloudProviders},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        aggregation_service::kAggregationServiceMultipleCloudProviders);
   }
 
   ~InterestGroupAggregationCoordinatorBrowserTest() override = default;

@@ -120,8 +120,6 @@ bool CheckPrivateAggregationConfig(
 
   if (options.privateAggregationConfig()->hasAggregationCoordinatorOrigin() &&
       base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiMultipleCloudProviders) &&
-      base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     scoped_refptr<SecurityOrigin> parsed_coordinator =
         SecurityOrigin::CreateFromString(

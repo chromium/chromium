@@ -1011,8 +1011,6 @@ bool GetAggregationCoordinatorFromConfig(
   }
 
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
-      !base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     // Ignore the specified aggregation coordinator unless the feature is
     // enabled.

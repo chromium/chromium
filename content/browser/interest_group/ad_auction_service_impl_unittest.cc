@@ -783,7 +783,6 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFledgeNegativeTargeting,
-         blink::features::kPrivateAggregationApiMultipleCloudProviders,
          aggregation_service::kAggregationServiceMultipleCloudProviders,
          features::kEnableUpdatingUserBiddingSignals,
          features::kEnableUpdatingExecutionModeToFrozenContext},
@@ -10393,11 +10392,8 @@ class AdAuctionServiceImplPrivateAggregationMultiCloudTest
     : public AdAuctionServiceImplPrivateAggregationEnabledTest {
  public:
   AdAuctionServiceImplPrivateAggregationMultiCloudTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kPrivateAggregationApiMultipleCloudProviders,
-         aggregation_service::kAggregationServiceMultipleCloudProviders},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        aggregation_service::kAggregationServiceMultipleCloudProviders);
   }
 
  protected:

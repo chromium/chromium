@@ -578,8 +578,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict& dict,
     InterestGroupUpdate& interest_group_update) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
-      !base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     // Ignore the specified aggregation coordinator unless the feature is
     // enabled.

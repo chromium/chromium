@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -935,9 +936,6 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
 }
 
 TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kPrivateAggregationApiMultipleCloudProviders);
   ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
@@ -1021,7 +1019,7 @@ TEST_F(PrivateAggregationHostTest,
        AggregationCoordinatorOriginIgnoredIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiMultipleCloudProviders);
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
   ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});

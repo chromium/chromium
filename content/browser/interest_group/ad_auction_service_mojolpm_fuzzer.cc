@@ -294,7 +294,6 @@ AdAuctionServiceTestcase::AdAuctionServiceTestcase(
        blink::features::kAdInterestGroupAPI, blink::features::kFledge,
        blink::features::kFledgeClearOriginJoinedAdInterestGroups,
        blink::features::kFledgeNegativeTargeting,
-       blink::features::kPrivateAggregationApiMultipleCloudProviders,
        aggregation_service::kAggregationServiceMultipleCloudProviders,
        features::kEnableUpdatingUserBiddingSignals,
        features::kEnableUpdatingExecutionModeToFrozenContext},
