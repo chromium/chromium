@@ -7,6 +7,17 @@
   .extension-buttons {
     margin-inline-start: auto;
   }
+
+  /* Reformat panel when the panel is the width of one extension card */
+  /* clean-css ignore:start */
+  @container (max-width:450px) {
+    /* Set a max width for the extension info so extension buttons can fit on
+       the same row */
+    .panel-extension-info {
+      max-width: 116px;
+    }
+  }
+  /* clean-css ignore:end */
 </style>
 
 <div class="panel-background" id="panelContainer">
