@@ -479,7 +479,7 @@ LensOverlayQueryController::CreateInteractionRequest(
         ->mutable_image_crop()
         ->CopyFrom(*image_crop);
     interaction_request_metadata.set_type(
-        lens::LensOverlayInteractionRequestMetadata::REGION);
+        lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_region()
         ->mutable_region()

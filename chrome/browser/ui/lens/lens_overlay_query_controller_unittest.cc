@@ -320,7 +320,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .type(),
-      lens::LensOverlayInteractionRequestMetadata::REGION);
+      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .selection_metadata()
@@ -422,7 +422,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .type(),
-      lens::LensOverlayInteractionRequestMetadata::REGION);
+      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .selection_metadata()
