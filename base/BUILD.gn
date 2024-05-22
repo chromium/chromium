@@ -178,16 +178,6 @@ if (is_fuchsia) {
   }
 }
 
-config("perfetto_config") {
-  if (use_perfetto_client_library) {
-    defines = [
-      # Use TRACE_EVENT macro implementation from Perfetto. See
-      # trace_event/trace_event_common.h.
-      "BASE_USE_PERFETTO_CLIENT_LIBRARY=1",
-    ]
-  }
-}
-
 if (enable_pkeys && is_debug) {
   config("no_stack_protector") {
     cflags = [ "-fno-stack-protector" ]
@@ -2446,24 +2436,17 @@ component("base") {
       "//third_party/perfetto/include/perfetto/protozero",
     ]
 
-    all_dependent_configs += [
-      ":perfetto_config",
-      "//third_party/perfetto/gn:public_config",
-    ]
+    all_dependent_configs += [ "//third_party/perfetto/gn:public_config" ]
 
     if (is_win) {
       sources += [
+        "trace_event/etw_interceptor_win.cc",
+        "trace_event/etw_interceptor_win.h",
         "trace_event/trace_event_etw_export_win.cc",
         "trace_event/trace_event_etw_export_win.h",
         "trace_event/trace_logging_minimal_win.cc",
         "trace_event/trace_logging_minimal_win.h",
       ]
-      if (use_perfetto_client_library) {
-        sources += [
-          "trace_event/etw_interceptor_win.cc",
-          "trace_event/etw_interceptor_win.h",
-        ]
-      }
     }
 
     if (is_android) {
@@ -2670,7 +2653,6 @@ buildflag_header("tracing_buildflags") {
 
   flags = [
     "ENABLE_BASE_TRACING=$enable_base_tracing",
-    "USE_PERFETTO_CLIENT_LIBRARY=$use_perfetto_client_library",
     "USE_PERFETTO_TRACE_PROCESSOR=$use_perfetto_trace_processor",
     "OPTIONAL_TRACE_EVENTS_ENABLED=$optional_trace_events_enabled",
   ]

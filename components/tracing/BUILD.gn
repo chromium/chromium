@@ -34,7 +34,7 @@ component("startup_tracing") {
     "tracing_export.h",
   ]
 
-  if (is_win && use_perfetto_client_library) {
+  if (is_win) {
     sources += [
       "common/etw_export_win.cc",
       "common/etw_export_win.h",

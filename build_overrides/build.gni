@@ -38,10 +38,6 @@ declare_args() {
   # TODO(crbug.com/40124378): Add dependency on perfetto to support typed events.
   enable_base_tracing = true
 
-  # Switches the TRACE_EVENT instrumentation from base's TraceLog implementation
-  # to //third_party/perfetto's client library (crbug/1006541).
-  use_perfetto_client_library = true
-
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party
   # repositories which do not use JUnit tests. For instance,
@@ -62,7 +58,7 @@ declare_args() {
 declare_args() {
   # Use Perfetto's trace processor for converting protobuf-encoded traces to
   # the legacy JSON format in base::TraceLog.
-  use_perfetto_trace_processor = use_perfetto_client_library && !is_nacl
+  use_perfetto_trace_processor = !is_nacl
 }
 
 # Allows different projects to specify their own suppression/ignore lists for
