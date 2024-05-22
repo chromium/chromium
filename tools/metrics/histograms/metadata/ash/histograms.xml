@@ -6087,6 +6087,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.Ambient.LinkToGooglePhotosClicked"
+    enum="BooleanHit" expires_after="2025-06-01">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted whenever the user clicks the hyperlink to config Google Photos from
+    the ambient UI albums selection subpage.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.AmbientMode.AnimationTheme2"
     enum="AmbientModeAnimationTheme" expires_after="2024-11-17">
   <owner>jasontt@chromium.org</owner>

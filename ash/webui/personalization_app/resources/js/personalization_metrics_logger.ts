@@ -12,7 +12,7 @@ import {Paths} from './personalization_router_element.js';
 // Numerical values are used for metrics; do not change or reuse values. These
 // enum values map to Paths enum string values from
 // personalization_router_element.ts.
-enum MetricsPath {
+const enum MetricsPath {
   AMBIENT = 0,
   AMBIENT_ALBUMS = 1,
   WALLPAPER_COLLECTION_IMAGES = 2,
@@ -32,6 +32,8 @@ const enum HistogramName {
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+  AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED =
+      'Ash.Personalization.Ambient.LinkToGooglePhotosClicked',
   DYNAMIC_COLOR_COLOR_SCHEME_BUTTON =
       'Ash.Personalization.DynamicColor.ColorSchemeButton',
   DYNAMIC_COLOR_STATIC_COLOR_BUTTON =
@@ -106,4 +108,9 @@ export function logDynamicColorColorSchemeButtonClick(color: ColorScheme) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.DYNAMIC_COLOR_COLOR_SCHEME_BUTTON, color,
       ColorScheme.MAX_VALUE);
+}
+
+export function logAmbientModeLinkToGooglePhotosClick() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED, true);
 }
