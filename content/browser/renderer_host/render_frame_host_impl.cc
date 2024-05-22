@@ -4943,11 +4943,6 @@ void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
   renderer_reported_bfcache_blocking_details_ = std::move(details);
 
   MaybeEvictFromBackForwardCache();
-
-  if (back_forward_cache_disabling_features_callback_for_testing_) {
-    back_forward_cache_disabling_features_callback_for_testing_.Run(
-        GetBackForwardCacheDisablingFeatures());
-  }
 }
 
 using BackForwardCacheDisablingFeatureHandle =

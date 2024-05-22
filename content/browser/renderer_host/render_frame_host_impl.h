@@ -1687,25 +1687,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedReceiver<mojom::DomAutomationControllerHost>
           receiver);
 
-  // Exposed so that tests can swap the implementation and intercept calls.
+  // Expose Mojo receivers to tests for use with
+  // `mojo::test::ScopedSwapImplForTesting`.
+  mojo::AssociatedReceiver<blink::mojom::BackForwardCacheControllerHost>&
+  back_forward_cache_controller_host_receiver_for_testing() {
+    return back_forward_cache_controller_host_associated_receiver_;
+  }
   mojo::AssociatedReceiver<mojom::FrameHost>&
   frame_host_receiver_for_testing() {
     return frame_host_associated_receiver_;
   }
-
-  // Exposed so that tests can swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>&
   local_frame_host_receiver_for_testing() {
     return local_frame_host_receiver_;
   }
-
-  // Exposed so that tests can swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>&
   local_main_frame_host_receiver_for_testing() {
     return local_main_frame_host_receiver_;
   }
-
-  // Exposed so that tests can swap the implementation and intercept calls.
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
   browser_interface_broker_receiver_for_testing() {
     return broker_receiver_;
@@ -1883,12 +1882,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // information than `GetBackForwardCacheDisablingFeatures()`, which returns
   // only a list of features used.
   BackForwardCacheBlockingDetails GetBackForwardCacheBlockingDetails() const;
-  using BackForwardCacheDisablingFeaturesCallback =
-      base::RepeatingCallback<void(BackForwardCacheDisablingFeatures)>;
-  void SetBackForwardCacheDisablingFeaturesCallbackForTesting(
-      BackForwardCacheDisablingFeaturesCallback callback) {
-    back_forward_cache_disabling_features_callback_for_testing_ = callback;
-  }
 
   // Returns a PrefetchedSignedExchangeCache which is attached to |this|.
   scoped_refptr<PrefetchedSignedExchangeCache>
@@ -5052,9 +5045,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated with a fenced frame root, or `this` is associated with an iframe
   // nested within a fenced frame.
   const FencedFrameStatus fenced_frame_status_;
-
-  BackForwardCacheDisablingFeaturesCallback
-      back_forward_cache_disabling_features_callback_for_testing_;
 
   // Manages a transient affordance for this frame or subframes to open a popup.
   TransientAllowPopup transient_allow_popup_;

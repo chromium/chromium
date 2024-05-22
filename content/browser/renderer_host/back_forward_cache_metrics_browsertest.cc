@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -11,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -29,12 +30,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-test-utils.h"
 
 using base::Bucket;
 using testing::ElementsAre;
@@ -106,17 +109,54 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   void NavigateAndWaitForDisablingFeature(
       const GURL& url,
       blink::scheduler::WebSchedulerTrackedFeature feature) {
-    base::RunLoop run_loop;
-    current_frame_host()
-        ->SetBackForwardCacheDisablingFeaturesCallbackForTesting(
-            base::BindLambdaForTesting(
-                [&run_loop, feature](
-                    blink::scheduler::WebSchedulerTrackedFeatures features) {
-                  if (features.Has(feature) && run_loop.running())
-                    run_loop.Quit();
-                }));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    run_loop.Run();
+    class BfcacheDisabledByFeatureWaiter
+        : public blink::mojom::
+              BackForwardCacheControllerHostInterceptorForTesting {
+     public:
+      explicit BfcacheDisabledByFeatureWaiter(
+          RenderFrameHostImpl* render_frame_host,
+          blink::scheduler::WebSchedulerTrackedFeature expected_feature)
+          : render_frame_host_(render_frame_host),
+            swapped_impl_(
+                render_frame_host
+                    ->back_forward_cache_controller_host_receiver_for_testing(),
+                this),
+            expected_feature_(expected_feature) {}
+
+      void Wait() { run_loop_.Run(); }
+
+      // BackForwardCacheControllerHostInterceptorForTesting overrides:
+      blink::mojom::BackForwardCacheControllerHost* GetForwardingInterface()
+          override {
+        return swapped_impl_.old_impl();
+      }
+
+      // BackForwardCacheControllerHost overrides:
+      void DidChangeBackForwardCacheDisablingFeatures(
+          RenderFrameHostImpl::BackForwardCacheBlockingDetails details)
+          override {
+        GetForwardingInterface()->DidChangeBackForwardCacheDisablingFeatures(
+            std::move(details));
+        if (render_frame_host_->GetBackForwardCacheDisablingFeatures().Has(
+                expected_feature_)) {
+          run_loop_.Quit();
+        }
+      }
+
+     private:
+      base::RunLoop run_loop_;
+      const raw_ptr<RenderFrameHostImpl> render_frame_host_;
+      mojo::test::ScopedSwapImplForTesting<
+          blink::mojom::BackForwardCacheControllerHost>
+          swapped_impl_;
+      const blink::scheduler::WebSchedulerTrackedFeature expected_feature_;
+    };
+
+    {
+      BfcacheDisabledByFeatureWaiter waiter(current_frame_host(), feature);
+      EXPECT_TRUE(NavigateToURL(shell(), url));
+      waiter.Wait();
+    }
 
     EXPECT_EQ(base::Difference(
                   current_frame_host()->GetBackForwardCacheDisablingFeatures(),
