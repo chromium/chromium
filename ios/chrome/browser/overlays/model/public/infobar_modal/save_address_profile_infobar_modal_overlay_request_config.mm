@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
@@ -60,8 +61,7 @@ void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
           base::SysUTF16ToNSString(row.first_value),
           base::SysUTF16ToNSString(row.second_value)
         ]
-           forKey:[NSNumber
-                      numberWithInt:AutofillUITypeFromAutofillType(row.type)]];
+           forKey:[NSNumber numberWithInt:base::to_underlying(row.type)]];
   }
 }
 

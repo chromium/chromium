@@ -325,7 +325,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                  textFieldValue:(NSString*)textFieldValue
            textFieldPlaceholder:(NSString*)textFieldPlaceholder
                    keyboardType:(UIKeyboardType)keyboardType
-                 autofillUIType:(AutofillUIType)autofillUIType {
+       autofillCreditCardUIType:
+           (AutofillCreditCardUIType)autofillCreditCardUIType {
   AutofillCreditCardEditItem* item =
       [[AutofillCreditCardEditItem alloc] initWithType:itemType];
   item.delegate = self;
@@ -335,7 +336,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.keyboardType = keyboardType;
   item.hideIcon = NO;
   item.textFieldEnabled = YES;
-  item.autofillUIType = autofillUIType;
+  item.autofillCreditCardUIType = autofillCreditCardUIType;
   return item;
 }
 
@@ -349,7 +350,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRATION_YEAR)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardExpYear];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kExpYear];
   return expirationYearItem;
 }
 
@@ -363,7 +364,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardExpMonth];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kExpMonth];
   return expirationMonthItem;
 }
 
@@ -377,7 +378,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardNumber];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kNumber];
   return cardNumberItem;
 }
 
@@ -391,7 +392,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME)
                            keyboardType:UIKeyboardTypeDefault
-                         autofillUIType:AutofillUITypeCreditCardHolderFullName];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kFullName];
   return cardHolderNameItem;
 }
 
@@ -405,7 +406,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)
                            keyboardType:UIKeyboardTypeDefault
-                         autofillUIType:AutofillUITypeUnknown];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kUnknown];
   return cardNicknameItem;
 }
 

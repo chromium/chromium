@@ -8,11 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include <vector>
-
-#include "components/autofill/core/browser/field_types.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "components/autofill/core/browser/field_types.h"
+#import "ios/chrome/browser/ui/autofill/autofill_credit_card_ui_type.h"
+#import "ios/chrome/grit/ios_strings.h"
 
 // Defines types for the fields that are used by the edit profile screens.
 struct AutofillProfileFieldDisplayInfo {
@@ -52,11 +50,13 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
     {autofill::EMAIL_ADDRESS, IDS_IOS_AUTOFILL_EMAIL, UIReturnKeyDone,
      UIKeyboardTypeEmailAddress, UITextAutocapitalizationTypeNone}};
 
-// Returns the AutofillUIType equivalent to `type`.
-AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type);
+// Returns the `AutofillCreditCardUIType` equivalent to `type`.
+AutofillCreditCardUIType AutofillUITypeFromAutofillTypeForCard(
+    autofill::FieldType type);
 
 // Returns the autofill::FieldType equivalent to `type`.
-autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
+autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
+    AutofillCreditCardUIType type);
 
 // Returns whether the provided field is used in the provided country's address.
 bool FieldIsUsedInAddress(autofill::FieldType autofillType,

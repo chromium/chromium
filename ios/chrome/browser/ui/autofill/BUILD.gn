@@ -163,7 +163,7 @@ source_set("autofill_shared_ui") {
 
 source_set("autofill_ui_type") {
   sources = [
-    "autofill_ui_type.h",
+    "autofill_credit_card_ui_type.h",
     "autofill_ui_type_util.h",
     "autofill_ui_type_util.mm",
   ]

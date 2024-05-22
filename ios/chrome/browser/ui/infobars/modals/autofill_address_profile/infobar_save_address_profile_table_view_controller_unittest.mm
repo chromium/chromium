@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/types/cxx23_to_underlying.h"
+#import "components/autofill/core/browser/field_types.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -81,7 +82,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
+        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street"
@@ -97,7 +98,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
+        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",

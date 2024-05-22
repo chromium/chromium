@@ -7,99 +7,41 @@
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_features.h"
 
-AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type) {
+AutofillCreditCardUIType AutofillUITypeFromAutofillTypeForCard(
+    autofill::FieldType type) {
   switch (type) {
     case autofill::UNKNOWN_TYPE:
-      return AutofillUITypeUnknown;
+      return AutofillCreditCardUIType::kUnknown;
     case autofill::CREDIT_CARD_NUMBER:
-      return AutofillUITypeCreditCardNumber;
+      return AutofillCreditCardUIType::kNumber;
     case autofill::CREDIT_CARD_NAME_FULL:
-      return AutofillUITypeCreditCardHolderFullName;
+      return AutofillCreditCardUIType::kFullName;
     case autofill::CREDIT_CARD_EXP_MONTH:
-      return AutofillUITypeCreditCardExpMonth;
+      return AutofillCreditCardUIType::kExpMonth;
     case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
-      return AutofillUITypeCreditCardExpYear;
-    case autofill::NAME_FULL:
-      return AutofillUITypeProfileFullName;
-    case autofill::COMPANY_NAME:
-      return AutofillUITypeProfileCompanyName;
-    case autofill::ADDRESS_HOME_STREET_ADDRESS:
-      return AutofillUITypeProfileHomeAddressStreet;
-    case autofill::ADDRESS_HOME_LINE1:
-      return AutofillUITypeProfileHomeAddressLine1;
-    case autofill::ADDRESS_HOME_LINE2:
-      return AutofillUITypeProfileHomeAddressLine2;
-    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
-      return AutofillUITypeProfileHomeAddressDependentLocality;
-    case autofill::ADDRESS_HOME_CITY:
-      return AutofillUITypeProfileHomeAddressCity;
-    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
-      return AutofillUITypeProfileHomeAddressAdminLevel2;
-    case autofill::ADDRESS_HOME_STATE:
-      return AutofillUITypeProfileHomeAddressState;
-    case autofill::ADDRESS_HOME_ZIP:
-      return AutofillUITypeProfileHomeAddressZip;
-    case autofill::ADDRESS_HOME_SORTING_CODE:
-      return AutofillUITypeProfileHomeAddressSortingCode;
-    case autofill::ADDRESS_HOME_COUNTRY:
-      return AutofillUITypeProfileHomeAddressCountry;
-    case autofill::PHONE_HOME_WHOLE_NUMBER:
-      return AutofillUITypeProfileHomePhoneWholeNumber;
-    case autofill::EMAIL_ADDRESS:
-      return AutofillUITypeProfileEmailAddress;
-    case autofill::ADDRESS_HOME_ADDRESS:
-      return AutofillUITypeAddressHomeAddress;
+      return AutofillCreditCardUIType::kExpYear;
     default:
       NOTREACHED_IN_MIGRATION();
-      return AutofillUITypeUnknown;
+      return AutofillCreditCardUIType::kUnknown;
   }
 }
 
-autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
+autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
+    AutofillCreditCardUIType type) {
   switch (type) {
-    case AutofillUITypeUnknown:
+    case AutofillCreditCardUIType::kUnknown:
       return autofill::UNKNOWN_TYPE;
-    case AutofillUITypeCreditCardNumber:
+    case AutofillCreditCardUIType::kNumber:
       return autofill::CREDIT_CARD_NUMBER;
-    case AutofillUITypeCreditCardHolderFullName:
+    case AutofillCreditCardUIType::kFullName:
       return autofill::CREDIT_CARD_NAME_FULL;
-    case AutofillUITypeCreditCardExpMonth:
+    case AutofillCreditCardUIType::kExpMonth:
       return autofill::CREDIT_CARD_EXP_MONTH;
-    case AutofillUITypeCreditCardExpYear:
+    case AutofillCreditCardUIType::kExpYear:
       return autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR;
-    case AutofillUITypeProfileFullName:
-      return autofill::NAME_FULL;
-    case AutofillUITypeProfileCompanyName:
-      return autofill::COMPANY_NAME;
-    case AutofillUITypeProfileHomeAddressStreet:
-      return autofill::ADDRESS_HOME_STREET_ADDRESS;
-    case AutofillUITypeProfileHomeAddressLine1:
-      return autofill::ADDRESS_HOME_LINE1;
-    case AutofillUITypeProfileHomeAddressLine2:
-      return autofill::ADDRESS_HOME_LINE2;
-    case AutofillUITypeProfileHomeAddressDependentLocality:
-      return autofill::ADDRESS_HOME_DEPENDENT_LOCALITY;
-    case AutofillUITypeProfileHomeAddressCity:
-      return autofill::ADDRESS_HOME_CITY;
-    case AutofillUITypeProfileHomeAddressAdminLevel2:
-      return autofill::ADDRESS_HOME_ADMIN_LEVEL2;
-    case AutofillUITypeProfileHomeAddressState:
-      return autofill::ADDRESS_HOME_STATE;
-    case AutofillUITypeProfileHomeAddressZip:
-      return autofill::ADDRESS_HOME_ZIP;
-    case AutofillUITypeProfileHomeAddressSortingCode:
-      return autofill::ADDRESS_HOME_SORTING_CODE;
-    case AutofillUITypeProfileHomeAddressCountry:
-      return autofill::ADDRESS_HOME_COUNTRY;
-    case AutofillUITypeProfileHomePhoneWholeNumber:
-      return autofill::PHONE_HOME_WHOLE_NUMBER;
-    case AutofillUITypeProfileEmailAddress:
-      return autofill::EMAIL_ADDRESS;
-    case AutofillUITypeAddressHomeAddress:
-      return autofill::ADDRESS_HOME_ADDRESS;
-    case AutofillUITypeCreditCardExpDate:
-    case AutofillUITypeCreditCardBillingAddress:
-    case AutofillUITypeCreditCardSaveToChrome:
+    case AutofillCreditCardUIType::kExpDate:
+    case AutofillCreditCardUIType::kBillingAddress:
+    case AutofillCreditCardUIType::kSaveToChrome:
     default:
       NOTREACHED_IN_MIGRATION();
       return autofill::UNKNOWN_TYPE;

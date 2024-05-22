@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
+#import "ios/chrome/browser/ui/autofill/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
 @implementation AutofillCreditCardUtil
@@ -48,24 +48,24 @@
             cardNickname:(NSString*)cardNickname
                 appLocal:(const std::string&)appLocal {
   [self updateCreditCard:creditCard
-            cardProperty:cardHolderName
-          autofillUIType:AutofillUITypeCreditCardHolderFullName
-                appLocal:appLocal];
+                  cardProperty:cardHolderName
+      autofillCreditCardUIType:AutofillCreditCardUIType::kFullName
+                      appLocal:appLocal];
 
   [self updateCreditCard:creditCard
-            cardProperty:cardNumber
-          autofillUIType:AutofillUITypeCreditCardNumber
-                appLocal:appLocal];
+                  cardProperty:cardNumber
+      autofillCreditCardUIType:AutofillCreditCardUIType::kNumber
+                      appLocal:appLocal];
 
   [self updateCreditCard:creditCard
-            cardProperty:expirationMonth
-          autofillUIType:AutofillUITypeCreditCardExpMonth
-                appLocal:appLocal];
+                  cardProperty:expirationMonth
+      autofillCreditCardUIType:AutofillCreditCardUIType::kExpMonth
+                      appLocal:appLocal];
 
   [self updateCreditCard:creditCard
-            cardProperty:expirationYear
-          autofillUIType:AutofillUITypeCreditCardExpYear
-                appLocal:appLocal];
+                  cardProperty:expirationYear
+      autofillCreditCardUIType:AutofillCreditCardUIType::kExpYear
+                      appLocal:appLocal];
 
   creditCard->SetNickname(base::SysNSStringToUTF16(cardNickname));
 }
@@ -108,11 +108,12 @@
 // Updates the `AutofillUIType` of the `creditCard` with the value of
 // `cardProperty`.
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
-            cardProperty:(NSString*)cardValue
-          autofillUIType:(AutofillUIType)fieldType
-                appLocal:(const std::string&)appLocal {
+                cardProperty:(NSString*)cardValue
+    autofillCreditCardUIType:(AutofillCreditCardUIType)autofillCreditCardUIType
+                    appLocal:(const std::string&)appLocal {
   creditCard->SetInfo(
-      autofill::AutofillType(AutofillTypeFromAutofillUIType(fieldType)),
+      autofill::AutofillType(
+          AutofillTypeFromAutofillUITypeForCard(autofillCreditCardUIType)),
       base::SysNSStringToUTF16(cardValue), appLocal);
 }
 
