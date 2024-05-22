@@ -33,6 +33,9 @@ namespace settings {
 
 namespace {
 
+constexpr std::string_view kExtendedUpdatesSettingChangedMessage =
+    "extended-updates-setting-changed";
+
 class TestAboutHandler : public ::settings::AboutHandler {
  public:
   explicit TestAboutHandler(Profile* profile) : AboutHandler(profile) {}
@@ -111,6 +114,11 @@ class AboutHandlerTest : public testing::Test {
     base::Time utc_date;
     ASSERT_TRUE(base::Time::FromUTCString(utc_date_string, &utc_date));
     fake_update_engine_client_->set_eol_date(utc_date);
+  }
+
+  void RestartJavascript() {
+    handler_->DisallowJavascript();
+    handler_->AllowJavascriptForTesting();
   }
 
  protected:
@@ -261,7 +269,27 @@ TEST_F(AboutHandlerTest, ObservesExtendedUpdatesSettingChanges) {
   const auto& call_data = web_ui_.call_data()[0];
   ASSERT_EQ(call_data->args().size(), 1u);
   EXPECT_EQ(call_data->args()[0].GetString(),
-            "extended-updates-setting-changed");
+            kExtendedUpdatesSettingChangedMessage);
+}
+
+TEST_F(AboutHandlerTest, ObservesExtendedUpdatesSettingChangesAfterRefresh) {
+  // Simulate the disallowing and allowing of Javascript during a page refresh.
+  RestartJavascript();
+
+  ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
+  EXPECT_CALL(mock_controller, HasOptInAbility(NotNull()))
+      .WillOnce(Return(true));
+
+  EXPECT_EQ(web_ui_.call_data().size(), 0u);
+  EXPECT_TRUE(mock_controller.OptIn(&profile_));
+
+  ASSERT_EQ(web_ui_.call_data().size(), 1u);
+  const auto& call_data = web_ui_.call_data()[0];
+  ASSERT_EQ(call_data->args().size(), 1u);
+  EXPECT_EQ(call_data->args()[0].GetString(),
+            kExtendedUpdatesSettingChangedMessage);
 }
 
 }  // namespace
