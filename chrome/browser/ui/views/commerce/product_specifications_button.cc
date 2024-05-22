@@ -174,6 +174,10 @@ void ProductSpecificationsButton::ShowEntryPointWithTitle(
   Show();
 }
 
+void ProductSpecificationsButton::HideEntryPoint() {
+  Hide();
+}
+
 void ProductSpecificationsButton::SetOpacity(float factor) {
   label()->layer()->SetOpacity(factor);
   close_button_->layer()->SetOpacity(factor);
