@@ -34,7 +34,8 @@ TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
 
   std::vector<actions::ActionId> browser_action_ids = {
       kActionNewIncognitoWindow, kActionPrint,    kActionClearBrowsingData,
-      kActionTaskManager,        kActionDevTools, kActionSendTabToSelf};
+      kActionTaskManager,        kActionDevTools, kActionSendTabToSelf,
+      kActionQrCodeGenerator};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 
@@ -59,4 +60,6 @@ TEST_F(BrowserActionsTest, CheckBrowserActionsEnabledState) {
             chrome::CanPrint(browser()));
   EXPECT_EQ(action_manager.FindAction(kActionSendTabToSelf)->GetEnabled(),
             chrome::CanSendTabToSelf(browser()));
+  EXPECT_EQ(action_manager.FindAction(kActionQrCodeGenerator)->GetEnabled(),
+            false);
 }

@@ -273,6 +273,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionDevTools, "PinnedDeveloperToolsButton"},
           {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
           {kActionPrint, "PinnedPrintButton"},
+          {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
           {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
           {kActionShowTranslate, "PinnedShowTranslateButton"},
           {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
