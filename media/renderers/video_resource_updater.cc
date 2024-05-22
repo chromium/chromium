@@ -509,6 +509,28 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
   }
 }
 
+std::vector<VideoFrame::Plane> GetVideoFramePlanes(
+    viz::SharedImageFormat format) {
+  CHECK(format.is_multi_plane());
+  switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
+      return {VideoFrame::Plane::kY, VideoFrame::Plane::kU,
+              VideoFrame::Plane::kV};
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      return {VideoFrame::Plane::kY, VideoFrame::Plane::kV,
+              VideoFrame::Plane::kU};
+    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+      return {VideoFrame::Plane::kY, VideoFrame::Plane::kUV};
+    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+      return {VideoFrame::Plane::kY, VideoFrame::Plane::kUV,
+              VideoFrame::Plane::kATriPlanar};
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V_A:
+      return {VideoFrame::Plane::kY, VideoFrame::Plane::kU,
+              VideoFrame::Plane::kV, VideoFrame::Plane::kA};
+  }
+  NOTREACHED_NORETURN();
+}
+
 bool UseMultiplanarSoftwarePixelUpload(const gfx::ColorSpace& cs) {
   // Multiplanar upload requires a valid SkYUVColorSpace -- which doesn't exist
   // for all possible color space combinations.
@@ -1568,9 +1590,12 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   for (int plane_index = 0; plane_index < yuv_si_format.NumberOfPlanes();
        ++plane_index) {
+    std::vector<VideoFrame::Plane> frame_planes =
+        GetVideoFramePlanes(yuv_si_format);
     // |video_stride_bytes| is the width of the |video_frame| we are
     // uploading (including non-frame data to fill in the stride).
-    const int video_stride_bytes = video_frame->stride(plane_index);
+    const int video_stride_bytes =
+        video_frame->stride(frame_planes[plane_index]);
 
     // |resource_size_pixels| is the size of the destination resource.
     const gfx::Size resource_size_pixels =
@@ -1611,7 +1636,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     const uint8_t* pixels;
     int pixels_stride_in_bytes;
     if (!needs_conversion) {
-      pixels = video_frame->data(plane_index);
+      pixels = video_frame->data(frame_planes[plane_index]);
       pixels_stride_in_bytes = video_stride_bytes;
     } else {
       // Avoid malloc for each frame/plane if possible.
@@ -1634,7 +1659,8 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
         // slower software pixel upload path here.
         float libyuv_multiplier = 1.f / max_value;
         libyuv::HalfFloatPlane(
-            reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
+            reinterpret_cast<const uint16_t*>(
+                video_frame->data(frame_planes[plane_index])),
             video_stride_bytes,
             reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].get()),
             upload_image_stride, libyuv_multiplier,
@@ -1644,14 +1670,16 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
                viz::SharedImageFormat::ChannelFormat::k8);
         const int scale = 0x10000 >> (bits_per_channel - 8);
         libyuv::Convert16To8Plane(
-            reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
+            reinterpret_cast<const uint16_t*>(
+                video_frame->data(frame_planes[plane_index])),
             video_stride_bytes / 2, upload_pixels_[plane_index].get(),
             upload_image_stride, scale, bytes_per_row,
             resource_size_pixels.height());
       } else if (needs_bit_upshifting) {
         CHECK_EQ(resource_bit_depth, 16u);
         libyuv::ConvertToMSBPlane_16(
-            reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
+            reinterpret_cast<const uint16_t*>(
+                video_frame->data(frame_planes[plane_index])),
             video_stride_bytes / 2,
             reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].get()),
             upload_image_stride / 2, resource_size_pixels.width(),
