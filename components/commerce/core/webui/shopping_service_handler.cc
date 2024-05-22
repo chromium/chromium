@@ -240,6 +240,12 @@ ShoppingServiceHandler::ShoppingServiceHandler(
       delegate_(std::move(delegate)) {
   scoped_subscriptions_observation_.Observe(shopping_service_);
   scoped_bookmark_model_observation_.Observe(bookmark_model_);
+  if (shopping_service_ &&
+      shopping_service_->GetProductSpecificationsService()) {
+    scoped_product_spec_observer_.Observe(
+        shopping_service_->GetProductSpecificationsService());
+  }
+
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
   shopping_service_->ScheduleSavedProductUpdate();
