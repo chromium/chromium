@@ -494,7 +494,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         }
 
         codec = AudioCodec::kIAMF;
-        profile = entry.iamf.profile == 0 ? AudioCodecProfile::kIAMF_SIMPLE
+        profile = entry.iacb.profile == 0 ? AudioCodecProfile::kIAMF_SIMPLE
                                           : AudioCodecProfile::kIAMF_BASE;
         // The correct values for the channel layout and sample rate can
         // be parsed from the descriptor bitstream prepended to each sample.
@@ -892,18 +892,18 @@ bool MP4StreamParser::PrepareAACBuffer(
 
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 bool MP4StreamParser::PrependIADescriptors(
-    const IamfSpecificBox& iamf_box,
+    const IamfSpecificBox& iacb,
     std::vector<uint8_t>* frame_buf,
     std::vector<SubsampleEntry>* subsamples) const {
   // Prepend the IA Descriptors to every IA Sample.
-  frame_buf->insert(frame_buf->begin(), iamf_box.ia_descriptors.begin(),
-                    iamf_box.ia_descriptors.end());
+  frame_buf->insert(frame_buf->begin(), iacb.ia_descriptors.begin(),
+                    iacb.ia_descriptors.end());
+  size_t descriptors_size = iacb.ia_descriptors.size();
   if (subsamples->empty()) {
     subsamples->push_back(
-        SubsampleEntry(iamf_box.ia_descriptors.size(),
-                       frame_buf->size() - iamf_box.ia_descriptors.size()));
+        SubsampleEntry(descriptors_size, frame_buf->size() - descriptors_size));
   } else {
-    (*subsamples)[0].clear_bytes += iamf_box.ia_descriptors.size();
+    (*subsamples)[0].clear_bytes += descriptors_size;
   }
 
   return true;
@@ -1083,7 +1083,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     } else {
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
       if (runs_->audio_description().format == FOURCC_IAMF) {
-        if (!PrependIADescriptors(runs_->audio_description().iamf, &frame_buf,
+        if (!PrependIADescriptors(runs_->audio_description().iacb, &frame_buf,
                                   &subsamples)) {
           MEDIA_LOG(ERROR, media_log_)
               << "Failed to prepare IA sample for decode";

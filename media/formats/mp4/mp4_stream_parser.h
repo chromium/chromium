@@ -102,7 +102,7 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
                         std::vector<SubsampleEntry>* subsamples) const;
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-  bool PrependIADescriptors(const IamfSpecificBox& iamf_box,
+  bool PrependIADescriptors(const IamfSpecificBox& iacb,
                             std::vector<uint8_t>* frame_buf,
                             std::vector<SubsampleEntry>* subsamples) const;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)

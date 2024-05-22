@@ -475,7 +475,7 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
   AC4SpecificBox ac4;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-  IamfSpecificBox iamf;
+  IamfSpecificBox iacb;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 };
 
