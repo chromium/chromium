@@ -124,6 +124,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:socket_factory",
   "//third_party/webrtc/rtc_base:socket_server",
   "//third_party/webrtc/rtc_base:ssl",
+  "//third_party/webrtc/rtc_base:ssl_adapter",
   "//third_party/webrtc/rtc_base:threading",
   "//third_party/webrtc/rtc_base:timestamp_aligner",
   "//third_party/webrtc/rtc_base:timeutils",
