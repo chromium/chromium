@@ -240,7 +240,9 @@ mojom::BatteryInfoPtr GetBatteryInfo(
   CHECK(bt_device);
   auto battery_info =
       bt_device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
-  CHECK(battery_info->percentage.has_value());
+  if (!battery_info || !battery_info->percentage.has_value()) {
+    return nullptr;
+  }
   const int percentage = battery_info->percentage.value();
   CHECK_GE(percentage, 0);
   CHECK_LE(percentage, 100);
