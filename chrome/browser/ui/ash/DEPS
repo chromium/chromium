@@ -298,6 +298,9 @@ specific_include_rules = {
   "birch_self_share_provider\.cc": [
     "+chrome/browser/favicon/favicon_utils.h",
     "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
+  ],
+  "birch_keyed_service_unittest\.cc": [
+    "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
   ]
 }
 

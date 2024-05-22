@@ -81,7 +81,9 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
       items_.emplace_back(
           base::UTF8ToUTF16(entry_guid), base::UTF8ToUTF16(entry->GetTitle()),
           entry->GetURL(), entry->GetSharedTime(),
-          base::UTF8ToUTF16(entry->GetDeviceName()), empty_favicon_url);
+          base::UTF8ToUTF16(entry->GetDeviceName()), empty_favicon_url,
+          base::BindRepeating(&BirchSelfShareProvider::OnItemPressed,
+                              weak_factory_.GetWeakPtr(), entry_guid));
       favicon_service->GetFaviconImageForPageURL(
           entry->GetURL(),
           base::BindOnce(&BirchSelfShareProvider::OnFavIconDataAvailable,
@@ -115,6 +117,12 @@ void BirchSelfShareProvider::OnFavIconDataAvailable(
   if (--(active_tasks_) == 0) {
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items_));
   }
+}
+
+void BirchSelfShareProvider::OnItemPressed(const std::string& guid) {
+  send_tab_to_self::SendTabToSelfModel* model =
+      sync_service_->GetSendTabToSelfModel();
+  model->MarkEntryOpened(guid);
 }
 
 }  // namespace ash

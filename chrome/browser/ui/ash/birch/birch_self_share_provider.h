@@ -33,7 +33,13 @@ class ASH_EXPORT BirchSelfShareProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
 
+ protected:
+  // Marks the entry as opened when the suggestion is pressed.
+  void OnItemPressed(const std::string& guid);
+
  private:
+  friend class BirchKeyedServiceTest;
+
   void OnFavIconDataAvailable(
       const std::string& guid,
       const favicon_base::FaviconImageResult& image_result);

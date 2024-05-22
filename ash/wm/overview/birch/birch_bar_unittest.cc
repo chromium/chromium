@@ -35,6 +35,7 @@
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
@@ -366,7 +367,8 @@ class BirchBarTest : public AshTestBase {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/GURL("https://www.exampletwo.com/"),
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*favicon_url=*/faviconUrl);
+          /*favicon_url=*/faviconUrl,
+          /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetSelfShareItems(item_list);

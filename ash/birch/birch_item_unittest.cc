@@ -16,8 +16,10 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/test_future.h"
@@ -458,6 +460,21 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kTab,
                                1);
+}
+
+TEST_F(BirchItemTest, SelfShare_PerformAction) {
+  GURL favicon_url("https://www.favicon.com/");
+  base::MockCallback<base::RepeatingClosure> activation_callback;
+  BirchSelfShareItem item(
+      /*guid=*/u"self share guid", /*title*/ u"self share tab",
+      /*url=*/GURL("https://www.example.com/"),
+      /*shared_time=*/base::Time(), /*device_name=*/u"my device",
+      /*favicon_url=*/favicon_url,
+      /*activation_callback=*/activation_callback.Get());
+  EXPECT_CALL(activation_callback, Run).Times(1);
+  item.PerformAction();
+  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+            GURL("https://www.example.com/"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -503,9 +503,9 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("https://www.favicon.com/");
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("https://www.example.com/"),
-                                    base::Time(), u"my device", faviconUrl);
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab", GURL("https://www.example.com/"),
+      base::Time(), u"my device", faviconUrl, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
@@ -835,9 +835,9 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
 
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("https://www.favicon.com/");
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("foo.bar.two"), base::Time(),
-                                    u"my device", faviconUrl);
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
+      u"my device", faviconUrl, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -980,9 +980,9 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("favicon");
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("foo.bar.two"), base::Time(),
-                                    u"my device", faviconUrl);
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
+      u"my device", faviconUrl, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
@@ -1466,9 +1466,9 @@ TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
 
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("https://www.favicon.com/");
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("https://www.example.com/"),
-                                    base::Time(), u"my device", faviconUrl);
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab", GURL("https://www.example.com/"),
+      base::Time(), u"my device", faviconUrl, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
@@ -1497,7 +1497,8 @@ TEST_F(BirchModelTest, DifferentSelfShareAndRecentTabItem) {
   GURL faviconUrl = GURL("https://www.favicon.com/");
   self_share_item_list.emplace_back(u"self share guid", u"self share tab",
                                     GURL("https://www.exampletwo.com/"),
-                                    base::Time(), u"my device", faviconUrl);
+                                    base::Time(), u"my device", faviconUrl,
+                                    base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();

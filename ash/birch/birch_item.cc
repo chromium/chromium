@@ -566,12 +566,14 @@ BirchSelfShareItem::BirchSelfShareItem(const std::u16string& guid,
                                        const GURL& url,
                                        const base::Time& shared_time,
                                        const std::u16string& device_name,
-                                       GURL& favicon_url)
+                                       GURL& favicon_url,
+                                       base::RepeatingClosure callback)
     : BirchItem(title, GetSubtitle(device_name, shared_time)),
       guid_(guid),
       url_(url),
       shared_time_(shared_time),
-      favicon_url_(favicon_url) {}
+      favicon_url_(favicon_url),
+      activation_callback_(std::move(callback)) {}
 
 BirchSelfShareItem::BirchSelfShareItem(BirchSelfShareItem&&) = default;
 
@@ -600,11 +602,13 @@ std::string BirchSelfShareItem::ToString() const {
 }
 
 void BirchSelfShareItem::PerformAction() {
-  // TODO(b/333412417): Scope how to mark entry opened.
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for self "
                   "share item";
     return;
+  }
+  if (activation_callback_) {
+    activation_callback_.Run();
   }
   RecordActionMetrics();
   NewWindowDelegate::GetPrimary()->OpenUrl(

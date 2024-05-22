@@ -299,7 +299,8 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     GURL& favicon_url);
+                     GURL& favicon_url,
+                     base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
   BirchSelfShareItem(const BirchSelfShareItem&);
   BirchSelfShareItem& operator=(const BirchSelfShareItem&);
@@ -326,6 +327,10 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   GURL url_;
   base::Time shared_time_;
   GURL favicon_url_;
+  // `activation_callback_` is triggered when the item is clicked by the user,
+  // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
+  // corresponding `SendTabToSelfEntry` as opened.
+  base::RepeatingClosure activation_callback_;
 };
 
 class ASH_EXPORT BirchWeatherItem : public BirchItem {

@@ -126,7 +126,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   const std::vector<BirchMostVisitedItem>& GetMostVisitedItemsForTest() const {
     return most_visited_data_.items;
   }
-  const std::vector<BirchSelfShareItem>& GetSelfShareItemsForTest() const {
+  std::vector<BirchSelfShareItem>& GetSelfShareItemsForTest() {
     return self_share_data_.items;
   }
   const std::vector<BirchReleaseNotesItem>& GetReleaseNotesItemsForTest()

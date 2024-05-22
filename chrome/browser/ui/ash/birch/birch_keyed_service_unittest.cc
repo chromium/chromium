@@ -13,7 +13,9 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
@@ -23,19 +25,27 @@
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -199,6 +209,113 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
+class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
+ public:
+  SendTabToSelfModelMock() = default;
+
+  ~SendTabToSelfModelMock() override = default;
+
+  MOCK_METHOD1(DeleteEntry, void(const std::string&));
+  MOCK_METHOD1(DismissEntry, void(const std::string&));
+
+  send_tab_to_self::SendTabToSelfEntry* AddEntry(
+      const GURL& url,
+      const std::string& title,
+      const std::string& target_device_cache_guid) override {
+    const std::string guid = "guid";
+
+    auto entry = std::make_unique<send_tab_to_self::SendTabToSelfEntry>(
+        guid, url, title, base::Time::Now(), "device_info",
+        target_device_cache_guid);
+
+    auto* result = entry.get();
+
+    entries_.emplace(guid, std::move(entry));
+
+    return result;
+  }
+
+  const send_tab_to_self::SendTabToSelfEntry* GetEntryByGUID(
+      const std::string& guid) const override {
+    auto it = entries_.find(guid);
+    return it != entries_.end() ? it->second.get() : nullptr;
+  }
+
+  std::vector<std::string> GetAllGuids() const override {
+    std::vector<std::string> keys;
+    for (const auto& it : entries_) {
+      DCHECK_EQ(it.first, it.second->GetGUID());
+      keys.push_back(it.first);
+    }
+    return keys;
+  }
+
+  void MarkEntryOpened(const std::string& guid) override {
+    auto it = entries_.find(guid);
+    if (it != entries_.end()) {
+      if (auto* entry = it->second.get()) {
+        entry->MarkOpened();
+      }
+    }
+  }
+
+ private:
+  std::map<std::string, std::unique_ptr<send_tab_to_self::SendTabToSelfEntry>>
+      entries_;
+};
+
+class TestSendTabToSelfSyncService
+    : public send_tab_to_self::SendTabToSelfSyncService {
+ public:
+  TestSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
+
+  ~TestSendTabToSelfSyncService() override = default;
+
+  send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel() override {
+    return &model_mock_;
+  }
+
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override {
+    return fake_delegate_.GetWeakPtr();
+  }
+
+ protected:
+  syncer::FakeModelTypeControllerDelegate fake_delegate_;
+  SendTabToSelfModelMock model_mock_;
+};
+
+std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<TestSendTabToSelfSyncService>();
+}
+
+class FaviconServiceMock : public favicon::MockFaviconService {
+ public:
+  FaviconServiceMock() = default;
+  ~FaviconServiceMock() override = default;
+  FaviconServiceMock(const FaviconServiceMock&) = delete;
+  FaviconServiceMock& operator=(const FaviconServiceMock&) = delete;
+
+  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
+      const GURL& page_url,
+      favicon_base::FaviconImageCallback callback,
+      base::CancelableTaskTracker* tracker) override {
+    favicon_base::FaviconImageResult result;
+    result.image = gfx::Image();
+    result.icon_url = GURL("https://example.com/favicon.ico");
+
+    std::move(callback).Run(result);
+
+    return base::CancelableTaskTracker::kBadTaskId;
+  }
+};
+
+std::unique_ptr<KeyedService> BuildFaviconServiceMock(
+    content::BrowserContext* context) {
+  return std::make_unique<FaviconServiceMock>();
+}
+
 }  // namespace
 
 // TODO(https://crbug.com/1370774): move `ScopedTestMountPoint` out of holding
@@ -242,6 +359,14 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
         SyncServiceFactory::GetForProfile(profile()));
 
     SetSessionServiceToReturnOpenTabsDelegate(true);
+
+    send_tab_to_self_model_ = static_cast<SendTabToSelfModelMock*>(
+        SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
+            ->GetSendTabToSelfModel());
+
+    favicon_service_ =
+        static_cast<FaviconServiceMock*>(FaviconServiceFactory::GetForProfile(
+            GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
 
   void SetSessionServiceToReturnOpenTabsDelegate(bool return_delegate) {
@@ -251,12 +376,14 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    send_tab_to_self_model_ = nullptr;
     mount_point_.reset();
     birch_keyed_service_ = nullptr;
     file_suggest_service_ = nullptr;
     session_sync_service_ = nullptr;
     sync_service_ = nullptr;
     release_notes_storage_ = nullptr;
+    favicon_service_ = nullptr;
     fake_user_manager_.Reset();
     BrowserWithTestWindowTest::TearDown();
     switches::SetIgnoreForestSecretKeyForTest(false);
@@ -286,6 +413,13 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
         IdentityManagerFactory::GetForProfile(GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@gmail.com",
                                         signin::ConsentLevel::kSignin);
+  }
+
+  void AddNewChromeSyncEntry() {
+    const GURL kUrl("https://www.example.com");
+    const std::string kTitle("example");
+    const std::string kTargetDeviceSyncCacheGuid("target");
+    send_tab_to_self_model_->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid);
   }
 
   void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
@@ -318,6 +452,12 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return session_sync_service_;
   }
 
+  SendTabToSelfModelMock* send_tab_to_self_model() {
+    return send_tab_to_self_model_;
+  }
+
+  FaviconServiceMock* favicon_service() { return favicon_service_; }
+
   syncer::TestSyncService* sync_service() { return sync_service_; }
 
   BirchKeyedService* birch_keyed_service() { return birch_keyed_service_; }
@@ -334,6 +474,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
              temp_dir_.GetPath())},
         {SessionSyncServiceFactory::GetInstance(),
          base::BindRepeating(&BuildMockSessionSyncService)},
+        {SendTabToSelfSyncServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildTestSendTabToSelfSyncService)},
+        {FaviconServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildFaviconServiceMock)},
     };
   }
 
@@ -353,6 +497,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   raw_ptr<syncer::TestSyncService> sync_service_;
 
+  raw_ptr<SendTabToSelfModelMock> send_tab_to_self_model_;
+
+  raw_ptr<FaviconServiceMock> favicon_service_;
+
   MockOpenTabsUIDelegate open_tabs_delegate_;
 
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
@@ -369,6 +517,7 @@ TEST_F(BirchKeyedServiceTest, HasDataProviders) {
   EXPECT_TRUE(birch_keyed_service()->GetCalendarProvider());
   EXPECT_TRUE(birch_keyed_service()->GetFileSuggestProvider());
   EXPECT_TRUE(birch_keyed_service()->GetRecentTabsProvider());
+  EXPECT_TRUE(birch_keyed_service()->GetSelfShareProvider());
 }
 
 TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
@@ -578,6 +727,29 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabsWaitForForeignSessionsChange) {
   session_sync_service()->NotifyMockForeignSessionsChanged();
   EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 2u);
   EXPECT_TRUE(session_sync_service()->IsSubscribersEmpty());
+}
+
+TEST_F(BirchKeyedServiceTest, SelfShareProvider) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* self_share_provider =
+      birch_keyed_service()->GetSelfShareProvider();
+
+  EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
+
+  AddNewChromeSyncEntry();
+  self_share_provider->RequestBirchDataFetch();
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 1u);
+
+  // Mark Self Share Item as opened, the provider should now return zero items.
+  model->GetSelfShareItemsForTest()[0].PerformAction();
+  self_share_provider->RequestBirchDataFetch();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 }
 
 }  // namespace ash
