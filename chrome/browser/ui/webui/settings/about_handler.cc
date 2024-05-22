@@ -417,8 +417,7 @@ void AboutHandler::OnJavascriptAllowed() {
                           weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!extended_updates_setting_change_subscription_ &&
-      ash::CrosSettings::IsInitialized()) {
+  if (ash::CrosSettings::IsInitialized()) {
     extended_updates_setting_change_subscription_ =
         ash::CrosSettings::Get()->AddSettingsObserver(
             ash::kDeviceExtendedAutoUpdateEnabled,
